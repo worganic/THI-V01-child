@@ -3996,7 +3996,9 @@ app.get('/api/version/check', async (req, res) => {
     try {
         let vf = {};
         if (fs.existsSync(VERSION_FILE)) {
-            vf = JSON.parse(fs.readFileSync(VERSION_FILE, 'utf8'));
+            let raw = fs.readFileSync(VERSION_FILE, 'utf8');
+            if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1); // strip BOM
+            vf = JSON.parse(raw);
         }
 
         // Mode child : version.json contient le champ "child"

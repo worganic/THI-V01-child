@@ -51,7 +51,7 @@ if /i not "%CONFIRM%"=="O" (
     pause & exit /b 0
 )
 
-powershell -NoProfile -Command "$vf = Get-Content '%CHILD_JSON%' | ConvertFrom-Json; $vf.baseSynced = '%BASE_VERSION%'; $vf | ConvertTo-Json -Depth 10 | Set-Content '%CHILD_JSON%' -Encoding UTF8"
+powershell -NoProfile -Command "$vf = Get-Content '%CHILD_JSON%' | ConvertFrom-Json; $vf.baseSynced = '%BASE_VERSION%'; $json = $vf | ConvertTo-Json -Depth 10; [System.IO.File]::WriteAllText('%CHILD_JSON%', $json, [System.Text.UTF8Encoding]::new($false))"
 
 echo.
 echo  [OK] version.json mis a jour : baseSynced = %BASE_VERSION%
