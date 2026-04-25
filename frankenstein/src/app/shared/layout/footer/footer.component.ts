@@ -21,7 +21,7 @@ export class FooterComponent implements OnInit {
   readonly copyrightHolder = environment.copyrightHolder;
   readonly copyrightTagline = environment.copyrightTagline;
 
-  versionStatus = signal<{ upToDate: boolean; localVersion: string; latestDeployment: any } | null>(null);
+  versionStatus = signal<any>(null);
 
   constructor(
     public auth: AuthService,

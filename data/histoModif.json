@@ -9,17 +9,11 @@
       "scope": ["system"],
       "features": "system:workflow",
       "title": "Système double versioning base/child",
-      "description": "Mise en place du double système de versioning : version.json migré vers le nouveau format avec childId, child (THI-0.01) et baseSynced (B0.01). CLAUDE.md mis à jour avec les règles de versioning child (préfixe THI-), format commit THI-X.XX, et section de synchronisation avec la base.",
-      "files": [
-        "version.json",
-        "data/histoModif.json",
-        "CLAUDE.md"
-      ],
-      "ai": "Claude Code",
-      "model": "claude-sonnet-4-6",
+      "description": "Mise en place du double système de versioning. version.json migré avec childId, child (THI-0.01) et baseSynced (B0.01). CLAUDE.md mis à jour.",
+      "files": ["version.json","data/histoModif.json","CLAUDE.md"],
+      "ai": "Claude Code","model": "claude-sonnet-4-6",
       "prompt": "ok je valide la solution B et tu peux lancer les étapes de 1 à 4",
-      "startedAt": "2026-04-25T00:00:00.000Z",
-      "completedAt": "2026-04-25T00:00:00.000Z"
+      "startedAt": "2026-04-25T00:00:00.000Z","completedAt": "2026-04-25T00:00:00.000Z"
     },
     {
       "id": "mod-002",
@@ -30,19 +24,26 @@
       "scope": ["frankenstein", "server"],
       "features": "frankenstein:deployments,server:version-check",
       "title": "Tableau dual version child/base dans admin déploiements",
-      "description": "Refonte de l'affichage du statut de version dans admin-deployments. server-data.js mis à jour pour détecter le format child (vf.child) et retourner la structure duale {mode:'child', child:{...}, base:{...}}. Le composant Angular affiche un tableau à 2 lignes avec statut indépendant et action pour chaque composant. admin.component mis à jour pour le point rouge.",
-      "files": [
-        "server/server-data.js",
-        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.ts",
-        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html",
-        "frankenstein/src/app/pages/admin/admin.component.ts",
-        "frankenstein/src/app/pages/admin/admin.component.html"
-      ],
-      "ai": "Claude Code",
-      "model": "claude-sonnet-4-6",
-      "prompt": "coté base cela à l'air bon mais coté child cela m'indique dernier deploiement BASE-B0.02 - 20260425 - Système double versioning base/child, ce qui est exact et Mise à jour requise — ce poste est en v0.00, la dernière version est vB0.02.",
-      "startedAt": "2026-04-25T01:00:00.000Z",
-      "completedAt": "2026-04-25T01:00:00.000Z"
+      "description": "server-data.js mis à jour pour détecter le format child et retourner la structure duale. Composant Angular affiche un tableau à 2 lignes avec statut indépendant et action pour chaque composant.",
+      "files": ["server/server-data.js","frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.ts","frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html","frankenstein/src/app/pages/admin/admin.component.ts","frankenstein/src/app/pages/admin/admin.component.html"],
+      "ai": "Claude Code","model": "claude-sonnet-4-6",
+      "prompt": "coté base cela à l'air bon mais coté child cela m'indique dernier deploiement BASE-B0.02...",
+      "startedAt": "2026-04-25T01:00:00.000Z","completedAt": "2026-04-25T01:00:00.000Z"
+    },
+    {
+      "id": "mod-003",
+      "version": "THI-0.03",
+      "date": "2026-04-25T02:00:00.000Z",
+      "type": "fix",
+      "commitType": "MERGE",
+      "scope": ["frankenstein", "system"],
+      "features": "frankenstein:deployments,system:workflow",
+      "title": "Fix header tableau + footer dual version + sync base B0.03",
+      "description": "Fix couleur header tableau (bg-white/5 par cellule). Footer mis à jour pour afficher les deux versions (THI-X.XX + BX.XX) avec icône si sync requise. baseSynced mis à jour à B0.03 suite à la propagation des changements de la base.",
+      "files": ["version.json","data/histoModif.json","frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html","frankenstein/src/app/shared/layout/footer/footer.component.ts","frankenstein/src/app/shared/layout/footer/footer.component.html"],
+      "ai": "Claude Code","model": "claude-sonnet-4-6",
+      "prompt": "il y a un soucis graphique sur les titres du tableau blanc sur blanc, ajoute aussi les différentes version avec un icone si il faut mettre à jour dans le footer, met à jour la version de base",
+      "startedAt": "2026-04-25T02:00:00.000Z","completedAt": "2026-04-25T02:00:00.000Z"
     }
   ]
 }

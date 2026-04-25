@@ -7,15 +7,33 @@
     <div class="flex items-center gap-3 text-[11px] text-light-text-muted dark:text-white/35">
       <span class="font-semibold text-light-text dark:text-white/60">{{ appName }}</span>
       <span class="text-light-border dark:text-white/20">·</span>
-      <!-- Version colorée : jaune = à jour, rouge = màj requise — cliquable vers /deployments -->
-      @if (versionStatus()) {
-        <a routerLink="/deployments"
+      <!-- Versions : mode child = 2 badges (child + base), mode base = 1 badge -->
+      @if (versionStatus()?.mode === 'child') {
+        <a routerLink="/admin" [queryParams]="{tab:'deploiement'}"
+           class="flex items-center gap-1.5 transition-opacity hover:opacity-70 cursor-pointer">
+          <span class="font-mono font-semibold flex items-center gap-0.5"
+                [class]="versionStatus().child.upToDate ? 'text-yellow-400' : 'text-red-400'">
+            <span class="material-symbols-outlined text-[11px]">{{ versionStatus().child.upToDate ? 'check_circle' : 'warning' }}</span>
+            {{ versionStatus().child.localVersion }}
+          </span>
+          <span class="text-light-border dark:text-white/20">·</span>
+          <span class="font-mono font-semibold flex items-center gap-0.5"
+                [class]="versionStatus().base.upToDate ? 'text-yellow-400' : 'text-orange-400'">
+            <span class="material-symbols-outlined text-[11px]">{{ versionStatus().base.upToDate ? 'check_circle' : 'sync_problem' }}</span>
+            {{ versionStatus().base.localVersion || '—' }}
+            @if (!versionStatus().base.upToDate) {
+              <span class="font-sans font-normal text-[10px]">({{ versionStatus().base.latestVersion }} dispo)</span>
+            }
+          </span>
+        </a>
+      } @else if (versionStatus()) {
+        <a routerLink="/admin" [queryParams]="{tab:'deploiement'}"
            class="font-mono font-semibold flex items-center gap-1 transition-opacity hover:opacity-70 cursor-pointer"
-           [class]="versionStatus()!.upToDate ? 'text-yellow-400' : 'text-red-400'">
-          <span class="material-symbols-outlined text-[11px]">{{ versionStatus()!.upToDate ? 'check_circle' : 'warning' }}</span>
-          v{{ versionStatus()!.localVersion }}
-          @if (!versionStatus()!.upToDate) {
-            <span class="font-sans font-normal text-[10px]">(v{{ versionStatus()!.latestDeployment?.version }} dispo)</span>
+           [class]="versionStatus().upToDate ? 'text-yellow-400' : 'text-red-400'">
+          <span class="material-symbols-outlined text-[11px]">{{ versionStatus().upToDate ? 'check_circle' : 'warning' }}</span>
+          {{ versionStatus().localVersion }}
+          @if (!versionStatus().upToDate) {
+            <span class="font-sans font-normal text-[10px]">({{ versionStatus().latestDeployment?.version }} dispo)</span>
           }
         </a>
       } @else {
