@@ -71,11 +71,15 @@
               </span>
             }
           </td>
-          <td class="px-5 py-3 text-xs text-light-text-muted dark:text-white/50">
+          <td class="px-5 py-3">
             @if (!versionStatus().child.upToDate) {
-              Committer et enregistrer un déploiement child
+              <div class="space-y-1">
+                <p class="text-xs text-light-text-muted dark:text-white/50">Committer puis enregistrer :</p>
+                <code class="block font-mono text-[10px] px-2 py-1.5 rounded bg-black/20 dark:bg-black/30 text-red-300 whitespace-nowrap">git commit -m "{{ versionStatus().child.localVersion }} - YYYYMMDD - [TYPE] - titre"</code>
+                <code class="block font-mono text-[10px] px-2 py-1.5 rounded bg-black/20 dark:bg-black/30 text-red-300 whitespace-nowrap">node server/deploy-log.js --version "{{ versionStatus().child.localVersion }}" ...</code>
+              </div>
             } @else {
-              —
+              <span class="text-xs text-light-text-muted dark:text-white/30">—</span>
             }
           </td>
         </tr>
@@ -110,11 +114,15 @@
               </span>
             }
           </td>
-          <td class="px-5 py-3 text-xs text-light-text-muted dark:text-white/50">
+          <td class="px-5 py-3">
             @if (!versionStatus().base.upToDate) {
-              Intégrer les modifications de la base puis mettre à jour <code class="font-mono text-[10px] bg-light-surface dark:bg-white/5 px-1 rounded">baseSynced</code>
+              <div class="space-y-1">
+                <p class="text-xs text-light-text-muted dark:text-white/50">1. Appliquer les fichiers de propagation</p>
+                <p class="text-xs text-light-text-muted dark:text-white/50">2. Mettre à jour <code class="font-mono text-[10px] bg-black/20 dark:bg-black/30 px-1 rounded text-orange-300">version.json → baseSynced: "{{ versionStatus().base.latestVersion }}"</code></p>
+                <code class="block font-mono text-[10px] px-2 py-1.5 rounded bg-black/20 dark:bg-black/30 text-orange-300 whitespace-nowrap">git commit -m "THI-X.XX - YYYYMMDD - [MERGE] - Sync base {{ versionStatus().base.latestVersion }}"</code>
+              </div>
             } @else {
-              —
+              <span class="text-xs text-light-text-muted dark:text-white/30">—</span>
             }
           </td>
         </tr>
