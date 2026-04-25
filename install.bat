@@ -36,4 +36,8 @@ echo  Installation terminee. Vous pouvez lancer :
 echo  launch-frankenstein.bat
 echo ============================================================
 echo.
+
+echo Archivage du script d'installation...
+rename "%DIR%\install.bat" "old-install.bat"
+
 pause
