@@ -2,24 +2,24 @@
   <div class="text-center max-w-md">
 
     <div class="w-16 h-16 neon-border rounded-2xl flex items-center justify-center mx-auto mb-6">
-      <span class="material-symbols-outlined neon-text text-3xl">rocket_launch</span>
+      <span class="material-symbols-outlined neon-text text-3xl">{{ appConfig.logoIcon() }}</span>
     </div>
 
     <h2 class="text-2xl font-bold text-light-text dark:text-white mb-3 tracking-tight">
-      Frankenstein Junior
+      {{ appConfig.homeConfig().welcomeTitle || appConfig.appName() }}
     </h2>
     <p class="text-light-text-muted dark:text-white/50 text-sm mb-10 max-w-xs mx-auto">
-      Créez et gérez vos projets de documentation Markdown avec prévisualisation live.
+      {{ appConfig.homeConfig().welcomeSubtitle || 'Créez et gérez vos projets de documentation Markdown avec prévisualisation live.' }}
     </p>
 
     <div class="flex flex-col gap-3 items-center">
 
-      <!-- Bouton principal : Mes Projets -->
+      <!-- Bouton principal (configurable via data/child/home.json) -->
       <button
-        (click)="goToProjets()"
+        (click)="goToPrimary()"
         class="flex items-center gap-2 px-6 py-3 rounded-xl bg-light-primary dark:bg-primary text-white font-bold transition-all hover:scale-105 shadow-lg shadow-light-primary/20 dark:shadow-primary/20 w-56">
-        <span class="material-symbols-outlined text-lg">folder_open</span>
-        Mes projets
+        <span class="material-symbols-outlined text-lg">{{ appConfig.homeConfig().primaryButtonIcon || 'folder_open' }}</span>
+        {{ appConfig.homeConfig().primaryButtonLabel || 'Mes projets' }}
       </button>
 
       <!-- Bouton admin : visible uniquement pour les admins -->

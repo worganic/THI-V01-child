@@ -195,5 +195,23 @@
       "startedAt": "2026-04-25T10:00:00.000Z",
       "completedAt": "2026-04-25T12:00:00.000Z"
     }
+    ,
+    {
+      "id": "mod-011",
+      "version": "THI-0.10",
+      "date": "2026-04-25T13:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:site",
+      "title": "Fix home.component.html — goToProjets → goToPrimary après synchro base",
+      "description": "La synchronisation base B0.10 avait mis à jour home.component.ts (renommage goToProjets → goToPrimary) mais pas le template HTML. Angular renvoyait NG9 : Property 'goToProjets' does not exist. Fix : remplacement du template child par la version base exacte (appConfig.logoIcon(), homeConfig(), goToPrimary()).",
+      "files": ["frankenstein/src/app/pages/user/home/home.component.html"],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "j'ai fait une synchro dans child, base ce lance bien mais child ne ce lance pas et angular renvois une erreur : Application bundle generation failed. [10.264 seconds]\n\n✘ [ERROR] NG9: Property 'goToProjets' does not exist on type 'HomeComponent'. [plugin angular-compiler]\n\n    src/app/pages/user/home/home.component.html:19:17:\n      19 │         (click)=\"goToProjets()\"\n         ╵                  ~~~~~~~~~~~\n\n  Error occurs in the template of component HomeComponent.",
+      "startedAt": "2026-04-25T13:00:00.000Z",
+      "completedAt": "2026-04-25T13:00:00.000Z"
+    }
   ]
 }
