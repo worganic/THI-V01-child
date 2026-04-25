@@ -1,30 +1,125 @@
-<!-- Statut version actuelle -->
-@if (versionStatus()) {
+<!-- Statut version — mode BASE (simple) -->
+@if (versionStatus() && !isChildMode) {
   <div class="mb-6 flex items-center gap-4 p-4 rounded-xl border"
-       [class]="versionStatus()!.upToDate
-         ? 'bg-yellow-500/5 border-yellow-500/20'
-         : 'bg-red-500/5 border-red-500/20'">
+       [class]="versionStatus().upToDate ? 'bg-yellow-500/5 border-yellow-500/20' : 'bg-red-500/5 border-red-500/20'">
     <span class="material-symbols-outlined text-2xl"
-          [class]="versionStatus()!.upToDate ? 'text-yellow-400' : 'text-red-400'">
-      {{ versionStatus()!.upToDate ? 'check_circle' : 'warning' }}
+          [class]="versionStatus().upToDate ? 'text-yellow-400' : 'text-red-400'">
+      {{ versionStatus().upToDate ? 'check_circle' : 'warning' }}
     </span>
     <div>
-      <p class="text-sm font-bold"
-         [class]="versionStatus()!.upToDate ? 'text-yellow-400' : 'text-red-400'">
-        @if (versionStatus()!.upToDate) {
-          Ce poste est à jour — v{{ versionStatus()!.localVersion }}
+      <p class="text-sm font-bold" [class]="versionStatus().upToDate ? 'text-yellow-400' : 'text-red-400'">
+        @if (versionStatus().upToDate) {
+          Base à jour — {{ versionStatus().localVersion }}
         } @else {
-          Mise à jour requise — ce poste est en v{{ versionStatus()!.localVersion }}, la dernière version est v{{ versionStatus()!.latestDeployment?.version }}
+          Mise à jour requise — local : {{ versionStatus().localVersion }} / déployé : {{ versionStatus().latestDeployment?.version }}
         }
       </p>
-      @if (versionStatus()!.latestDeployment) {
+      @if (versionStatus().latestDeployment) {
         <p class="text-xs text-light-text-muted dark:text-white/40 mt-0.5">
-          Dernier déploiement : <strong>{{ versionStatus()!.latestDeployment.commit_name || '—' }}</strong>
-          le {{ formatDeployDate(versionStatus()!.latestDeployment.deployed_at) }}
-          par {{ versionStatus()!.latestDeployment.deployed_by }}
+          Dernier déploiement : <strong>{{ versionStatus().latestDeployment.commit_name || '—' }}</strong>
+          le {{ formatDeployDate(versionStatus().latestDeployment.deployed_at) }}
+          par {{ versionStatus().latestDeployment.deployed_by }}
         </p>
       }
     </div>
+  </div>
+}
+
+<!-- Statut version — mode CHILD (tableau dual) -->
+@if (versionStatus() && isChildMode) {
+  <div class="mb-6 rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+    <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center gap-2">
+      <span class="material-symbols-outlined text-base text-light-primary dark:text-primary">lan</span>
+      <span class="text-sm font-bold text-light-text dark:text-white">Versions — {{ versionStatus().childId }}</span>
+    </div>
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b border-light-border dark:border-white/10 bg-light-surface dark:bg-white/3">
+          <th class="px-5 py-2 text-left text-[11px] uppercase tracking-wider font-semibold text-light-text-muted dark:text-white/40 w-40">Composant</th>
+          <th class="px-5 py-2 text-left text-[11px] uppercase tracking-wider font-semibold text-light-text-muted dark:text-white/40">Version locale</th>
+          <th class="px-5 py-2 text-left text-[11px] uppercase tracking-wider font-semibold text-light-text-muted dark:text-white/40">Dernier déploiement</th>
+          <th class="px-5 py-2 text-left text-[11px] uppercase tracking-wider font-semibold text-light-text-muted dark:text-white/40">Statut</th>
+          <th class="px-5 py-2 text-left text-[11px] uppercase tracking-wider font-semibold text-light-text-muted dark:text-white/40">Action</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-light-border/50 dark:divide-white/5">
+        <!-- Ligne Child -->
+        <tr>
+          <td class="px-5 py-3">
+            <span class="font-semibold text-light-text dark:text-white">Child</span>
+            <span class="ml-1.5 text-xs font-mono px-1.5 py-0.5 rounded bg-light-primary/10 dark:bg-primary/10 text-light-primary dark:text-primary">{{ versionStatus().childId }}</span>
+          </td>
+          <td class="px-5 py-3 font-mono text-sm font-bold text-light-text dark:text-white">
+            {{ versionStatus().child.localVersion }}
+          </td>
+          <td class="px-5 py-3">
+            @if (versionStatus().child.latestDeployment) {
+              <span class="font-mono text-sm text-light-text dark:text-white/70">{{ versionStatus().child.latestDeployment.version }}</span>
+              <span class="block text-xs text-light-text-muted dark:text-white/30 mt-0.5">{{ formatDeployDate(versionStatus().child.latestDeployment.deployed_at) }}</span>
+            } @else {
+              <span class="text-xs text-light-text-muted dark:text-white/30 italic">Aucun déploiement</span>
+            }
+          </td>
+          <td class="px-5 py-3">
+            @if (versionStatus().child.upToDate) {
+              <span class="flex items-center gap-1 text-green-400 text-xs font-semibold">
+                <span class="material-symbols-outlined text-sm">check_circle</span> À jour
+              </span>
+            } @else {
+              <span class="flex items-center gap-1 text-red-400 text-xs font-semibold">
+                <span class="material-symbols-outlined text-sm">warning</span> Non déployé
+              </span>
+            }
+          </td>
+          <td class="px-5 py-3 text-xs text-light-text-muted dark:text-white/50">
+            @if (!versionStatus().child.upToDate) {
+              Committer et enregistrer un déploiement child
+            } @else {
+              —
+            }
+          </td>
+        </tr>
+        <!-- Ligne Base -->
+        <tr>
+          <td class="px-5 py-3">
+            <span class="font-semibold text-light-text dark:text-white">Base</span>
+            <span class="ml-1.5 text-xs font-mono px-1.5 py-0.5 rounded bg-slate-500/10 text-slate-400">worganic</span>
+          </td>
+          <td class="px-5 py-3">
+            <span class="font-mono text-sm font-bold text-light-text dark:text-white">{{ versionStatus().base.localVersion || '—' }}</span>
+            <span class="block text-[10px] text-light-text-muted dark:text-white/30 mt-0.5">syncée localement</span>
+          </td>
+          <td class="px-5 py-3">
+            @if (versionStatus().base.latestDeployment) {
+              <span class="font-mono text-sm" [class]="versionStatus().base.upToDate ? 'text-light-text dark:text-white/70' : 'text-orange-400 font-bold'">
+                {{ versionStatus().base.latestVersion }}
+              </span>
+              <span class="block text-xs text-light-text-muted dark:text-white/30 mt-0.5">{{ formatDeployDate(versionStatus().base.latestDeployment.deployed_at) }}</span>
+            } @else {
+              <span class="text-xs text-light-text-muted dark:text-white/30 italic">Aucun déploiement base</span>
+            }
+          </td>
+          <td class="px-5 py-3">
+            @if (versionStatus().base.upToDate) {
+              <span class="flex items-center gap-1 text-green-400 text-xs font-semibold">
+                <span class="material-symbols-outlined text-sm">check_circle</span> Syncée
+              </span>
+            } @else {
+              <span class="flex items-center gap-1 text-orange-400 text-xs font-semibold">
+                <span class="material-symbols-outlined text-sm">sync_problem</span> Sync requise
+              </span>
+            }
+          </td>
+          <td class="px-5 py-3 text-xs text-light-text-muted dark:text-white/50">
+            @if (!versionStatus().base.upToDate) {
+              Intégrer les modifications de la base puis mettre à jour <code class="font-mono text-[10px] bg-light-surface dark:bg-white/5 px-1 rounded">baseSynced</code>
+            } @else {
+              —
+            }
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 }
 

@@ -13,7 +13,7 @@ const API = environment.apiDataUrl;
   templateUrl: './admin-deployments.component.html',
 })
 export class AdminDeploymentsComponent implements OnInit {
-  @Output() versionStatusChange = new EventEmitter<{ upToDate: boolean; localVersion: string; latestDeployment: any } | null>();
+  @Output() versionStatusChange = new EventEmitter<any>();
 
   deployments = signal<any[]>([]);
   deployFilterType = signal<string>('');
@@ -30,7 +30,7 @@ export class AdminDeploymentsComponent implements OnInit {
   deployModel = '';
   deployModIds = '';
   expandedDeploy = signal<number | null>(null);
-  versionStatus = signal<{ upToDate: boolean; localVersion: string; latestDeployment: any } | null>(null);
+  versionStatus = signal<any>(null);
 
   readonly deployCommitTypes: readonly string[] = ['FIX', 'AMELIORATION', 'MERGE'];
 
@@ -66,8 +66,14 @@ export class AdminDeploymentsComponent implements OnInit {
     } catch (e) { console.error('[VERSION]', e); }
   }
 
+  get isChildMode(): boolean { return this.versionStatus()?.mode === 'child'; }
+  get childUpToDate(): boolean { return this.versionStatus()?.child?.upToDate ?? true; }
+  get baseUpToDate(): boolean { return this.versionStatus()?.base?.upToDate ?? true; }
+  get anyOutOfDate(): boolean { return this.isChildMode ? (!this.childUpToDate || !this.baseUpToDate) : !(this.versionStatus()?.upToDate ?? true); }
+
   openDeployForm() {
-    this.deployVersion = this.versionStatus()?.localVersion || '';
+    const vs = this.versionStatus();
+    this.deployVersion = this.isChildMode ? (vs?.child?.localVersion || '') : (vs?.localVersion || '');
     this.deployCommitName = '';
     this.deployDescription = '';
     this.deployFiles = '';

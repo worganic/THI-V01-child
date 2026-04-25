@@ -3994,14 +3994,35 @@ const VERSION_FILE = path.join(PROJECT_ROOT, 'version.json');
 
 app.get('/api/version/check', async (req, res) => {
     try {
-        let localVersion = '0.00';
+        let vf = {};
         if (fs.existsSync(VERSION_FILE)) {
-            const vf = JSON.parse(fs.readFileSync(VERSION_FILE, 'utf8'));
-            localVersion = vf.version || '0.00';
+            vf = JSON.parse(fs.readFileSync(VERSION_FILE, 'utf8'));
         }
-        const [rows] = await pool.query(
-            'SELECT * FROM app_deployments ORDER BY deployed_at DESC LIMIT 1'
-        );
+
+        // Mode child : version.json contient le champ "child"
+        if (vf.child) {
+            const localChild = vf.child;
+            const localBaseSynced = vf.baseSynced || null;
+            const childId = vf.childId || 'child';
+            const prefix = localChild.split('-')[0] + '-'; // ex: "THI-"
+
+            const [[latestChildRow], [latestBaseRow]] = await Promise.all([
+                pool.query('SELECT * FROM app_deployments WHERE version LIKE ? ORDER BY deployed_at DESC LIMIT 1', [prefix + '%']),
+                pool.query('SELECT * FROM app_deployments WHERE version LIKE ? ORDER BY deployed_at DESC LIMIT 1', ['B%'])
+            ]);
+            const latestChild = latestChildRow[0] || null;
+            const latestBase = latestBaseRow[0] || null;
+
+            const childUpToDate = !latestChild || latestChild.version === localChild;
+            const baseUpToDate = !latestBase || !localBaseSynced || latestBase.version === localBaseSynced;
+
+            const status = { mode: 'child', childId, child: { upToDate: childUpToDate, localVersion: localChild, latestDeployment: latestChild }, base: { upToDate: baseUpToDate, localVersion: localBaseSynced, latestVersion: latestBase?.version || null, latestDeployment: latestBase } };
+            return res.json(status);
+        }
+
+        // Mode base (fallback)
+        const localVersion = vf.base || vf.version || '0.00';
+        const [rows] = await pool.query('SELECT * FROM app_deployments ORDER BY deployed_at DESC LIMIT 1');
         const latest = rows[0] || null;
         const upToDate = !latest || latest.version === localVersion;
         res.json({ upToDate, localVersion, latestDeployment: latest });
@@ -4048,7 +4069,13 @@ app.post('/api/admin/deployments', async (req, res) => {
                 features || ''
             ]
         );
-        fs.writeFileSync(VERSION_FILE, JSON.stringify({ version }, null, 2), 'utf8');
+        const existingVf = fs.existsSync(VERSION_FILE) ? JSON.parse(fs.readFileSync(VERSION_FILE, 'utf8')) : {};
+        if (existingVf.child !== undefined) {
+            existingVf.child = version;
+            fs.writeFileSync(VERSION_FILE, JSON.stringify(existingVf, null, 2), 'utf8');
+        } else {
+            fs.writeFileSync(VERSION_FILE, JSON.stringify({ base: version }, null, 2), 'utf8');
+        }
         res.json({ success: true });
     } catch (e) {
         console.error('[DEPLOYMENTS] Create error:', e);

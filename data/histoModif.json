@@ -20,6 +20,29 @@
       "prompt": "ok je valide la solution B et tu peux lancer les étapes de 1 à 4",
       "startedAt": "2026-04-25T00:00:00.000Z",
       "completedAt": "2026-04-25T00:00:00.000Z"
+    },
+    {
+      "id": "mod-002",
+      "version": "THI-0.02",
+      "date": "2026-04-25T01:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein", "server"],
+      "features": "frankenstein:deployments,server:version-check",
+      "title": "Tableau dual version child/base dans admin déploiements",
+      "description": "Refonte de l'affichage du statut de version dans admin-deployments. server-data.js mis à jour pour détecter le format child (vf.child) et retourner la structure duale {mode:'child', child:{...}, base:{...}}. Le composant Angular affiche un tableau à 2 lignes avec statut indépendant et action pour chaque composant. admin.component mis à jour pour le point rouge.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html",
+        "frankenstein/src/app/pages/admin/admin.component.ts",
+        "frankenstein/src/app/pages/admin/admin.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "coté base cela à l'air bon mais coté child cela m'indique dernier deploiement BASE-B0.02 - 20260425 - Système double versioning base/child, ce qui est exact et Mise à jour requise — ce poste est en v0.00, la dernière version est vB0.02.",
+      "startedAt": "2026-04-25T01:00:00.000Z",
+      "completedAt": "2026-04-25T01:00:00.000Z"
     }
   ]
 }

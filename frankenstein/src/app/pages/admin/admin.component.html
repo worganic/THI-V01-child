@@ -42,7 +42,7 @@
               : 'text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white'">
       <span class="material-symbols-outlined text-base">rocket_launch</span>
       Déploiement
-      @if (versionStatus() && !versionStatus()!.upToDate) {
+      @if (versionStatus() && (versionStatus().mode === 'child' ? (!versionStatus().child?.upToDate || !versionStatus().base?.upToDate) : !versionStatus().upToDate)) {
         <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
       }
     </button>
