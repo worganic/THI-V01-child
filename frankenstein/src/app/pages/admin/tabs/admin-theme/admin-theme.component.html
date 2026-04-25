@@ -100,12 +100,39 @@
     </div>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!-- CSS de base (lecture seule)                 -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="border-t border-light-border dark:border-white/5 pt-8">
+      <button (click)="baseCssExpanded.set(!baseCssExpanded())"
+              class="w-full flex items-center gap-3 mb-2 text-left group">
+        <span class="material-symbols-outlined text-light-text-muted dark:text-white/40 text-lg group-hover:text-light-primary dark:group-hover:text-primary transition-colors">description</span>
+        <h3 class="text-sm font-semibold text-light-text-muted dark:text-white/50 uppercase tracking-wider group-hover:text-light-primary dark:group-hover:text-primary transition-colors flex-1">
+          styles.scss (base — lecture seule)
+        </h3>
+        <span class="material-symbols-outlined text-light-text-muted dark:text-white/30 text-base transition-transform"
+              [class.rotate-180]="baseCssExpanded()">expand_more</span>
+      </button>
+      <p class="text-xs text-light-text-muted dark:text-white/30 mb-3">
+        Fichier de styles de base non modifiable. Utilisez la zone d'override ci-dessous pour le personnaliser.
+      </p>
+      @if (baseCssExpanded()) {
+        <textarea
+          [value]="baseCss()"
+          readonly
+          rows="20"
+          spellcheck="false"
+          class="w-full bg-light-surface/50 dark:bg-black/30 border border-light-border dark:border-white/5 rounded-xl px-4 py-3 text-xs text-light-text-muted dark:text-white/40 font-mono focus:outline-none resize-y leading-relaxed mb-4 cursor-default select-all"
+        ></textarea>
+      }
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!-- CSS Override                                -->
     <!-- ═══════════════════════════════════════════ -->
     <div class="border-t border-light-border dark:border-white/5 pt-8">
       <div class="flex items-center gap-3 mb-2">
         <span class="material-symbols-outlined text-light-primary dark:text-primary text-lg">code</span>
-        <h3 class="text-sm font-semibold text-light-text-muted dark:text-white/50 uppercase tracking-wider">CSS personnalisé</h3>
+        <h3 class="text-sm font-semibold text-light-text-muted dark:text-white/50 uppercase tracking-wider">CSS personnalisé (override)</h3>
       </div>
       <p class="text-xs text-light-text-muted dark:text-white/30 mb-4">
         Ce CSS est injecté sur toutes les pages après les styles de base. Il prend le pas sur le thème par défaut.

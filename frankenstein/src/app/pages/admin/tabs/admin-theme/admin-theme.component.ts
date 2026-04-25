@@ -77,7 +77,9 @@ export class AdminThemeComponent implements OnInit {
   loading     = signal(true);
   savingCss   = signal(false);
   savedCss    = signal(false);
-  activePreset = signal<string | null>(null);
+  activePreset    = signal<string | null>(null);
+  baseCss         = signal<string>('');
+  baseCssExpanded = signal(false);
 
   readonly colorVars = COLOR_VARS;
   readonly presets   = PRESETS;
@@ -88,6 +90,7 @@ export class AdminThemeComponent implements OnInit {
   ngOnInit() {
     this.loadCurrentTheme();
     this.loadCustomCss();
+    this.loadBaseCss();
   }
 
   async loadCurrentTheme() {
@@ -114,6 +117,13 @@ export class AdminThemeComponent implements OnInit {
     try {
       const res = await firstValueFrom(this.http.get<any>(`${API}/api/child/css`));
       this.customCss.set(res?.customCSS || '');
+    } catch { /* ignore */ }
+  }
+
+  async loadBaseCss() {
+    try {
+      const res = await firstValueFrom(this.http.get<any>(`${API}/read-file?file=../frankenstein/src/styles.scss`));
+      this.baseCss.set(res?.content || '');
     } catch { /* ignore */ }
   }
 

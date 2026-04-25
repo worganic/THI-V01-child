@@ -385,6 +385,28 @@
       "prompt": "il y a un pb de contrast avec certain bouton [Image #4]. LA couleur de l'icone n'est pas mis à jour avec le thème [Image #5]. Idem la page d'accueil et le header non connecté n'a pas le thème mis à jour [Image #6]",
       "startedAt": "2026-04-25T13:00:00.000Z",
       "completedAt": "2026-04-25T14:00:00.000Z"
+    },
+    {
+      "id": "mod-016",
+      "version": "THI-0.14",
+      "date": "2026-04-25T15:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:admin",
+      "title": "Admin/Thème : affichage styles.scss en lecture seule",
+      "description": "Sync base B0.14. Ajout section repliable dans admin/thème affichant styles.scss complet en lecture seule. Chargement via GET /read-file?file=../frankenstein/src/styles.scss. Signal baseCss + baseCssExpanded.",
+      "files": [
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "les données css affiché dans la gestion du thème n'est pas complet. le fichier @frankenstein/src/styles.scss contient beaucoup plus d'element",
+      "startedAt": "2026-04-25T14:30:00.000Z",
+      "completedAt": "2026-04-25T15:00:00.000Z"
     }
   ]
 }
