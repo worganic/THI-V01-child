@@ -13,6 +13,59 @@ interface ColorVar {
   description: string;
 }
 
+interface StyleSettingItem {
+  key: string;
+  label: string;
+  type: 'range' | 'select';
+  unit: string;
+  min?: number;
+  max?: number;
+  step?: number;
+  default: number | string;
+  options?: { value: string; label: string }[];
+}
+
+interface StyleSettingGroup {
+  label: string;
+  icon: string;
+  items: StyleSettingItem[];
+}
+
+const STYLE_SETTING_GROUPS: StyleSettingGroup[] = [
+  {
+    label: 'Cartes & Panneaux',
+    icon: 'dashboard',
+    items: [
+      { key: 'card-radius',       label: 'Arrondi',            type: 'range',  unit: 'px',     min: 0, max: 32, step: 1, default: 12 },
+      { key: 'card-border-width', label: 'Épaisseur bordure',  type: 'range',  unit: 'px',     min: 0, max: 4,  step: 1, default: 1 },
+    ]
+  },
+  {
+    label: 'Titres (h1 – h4)',
+    icon: 'title',
+    items: [
+      { key: 'h-weight', label: 'Graisse', type: 'select', unit: '', default: '700',
+        options: [
+          { value: '300', label: 'Light — 300' },
+          { value: '400', label: 'Regular — 400' },
+          { value: '500', label: 'Medium — 500' },
+          { value: '600', label: 'Semi-Bold — 600' },
+          { value: '700', label: 'Bold — 700' },
+          { value: '800', label: 'Extra-Bold — 800' },
+        ]
+      },
+      { key: 'h-letter-spacing', label: 'Espacement lettres', type: 'range', unit: 'em/100', min: -6, max: 6, step: 1, default: -2 },
+    ]
+  },
+  {
+    label: 'Champs de saisie',
+    icon: 'edit',
+    items: [
+      { key: 'input-radius', label: 'Arrondi', type: 'range', unit: 'px', min: 0, max: 20, step: 1, default: 10 },
+    ]
+  },
+];
+
 const COLOR_VARS: ColorVar[] = [
   { key: '--tw-primary',       label: 'Primaire',          description: 'Texte, bordures, éléments principaux' },
   { key: '--tw-secondary',     label: 'Secondaire',        description: 'Éléments secondaires, sous-titres' },
@@ -77,14 +130,18 @@ export class AdminThemeComponent implements OnInit {
   loading     = signal(true);
   savingCss   = signal(false);
   savedCss    = signal(false);
+  savingStyle = signal(false);
+  savedStyle  = signal(false);
   activePreset    = signal<string | null>(null);
   baseCss         = signal<string>('');
   baseCssExpanded = signal(false);
 
-  readonly colorVars = COLOR_VARS;
-  readonly presets   = PRESETS;
+  readonly colorVars         = COLOR_VARS;
+  readonly presets           = PRESETS;
+  readonly styleSettingGroups = STYLE_SETTING_GROUPS;
 
   hexValues: Record<string, string> = {};
+  styleValues: Record<string, any>  = {};
   customCss = signal<string>('');
 
   ngOnInit() {
@@ -102,11 +159,19 @@ export class AdminThemeComponent implements OnInit {
         const rgbStr = cssVars[cv.key] || getComputedStyle(document.documentElement).getPropertyValue(cv.key).trim();
         this.hexValues[cv.key] = this.rgbStrToHex(rgbStr);
       });
+      const saved = theme?.styleSettings ?? {};
+      STYLE_SETTING_GROUPS.forEach(g => g.items.forEach(item => {
+        this.styleValues[item.key] = saved[item.key] !== undefined ? saved[item.key] : item.default;
+      }));
+      this.applyStyleSettingsToDocument();
     } catch {
       COLOR_VARS.forEach(cv => {
         const rgbStr = getComputedStyle(document.documentElement).getPropertyValue(cv.key).trim();
         this.hexValues[cv.key] = this.rgbStrToHex(rgbStr);
       });
+      STYLE_SETTING_GROUPS.forEach(g => g.items.forEach(item => {
+        this.styleValues[item.key] = item.default;
+      }));
     } finally {
       this.activePreset.set(this.detectActivePreset());
       this.loading.set(false);
@@ -173,6 +238,65 @@ export class AdminThemeComponent implements OnInit {
   async resetCustomCss() {
     this.customCss.set('');
     await this.saveCustomCss();
+  }
+
+  onStyleChange(key: string, rawValue: string) {
+    const group = STYLE_SETTING_GROUPS.flatMap(g => g.items).find(i => i.key === key);
+    this.styleValues[key] = group?.type === 'range' ? Number(rawValue) : rawValue;
+    this.applyStyleSettingsToDocument();
+  }
+
+  applyStyleSettingsToDocument() {
+    STYLE_SETTING_GROUPS.forEach(g => g.items.forEach(item => {
+      const val = this.styleValues[item.key] ?? item.default;
+      document.documentElement.style.setProperty('--' + item.key, this.toCssValue(item, val));
+    }));
+  }
+
+  formatDisplayValue(item: StyleSettingItem, val: any): string {
+    if (item.unit === 'em/100') return (Number(val) / 100).toFixed(2) + 'em';
+    if (item.unit === 'px') return val + 'px';
+    if (item.type === 'select') return item.options?.find(o => o.value === String(val))?.label || String(val);
+    return String(val);
+  }
+
+  stylePreviewValue(key: string): string {
+    const item = STYLE_SETTING_GROUPS.flatMap(g => g.items).find(i => i.key === key);
+    if (!item) return '';
+    return this.toCssValue(item, this.styleValues[key] ?? item.default);
+  }
+
+  async saveStyleSettings() {
+    this.savingStyle.set(true);
+    this.savedStyle.set(false);
+    const styleSettings: Record<string, any> = {};
+    STYLE_SETTING_GROUPS.forEach(g => g.items.forEach(item => {
+      styleSettings[item.key] = this.styleValues[item.key] ?? item.default;
+    }));
+    const cssVars: Record<string, string> = {};
+    COLOR_VARS.forEach(cv => {
+      cssVars[cv.key] = this.hexToRgbStr(this.hexValues[cv.key] || '#000000');
+    });
+    try {
+      await firstValueFrom(this.http.post(`${API}/api/child/config/theme`, { cssVars, styleSettings }));
+      this.savedStyle.set(true);
+      setTimeout(() => this.savedStyle.set(false), 3000);
+    } finally {
+      this.savingStyle.set(false);
+    }
+  }
+
+  resetStyleSettings() {
+    STYLE_SETTING_GROUPS.forEach(g => g.items.forEach(item => {
+      this.styleValues[item.key] = item.default;
+    }));
+    this.applyStyleSettingsToDocument();
+  }
+
+  private toCssValue(item: StyleSettingItem, val: any): string {
+    if (item.unit === 'em/100') return (Number(val) / 100) + 'em';
+    if (item.unit === 'px') return val + 'px';
+    return String(val);
   }
 
   get buttonTextClass(): string {

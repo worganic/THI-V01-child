@@ -40,6 +40,13 @@
     --tw-background: 10 10 15;
     --tw-surface: 18 18 26;
     --tw-surface-light: 26 26 37;
+
+    /* Customizable style settings — admin/theme */
+    --card-radius: 12px;
+    --card-border-width: 1px;
+    --h-weight: 700;
+    --h-letter-spacing: -0.02em;
+    --input-radius: 10px;
 }
 
 .dark {
@@ -64,6 +71,15 @@
     --accent-color: #ec4899;
     --accent-light: #f472b6;
     --accent-lighter: #f9a8d4;
+
+    --tw-primary: 244 114 182;
+    --tw-secondary: 249 168 212;
+    --tw-accent: 236 72 153;
+    --tw-accent-dark: 190 24 93;
+    --tw-accent-darker: 131 24 67;
+    --tw-background: 26 10 18;
+    --tw-surface: 42 16 32;
+    --tw-surface-light: 58 24 48;
 
     --color-light-primary: 236 72 153;
     --color-light-secondary: 244 114 182;
@@ -116,8 +132,22 @@ body {
 .pink .dark\:ring-primary\/20 { --tw-ring-color: rgba(236, 72, 153, 0.2) !important; }
 .pink .dark\:group-hover\:text-primary { color: #f472b6 !important; }
 
+/* Style settings — global rules */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: var(--h-weight, 700);
+    letter-spacing: var(--h-letter-spacing, -0.02em);
+}
+.modal-content, .modal-box {
+    border-radius: var(--card-radius, 12px);
+}
+input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="range"]):not([type="file"]),
+textarea {
+    border-radius: var(--input-radius, 10px);
+}
+
 .neon-border {
-    border: 1px solid rgb(var(--tw-accent));
+    border: var(--card-border-width, 1px) solid rgb(var(--tw-accent));
+    border-radius: var(--card-radius, 12px);
     box-shadow: 0 0 10px rgb(var(--tw-accent) / 0.3);
     transition: all 0.3s ease;
 }

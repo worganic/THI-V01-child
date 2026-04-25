@@ -100,6 +100,94 @@
     </div>
 
     <!-- ═══════════════════════════════════════════ -->
+    <!-- Styles avancés                              -->
+    <!-- ═══════════════════════════════════════════ -->
+    <div class="border-t border-light-border dark:border-white/5 pt-8 space-y-6">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-light-primary dark:text-primary text-lg">tune</span>
+        <h3 class="text-sm font-semibold text-light-text-muted dark:text-white/50 uppercase tracking-wider">Styles avancés</h3>
+      </div>
+
+      @for (group of styleSettingGroups; track group.label) {
+        <div>
+          <div class="flex items-center gap-2 mb-3">
+            <span class="material-symbols-outlined text-light-text-muted dark:text-white/30 text-sm">{{ group.icon }}</span>
+            <p class="text-xs font-semibold text-light-text-muted dark:text-white/40 uppercase tracking-wider">{{ group.label }}</p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            @for (item of group.items; track item.key) {
+              <div class="bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 rounded-xl p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-medium text-light-text dark:text-white">{{ item.label }}</p>
+                  <span class="text-xs font-mono text-light-primary dark:text-primary font-bold">
+                    {{ formatDisplayValue(item, styleValues[item.key] ?? item.default) }}
+                  </span>
+                </div>
+                @if (item.type === 'range') {
+                  <input type="range"
+                         [min]="item.min"
+                         [max]="item.max"
+                         [step]="item.step"
+                         [value]="styleValues[item.key] ?? item.default"
+                         (input)="onStyleChange(item.key, $any($event.target).value)"
+                         class="w-full h-1.5 rounded-full appearance-none cursor-pointer" />
+                } @else {
+                  <select [value]="styleValues[item.key] ?? item.default"
+                          (change)="onStyleChange(item.key, $any($event.target).value)"
+                          class="w-full bg-light-surface dark:bg-background border border-light-border dark:border-white/10 rounded-lg px-3 py-2 text-sm text-light-text dark:text-white focus:outline-none focus:border-light-primary dark:focus:border-primary">
+                    @for (opt of item.options; track opt.value) {
+                      <option [value]="opt.value">{{ opt.label }}</option>
+                    }
+                  </select>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Aperçu live -->
+      <div class="bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 rounded-xl p-5 space-y-4">
+        <p class="text-xs font-semibold text-light-text-muted dark:text-white/40 uppercase tracking-wider">Aperçu</p>
+        <h3 class="text-light-text dark:text-white"
+            [style.font-weight]="styleValues['h-weight'] ?? 700"
+            [style.letter-spacing]="stylePreviewValue('h-letter-spacing')">
+          Titre exemple — Administration
+        </h3>
+        <div class="border border-light-border dark:border-white/10 bg-light-surface dark:bg-background p-4"
+             [style.border-radius.px]="styleValues['card-radius'] ?? 12"
+             [style.border-width.px]="styleValues['card-border-width'] ?? 1">
+          <p class="text-sm text-light-text-muted dark:text-white/50">Contenu d'une card — border-radius et épaisseur</p>
+        </div>
+        <input type="text" placeholder="Champ de saisie — border-radius" disabled
+               class="w-full px-4 py-2.5 border border-light-border dark:border-white/10 bg-transparent text-light-text-muted dark:text-white/40 text-sm"
+               [style.border-radius.px]="styleValues['input-radius'] ?? 10" />
+      </div>
+
+      <!-- Sauvegarde styles -->
+      <div class="flex items-center gap-4">
+        <button (click)="saveStyleSettings()"
+                [disabled]="savingStyle()"
+                [ngClass]="buttonTextClass"
+                class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-light-primary dark:bg-primary font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
+          <span class="material-symbols-outlined text-base" [class.animate-spin]="savingStyle()">{{ savingStyle() ? 'progress_activity' : 'save' }}</span>
+          {{ savingStyle() ? 'Sauvegarde…' : 'Sauvegarder les styles' }}
+        </button>
+        <button (click)="resetStyleSettings()"
+                class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:border-red-400 hover:text-red-400 dark:hover:border-red-400 dark:hover:text-red-400 text-sm font-semibold transition-all">
+          <span class="material-symbols-outlined text-base">restart_alt</span>
+          Réinitialiser
+        </button>
+        @if (savedStyle()) {
+          <div class="flex items-center gap-1.5 text-green-400 text-sm font-semibold">
+            <span class="material-symbols-outlined text-base">check_circle</span>
+            Styles sauvegardés !
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════ -->
     <!-- CSS de base (lecture seule)                 -->
     <!-- ═══════════════════════════════════════════ -->
     <div class="border-t border-light-border dark:border-white/5 pt-8">

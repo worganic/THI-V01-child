@@ -428,6 +428,30 @@
       "prompt": "lorsque le fichier @install.bat à été utilisé, il faudrait le renommé en old-install.bat",
       "startedAt": "2026-04-25T16:15:00.000Z",
       "completedAt": "2026-04-25T16:30:00.000Z"
+    },
+    {
+      "id": "mod-018",
+      "version": "THI-0.16",
+      "date": "2026-04-25T10:00:00.000Z",
+      "type": "feature",
+      "commitType": "MERGE",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:admin",
+      "title": "Sync base B0.17 — styles avancés admin/theme",
+      "description": "Synchronisation depuis worganic-base B0.17. Ajout section Styles avancés dans admin/theme : variables CSS pour arrondis cartes, épaisseur bordure, styles titres h1-h6, arrondi champs de saisie. Application au démarrage via applyStyleSettings() dans app-config.service.ts.",
+      "files": [
+        "frankenstein/src/styles.scss",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.html",
+        "frankenstein/src/app/core/services/app-config.service.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Sync base B0.17 — styles avancés admin/theme",
+      "startedAt": "2026-04-25T08:00:00.000Z",
+      "completedAt": "2026-04-25T10:00:00.000Z"
     }
   ]
 }

@@ -46,12 +46,13 @@ export class AppConfigService {
   constructor(private http: HttpClient) {}
 
   async load(): Promise<void> {
-    const [app, theme, nav, landing, home] = await Promise.allSettled([
+    const [app, theme, nav, landing, home, css] = await Promise.allSettled([
       firstValueFrom(this.http.get<any>(`${API}/api/child/config/app`)),
       firstValueFrom(this.http.get<any>(`${API}/api/child/config/theme`)),
       firstValueFrom(this.http.get<any>(`${API}/api/child/config/nav`)),
       firstValueFrom(this.http.get<any>(`${API}/api/child/config/landing`)),
       firstValueFrom(this.http.get<any>(`${API}/api/child/config/home`)),
+      firstValueFrom(this.http.get<any>(`${API}/api/child/css`)),
     ]);
 
     if (app.status === 'fulfilled' && app.value) {
@@ -64,11 +65,16 @@ export class AppConfigService {
       if (a.copyrightTagline) this.copyrightTagline.set(a.copyrightTagline);
     }
 
-    if (theme.status === 'fulfilled' && theme.value?.cssVars) {
-      const vars = theme.value.cssVars as Record<string, string>;
-      Object.entries(vars).forEach(([k, v]) => {
-        document.documentElement.style.setProperty(k, v);
-      });
+    if (theme.status === 'fulfilled' && theme.value) {
+      if (theme.value.cssVars) {
+        const vars = theme.value.cssVars as Record<string, string>;
+        Object.entries(vars).forEach(([k, v]) => {
+          document.documentElement.style.setProperty(k, v);
+        });
+      }
+      if (theme.value.styleSettings) {
+        this.applyStyleSettings(theme.value.styleSettings);
+      }
     }
 
     if (nav.status === 'fulfilled' && Array.isArray(nav.value?.items)) {
@@ -82,5 +88,33 @@ export class AppConfigService {
     if (home.status === 'fulfilled' && home.value) {
       this.homeConfig.set(home.value);
     }
+
+    if (css.status === 'fulfilled' && css.value?.customCSS) {
+      this.injectCustomCss(css.value.customCSS);
+    }
+  }
+
+  private applyStyleSettings(settings: Record<string, any>) {
+    const unitMap: Record<string, string> = {
+      'card-radius': 'px', 'card-border-width': 'px',
+      'h-weight': '', 'h-letter-spacing': 'em/100', 'input-radius': 'px',
+    };
+    Object.entries(settings).forEach(([key, val]) => {
+      const unit = unitMap[key] ?? '';
+      const cssVal = unit === 'em/100' ? (Number(val) / 100) + 'em'
+                   : unit === 'px'     ? val + 'px'
+                   : String(val);
+      document.documentElement.style.setProperty('--' + key, cssVal);
+    });
+  }
+
+  private injectCustomCss(css: string) {
+    let el = document.getElementById('frankenstein-custom-css') as HTMLStyleElement | null;
+    if (!el) {
+      el = document.createElement('style');
+      el.id = 'frankenstein-custom-css';
+      document.head.appendChild(el);
+    }
+    el.textContent = css;
   }
 }
