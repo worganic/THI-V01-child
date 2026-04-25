@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfigService } from '../../../core/services/config.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { environment } from '../../../../environments/environment';
 
 const API = environment.apiDataUrl;
@@ -16,16 +17,12 @@ const API = environment.apiDataUrl;
 export class FooterComponent implements OnInit {
   @Input() onOpenTools?: () => void;
 
-  readonly appName = environment.appName;
-  readonly copyrightYear = environment.copyrightYear;
-  readonly copyrightHolder = environment.copyrightHolder;
-  readonly copyrightTagline = environment.copyrightTagline;
-
   versionStatus = signal<any>(null);
 
   constructor(
     public auth: AuthService,
-    public configService: ConfigService
+    public configService: ConfigService,
+    public appConfig: AppConfigService
   ) {}
 
   ngOnInit() {

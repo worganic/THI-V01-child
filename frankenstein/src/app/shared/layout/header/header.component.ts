@@ -8,6 +8,7 @@ import { ThemeService } from '../../../core/services/theme.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ConfigService, ProviderOption } from '../../../core/services/config.service';
 import { LayoutService } from '../../../core/services/layout.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { environment } from '../../../../environments/environment';
 
 const EXECUTOR_API = environment.apiExecutorUrl;
@@ -60,6 +61,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     public auth: AuthService,
     public configService: ConfigService,
     public layoutService: LayoutService,
+    public appConfig: AppConfigService,
     private router: Router
   ) {
     // Sync thème icon

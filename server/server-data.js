@@ -4085,6 +4085,39 @@ app.post('/api/admin/deployments', async (req, res) => {
     }
 });
 
+// ── Child config (data/child/*.json) ─────────────────────────────────────────
+const CHILD_CONFIG_DIR  = path.join(PROJECT_ROOT, 'data', 'child');
+const CHILD_CONFIG_KEYS = ['app', 'theme', 'nav', 'landing', 'home', 'conf', 'admin-tabs'];
+
+app.get('/api/child/config/:key', (req, res) => {
+    const key = req.params.key;
+    if (!CHILD_CONFIG_KEYS.includes(key)) return res.status(404).json({ error: 'Config introuvable' });
+    const filePath = path.join(CHILD_CONFIG_DIR, `${key}.json`);
+    if (!fs.existsSync(filePath)) return res.json({});
+    try {
+        let raw = fs.readFileSync(filePath, 'utf8');
+        if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+        res.json(JSON.parse(raw));
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur lecture config child' });
+    }
+});
+
+app.post('/api/child/config/:key', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    const key = req.params.key;
+    if (!CHILD_CONFIG_KEYS.includes(key)) return res.status(404).json({ error: 'Config introuvable' });
+    const filePath = path.join(CHILD_CONFIG_DIR, `${key}.json`);
+    try {
+        if (!fs.existsSync(CHILD_CONFIG_DIR)) fs.mkdirSync(CHILD_CONFIG_DIR, { recursive: true });
+        fs.writeFileSync(filePath, JSON.stringify(req.body, null, 2), 'utf8');
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur écriture config child' });
+    }
+});
+
 // ============================================================
 // Help Pages CRUD
 // ============================================================

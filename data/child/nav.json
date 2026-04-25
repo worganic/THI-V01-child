@@ -1,0 +1,5 @@
+{
+  "items": [
+    { "route": "/projets", "label": "Projets", "icon": "folder_open" }
+  ]
+}

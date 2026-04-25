@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { ThemeService } from '../../../core/services/theme.service';
 import { DbStatusService } from '../../../core/services/db-status.service';
+import { AppConfigService } from '../../../core/services/app-config.service';
 import { environment } from '../../../../environments/environment';
 
 @Component({
@@ -15,9 +16,10 @@ import { environment } from '../../../../environments/environment';
   styleUrl: './landing.component.scss'
 })
 export class LandingComponent implements OnInit, OnDestroy {
-  readonly appName = environment.appName;
-  readonly copyrightYear = environment.copyrightYear;
-  readonly copyrightHolder = environment.copyrightHolder;
+  get appName()        { return this.appConfig.appName(); }
+  get copyrightYear()  { return this.appConfig.copyrightYear(); }
+  get copyrightHolder(){ return this.appConfig.copyrightHolder(); }
+  get lc()             { return this.appConfig.landingConfig(); }
 
   showLoginModal = false;
   showRegisterModal = false;
@@ -42,7 +44,8 @@ export class LandingComponent implements OnInit, OnDestroy {
     private auth: AuthService,
     private router: Router,
     private themeService: ThemeService,
-    public db: DbStatusService
+    public db: DbStatusService,
+    public appConfig: AppConfigService
   ) {}
 
   retrying = false;

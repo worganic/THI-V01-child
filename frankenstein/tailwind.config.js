@@ -7,14 +7,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "primary": "#e0aaff",
-        "secondary": "#c77dff",
-        "accent": "#9d4edd",
-        "accent-dark": "#7b2cbf",
-        "accent-darker": "#5a189a",
-        "background": "#0a0a0f",
-        "surface": "#12121a",
-        "surface-light": "#1a1a25",
+        "primary": "rgb(var(--tw-primary) / <alpha-value>)",
+        "secondary": "rgb(var(--tw-secondary) / <alpha-value>)",
+        "accent": "rgb(var(--tw-accent) / <alpha-value>)",
+        "accent-dark": "rgb(var(--tw-accent-dark) / <alpha-value>)",
+        "accent-darker": "rgb(var(--tw-accent-darker) / <alpha-value>)",
+        "background": "rgb(var(--tw-background) / <alpha-value>)",
+        "surface": "rgb(var(--tw-surface) / <alpha-value>)",
+        "surface-light": "rgb(var(--tw-surface-light) / <alpha-value>)",
         "light-primary": "rgb(var(--color-light-primary) / <alpha-value>)",
         "light-secondary": "rgb(var(--color-light-secondary) / <alpha-value>)",
         "light-accent": "rgb(var(--color-light-accent) / <alpha-value>)",

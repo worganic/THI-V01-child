@@ -1,73 +1,9 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
-import { guestGuard } from './core/guards/guest.guard';
+import { BASE_ROUTES } from './base-routes';
+import { CHILD_ROUTES } from './child/child-routes';
 
 export const routes: Routes = [
-  // ── Page publique : Landing / Authentification ────────────────
-  {
-    path: '',
-    canActivate: [guestGuard],
-    loadComponent: () => import('./pages/public/landing/landing.component').then(m => m.LandingComponent)
-  },
-
-  // ── Pages protégées (utilisateurs connectés) ──────────────────
-  {
-    path: 'home',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/home/home.component').then(m => m.HomeComponent)
-  },
-  {
-    path: 'editor',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/editor/editor.component').then(m => m.EditorComponent)
-  },
-  {
-    path: 'projets',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/projets/projets.component').then(m => m.ProjetsComponent)
-  },
-  {
-    path: 'projets/:id',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/projet-editor/projet-editor.component').then(m => m.ProjetEditorComponent)
-  },
-  {
-    path: 'documents',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/documents/documents.component').then(m => m.DocumentsComponent)
-  },
-  {
-    path: 'config',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/config/config.component').then(m => m.ConfigComponent)
-  },
-  {
-    path: 'deployments',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/deployments/deployments.component').then(m => m.DeploymentsComponent)
-  },
-
-  // ── Pages admin ───────────────────────────────────────────────
-  {
-    path: 'admin',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/admin/admin.component').then(m => m.AdminComponent)
-  },
-
-  // ── Pages doc publiques (sans auth) ──────────────────────────
-  {
-    path: 'tchat-ia-doc',
-    loadComponent: () => import('./tools/tchat-ia/tchat-ia-doc.component').then(m => m.TchatIaDocComponent)
-  },
-  {
-    path: 'ticket-widget-doc',
-    loadComponent: () => import('./tools/ticket-widget/ticket-widget-doc.component').then(m => m.TicketWidgetDocComponent)
-  },
-  {
-    path: 'cahier-recette-doc',
-    loadComponent: () => import('./tools/cahier-recette/cahier-recette-doc.component').then(m => m.CahierRecetteDocComponent)
-  },
-
-  // ── Fallback ──────────────────────────────────────────────────
+  ...BASE_ROUTES,
+  ...CHILD_ROUTES,
   { path: '**', redirectTo: '' }
 ];

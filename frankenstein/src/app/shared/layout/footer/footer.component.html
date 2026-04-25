@@ -5,7 +5,7 @@
 
     <!-- Copyright -->
     <div class="flex items-center gap-3 text-[11px] text-light-text-muted dark:text-white/35">
-      <span class="font-semibold text-light-text dark:text-white/60">{{ appName }}</span>
+      <span class="font-semibold text-light-text dark:text-white/60">{{ appConfig.appName() }}</span>
       <span class="text-light-border dark:text-white/20">·</span>
       <!-- Versions : mode child = 2 badges (child + base), mode base = 1 badge -->
       @if (versionStatus()?.mode === 'child') {
@@ -40,9 +40,9 @@
         <span class="font-mono text-light-text-muted dark:text-white/30">v…</span>
       }
       <span class="text-light-border dark:text-white/20">·</span>
-      <span>© {{ copyrightYear }} {{ copyrightHolder }}</span>
+      <span>© {{ appConfig.copyrightYear() }} {{ appConfig.copyrightHolder() }}</span>
       <span class="text-light-border dark:text-white/20">·</span>
-      <span>{{ copyrightTagline }}</span>
+      <span>{{ appConfig.copyrightTagline() }}</span>
     </div>
 
     <!-- Bouton Outils Externes -->

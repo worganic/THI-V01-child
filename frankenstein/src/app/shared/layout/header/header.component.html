@@ -9,10 +9,10 @@
     <!-- Logo -->
     <div class="flex items-center gap-3">
       <div class="w-8 h-8 neon-border flex items-center justify-center rounded">
-        <span class="material-symbols-outlined neon-text text-xl">rocket_launch</span>
+        <span class="material-symbols-outlined neon-text text-xl">{{ appConfig.logoIcon() }}</span>
       </div>
       <h1 class="text-lg font-bold text-light-text dark:text-white tracking-tight">
-        Frankenstein <span class="text-light-primary dark:text-primary">Junior</span>
+        {{ appConfig.appName() }}
       </h1>
     </div>
 
