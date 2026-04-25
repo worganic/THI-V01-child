@@ -2,23 +2,25 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AdminProjetsComponent } from './tabs/admin-projets/admin-projets.component';
 import { AdminUsersComponent } from './tabs/admin-users/admin-users.component';
 import { AdminDeploymentsComponent } from './tabs/admin-deployments/admin-deployments.component';
 import { AdminHelpComponent } from './tabs/admin-help/admin-help.component';
 import { ConfigComponent } from '../user/config/config.component';
 
-type AdminTab = 'users' | 'deploiement' | 'help' | 'config';
+type AdminTab = 'projects' | 'users' | 'deploiement' | 'help' | 'config';
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, AdminUsersComponent, AdminDeploymentsComponent, AdminHelpComponent, ConfigComponent],
+  imports: [CommonModule, AdminProjetsComponent, AdminUsersComponent, AdminDeploymentsComponent, AdminHelpComponent, ConfigComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })
 export class AdminComponent implements OnInit {
-  activeTab = signal<AdminTab>('users');
+  activeTab = signal<AdminTab>('projects');
 
+  projectsCount = signal(0);
   usersCount = signal(0);
   helpCount = signal(0);
   versionStatus = signal<{ upToDate: boolean; localVersion: string; latestDeployment: any } | null>(null);
@@ -39,7 +41,7 @@ export class AdminComponent implements OnInit {
     }
 
     const params = this.route.snapshot.queryParamMap;
-    const tab = (params.get('tab') as AdminTab) || 'users';
+    const tab = (params.get('tab') as AdminTab) || 'projects';
     const editId = params.get('editId');
 
     this.activeTab.set(tab);

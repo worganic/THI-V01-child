@@ -1,0 +1,40 @@
+<!-- Chargement -->
+@if (loading()) {
+  <div class="flex items-center justify-center h-[60vh]">
+    <span class="material-symbols-outlined text-4xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+  </div>
+}
+
+<!-- Layout principal (full viewport sous le header Frankenstein) -->
+@if (!loading()) {
+  <div class="fixed inset-0 flex flex-col bg-white dark:bg-[#0f0f17] overflow-hidden">
+
+    <!-- (1) Toolbar secondaire : navigation + formatting -->
+    <app-projet-toolbar
+      [projectTitle]="project()?.title || ''"
+      [isDirty]="isDirty()"
+      (save)="save()" />
+
+    <!-- Corps principal -->
+    <div class="flex flex-1 overflow-hidden">
+
+      <!-- (3) Sidebar gauche : icônes + arbre projet -->
+      <app-projet-sidebar />
+
+      <!-- (4+5) Éditeur central -->
+      <app-projet-editor-zone
+        [content]="markdownContent"
+        (contentChange)="onContentChange($event)" />
+
+      <!-- (6) Conversation IA -->
+      <app-projet-conversation />
+
+    </div>
+
+    <!-- (2) Barre de statut -->
+    <app-projet-statusbar
+      [status]="statusLabel"
+      [isDirty]="isDirty()" />
+
+  </div>
+}

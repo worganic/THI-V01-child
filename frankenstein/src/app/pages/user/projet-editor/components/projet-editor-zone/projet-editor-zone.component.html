@@ -1,0 +1,9 @@
+<div class="h-full flex flex-col bg-white dark:bg-[#0f0f17]">
+
+  <app-markdown-editor
+    [value]="localContent"
+    (valueChange)="onEditorChange($event)"
+    placeholder="Commencez à écrire votre document en Markdown...">
+  </app-markdown-editor>
+
+</div>

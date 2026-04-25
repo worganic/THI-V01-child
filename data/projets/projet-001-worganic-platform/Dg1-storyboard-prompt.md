@@ -1,0 +1,1 @@
+- Garde exactement les mêmes données mais change le design pour faire un design plus moderne identique à la page ./docs/index.html.

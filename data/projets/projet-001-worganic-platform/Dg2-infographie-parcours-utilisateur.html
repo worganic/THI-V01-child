@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectForge - Infographie Parcours Utilisateur</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .infographic-section {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .section-title {
+            font-size: 2em;
+            color: #333;
+            margin-bottom: 40px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        /* Timeline Style */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #667eea, #764ba2, #f093fb);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            margin-bottom: 50px;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+            padding-right: 5%;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+            padding-left: 5%;
+        }
+
+        .timeline-content {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: -20px;
+            width: 20px;
+            height: 20px;
+            background: #f8f9ff;
+            border-radius: 0 15px 0 0;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: -20px;
+            width: 20px;
+            height: 20px;
+            background: #f8f9ff;
+            border-radius: 15px 0 0 0;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 4px solid #667eea;
+            border-radius: 50%;
+            top: 35px;
+            z-index: 2;
+        }
+
+        .timeline-time {
+            font-weight: 700;
+            color: #667eea;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .timeline-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-card {
+            background: #f8f9ff;
+            padding: 40px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .comparison-card.after {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+        }
+
+        .comparison-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .comparison-list {
+            list-style: none;
+            display: grid;
+            gap: 15px;
+        }
+
+        .comparison-list li {
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            padding-left: 35px;
+            position: relative;
+            color: #666;
+        }
+
+        .comparison-list li::before {
+            content: '✗';
+            position: absolute;
+            left: 12px;
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .comparison-card.after .comparison-list li::before {
+            content: '✓';
+            color: #10b981;
+        }
+
+        /* Impact Section */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .metric-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .metric-label {
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .arch-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+            font-weight: 600;
+        }
+
+        .arch-arrow {
+            font-size: 2em;
+            color: #667eea;
+        }
+
+        /* Use Cases */
+        .use-cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .use-case {
+            background: white;
+            border: 2px solid #e0e7ff;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .use-case:hover {
+            border-color: #667eea;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .use-case-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .use-case-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .use-case-benefit {
+            background: #f0fdf4;
+            color: #166534;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            border-left: 3px solid #10b981;
+        }
+
+        footer {
+            text-align: center;
+            color: #666;
+            margin-top: 60px;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                width: 100%;
+                margin-left: 0;
+                padding-left: 60px;
+                text-align: left;
+                padding-right: 0;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .architecture {
+                flex-direction: column;
+            }
+
+            .arch-arrow {
+                transform: rotate(90deg);
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌊 Parcours Utilisateur ProjectForge</h1>
+            <p>Infographie interactive du flux complet - De la découverte à la livraison</p>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="infographic-section">
+            <h2 class="section-title">⏱️ Chronologie du Parcours (0 à 15 minutes)</h2>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">00-01 min</div>
+                        <div class="timeline-title">📚 Découverte</div>
+                        <div class="timeline-description">
+                            L'utilisateur explore la page d'accueil et voit les templates disponibles. Il peut filtrer par type, consulter les descriptions et estimer le temps nécessaire.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">01-04 min</div>
+                        <div class="timeline-title">📋 Création du Projet</div>
+                        <div class="timeline-description">
+                            En 3 clics simples : sélectionner une template, nommer le projet, et la structure est créée automatiquement. Zéro friction, zéro erreur possible.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">04-10 min</div>
+                        <div class="timeline-title">❓ Réponse aux Questions</div>
+                        <div class="timeline-description">
+                            Navigation progressive question par question. Chaque question a une aide contextuelle, une validation en temps réel et une barre de progression. Les réponses se sauvegardent automatiquement.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">10-11 min</div>
+                        <div class="timeline-title">🤖 Génération IA</div>
+                        <div class="timeline-description">
+                            Un clic lance la génération par Claude. L'utilisateur voit un aperçu modifiable du prompt, puis regarde le streaming en temps réel de la génération des documents.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">11-15 min</div>
+                        <div class="timeline-title">📥 Téléchargement & Livraison</div>
+                        <div class="timeline-description">
+                            Les documents générés sont listés et prêts. L'utilisateur peut télécharger chaque fichier individuellement ou tout en une archive ZIP. Utilisables immédiatement.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="infographic-section">
+            <h2 class="section-title">📊 Avant vs. Après</h2>
+
+            <div class="comparison">
+                <div class="comparison-card">
+                    <div class="comparison-title">❌ Avant ProjectForge</div>
+                    <ul class="comparison-list">
+                        <li>30-45 minutes pour créer un projet</li>
+                        <li>Risques d'erreurs et d'oublis</li>
+                        <li>Pas de structure standardisée</li>
+                        <li>Génération manuelle de documents</li>
+                        <li>Qualité variable selon la personne</li>
+                        <li>Aucune traçabilité</li>
+                        <li>Perte de temps sur tâches répétitives</li>
+                    </ul>
+                </div>
+
+                <div class="comparison-card after">
+                    <div class="comparison-title">✅ Avec ProjectForge</div>
+                    <ul class="comparison-list">
+                        <li>5 minutes pour créer un projet</li>
+                        <li>Zéro erreur grâce aux validations</li>
+                        <li>Structure 100% cohérente</li>
+                        <li>Génération automatique par IA</li>
+                        <li>Qualité professionnelle garantie</li>
+                        <li>Historique complet de chaque action</li>
+                        <li>Automatisation complète</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Impact Metrics -->
+        <div class="infographic-section">
+            <h2 class="section-title">📈 Impact Chiffré</h2>
+
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-number">6x</div>
+                    <div class="metric-label">Plus rapide<br>(45 min → 5 min)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">100%</div>
+                    <div class="metric-label">Cohérence<br>entre projets</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">90%</div>
+                    <div class="metric-label">Temps gagné<br>sur génération docs</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">70%</div>
+                    <div class="metric-label">Réduction effort<br>manuel</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Architecture -->
+        <div class="infographic-section">
+            <h2 class="section-title">🏗️ Architecture Technique</h2>
+
+            <div class="architecture">
+                <div class="arch-box">🎨<br>React Frontend<br>(UX fluide)</div>
+                <div class="arch-arrow">↔</div>
+                <div class="arch-box">⚙️<br>Node.js Backend<br>(API REST)</div>
+                <div class="arch-arrow">↔</div>
+                <div class="arch-box">💾<br>JSON Storage<br>(Données)</div>
+                <div class="arch-arrow">↔</div>
+                <div class="arch-box">🤖<br>Claude Code<br>(Génération IA)</div>
+            </div>
+
+            <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; margin-top: 30px;">
+                <h3 style="color: #333; margin-bottom: 15px;">Flux de Données Clé</h3>
+                <div style="color: #666; line-height: 1.8;">
+                    1️⃣ L'utilisateur saisit ses réponses dans le formulaire React<br>
+                    2️⃣ Sauvegarde automatique en JSON (1 sec max)<br>
+                    3️⃣ À la génération : création d'un prompt structuré<br>
+                    4️⃣ Appel à Claude Code CLI en streaming<br>
+                    5️⃣ Fichiers créés dans _outputs/<br>
+                    6️⃣ Historique enregistré de manière immuable
+                </div>
+            </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="infographic-section">
+            <h2 class="section-title">🎯 Cas d'Utilisation Principaux</h2>
+
+            <div class="use-cases">
+                <div class="use-case">
+                    <div class="use-case-title">👨‍💼 Consultant Junior</div>
+                    <div class="use-case-description">
+                        Crée rapidement un cahier des charges professionnel pour chaque nouveau client, sans risque d'erreur ou d'oubli.
+                    </div>
+                    <div class="use-case-benefit">⏱️ Gagne 40 min par projet</div>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-title">📊 Chef de Projet</div>
+                    <div class="use-case-description">
+                        Gère une structure cohérente entre tous ses projets, avec traçabilité complète de chaque décision et modification.
+                    </div>
+                    <div class="use-case-benefit">📈 Améliore la qualité de 30%</div>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-title">🏢 Équipe Service</div>
+                    <div class="use-case-description">
+                        Standardise la création de propositions commerciales avec IA, assurant une qualité uniforme quelle que soit la personne.
+                    </div>
+                    <div class="use-case-benefit">🎯 Scalabilité garantie</div>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-title">🔄 Reprise de Projets</div>
+                    <div class="use-case-description">
+                        Revient à un projet interrompu et reprend exactement où on l'avait laissé, sans perdre aucune information.
+                    </div>
+                    <div class="use-case-benefit">💾 Continuité 100%</div>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-title">📝 Génération Automatique</div>
+                    <div class="use-case-description">
+                        Génère automatiquement des documents professionnels (cahier des charges, propositions, plans) en moins d'une minute.
+                    </div>
+                    <div class="use-case-benefit">⚡ 60x plus rapide</div>
+                </div>
+
+                <div class="use-case">
+                    <div class="use-case-title">🔍 Audit & Conformité</div>
+                    <div class="use-case-description">
+                        Accède à l'historique complet de chaque projet pour démontrer la conformité et la traçabilité des décisions.
+                    </div>
+                    <div class="use-case-benefit">✅ Audit-ready</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Features -->
+        <div class="infographic-section">
+            <h2 class="section-title">✨ Fonctionnalités Clés</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px;">
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">📚 70+ Templates</h4>
+                    <p style="color: #666; line-height: 1.6;">Templates structurées pour tous les cas d'usage, prêtes à l'emploi avec des métadonnées complètes.</p>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">🎯 Formulaires Intuitifs</h4>
+                    <p style="color: #666; line-height: 1.6;">10 types de questions différents, validation en temps réel, aide contextuelle pour chaque champ.</p>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">🤖 Génération IA</h4>
+                    <p style="color: #666; line-height: 1.6;">Intégration Claude Code, streaming en temps réel, documents professionnels en < 1 min.</p>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">📊 Dashboard Complet</h4>
+                    <p style="color: #666; line-height: 1.6;">Vue d'ensemble de tous les projets, progression visuelle, reprise instantanée.</p>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">📜 Historique Complet</h4>
+                    <p style="color: #666; line-height: 1.6;">Timeline immuable de toutes les actions, filtrage par type, audit-ready.</p>
+                </div>
+
+                <div style="background: #f8f9ff; padding: 25px; border-radius: 12px; border-left: 4px solid #667eea;">
+                    <h4 style="color: #667eea; margin-bottom: 10px;">📱 Responsive Design</h4>
+                    <p style="color: #666; line-height: 1.6;">Accessible sur mobile, tablet et desktop, UX fluide sur tous les appareils.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>🚀 ProjectForge Platform - Infographie Complète - Généré le 17/01/2026</p>
+        <p>Basé sur 69 exigences fonctionnelles structurées | Architecture modulaire | Stack moderne</p>
+    </footer>
+</body>
+</html>

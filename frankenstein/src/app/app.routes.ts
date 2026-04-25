@@ -21,7 +21,17 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/user/editor/editor.component').then(m => m.EditorComponent)
   },
-{
+  {
+    path: 'projets',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/user/projets/projets.component').then(m => m.ProjetsComponent)
+  },
+  {
+    path: 'projets/:id',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/user/projet-editor/projet-editor.component').then(m => m.ProjetEditorComponent)
+  },
+  {
     path: 'documents',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/user/documents/documents.component').then(m => m.DocumentsComponent)

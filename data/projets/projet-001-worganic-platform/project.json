@@ -1,0 +1,933 @@
+{
+  "id": "projet-001-worganic-platform",
+  "userId": "d78ab175-0755-4d09-9c4d-120e628a2b2c",
+  "name": "Worganic Platform - Create App",
+  "type": "full-web",
+  "createdAt": "2026-01-31T20:00:00.000Z",
+  "updatedAt": "2026-02-17T20:43:50.349Z",
+  "status": "in-progress",
+  "description": "Site Web Complet - Application de création de projets avec pipeline d'étapes",
+  "metadata": {
+    "aiConfig": {
+      "provider": "claude",
+      "model": "claude-sonnet-4-5",
+      "lastUpdated": "2026-02-01T16:00:00.000Z"
+    },
+    "design": "Lavande Dreams",
+    "selectedProjectType": "full-web"
+  },
+  "pipeline": {
+    "steps": [
+      {
+        "id": "A",
+        "ia": [
+          {
+            "name": "gemini",
+            "model": "2.0 Flash"
+          }
+        ],
+        "name": "Prompt Initial",
+        "shortName": "Prompt Initial",
+        "file": "Aa0-prompt.md",
+        "prompt": "Aa0-prompt.md",
+        "summary": "Définir la vision globale du projet, les objectifs principaux et le contexte métier. Ce prompt initial sert de base pour toutes les étapes suivantes.",
+        "status": "completed",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "validation": {
+          "status": "validated",
+          "timestamp": "2026-02-01T19:45:19.105Z"
+        },
+        "filesStatus": [
+          {
+            "name": "Aa0-prompt.md",
+            "exists": true,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "B",
+        "ia": [
+          {
+            "name": "gemini",
+            "model": "gemini-2.0-flash"
+          }
+        ],
+        "name": "Extraction Exigences",
+        "shortName": "Exigences Fct.",
+        "file": [
+          "Bg0-Prompt.md",
+          "Bg0-Exigences_Fonctionnelles_Structurees.md"
+        ],
+        "prompt": "origine/Ba0-Prompt.md",
+        "summary": "Analyser le prompt initial pour extraire et structurer les exigences fonctionnelles. Identifier les fonctionnalités clés, les contraintes et les critères d'acceptation.",
+        "status": "completed",
+        "outClaude": "D'accord, je vais suivre les instructions pour extraire et structurer les exigences fonctionnelles...",
+        "lastExecutionDate": "2026-01-31T21:33:16.489Z",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "validation": {
+          "status": "validated",
+          "timestamp": "2026-02-01T19:45:24.741Z"
+        },
+        "filesStatus": [
+          {
+            "name": "Bg0-Prompt.md",
+            "exists": true,
+            "hasPrompt": false
+          },
+          {
+            "name": "Bg0-Exigences_Fonctionnelles_Structurees.md",
+            "exists": true,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "C",
+        "ia": [
+          {
+            "name": "gemini",
+            "model": "gemini-2.0-flash"
+          }
+        ],
+        "name": "Creation Prompt",
+        "shortName": "Prompt Ex.Fct",
+        "file": [
+          "Cg0-Prompt.md",
+          "Cg1-prompt-final.md"
+        ],
+        "prompt": "origine/Ca0-Prompt.md",
+        "summary": "Créer un prompt détaillé basé sur les exigences fonctionnelles extraites. Ce prompt servira de guide pour la génération du storyboard.",
+        "status": "completed",
+        "outClaude": "D'accord, je vais créer les prompts pour chaque exigence fonctionnelle...",
+        "lastExecutionDate": "2026-01-31T21:10:19.169Z",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "validation": {
+          "status": "validated",
+          "timestamp": "2026-02-01T19:45:28.348Z"
+        },
+        "filesStatus": [
+          {
+            "name": "Cg0-Prompt.md",
+            "exists": true,
+            "hasPrompt": false
+          },
+          {
+            "name": "Cg1-prompt-final.md",
+            "exists": true,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "D",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "name": "Storyboard",
+        "shortName": "Storyboard",
+        "file": [
+          "Dg0-Prompt.md",
+          "Dg1-storyboard.html"
+        ],
+        "prompt": "origine/Da0-Prompt.md",
+        "summary": "Créer le storyboard visuel du projet : scénarios utilisateur, parcours, écrans clés et flux de navigation entre les différentes sections.",
+        "status": "completed",
+        "outClaude": "",
+        "lastExecutionDate": "2026-01-27T20:36:43.461Z",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "validation": {
+          "status": "validated",
+          "timestamp": "2026-02-01T19:45:42.021Z"
+        },
+        "filesStatus": [
+          {
+            "name": "Dg0-Prompt.md",
+            "exists": true,
+            "hasPrompt": false
+          },
+          {
+            "name": "Dg1-storyboard.html",
+            "exists": true,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "E",
+        "name": "Mockup",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Mockup",
+        "file": [
+          "Eg0-Prompt.md",
+          "Eg1-mockup.html"
+        ],
+        "prompt": "origine/Ea0-Prompt.md",
+        "summary": "Concevoir les maquettes haute-fidélité de l'interface utilisateur. Définir la structure des pages, les composants UI et l'ergonomie générale.",
+        "status": "completed",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "validation": {
+          "status": "validated",
+          "timestamp": "2026-02-01T19:50:06.175Z"
+        },
+        "filesStatus": [
+          {
+            "name": "Eg0-Prompt.md",
+            "exists": true,
+            "hasPrompt": false
+          },
+          {
+            "name": "Eg1-mockup.html",
+            "exists": true,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "F",
+        "name": "Design",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Design Selection",
+        "file": [
+          "Fa1-design.html",
+          "Gg2-design-choix.md"
+        ],
+        "prompt": "",
+        "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+        "status": "in-progress",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "filesStatus": [
+          {
+            "name": "Fa1-design.html",
+            "exists": false,
+            "hasPrompt": false
+          },
+          {
+            "name": "Gg2-design-choix.md",
+            "exists": false,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "G",
+        "name": "Design création",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Design",
+        "file": [
+          "Gg1-design.html",
+          "Gg2-design-choix.md"
+        ],
+        "prompt": "",
+        "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "filesStatus": [
+          {
+            "name": "Gg1-design.html",
+            "exists": false,
+            "hasPrompt": false
+          },
+          {
+            "name": "Gg2-design-choix.md",
+            "exists": false,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "H",
+        "name": "Cahier de Tests",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Cahier Tests",
+        "file": [
+          "Hg0-Prompt.md",
+          "Hg1-tests.html"
+        ],
+        "prompt": "origine/Ha0-Prompt.md",
+        "summary": "Rédiger le cahier de tests fonctionnels et techniques. Définir les cas de test, les scénarios de validation et les critères de succès.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "filesStatus": [
+          {
+            "name": "Hg0-Prompt.md",
+            "exists": false,
+            "hasPrompt": false
+          },
+          {
+            "name": "Hg1-tests.html",
+            "exists": false,
+            "hasPrompt": false
+          }
+        ]
+      },
+      {
+        "id": "I",
+        "name": "Ordre Execution",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Ordre Exec.",
+        "file": [
+          "Ig0-Prompt.md",
+          "Ig6-ordre.html"
+        ],
+        "prompt": "origine/Ia0-Prompt.md",
+        "summary": "Établir l'ordre d'exécution des tâches de développement. Prioriser les fonctionnalités et créer un planning de réalisation.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "filesStatus": [
+          {
+            "name": "Ig0-Prompt.md",
+            "exists": false,
+            "hasPrompt": false
+          },
+          {
+            "name": "Ig6-ordre.html",
+            "exists": false,
+            "hasPrompt": false
+          }
+        ]
+      }
+    ]
+  },
+  "pagesProjet": [
+    {
+      "id": "exigences",
+      "title": "Exigences Fonctionnelles Structurees",
+      "file": "Bg0-Exigences_Fonctionnelles_Structurees.md",
+      "href": "Bg0-Exigences_Fonctionnelles_Structurees.md",
+      "icon": "description",
+      "iconColor": "text-blue-400",
+      "category": "Exigences",
+      "categoryBadge": "badge-storyboard",
+      "description": "Exigences fonctionnelles du systeme"
+    },
+    {
+      "id": "storyboard",
+      "title": "Storyboard",
+      "file": "Dg1-storyboard.html",
+      "href": "Dg1-storyboard.html",
+      "icon": "movie",
+      "iconColor": "text-blue-400",
+      "category": "Storyboard",
+      "categoryBadge": "badge-storyboard",
+      "description": "Storyboard complet du systeme"
+    },
+    {
+      "id": "parcours",
+      "title": "Parcours Utilisateur",
+      "file": "Dg2-infographie-parcours-utilisateur.html",
+      "href": "Dg2-infographie-parcours-utilisateur.html",
+      "icon": "route",
+      "iconColor": "text-blue-400",
+      "category": "Infographie",
+      "categoryBadge": "badge-storyboard",
+      "description": "Infographie du parcours utilisateur"
+    },
+    {
+      "id": "mockup",
+      "title": "Mockup Interface",
+      "file": "Eg1-mockup.html",
+      "href": "Eg1-mockup.html",
+      "icon": "web",
+      "iconColor": "text-yellow-400",
+      "category": "Mockup",
+      "categoryBadge": "badge-mockup",
+      "description": "Maquette complete de l'interface"
+    }
+  ],
+  "progress": {
+    "totalSteps": 16,
+    "completedSteps": 5,
+    "currentStep": "F"
+  },
+  "workflows": [
+    {
+      "id": "wf-projet-001-worganic-platform-1769889600000",
+      "workflowTypeId": "full-web",
+      "workflowTypeName": "full-web",
+      "addedAt": "2026-01-31T20:00:00.000Z",
+      "pipeline": {
+        "steps": [
+          {
+            "id": "A",
+            "ia": [
+              {
+                "name": "gemini",
+                "model": "2.0 Flash"
+              }
+            ],
+            "name": "Prompt Initial",
+            "shortName": "Prompt Initial",
+            "file": "Aa0-prompt.md",
+            "prompt": "Aa0-prompt.md",
+            "summary": "Définir la vision globale du projet, les objectifs principaux et le contexte métier. Ce prompt initial sert de base pour toutes les étapes suivantes.",
+            "status": "completed",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "validation": {
+              "status": "validated",
+              "timestamp": "2026-02-01T19:45:19.105Z"
+            },
+            "filesStatus": [
+              {
+                "name": "Aa0-prompt.md",
+                "exists": true,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "B",
+            "ia": [
+              {
+                "name": "gemini",
+                "model": "gemini-2.0-flash"
+              }
+            ],
+            "name": "Extraction Exigences",
+            "shortName": "Exigences Fct.",
+            "file": [
+              "Bg0-Prompt.md",
+              "Bg0-Exigences_Fonctionnelles_Structurees.md"
+            ],
+            "prompt": "origine/Ba0-Prompt.md",
+            "summary": "Analyser le prompt initial pour extraire et structurer les exigences fonctionnelles. Identifier les fonctionnalités clés, les contraintes et les critères d'acceptation.",
+            "status": "completed",
+            "outClaude": "D'accord, je vais suivre les instructions pour extraire et structurer les exigences fonctionnelles...",
+            "lastExecutionDate": "2026-01-31T21:33:16.489Z",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "validation": {
+              "status": "validated",
+              "timestamp": "2026-02-01T19:45:24.741Z"
+            },
+            "filesStatus": [
+              {
+                "name": "Bg0-Prompt.md",
+                "exists": true,
+                "hasPrompt": false
+              },
+              {
+                "name": "Bg0-Exigences_Fonctionnelles_Structurees.md",
+                "exists": true,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "C",
+            "ia": [
+              {
+                "name": "gemini",
+                "model": "gemini-2.0-flash"
+              }
+            ],
+            "name": "Creation Prompt",
+            "shortName": "Prompt Ex.Fct",
+            "file": [
+              "Cg0-Prompt.md",
+              "Cg1-prompt-final.md"
+            ],
+            "prompt": "origine/Ca0-Prompt.md",
+            "summary": "Créer un prompt détaillé basé sur les exigences fonctionnelles extraites. Ce prompt servira de guide pour la génération du storyboard.",
+            "status": "completed",
+            "outClaude": "D'accord, je vais créer les prompts pour chaque exigence fonctionnelle...",
+            "lastExecutionDate": "2026-01-31T21:10:19.169Z",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "validation": {
+              "status": "validated",
+              "timestamp": "2026-02-01T19:45:28.348Z"
+            },
+            "filesStatus": [
+              {
+                "name": "Cg0-Prompt.md",
+                "exists": true,
+                "hasPrompt": false
+              },
+              {
+                "name": "Cg1-prompt-final.md",
+                "exists": true,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "D",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "name": "Storyboard",
+            "shortName": "Storyboard",
+            "file": [
+              "Dg0-Prompt.md",
+              "Dg1-storyboard.html"
+            ],
+            "prompt": "origine/Da0-Prompt.md",
+            "summary": "Créer le storyboard visuel du projet : scénarios utilisateur, parcours, écrans clés et flux de navigation entre les différentes sections.",
+            "status": "completed",
+            "outClaude": "",
+            "lastExecutionDate": "2026-01-27T20:36:43.461Z",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "validation": {
+              "status": "validated",
+              "timestamp": "2026-02-01T19:45:42.021Z"
+            },
+            "filesStatus": [
+              {
+                "name": "Dg0-Prompt.md",
+                "exists": true,
+                "hasPrompt": false
+              },
+              {
+                "name": "Dg1-storyboard.html",
+                "exists": true,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "E",
+            "name": "Mockup",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "shortName": "Mockup",
+            "file": [
+              "Eg0-Prompt.md",
+              "Eg1-mockup.html"
+            ],
+            "prompt": "origine/Ea0-Prompt.md",
+            "summary": "Concevoir les maquettes haute-fidélité de l'interface utilisateur. Définir la structure des pages, les composants UI et l'ergonomie générale.",
+            "status": "completed",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "validation": {
+              "status": "validated",
+              "timestamp": "2026-02-01T19:50:06.175Z"
+            },
+            "filesStatus": [
+              {
+                "name": "Eg0-Prompt.md",
+                "exists": true,
+                "hasPrompt": false
+              },
+              {
+                "name": "Eg1-mockup.html",
+                "exists": true,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "F",
+            "name": "Design",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "shortName": "Design Selection",
+            "file": [
+              "Fa1-design.html",
+              "Gg2-design-choix.md"
+            ],
+            "prompt": "",
+            "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+            "status": "in-progress",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "filesStatus": [
+              {
+                "name": "Fa1-design.html",
+                "exists": false,
+                "hasPrompt": false
+              },
+              {
+                "name": "Gg2-design-choix.md",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "G",
+            "name": "Design création",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "shortName": "Design",
+            "file": [
+              "Gg1-design.html",
+              "Gg2-design-choix.md"
+            ],
+            "prompt": "",
+            "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+            "status": "pending",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "filesStatus": [
+              {
+                "name": "Gg1-design.html",
+                "exists": false,
+                "hasPrompt": false
+              },
+              {
+                "name": "Gg2-design-choix.md",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "H",
+            "name": "Cahier de Tests",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "shortName": "Cahier Tests",
+            "file": [
+              "Hg0-Prompt.md",
+              "Hg1-tests.html"
+            ],
+            "prompt": "origine/Ha0-Prompt.md",
+            "summary": "Rédiger le cahier de tests fonctionnels et techniques. Définir les cas de test, les scénarios de validation et les critères de succès.",
+            "status": "pending",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "filesStatus": [
+              {
+                "name": "Hg0-Prompt.md",
+                "exists": false,
+                "hasPrompt": false
+              },
+              {
+                "name": "Hg1-tests.html",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "I",
+            "name": "Ordre Execution",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "shortName": "Ordre Exec.",
+            "file": [
+              "Ig0-Prompt.md",
+              "Ig6-ordre.html"
+            ],
+            "prompt": "origine/Ia0-Prompt.md",
+            "summary": "Établir l'ordre d'exécution des tâches de développement. Prioriser les fonctionnalités et créer un planning de réalisation.",
+            "status": "pending",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "filesStatus": [
+              {
+                "name": "Ig0-Prompt.md",
+                "exists": false,
+                "hasPrompt": false
+              },
+              {
+                "name": "Ig6-ordre.html",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "totalSteps": 9,
+        "completedSteps": 5,
+        "currentStep": "F"
+      }
+    },
+    {
+      "id": "wf-projet-001-worganic-platform-1771361030183",
+      "workflowTypeId": "workflow-1770639879864-0",
+      "workflowTypeName": "Recette de cuisine",
+      "addedAt": "2026-02-17T20:43:50.183Z",
+      "pipeline": {
+        "steps": [
+          {
+            "id": "A",
+            "ia": [
+              {
+                "name": "gemini",
+                "model": "2.0 Flash"
+              }
+            ],
+            "name": "Prompt Initial",
+            "shortName": "Prompt Initial",
+            "file": [
+              "01-PROMPT_INITIAL-prompt.md"
+            ],
+            "prompt": "prompt.md",
+            "summary": "Définir la vision globale du projet, les objectifs principaux et le contexte métier. Ce prompt initial sert de base pour toutes les étapes suivantes.",
+            "status": "in-progress",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "type": 0,
+            "order": 1,
+            "promptDocumentId": "doc-1770507845764",
+            "filesStatus": [
+              {
+                "name": "01-PROMPT_INITIAL-prompt.md",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "etape-1770639879864-0",
+            "name": "Analyse Ingrédients",
+            "type": 1,
+            "shortName": "Analyse In",
+            "summary": "Extraction et catégorisation des ingrédients fournis (protéines, légumes, féculents, épices, etc.)",
+            "prompt": "Extraction et catégorisation des ingrédients fournis (protéines, légumes, féculents, épices, etc.)",
+            "file": [
+              "02-ANALYSE_INGREDIENTS-ingredients_analyses.json"
+            ],
+            "order": 2,
+            "originalId": "etape-1770639879864-0",
+            "promptDocumentId": "doc-1770639879864-0",
+            "status": "pending",
+            "filesStatus": [
+              {
+                "name": "02-ANALYSE_INGREDIENTS-ingredients_analyses.json",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "etape-1770639879864-1",
+            "name": "Génération Recettes",
+            "type": 1,
+            "shortName": "Génération",
+            "summary": "Création de propositions de recettes basées sur les ingrédients disponibles",
+            "prompt": "Création de propositions de recettes basées sur les ingrédients disponibles",
+            "file": [
+              "03-GENERATION_RECETTES-recettes_proposees.json"
+            ],
+            "order": 3,
+            "originalId": "etape-1770639879864-1",
+            "promptDocumentId": "doc-1770639879864-2",
+            "status": "pending",
+            "filesStatus": [
+              {
+                "name": "03-GENERATION_RECETTES-recettes_proposees.json",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "etape-1770639879864-2",
+            "name": "Sélection Recette",
+            "type": 2,
+            "shortName": "Sélection ",
+            "summary": "Interface de sélection de la recette à développer parmi les propositions",
+            "prompt": "Interface de sélection de la recette à développer parmi les propositions",
+            "file": [
+              "04-SELECTION_RECETTE-recette_choisie.json"
+            ],
+            "order": 4,
+            "originalId": "etape-1770639879864-2",
+            "promptDocumentId": null,
+            "status": "pending",
+            "filesStatus": [
+              {
+                "name": "04-SELECTION_RECETTE-recette_choisie.json",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "etape-1770639879864-3",
+            "name": "Détails Recette",
+            "type": 1,
+            "shortName": "Détails Re",
+            "summary": "Génération des instructions détaillées, quantités précises et conseils de préparation",
+            "prompt": "Génération des instructions détaillées, quantités précises et conseils de préparation",
+            "file": [
+              "05-DETAILS_RECETTE-recette_complete.md",
+              "05-DETAILS_RECETTE-recette_complete.html"
+            ],
+            "order": 5,
+            "originalId": "etape-1770639879864-3",
+            "promptDocumentId": "doc-1770639879864-6",
+            "status": "pending",
+            "filesStatus": [
+              {
+                "name": "05-DETAILS_RECETTE-recette_complete.md",
+                "exists": false,
+                "hasPrompt": false
+              },
+              {
+                "name": "05-DETAILS_RECETTE-recette_complete.html",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "etape-1770639879864-4",
+            "name": "Suggestions Améliorations",
+            "type": 1,
+            "shortName": "Suggestion",
+            "summary": "Propositions d'ingrédients complémentaires ou variantes pour améliorer la recette",
+            "prompt": "Propositions d'ingrédients complémentaires ou variantes pour améliorer la recette",
+            "file": [
+              "06-SUGGESTIONS_AMELIORATIONS-suggestions_ameliorations.md"
+            ],
+            "order": 6,
+            "originalId": "etape-1770639879864-4",
+            "promptDocumentId": "doc-1770639879864-8",
+            "status": "pending",
+            "filesStatus": [
+              {
+                "name": "06-SUGGESTIONS_AMELIORATIONS-suggestions_ameliorations.md",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          },
+          {
+            "id": "J",
+            "name": "Fiche Suivi",
+            "ia": [
+              {
+                "name": "",
+                "model": ""
+              }
+            ],
+            "shortName": "Fiche Suivi",
+            "file": [
+              "07-FICHE_SUIVI-Jg0_Prompt.md",
+              "07-FICHE_SUIVI-Jg1_fiche.html"
+            ],
+            "prompt": "origine/Ja0-Prompt.md",
+            "summary": "Créer la fiche de suivi du projet pour tracker l'avancement, les décisions prises et les points d'attention.",
+            "status": "pending",
+            "outClaude": "",
+            "tokensUsed": 0,
+            "tokensBegin": 0,
+            "tokensEnd": 0,
+            "type": 0,
+            "order": 7,
+            "promptDocumentId": null,
+            "filesStatus": [
+              {
+                "name": "07-FICHE_SUIVI-Jg0_Prompt.md",
+                "exists": false,
+                "hasPrompt": false
+              },
+              {
+                "name": "07-FICHE_SUIVI-Jg1_fiche.html",
+                "exists": false,
+                "hasPrompt": false
+              }
+            ]
+          }
+        ]
+      },
+      "progress": {
+        "totalSteps": 7,
+        "completedSteps": 0,
+        "currentStep": "A"
+      },
+      "updatedAt": "2026-02-17T20:43:50.349Z"
+    }
+  ]
+}
