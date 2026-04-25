@@ -117,19 +117,19 @@ body {
 .pink .dark\:group-hover\:text-primary { color: #f472b6 !important; }
 
 .neon-border {
-    border: 1px solid var(--accent-color);
-    box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+    border: 1px solid rgb(var(--tw-accent));
+    box-shadow: 0 0 10px rgb(var(--tw-accent) / 0.3);
     transition: all 0.3s ease;
 }
-.dark .neon-border { box-shadow: 0 0 10px rgba(157, 78, 221, 0.3); }
-:root .neon-border { box-shadow: 0 0 5px rgba(123, 44, 191, 0.2); }
+.dark .neon-border { box-shadow: 0 0 10px rgb(var(--tw-accent) / 0.3); }
+:root .neon-border { box-shadow: 0 0 5px rgb(var(--tw-accent-dark) / 0.2); }
 .pink .neon-border { box-shadow: 0 0 10px rgba(236, 72, 153, 0.4); border-color: #ec4899; }
 
 .neon-text {
-    color: var(--accent-light);
+    color: rgb(var(--tw-primary));
     transition: all 0.3s ease;
 }
-.dark .neon-text { text-shadow: 0 0 8px rgba(199, 125, 255, 0.6); }
+.dark .neon-text { text-shadow: 0 0 8px rgb(var(--tw-primary) / 0.6); }
 .pink .neon-text { color: #f472b6; text-shadow: 0 0 10px rgba(236, 72, 153, 0.6); }
 
 .link-card {
@@ -138,8 +138,8 @@ body {
     display: block;
 }
 .link-card:hover { border-color: var(--accent-color); transform: translateY(-2px); }
-.dark .link-card:hover { box-shadow: 0 0 20px rgba(157, 78, 221, 0.3); }
-:root .link-card:hover { box-shadow: 0 0 10px rgba(123, 44, 191, 0.2); }
+.dark .link-card:hover { box-shadow: 0 0 20px rgb(var(--tw-accent) / 0.3); }
+:root .link-card:hover { box-shadow: 0 0 10px rgb(var(--tw-accent-dark) / 0.2); }
 .pink .link-card:hover { box-shadow: 0 0 20px rgba(236, 72, 153, 0.35); }
 
 .terminal-output { font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word; }
