@@ -204,6 +204,58 @@ Le champ `version` d'une entrée histoModif utilise toujours la version **child*
 - **Executor IA** : `electron/executor/server-executor.js` sur port 3002
 - **Données** : `data/` (projets, config, users, historique)
 
+## Règle ABSOLUE : Fichiers base — ne jamais modifier dans ce child
+
+Les fichiers suivants proviennent de `worganic-base` et sont **écrasés à chaque synchronisation**. Ne JAMAIS les modifier directement dans ce child project. Toute modification doit être faite dans la base, puis propagée.
+
+### Fichiers base intouchables (frankenstein/)
+- `frankenstein/src/app/app.config.ts`
+- `frankenstein/src/app/app.routes.ts`
+- `frankenstein/src/app/base-routes.ts`
+- `frankenstein/src/app/core/**` — tous les services, guards, interceptors
+- `frankenstein/src/app/shared/**` — header, footer, nav, layout
+- `frankenstein/src/app/pages/admin/admin.component.*`
+- `frankenstein/src/app/pages/admin/tabs/**` — onglets admin base
+- `frankenstein/src/app/pages/user/**` — home, documents, editor, config, deployments
+- `frankenstein/src/app/pages/public/landing/**`
+- `frankenstein/src/app/tools/**`
+- `frankenstein/src/styles.scss`
+- `frankenstein/tailwind.config.js`
+
+### Fichiers base intouchables (server/)
+- `server/server-data.js`
+- `server/deploy-log.js`
+- `server/db.js`
+
+### Fichiers base intouchables (racine)
+- `install.bat`
+- `launch-frankenstein.bat`
+- `start-dev.js`
+
+### Fichiers MODIFIABLES dans ce child (jamais propagés depuis la base)
+
+| Fichier | Rôle |
+|---------|------|
+| `data/child/app.json` | Nom de l'app, logo, copyright |
+| `data/child/theme.json` | Variables CSS (couleurs custom) |
+| `data/child/nav.json` | Items de navigation supplémentaires |
+| `data/child/landing.json` | Textes de la page de connexion |
+| `data/child/home.json` | Config home page |
+| `frankenstein/src/app/child/child-routes.ts` | Routes exclusives child |
+| `frankenstein/src/app/child/child-admin-tabs.ts` | Onglets admin exclusifs child |
+| `frankenstein/src/app/pages/child/**` | Pages Angular exclusives child |
+| `frankenstein/src/environments/environment.ts` | URLs des serveurs, appName |
+| `version.json` | Version child uniquement (champ `child` et `baseSynced`) |
+| `data/histoModif.json` | Historique des modifications |
+| `data/config/**` | Config locale (users, conf, sessions, AI models) |
+| `sync-from-base.bat` | Script de synchronisation |
+| `README.md` | Documentation child |
+| `CLAUDE.md` | Instructions IA child |
+
+> Si une modification d'un fichier base est nécessaire pour ce child, la faire dans `worganic-base` et la propager via `data/base-propagation.json`.
+
+---
+
 ## Règle obligatoire : Composants Angular réutilisables
 
 **Tout élément d'UI qui apparaît dans plus d'une page ou d'un contexte doit être implémenté comme un composant Angular standalone dédié**, placé dans `frankenstein/src/app/components/`.

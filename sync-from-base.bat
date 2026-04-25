@@ -1,22 +1,37 @@
 @echo off
 setlocal EnableDelayedExpansion
 cd /d "%~dp0"
-title Sync base worganic -^> THI-V01
 
+REM -- Configuration — adapter si le dossier base n'est pas a ce chemin relatif
 set "BASE_PATH=%~dp0..\worganic-base"
 set "CHILD_JSON=%~dp0version.json"
 set "BASE_JSON=%BASE_PATH%\version.json"
 set "PROPAG_JSON=%BASE_PATH%\data\base-propagation.json"
 
+REM -- Lecture du childId depuis version.json
+for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content '%CHILD_JSON%' | ConvertFrom-Json).childId"`) do set "CHILD_ID=%%i"
+
+if "%CHILD_ID%"=="" (
+    echo.
+    echo  [ERREUR] Ce fichier est reserve aux projets child.
+    echo  version.json ne contient pas de champ 'childId'.
+    echo  Etes-vous bien dans un dossier child ?
+    echo.
+    pause & exit /b 1
+)
+
+title Sync worganic-base -> %CHILD_ID%
+
 echo.
 echo  ================================================
-echo    Sync worganic-base  ^>  child THI-V01
+echo    Sync worganic-base  ^>  child %CHILD_ID%
 echo  ================================================
 echo.
 
 if not exist "%BASE_PATH%\" (
     echo  [ERREUR] Dossier worganic-base introuvable :
     echo  %BASE_PATH%
+    echo  Verifiez la variable BASE_PATH en haut de ce fichier.
     echo.
     pause & exit /b 1
 )
@@ -25,6 +40,7 @@ for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content 
 for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content '%CHILD_JSON%' | ConvertFrom-Json).child"`) do set "CHILD_VERSION=%%i"
 for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content '%CHILD_JSON%' | ConvertFrom-Json).baseSynced"`) do set "BASE_SYNCED=%%i"
 
+echo   Child           : %CHILD_ID%
 echo   Version child   : %CHILD_VERSION%
 echo   Base disponible : %BASE_VERSION%
 echo   Base syncee     : %BASE_SYNCED%
@@ -36,7 +52,7 @@ if "%BASE_VERSION%"=="%BASE_SYNCED%" (
     pause & exit /b 0
 )
 
-echo  [!] Mise a jour disponible : %BASE_SYNCED%  -^>  %BASE_VERSION%
+echo  [!] Mise a jour disponible : %BASE_SYNCED%  ->  %BASE_VERSION%
 echo.
 echo  Modifications a integrer :
 echo  --------------------------
@@ -58,7 +74,7 @@ echo  [OK] version.json mis a jour : baseSynced = %BASE_VERSION%
 echo.
 
 for /f "usebackq delims=" %%d in (`powershell -NoProfile -Command "Get-Date -Format yyyyMMdd"`) do set "TODAY=%%d"
-for /f "usebackq delims=" %%v in (`powershell -NoProfile -Command "$v = '%CHILD_VERSION%' -replace '^THI-',''; $p = $v.Split('.'); $maj = [int]$p[0]; $min = [int]$p[1] + 1; if ($min -ge 100) { $maj++; $min = 0 }; 'THI-' + $maj + '.' + $min.ToString('D2')"`) do set "NEXT=%%v"
+for /f "usebackq delims=" %%v in (`powershell -NoProfile -Command "$v = '%CHILD_VERSION%'; $prefix = $v -replace '\d.*',''; $num = $v -replace ('^' + [regex]::Escape($prefix)),''; $p = $num.Split('.'); $maj = [int]$p[0]; $min = [int]$p[1] + 1; if ($min -ge 100) { $maj++; $min = 0 }; $prefix + $maj + '.' + $min.ToString('D2')"`) do set "NEXT=%%v"
 
 echo  Commandes pour finaliser :
 echo  --------------------------

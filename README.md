@@ -1,101 +1,91 @@
-# Worganic Base — Template de projet
+# THI-V01 — Child project Worganic Base
 
-Stack complète Angular 18 + Express + Electron, prête à l'emploi pour démarrer un nouveau projet.
-
----
-
-## Ce que contient ce template
-
-| Composant | Port | Description |
-|-----------|------|-------------|
-| Angular 18 (frontend) | 4202 | Interface utilisateur — `frankenstein/` |
-| server-data.js | 3001 | API données, config, auth — `server/` |
-| server-executor.js | 3002 | Exécution IA locale — `electron/executor/` |
-
-**Fonctionnalités incluses :**
-- Auth (guard, interceptor, token localStorage)
-- Pages : Home, Editor, Documents, Config, Deployments
-- Admin : Users, Deployments, Help, Config
-- Layout complet (header / nav / footer)
-- Help drawer system
-- Markdown editor réutilisable
-- Tools : tchat-ia, ticket-widget, cahier-recette
-- Workflow Claude (CLAUDE.md, histoModif, version, deploy-log)
+Projet child basé sur [worganic-base](https://github.com/worganic/worganic-base).
 
 ---
 
-## Créer un nouveau projet depuis ce template (Git Subtree)
+## Versioning dual
 
-```bash
-# 1. Initialiser le nouveau projet
-mkdir mon-projet && cd mon-projet
-git init
+| Champ | Format | Rôle |
+|-------|--------|------|
+| `child` | `THI-X.XX` | Version de ce child project |
+| `baseSynced` | `BX.XX` | Dernière version de la base intégrée |
 
-# 2. Intégrer le template comme sous-dossier "base"
-git subtree add --prefix=base https://github.com/worganic/worganic-base.git main --squash
-
-# 3. Créer le code spécifique au projet à côté de base/
-mkdir src
-```
-
-Structure résultante :
-```
-mon-projet/
-  base/        ← stack de base (synchronisable)
-  src/         ← code spécifique au projet
-  package.json
-```
-
----
-
-## Mettre à jour un projet depuis le template
-
-```bash
-# Depuis le dossier du projet enfant
-git subtree pull --prefix=base https://github.com/worganic/worganic-base.git main --squash
-```
-
-En cas de conflit : résoudre manuellement, puis `git commit`.
-
----
-
-## Installation du template en local
-
-### Prérequis
-
-| Outil | Version minimale |
-|-------|-----------------|
-| Node.js | 20+ |
-| Angular CLI | 18+ (`npm install -g @angular/cli`) |
-| Windows Terminal | — (pour `launch-frankenstein.bat`) |
-
-### Installer les dépendances
-
-```bash
-install.bat
-```
-
-### Configurer les clés API
-
-Éditer `data/config/conf.json` :
-
+Le fichier `version.json` à la racine contient les trois champs :
 ```json
-{
-  "apiKeys": {
-    "gemini": { "key": "<votre-clé>", "active": true },
-    "claude": { "key": "<votre-clé>",  "active": true }
-  }
-}
+{ "childId": "THI-V01", "child": "THI-0.07", "baseSynced": "B0.07" }
 ```
 
-### Démarrer
+---
+
+## Synchronisation depuis la base
+
+Quand `worganic-base` publie une nouvelle version :
+
+```
+.\sync-from-base.bat
+```
+
+Le script :
+- Affiche les propagations en attente (fichiers à intégrer manuellement)
+- Met à jour `baseSynced` dans `version.json`
+- Affiche les commandes git/deploy-log pour finaliser le commit de merge
+
+---
+
+## Personnalisation child-safe
+
+Ces fichiers appartiennent **exclusivement à ce child** et ne sont jamais écrasés par la base.
+
+### Branding & thème
+| Fichier | Rôle |
+|---------|------|
+| `data/child/app.json` | Nom, logo icon (material), copyright |
+| `data/child/theme.json` | Variables CSS (couleurs primaires, fond) |
+
+### Contenu des pages
+| Fichier | Rôle |
+|---------|------|
+| `data/child/nav.json` | Items de navigation supplémentaires |
+| `data/child/landing.json` | Textes de la page de connexion |
+| `data/child/home.json` | Titre, sous-titre, bouton principal de la home |
+
+### Code Angular
+| Fichier | Rôle |
+|---------|------|
+| `frankenstein/src/app/child/child-routes.ts` | Routes exclusives |
+| `frankenstein/src/app/child/child-admin-tabs.ts` | Onglets admin exclusifs |
+| `frankenstein/src/app/pages/child/**` | Pages Angular exclusives |
+| `frankenstein/src/environments/environment.ts` | URLs des serveurs |
+
+---
+
+## Ce qu'il ne faut PAS modifier dans ce child
+
+Les fichiers suivants sont propagés depuis `worganic-base`. Les modifier ici reviendrait à créer des conflits lors de la prochaine synchronisation :
+
+- `frankenstein/src/app/core/**` (services, guards)
+- `frankenstein/src/app/shared/**` (header, footer, nav, layout)
+- `frankenstein/src/app/pages/admin/**` (sauf onglets child)
+- `frankenstein/src/app/pages/user/**` (home, documents, editor…)
+- `frankenstein/src/app/base-routes.ts`
+- `frankenstein/src/app/app.config.ts` / `app.routes.ts`
+- `server/server-data.js` / `server/deploy-log.js`
+- `frankenstein/src/styles.scss` / `tailwind.config.js`
+
+Si une modification partagée est nécessaire → la faire dans `worganic-base` et la propager.
+
+---
+
+## Démarrage
 
 ```bash
-launch-frankenstein.bat
+install.bat        # Installation des dépendances
+launch-frankenstein.bat  # Démarrage dev (Angular + serveurs)
 ```
 
 ---
 
 ## Workflow Claude Code
 
-Ce projet inclut `CLAUDE.md` avec les règles de workflow IA (histoModif, versioning, git).
+Ce projet inclut `CLAUDE.md` avec les règles de workflow IA (histoModif, versioning, git, règles de fichiers child-safe).
