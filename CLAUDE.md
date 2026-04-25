@@ -112,11 +112,17 @@ Question 3 : "Titre du commit ?"
   - `0.25` → `1.00` / `2.05` → `3.00` / `1.99` → `2.00`
 
 ### Mise à jour de version.json
-Après décision de l'utilisateur, mettre à jour `version.json` :
+Après décision de l'utilisateur, mettre à jour le champ `child` dans `version.json` :
 ```json
-{ "version": "X.XX" }
+{
+  "childId": "THI-V01",
+  "child": "THI-X.XX",
+  "baseSynced": "BX.XX"
+}
 ```
-Le nouveau numéro de version est ensuite inclus dans le champ `version` de l'entrée histoModif.json.
+Le préfixe `THI-` identifie la version comme appartenant au child THI-V01. Exemples : `THI-0.01` → `THI-0.02` / `THI-0.99` → `THI-1.00`.
+Le champ `baseSynced` n'est mis à jour **que lors d'une synchronisation avec la base** (commit de type MERGE).
+Le nouveau numéro de version child (ex: `THI-0.02`) est ensuite inclus dans le champ `version` de l'entrée histoModif.json.
 
 ---
 
@@ -141,7 +147,7 @@ Le titre doit refléter **l'ensemble des prompts depuis le dernier git**, pas se
 
 1. Mettre à jour `version.json` avec le nouveau numéro
 2. `git add` des fichiers modifiés (ne pas utiliser `git add .` — lister les fichiers explicitement)
-3. `git commit -m "vX.XX - YYYYMMDD - [TYPE] - Titre choisi"`
+3. `git commit -m "THI-X.XX - YYYYMMDD - [TYPE] - Titre choisi"`
    - Format de date : YYYYMMDD (ex: 20260321)
 4. `git push`
 5. **Enregistrer le déploiement en BDD** via le script `server/deploy-log.js` :
@@ -150,7 +156,7 @@ Le titre doit refléter **l'ensemble des prompts depuis le dernier git**, pas se
    - `--files` : union de tous les fichiers modifiés depuis le dernier commit
 ```bash
 node server/deploy-log.js \
-  --version "X.XX" \
+  --version "THI-X.XX" \
   --commit "vX.XX - YYYYMMDD - [TYPE] - Titre choisi" \
   --description "Description consolidée de TOUS les prompts depuis le dernier git" \
   --ai "Claude Code" \
@@ -162,6 +168,31 @@ node server/deploy-log.js \
 ```
 
 > **Note** : Ce script se connecte directement à MySQL sans nécessiter de session admin. Il doit être exécuté depuis la racine du projet (le `require('./db')` est relatif à `server/`). En cas d'échec, informer l'utilisateur d'enregistrer manuellement via Admin → Déploiements.
+
+---
+
+## Règle obligatoire : Synchronisation avec la base (worganic-base)
+
+### Vérification au début de chaque session
+Lire `version.json` et afficher :
+```
+Child THI-V01 — version child : THI-X.XX | base syncée : BX.XX
+```
+Si l'utilisateur mentionne une mise à jour de la base ou un `baseSynced` inférieur à la version base connue, afficher l'avertissement :
+> ⚠️ La base a été mise à jour. Pensez à intégrer les changements avant de committer (Admin → Propagations).
+
+### Workflow de synchronisation base → child
+Quand l'utilisateur intègre des modifications de la base :
+1. Appliquer les fichiers listés dans `propagationScope` de l'entrée `base-propagation.json` concernée
+2. Mettre à jour `baseSynced` dans `version.json` avec la version base intégrée
+3. Committer avec le type `MERGE` et le format :
+   ```
+   THI-X.XX - YYYYMMDD - [MERGE] - Sync base BX.XX
+   ```
+4. Informer l'utilisateur qu'il peut marquer la propagation comme traitée dans l'admin de la base
+
+### Champs `version` dans histoModif.json
+Le champ `version` d'une entrée histoModif utilise toujours la version **child** (`THI-X.XX`), pas la version base.
 
 ---
 

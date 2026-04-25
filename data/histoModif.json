@@ -1,3 +1,25 @@
 {
-  "modifications": []
+  "modifications": [
+    {
+      "id": "mod-001",
+      "version": "THI-0.01",
+      "date": "2026-04-25T00:00:00.000Z",
+      "type": "config",
+      "commitType": "AMELIORATION",
+      "scope": ["system"],
+      "features": "system:workflow",
+      "title": "Système double versioning base/child",
+      "description": "Mise en place du double système de versioning : version.json migré vers le nouveau format avec childId, child (THI-0.01) et baseSynced (B0.01). CLAUDE.md mis à jour avec les règles de versioning child (préfixe THI-), format commit THI-X.XX, et section de synchronisation avec la base.",
+      "files": [
+        "version.json",
+        "data/histoModif.json",
+        "CLAUDE.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "ok je valide la solution B et tu peux lancer les étapes de 1 à 4",
+      "startedAt": "2026-04-25T00:00:00.000Z",
+      "completedAt": "2026-04-25T00:00:00.000Z"
+    }
+  ]
 }
