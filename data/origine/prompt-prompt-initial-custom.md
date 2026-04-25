@@ -1,0 +1,1 @@
+Définir la vision globale du projet.

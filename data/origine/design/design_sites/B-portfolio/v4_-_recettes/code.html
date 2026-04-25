@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Rustic Gourmet | Professional Recipe Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#d3997e", // Terracotta
+                        "olive": "#6A8B5F",
+                        "background-light": "#fcf7ee", // Parchment Cream
+                        "background-dark": "#302e2c",
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Newsreader", serif;
+    background-color: #fcf7ee
+    }
+.parchment-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuCp3ZfqmYCAQyW3WLwsOc-d76al19dd1sOrrT1P0quWMvyBgG7EOzIYTMXbufo6F1PrzHxbMk0A2w1JfATmSQUX-XTWnmPhXkDA_yUTYlLBn4z5s1kA0R9vTP4dsge6n4L7qV3YvKRQvTSEaB2gXFByJMuzEfFYUFriI7a-T19eGXFiUV_4bVLOkeVa7pf_ZrLFqVkI_Rbmcd6GnVoIIISFahH-kP1_8B3J3tnQy-vwE1x3B6ijeumuFzbQd3IUmsgmaPnTz6JrUg)
+    }
+.custom-shadow {
+    box-shadow: 0 10px 30px -10px rgba(211, 153, 126, 0.15)
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#161412] parchment-texture">
+<!-- Top Navigation -->
+<div class="relative flex flex-col w-full overflow-x-hidden">
+<header class="sticky top-0 z-50 bg-background-light/90 backdrop-blur-md border-b border-primary/10 px-6 md:px-20 py-4 flex items-center justify-between dark:bg-background-dark/90">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<span class="material-symbols-outlined text-4xl">skillet</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-xl font-bold tracking-tight leading-none text-[#161412] dark:text-white">Rustic Gourmet</h1>
+<span class="text-[10px] uppercase tracking-[0.2em] text-olive font-semibold">Chef Julian's Kitchen</span>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-8 text-sm font-medium uppercase tracking-widest text-[#161412]/70 dark:text-white/70">
+<a class="hover:text-primary transition-colors border-b-2 border-primary" href="#">Recipes</a>
+<a class="hover:text-primary transition-colors" href="#">The Chef</a>
+<a class="hover:text-primary transition-colors" href="#">Workshops</a>
+<a class="hover:text-primary transition-colors" href="#">Journal</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-olive/60">search</span>
+<input class="bg-primary/5 border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-primary w-48 transition-all focus:w-64 placeholder:text-olive/40" placeholder="Search ingredients..." type="text"/>
+</div>
+<button class="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-sm">shopping_basket</span>
+<span>Market List</span>
+</button>
+</div>
+</header>
+<main class="flex-1 max-w-[1400px] mx-auto w-full px-6 md:px-10 py-8">
+<!-- Hero Section -->
+<section class="mb-16">
+<div class="relative rounded-xl overflow-hidden min-h-[600px] flex items-center justify-center p-8 group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" data-alt="Steam rising from a rustic roasted vegetable tart on a wooden table" style="background-image: linear-gradient(rgba(48, 46, 44, 0.4), rgba(48, 46, 44, 0.2)), url('https://lh3.googleusercontent.com/aida-public/AB6AXuBaB7Hv3oQDHdTjheAI1Hvqm-bIAs7i19CtYadXHgb-_lJVQRvVdkanHvMNwLegwAHwEZTAbFpsQquF0r1ue_YOG16VWFHZK0Lnfitak1_Rfulsx8RxVckEFXrUHS4dS03PgexronBRjvAGJEMQV3req3oqAEFlw3Ny3fol5NFlR1OPOk_dpa1Kjt2L2V1R0oMHuDfgH-OlMvVVeS-vH5kLJe8R2v3LNqSYJD30G-1Rj_Xr0D7Dz1390newCNsUdtQxCTN9w9LawQ');">
+</div>
+<div class="relative text-center max-w-3xl flex flex-col items-center gap-8">
+<div class="bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1 rounded-full text-white text-[10px] uppercase tracking-[0.3em] font-bold">
+                            Current Seasonal Feature
+                        </div>
+<h2 class="text-white text-5xl md:text-7xl font-bold leading-tight drop-shadow-2xl">
+                            Artisanal Flavors for the Modern Table
+                        </h2>
+<p class="text-white/90 text-lg md:text-xl font-light max-w-xl italic">
+                            "Cooking is an act of love made visible. These recipes are my letters to the seasons."
+                        </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-primary/90 transition-colors flex items-center gap-3">
+                                Explore The Harvest <span class="material-symbols-outlined">arrow_right_alt</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Refine & Filters -->
+<section class="mb-12">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 mb-8">
+<div>
+<h3 class="text-3xl font-bold text-[#161412] dark:text-white mb-2">Refine Your Palate</h3>
+<p class="text-olive font-medium italic">Filter by the rhythm of the year and the mood of the table.</p>
+</div>
+<div class="flex items-center gap-2 text-sm text-primary font-bold uppercase tracking-tighter">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                        All Parameters
+                    </div>
+</div>
+<div class="flex flex-wrap gap-4 p-2">
+<div class="flex items-center gap-2 mr-6 border-r border-primary/20 pr-6">
+<span class="text-[10px] uppercase tracking-widest font-bold text-olive/60">Season:</span>
+<button class="flex items-center gap-2 rounded-full bg-primary text-white pl-4 pr-3 py-1.5 text-sm font-medium">
+                            Harvest <span class="material-symbols-outlined text-sm">close</span>
+</button>
+<button class="flex items-center gap-2 rounded-full bg-white border border-primary/20 text-[#161412] pl-4 pr-3 py-1.5 text-sm font-medium hover:bg-primary/5">
+                            Spring <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 rounded-full bg-white border border-primary/20 text-[#161412] pl-4 pr-3 py-1.5 text-sm font-medium hover:bg-primary/5">
+                            Winter <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] uppercase tracking-widest font-bold text-olive/60">Occasion:</span>
+<button class="flex items-center gap-2 rounded-full bg-white border border-primary/20 text-[#161412] pl-4 pr-3 py-1.5 text-sm font-medium hover:bg-primary/5">
+                            Brunch <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 rounded-full bg-white border border-primary/20 text-[#161412] pl-4 pr-3 py-1.5 text-sm font-medium hover:bg-primary/5">
+                            Gala <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+<button class="flex items-center gap-2 rounded-full bg-white border border-primary/20 text-[#161412] pl-4 pr-3 py-1.5 text-sm font-medium hover:bg-primary/5">
+                            Midweek <span class="material-symbols-outlined text-sm">expand_more</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Featured Grid -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
+<!-- Recipe Card 1 -->
+<div class="group flex flex-col bg-white dark:bg-background-dark/50 rounded-xl overflow-hidden custom-shadow border border-primary/5">
+<div class="relative aspect-[4/5] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Close up of a roasted heirloom carrot tart with microgreens" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC1bOwfybzJipROc32pBoiDIhTVCbHh-k__sKwHPA29IMryAngEjJQKXakPBhJ8V6TOXn3ark1S2e--8Ll_W2AbyztU4EAlTQ4RWgucKJAg_hfrw03eoVxkM_N2421HF25Z5kRfBfFJpxH2mdtTUDCoWd3KYfMA0MQyN5D9fsAzToPMVnyv_NvS2PpCDfPbytKQSe1_jDFdyAoLpUcf4raDvMRbXnrla44VwH7OMpCeUvqe0kCRLZb98Xw-ZlcE1JXenF6mFypqWA');"></div>
+<div class="absolute top-4 left-4 bg-primary text-white px-3 py-1 rounded text-[10px] uppercase font-bold tracking-widest">Chef's Pick</div>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur size-10 rounded-full flex items-center justify-center text-primary shadow-lg hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-bold text-olive tracking-widest uppercase italic">Autmn Harvest</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="text-xs font-bold">4.9</span>
+</div>
+</div>
+<h4 class="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">Roasted Heirloom Carrot Tart</h4>
+<p class="text-sm text-[#161412]/60 dark:text-white/60 line-clamp-2 italic mb-4">A delicate pastry crust filled with whipped goat cheese and maple-glazed heirloom carrots from the morning market.</p>
+<div class="flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-[#161412]/40">
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 45m</div>
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-base">restaurant</span> Intermediate</div>
+</div>
+</div>
+</div>
+<!-- Recipe Card 2 -->
+<div class="group flex flex-col bg-white dark:bg-background-dark/50 rounded-xl overflow-hidden custom-shadow border border-primary/5">
+<div class="relative aspect-[4/5] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Handmade tagliatelle pasta with wild mushrooms and herbs" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAIMfOmQRwHYiJ226LO-Hb4n5xIoklirTvwguUZvh3sHyCffeR-30w3EsVpkBKEnbehCwcHo5ABUddGBHpnJhTOpQr5uKeKScFhc6CRoa9gb5ZpzmXerl5AUwcaKXS87I34ypyOZojcZHhuZK1KLoI8z5mt9_Z4Ks4LNqj-Jzd--usZwrPsw_9O1Ye604n0az-z8OuvkdXAXgnZQXhwN93xw-bDBFM6k4WwifoKOLfoMXq90vfkCCUv81gkEYjkPkqDlxvkj99yBQ');"></div>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur size-10 rounded-full flex items-center justify-center text-primary shadow-lg hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-bold text-olive tracking-widest uppercase italic">Pasta Fresca</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="text-xs font-bold">5.0</span>
+</div>
+</div>
+<h4 class="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">Wild Mushroom Tagliatelle</h4>
+<p class="text-sm text-[#161412]/60 dark:text-white/60 line-clamp-2 italic mb-4">Earthy porcini and chanterelles tossed in a brown butter sage sauce with hand-cut noodles.</p>
+<div class="flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-[#161412]/40">
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 30m</div>
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-base">restaurant</span> Expert</div>
+</div>
+</div>
+</div>
+<!-- Recipe Card 3 -->
+<div class="group flex flex-col bg-white dark:bg-background-dark/50 rounded-xl overflow-hidden custom-shadow border border-primary/5">
+<div class="relative aspect-[4/5] overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Fresh burrata cheese with sliced peaches, balsamic glaze and basil" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCNGE7ddXYtDs8C7NZlpYmu6Mzty77idLwTb-CEluwCUM5skh7WOT8SSNZ_I6kUehW3kZWgXzvlgyWD8I_DUqUuAZvNh88nzH111jXW1juag9wX_nCK1RpfxD7UO21NQU7uPDGSIPscQA722QSQIS2dGC7d1L_swkB4gCXtWcCRleo6GAIp-D8V95xymV0ciLVB_13RFcaivYJWHn720Bsckr7sjzI0RHjew7-JnRIbENxwclZ0mi7CdYe9Jdv1EpclkTjsjlUhpA');"></div>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur size-10 rounded-full flex items-center justify-center text-primary shadow-lg hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+<div class="p-6">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs font-bold text-olive tracking-widest uppercase italic">Summer Breeze</span>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined text-sm fill-1">star</span>
+<span class="text-xs font-bold">4.8</span>
+</div>
+</div>
+<h4 class="text-2xl font-bold mb-2 group-hover:text-primary transition-colors">Burrata with Peach &amp; Basil</h4>
+<p class="text-sm text-[#161412]/60 dark:text-white/60 line-clamp-2 italic mb-4">A celebration of summer fruit paired with creamy burrata and aged balsamic vinegar.</p>
+<div class="flex items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-[#161412]/40">
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 15m</div>
+<div class="flex items-center gap-1"><span class="material-symbols-outlined text-base">restaurant</span> Beginner</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Chef's Table Section (Portfolio Style) -->
+<section class="mb-20">
+<div class="flex flex-col items-center text-center mb-12">
+<span class="text-primary uppercase tracking-[0.4em] text-[10px] font-black mb-2">Portfolio</span>
+<h3 class="text-4xl font-bold text-[#161412] dark:text-white">The Chef's Table</h3>
+<div class="w-16 h-px bg-primary mt-4"></div>
+</div>
+<div class="columns-1 sm:columns-2 lg:columns-4 gap-4 space-y-4">
+<div class="relative overflow-hidden rounded-xl bg-primary/10">
+<img class="w-full hover:scale-110 transition-transform duration-500" data-alt="Tender sliced steak with chimichurri sauce" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgN6eJmDMmYqzllVrnDkocWnrc3fr0EgwxbmpYy9jjsv0Le_qRvz-DYpOj63wAc0jk4Lx9Rea2OBfiuO-LHxWgS0K8Yh0OtQuZzeoI86VkP10dSvXB1hxL_eE95IhL1cmFLc003XeflKb6yZvg6vvby_O3NjPDk9hRz6D4SAkkjjkzDIBbDV2oFJEBFxbmx-JseVhM5oS4Yr69qTRWxMnDhikk162wDjddZMfLS6ljRGel0UsWAjO9XxQf93sHwDQX6lnQzpRyiw"/>
+</div>
+<div class="relative overflow-hidden rounded-xl bg-primary/10">
+<img class="w-full hover:scale-110 transition-transform duration-500" data-alt="Platter of vibrant Mediterranean appetizers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8Cqz9gg27Rimuf8NsDq_LOMcGVyXoKTQyZ97L1ua_ukPLt25NnTluu7y5WT48d45I3OOeq7Dy-MrjjNiXeWJg-JDeE37fJ7J57x-cSey8HeaIntT8DYbDZRCzq6k2mtMyTwpM0rIXtABrV2bjIIiACOMP5R_EA5kjx75UOe6oO--vzZAUwAabpcXrsMJh45fRNsRxWLmpkxIxxW8zgLk0L6ZKmIcT8k0t_X2VvvDkJsK1ZyF80EPbOqKGHSGDiYx3daXt3tXuxQ"/>
+</div>
+<div class="relative overflow-hidden rounded-xl bg-primary/10">
+<img class="w-full hover:scale-110 transition-transform duration-500" data-alt="Chef plating a gourmet dish with tweezers" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCu4rkTt9E8QhWNRxoOvZbQ-kzs-317DBk1O3wzwoHBelV9KIp3O2BVXWNd-vQSXaS2qGXPgWcAMklrORlOZJ0lOS6re93kiCbqdwbs9D_tWLKiCZ71b6O1k81HvSS43xHQHgzjaer9Apsf_RWzIQWLnWQlGjjJEcScVve6fP0SPdPWRURTgTk5210s_LelcGqu5uxqiieEuLzUbLmMO8jIEOmQiLS2Tr91D_JJHoABsNJ3Y4DQBTtdADkchUol1j7ZeyaWvaD1lg"/>
+</div>
+<div class="relative overflow-hidden rounded-xl bg-primary/10">
+<img class="w-full hover:scale-110 transition-transform duration-500" data-alt="Gourmet salmon dish with asparagus and lemon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOYyf03TxhF_mWDL9QJEzB2MU4D1sQWjM4I_V96xKnJoJa_KPoshOOc0GFwQ8ER2lQAd9iUGFsEyogw8daEfwU26SldhEy6tvcil3HGHlBIBnqWZjStAvh2hZHAX7F6UjXBVT2um5ugkfq0hqdt1mjsscA8kIWgWCM-sH8aRjuamlFH-cjZ4seFx0gqCxckIonzqtCk9-ySw0DC9beDhiOwKFtHA-W0djQPkD0Oca270Z0jW5sPWO8DmORYWQ2luNzSrXdtGu2GQ"/>
+</div>
+<div class="relative overflow-hidden rounded-xl bg-primary/10">
+<img class="w-full hover:scale-110 transition-transform duration-500" data-alt="Wooden tray with fresh baked bread and herbs" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp-B5YFeRzgdHGjltrNepBuQ93Gp8c1Bw-vBPe2jeycSWMLXqsJcyskwtg0moljD-cBPbABxr-dkkyg6XdMpO8RJXxraeGKN6a-9AOPQV3gZ2jfscyFoBrox15jIp00MMnQvEaOptTGtWSDm4MxjER2e12xYkftf2SDxRkuIG0OrcLWrQR_SEmh0caHCBIEaN88WHO2yrBQPYe1RB2VcBwkb6KUXilN_s8q9yOa_F85n4He0stowkYQIGvlIgYaomAygx5I8wyQg"/>
+</div>
+<div class="relative overflow-hidden rounded-xl bg-primary/10">
+<img class="w-full hover:scale-110 transition-transform duration-500" data-alt="Bowl of creamy pumpkin soup with toasted seeds" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyIjiKVFa1B02wlvddxufJJ3umihyH99kEKsn86uzWnARu0lQUIlR0oRb5fiP01NSPgwv6RhlMiquysO09LyTiev6ju6xpIEtTlZIcYr56gxqs-mbS-h3qb1oTJD5ZgZ8xmFtbWiNFg2A5liw4-8fnERHiEMDJAn56DKz1CrHyOpYTdYmEFG_OJd7wmFve7ftz1CxFCf988dwEej1kYjQhJARweejs7At16hN-WFXfZf66hHisdxozwtWK6ogUGUBpq6DKHWAMig"/>
+</div>
+</div>
+</section>
+<!-- Newsletter/CTA Section -->
+<section class="bg-olive/10 rounded-xl p-8 md:p-16 flex flex-col items-center text-center border-2 border-dashed border-olive/20 mb-20">
+<span class="material-symbols-outlined text-5xl text-olive mb-6">edit_note</span>
+<h3 class="text-3xl md:text-4xl font-bold text-[#161412] dark:text-white mb-4">Recipes Sent to Your Inbox</h3>
+<p class="text-lg text-[#161412]/70 dark:text-white/70 max-w-lg mb-8 italic">Join Julian's private circle and receive weekly market finds and exclusive seasonal techniques.</p>
+<div class="flex flex-col sm:flex-row gap-4 w-full max-w-md">
+<input class="flex-1 rounded-lg border-primary/20 bg-white px-4 py-3 focus:ring-primary focus:border-primary" placeholder="Your email address" type="email"/>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:bg-primary/90 transition-colors uppercase tracking-widest text-sm">Subscribe</button>
+</div>
+</section>
+</main>
+<!-- Interactive Shopping List (Sidebar Peek) -->
+<aside class="fixed right-6 bottom-6 flex flex-col items-end gap-4 z-40">
+<div class="bg-white dark:bg-background-dark p-6 rounded-lg shadow-2xl border border-primary/20 w-80 custom-shadow hidden lg:flex flex-col">
+<div class="flex items-center justify-between border-b border-primary/10 pb-4 mb-4">
+<h5 class="font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">format_list_bulleted</span>
+                        Market List (3)
+                    </h5>
+<span class="text-[10px] text-olive font-bold uppercase tracking-widest cursor-pointer">Clear</span>
+</div>
+<div class="space-y-4 max-h-60 overflow-y-auto pr-2">
+<div class="flex items-center gap-3">
+<input checked="" class="rounded text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium line-through opacity-50">Heirloom Carrots</span>
+<span class="text-[9px] uppercase text-primary font-bold">Carrot Tart</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<input class="rounded text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium">Fresh Burrata (2 balls)</span>
+<span class="text-[9px] uppercase text-primary font-bold">Peach Salad</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<input class="rounded text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-sm font-medium">Dried Porcini Mushrooms</span>
+<span class="text-[9px] uppercase text-primary font-bold">Tagliatelle</span>
+</div>
+</div>
+</div>
+<button class="mt-6 w-full py-2 bg-primary/10 text-primary rounded font-bold text-xs uppercase tracking-widest hover:bg-primary hover:text-white transition-colors">
+                    Email My List
+                </button>
+</div>
+<button class="lg:hidden size-14 bg-primary text-white rounded-full shadow-2xl flex items-center justify-center">
+<span class="material-symbols-outlined">shopping_basket</span>
+</button>
+</aside>
+<!-- Footer -->
+<footer class="bg-background-light dark:bg-background-dark border-t border-primary/10 pt-16 pb-8 px-10">
+<div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-4xl">skillet</span>
+<h2 class="text-2xl font-bold text-[#161412] dark:text-white">Rustic Gourmet</h2>
+</div>
+<p class="text-lg italic text-[#161412]/60 dark:text-white/60 mb-8 max-w-md">"Honoring the ingredients, the process, and the people at the table. A digital archive of artisanal culinary discovery."</p>
+<div class="flex gap-4">
+<a class="size-10 rounded-full border border-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" href="#"><span class="material-symbols-outlined">camera</span></a>
+<a class="size-10 rounded-full border border-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" href="#"><span class="material-symbols-outlined">play_circle</span></a>
+<a class="size-10 rounded-full border border-primary/20 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-colors" href="#"><span class="material-symbols-outlined">mail</span></a>
+</div>
+</div>
+<div>
+<h6 class="text-xs uppercase tracking-[0.3em] font-black text-olive mb-6">Library</h6>
+<ul class="space-y-4 text-sm font-medium text-[#161412]/70 dark:text-white/70">
+<li><a class="hover:text-primary" href="#">Appetizers</a></li>
+<li><a class="hover:text-primary" href="#">Main Courses</a></li>
+<li><a class="hover:text-primary" href="#">Confections</a></li>
+<li><a class="hover:text-primary" href="#">Fermentations</a></li>
+</ul>
+</div>
+<div>
+<h6 class="text-xs uppercase tracking-[0.3em] font-black text-olive mb-6">Studio</h6>
+<ul class="space-y-4 text-sm font-medium text-[#161412]/70 dark:text-white/70">
+<li><a class="hover:text-primary" href="#">About Chef Julian</a></li>
+<li><a class="hover:text-primary" href="#">Private Workshops</a></li>
+<li><a class="hover:text-primary" href="#">Ingredient Sourcing</a></li>
+<li><a class="hover:text-primary" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="text-center pt-8 border-t border-primary/10 text-[10px] uppercase tracking-widest font-bold text-[#161412]/30">
+                © 2024 Rustic Gourmet Studio. All Rights Reserved. Culinary Arts for the Soul.
+            </div>
+</footer>
+</div>
+</body></html>

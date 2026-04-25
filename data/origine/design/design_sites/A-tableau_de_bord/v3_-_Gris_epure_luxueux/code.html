@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tableau de Bord - Gris Épuré Luxueux</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ae8d65",
+                        "background-light": "#f4f4f6",
+                        "background-dark": "#292e32",
+                        "surface": "#3e444b",
+                        "coral": "#CD6155",
+                        "teal": "#3C7B73",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-nav-item {
+            background-color: rgba(174, 141, 101, 0.15);
+            border-left: 3px solid #ae8d65;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white font-display antialiased">
+<div class="flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 flex flex-col border-r border-white/5 bg-background-light dark:bg-background-dark py-8 px-6">
+<div class="flex items-center gap-3 mb-12 px-2">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center text-background-dark">
+<span class="material-symbols-outlined font-bold">account_balance</span>
+</div>
+<div>
+<h1 class="text-lg font-extrabold tracking-tight leading-none">LUX BANQUE</h1>
+<p class="text-[10px] uppercase tracking-widest text-primary font-bold">Gestion Privée</p>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg active-nav-item text-primary" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-semibold uppercase tracking-wider">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">wallet</span>
+<span class="text-sm font-semibold uppercase tracking-wider">Comptes</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">query_stats</span>
+<span class="text-sm font-semibold uppercase tracking-wider">Analyses</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-semibold uppercase tracking-wider">Paiements</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-white/60 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined">shield_person</span>
+<span class="text-sm font-semibold uppercase tracking-wider">Conseiller</span>
+</a>
+</nav>
+<div class="mt-auto pt-6">
+<button class="w-full bg-primary text-background-dark font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">sync_alt</span>
+<span class="uppercase tracking-widest text-xs">Virement Express</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col overflow-y-auto bg-background-dark/50 p-12">
+<!-- Top Header Area -->
+<header class="flex items-center justify-between mb-12">
+<div>
+<h2 class="text-4xl font-extrabold tracking-tight mb-2">Aperçu du Patrimoine</h2>
+<p class="text-white/40 text-lg">Bienvenue, Monsieur M. Dupont. Votre portefeuille est en croissance.</p>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40">search</span>
+<input class="bg-surface/50 border-none rounded-full pl-12 pr-6 py-3 w-72 text-sm focus:ring-1 focus:ring-primary placeholder:text-white/20" placeholder="Rechercher une opération..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="size-12 rounded-full bg-surface flex items-center justify-center text-white/60 hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications_unread</span>
+</button>
+<div class="size-12 rounded-full border-2 border-primary p-0.5">
+<img class="w-full h-full rounded-full object-cover" data-alt="Profile portrait of a bank client" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDFsmbc_g4Hp5dIC-44-URUie3xGcX4FdUMLyO60dbmEeossvXAxGNk1PEeYQvpBga8jo7yXs3SoWHb3IYOaFTd4UvrVEq1Qg-OyNzc7DHlLC33rRAt_w3cNU_Teuf6UkYQkrKvIhSeGn8vy_iG1j3D5HSRAhsKYzSqYxfPtFB3CoQgjlNxN9ymJh51-4ZvEF97GAl7-FT4I-kJ_2N_09eIdIYWjnADWCsn51-PHjN_Kwx-3yR-abuJElTukMkIzv_xN3IZiVNWV4"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+<div class="bg-surface p-8 rounded-xl card-shadow border border-white/5 group hover:border-primary/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<p class="text-white/40 font-bold uppercase tracking-widest text-xs">Valeur Nette Totale</p>
+<span class="text-primary material-symbols-outlined">account_balance_wallet</span>
+</div>
+<p class="text-4xl font-bold tracking-tight mb-2">1,240,500.00 €</p>
+<div class="flex items-center gap-2 text-primary font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-sm">+2.4% <span class="text-white/20 font-normal ml-1">vs mois dernier</span></span>
+</div>
+</div>
+<div class="bg-surface p-8 rounded-xl card-shadow border border-white/5 group hover:border-teal/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<p class="text-white/40 font-bold uppercase tracking-widest text-xs">Actifs Liquides</p>
+<span class="text-teal material-symbols-outlined">currency_exchange</span>
+</div>
+<p class="text-4xl font-bold tracking-tight mb-2">425,800.00 €</p>
+<div class="flex items-center gap-2 text-teal font-bold">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span class="text-sm">+0.8% <span class="text-white/20 font-normal ml-1">en réserve</span></span>
+</div>
+</div>
+<div class="bg-surface p-8 rounded-xl card-shadow border border-white/5 group hover:border-coral/30 transition-all duration-300">
+<div class="flex justify-between items-start mb-6">
+<p class="text-white/40 font-bold uppercase tracking-widest text-xs">Utilisation Crédit</p>
+<span class="text-coral material-symbols-outlined">credit_card</span>
+</div>
+<p class="text-4xl font-bold tracking-tight mb-2">12,450.00 €</p>
+<div class="flex items-center gap-2 text-coral font-bold">
+<span class="material-symbols-outlined text-sm">trending_down</span>
+<span class="text-sm">-1.2% <span class="text-white/20 font-normal ml-1">de la limite</span></span>
+</div>
+</div>
+</div>
+<!-- Main Grid: Bento Box -->
+<div class="grid grid-cols-12 gap-8 mb-8">
+<!-- Wealth Evolution Chart -->
+<div class="col-span-12 lg:col-span-8 bg-surface p-10 rounded-xl card-shadow border border-white/5">
+<div class="flex items-center justify-between mb-10">
+<div>
+<h3 class="text-xl font-bold uppercase tracking-widest">Évolution du Patrimoine</h3>
+<p class="text-white/40">Performance consolidée du semestre</p>
+</div>
+<div class="flex bg-background-dark rounded-lg p-1">
+<button class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider bg-surface rounded shadow-sm">6 Mois</button>
+<button class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white/40 hover:text-white">1 An</button>
+<button class="px-4 py-1.5 text-xs font-bold uppercase tracking-wider text-white/40 hover:text-white">Tout</button>
+</div>
+</div>
+<div class="h-80 w-full">
+<svg class="w-full h-full" viewbox="0 0 1000 300">
+<defs>
+<lineargradient id="grad-gold" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#ae8d65;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#ae8d65;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,250 Q125,230 250,210 T500,150 T750,110 T1000,50 L1000,300 L0,300 Z" fill="url(#grad-gold)"></path>
+<path d="M0,250 Q125,230 250,210 T500,150 T750,110 T1000,50" fill="none" stroke="#ae8d65" stroke-linecap="round" stroke-width="4"></path>
+<circle cx="500" cy="150" fill="#ae8d65" r="6"></circle>
+<circle cx="1000" cy="50" fill="#ae8d65" r="6"></circle>
+</svg>
+<div class="flex justify-between mt-6 px-2 text-white/40 font-bold uppercase tracking-widest text-[10px]">
+<span>Janvier</span>
+<span>Février</span>
+<span>Mars</span>
+<span>Avril</span>
+<span>Mai</span>
+<span>Juin</span>
+</div>
+</div>
+</div>
+<!-- Asset Allocation Donut -->
+<div class="col-span-12 lg:col-span-4 bg-surface p-10 rounded-xl card-shadow border border-white/5 flex flex-col items-center justify-center text-center">
+<h3 class="text-xl font-bold uppercase tracking-widest mb-8">Allocation d'actifs</h3>
+<div class="relative size-48 mb-8">
+<svg class="size-full -rotate-90" viewbox="0 0 36 36">
+<circle class="stroke-teal" cx="18" cy="18" fill="none" r="16" stroke-dasharray="60 100" stroke-width="3"></circle>
+<circle class="stroke-primary" cx="18" cy="18" fill="none" r="16" stroke-dasharray="25 100" stroke-dashoffset="-60" stroke-width="3"></circle>
+<circle class="stroke-coral" cx="18" cy="18" fill="none" r="16" stroke-dasharray="15 100" stroke-dashoffset="-85" stroke-width="3"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-3xl font-extrabold">12</span>
+<span class="text-[10px] uppercase text-white/40 font-bold">Produits</span>
+</div>
+</div>
+<div class="w-full space-y-3">
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-teal"></div>
+<span class="text-white/60">Actions (ETF)</span>
+</div>
+<span class="font-bold">60%</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-primary"></div>
+<span class="text-white/60">Immobilier</span>
+</div>
+<span class="font-bold">25%</span>
+</div>
+<div class="flex items-center justify-between text-sm">
+<div class="flex items-center gap-2">
+<div class="size-2 rounded-full bg-coral"></div>
+<span class="text-white/60">Obligations</span>
+</div>
+<span class="font-bold">15%</span>
+</div>
+</div>
+</div>
+<!-- Recent Transactions -->
+<div class="col-span-12 bg-surface p-10 rounded-xl card-shadow border border-white/5">
+<div class="flex items-center justify-between mb-10">
+<h3 class="text-xl font-bold uppercase tracking-widest">Transactions Récentes</h3>
+<button class="text-primary text-xs font-bold uppercase tracking-widest hover:underline">Voir l'historique complet</button>
+</div>
+<div class="space-y-6">
+<div class="flex items-center justify-between py-4 border-b border-white/5">
+<div class="flex items-center gap-6">
+<div class="size-14 bg-background-dark rounded-xl flex items-center justify-center text-primary border border-white/5">
+<span class="material-symbols-outlined">shopping_bag</span>
+</div>
+<div>
+<p class="font-bold text-lg">Hermès Paris Faubourg</p>
+<p class="text-white/40 text-sm">14 Octobre 2023 • Luxe &amp; Mode</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold">- 4,250.00 €</p>
+<p class="text-[10px] uppercase font-bold text-teal">Confirmé</p>
+</div>
+</div>
+<div class="flex items-center justify-between py-4 border-b border-white/5">
+<div class="flex items-center gap-6">
+<div class="size-14 bg-background-dark rounded-xl flex items-center justify-center text-primary border border-white/5">
+<span class="material-symbols-outlined">apartment</span>
+</div>
+<div>
+<p class="font-bold text-lg">Loyer Résidence Monaco</p>
+<p class="text-white/40 text-sm">01 Octobre 2023 • Logement</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold">- 8,500.00 €</p>
+<p class="text-[10px] uppercase font-bold text-teal">Automatique</p>
+</div>
+</div>
+<div class="flex items-center justify-between py-4">
+<div class="flex items-center gap-6">
+<div class="size-14 bg-background-dark rounded-xl flex items-center justify-center text-teal border border-white/5">
+<span class="material-symbols-outlined">call_received</span>
+</div>
+<div>
+<p class="font-bold text-lg">Dividendes Vanguard World</p>
+<p class="text-white/40 text-sm">28 Septembre 2023 • Investissement</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xl font-bold text-teal">+ 12,420.00 €</p>
+<p class="text-[10px] uppercase font-bold text-teal">Réceptionné</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+<!-- Market Insights Card -->
+<div class="bg-primary/10 border border-primary/20 p-8 rounded-xl flex items-center gap-8">
+<div class="size-20 bg-primary rounded-full flex items-center justify-center text-background-dark shrink-0">
+<span class="material-symbols-outlined text-4xl font-bold">insights</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-primary uppercase tracking-tight mb-2">Conseil du Jour</h4>
+<p class="text-white/70 italic text-lg leading-relaxed">"Le marché des obligations vertes en Europe présente une opportunité de diversification rare ce trimestre. Contactez votre conseiller."</p>
+</div>
+</div>
+<!-- Relationship Manager -->
+<div class="bg-surface p-8 rounded-xl border border-white/5 flex items-center justify-between">
+<div class="flex items-center gap-6">
+<div class="size-16 rounded-xl overflow-hidden grayscale hover:grayscale-0 transition-all">
+<img class="w-full h-full object-cover" data-alt="Portrait of a banking relationship manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuABzkj-O8hAnWjCwu9OV9bKt4BRH0aZ-ywbSIjTmsO1oqBLZ-Ts34cQJl7pig9-MSovMezJJxQ32xmIfYwu1u9vNGg15KydkPPDJ-arYSP6tPy_NAXYwGuRC9aiLYUC8Z1Uz41RsWrKrq753g-vrhQ3U6vuAw9SY5FiHH--B4sf1YEwK6JFL9-yTxLITAJX_qlx7zUwYSGsEeLeaw_l8U4NF4jjF6XRXfUg3WqtchiOyCxx8XcK9rZnVwiAoYtDwRPTWL17jaaAHeM"/>
+</div>
+<div>
+<p class="text-xs uppercase font-bold text-white/40 tracking-widest mb-1">Votre Conseiller Privé</p>
+<p class="text-xl font-bold">Jean-Loup de la Salle</p>
+<p class="text-sm text-primary font-bold">Ligne Directe • Disponible</p>
+</div>
+</div>
+<button class="size-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-background-dark transition-all">
+<span class="material-symbols-outlined">call</span>
+</button>
+</div>
+</div>
+</main>
+</div>
+</body></html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Modular Intelligence | Modern SaaS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00b29b",
+                        "accent": "#FBC02D",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#16181d",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Epilogue', sans-serif;
+        }
+        .modular-grid-bg {
+            background-image: radial-gradient(#e5e5e5 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#101817] dark:text-white transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header / Navigation -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-[#e5e5e5] dark:border-zinc-800 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-6 md:px-20 py-4">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-white text-xl">grid_view</span>
+</div>
+<h2 class="text-[#101817] dark:text-white text-lg font-extrabold leading-tight tracking-tight uppercase">Modular</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-center gap-10">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Features</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Ecosystem</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">About</a>
+</div>
+<div class="flex items-center gap-3">
+<button class="hidden sm:flex min-w-[100px] cursor-pointer items-center justify-center rounded h-10 px-4 bg-transparent border border-[#e5e5e5] dark:border-zinc-700 text-[#101817] dark:text-white text-sm font-bold tracking-tight">
+                    Login
+                </button>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded h-10 px-4 bg-primary text-white text-sm font-bold tracking-tight shadow-sm hover:brightness-110 transition-all">
+                    Get Started
+                </button>
+</div>
+</header>
+<main class="flex flex-col flex-1">
+<!-- Hero Section -->
+<section class="relative px-6 md:px-20 py-16 md:py-32 modular-grid-bg">
+<div class="max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="flex flex-col gap-8">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-accent/20 text-[#856404] dark:text-accent rounded-full text-xs font-bold w-fit uppercase tracking-widest">
+<span class="relative flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
+</span>
+                            v2.0 Now Live
+                        </div>
+<h1 class="text-[#101817] dark:text-white text-5xl md:text-7xl font-black leading-[1.1] tracking-[-0.04em]">
+                            Revolutionize your <span class="text-primary italic">workflow</span> with modularity.
+                        </h1>
+<p class="text-[#5e5e5e] dark:text-zinc-400 text-lg md:text-xl font-medium leading-relaxed max-w-[500px]">
+                            A high-end platform that blends geometric rigor with contemporary digital art to empower your team's creative output.
+                        </p>
+<div class="flex flex-wrap gap-4 mt-4">
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded h-14 px-8 bg-primary text-white text-base font-bold tracking-tight hover:scale-[1.02] transition-transform">
+                                Start Building
+                            </button>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded h-14 px-8 bg-white dark:bg-zinc-800 border border-[#e5e5e5] dark:border-zinc-700 text-[#101817] dark:text-white text-base font-bold tracking-tight hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors">
+                                Watch Demo
+                            </button>
+</div>
+</div>
+<div class="relative group">
+<div class="absolute -inset-4 bg-primary/10 rounded-full blur-3xl group-hover:bg-primary/20 transition-all duration-700"></div>
+<div class="relative aspect-square w-full max-w-[500px] mx-auto bg-cover bg-center rounded-xl shadow-2xl overflow-hidden border-8 border-white dark:border-zinc-800" data-alt="3D abstract illustration featuring floating teal spheres and white cubes" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCnpAvtyd7WCNh218YDHs0at2uFiET_sr9Ntf1CfYGShStYFjihi8zGYmnQxeHRL5AOxSjvaGTXZ-N83IZh5Ln1LCVlAlu12pHp29-Bo70TMOMULPBK2HoAo_YFE55XBQnXHmbZyP-kIDAPQJrWilGkIQiTxqpLTCEpha0HQxqQZMHcbASWmGzJvlarJaCzHLfO1sRfiDjXXjn0PEzedcl6AeobOPcv9UgLffyyxWVeW1_Uf4eT1NAVjhfDRi6GYIRbx4HqCFZAQvU');">
+</div>
+<!-- Floating Bauhaus Elements -->
+<div class="absolute -top-10 -right-10 size-24 bg-accent/90 rounded-full hidden md:block"></div>
+<div class="absolute -bottom-6 -left-6 size-32 border-4 border-primary rounded-lg hidden md:block"></div>
+</div>
+</div>
+</section>
+<!-- Social Proof -->
+<section class="border-y border-[#e5e5e5] dark:border-zinc-800 py-12 px-6 bg-white dark:bg-zinc-900">
+<div class="max-w-[1200px] mx-auto">
+<p class="text-center text-xs font-bold uppercase tracking-[0.3em] text-zinc-400 mb-10">Trusted by Global Design Teams</p>
+<div class="flex flex-wrap justify-center gap-12 md:gap-24 opacity-40 grayscale">
+<div class="h-8 w-24 bg-zinc-400 rounded-sm" data-alt="Client company logo placeholder"></div>
+<div class="h-8 w-24 bg-zinc-400 rounded-sm" data-alt="Client company logo placeholder"></div>
+<div class="h-8 w-24 bg-zinc-400 rounded-sm" data-alt="Client company logo placeholder"></div>
+<div class="h-8 w-24 bg-zinc-400 rounded-sm" data-alt="Client company logo placeholder"></div>
+<div class="h-8 w-24 bg-zinc-400 rounded-sm" data-alt="Client company logo placeholder"></div>
+</div>
+</div>
+</section>
+<!-- Text Grid Highlights -->
+<section class="py-20 px-6 md:px-20">
+<div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div class="flex flex-col gap-4 p-8 rounded border border-[#e5e5e5] dark:border-zinc-800 bg-white dark:bg-zinc-900 group hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">verified_user</span>
+<h3 class="text-lg font-bold">Secure Infrastructure</h3>
+<p class="text-sm text-zinc-500 leading-relaxed">Enterprise-grade security protocols baked into every module.</p>
+</div>
+<div class="flex flex-col gap-4 p-8 rounded border border-[#e5e5e5] dark:border-zinc-800 bg-white dark:bg-zinc-900 group hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">bolt</span>
+<h3 class="text-lg font-bold">Instant Sync</h3>
+<p class="text-sm text-zinc-500 leading-relaxed">Proprietary delta-sync technology for zero-latency collaboration.</p>
+</div>
+<div class="flex flex-col gap-4 p-8 rounded border border-[#e5e5e5] dark:border-zinc-800 bg-white dark:bg-zinc-900 group hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">hub</span>
+<h3 class="text-lg font-bold">Open Ecosystem</h3>
+<p class="text-sm text-zinc-500 leading-relaxed">Connect to over 200+ third-party applications seamlessly.</p>
+</div>
+<div class="flex flex-col gap-4 p-8 rounded border border-[#e5e5e5] dark:border-zinc-800 bg-white dark:bg-zinc-900 group hover:border-primary transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">architecture</span>
+<h3 class="text-lg font-bold">Custom Frameworks</h3>
+<p class="text-sm text-zinc-500 leading-relaxed">Build your own tools using our extensive design system.</p>
+</div>
+</div>
+</section>
+<!-- Value Proposition Section -->
+<section class="py-20 px-6 md:px-20 bg-background-light dark:bg-zinc-950 overflow-hidden">
+<div class="max-w-[1200px] mx-auto">
+<div class="flex flex-col lg:flex-row items-center gap-16">
+<div class="w-full lg:w-1/2 relative">
+<div class="aspect-square bg-zinc-200 dark:bg-zinc-800 rounded-xl overflow-hidden shadow-xl" data-alt="User interface screenshot of the modular dashboard" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAseq2E2k7qCbeeCaRX9Zqt0kGH93tJM1Ckb-thlIg67RGyC6GcG1CiUYpHCzTWWILgQ9OoZ34O1ScZZTNxnegBhRvouDbtoWW2dAnTEfiRvnYUiS2vv1Tf_SwKh3ybi5XmY6-tArhFfWXsnA_5q4nHFMk-m1xao4gQw67z9iUGAziOlMd4lQqA2Wx89eB2xXwgPxfHSo0to5zX5ajwf6DpqPuHjKtcJcMGue1TVoWH8W-O0L3OEZL-RqGjLs2EUjpHvxXzhRvR3Q8');"></div>
+<div class="absolute -bottom-8 -right-8 p-6 bg-white dark:bg-zinc-900 border border-[#e5e5e5] dark:border-zinc-800 shadow-2xl rounded max-w-[240px]">
+<p class="text-3xl font-black text-primary mb-1">99.9%</p>
+<p class="text-xs font-bold text-zinc-400 uppercase tracking-tighter">Uptime Guarantee</p>
+</div>
+</div>
+<div class="w-full lg:w-1/2 flex flex-col gap-6">
+<h2 class="text-4xl md:text-5xl font-black text-[#101817] dark:text-white leading-tight">Modular thinking for the modern enterprise.</h2>
+<p class="text-lg text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                                We've rebuilt the workflow engine from the ground up. Instead of rigid structures, we provide the primitives you need to build exactly what your team requires.
+                            </p>
+<ul class="flex flex-col gap-4 mt-4">
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary font-bold">check</span>
+<span class="font-bold">Automated Asset Management</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary font-bold">check</span>
+<span class="font-bold">AI-Powered Suggestion Engine</span>
+</li>
+<li class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary font-bold">check</span>
+<span class="font-bold">Infinite Undo/Redo Versioning</span>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<!-- Dark CTA Section -->
+<section class="px-6 md:px-20 py-20">
+<div class="max-w-[1200px] mx-auto bg-[#101817] rounded-xl p-8 md:p-20 relative overflow-hidden flex flex-col items-center text-center gap-8">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 blur-[100px]"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-accent/10 blur-[100px]"></div>
+<h2 class="text-white text-3xl md:text-5xl font-black leading-tight max-w-[700px] relative z-10">
+                        Ready to transform how your team builds digital products?
+                    </h2>
+<p class="text-zinc-400 text-lg max-w-[500px] relative z-10">
+                        Join 2,500+ forward-thinking teams already using Modular Intelligence.
+                    </p>
+<div class="flex flex-wrap justify-center gap-4 relative z-10">
+<button class="px-10 h-14 bg-primary text-white font-bold rounded hover:brightness-110 transition-all">Get Started Free</button>
+<button class="px-10 h-14 bg-white/10 text-white font-bold rounded border border-white/20 hover:bg-white/20 transition-all">Contact Sales</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-background-dark border-t border-[#e5e5e5] dark:border-zinc-800 pt-16 pb-8 px-6 md:px-20">
+<div class="max-w-[1200px] mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-16">
+<div class="col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<div class="size-6 bg-primary rounded-sm"></div>
+<h2 class="text-[#101817] dark:text-white text-base font-extrabold uppercase tracking-tight">Modular</h2>
+</div>
+<p class="text-zinc-500 text-sm leading-relaxed max-w-[300px]">
+                        The future of workflow intelligence. Built for teams that value speed, precision, and modular design.
+                    </p>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-sm uppercase tracking-widest text-zinc-400">Product</h4>
+<a class="text-sm font-medium hover:text-primary" href="#">Features</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Integrations</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Enterprise</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Pricing</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-sm uppercase tracking-widest text-zinc-400">Company</h4>
+<a class="text-sm font-medium hover:text-primary" href="#">About Us</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Careers</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Blog</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Press</a>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="font-bold text-sm uppercase tracking-widest text-zinc-400">Legal</h4>
+<a class="text-sm font-medium hover:text-primary" href="#">Privacy</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Terms</a>
+<a class="text-sm font-medium hover:text-primary" href="#">Cookie Policy</a>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto pt-8 border-t border-[#e5e5e5] dark:border-zinc-800 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-zinc-400">© 2024 Modular Intelligence Inc. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="text-zinc-400 hover:text-primary transition-colors" href="#">
+<svg class="size-5" fill="currentColor" viewbox="0 0 24 24"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path></svg>
+</a>
+<a class="text-zinc-400 hover:text-primary transition-colors" href="#">
+<svg class="size-5" fill="currentColor" viewbox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 16h-2v-6h2v6zm-1-6.891c-.607 0-1.1-.493-1.1-1.1s.493-1.1 1.1-1.1 1.1.493 1.1 1.1-.493 1.1-1.1 1.1zm8 6.891h-2v-3.4c0-.4-.3-.6-.6-.6s-.6.2-.6.6v3.4h-2v-6h2v.8c.3-.5.9-.8 1.5-.8 1.1 0 1.7.7 1.7 1.8v4.2z"></path></svg>
+</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

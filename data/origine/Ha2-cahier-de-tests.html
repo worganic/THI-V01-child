@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cahier de Tests - ProjectForge Platform</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="../assets/css/styles.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e0aaff",
+                        "secondary": "#c77dff",
+                        "accent": "#9d4edd",
+                        "accent-dark": "#7b2cbf",
+                        "accent-darker": "#5a189a",
+                        "background": "#0a0a0f",
+                        "surface": "#12121a",
+                        "surface-light": "#1a1a25",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0a0f;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .neon-border {
+            border: 1px solid #9d4edd;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+        }
+
+        .neon-text {
+            color: #c77dff;
+            text-shadow: 0 0 8px rgba(199, 125, 255, 0.6);
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-pending { background: #6b7280; }
+        .status-passed { background: #10b981; box-shadow: 0 0 8px #10b981; }
+        .status-failed { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+        .status-blocked { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+
+        .test-card {
+            transition: all 0.3s ease;
+        }
+
+        .test-card:hover {
+            border-color: #9d4edd;
+            box-shadow: 0 0 15px rgba(157, 78, 221, 0.2);
+        }
+
+        .test-card.expanded .test-details {
+            max-height: 2000px;
+            opacity: 1;
+        }
+
+        /* Card status styles */
+        .test-card.card-passed {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.15);
+        }
+        .test-card.card-passed:hover {
+            border-color: #10b981;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .test-card.card-failed {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.15);
+        }
+        .test-card.card-failed:hover {
+            border-color: #ef4444;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+        }
+
+        .test-card.card-blocked {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+        }
+        .test-card.card-blocked:hover {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+
+        .test-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .category-badge {
+            font-size: 10px;
+            padding: 4px 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .priority-must { background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .priority-should { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.3); }
+        .priority-could { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.3); }
+
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background: rgba(157, 78, 221, 0.2);
+            border-color: #9d4edd;
+            color: #c77dff;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0a0f; }
+        ::-webkit-scrollbar-thumb { background: #5a189a; }
+        ::-webkit-scrollbar-thumb:hover { background: #7b2cbf; }
+
+        @media print {
+            body { background: white; color: black; }
+            .no-print { display: none; }
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(157, 78, 221, 0.3);
+            border-top-color: #9d4edd;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="bg-background text-white font-display min-h-screen">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10 no-print">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <a href="../index.html" class="back-button">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Retour
+                    </a>
+                    <div class="w-10 h-10 neon-border flex items-center justify-center">
+                        <span class="material-symbols-outlined neon-text">fact_check</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold" id="headerTitle">Cahier de Tests</h1>
+                        <p class="text-xs text-white/50" id="headerSubtitle"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-xs text-white/50">Serveur actif</p>
+                        <p class="text-sm font-mono text-green-400" id="headerServerUrl"></p>
+                    </div>
+                    <button onclick="window.print()" class="px-4 py-2 border border-white/20 text-sm hover:border-accent transition-colors">
+                        <span class="material-symbols-outlined text-sm align-middle mr-1">print</span>
+                        Imprimer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-7xl mx-auto">
+
+            <!-- Stats Dashboard -->
+            <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-surface p-6 border border-white/10">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs uppercase tracking-widest text-white/50">Total Tests</span>
+                        <span class="material-symbols-outlined text-white/30">assignment</span>
+                    </div>
+                    <div class="text-4xl font-bold neon-text" id="totalTests">0</div>
+                </div>
+                <div class="bg-surface p-6 border border-white/10">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs uppercase tracking-widest text-white/50">Reussis</span>
+                        <span class="material-symbols-outlined text-green-400">check_circle</span>
+                    </div>
+                    <div class="text-4xl font-bold text-green-400" id="passedTests">0</div>
+                </div>
+                <div class="bg-surface p-6 border border-white/10">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs uppercase tracking-widest text-white/50">Echoues</span>
+                        <span class="material-symbols-outlined text-red-400">cancel</span>
+                    </div>
+                    <div class="text-4xl font-bold text-red-400" id="failedTests">0</div>
+                </div>
+                <div class="bg-surface p-6 border border-white/10">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-xs uppercase tracking-widest text-white/50">En attente</span>
+                        <span class="material-symbols-outlined text-white/30">pending</span>
+                    </div>
+                    <div class="text-4xl font-bold text-white/50" id="pendingTests">0</div>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="mb-8 no-print" id="filtersSection">
+                <div class="flex flex-wrap gap-3" id="filterButtons">
+                    <button class="filter-btn border border-white/20 active" data-filter="all">Tous</button>
+                    <!-- Filter buttons will be dynamically generated -->
+                </div>
+            </section>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="flex flex-col items-center justify-center py-16">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-white/50">Chargement des tests...</p>
+            </div>
+
+            <!-- Error State -->
+            <div id="errorState" class="hidden text-center py-16">
+                <span class="material-symbols-outlined text-6xl text-red-400 mb-4">error</span>
+                <p class="text-white/50">Erreur lors du chargement des donnees</p>
+                <p class="text-sm text-red-400 mt-2" id="errorMessage"></p>
+                <button onclick="loadTestData()" class="mt-4 px-4 py-2 border border-accent text-accent hover:bg-accent/20 transition-colors">
+                    Reessayer
+                </button>
+            </div>
+
+            <!-- Test Cases Container -->
+            <section id="testCases" class="hidden">
+                <!-- Tests will be dynamically rendered here -->
+            </section>
+
+            <!-- Footer -->
+            <footer class="border-t border-white/10 pt-8 mt-12">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-white/40" id="footerTitle"></p>
+                        <p class="text-xs text-white/30" id="footerExigences">- exigences totales</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-white/40" id="footerPort"></p>
+                        <p class="text-xs text-white/30" id="footerDesign"></p>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <!-- Embedded test data for file:// protocol support -->
+    <script id="embeddedTestData" type="application/json">
+{"metadata":{"title":"Cahier de Tests - ProjectForge Platform11","version":"1.0","createdAt":"2026-01-23","totalTests":108,"exigences":{"must":52,"should":32,"could":24},"reference":"docs/Bg0-Exigences_Fonctionnelles_Structurees.md"},"categories":[{"id":"templates","name":"Gestion des Templates","section":1,"tests":[{"id":"EF-SYS-001","title":"Afficher la liste des templates","description":"Le systeme doit afficher une grille de toutes les templates disponibles avec leur icone, nom, description courte, nombre de phases et tags.","priority":"must","objective":"Valider que toutes les templates du dossier structure/ sont correctement chargees et affichees dans une grille responsive.","references":["EU-01 : Decouvrir les templates disponibles","BM-01 : Simplifier la creation de projets","docs/Bg0-Exigences_Fonctionnelles_Structurees.md"],"preconditions":["Serveur backend demarre","Au moins 1 template presente dans structure/","Navigateur moderne (Chrome, Firefox, Edge)"],"steps":["Ouvrir la page d'accueil de l'application","Verifier que la section \"Templates disponibles\" s'affiche","Compter le nombre de templates affichees","Pour chaque template, verifier la presence de: icone, nom, description, nombre de phases, tags","Redimensionner la fenetre pour tester le responsive"],"expectedResults":["Toutes les templates sont listees","Chaque carte affiche: icone, nom, description, phases_count, tags","Grille responsive (1-4 colonnes selon largeur)","Clic sur template affiche les details"]},{"id":"EF-SYS-002","title":"Afficher les details d'une template","description":"Le systeme doit afficher une modale avec tous les details de la template selectionnee.","priority":"must","steps":["Cliquer sur une carte template","Verifier l'ouverture de la modale","Verifier la presence de: nom complet, description, liste des phases, duree estimee","Verifier le bouton \"Utiliser cette template\"","Fermer la modale avec X ou clic exterieur"],"expectedResults":["Modale s'ouvre avec animation fluide","Tous les details sont affiches","Bouton \"Utiliser\" lance la creation","Modale se ferme correctement"]},{"id":"EF-SYS-003","title":"Charger les phases d'une template","description":"Le systeme doit charger et indexer toutes les phases d'une template depuis le dossier _phases/.","priority":"must","steps":["Creer un projet depuis une template","Verifier que les phases sont chargees dans le bon ordre","Verifier les attributs de chaque phase (id, name, description, type, order, icon)","Verifier qu'aucune phase n'est dupliquee"],"expectedResults":["Phases chargees dans l'ordre numerique","Tous les attributs presents","Pas de duplication","Phases required identifiees"]}]},{"id":"projets","name":"Gestion des Projets","section":2,"tests":[{"id":"EF-SYS-010","title":"Creer un nouveau projet","description":"Le systeme doit creer un nouveau projet avec un ID unique, enregistrer ses metadonnees et initialiser la structure de dossiers.","priority":"must","steps":["Cliquer sur \"Nouveau projet\"","Remplir le nom du projet","Selectionner une template","Valider la creation","Verifier la redirection vers le projet","Verifier les fichiers crees (project.json, history.json)"],"expectedResults":["ID unique genere","project.json et history.json crees","Statut \"in_progress\", completion 0%","Timestamps created_at et updated_at corrects","Redirection vers questionnaire phase 1"]},{"id":"EF-SYS-011","title":"Afficher la liste des projets","description":"Le systeme doit afficher la liste de tous les projets avec leur progression, statut et derniere modification.","priority":"must","steps":["Acceder a la page d'accueil","Verifier la section \"Mes projets\"","Verifier les informations de chaque projet","Tester le tri par date et progression"],"expectedResults":["Tous les projets listes","Nom, template, %, phase actuelle affiches","Tri fonctionnel","Projets termines identifies visuellement"]},{"id":"EF-SYS-015","title":"Calculer la progression globale","description":"Le systeme doit calculer automatiquement le pourcentage de progression du projet.","priority":"must","steps":["Creer un nouveau projet (0%)","Repondre a quelques questions","Verifier la mise a jour de la progression","Completer une phase entiere","Verifier la progression finale (100%)"],"expectedResults":["Projet vide = 0%","Progression mise a jour en temps reel","Projet termine = 100%","Affichage sur carte et page projet"]}]},{"id":"phases","name":"Gestion des Phases","section":3,"tests":[{"id":"EF-SYS-020","title":"Afficher les phases du projet","description":"Le systeme doit afficher une sidebar avec toutes les phases du projet avec icones visuelles indiquant leur statut.","priority":"must","steps":["Ouvrir un projet existant","Verifier la sidebar des phases","Verifier les icones de statut (completed, in_progress, pending)","Cliquer sur une phase pour naviguer"],"expectedResults":["Phases listees dans le bon ordre","Statut affiche avec icone/couleur","Phase actuelle mise en evidence","Navigation fonctionnelle"]},{"id":"EF-SYS-023","title":"Naviguer entre les phases","description":"Le systeme doit permettre la navigation entre les phases via la sidebar et les boutons Precedent/Suivant.","priority":"must","steps":["Cliquer sur une phase dans la sidebar","Utiliser le bouton \"Suivant\"","Utiliser le bouton \"Precedent\"","Verifier l'URL de la page","Verifier que les reponses sont conservees"],"expectedResults":["Navigation instantanee","Boutons desactives aux limites","URL mise a jour","Reponses conservees"]}]},{"id":"questionnaires","name":"Gestion des Questionnaires","section":4,"tests":[{"id":"EF-SYS-031","title":"Afficher une question a la fois","description":"Le systeme doit afficher une seule question a la fois avec son label, description d'aide et barre de progression.","priority":"must","steps":["Ouvrir un questionnaire","Verifier qu'une seule question est affichee","Verifier le label et la description d'aide","Verifier la progression \"Question X/Y\"","Naviguer a la question suivante"],"expectedResults":["Une seule question visible","Label et aide lisibles","Progression correcte","Animations fluides"]},{"id":"EF-SYS-032","title":"Supporter les differents types de questions","description":"Le systeme doit supporter 10 types de questions: text, textarea, number, date, select, checkbox, radio, boolean, range, file.","priority":"must","steps":["Tester un champ text (saisie libre)","Tester un champ textarea (texte long)","Tester un champ number (validation numerique)","Tester un champ date (datepicker)","Tester un champ select (liste deroulante)","Tester checkbox et radio","Tester range (slider)","Tester file (upload)"],"expectedResults":["Chaque type affiche le bon composant","Validations appropriees","Options select/checkbox/radio correctes","Upload fichiers fonctionnel"]},{"id":"EF-SYS-033","title":"Sauvegarder la reponse a une question","description":"Le systeme doit sauvegarder automatiquement chaque reponse dans le fichier JSON du projet.","priority":"must","steps":["Saisir une reponse a une question","Verifier la notification de sauvegarde","Quitter et revenir au projet","Verifier que la reponse est restauree","Verifier le timestamp answered_at"],"expectedResults":["Sauvegarde en moins de 1 seconde","Timestamp enregistre","Reponse persistante","Aucune reponse perdue"]}]},{"id":"claude","name":"Integration Claude Code","section":5,"tests":[{"id":"EF-SYS-041","title":"Appeler Claude Code CLI","description":"Le systeme doit executer la commande Claude Code CLI avec le prompt genere et capturer la sortie.","priority":"must","steps":["Completer un questionnaire","Cliquer sur \"Generer\"","Verifier que la generation demarre","Verifier les fichiers crees dans _outputs/","Tester avec une erreur Claude"],"expectedResults":["Commande claude executee","Generation demarre en moins de 2s","Fichiers crees dans _outputs/","Erreurs capturees et affichees"]},{"id":"EF-SYS-042","title":"Afficher la reponse en streaming","description":"Le systeme doit afficher la reponse de Claude en temps reel avec mise a jour progressive du texte.","priority":"must","steps":["Lancer une generation","Observer l'affichage en temps reel","Verifier le curseur/spinner de generation","Verifier l'auto-scroll","Copier la reponse finale"],"expectedResults":["Texte apparait progressivement","Latence moins de 100ms","Scroll automatique","Reponse copiable"]},{"id":"EF-SYS-045","title":"Telecharger les fichiers generes","description":"Le systeme doit permettre le telechargement de fichiers individuels ou tous les fichiers en archive ZIP.","priority":"must","steps":["Generer des fichiers","Cliquer sur \"Telecharger\" pour un fichier","Verifier le contenu du fichier","Cliquer sur \"Telecharger tout\"","Verifier l'archive ZIP"],"expectedResults":["Bouton \"Telecharger\" fonctionnel","Fichiers avec bons noms et contenus","Archive ZIP valide","Telechargement en moins de 5s"]}]},{"id":"historique","name":"Historique et Versioning","section":6,"tests":[{"id":"EF-SYS-050","title":"Enregistrer l'historique des modifications","description":"Le systeme doit enregistrer chaque modification dans history.json avec timestamp, action et details.","priority":"must","steps":["Effectuer plusieurs actions sur un projet","Verifier le fichier history.json","Verifier les timestamps","Verifier les types d'actions"],"expectedResults":["Historique enregistre","Timestamps corrects","Actions detaillees","Ordre chronologique"]},{"id":"EF-SYS-051","title":"Afficher l'historique du projet","description":"Le systeme doit afficher une timeline de l'historique des modifications du projet.","priority":"should","steps":["Ouvrir un projet","Acceder a la section historique","Verifier l'affichage de la timeline","Verifier les details de chaque entree"],"expectedResults":["Timeline lisible","Actions identifiables","Dates formatees","Navigation possible"]}]},{"id":"ui","name":"Interface Utilisateur","section":7,"tests":[{"id":"UI-001","title":"Navigation globale","description":"Verifier que la navigation entre les pages est fluide et coherente.","priority":"must","steps":["Verifier le header sur toutes les pages","Tester les liens de navigation","Verifier le breadcrumb","Tester le retour arriere"],"expectedResults":["Header coherent","Liens fonctionnels","Breadcrumb correct","Navigation fluide"]},{"id":"UI-002","title":"Messages de feedback","description":"Verifier que les messages de succes, erreur et loading sont affiches correctement.","priority":"must","steps":["Effectuer une action reussie","Effectuer une action echouee","Observer le loading pendant une operation","Verifier les styles des messages"],"expectedResults":["Toast de succes visible","Toast d'erreur visible","Spinner de chargement","Styles coherents"]},{"id":"UI-003","title":"Accessibilite clavier","description":"Verifier que l'interface est navigable au clavier.","priority":"should","steps":["Naviguer avec Tab","Activer les boutons avec Enter/Space","Verifier le focus visible","Tester les raccourcis clavier"],"expectedResults":["Ordre de tabulation logique","Boutons activables au clavier","Focus visible","Raccourcis fonctionnels"]}]},{"id":"design","name":"Design System","section":8,"tests":[{"id":"DS-001","title":"Palette de couleurs Lavande Dreams","description":"Verifier que toutes les couleurs de la palette sont correctement appliquees sur l'ensemble de l'interface.","priority":"must","references":["docs/Gg0-design.md","docs/Gg1-design_exemple.html"],"colors":{"primary":"#e0aaff","secondary":"#c77dff","accent":"#9d4edd","accentDark":"#7b2cbf","accentDarker":"#5a189a"},"steps":["Ouvrir la page exemple (Gg1-design_exemple.html)","Verifier les boutons primaires (#9d4edd)","Verifier les textes neon (#c77dff)","Verifier les bordures neon","Verifier le fond (#0a0a0f)"],"expectedResults":["Toutes les couleurs conformes au guide","Effets neon visibles","Contraste suffisant (WCAG AA)"]},{"id":"DS-002","title":"Typographie Space Grotesk","description":"Verifier que la police Space Grotesk est correctement chargee et appliquee avec la hierarchie definie.","priority":"must","steps":["Verifier le chargement de la police (Network tab)","Verifier H1 (4rem, bold, italic)","Verifier H2 (2.5rem, bold)","Verifier H3, H4, body, small, caption","Verifier le fallback (sans-serif)"],"expectedResults":["Police Space Grotesk chargee","Hierarchie respectee","Poids 300-700 disponibles","Fallback fonctionnel"]},{"id":"DS-003","title":"Composants UI interactifs","description":"Verifier que tous les composants UI (boutons, cartes, formulaires, modales) fonctionnent correctement.","priority":"must","steps":["Tester les boutons (hover, click, disabled)","Tester les cartes (hover effect)","Tester les formulaires (focus, validation)","Tester les onglets (navigation)","Tester les modales (open/close)","Tester les accordions","Tester les tooltips"],"expectedResults":["Tous les etats visuels presents","Transitions fluides (300ms)","Effets neon sur focus/hover","Accessibilite clavier"]}]},{"id":"performance","name":"Performance (ENF)","section":9,"tests":[{"id":"ENF-SYS-001","title":"Temps de chargement des pages","description":"Les pages doivent etre entierement chargees et interactives en moins de 3 secondes sur une connexion 4G.","priority":"should","steps":["Ouvrir DevTools Performance","Simuler connexion 4G (Network throttling)","Charger la page d'accueil","Mesurer FCP et TTI","Charger une page projet"],"expectedResults":["FCP moins de 1.5s","TTI moins de 3s","Page projet moins de 2s","Transitions fluides"]},{"id":"ENF-SYS-032","title":"Responsive design multi-appareils","description":"L'application doit etre responsive et fonctionnelle sur mobile (320px), tablet (768px) et desktop (1920px).","priority":"must","steps":["Tester sur mobile (320px)","Tester sur tablet (768px)","Tester sur desktop (1920px)","Verifier la reorganisation des 3 colonnes","Verifier les gestes tactiles"],"expectedResults":["Pas de scroll horizontal","Colonnes empilees sur mobile","Gestes tactiles fonctionnels","Inputs plus de 44px"]}]}]}
+    </script>
+
+    <script>
+        // Global data store
+        let testData = null;
+
+        // Load test data - tries fetch first, falls back to embedded data
+        async function loadTestData() {
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const testCases = document.getElementById('testCases');
+
+            loadingState.classList.remove('hidden');
+            errorState.classList.add('hidden');
+            testCases.classList.add('hidden');
+
+            try {
+                // Try to fetch from external JSON file first
+                const response = await fetch('Ha2-cahier-de-tests.json');
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                testData = await response.json();
+                console.log('Loaded test data from external JSON file');
+            } catch (fetchError) {
+                // Fall back to embedded data (for file:// protocol)
+                console.log('Fetch failed, using embedded data:', fetchError.message);
+                try {
+                    const embeddedScript = document.getElementById('embeddedTestData');
+                    if (embeddedScript) {
+                        testData = JSON.parse(embeddedScript.textContent);
+                        console.log('Loaded test data from embedded JSON');
+                    } else {
+                        throw new Error('No embedded data found');
+                    }
+                } catch (embeddedError) {
+                    console.error('Error loading test data:', embeddedError);
+                    loadingState.classList.add('hidden');
+                    errorState.classList.remove('hidden');
+                    document.getElementById('errorMessage').textContent = embeddedError.message;
+                    return;
+                }
+            }
+
+            renderMetadata();
+            renderFilters();
+            renderTestCases();
+            loadFromLocalStorage();
+            updateStats();
+
+            loadingState.classList.add('hidden');
+            testCases.classList.remove('hidden');
+        }
+
+        // Render metadata in header and footer from test data
+        function renderMetadata() {
+            if (!testData || !testData.metadata) return;
+
+            const meta = testData.metadata;
+
+            // Footer - exigences info from test data
+            document.getElementById('footerExigences').textContent =
+                `${meta.totalTests} exigences totales (${meta.exigences.must} Must, ${meta.exigences.should} Should, ${meta.exigences.could} Could)`;
+        }
+
+        // Load metadata from index.json (like Da0-storyboard.html)
+        async function loadMetadata() {
+            try {
+                const response = await fetch('../index.json?' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const meta = data.metadata;
+
+                    document.getElementById('headerTitle').textContent = 'Cahier de Tests';
+                    document.getElementById('headerSubtitle').textContent = `${meta.platform} v${meta.version}`;
+                    document.getElementById('headerServerUrl').textContent = meta.server.url;
+
+                    document.getElementById('footerTitle').textContent = `${meta.title} - ${meta.platform}`;
+                    document.getElementById('footerPort').textContent = `Port: ${meta.server.port}`;
+                    document.getElementById('footerDesign').textContent = `Design: ${meta.design}`;
+                }
+            } catch (e) {
+                console.log('Metadata not available');
+            }
+        }
+
+        // Format date from YYYY-MM-DD to DD/MM/YYYY
+        function formatDate(dateStr) {
+            if (!dateStr) return '--/--/----';
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            return dateStr;
+        }
+
+        // Render filter buttons
+        function renderFilters() {
+            if (!testData || !testData.categories) return;
+
+            const container = document.getElementById('filterButtons');
+            container.innerHTML = '<button class="filter-btn border border-white/20 active" data-filter="all">Tous</button>';
+
+            testData.categories.forEach(category => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn border border-white/20';
+                btn.dataset.filter = category.id;
+                btn.textContent = category.name.replace('Gestion des ', '').replace('Integration ', '');
+                container.appendChild(btn);
+            });
+
+            // Attach event listeners
+            container.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    container.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+
+                    const filter = btn.dataset.filter;
+                    document.querySelectorAll('[data-category]').forEach(section => {
+                        if (filter === 'all' || section.dataset.category === filter) {
+                            section.style.display = 'block';
+                        } else {
+                            section.style.display = 'none';
+                        }
+                    });
+                });
+            });
+        }
+
+        // Render all test cases
+        function renderTestCases() {
+            if (!testData || !testData.categories) return;
+
+            const container = document.getElementById('testCases');
+            container.innerHTML = '';
+
+            testData.categories.forEach(category => {
+                const sectionHtml = renderCategory(category);
+                container.innerHTML += sectionHtml;
+            });
+        }
+
+        // Render a single category section
+        function renderCategory(category) {
+            let testsHtml = '';
+
+            category.tests.forEach(test => {
+                testsHtml += renderTestCard(test);
+            });
+
+            return `
+                <div class="mb-12" data-category="${category.id}">
+                    <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-6 flex items-center gap-3">
+                        <span class="w-8 h-[1px] bg-accent"></span>
+                        Section ${category.section} : ${category.name}
+                    </h2>
+                    ${testsHtml}
+                </div>
+            `;
+        }
+
+        // Render a single test card
+        function renderTestCard(test) {
+            const priorityClass = `priority-${test.priority}`;
+            const priorityLabel = test.priority === 'must' ? 'Must Have' :
+                                  test.priority === 'should' ? 'Should Have' : 'Could Have';
+
+            // Build details content
+            let detailsLeft = '';
+            let detailsRight = '';
+
+            // Objective
+            if (test.objective) {
+                detailsLeft += `
+                    <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3">Objectif</h4>
+                    <p class="text-sm text-white/70">${test.objective}</p>
+                `;
+            }
+
+            // References
+            if (test.references && test.references.length > 0) {
+                detailsLeft += `
+                    <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3 mt-6">References</h4>
+                    <ul class="text-sm text-white/70 space-y-1">
+                        ${test.references.map(ref => `<li>- ${ref}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Preconditions
+            if (test.preconditions && test.preconditions.length > 0) {
+                detailsLeft += `
+                    <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3 mt-6">Conditions prealables</h4>
+                    <ul class="text-sm text-white/70 space-y-1">
+                        ${test.preconditions.map(pre => `<li>- ${pre}</li>`).join('')}
+                    </ul>
+                `;
+            }
+
+            // Colors (for design tests)
+            if (test.colors) {
+                detailsLeft += `
+                    <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3 mt-6">Couleurs a verifier</h4>
+                    <ul class="text-sm text-white/70 space-y-1">
+                        ${Object.entries(test.colors).map(([name, color]) =>
+                            `<li class="flex items-center gap-2"><span class="w-4 h-4 inline-block" style="background:${color}"></span> ${name}: ${color}</li>`
+                        ).join('')}
+                    </ul>
+                `;
+            }
+
+            // Steps
+            if (test.steps && test.steps.length > 0) {
+                const stepsHtml = test.steps.map((step, i) =>
+                    `<li class="flex gap-2"><span class="text-accent">${i + 1}.</span> ${step}</li>`
+                ).join('');
+
+                if (!detailsLeft) {
+                    detailsLeft += `
+                        <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3">Etapes de test</h4>
+                        <ol class="text-sm text-white/70 space-y-2">${stepsHtml}</ol>
+                    `;
+                } else {
+                    detailsRight += `
+                        <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3">Etapes de test</h4>
+                        <ol class="text-sm text-white/70 space-y-2">${stepsHtml}</ol>
+                    `;
+                }
+            }
+
+            // Expected Results
+            if (test.expectedResults && test.expectedResults.length > 0) {
+                const resultsHtml = test.expectedResults.map(result =>
+                    `<li class="flex items-center gap-2"><span class="text-green-400">&#10003;</span> ${result}</li>`
+                ).join('');
+
+                detailsRight += `
+                    <h4 class="text-xs uppercase tracking-widest text-white/50 mb-3 mt-6">Resultat attendu</h4>
+                    <ul class="text-sm text-white/70 space-y-1">${resultsHtml}</ul>
+                `;
+            }
+
+            return `
+                <div class="test-card bg-surface border border-white/10 mb-4 cursor-pointer" onclick="toggleTest(this)">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="status-dot status-pending" data-test-id="${test.id}"></div>
+                                <span class="font-mono text-sm text-white/50">${test.id}</span>
+                                <span class="category-badge ${priorityClass}">${priorityLabel}</span>
+                            </div>
+                            <span class="material-symbols-outlined text-white/30">expand_more</span>
+                        </div>
+                        <h3 class="text-lg font-semibold mb-2">${test.title}</h3>
+                        <p class="text-white/60 text-sm">${test.description}</p>
+                    </div>
+                    <div class="test-details border-t border-white/10">
+                        <div class="p-6 grid md:grid-cols-2 gap-6">
+                            <div>${detailsLeft}</div>
+                            <div>${detailsRight}</div>
+                        </div>
+                        <div class="p-6 border-t border-white/10 flex gap-3 no-print">
+                            <button class="px-4 py-2 bg-green-500/20 border border-green-500/30 text-green-400 text-sm" onclick="event.stopPropagation(); setTestStatus('${test.id}', 'passed')">Reussi</button>
+                            <button class="px-4 py-2 bg-red-500/20 border border-red-500/30 text-red-400 text-sm" onclick="event.stopPropagation(); setTestStatus('${test.id}', 'failed')">Echoue</button>
+                            <button class="px-4 py-2 bg-yellow-500/20 border border-yellow-500/30 text-yellow-400 text-sm" onclick="event.stopPropagation(); setTestStatus('${test.id}', 'blocked')">Bloque</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Toggle test expansion
+        function toggleTest(card) {
+            card.classList.toggle('expanded');
+        }
+
+        // Set test status
+        function setTestStatus(testId, status) {
+            const dot = document.querySelector(`[data-test-id="${testId}"]`);
+            if (dot) {
+                // Update dot status
+                dot.className = `status-dot status-${status}`;
+
+                // Update card status (find parent .test-card)
+                const card = dot.closest('.test-card');
+                if (card) {
+                    // Remove all status classes
+                    card.classList.remove('card-passed', 'card-failed', 'card-blocked', 'card-pending');
+                    // Add new status class
+                    card.classList.add(`card-${status}`);
+                }
+            }
+            updateStats();
+            saveToLocalStorage();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const passed = document.querySelectorAll('.status-passed').length;
+            const failed = document.querySelectorAll('.status-failed').length;
+            const blocked = document.querySelectorAll('.status-blocked').length;
+            const total = document.querySelectorAll('.status-dot').length;
+            const pending = total - passed - failed - blocked;
+
+            document.getElementById('totalTests').textContent = total;
+            document.getElementById('passedTests').textContent = passed;
+            document.getElementById('failedTests').textContent = failed;
+            document.getElementById('pendingTests').textContent = pending;
+        }
+
+        // Save to localStorage AND to server (JSON file)
+        function saveToLocalStorage() {
+            const statuses = {};
+            document.querySelectorAll('.status-dot').forEach(dot => {
+                const testId = dot.dataset.testId;
+                const status = dot.className.replace('status-dot status-', '');
+                statuses[testId] = status;
+            });
+
+            // Save to localStorage (fallback)
+            localStorage.setItem('testStatuses', JSON.stringify(statuses));
+
+            // Save to server (JSON file) if available
+            saveToServer(statuses);
+        }
+
+        // Save statuses to server
+        async function saveToServer(statuses) {
+            try {
+                const response = await fetch('/save-test-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ statuses })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    console.log('Statuts sauvegardes dans le fichier JSON');
+                }
+            } catch (error) {
+                console.log('Serveur non disponible, sauvegarde localStorage uniquement');
+            }
+        }
+
+        // Load statuses from JSON data or localStorage
+        function loadFromLocalStorage() {
+            // First try to load from JSON data (loaded via fetch)
+            if (testData && testData.testStatuses) {
+                const statuses = testData.testStatuses;
+                applyStatuses(statuses);
+                // Sync to localStorage
+                localStorage.setItem('testStatuses', JSON.stringify(statuses));
+                console.log('Statuts charges depuis le fichier JSON');
+                return;
+            }
+
+            // Fallback to localStorage
+            const saved = localStorage.getItem('testStatuses');
+            if (saved) {
+                const statuses = JSON.parse(saved);
+                applyStatuses(statuses);
+                console.log('Statuts charges depuis localStorage');
+            }
+        }
+
+        // Apply statuses to DOM
+        function applyStatuses(statuses) {
+            Object.keys(statuses).forEach(testId => {
+                const dot = document.querySelector(`[data-test-id="${testId}"]`);
+                if (dot) {
+                    const status = statuses[testId];
+                    // Update dot status
+                    dot.className = `status-dot status-${status}`;
+
+                    // Update card status
+                    const card = dot.closest('.test-card');
+                    if (card) {
+                        card.classList.remove('card-passed', 'card-failed', 'card-blocked', 'card-pending');
+                        card.classList.add(`card-${status}`);
+                    }
+                }
+            });
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTestData();
+            loadMetadata();
+        });
+    </script>
+
+</body>
+</html>

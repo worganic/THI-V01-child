@@ -1,0 +1,1 @@
+Le système doit afficher un bouton 'Traitement rapide' sur l'écran de la commande (mentionnée dans Ba1, liée à EU3).

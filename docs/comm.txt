@@ -1,0 +1,58 @@
+
+
+													= ETAT		
+Etape 1 (2026-04-19) :
+	Divers : 
+ 		- Création du Doc travail - Notion							= 
+		
+	Mise en place du projet de base V0 :
+		- Préparation du  projet sous git							= Terminé
+			https://github.com/worganic/Frankenstein
+			
+
+		- Création du projet initial								= Terminé
+			Spec : Application sur PC - Electron - voir web - voir bdd
+			Utilisation de l'ancien projet avec suppression des éléments non necessaire.
+		- Site :
+			* A - Section non connecté :
+				* A1 - Page d'accueil
+					* A1A - Zone de connexion - lié à B2A
+			* B - Section connecté :
+				* B1 - Section user connecté (profil:user)
+					* B1*A - Mise en place du menu (user)
+					* B1A - Section projet				
+				* B2 - Section admin (profil:admin)
+					* B2*A - Mise en place du menu (admin)
+					* B2A - CRUD user
+					* B2B - CRUD projet
+					* B2C - Zone déploiement
+					* B2D - Zone help
+			* C - Divers
+				* C1 - Header B : Logo, option (Clair/sombre), déconnexion
+				* C2 - Footer B : Nom + corypright, version, bouton outils Externe
+				* C3 - Design système clair/sombre (bouton sur header)
+				* C5 - Système outils externe (bouton sur footer)	
+					* C5A - Configuration
+					* C5B - Système Recette
+					* C5C - Système Tickets
+					* C5D - Système Action (IA)			
+					* C5E - Système IA logs (IA)
+					* C5F - Système Historique ()
+
+A faire, suppression section IA dans le menu
+Ajout possibilité d'ajouté ou masqué les sections externe non utilisé.
+Suppression configuration et ajout dans le menu admin
+
+Etape intermédiaire, réflexion à avoir :
+	Mise en place de la bdd : 
+		Bdd partagé (hostinger)
+		Bdd git 
+		Comment protéger et partager des datas 
+
+
+Difficultés :
+	Bdd partagé mais interne (push/pull).
+	bdd externe pour les verrouillages des zones.
+		Avantage : Sécurité des datas (suppression)
+Voir pour un server git interne.
+Voir pour crypter les données RED

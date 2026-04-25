@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sélecteur Complet de Design</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="../../assets/css/styles.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e0aaff",
+                        "secondary": "#c77dff",
+                        "accent": "#9d4edd",
+                        "accent-dark": "#7b2cbf",
+                        "accent-darker": "#5a189a",
+                        "background": "#0a0a0f",
+                        "surface": "#12121a",
+                        "surface-light": "#1a1a25",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* Design Choice specific styles */
+        .section-card {
+            background: #12121a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #e0aaff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(to bottom, #9d4edd, #c77dff);
+            border-radius: 2px;
+        }
+
+        /* Type Selection Buttons */
+        .type-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .type-btn {
+            padding: 20px;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            background: #1a1a25;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .type-btn:hover {
+            border-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .type-btn.active {
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            border-color: #9d4edd;
+            box-shadow: 0 5px 20px rgba(157, 78, 221, 0.4);
+        }
+
+        .type-btn-icon {
+            font-size: 1.8rem;
+        }
+
+        /* Categories Grid */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            padding: 12px 14px;
+            background: #1a1a25;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .category-btn:hover {
+            border-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.15);
+            color: #c77dff;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            border-color: #9d4edd;
+            box-shadow: 0 4px 12px rgba(157, 78, 221, 0.3);
+        }
+
+        /* Documents/Items Grid */
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+        }
+
+        .document-card {
+            background: #1a1a25;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            cursor: pointer;
+        }
+
+        .document-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.25);
+            border-color: #9d4edd;
+        }
+
+        .document-card.selected {
+            border-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.1);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .document-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #0a0a0f;
+        }
+
+        .document-info {
+            padding: 15px;
+        }
+
+        .document-info h3 {
+            color: #e0aaff;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .document-code {
+            display: inline-block;
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Versions Grid */
+        .versions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .version-card {
+            background: #1a1a25;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            cursor: pointer;
+        }
+
+        .version-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.25);
+            border-color: #9d4edd;
+        }
+
+        .version-card.selected {
+            border-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.1);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .version-image-container {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background: #0a0a0f;
+        }
+
+        .version-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .version-info {
+            padding: 15px;
+        }
+
+        .version-info h3 {
+            color: #e0aaff;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            word-break: break-word;
+        }
+
+        .version-code {
+            display: inline-block;
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Palettes Grid */
+        .palettes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+        }
+
+        .palette-card {
+            background: #1a1a25;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            cursor: pointer;
+        }
+
+        .palette-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.25);
+            border-color: #9d4edd;
+        }
+
+        .palette-card.selected {
+            border-color: #9d4edd;
+            background: rgba(157, 78, 221, 0.1);
+            box-shadow: 0 0 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .palette-header {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .palette-number {
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .palette-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #e0aaff;
+        }
+
+        .palette-colors {
+            display: flex;
+            height: 70px;
+        }
+
+        .color-block {
+            flex: 1;
+            position: relative;
+            cursor: pointer;
+            transition: flex 0.3s ease;
+        }
+
+        .palette-card:hover .color-block:hover {
+            flex: 1.3;
+        }
+
+        .color-code {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.85);
+            color: #fff;
+            padding: 6px;
+            text-align: center;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            transform: translateY(100%);
+            transition: transform 0.25s ease;
+        }
+
+        .color-block:hover .color-code {
+            transform: translateY(0);
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: rgba(157, 78, 221, 0.1);
+            border-left: 3px solid #9d4edd;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.2);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .summary-value {
+            color: #c77dff;
+            font-weight: 700;
+            word-break: break-word;
+            text-align: right;
+            flex: 1;
+            margin-left: 20px;
+            font-size: 0.9em;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 5px 20px rgba(157, 78, 221, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-primary:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(157, 78, 221, 0.15);
+            color: #c77dff;
+            border: 1px solid rgba(157, 78, 221, 0.5);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(157, 78, 221, 0.25);
+            border-color: #9d4edd;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            display: none;
+            font-size: 0.9em;
+        }
+
+        .message.success {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            display: block;
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            display: block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .text-muted {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9em;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .type-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid,
+            .versions-grid,
+            .documents-grid,
+            .palettes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-white font-display min-h-screen">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <a href="../../index.html" class="back-button">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Retour
+                    </a>
+                    <div class="w-10 h-10 neon-border flex items-center justify-center">
+                        <span class="material-symbols-outlined neon-text">palette</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold" id="headerTitle">Sélecteur Design</h1>
+                        <p class="text-xs text-white/50" id="headerSubtitle"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-xs text-white/50">Serveur actif</p>
+                        <p class="text-sm font-mono text-green-400" id="headerServerUrl"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-6xl mx-auto">
+
+            <div class="page-header">
+                <h1>Sélecteur Complet de Design</h1>
+                <p class="subtitle">Choisissez vos documents, templates de site et palette de couleurs</p>
+            </div>
+
+            <!-- Section Type Selection -->
+            <div class="section-card">
+                <div class="section-title">Type de Contenu</div>
+                <p class="text-muted">Commencez par choisir le type :</p>
+                <div class="type-buttons">
+                    <button class="type-btn" onclick="selectType('documents')">
+                        <span class="type-btn-icon">📄</span>
+                        Documents
+                    </button>
+                    <button class="type-btn" onclick="selectType('sites')">
+                        <span class="type-btn-icon">🌐</span>
+                        Sites Web
+                    </button>
+                </div>
+            </div>
+
+            <!-- Section Documents -->
+            <div class="section-card hidden" id="documents-section">
+                <div class="section-title">Documents Design</div>
+                <p class="text-muted">Sélectionnez un document :</p>
+                <div class="documents-grid" id="documents-container"></div>
+            </div>
+
+            <!-- Section Sites -->
+            <div class="section-card hidden" id="sites-section">
+                <div class="section-title">Templates de Sites</div>
+
+                <div style="margin-bottom: 20px;">
+                    <p class="text-muted">Sélectionnez une catégorie :</p>
+                    <div class="categories-grid" id="categories-container"></div>
+                </div>
+
+                <div id="versions-section" style="display: none;">
+                    <p class="text-muted" id="category-title"></p>
+                    <div class="versions-grid" id="versions-container"></div>
+                </div>
+            </div>
+
+            <!-- Section Palettes de Couleurs -->
+            <div class="section-card">
+                <div class="section-title">Palettes de Couleurs</div>
+                <p class="text-muted">Cliquez sur une palette pour la sélectionner :</p>
+                <div class="palettes-grid" id="palettes-container"></div>
+            </div>
+
+            <!-- Section Résumé -->
+            <div class="section-card">
+                <div class="section-title">Résumé de Vos Choix</div>
+
+                <div class="summary-section">
+                    <div class="summary-item">
+                        <span class="summary-label">Élément sélectionné :</span>
+                        <span class="summary-value" id="selected-item">Aucun</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Code :</span>
+                        <span class="summary-value" id="selected-code">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Palette sélectionnée :</span>
+                        <span class="summary-value" id="selected-palette-name">Aucune</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Palette (Code) :</span>
+                        <span class="summary-value" id="selected-palette-code">-</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="resetSelection()">Réinitialiser</button>
+                    <button class="btn btn-primary" id="submit-btn" onclick="submitSelection()" disabled>Enregistrer les Choix</button>
+                </div>
+
+                <div class="message" id="message"></div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="border-t border-white/10 pt-8 mt-12">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-white/40" id="footerTitle"></p>
+                        <p class="text-xs text-white/30">Sélecteur de templates et palettes</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-white/40" id="footerPort"></p>
+                        <p class="text-xs text-white/30" id="footerDesign"></p>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Données des documents
+        const documentsData = [
+            { name: "10042-i Business-Cafe-One-Pager", code: "10042", image: "Design_Documents/10042-i_Business-Cafe-One-Pager_full.jpg" },
+            { name: "20815-i Corporate-One-Pager", code: "20815", image: "Design_Documents/20815-i_Corporate-One-Pager_full.jpg" },
+            { name: "31549-i CPR-One-Pager", code: "31549", image: "Design_Documents/31549-i_CPR-One-Pager_full.jpg" },
+            { name: "42076-i Onboarding-One-Pager", code: "42076", image: "Design_Documents/42076-i_Onboarding-One-Pager_full.jpg" },
+            { name: "53284-i Professional-One-Pager", code: "53284", image: "Design_Documents/53284-i_Professional-One-Pager_full.jpg" },
+            { name: "64591-i Simple-One-Pager", code: "64591", image: "Design_Documents/64591-i_Simple-One-Pager_full.jpg" },
+            { name: "75803-i Tech-One-Pager", code: "75803", image: "Design_Documents/75803-i_Tech-One-Pager_full.jpg" }
+        ];
+
+        // Données des sites
+        const sitesData = {
+            "A-tableau_de_bord": {
+                name: "Tableau de Bord",
+                versions: [
+                    { name: "v1 - Design 1", code: "A1", screen: "design_sites/A-tableau_de_bord/v1_-_Design_1_tableau_de_bord/screen.png", link: "design_sites/A-tableau_de_bord/v1_-_Design_1_tableau_de_bord/code.html" },
+                    { name: "v2 - Bleu Nuit Compact", code: "A2", screen: "design_sites/A-tableau_de_bord/v2_-_Bleu_nuit_compact/screen.png", link: "design_sites/A-tableau_de_bord/v2_-_Bleu_nuit_compact/code.html" },
+                    { name: "v3 - Gris Épuré Luxueux", code: "A3", screen: "design_sites/A-tableau_de_bord/v3_-_Gris_epure_luxueux/screen.png", link: "design_sites/A-tableau_de_bord/v3_-_Gris_epure_luxueux/code.html" },
+                    { name: "v4 - Noir Néon Futuriste", code: "A4", screen: "design_sites/A-tableau_de_bord/v4_-_Noir_neon_futuriste/screen.png", link: "design_sites/A-tableau_de_bord/v4_-_Noir_neon_futuriste/code.html" },
+                    { name: "v5 - Standard", code: "A5", screen: "design_sites/A-tableau_de_bord/v5/screen.png", link: "design_sites/A-tableau_de_bord/v5/code.html" }
+                ]
+            },
+            "B-portfolio": {
+                name: "Portfolio",
+                versions: [
+                    { name: "v1 - Sacs", code: "B1", screen: "design_sites/B-portfolio/v1_-_sacs/screen.png", link: "design_sites/B-portfolio/v1_-_sacs/code.html" },
+                    { name: "v2 - Sacs 2", code: "B2", screen: "design_sites/B-portfolio/v2_-_sacs_2/screen.png", link: "design_sites/B-portfolio/v2_-_sacs_2/code.html" },
+                    { name: "v3 - Voitures", code: "B3", screen: "design_sites/B-portfolio/v3_-_voitures/screen.png", link: "design_sites/B-portfolio/v3_-_voitures/code.html" },
+                    { name: "v4 - Recettes", code: "B4", screen: "design_sites/B-portfolio/v4_-_recettes/screen.png", link: "design_sites/B-portfolio/v4_-_recettes/code.html" },
+                    { name: "v5 - Lego", code: "B5", screen: "design_sites/B-portfolio/v5_-_Lego/screen.png", link: "design_sites/B-portfolio/v5_-_Lego/code.html" }
+                ]
+            },
+            "C-ecommerce": {
+                name: "E-commerce",
+                versions: [
+                    { name: "v1 - Horlogerie de Luxe", code: "C1", screen: "design_sites/C-ecommerce/v1_-_Horlogerie_de_Luxe_(Minimaliste_Clair)/screen.png", link: "design_sites/C-ecommerce/v1_-_Horlogerie_de_Luxe_(Minimaliste_Clair)/code.html" },
+                    { name: "v2 - Cyber Gear", code: "C2", screen: "design_sites/C-ecommerce/v2_-_Cyber_Gear_(Sombre_&_Néon)/screen.png", link: "design_sites/C-ecommerce/v2_-_Cyber_Gear_(Sombre_&_Néon)/code.html" },
+                    { name: "v3 - Terra Botanica", code: "C3", screen: "design_sites/C-ecommerce/v3_-_Terra_Botanica_(Naturel_&_Organique)/screen.png", link: "design_sites/C-ecommerce/v3_-_Terra_Botanica_(Naturel_&_Organique)/code.html" },
+                    { name: "v4 - Urban Edge", code: "C4", screen: "design_sites/C-ecommerce/v4_-_Urban_Edge_(Brutaliste_Streetwear)/screen.png", link: "design_sites/C-ecommerce/v4_-_Urban_Edge_(Brutaliste_Streetwear)/code.html" },
+                    { name: "v5 - Atelier Maison", code: "C5", screen: "design_sites/C-ecommerce/v5_-_Atelier_Maison_(Sombre_&_Chaleureux)/screen.png", link: "design_sites/C-ecommerce/v5_-_Atelier_Maison_(Sombre_&_Chaleureux)/code.html" }
+                ]
+            },
+            "E-Site_Vitrine": {
+                name: "Site Vitrine (Corporate)",
+                versions: [
+                    { name: "v1 - Portfolio Architecture", code: "E1", screen: "design_sites/E-Site_Vitrine_(Corporate)/v1_-_Portfolio_d'Architecture_Minimaliste_(Clair)/screen.png", link: "design_sites/E-Site_Vitrine_(Corporate)/v1_-_Portfolio_d'Architecture_Minimaliste_(Clair)/code.html" },
+                    { name: "v2 - Cybersécurité", code: "E2", screen: "design_sites/E-Site_Vitrine_(Corporate)/v2_-_Plateforme_de_Cybersécurité_(Sombre)/screen.png", link: "design_sites/E-Site_Vitrine_(Corporate)/v2_-_Plateforme_de_Cybersécurité_(Sombre)/code.html" },
+                    { name: "v3 - Boulangerie", code: "E3", screen: "design_sites/E-Site_Vitrine_(Corporate)/v3_-_Boulangerie_Artisanale_(ChaudClair)/screen.png", link: "design_sites/E-Site_Vitrine_(Corporate)/v3_-_Boulangerie_Artisanale_(ChaudClair)/code.html" },
+                    { name: "v4 - Montres de Luxe", code: "E4", screen: "design_sites/E-Site_Vitrine_(Corporate)/v4_-_Boutique_de_Montres_de_Luxe_(SombrePremium)/screen.png", link: "design_sites/E-Site_Vitrine_(Corporate)/v4_-_Boutique_de_Montres_de_Luxe_(SombrePremium)/code.html" },
+                    { name: "v5 - Cosmétiques Éco", code: "E5", screen: "design_sites/E-Site_Vitrine_(Corporate)/v5_-_Marque_de_Cosmétiques_Éco-responsables_(NaturelClair)/screen.png", link: "design_sites/E-Site_Vitrine_(Corporate)/v5_-_Marque_de_Cosmétiques_Éco-responsables_(NaturelClair)/code.html" }
+                ]
+            },
+            "F-Blog": {
+                name: "Blog",
+                versions: [
+                    { name: "v1 - Tech Minimaliste", code: "F1", screen: "design_sites/F-Blog/V1_-_Blog_Tech_Minimaliste_(Clair)/screen.png", link: "design_sites/F-Blog/V1_-_Blog_Tech_Minimaliste_(Clair)/code.html" },
+                    { name: "v2 - Gaming Cyber", code: "F2", screen: "design_sites/F-Blog/V2_-_Blog_Gaming_Cyber_(Sombre)/screen.png", link: "design_sites/F-Blog/V2_-_Blog_Gaming_Cyber_(Sombre)/code.html" },
+                    { name: "v3 - Lifestyle Cuisine", code: "F3", screen: "design_sites/F-Blog/V3_-_Blog_Lifestyle_&_Cuisine_(Chaleureux)/screen.png", link: "design_sites/F-Blog/V3_-_Blog_Lifestyle_&_Cuisine_(Chaleureux)/code.html" },
+                    { name: "v4 - Design Brutaliste", code: "F4", screen: "design_sites/F-Blog/V4_-_Blog_Design_Brutaliste_(Sombre)/screen.png", link: "design_sites/F-Blog/V4_-_Blog_Design_Brutaliste_(Sombre)/code.html" },
+                    { name: "v5 - Finance Actualités", code: "F5", screen: "design_sites/F-Blog/V5_-_Blog_Finance_&_Actualités_(Classique)/screen.png", link: "design_sites/F-Blog/V5_-_Blog_Finance_&_Actualités_(Classique)/code.html" }
+                ]
+            },
+            "G-Gestion_docs": {
+                name: "Gestion Docs",
+                versions: [
+                    { name: "v1 - Visionneuse Executive", code: "G1", screen: "design_sites/G-Gestion_docs/v1_-_Visionneuse_Exécutive_(Minimaliste)/screen.png", link: "design_sites/G-Gestion_docs/v1_-_Visionneuse_Exécutive_(Minimaliste)/code.html" },
+                    { name: "v2 - Bibliothèque Institutionnelle", code: "G2", screen: "design_sites/G-Gestion_docs/v2_-_Bibliothèque_Institutionnelle_(Moderne)/screen.png", link: "design_sites/G-Gestion_docs/v2_-_Bibliothèque_Institutionnelle_(Moderne)/code.html" },
+                    { name: "v3 - Mode Technique", code: "G3", screen: "design_sites/G-Gestion_docs/v3_-_Mode_Technique_Sombre_(High-Tech)/screen.png", link: "design_sites/G-Gestion_docs/v3_-_Mode_Technique_Sombre_(High-Tech)/code.html" },
+                    { name: "v4 - Grille Éditoriale", code: "G4", screen: "design_sites/G-Gestion_docs/v4_-_Grille_Éditoriale_(Style_Suisse)/screen.png", link: "design_sites/G-Gestion_docs/v4_-_Grille_Éditoriale_(Style_Suisse)/code.html" },
+                    { name: "v5 - Interface Verre", code: "G5", screen: "design_sites/G-Gestion_docs/v5_-_Interface_Verre_Dépoli_(Moderne)/screen.png", link: "design_sites/G-Gestion_docs/v5_-_Interface_Verre_Dépoli_(Moderne)/code.html" }
+                ]
+            },
+            "H-landingpage": {
+                name: "Landing Page",
+                versions: [
+                    { name: "v1 - SaaS Moderne", code: "H1", screen: "design_sites/H-landingpage/V1_-_SaaS_Moderne_(Clair)/screen.png", link: "design_sites/H-landingpage/V1_-_SaaS_Moderne_(Clair)/code.html" },
+                    { name: "v2 - Agence Créative", code: "H2", screen: "design_sites/H-landingpage/V2_-_Agence_Créative_(Sombre)/screen.png", link: "design_sites/H-landingpage/V2_-_Agence_Créative_(Sombre)/code.html" },
+                    { name: "v3 - Bio Écologique", code: "H3", screen: "design_sites/H-landingpage/V3_-_Bio_&_Écologique_(Clair)/screen.png", link: "design_sites/H-landingpage/V3_-_Bio_&_Écologique_(Clair)/code.html" },
+                    { name: "v4 - Luxe Élégance", code: "H4", screen: "design_sites/H-landingpage/V4_-_Luxe_&_Élégance_(Sombre)/screen.png", link: "design_sites/H-landingpage/V4_-_Luxe_&_Élégance_(Sombre)/code.html" },
+                    { name: "v5 - Éducation Ludique", code: "H5", screen: "design_sites/H-landingpage/V5_-_Éducation_Ludique_(Clair)/screen.png", link: "design_sites/H-landingpage/V5_-_Éducation_Ludique_(Clair)/code.html" }
+                ]
+            }
+        };
+
+        // Données des palettes complètes
+        const palettesData = [
+            { num: "01", name: "Coucher de Soleil Vintage", colors: ["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"] },
+            { num: "02", name: "Rose Poudré", colors: ["#ffcdb2", "#ffb4a2", "#e5989b", "#b5838d", "#6d6875"] },
+            { num: "03", name: "Océan Profond", colors: ["#03045e", "#023e8a", "#0077b6", "#0096c7", "#00b4d8"] },
+            { num: "04", name: "Forêt Enchantée", colors: ["#606c38", "#283618", "#fefae0", "#dda15e", "#bc6c25"] },
+            { num: "05", name: "Minuit Étoilé", colors: ["#10002b", "#240046", "#3c096c", "#5a189a", "#7b2cbf"] },
+            { num: "06", name: "Terre & Sable", colors: ["#d4a373", "#ccd5ae", "#e9edc9", "#fefae0", "#faedcd"] },
+            { num: "07", name: "Néon Rétro", colors: ["#f72585", "#7209b7", "#3a0ca3", "#4361ee", "#4cc9f0"] },
+            { num: "08", name: "Menthe Glaciale", colors: ["#caf0f8", "#ade8f4", "#90e0ef", "#48cae4", "#00b4d8"] },
+            { num: "09", name: "Automne Doré", colors: ["#774936", "#8a5a44", "#a47148", "#c4a77d", "#eae0d5"] },
+            { num: "10", name: "Lavande Dreams", colors: ["#e0aaff", "#c77dff", "#9d4edd", "#7b2cbf", "#5a189a"] },
+            { num: "11", name: "Pastel Rainbow", colors: ["#ffadad", "#ffd6a5", "#fdffb6", "#caffbf", "#9bf6ff"] },
+            { num: "12", name: "Monochrome Élégant", colors: ["#212529", "#343a40", "#495057", "#6c757d", "#adb5bd"] },
+            { num: "13", name: "Jardin Japonais", colors: ["#780000", "#c1121f", "#fdf0d5", "#003049", "#669bbc"] },
+            { num: "14", name: "Tropical Vibes", colors: ["#007f5f", "#2b9348", "#55a630", "#80b918", "#aacc00"] },
+            { num: "15", name: "Café Crème", colors: ["#6f4e37", "#a67b5b", "#c4a77d", "#e4d4c8", "#f9f6f2"] },
+            { num: "16", name: "Aurore Boréale", colors: ["#1b4332", "#2d6a4f", "#40916c", "#52b788", "#74c69d"] },
+            { num: "17", name: "Candy Pop", colors: ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93"] },
+            { num: "18", name: "Bleu Glacier", colors: ["#cce3de", "#a4c3b2", "#6b9080", "#557b71", "#3a5a40"] },
+            { num: "19", name: "Sunset Beach", colors: ["#f94144", "#f3722c", "#f8961e", "#f9844a", "#f9c74f"] },
+            { num: "20", name: "Nordic Frost", colors: ["#e8e8e4", "#d8e2dc", "#ece4db", "#ffe5d9", "#ffd7ba"] },
+            { num: "21", name: "Berry Mix", colors: ["#590d22", "#800f2f", "#a4133c", "#c9184a", "#ff4d6d"] },
+            { num: "22", name: "Olive Garden", colors: ["#4a5759", "#7d8471", "#9a8c77", "#b8b08d", "#c2c5aa"] },
+            { num: "23", name: "Electric Dreams", colors: ["#7400b8", "#6930c3", "#5e60ce", "#5390d9", "#4ea8de"] },
+            { num: "24", name: "Sahara Dunes", colors: ["#eddcd2", "#fff1e6", "#fde2e4", "#fad2e1", "#e2ece9"] },
+            { num: "25", name: "Deep Purple", colors: ["#2b2d42", "#3d405b", "#5c5d8d", "#8d99ae", "#edf2f4"] },
+            { num: "26", name: "Fresh Mint", colors: ["#d8f3dc", "#b7e4c7", "#95d5b2", "#74c69d", "#52b788"] },
+            { num: "27", name: "Coral Reef", colors: ["#ff9f1c", "#ffbf69", "#cbf3f0", "#2ec4b6", "#006d77"] },
+            { num: "28", name: "Dusty Rose", colors: ["#f8edeb", "#fcd5ce", "#fec5bb", "#f9a699", "#f08080"] },
+            { num: "29", name: "Ocean Breeze", colors: ["#a2d2ff", "#bde0fe", "#caf0f8", "#90e0ef", "#48cae4"] },
+            { num: "30", name: "Woodland", colors: ["#344e41", "#3a5a40", "#588157", "#a3b18a", "#dad7cd"] },
+            { num: "31", name: "Cherry Blossom", colors: ["#fff0f3", "#ffccd5", "#ffb3c1", "#ff8fa3", "#ff758f"] },
+            { num: "32", name: "Midnight Blue", colors: ["#001219", "#005f73", "#0a9396", "#94d2bd", "#e9d8a6"] }
+        ];
+
+        let selectedType = null;
+        let selectedItem = null;
+        let selectedPalette = null;
+        let currentCategory = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPalettes();
+            loadMetadata();
+        });
+
+        // Load metadata from JSON
+        async function loadMetadata() {
+            try {
+                const response = await fetch('../../index.json?' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const meta = data.metadata;
+
+                    document.getElementById('headerTitle').textContent = 'Sélecteur Design';
+                    document.getElementById('headerSubtitle').textContent = `${meta.platform} v${meta.version}`;
+                    document.getElementById('headerServerUrl').textContent = meta.server.url;
+
+                    document.getElementById('footerTitle').textContent = `${meta.title} - ${meta.platform}`;
+                    document.getElementById('footerPort').textContent = `Port: ${meta.server.port}`;
+                    document.getElementById('footerDesign').textContent = `Design: ${meta.design}`;
+                }
+            } catch (e) {
+                console.log('Metadata not available');
+            }
+        }
+
+        // Select Type
+        function selectType(type) {
+            selectedType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.closest('.type-btn').classList.add('active');
+
+            // Hide/Show sections
+            document.getElementById('documents-section').classList.toggle('hidden', type !== 'documents');
+            document.getElementById('sites-section').classList.toggle('hidden', type !== 'sites');
+
+            if (type === 'documents') {
+                renderDocuments();
+            } else if (type === 'sites') {
+                renderCategories();
+            }
+
+            resetItemSelection();
+        }
+
+        // Render Documents
+        function renderDocuments() {
+            const container = document.getElementById('documents-container');
+            container.innerHTML = documentsData.map(doc => `
+                <div class="document-card" onclick="selectDocument('${doc.code}', '${doc.name}', this)">
+                    <img src="${doc.image}" alt="${doc.name}" onerror="this.style.background='#1a1a25'">
+                    <div class="document-info">
+                        <h3>${doc.name}</h3>
+                        <span class="document-code">${doc.code}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Select Document
+        function selectDocument(code, name, element) {
+            document.querySelectorAll('.document-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedItem = { type: 'document', code, name };
+            updateSummary();
+            updateSubmitButton();
+        }
+
+        // Render Categories
+        function renderCategories() {
+            const container = document.getElementById('categories-container');
+            container.innerHTML = Object.entries(sitesData).map(([key, data]) => `
+                <button class="category-btn" onclick="selectCategory('${key}')">
+                    ${data.name}
+                </button>
+            `).join('');
+        }
+
+        // Select Category
+        function selectCategory(categoryKey) {
+            currentCategory = categoryKey;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.includes(sitesData[categoryKey].name.split(' ')[0]));
+            });
+
+            const category = sitesData[categoryKey];
+            const container = document.getElementById('versions-container');
+            const title = document.getElementById('category-title');
+
+            title.textContent = `Variantes de ${category.name}`;
+            container.innerHTML = category.versions.map(version => `
+                <div class="version-card" onclick="selectTemplate('${categoryKey}', '${version.code}', '${version.name}', '${version.link}', this)">
+                    <div class="version-image-container">
+                        <img src="${version.screen}" alt="${version.name}" onerror="this.style.background='#1a1a25'">
+                    </div>
+                    <div class="version-info">
+                        <h3>${version.name}</h3>
+                        <span class="version-code">${version.code}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            document.getElementById('versions-section').style.display = 'block';
+        }
+
+        // Select Template
+        function selectTemplate(category, code, name, link, element) {
+            document.querySelectorAll('.version-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedItem = { type: 'site', code, name, link, category };
+            updateSummary();
+            updateSubmitButton();
+        }
+
+        // Render Palettes
+        function renderPalettes() {
+            const container = document.getElementById('palettes-container');
+            container.innerHTML = palettesData.map((palette, index) => {
+                const colorsHtml = palette.colors.map(color => `
+                    <div class="color-block" style="background-color: ${color};">
+                        <span class="color-code">${color}</span>
+                    </div>
+                `).join('');
+
+                return `
+                    <div class="palette-card" data-num="${palette.num}" data-name="${palette.name}" data-colors="${palette.colors.join('|')}" onclick="selectPaletteCard(this)">
+                        <div class="palette-header">
+                            <span class="palette-number">${palette.num}</span>
+                            <span class="palette-name">${palette.name}</span>
+                        </div>
+                        <div class="palette-colors">
+                            ${colorsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Select Palette Card (wrapper)
+        function selectPaletteCard(element) {
+            const num = element.dataset.num;
+            const name = element.dataset.name;
+            const colors = element.dataset.colors.split('|');
+            selectPalette(num, name, colors, element);
+        }
+
+        // Select Palette
+        function selectPalette(num, name, colors, element) {
+            document.querySelectorAll('.palette-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedPalette = { num, name, colors };
+            updateSummary();
+            updateSubmitButton();
+        }
+
+        // Reset Item Selection
+        function resetItemSelection() {
+            selectedItem = null;
+            document.querySelectorAll('.document-card, .version-card').forEach(card => card.classList.remove('selected'));
+            updateSummary();
+            updateSubmitButton();
+        }
+
+        // Update Summary
+        function updateSummary() {
+            document.getElementById('selected-item').textContent = selectedItem ? selectedItem.name : 'Aucun';
+            document.getElementById('selected-code').textContent = selectedItem ? selectedItem.code : '-';
+            document.getElementById('selected-palette-name').textContent = selectedPalette ? selectedPalette.name : 'Aucune';
+            document.getElementById('selected-palette-code').textContent = selectedPalette ? selectedPalette.num : '-';
+        }
+
+        // Update Submit Button
+        function updateSubmitButton() {
+            const isComplete = selectedItem && selectedPalette;
+            document.getElementById('submit-btn').disabled = !isComplete;
+        }
+
+        // Reset Selection
+        function resetSelection() {
+            selectedType = null;
+            selectedItem = null;
+            selectedPalette = null;
+            currentCategory = null;
+
+            document.querySelectorAll('.type-btn, .category-btn, .document-card, .version-card, .palette-card').forEach(el => el.classList.remove('active', 'selected'));
+            document.getElementById('versions-section').style.display = 'none';
+            document.getElementById('documents-section').classList.add('hidden');
+            document.getElementById('sites-section').classList.add('hidden');
+            document.getElementById('message').style.display = 'none';
+
+            updateSummary();
+            updateSubmitButton();
+        }
+
+        // Submit Selection
+        function submitSelection() {
+            if (!selectedItem || !selectedPalette) {
+                showMessage('Veuillez sélectionner un élément et une palette de couleurs', 'error');
+                return;
+            }
+
+            // Créer le contenu du fichier markdown
+            const timestamp = new Date().toLocaleString('fr-FR');
+            let markdownContent = `# Choix de Design Sélectionné\n\nDate : ${timestamp}\n\n`;
+
+            if (selectedItem.type === 'document') {
+                markdownContent += `## Document Sélectionné\n- **Nom** : ${selectedItem.name}\n- **Code** : ${selectedItem.code}\n\n`;
+            } else {
+                markdownContent += `## Site Web Sélectionné\n- **Nom** : ${selectedItem.name}\n- **Catégorie** : ${selectedItem.category}\n- **Code** : ${selectedItem.code}\n- **Lien** : ${selectedItem.link}\n\n`;
+            }
+
+            markdownContent += `## Palette de Couleurs Sélectionnée\n`;
+            markdownContent += `- **Numéro** : ${selectedPalette.num}\n`;
+            markdownContent += `- **Nom** : ${selectedPalette.name}\n`;
+            markdownContent += `- **Couleurs** : ${selectedPalette.colors.join(', ')}\n\n`;
+            markdownContent += `## Résumé\n`;
+            markdownContent += `${selectedItem.type === 'document' ? 'Document' : 'Site'}: ${selectedItem.code} | Palette: ${selectedPalette.num}\n\n`;
+            markdownContent += `---\n*Page générée automatiquement par le sélecteur de design*\n`;
+
+            // Envoyer au serveur
+            fetch('/save-design-choice', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    item: selectedItem,
+                    palette: selectedPalette,
+                    content: markdownContent
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage('Vos choix ont été enregistrés avec succès dans Gg2-design-choix.md !', 'success');
+                } else {
+                    showMessage('Erreur : ' + (data.message || 'Impossible d\'enregistrer les choix'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Erreur:', error);
+                showMessage('Erreur de connexion au serveur', 'error');
+            });
+        }
+
+        // Show Message
+        function showMessage(text, type) {
+            const messageEl = document.getElementById('message');
+            messageEl.textContent = text;
+            messageEl.className = 'message ' + type;
+        }
+    </script>
+</body>
+</html>

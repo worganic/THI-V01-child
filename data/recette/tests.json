@@ -1,0 +1,1200 @@
+{
+  "tests": [
+    {
+      "id": "test-001",
+      "categoryId": "cat-001",
+      "name": "Connexion avec identifiants valides",
+      "description": "Vérifie que l'utilisateur peut se connecter avec un compte existant",
+      "priority": "critique",
+      "status": "active",
+      "preconditions": "Compte utilisateur existant : user@test.com / password123",
+      "tags": [
+        "auth",
+        "smoke"
+      ],
+      "targetPages": [
+        "/",
+        "/login"
+      ],
+      "estimatedMinutes": 2,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "/",
+          "action": "Naviguer vers la page d'accueil",
+          "element": "URL du navigateur",
+          "expected": "Page de connexion affichée avec logo et formulaire visible"
+        },
+        {
+          "order": 2,
+          "page": "/",
+          "action": "Saisir 'user@test.com' dans le champ Email",
+          "element": "input[type=email] — champ Email",
+          "expected": "La valeur est acceptée et visible dans le champ"
+        },
+        {
+          "order": 3,
+          "page": "/",
+          "action": "Saisir 'password123' dans le champ Mot de passe",
+          "element": "input[type=password] — champ Mot de passe",
+          "expected": "Le champ affiche des points masquant la valeur"
+        },
+        {
+          "order": 4,
+          "page": "/",
+          "action": "Cliquer sur le bouton 'Se connecter'",
+          "element": "button — Se connecter",
+          "expected": "Redirection vers /home, menu utilisateur affiché avec le nom de l'utilisateur"
+        }
+      ],
+      "createdAt": "2026-03-08T10:00:00.000Z",
+      "updatedAt": "2026-03-08T10:00:00.000Z"
+    },
+    {
+      "id": "test-002",
+      "categoryId": "cat-001",
+      "name": "Connexion avec identifiants invalides",
+      "description": "Vérifie que le message d'erreur s'affiche en cas d'échec",
+      "priority": "haute",
+      "status": "active",
+      "preconditions": "Aucun",
+      "tags": [
+        "auth",
+        "erreur"
+      ],
+      "targetPages": [
+        "/",
+        "/login"
+      ],
+      "estimatedMinutes": 1,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "/",
+          "action": "Saisir 'inexistant@test.com' dans le champ Email",
+          "element": "input[type=email]",
+          "expected": "La valeur est acceptée"
+        },
+        {
+          "order": 2,
+          "page": "/",
+          "action": "Saisir 'mauvaismdp' dans le champ Mot de passe",
+          "element": "input[type=password]",
+          "expected": "La valeur est masquée"
+        },
+        {
+          "order": 3,
+          "page": "/",
+          "action": "Cliquer sur 'Se connecter'",
+          "element": "button — Se connecter",
+          "expected": "Message d'erreur affiché, utilisateur reste sur la page de connexion"
+        }
+      ],
+      "createdAt": "2026-03-08T10:00:00.000Z",
+      "updatedAt": "2026-03-08T10:00:00.000Z"
+    },
+    {
+      "id": "test-003",
+      "categoryId": "cat-002",
+      "name": "Navigation menu principal",
+      "description": "Vérifie que tous les liens du menu sont fonctionnels",
+      "priority": "haute",
+      "status": "active",
+      "preconditions": "Utilisateur connecté",
+      "tags": [
+        "navigation",
+        "smoke"
+      ],
+      "targetPages": [
+        "/home"
+      ],
+      "estimatedMinutes": 3,
+      "dependsOn": [
+        "test-001"
+      ],
+      "steps": [
+        {
+          "order": 1,
+          "page": "/home",
+          "action": "Vérifier la présence du menu de navigation",
+          "element": "nav — barre de navigation principale",
+          "expected": "Menu visible avec liens : Accueil, Dashboard, Configuration, Tickets"
+        },
+        {
+          "order": 2,
+          "page": "/home",
+          "action": "Cliquer sur le lien 'Dashboard'",
+          "element": "a[routerLink='/dashboard']",
+          "expected": "Redirection vers /dashboard sans rechargement de page"
+        },
+        {
+          "order": 3,
+          "page": "/dashboard",
+          "action": "Cliquer sur 'Accueil' dans le menu",
+          "element": "a[routerLink='/home']",
+          "expected": "Retour vers /home"
+        }
+      ],
+      "createdAt": "2026-03-08T10:00:00.000Z",
+      "updatedAt": "2026-03-08T10:00:00.000Z"
+    },
+    {
+      "name": "Ajout d'un nouveau document avec validation des champs obligatoires",
+      "categoryId": "cat-001",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "form",
+        "validation",
+        "CRUD"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 10,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Remplir le champ 'Nom' avec une valeur",
+          "element": "Input[name='Nom']",
+          "expected": "Valeur saisie affichée dans le champ"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner un fichier via le champ 'Fichier'",
+          "element": "Input[type='file'][name='Fichier']",
+          "expected": "Nom du fichier affiché ou prévisualisation du fichier"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Ouvrir la liste déroulante 'Type' et sélectionner une option",
+          "element": "Select[name='Type']",
+          "expected": "Option sélectionnée visible dans le dropdown"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer sur le bouton 'save Ajouter Fichier'",
+          "element": "Button[text='Ajouter Fichier']",
+          "expected": "Document ajouté avec succès, message de confirmation affiché, document visible dans la liste 'Documents liés'"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, section 'Ajouter un document' visible",
+      "description": "Vérifier que l'ajout d'un document valide avec tous les champs obligatoires remplis fonctionne correctement et que le document s'ajoute à la liste.",
+      "id": "test-1773084512248-rn52i",
+      "createdAt": "2026-03-09T19:28:32.248Z",
+      "updatedAt": "2026-03-09T19:28:32.248Z"
+    },
+    {
+      "name": "Validation des champs obligatoires avant soumission",
+      "categoryId": "cat-001",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "validation",
+        "form",
+        "erreur"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Laisser le champ 'Nom' vide et le champ 'Fichier' vide",
+          "element": "Input[name='Nom'], Input[name='Fichier']",
+          "expected": "Champs restent vides"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer sur le bouton 'Ajouter Fichier' sans remplir les champs obligatoires",
+          "element": "Button[text='Ajouter Fichier']",
+          "expected": "Message d'erreur affichant que les champs obligatoires doivent être remplis (Nom*, Fichier*, Type*)"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Remplir uniquement le champ 'Nom' et laisser 'Fichier' vide",
+          "element": "Input[name='Nom']",
+          "expected": "Message d'erreur indiquant que 'Fichier' et 'Type' sont obligatoires"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, formulaire d'ajout de document vide",
+      "description": "Vérifier que la soumission du formulaire est bloquée ou génère des messages d'erreur si des champs obligatoires ne sont pas remplis.",
+      "id": "test-1773084512260-9njkm",
+      "createdAt": "2026-03-09T19:28:32.260Z",
+      "updatedAt": "2026-03-09T19:28:32.260Z"
+    },
+    {
+      "name": "Filtrage des documents par type",
+      "categoryId": "cat-001",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "filter",
+        "recherche",
+        "UI"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Localiser la section de filtrage avec 'Type'",
+          "element": "Filter[name='Type']",
+          "expected": "Liste déroulante 'Type' visible avec options disponibles"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner un type spécifique (ex: 'Prompt')",
+          "element": "Select[name='Type']",
+          "expected": "Sélection affichée dans le dropdown"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Vérifier la liste des documents affichée",
+          "element": "DocumentList",
+          "expected": "Seuls les documents de type 'Prompt' sont affichés dans la liste"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner un autre type (ex: 'Rôle')",
+          "element": "Select[name='Type']",
+          "expected": "Liste mise à jour pour afficher uniquement les documents de type 'Rôle'"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, plusieurs documents visibles dans la liste",
+      "description": "Vérifier que le filtrage par 'Type' affiche uniquement les documents correspondant au type sélectionné.",
+      "id": "test-1773084512273-410fo",
+      "createdAt": "2026-03-09T19:28:32.273Z",
+      "updatedAt": "2026-03-09T19:28:32.273Z"
+    },
+    {
+      "name": "Opération de suppression d'un document",
+      "categoryId": "cat-001",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "CRUD",
+        "delete",
+        "confirmation"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Localiser un document dans la liste et identifier son bouton 'delete'",
+          "element": "Button[icon='delete']",
+          "expected": "Icône delete visible pour chaque document"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer sur l'icône delete d'un document",
+          "element": "Button[icon='delete']",
+          "expected": "Popup de confirmation affichée (ex: 'Êtes-vous sûr de vouloir supprimer ce document ?')"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer sur 'Confirmer' ou 'Oui' dans la popup",
+          "element": "Button[text='Confirmer']",
+          "expected": "Document supprimé avec succès, message de confirmation affiché, document retiré de la liste"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, au moins un document visible dans la liste",
+      "description": "Vérifier que la suppression d'un document fonctionne correctement et que le document est retiré de la liste.",
+      "id": "test-1773084512285-asmoo",
+      "createdAt": "2026-03-09T19:28:32.285Z",
+      "updatedAt": "2026-03-09T19:28:32.285Z"
+    },
+    {
+      "name": "Groupement automatique des documents liés",
+      "categoryId": "cat-001",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "groupement",
+        "affichage",
+        "organisation"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Localiser la section 'Documents liés (groupement automatique)'",
+          "element": "Section[name='Documents liés']",
+          "expected": "Section visible avec documents groupés par catégorie/type"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Vérifier le groupement des documents (ex: tous les 'Prompt' ensemble, tous les 'Input' ensemble)",
+          "element": "DocumentGroup",
+          "expected": "Documents correctement groupés par type/catégorie avec des en-têtes clairs"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Ajouter un nouveau document lié et vérifier que le groupement se met à jour",
+          "element": "Button[text='Ajouter Fichier']",
+          "expected": "Nouveau document ajouté au groupe approprié immédiatement après ajout"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, section 'Documents liés' visible avec plusieurs documents",
+      "description": "Vérifier que les documents liés sont correctement groupés automatiquement dans la section 'Documents liés'.",
+      "id": "test-1773084512301-o9olo",
+      "createdAt": "2026-03-09T19:28:32.301Z",
+      "updatedAt": "2026-03-09T19:28:32.301Z"
+    },
+    {
+      "name": "Navigation et édition d'un document existant",
+      "categoryId": "cat-001",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "CRUD",
+        "edit",
+        "form"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 10,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Localiser un document dans la liste et cliquer sur l'icône 'edit'",
+          "element": "Button[icon='edit']",
+          "expected": "Formulaire d'édition ouvert ou page d'édition chargée"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Modifier le champ 'Nom' du document",
+          "element": "Input[name='Nom']",
+          "expected": "Valeur modifiée affichée dans le champ"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer sur le bouton de sauvegarde (ex: 'Enregistrer' ou 'Sauvegarder')",
+          "element": "Button[text='save']",
+          "expected": "Modifications sauvegardées avec succès, message de confirmation affiché, changements visibles dans la liste"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, au moins un document visible avec bouton 'edit'",
+      "description": "Vérifier que le bouton 'edit' permet de modifier les informations d'un document existant.",
+      "id": "test-1773084512312-ts90d",
+      "createdAt": "2026-03-09T19:28:32.312Z",
+      "updatedAt": "2026-03-09T19:28:32.312Z"
+    },
+    {
+      "name": "Filtrage par plusieurs critères simultanés",
+      "categoryId": "cat-001",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "filter",
+        "combinaison",
+        "recherche"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 12,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Localiser les filtres: 'Statut', 'Type', 'IA'",
+          "element": "Filter[name='Statut'], Filter[name='Type'], Filter[name='IA']",
+          "expected": "Tous les filtres visibles et accessibles"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner une option dans le filtre 'Statut' (ex: 'Actif')",
+          "element": "Filter[name='Statut']",
+          "expected": "Filtre appliqué, documents filtrés affichés"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Ajouter un filtre supplémentaire sur 'Type' (ex: 'Prompt')",
+          "element": "Filter[name='Type']",
+          "expected": "Les deux filtres appliqués, liste affichant uniquement les documents correspondant aux deux critères"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Ajouter un troisième filtre sur 'IA' (ex: 'Gemini')",
+          "element": "Filter[name='IA']",
+          "expected": "Les trois filtres appliqués, liste affichant uniquement les documents correspondant à tous les critères"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, plusieurs documents avec différents statuts, types et IA",
+      "description": "Vérifier que l'application de plusieurs filtres (Statut + Type + IA) fonctionne correctement et affiche les résultats combinés.",
+      "id": "test-1773084512323-6vayc",
+      "createdAt": "2026-03-09T19:28:32.323Z",
+      "updatedAt": "2026-03-09T19:28:32.323Z"
+    },
+    {
+      "name": "Ouverture d'un document et navigation associée",
+      "categoryId": "cat-001",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "navigation",
+        "interaction",
+        "lien"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Localiser un document dans la liste et identifier le bouton 'open_in_new'",
+          "element": "Button[icon='open_in_new']",
+          "expected": "Icône 'open_in_new' visible pour chaque document"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer sur l'icône 'open_in_new'",
+          "element": "Button[icon='open_in_new']",
+          "expected": "Document ouvert dans un nouvel onglet ou nouvel contexte, contenu du document affiché correctement"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Vérifier que le contenu du document s'affiche correctement",
+          "element": "DocumentContent",
+          "expected": "Contenu lisible, formatage correct, ressources chargées (si applicable)"
+        }
+      ],
+      "preconditions": "Utilisateur authentifié, page admin chargée, au moins un document avec un lien 'open_in_new' visible",
+      "description": "Vérifier que le bouton 'open_in_new' ouvre le document lié correctement dans un nouvel onglet ou contexte approprié.",
+      "id": "test-1773084512338-j5bev",
+      "createdAt": "2026-03-09T19:28:32.338Z",
+      "updatedAt": "2026-03-09T19:28:32.338Z"
+    },
+    {
+      "name": "Ajouter un document avec tous les champs requis",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "formulaire",
+        "validation",
+        "création"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Bouton 'Ajouter un document' (add_circle)",
+          "expected": "Le formulaire d'ajout se déploie/se affiche"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Remplir",
+          "element": "Champ 'Nom *'",
+          "expected": "Le texte 'Test Document' est saisi"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer et sélectionner",
+          "element": "Dropdown 'Type *'",
+          "expected": "La liste déroulante s'affiche avec les options disponibles"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner",
+          "element": "Option 'Prompt' dans le dropdown Type",
+          "expected": "'Prompt' est sélectionné dans le champ Type"
+        },
+        {
+          "order": 5,
+          "page": "http://localhost:4200/admin",
+          "action": "Uploader",
+          "element": "Champ 'Fichier *'",
+          "expected": "Un fichier .md ou .html est accepté et affiché"
+        },
+        {
+          "order": 6,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Bouton 'save Ajouter Fichier'",
+          "expected": "Le document est ajouté à la liste. Un message de confirmation apparaît."
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée.",
+      "description": "Vérifier que le formulaire d'ajout accepte un document valide avec tous les champs obligatoires remplis (Nom, Fichier, Type)",
+      "id": "test-1773088394156-acvsa",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Validation des champs obligatoires",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "validation",
+        "formulaire",
+        "erreur"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Laisser vide",
+          "element": "Champ 'Nom *'",
+          "expected": "Le champ est vide"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Bouton 'save Ajouter Fichier'",
+          "expected": "Un message d'erreur apparaît indiquant que 'Nom' est obligatoire"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Remplir",
+          "element": "Champ 'Nom *'",
+          "expected": "Le champ est rempli avec 'Test'"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Bouton 'save Ajouter Fichier' sans sélectionner Type",
+          "expected": "Un message d'erreur apparaît indiquant que 'Type' est obligatoire"
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée. Formulaire d'ajout ouvert.",
+      "description": "Vérifier que la soumission du formulaire échoue si les champs Nom, Fichier ou Type ne sont pas remplis",
+      "id": "test-1773088394156-jwj5u",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Filtrer les documents par type",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "filtrage",
+        "recherche",
+        "documents"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Dropdown 'Type' dans la section des filtres",
+          "expected": "Une liste déroulante apparaît avec toutes les options disponibles (Prompt, Input choix, Input context, Rôle, Output Exemple)"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner",
+          "element": "Option 'Prompt' dans le dropdown Type",
+          "expected": "La liste des documents s'affiche avec uniquement les documents de type 'Prompt'"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Vérifier",
+          "element": "Champ 'Type' de chaque document affiché",
+          "expected": "Tous les documents affichés ont 'Prompt' comme type"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Sélectionner",
+          "element": "Option 'Input choix' dans le dropdown Type",
+          "expected": "La liste change et affiche uniquement les documents de type 'Input choix'"
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée avec au moins 10 documents présents. Plusieurs types de documents existent (Prompt, Input choix, Input context, etc.).",
+      "description": "Vérifier que le filtre 'Type' affiche uniquement les documents du type sélectionné",
+      "id": "test-1773088394156-23nxy",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Ouvrir et éditer un document existant",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "document",
+        "édition",
+        "actions"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Identifier",
+          "element": "Première ligne de la section 'Documents liés'",
+          "expected": "Un document est visible avec ses métadonnées (Nom, Type, IA, Rôle, etc.)"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Icône 'open_in_new' (Ouvrir) pour ce document",
+          "expected": "Le document s'ouvre dans un nouvel onglet ou dans un lecteur de fichier"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Revenir",
+          "element": "À la page /admin",
+          "expected": "Retour à la page d'administration des documents"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Icône 'edit' (Éditer) pour le même document",
+          "expected": "Le formulaire d'édition du document se charge avec les données actuelles pré-remplies"
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée. Au moins un document est présent dans la liste.",
+      "description": "Vérifier que les actions 'Ouvrir' et 'Éditer' sur un document existant fonctionnent correctement",
+      "id": "test-1773088394156-k0hr6",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Supprimer un document et confirmation",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "suppression",
+        "confirmation",
+        "document"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Icône 'delete' (Supprimer) sur un document",
+          "expected": "Une boîte de dialogue de confirmation apparaît demandant confirmation de suppression"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Bouton 'Annuler' dans la boîte de dialogue",
+          "expected": "La boîte se ferme et le document reste dans la liste"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Icône 'delete' à nouveau",
+          "expected": "La boîte de dialogue de confirmation réapparaît"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Bouton 'Confirmer' dans la boîte de dialogue",
+          "expected": "Le document est supprimé de la liste. Un message de succès apparaît."
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée. Au moins un document est présent dans la liste.",
+      "description": "Vérifier que la suppression d'un document affiche une confirmation et qu'il est bien supprimé après validation",
+      "id": "test-1773088394156-hjili",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Rechercher un document par nom",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "recherche",
+        "filtrage",
+        "performance"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 4,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Cliquer",
+          "element": "Champ de recherche (icône 'search')",
+          "expected": "Le champ de recherche est activé et prêt à recevoir du texte"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Taper",
+          "element": "Champ de recherche",
+          "expected": "Le texte 'Prompt' est saisi"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Attendre",
+          "element": "Mise à jour de la liste",
+          "expected": "Les documents dont le nom contient 'Prompt' sont affichés en moins de 500ms"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Vérifier",
+          "element": "Les noms de tous les documents affichés",
+          "expected": "Chaque nom contient le texte recherché 'Prompt'"
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée avec au moins 15 documents de noms variés.",
+      "description": "Vérifier que la fonction de recherche filtre les documents par nom en temps réel",
+      "id": "test-1773088394156-sy2c2",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Groupement automatique des documents",
+      "categoryId": "cat-1773088394139-k1a54",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "groupement",
+        "organisation",
+        "affichage"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin"
+      ],
+      "estimatedMinutes": 4,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin",
+          "action": "Examiner",
+          "element": "La section 'Documents liés (groupement automatique)'",
+          "expected": "Les documents sont organisés en groupes visibles (par Type, par Rôle ou par catégorie)"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin",
+          "action": "Identifier",
+          "element": "Les en-têtes de groupes",
+          "expected": "Chaque groupe a un en-tête clair (ex: 'Prompt', 'Input choix', 'Rôle', etc.)"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin",
+          "action": "Vérifier",
+          "element": "La cohérence au sein de chaque groupe",
+          "expected": "Tous les documents d'un groupe partagent la même caractéristique (même type ou même rôle)"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin",
+          "action": "Ajouter",
+          "element": "Un nouveau document de type 'Input context'",
+          "expected": "Le nouveau document apparaît dans le groupe 'Input context' sans rechargement de page"
+        }
+      ],
+      "preconditions": "Utilisateur connecté avec droits admin. Page /admin chargée avec au moins 20 documents ayant différents types et rôles.",
+      "description": "Vérifier que les documents sont correctement regroupés automatiquement selon leurs critères",
+      "id": "test-1773088394156-zd15h",
+      "createdAt": "2026-03-09T20:33:14.156Z",
+      "updatedAt": "2026-03-09T20:33:14.156Z"
+    },
+    {
+      "name": "Affichage du tableau des utilisateurs avec données complètes",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "tableau",
+        "affichage",
+        "utilisateurs",
+        "données"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Charger la page de gestion des utilisateurs",
+          "element": "Page admin - section users",
+          "expected": "Le tableau s'affiche avec 2 utilisateurs. Le compteur affiche '2 utilisateurs'"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Vérifier les données du premier utilisateur (admin)",
+          "element": "Première ligne du tableau",
+          "expected": "Affichage: Email 'worganic@gmail.com', Rôle 'Admin', Inscrit le '21/02/2026', Dernière connexion '04/03/2026 18:28'"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Vérifier les données du deuxième utilisateur",
+          "element": "Deuxième ligne du tableau",
+          "expected": "Affichage: Utilisateur 'test person', Rôle 'Utilisateur', Inscrit le '21/02/2026', Dernière connexion '21/02/2026 18:23'"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin. Le système contient au moins 2 utilisateurs.",
+      "description": "Vérifier que le tableau affiche correctement tous les utilisateurs avec leurs informations (email, rôle, dates d'inscription et de connexion)",
+      "id": "test-1773173980651-zdige",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    },
+    {
+      "name": "Recherche d'utilisateurs par email ou nom",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "haute",
+      "status": "draft",
+      "tags": [
+        "recherche",
+        "filtrage",
+        "recherche-utilisateur"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur la barre de recherche",
+          "element": "Champ de recherche (search input)",
+          "expected": "Le champ de recherche est actif et prêt pour l'entrée"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Taper 'worganic' pour rechercher l'utilisateur admin",
+          "element": "Champ de recherche",
+          "expected": "Le tableau filtre et affiche uniquement l'utilisateur 'worganic@gmail.com'. Le compteur affiche '1 utilisateur'"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Effacer le champ de recherche",
+          "element": "Champ de recherche",
+          "expected": "Le tableau affiche à nouveau tous les 2 utilisateurs"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Taper 'test' pour rechercher l'utilisateur test",
+          "element": "Champ de recherche",
+          "expected": "Le tableau filtre et affiche uniquement l'utilisateur 'test person'"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin. Le tableau contient au moins 2 utilisateurs.",
+      "description": "Vérifier que la barre de recherche filtre correctement les utilisateurs par email ou nom en temps réel",
+      "id": "test-1773173980651-x5e25",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    },
+    {
+      "name": "Édition du rôle d'un utilisateur",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "édition",
+        "rôle",
+        "modification",
+        "utilisateur"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 10,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur le bouton edit (icône edit) pour l'utilisateur 'test person'",
+          "element": "Bouton edit de la deuxième ligne",
+          "expected": "Une modal ou formulaire d'édition s'ouvre avec les données de l'utilisateur pré-remplies"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Modifier le rôle de 'Utilisateur' à 'Admin'",
+          "element": "Champ sélection de rôle dans le formulaire",
+          "expected": "Le rôle se change à 'Admin' dans le formulaire"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Soumettre le formulaire en cliquant le bouton de validation",
+          "element": "Bouton de confirmation/sauvegarde",
+          "expected": "Le formulaire se ferme et le tableau affiche le rôle mis à jour pour l'utilisateur 'test person' (maintenant 'Admin')"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin. Au moins un utilisateur avec un rôle 'Utilisateur' existe.",
+      "description": "Vérifier que le bouton edit permet de modifier le rôle d'un utilisateur et que la modification est persistée",
+      "id": "test-1773173980651-q2eh7",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    },
+    {
+      "name": "Suppression d'un utilisateur avec confirmation",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "critique",
+      "status": "draft",
+      "tags": [
+        "suppression",
+        "delete",
+        "utilisateur",
+        "confirmation"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 10,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur le bouton delete (icône delete) pour l'utilisateur 'test person'",
+          "element": "Bouton delete de la deuxième ligne",
+          "expected": "Une popup de confirmation apparaît demandant la confirmation de la suppression"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur le bouton de confirmation (Oui/Confirmer)",
+          "element": "Bouton de confirmation dans la popup",
+          "expected": "L'utilisateur est supprimé. Le tableau se met à jour et n'affiche plus 'test person'. Le compteur passe de '2 utilisateurs' à '1 utilisateur'"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Vérifier que seul l'utilisateur admin reste",
+          "element": "Tableau des utilisateurs",
+          "expected": "Le tableau contient uniquement 'worganic@gmail.com' avec le rôle 'Admin'"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin. Le tableau contient au moins 2 utilisateurs.",
+      "description": "Vérifier que le bouton delete supprime un utilisateur après confirmation et met à jour le tableau et compteur",
+      "id": "test-1773173980651-xdhez",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    },
+    {
+      "name": "Tri des colonnes du tableau",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "tri",
+        "colonnes",
+        "tableau",
+        "sort"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 8,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur l'en-tête 'Email' (avec icône unfold_more)",
+          "element": "En-tête de colonne Email",
+          "expected": "Le tableau se trie par email en ordre croissant (A-Z). L'icône unfold_more peut changer d'état"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer à nouveau sur l'en-tête 'Email'",
+          "element": "En-tête de colonne Email",
+          "expected": "Le tableau se trie par email en ordre décroissant (Z-A)"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur l'en-tête 'Rôle'",
+          "element": "En-tête de colonne Rôle",
+          "expected": "Le tableau se trie par rôle (Admin avant Utilisateur ou inverse)"
+        },
+        {
+          "order": 4,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur l'en-tête 'Dernière connexion'",
+          "element": "En-tête de colonne Dernière connexion",
+          "expected": "Le tableau se trie par date de dernière connexion (plus récent ou plus ancien en premier)"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin. Le tableau contient au moins 2 utilisateurs.",
+      "description": "Vérifier que les colonnes triables (Email, Rôle, Dernière connexion) se trient correctement en ordre ascendant/descendant",
+      "id": "test-1773173980651-9ll2d",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    },
+    {
+      "name": "Actualisation de la liste des utilisateurs",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "normale",
+      "status": "draft",
+      "tags": [
+        "refresh",
+        "actualisation",
+        "données"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 5,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Noter le contenu actuel du tableau et le compteur",
+          "element": "Tableau et compteur d'utilisateurs",
+          "expected": "Le tableau affiche 2 utilisateurs et le compteur affiche '2 utilisateurs'"
+        },
+        {
+          "order": 2,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Cliquer sur le bouton refresh (icône de rafraîchissement)",
+          "element": "Bouton refresh",
+          "expected": "Le tableau se réactualise et recharge les données du serveur. Possible affichage d'un indicateur de chargement"
+        },
+        {
+          "order": 3,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Vérifier que les données affichées sont à jour",
+          "element": "Tableau des utilisateurs",
+          "expected": "Le tableau affiche toujours 2 utilisateurs avec les mêmes données après actualisation"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin et se trouve sur la page des utilisateurs.",
+      "description": "Vérifier que le bouton refresh réactualise correctement la liste des utilisateurs à partir du serveur",
+      "id": "test-1773173980651-n6cyf",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    },
+    {
+      "name": "Affichage du message informatif sur l'inscription",
+      "categoryId": "cat-1773173980631-pif7u",
+      "priority": "basse",
+      "status": "draft",
+      "tags": [
+        "information",
+        "message",
+        "inscription"
+      ],
+      "targetPages": [
+        "http://localhost:4200/admin?section=users"
+      ],
+      "estimatedMinutes": 3,
+      "dependsOn": [],
+      "steps": [
+        {
+          "order": 1,
+          "page": "http://localhost:4200/admin?section=users",
+          "action": "Vérifier la présence et le contenu du message informatif",
+          "element": "Zone d'information (icône info + texte)",
+          "expected": "Le message 'Les utilisateurs s'inscrivent via la page d'accueil. Cliquez sur Modifier pour changer le rôle ou les informations d'un compte.' est visible et correctement formaté"
+        }
+      ],
+      "preconditions": "L'utilisateur est connecté en tant qu'admin et accède à la page de gestion des utilisateurs.",
+      "description": "Vérifier que le message informatif expliquant le processus d'inscription est correctement affiché",
+      "id": "test-1773173980651-zosm8",
+      "createdAt": "2026-03-10T20:19:40.651Z",
+      "updatedAt": "2026-03-10T20:19:40.651Z"
+    }
+  ]
+}

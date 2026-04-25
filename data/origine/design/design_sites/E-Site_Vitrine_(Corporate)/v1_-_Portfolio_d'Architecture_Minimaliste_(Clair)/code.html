@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ARCH-MINIMAL | Minimalist Architecture Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06e4f9",
+                        "background-light": "#f9fafb",
+                        "background-dark": "#17191c",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: crosshair;
+        }
+        .architectural-grid {
+            background-image: radial-gradient(rgba(6, 228, 249, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .glass-panel {
+            background: rgba(23, 25, 28, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 228, 249, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen selection:bg-primary selection:text-background-dark">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 px-6 py-4 lg:px-20 lg:py-8 pointer-events-none">
+<div class="max-w-7xl mx-auto flex items-center justify-between pointer-events-auto">
+<div class="flex items-center gap-3">
+<div class="size-6 bg-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-background-dark text-sm font-bold">architecture</span>
+</div>
+<h1 class="text-xl font-bold tracking-tighter uppercase dark:text-white">Arch-Minimal</h1>
+</div>
+<div class="hidden md:flex items-center gap-12 glass-panel px-8 py-3 rounded-full">
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Work</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Studio</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Journal</a>
+<a class="text-xs font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<button class="bg-primary text-background-dark px-6 py-2 text-xs font-bold uppercase tracking-widest rounded-full hover:scale-105 transition-transform">
+                Inquire
+            </button>
+</div>
+</nav>
+<!-- Hero Section -->
+<section class="relative h-screen w-full flex items-end overflow-hidden pt-20">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/20 to-transparent z-10"></div>
+<div class="w-full h-full bg-cover bg-center" data-alt="Brutalist concrete building with sharp shadows" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBEI42hz-1iaBbtxsKujiTRZd3cl92jS-7leOT7lZlDcDpUO8QB4_USLkXAbNCxym7Mwqo6VRu4fVam5K2hC_1qdzrBHV3GpYfzUsS3XA4Tx0BVIUpL0qFhtZ2glJf-IliB5XTJdvlQtJ3vc6_G4NqG4usAfqfvr7hzjZlwIl_DhrnXBM7wXmr5-EjaJZcZnN3kBwMLs4SXlOefrz7OyzgGMqt0E3AIlDfViLyW7ZE5HmGR2YYKgRr2MigpTuQGykwpf6Uj11Ce2kdG');"></div>
+</div>
+<div class="relative z-20 max-w-7xl mx-auto px-6 lg:px-20 pb-20 w-full">
+<div class="flex flex-col gap-6 max-w-2xl">
+<div class="flex items-center gap-4">
+<span class="h-px w-12 bg-primary"></span>
+<span class="text-xs font-bold tracking-[0.3em] uppercase text-primary">Est. 2024 / Berlin</span>
+</div>
+<h1 class="text-6xl md:text-8xl font-bold leading-none tracking-tighter uppercase">
+                    Structural <br/>
+<span class="text-primary">Silence.</span>
+</h1>
+<p class="text-lg md:text-xl text-slate-400 font-light leading-relaxed max-w-lg">
+                    Redefining architectural precision through the lens of minimalist geometry and digital innovation.
+                </p>
+<div class="flex gap-4 mt-4">
+<button class="flex items-center gap-3 bg-white text-background-dark px-8 py-4 rounded-lg font-bold uppercase text-sm group overflow-hidden relative">
+<span class="relative z-10">Explore Projects</span>
+<span class="material-symbols-outlined relative z-10 group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<div class="absolute right-0 bottom-0 p-10 hidden lg:block z-20">
+<div class="flex flex-col items-end gap-2 text-xs font-bold tracking-widest uppercase text-slate-500">
+<span>Latitude: 52.5200° N</span>
+<span>Longitude: 13.4050° E</span>
+</div>
+</div>
+</section>
+<!-- Project Filter / Tabs -->
+<section class="bg-background-dark pt-24 pb-12 border-b border-white/5 architectural-grid">
+<div class="max-w-7xl mx-auto px-6 lg:px-20">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
+<div>
+<h2 class="text-3xl font-bold uppercase tracking-tight">Recent Works</h2>
+<p class="text-slate-500 text-sm mt-2">Curated selection of spatial experiments.</p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="px-6 py-2 rounded-full border border-primary bg-primary/10 text-primary text-xs font-bold uppercase tracking-widest">All Work</button>
+<button class="px-6 py-2 rounded-full border border-white/10 hover:border-primary/50 text-slate-400 text-xs font-bold uppercase tracking-widest transition-all">Residential</button>
+<button class="px-6 py-2 rounded-full border border-white/10 hover:border-primary/50 text-slate-400 text-xs font-bold uppercase tracking-widest transition-all">Commercial</button>
+<button class="px-6 py-2 rounded-full border border-white/10 hover:border-primary/50 text-slate-400 text-xs font-bold uppercase tracking-widest transition-all">Cultural</button>
+</div>
+</div>
+<!-- Asymmetric Grid -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+<!-- Large Card -->
+<div class="md:col-span-8 group cursor-pointer">
+<div class="relative aspect-[16/9] overflow-hidden rounded-xl border border-white/10 bg-slate-900">
+<div class="absolute inset-0 bg-background-dark/40 group-hover:bg-transparent transition-all duration-500 z-10"></div>
+<img class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" data-alt="Modern concrete house with glass walls" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDV47nLRabbMCjJZKouuPfyMG4h30NczRNve6pJMmyaQ9pMjmFCRQzj7RRjeC5cCTqn6tyeocZTMMaYzcE3q1JHRQfAl_bucGY9T-mJYMx6NigTyAbJOWMbKiFPSepkOFkfnV4g6Uh8R68zIJN3armhFeHVCPZDXvko-VBwBUqlJg4djykinQoR0noteIjJ-t5P4hDTIrKbsGayxfWOdoMWJqduLO8yeXX7DpYPDm24y5O7IyqWNZP02bWC9LqhI0XY2tsuFrkk0fBO"/>
+<div class="absolute bottom-0 left-0 p-8 z-20 flex flex-col gap-2">
+<span class="text-[10px] uppercase tracking-[0.3em] font-bold text-primary bg-background-dark/80 backdrop-blur-md px-3 py-1 self-start rounded">Norway / 2023</span>
+<h3 class="text-4xl font-bold uppercase tracking-tighter text-white">The Concrete Monolith</h3>
+</div>
+</div>
+</div>
+<!-- Small Vertical Card -->
+<div class="md:col-span-4 group cursor-pointer">
+<div class="relative h-full overflow-hidden rounded-xl border border-white/10 bg-slate-900">
+<div class="absolute inset-0 bg-background-dark/40 group-hover:bg-transparent transition-all duration-500 z-10"></div>
+<img class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" data-alt="Interior of a minimalist glass pavilion" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUVIRlUOhb0e-vba-fei_3m5Y8Sgti2_Zu2uB3wLNKZn_SPyJmcjaS6cFdtz2q_i7UMxJ9H1DdJItXUGaeea-1i0kInYmQtAXlo4872gdHti5NDIATR0j9F7IGH3aJwDuwI2R1ObTqbAV3efhdk3fbvsGMvO5OdNQYhxkpbg3Sm0YtQV8ybwkUEeooOSYTMzEQoZHTQOPg9F0ksdOREVKCBG5SYjZORJHuT30mFvPHS5rYCB9BfIBrAHzbdiyX4tlCFFucasQ3hUIy"/>
+<div class="absolute bottom-0 left-0 p-8 z-20 flex flex-col gap-2">
+<span class="text-[10px] uppercase tracking-[0.3em] font-bold text-primary bg-background-dark/80 backdrop-blur-md px-3 py-1 self-start rounded">Japan / 2024</span>
+<h3 class="text-3xl font-bold uppercase tracking-tighter text-white">Glass Pavilion</h3>
+</div>
+</div>
+</div>
+<!-- Small Horizontal Card -->
+<div class="md:col-span-4 group cursor-pointer">
+<div class="relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-slate-900">
+<div class="absolute inset-0 bg-background-dark/40 group-hover:bg-transparent transition-all duration-500 z-10"></div>
+<img class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" data-alt="Urban brutalist building detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbgjSQch7YN5HGfGicdG-jNTfuhxd7UNpGA_Q-FlppRwTW6LgRlPIiLr4MaAAPti4XZHp5oPmhYSOL_2BZDHu0yvVa0tYephgLkQrBzzfj3tnLOCvWd8nSB2x9YFzJVe1BW97nziZKzklsHGbuzNdWRdGO9TSMieOzJr1Fdw2XQ9wLK6fkRtaAxbg_ldOROE55_0v_HTxKcnQK1nfIM5HBfwiLm56yJU2iMB3mEyWwcwDd5JNUYc-Pu9nNulG4G9SecQ8B-1BB6iQ1"/>
+<div class="absolute bottom-0 left-0 p-8 z-20 flex flex-col gap-2">
+<span class="text-[10px] uppercase tracking-[0.3em] font-bold text-primary bg-background-dark/80 backdrop-blur-md px-3 py-1 self-start rounded">Germany / 2022</span>
+<h3 class="text-2xl font-bold uppercase tracking-tighter text-white">Urban Brutalism</h3>
+</div>
+</div>
+</div>
+<!-- Medium Card -->
+<div class="md:col-span-8 group cursor-pointer">
+<div class="relative aspect-[16/9] overflow-hidden rounded-xl border border-white/10 bg-slate-900">
+<div class="absolute inset-0 bg-background-dark/40 group-hover:bg-transparent transition-all duration-500 z-10"></div>
+<img class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" data-alt="Luxury minimalist villa in desert" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqCf99VKm7eY0dNAygCKbmEzMU7ZjebTXe9S1bt08EtdEJG2YDISG4FcOIcq1ba4bQp0i5hGsmlMW0FvNXHMdQWaazWvxoCbVRquPl901vT9Nxwu0ask3xcttB4slHc7l25ZTSodItpEIs6ol10BiKSmlDNkMX37NsxJ8zbSfkul23ZS1yhdQ1RP1cNQhVYF7qdnKFs7W-sKy5dbPcYbDRayzmeTS6Q86_EsC7J2PE2rbcOWrhz8Ww1D4X-s-HX2fBMwEoNBYDnluc"/>
+<div class="absolute bottom-0 left-0 p-8 z-20 flex flex-col gap-2">
+<span class="text-[10px] uppercase tracking-[0.3em] font-bold text-primary bg-background-dark/80 backdrop-blur-md px-3 py-1 self-start rounded">UAE / 2024</span>
+<h3 class="text-4xl font-bold uppercase tracking-tighter text-white">Dune Residency</h3>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Studio / Vision Section -->
+<section class="bg-background-dark py-32 border-t border-white/5">
+<div class="max-w-7xl mx-auto px-6 lg:px-20 grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+<div class="relative">
+<div class="aspect-square rounded-xl overflow-hidden border border-white/10">
+<img class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700" data-alt="Interior architect workspace with scale model" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1vEmQimABcc4VkQ298psW2VeMQaRb_py_wprOZ_Mao1kWM6n_hjbkOks2I8lVIsTUgr5WkCjnhzP_4XtyHpp3HkrcgcmNPv1suIjnB0s2ESDGNkvkUbTauKYzhSEaK_hKx78jT7TEO3AGyO-reRoTW0bmWA6rejDSyt1q3HcZApODLu7fNq6GCNnHL7T0c20_sAtTjmKC8FbWEKSbEyihsCw4nxW2FXO0RjCmPtnxaifIUbz_vJBniPtZFRmOPRCM81J1mMnUx4KY"/>
+</div>
+<div class="absolute -bottom-6 -right-6 w-48 h-48 bg-primary/10 backdrop-blur-xl border border-primary/20 rounded-xl p-6 hidden md:flex flex-col justify-end">
+<span class="text-3xl font-bold text-primary">12+</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Awards for innovation</span>
+</div>
+</div>
+<div class="flex flex-col gap-8">
+<span class="text-xs font-bold tracking-[0.4em] uppercase text-primary">The Studio</span>
+<h2 class="text-5xl font-bold uppercase tracking-tighter leading-tight">We build spaces <br/>that breathe.</h2>
+<p class="text-slate-400 text-lg leading-relaxed">
+                    Our philosophy is centered on the subtraction of the unnecessary. By focusing on raw materials, natural light, and geometric purity, we create environments that foster clarity and focus. 
+                </p>
+<div class="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
+<div>
+<h4 class="text-primary font-bold text-lg mb-2">Purity</h4>
+<p class="text-xs text-slate-500 leading-relaxed uppercase tracking-wider">The elimination of visual noise through rigorous design.</p>
+</div>
+<div>
+<h4 class="text-primary font-bold text-lg mb-2">Innovation</h4>
+<p class="text-xs text-slate-500 leading-relaxed uppercase tracking-wider">Utilizing advanced computation for structural efficiency.</p>
+</div>
+</div>
+<a class="flex items-center gap-3 text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">
+                    Meet the Team
+                    <span class="material-symbols-outlined">north_east</span>
+</a>
+</div>
+</div>
+</section>
+<!-- Contact CTA -->
+<section class="bg-background-dark py-32 overflow-hidden relative">
+<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150%] h-[150%] pointer-events-none opacity-20">
+<div class="w-full h-full architectural-grid opacity-30"></div>
+</div>
+<div class="max-w-7xl mx-auto px-6 lg:px-20 relative z-10 text-center">
+<h2 class="text-5xl md:text-8xl font-bold uppercase tracking-tighter mb-12">Ready to build?</h2>
+<div class="flex flex-col md:flex-row items-center justify-center gap-8">
+<button class="w-full md:w-auto bg-primary text-background-dark px-12 py-6 rounded-xl font-bold uppercase tracking-[0.2em] hover:shadow-[0_0_30px_rgba(6,228,249,0.3)] transition-all">
+                    Start a Project
+                </button>
+<button class="w-full md:w-auto border border-white/20 px-12 py-6 rounded-xl font-bold uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+                    View Portfolio
+                </button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-background-dark py-20 border-t border-white/5">
+<div class="max-w-7xl mx-auto px-6 lg:px-20">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-2 md:col-span-1 flex flex-col gap-6">
+<div class="flex items-center gap-2">
+<div class="size-4 bg-primary"></div>
+<h2 class="font-bold tracking-tighter uppercase">Arch-Minimal</h2>
+</div>
+<p class="text-xs text-slate-500 leading-relaxed max-w-[200px]">
+                        Architectural studio specialized in high-end minimalist residential and commercial projects.
+                    </p>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="text-xs font-bold uppercase tracking-widest text-slate-400">Navigation</h5>
+<ul class="flex flex-col gap-2 text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Work</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Studio</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="text-xs font-bold uppercase tracking-widest text-slate-400">Social</h5>
+<ul class="flex flex-col gap-2 text-sm">
+<li><a class="hover:text-primary transition-colors" href="#">Instagram</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">LinkedIn</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Pinterest</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Behance</a></li>
+</ul>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="text-xs font-bold uppercase tracking-widest text-slate-400">Office</h5>
+<p class="text-sm text-slate-300">
+                        Rosenthaler Str. 40-41<br/>
+                        10119 Berlin, Germany
+                    </p>
+<a class="text-sm text-primary underline" href="mailto:office@arch-minimal.com">office@arch-minimal.com</a>
+</div>
+</div>
+<div class="flex flex-col md:flex-row items-center justify-between pt-10 border-t border-white/5 gap-6">
+<span class="text-[10px] uppercase tracking-widest text-slate-600">© 2024 Arch-Minimal Studio. All Rights Reserved.</span>
+<div class="flex gap-8">
+<a class="text-[10px] uppercase tracking-widest text-slate-600 hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="text-[10px] uppercase tracking-widest text-slate-600 hover:text-white transition-colors" href="#">Imprint</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

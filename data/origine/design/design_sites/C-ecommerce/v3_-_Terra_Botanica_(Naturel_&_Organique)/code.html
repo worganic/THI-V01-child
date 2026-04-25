@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Terra Botanica - Organic Skincare</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#118192",
+                        "background-light": "#fcfbf8",
+                        "background-dark": "#1a1a1a",
+                        "sage": "#94a397",
+                        "terracotta": "#c67b5c",
+                        "cream": "#f5f0e8"
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .botanical-bg {
+            background-image: radial-gradient(circle at 2px 2px, #11819211 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#111718] dark:text-white transition-colors duration-300 botanical-bg">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-[#f0f4f4] dark:border-[#2a2a2a] px-6 lg:px-20 py-4 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">eco</span>
+</div>
+<h2 class="text-[#111718] dark:text-white text-xl font-extrabold tracking-tight">Terra Botanica</h2>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Shop</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Philosophy</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Journal</a>
+<a class="text-sm font-semibold hover:text-primary transition-colors" href="#">Refills</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="hidden sm:flex items-center bg-cream/50 dark:bg-white/5 rounded-lg px-3 py-1.5 border border-transparent focus-within:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-gray-500 text-xl">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-40 placeholder:text-gray-400" placeholder="Find your ritual..." type="text"/>
+</div>
+<button class="p-2 hover:bg-cream dark:hover:bg-white/10 rounded-full transition-all">
+<span class="material-symbols-outlined">person</span>
+</button>
+<button class="p-2 hover:bg-cream dark:hover:bg-white/10 rounded-full transition-all relative">
+<span class="material-symbols-outlined">shopping_cart</span>
+<span class="absolute top-1 right-1 bg-terracotta text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">2</span>
+</button>
+</div>
+</header>
+<main class="flex-1 px-6 lg:px-20 py-8">
+<!-- Bento Grid Hero Section -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 mb-16 h-auto md:h-[600px]">
+<!-- Main Lifestyle Tile -->
+<div class="md:col-span-8 relative overflow-hidden rounded-xl group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Woman applying skincare in soft natural light" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDuxUg3Bd2BDSAySCL-AYRrKDpjkD8YpFCjPl6wjd4_gO3RRFQK1kZc5sZh_5QHlbILSWuldXM7OA7P9RriwoW8nyun9Sn4x4YMKC56iAQB_2R-qqs_7oSnOHjCbCD2WABriye5_eryqTZ63OpxMQgNruYZMRGfeh2K9FoWbdiohFVTjp6pmotn8W77FVNpXfMutDHUocxN5cKfzkLJW0OmPRbFC3gfqE7PJx5peZ34Y4f0TUBByDF2BVyyz3C5xBv-OCvIiTyLLq9m');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-8 md:p-12">
+<h1 class="text-white text-4xl md:text-6xl font-black mb-4 leading-tight">Nature’s Wisdom,<br/>Bottled.</h1>
+<p class="text-white/90 text-lg max-w-md mb-8">Sustainable skincare for a conscious glow. Ethical, organic, and effective ingredients for your skin.</p>
+<div class="flex gap-4">
+<button class="bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-lg font-bold transition-all shadow-lg">Shop Collection</button>
+<button class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white px-8 py-4 rounded-lg font-bold transition-all">Our Mission</button>
+</div>
+</div>
+</div>
+<!-- Secondary Tiles -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<!-- Ingredient Highlight -->
+<div class="flex-1 bg-sage/20 dark:bg-sage/10 rounded-xl p-8 flex flex-col justify-between border border-sage/20 relative overflow-hidden group">
+<span class="material-symbols-outlined text-sage text-6xl absolute -right-4 -top-4 rotate-12 opacity-30">compost</span>
+<div>
+<span class="text-sage font-bold uppercase tracking-widest text-xs mb-2 block">Featured Ingredient</span>
+<h3 class="text-2xl font-bold text-[#111718] dark:text-white">Wild Atlantic Seaweed</h3>
+<p class="text-sm text-gray-600 dark:text-gray-300 mt-2">Rich in minerals and antioxidants to detoxify and hydrate.</p>
+</div>
+<a class="flex items-center gap-2 text-primary font-bold group-hover:gap-3 transition-all" href="#">
+                                Learn More <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+<!-- New Arrival Minimal Tile -->
+<div class="flex-1 bg-terracotta/10 rounded-xl p-8 flex items-center justify-between border border-terracotta/20">
+<div>
+<h3 class="text-xl font-bold text-[#111718] dark:text-white">The Terra Standard</h3>
+<p class="text-sm text-gray-600 dark:text-gray-300 mt-1">100% Carbon Neutral</p>
+</div>
+<div class="size-16 bg-terracotta/20 rounded-full flex items-center justify-center text-terracotta">
+<span class="material-symbols-outlined text-3xl">verified</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Shop by Skin Concern -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8 px-2">
+<h2 class="text-3xl font-bold tracking-tight">Shop by Skin Concern</h2>
+<a class="text-sm font-semibold text-primary flex items-center gap-1 hover:underline" href="#">View All <span class="material-symbols-outlined text-sm">chevron_right</span></a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<!-- Concern Card -->
+<a class="group flex flex-col items-center p-8 bg-white dark:bg-[#222] rounded-xl border border-[#f0f4f4] dark:border-[#333] hover:shadow-xl hover:-translate-y-1 transition-all" href="#">
+<div class="size-20 bg-cream dark:bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl group-hover:scale-110 transition-transform">water_drop</span>
+</div>
+<p class="font-bold text-lg">Hydrate</p>
+<p class="text-xs text-gray-500 mt-1 text-center">For dry &amp; flaky skin</p>
+</a>
+<a class="group flex flex-col items-center p-8 bg-white dark:bg-[#222] rounded-xl border border-[#f0f4f4] dark:border-[#333] hover:shadow-xl hover:-translate-y-1 transition-all" href="#">
+<div class="size-20 bg-cream dark:bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl group-hover:scale-110 transition-transform">spa</span>
+</div>
+<p class="font-bold text-lg">Calm</p>
+<p class="text-xs text-gray-500 mt-1 text-center">For sensitive skin</p>
+</a>
+<a class="group flex flex-col items-center p-8 bg-white dark:bg-[#222] rounded-xl border border-[#f0f4f4] dark:border-[#333] hover:shadow-xl hover:-translate-y-1 transition-all" href="#">
+<div class="size-20 bg-cream dark:bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl group-hover:scale-110 transition-transform">auto_awesome</span>
+</div>
+<p class="font-bold text-lg">Glow</p>
+<p class="text-xs text-gray-500 mt-1 text-center">For dull skin</p>
+</a>
+<a class="group flex flex-col items-center p-8 bg-white dark:bg-[#222] rounded-xl border border-[#f0f4f4] dark:border-[#333] hover:shadow-xl hover:-translate-y-1 transition-all" href="#">
+<div class="size-20 bg-cream dark:bg-white/5 rounded-full flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl group-hover:scale-110 transition-transform">balance</span>
+</div>
+<p class="font-bold text-lg">Balance</p>
+<p class="text-xs text-gray-500 mt-1 text-center">For oily/combination skin</p>
+</a>
+</div>
+</section>
+<!-- Product Showcase -->
+<section class="mb-20">
+<div class="flex items-center justify-between mb-8 px-2">
+<h2 class="text-3xl font-bold tracking-tight">The New Essentials</h2>
+<div class="flex gap-2">
+<button class="size-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<button class="size-10 rounded-full border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Product Card 1 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-[#f0f4f4] rounded-xl overflow-hidden mb-4">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Amber glass bottle serum on a stone surface" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAzweqMvBA9Ntn6NyMUEsM_nRCv83_gtuvUWnAGy5FSCJGigvTUsIgFcAcSMru54Hnl_7un7GyDyGWdO0k9mjppl7IY7S1cvmk_rDaztIU4OTVlxYGVJ7UhmNdtq6fmnvFteQTz8JP_ZxxFMNqa_XuwW4P_HFiKXng3Hwe7rV4vpfFLOS8PimGhGQqkczwSbo3nTzJce6yQQmDbQTOkmf5tq3h9uNxZXr5fzpat25b-zThveuKmDPd0VGKIUEk04jaZ5rg7WXG3yxmI');"></div>
+<div class="absolute top-4 left-4">
+<span class="bg-terracotta text-white text-[10px] font-bold px-2 py-1 rounded-full uppercase tracking-widest">New</span>
+</div>
+<div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<button class="w-full bg-white text-[#111718] py-3 rounded-lg font-bold flex items-center justify-center gap-2 translate-y-4 group-hover:translate-y-0 transition-all">
+<span class="material-symbols-outlined text-xl">add_shopping_cart</span>
+                                        Add to Cart
+                                    </button>
+</div>
+</div>
+<h3 class="text-lg font-bold">Midnight Recovery Oil</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm">star_half</span>
+</div>
+<span class="text-xs text-gray-500">(124 reviews)</span>
+</div>
+<p class="text-primary font-bold mt-2">$48.00</p>
+</div>
+<!-- Product Card 2 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-[#f0f4f4] rounded-xl overflow-hidden mb-4">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Creamy cleanser in a sustainable glass jar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBtsQJFGadkZAX6DvjntpErNYRZGpZR06S7i1dNxFp3SIotZjwtkxyXZDWFjCOIGBDGQuhhsPTKp-o42pLLFtUsi8MuYSf1tW5Xbs066_PPX59NDdq7yEzSzvAIkWMINESbWwdQCgopiAbkArXq05eslixMAoCXcOl0U4EPRWWWnXDhtVU0HTjGBP1cwLH_qGFrCrBl9UMOBw43SMLWvDYbhdxYcexcG3mDRckik5A6uxNCXAQ-RWCWO3RlkLsLp0Ht5zyw2kXVFIrF');"></div>
+<div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<button class="w-full bg-white text-[#111718] py-3 rounded-lg font-bold flex items-center justify-center gap-2 translate-y-4 group-hover:translate-y-0 transition-all">
+<span class="material-symbols-outlined text-xl">add_shopping_cart</span>
+                                        Add to Cart
+                                    </button>
+</div>
+</div>
+<h3 class="text-lg font-bold">Seaweed Infused Cleanser</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+</div>
+<span class="text-xs text-gray-500">(89 reviews)</span>
+</div>
+<p class="text-primary font-bold mt-2">$32.00</p>
+</div>
+<!-- Product Card 3 -->
+<div class="group">
+<div class="relative aspect-[4/5] bg-[#f0f4f4] rounded-xl overflow-hidden mb-4">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Eco-friendly moisturiser with wood cap" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDkagSTZFRNcwRZFJj6w8U6zIJfV2_uL1AqLfgg1n6tt7odABEXyvCEXjbyFg1cn53_XHWW9_QiXVq7HS60NUNxL0xWFhkGRiQRwpBNDcWunkt5xe7SPomx7g5SPjYJEQ8I6QLKtgy3Mb40QE8TXpv1FthMpFxsvdOq0FDuDKx_Q1GdwrtJCsJNw1cDUydJd5vMK6mXebevlrbJuX3MaXkuBkk2s15ho8FB3zWqDAvXMovd1BAfLn8_Mz2CZMl8fLRp3jRgcdgT1Odr');"></div>
+<div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
+<button class="w-full bg-white text-[#111718] py-3 rounded-lg font-bold flex items-center justify-center gap-2 translate-y-4 group-hover:translate-y-0 transition-all">
+<span class="material-symbols-outlined text-xl">add_shopping_cart</span>
+                                        Add to Cart
+                                    </button>
+</div>
+</div>
+<h3 class="text-lg font-bold">Botanical Dew Mist</h3>
+<div class="flex items-center gap-2 mt-1">
+<div class="flex text-primary">
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm fill-current">star</span>
+<span class="material-symbols-outlined text-sm">star</span>
+</div>
+<span class="text-xs text-gray-500">(210 reviews)</span>
+</div>
+<p class="text-primary font-bold mt-2">$24.00</p>
+</div>
+</div>
+</section>
+<!-- Newsletter Bento Style -->
+<section class="bg-cream dark:bg-[#1f1f1f] rounded-2xl p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden relative">
+<div class="absolute -left-20 -bottom-20 size-80 bg-primary/5 rounded-full blur-3xl"></div>
+<div class="z-10 max-w-lg">
+<h2 class="text-4xl font-bold mb-4 tracking-tight">Join the Ritual</h2>
+<p class="text-gray-600 dark:text-gray-400 text-lg">Receive exclusive insights into our botanical ingredients, sustainable living tips, and 15% off your first ritual.</p>
+</div>
+<div class="z-10 w-full md:w-auto">
+<form class="flex flex-col sm:flex-row gap-3">
+<input class="bg-white dark:bg-black/20 border-none rounded-lg px-6 py-4 focus:ring-2 focus:ring-primary w-full sm:w-80" placeholder="email@address.com" type="email"/>
+<button class="bg-primary text-white font-bold px-8 py-4 rounded-lg hover:bg-primary/90 transition-all whitespace-nowrap">Sign Up</button>
+</form>
+<p class="text-[10px] text-gray-400 mt-3 text-center sm:text-left">By subscribing you agree to our Privacy Policy and Terms of Service.</p>
+</div>
+</section>
+</main>
+<!-- Minimal Footer -->
+<footer class="bg-background-light dark:bg-background-dark border-t border-[#f0f4f4] dark:border-[#2a2a2a] px-6 lg:px-20 py-12">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 mb-12">
+<div class="col-span-2">
+<div class="flex items-center gap-2 text-primary mb-6">
+<span class="material-symbols-outlined text-2xl">eco</span>
+<span class="text-lg font-bold text-[#111718] dark:text-white">Terra Botanica</span>
+</div>
+<p class="text-sm text-gray-500 max-w-xs">Honoring the earth by providing skincare that respects both your skin and our planet.</p>
+</div>
+<div>
+<h4 class="font-bold text-sm mb-4">Shop</h4>
+<ul class="text-sm text-gray-500 space-y-2">
+<li><a class="hover:text-primary transition-colors" href="#">Cleanse</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Hydrate</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Treat</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Sun Care</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-sm mb-4">Company</h4>
+<ul class="text-sm text-gray-500 space-y-2">
+<li><a class="hover:text-primary transition-colors" href="#">Our Story</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Sustainability</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Ingredients</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Careers</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-sm mb-4">Support</h4>
+<ul class="text-sm text-gray-500 space-y-2">
+<li><a class="hover:text-primary transition-colors" href="#">Shipping</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Returns</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">FAQ</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-sm mb-4">Social</h4>
+<div class="flex gap-4">
+<a class="size-8 rounded-full bg-cream dark:bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-sm">public</span>
+</a>
+<a class="size-8 rounded-full bg-cream dark:bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-sm">photo_camera</span>
+</a>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-[#f0f4f4] dark:border-[#2a2a2a] text-[10px] text-gray-400 uppercase tracking-widest">
+<p>© 2024 Terra Botanica. All Rights Reserved.</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Accessibility</a>
+</div>
+</div>
+</footer>
+</div>
+</div>
+</body></html>

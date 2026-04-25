@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cyber Gaming Blog | Dark Edition</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;700;800&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335157",
+                        "accent-purple": "#8b5cf6",
+                        "accent-cyan": "#22d3ee",
+                        "background-light": "#fbfaf9",
+                        "background-dark": "#0f1113", // Custom deeper dark for high contrast
+                        "card-dark": "#1a1d21",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glow-border {
+            position: relative;
+            border: 1px solid rgba(34, 211, 238, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glow-border:hover {
+            border-color: rgba(34, 211, 238, 0.5);
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+        }
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+        }
+        .cyber-grid {
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.02) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(34, 211, 238, 0.05);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-gray-100 min-h-screen selection:bg-accent-cyan/30">
+<div class="relative w-full min-h-screen flex flex-col cyber-grid">
+<!-- Header -->
+<header class="sticky top-0 z-50 w-full backdrop-blur-lg border-b border-white/5 bg-background-dark/80 px-4 md:px-10 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary rounded-lg shadow-[0_0_15px_rgba(51,81,87,0.5)]">
+<span class="material-symbols-outlined text-accent-cyan">terminal</span>
+</div>
+<h1 class="text-xl font-extrabold tracking-tighter uppercase italic neon-text-cyan">
+                            Cyber<span class="text-accent-cyan">Gaming</span>
+</h1>
+</div>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-sm font-bold uppercase tracking-widest text-accent-cyan hover:text-white transition-colors" href="#">News</a>
+<a class="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors" href="#">Reviews</a>
+<a class="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors" href="#">Hardware</a>
+<a class="text-sm font-bold uppercase tracking-widest text-gray-400 hover:text-white transition-colors" href="#">Esports</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">search</span>
+<input class="bg-card-dark border-none rounded-full pl-10 pr-4 py-2 text-sm focus:ring-1 focus:ring-accent-cyan w-64 transition-all" placeholder="Search archives..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-primary/80 text-white px-6 py-2 rounded-full text-sm font-bold tracking-wide transition-all shadow-[0_4px_20px_rgba(0,0,0,0.3)]">
+                        JOIN HUB
+                    </button>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto w-full px-4 md:px-10 py-8 grid grid-cols-12 gap-8">
+<!-- Main Content Area -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-10">
+<!-- Hero Feature -->
+<section class="relative group cursor-pointer overflow-hidden rounded-xl h-[450px] flex items-end p-8 border border-white/10">
+<div class="absolute inset-0 bg-center bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Futuristic neon city game environment with skyscrapers" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBwwHQ5h9EVfF1e_AbLn01qMi79kmXrfpMFPXt6_4caphaFweO2aaYQc7qJow5NAs_uEcaKZ4bvapimR32rX0Dh96r4iJFKzxdzrPVrx-cDnaD8aB89ki4YDaZL2z3xEzFHL8xEGw2TGwRUyMuVPKxQh6gA7zkxsI6-51AFKXGEOJIGV3ba1Nt77Jm7D-bdHZxcuNU8akCwyG84utoWQXRk05XYTDaoAgONVwhNSUWCQ0nca2BaSyD1933rNvJ9zGJpzngPDNXKLiQ");'></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-background-dark/40 to-transparent"></div>
+<div class="relative z-10 space-y-4">
+<div class="flex gap-2">
+<span class="bg-accent-purple text-[10px] font-black uppercase px-2 py-1 rounded">Exclusive</span>
+<span class="bg-accent-cyan text-background-dark text-[10px] font-black uppercase px-2 py-1 rounded">Next-Gen</span>
+</div>
+<h2 class="text-4xl md:text-5xl font-black text-white leading-tight">
+                            NEON OVERDRIVE: <br/>The 2025 Roadmap Unleashed
+                        </h2>
+<p class="text-gray-300 max-w-xl text-lg font-light leading-relaxed">
+                            We sit down with the architects of the next digital frontier to discuss ray-tracing, AI NPCs, and the end of loading screens.
+                        </p>
+<div class="flex items-center gap-4 pt-4">
+<button class="bg-white text-black font-bold py-3 px-8 rounded-lg hover:bg-accent-cyan hover:text-black transition-all">
+                                READ STORY
+                            </button>
+<span class="text-sm text-gray-400 font-medium">8 MIN READ</span>
+</div>
+</div>
+</section>
+<!-- Tabs & Filter -->
+<div class="flex flex-wrap items-center justify-between border-b border-white/5 pb-2">
+<div class="flex gap-8 overflow-x-auto no-scrollbar">
+<a class="pb-4 border-b-2 border-accent-cyan text-accent-cyan font-bold tracking-widest text-xs uppercase" href="#">Trending Now</a>
+<a class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-300 font-bold tracking-widest text-xs uppercase transition-colors" href="#">Latest Intel</a>
+<a class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-300 font-bold tracking-widest text-xs uppercase transition-colors" href="#">Pro Circuit</a>
+<a class="pb-4 border-b-2 border-transparent text-gray-500 hover:text-gray-300 font-bold tracking-widest text-xs uppercase transition-colors" href="#">Gear Lab</a>
+</div>
+<button class="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-accent-cyan transition-colors pb-4">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                        FILTER
+                    </button>
+</div>
+<!-- Articles Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Article 1 -->
+<div class="glow-border bg-card-dark rounded-xl overflow-hidden group">
+<div class="h-48 bg-center bg-cover" data-alt="Close up of a futuristic mechanical keyboard with glowing keys" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCGoa-FVxWr5X0ttanlRthvIzox_-__K8KYEPT3CpoYrdtMxfXHZjNrngjqKOR0hlrrVPLBbgHMioUCJdVfvmZDZfSEx1LxZLIGfaFN-g7kncWGTS-t1ByqZqCrctGS5DQS6QuGu_SpnrTYqaf78jtmBrpyRV6IxV-Yn372voMba4ptdGDvNXYXcF4unkFb4YsnS-Jzl7EJO41mLaia4meMU-fPMYBnL1UTXcMsvj30ge-G8RSMGIk_mDu463QFbqrggvKiTqXEFFg");'></div>
+<div class="p-6">
+<span class="text-accent-cyan text-[10px] font-bold uppercase tracking-[0.2em]">Hardware Lab</span>
+<h3 class="text-xl font-bold mt-2 text-white group-hover:text-accent-cyan transition-colors">Are Mechanical Keyboards Reaching Peak Performance?</h3>
+<p class="text-gray-400 text-sm mt-3 leading-relaxed">Testing the latest optical switches for sub-millisecond response times in competitive play.</p>
+<div class="mt-6 flex justify-between items-center">
+<span class="text-xs text-gray-500">MAY 14 • BY J. VOID</span>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-accent-cyan transition-colors">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Article 2 -->
+<div class="glow-border bg-card-dark rounded-xl overflow-hidden group">
+<div class="h-48 bg-center bg-cover" data-alt="Digital illustration of a high-tech gaming headset" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBDETZCE-mKY_5SH2-66kj74Jf6XxU7CTIeVivC7mQdMmuGn-CweIfwcgyV56VBnnj3cVf3KDVQ9vWz4O01wILkf9aa2LZdA5No6YGqy-1FbAEUuxNhMnHO96DOE6ksQATQCbTTstaJrgGFqetzMsz5Z5kl7iDZhSeVYpCko7fUOV_fA0HpPOiYPDhD8ElzrApChQyqtfK92igYPa3f66ioV4NzVaGt4oM6tba-jZJLciwFJqncyYfwdHpFnFgwIR-u8BRT3BvQeoQ");'></div>
+<div class="p-6">
+<span class="text-accent-purple text-[10px] font-bold uppercase tracking-[0.2em]">Esports Digest</span>
+<h3 class="text-xl font-bold mt-2 text-white group-hover:text-accent-purple transition-colors">Global Finals: The Underdogs Who Toppled Giants</h3>
+<p class="text-gray-400 text-sm mt-3 leading-relaxed">A breakdown of the strategic shifts that defined this year's World Championship in Stockholm.</p>
+<div class="mt-6 flex justify-between items-center">
+<span class="text-xs text-gray-500">MAY 12 • BY K. SPECTRE</span>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-accent-purple transition-colors">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Article 3 -->
+<div class="glow-border bg-card-dark rounded-xl overflow-hidden group">
+<div class="h-48 bg-center bg-cover" data-alt="Stylized glowing game console and controller on a table" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5dxFi1TbR7aSedrmiKhnxR0kaRmaRUwdmXbqI6SsJ3j7uqeAdLKVGKLHeNOwYrXSIq8TdxQE0j5IXCb1Sl2EqIZsll0fErsotX2KV8AEYkoEyL-HWvsVpzhMxPamG1mQSN_FpPpH_LHzXArEoD6R8hWufOurxlo8akcMnmMVTsLkJaAo-VGCfNylUk7po3alYI5IxhqHqmmiebKudEL9oTTm3We5Im_GIj14sdKwH95EHaXo1IvaBsqN2R20VzSSQGz5OwW7ep5A");'></div>
+<div class="p-6">
+<span class="text-yellow-500 text-[10px] font-bold uppercase tracking-[0.2em]">Reviews</span>
+<h3 class="text-xl font-bold mt-2 text-white group-hover:text-yellow-500 transition-colors">Retro-Future: Why We Still Love 16-Bit Esthetics</h3>
+<p class="text-gray-400 text-sm mt-3 leading-relaxed">How indie developers are bridging the gap between nostalgia and modern fidelity.</p>
+<div class="mt-6 flex justify-between items-center">
+<span class="text-xs text-gray-500">MAY 10 • BY C. PIXEL</span>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-yellow-500 transition-colors">arrow_forward</span>
+</div>
+</div>
+</div>
+<!-- Article 4 -->
+<div class="glow-border bg-card-dark rounded-xl overflow-hidden group">
+<div class="h-48 bg-center bg-cover" data-alt="Dynamic shot of a competitive gamer in a dark room with neon lights" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAhG68CH5uKLgnPwoa1PzIpAKHss5PmGqkxBu7kbpceqXj9-F4XsiDiFHko2PVs0MQX27TK1dCr4lXQDBySQfarkf5qu8i1mgI6UgAImquga7srDSe75q-Q829P5EZMPgAdAQtIN7aL0RK_lhnoTWQUyzzrRT7NlkSN6S65Y2XwBsU4GWqp_en95Lc_4TCPJOS0zgoaMyQ9qCRZ6_2CwZMwit9kxKyJ6FRswX7MJ_RekiB-A2mGsEDikyMwMbl8cBNfq9oGkMIyzyA");'></div>
+<div class="p-6">
+<span class="text-green-500 text-[10px] font-bold uppercase tracking-[0.2em]">Culture</span>
+<h3 class="text-xl font-bold mt-2 text-white group-hover:text-green-500 transition-colors">Mental Fortitude: The New Meta of Pro Gaming</h3>
+<p class="text-gray-400 text-sm mt-3 leading-relaxed">The psychology behind high-stakes clutch moments and how pros handle the pressure.</p>
+<div class="mt-6 flex justify-between items-center">
+<span class="text-xs text-gray-500">MAY 08 • BY DR. HEX</span>
+<span class="material-symbols-outlined text-gray-600 group-hover:text-green-500 transition-colors">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Sidebar -->
+<aside class="col-span-12 lg:col-span-4 flex flex-col gap-8">
+<!-- Live Status Card -->
+<div class="bg-card-dark border border-white/5 rounded-xl p-6 relative overflow-hidden">
+<div class="scanline"></div>
+<div class="flex items-center justify-between mb-6">
+<h4 class="font-black italic text-sm tracking-widest uppercase">Live Transmissions</h4>
+<span class="flex h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-4 group cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+<div class="size-12 rounded-full bg-primary flex items-center justify-center border-2 border-accent-cyan">
+<span class="material-symbols-outlined text-accent-cyan">podcasts</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white group-hover:text-accent-cyan transition-colors">CyberHub Podcast #42</p>
+<p class="text-xs text-gray-500">1.2k Viewers • Streaming Now</p>
+</div>
+</div>
+<div class="flex items-center gap-4 group cursor-pointer p-2 rounded-lg hover:bg-white/5 transition-all">
+<div class="size-12 rounded-full bg-primary/20 flex items-center justify-center border border-white/10">
+<span class="material-symbols-outlined text-gray-400">play_circle</span>
+</div>
+<div>
+<p class="text-sm font-bold text-white group-hover:text-accent-cyan transition-colors">Apex Pro League - Asia</p>
+<p class="text-xs text-gray-500">8.4k Viewers • Live Match</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Trending Topics -->
+<div class="flex flex-col gap-4">
+<h4 class="font-black italic text-sm tracking-widest uppercase px-2 border-l-4 border-accent-cyan">Hottest Intel</h4>
+<div class="flex flex-col gap-2">
+<div class="bg-card-dark p-4 rounded-xl border border-white/5 hover:border-accent-purple transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-accent-purple font-black">#RTX5090</span>
+<span class="text-[10px] text-gray-600">22.4K POSTS</span>
+</div>
+<p class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors leading-snug">Leak: Next-gen architecture suggests 45% performance leap in ray-tracing.</p>
+</div>
+<div class="bg-card-dark p-4 rounded-xl border border-white/5 hover:border-accent-cyan transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-accent-cyan font-black">#GAMEOFTHEYEAR</span>
+<span class="text-[10px] text-gray-600">105K POSTS</span>
+</div>
+<p class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors leading-snug">Poll: Community predictions for the upcoming awards season.</p>
+</div>
+<div class="bg-card-dark p-4 rounded-xl border border-white/5 hover:border-white/20 transition-all cursor-pointer group">
+<div class="flex justify-between items-start mb-2">
+<span class="text-[10px] text-gray-400 font-black">#STEAMDECK2</span>
+<span class="text-[10px] text-gray-600">12K POSTS</span>
+</div>
+<p class="text-sm font-bold text-gray-300 group-hover:text-white transition-colors leading-snug">Valve developers hint at screen improvements for the next iteration.</p>
+</div>
+</div>
+</div>
+<!-- Newsletter / Join -->
+<div class="bg-primary/20 border border-primary/40 rounded-xl p-8 text-center space-y-4">
+<span class="material-symbols-outlined text-4xl text-accent-cyan">mail</span>
+<h4 class="text-xl font-bold">The Weekly Breach</h4>
+<p class="text-sm text-gray-400">Get the most critical gaming intelligence delivered straight to your neural link every Friday.</p>
+<div class="pt-4 flex flex-col gap-3">
+<input class="bg-background-dark border-white/10 rounded-lg text-sm focus:ring-accent-cyan focus:border-accent-cyan" placeholder="Access key (Email)" type="email"/>
+<button class="bg-accent-cyan text-background-dark font-black py-3 rounded-lg hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] transition-all">SUBSCRIBE</button>
+</div>
+</div>
+<!-- Social Stats -->
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-card-dark p-4 rounded-xl border border-white/5 flex flex-col items-center gap-1">
+<span class="text-xl font-black text-white">450K</span>
+<span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Followers</span>
+</div>
+<div class="bg-card-dark p-4 rounded-xl border border-white/5 flex flex-col items-center gap-1">
+<span class="text-xl font-black text-white">12M</span>
+<span class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Monthly Reads</span>
+</div>
+</div>
+</aside>
+</main>
+<!-- Footer -->
+<footer class="mt-20 border-t border-white/5 bg-card-dark/50 py-16">
+<div class="max-w-7xl mx-auto px-10 grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2 space-y-6">
+<div class="flex items-center gap-3">
+<div class="p-2 bg-primary rounded-lg">
+<span class="material-symbols-outlined text-accent-cyan">terminal</span>
+</div>
+<h1 class="text-2xl font-black tracking-tighter uppercase italic neon-text-cyan">
+                            Cyber<span class="text-accent-cyan">Gaming</span>
+</h1>
+</div>
+<p class="text-gray-500 max-w-sm leading-relaxed">
+                        The world's premier digital sanctuary for gaming culture, technological advancement, and the pursuit of digital mastery. Est. 2021.
+                    </p>
+<div class="flex gap-4">
+<a class="size-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-accent-cyan hover:text-black transition-all" href="#">
+<span class="material-symbols-outlined text-lg">share</span>
+</a>
+<a class="size-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-accent-purple hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-lg">forum</span>
+</a>
+</div>
+</div>
+<div class="space-y-4">
+<h5 class="text-xs font-black uppercase tracking-[0.3em] text-white">The Network</h5>
+<ul class="space-y-2 text-sm text-gray-500">
+<li><a class="hover:text-accent-cyan transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-accent-cyan transition-colors" href="#">Editorial Policy</a></li>
+<li><a class="hover:text-accent-cyan transition-colors" href="#">Privacy Neural-Link</a></li>
+<li><a class="hover:text-accent-cyan transition-colors" href="#">Contact Support</a></li>
+</ul>
+</div>
+<div class="space-y-4">
+<h5 class="text-xs font-black uppercase tracking-[0.3em] text-white">Archives</h5>
+<ul class="space-y-2 text-sm text-gray-500">
+<li><a class="hover:text-accent-purple transition-colors" href="#">PC Mastery</a></li>
+<li><a class="hover:text-accent-purple transition-colors" href="#">Console Wars</a></li>
+<li><a class="hover:text-accent-purple transition-colors" href="#">Mobile Tech</a></li>
+<li><a class="hover:text-accent-purple transition-colors" href="#">Retro Vault</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-7xl mx-auto px-10 mt-16 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-gray-600 font-bold uppercase tracking-widest">
+<p>© 2024 CYBER GAMING MEDIA GROUP. ALL DATA ENCRYPTED.</p>
+<div class="flex gap-8">
+<span>STATUS: OPTIMAL</span>
+<span>LATENCY: 14MS</span>
+<span>LOC: SECTOR 7G</span>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

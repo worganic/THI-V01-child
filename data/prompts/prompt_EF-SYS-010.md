@@ -1,0 +1,1 @@
+Le système doit permettre à l'utilisateur d'accéder à ses factures des 24 derniers mois (mentionnée dans Ba1, liée à EU4).

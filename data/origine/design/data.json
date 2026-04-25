@@ -1,0 +1,321 @@
+{
+  "documents": [
+    {
+      "name": "10042-i Business-Cafe-One-Pager",
+      "image": "design documents/10042-i_Business-Cafe-One-Pager_full.jpg",
+      "code": "10042"
+    },
+    {
+      "name": "20815-i Corporate-One-Pager",
+      "image": "design documents/20815-i_Corporate-One-Pager_full.jpg",
+      "code": "20815"
+    },
+    {
+      "name": "31549-i CPR-One-Pager",
+      "image": "design documents/31549-i_CPR-One-Pager_full.jpg",
+      "code": "31549"
+    },
+    {
+      "name": "42076-i Onboarding-One-Pager",
+      "image": "design documents/42076-i_Onboarding-One-Pager_full.jpg",
+      "code": "42076"
+    },
+    {
+      "name": "53284-i Professional-One-Pager",
+      "image": "design documents/53284-i_Professional-One-Pager_full.jpg",
+      "code": "53284"
+    },
+    {
+      "name": "64591-i Simple-One-Pager",
+      "image": "design documents/64591-i_Simple-One-Pager_full.jpg",
+      "code": "64591"
+    },
+    {
+      "name": "75803-i Tech-One-Pager",
+      "image": "design documents/75803-i_Tech-One-Pager_full.jpg",
+      "code": "75803"
+    }
+  ],
+  "sites": [
+    {
+      "name": "A-tableau_de_bord",
+      "versions": [
+        {
+          "name": "v1 - Design 1 tableau de bord",
+          "screen": "design sites/A-tableau_de_bord/v1 - Design 1 tableau de bord/screen.png",
+          "code": "design sites/A-tableau_de_bord/v1 - Design 1 tableau de bord/code.html",
+          "infos": "v1 - Design 1 tableau de bord\r\nAucun commentaire.\n\nCode: A1",
+          "uniqueCode": "A1"
+        },
+        {
+          "name": "v2 - Bleu nuit compact",
+          "screen": "design sites/A-tableau_de_bord/v2 - Bleu nuit compact/screen.png",
+          "code": "design sites/A-tableau_de_bord/v2 - Bleu nuit compact/code.html",
+          "infos": "Tableau de Bord - Bleu Nuit Compact (Variante 1) :\r\nUne version haute densité avec un fond bleu nuit profond et des espacements réduits, idéale pour visualiser un maximum de données sans scroller.\n\nCode: A2",
+          "uniqueCode": "A2"
+        },
+        {
+          "name": "v3 - Gris epure luxueux",
+          "screen": "design sites/A-tableau_de_bord/v3 - Gris epure luxueux/screen.png",
+          "code": "design sites/A-tableau_de_bord/v3 - Gris epure luxueux/code.html",
+          "infos": "Tableau de Bord - Noir Néon Futuriste (Variante 3) :Un design minimaliste sur fond noir pur avec des bordures néons éclatantes et un espacement dynamique pour un look \"Fintech\" très moderne.\n\nCode: A3",
+          "uniqueCode": "A3"
+        },
+        {
+          "name": "v4 - Noir neon futuriste",
+          "screen": "design sites/A-tableau_de_bord/v4 - Noir neon futuriste/screen.png",
+          "code": "design sites/A-tableau_de_bord/v4 - Noir neon futuriste/code.html",
+          "infos": "Tableau de Bord - Noir Néon Futuriste (Variante 3) :\r\nUn design minimaliste sur fond noir pur avec des bordures néons éclatantes et un espacement dynamique pour un look \"Fintech\" très moderne.\n\nCode: A4",
+          "uniqueCode": "A4"
+        },
+        {
+          "name": "v5",
+          "screen": "design sites/A-tableau_de_bord/v5/screen.png",
+          "code": "design sites/A-tableau_de_bord/v5/code.html",
+          "infos": "\n\nCode: A5",
+          "uniqueCode": "A5"
+        }
+      ]
+    },
+    {
+      "name": "B-portfolio",
+      "versions": [
+        {
+          "name": "v1 - sacs",
+          "screen": "design sites/B-portfolio/v1 - sacs/screen.png",
+          "code": "design sites/B-portfolio/v1 - sacs/code.html",
+          "infos": "Light Theme Designer Portfolio :\r\nUn design épuré et luxueux mettant l'accent sur la clarté, avec une typographie avec empattements élégante et beaucoup d'espace blanc pour sublimer les créations.\n\nCode: B1",
+          "uniqueCode": "B1"
+        },
+        {
+          "name": "v2 - sacs 2",
+          "screen": "design sites/B-portfolio/v2 - sacs 2/screen.png",
+          "code": "design sites/B-portfolio/v2 - sacs 2/code.html",
+          "infos": "Artistic Indie Portfolio Design :\r\nUn design au style \"maximaliste\" et contemporain, utilisant des couleurs terreuses et organiques (terracotta, vert sauge). La mise en page est expérimentale avec des éléments qui se chevauchent et une typographie très grasse et moderne, s'éloignant des codes du luxe traditionnel pour une approche plus artisanale et \"boutique créateur\".\n\nCode: B2",
+          "uniqueCode": "B2"
+        },
+        {
+          "name": "v3 - voitures",
+          "screen": "design sites/B-portfolio/v3 - voitures/screen.png",
+          "code": "design sites/B-portfolio/v3 - voitures/code.html",
+          "infos": "Automotive Luggage Portfolio Design :\r\nUn design high-tech et aérodynamique inspiré de l'ingénierie automobile. Le site utilise des textures de fibre de carbone, des accents de couleurs vives (bleu néon ou rouge course) et présente les sacs comme des accessoires de précision conçus pour s'intégrer parfaitement dans les coffres de voitures de luxe. L'esthétique est futuriste, avec une typographie large et technique rappelant les tableaux de bord de sportives.\n\nCode: B3",
+          "uniqueCode": "B3"
+        },
+        {
+          "name": "v4 - recettes",
+          "screen": "design sites/B-portfolio/v4 - recettes/screen.png",
+          "code": "design sites/B-portfolio/v4 - recettes/code.html",
+          "infos": "Rustic Gourmet Recipe Portfolio :\r\nConçu comme un livre de cuisine digital, ce design utilise une esthétique chaleureuse et rustique. Le fond rappelle le papier parchemin, agrémenté de typographies manuscrites élégantes. Les visuels mettent en avant des plats gourmets avec une photographie très texturée (vapeur, herbes fraîches, ingrédients bruts). On y trouve des sections pour filtrer par saison et une mise en page aérée qui laisse respirer les recettes.\n\nCode: B4",
+          "uniqueCode": "B4"
+        },
+        {
+          "name": "v5 - Lego",
+          "screen": "design sites/B-portfolio/v5 - Lego/screen.png",
+          "code": "design sites/B-portfolio/v5 - Lego/code.html",
+          "infos": "Playful Modular Brick Portfolio : \r\nCe design adopte une structure modulaire où chaque section ressemble à un bloc de construction imbriqué. On y retrouve les couleurs primaires emblématiques (rouge, bleu, jaune, vert) avec des boutons et des bordures rappelant les formes des briques. Les images mettent en scène des constructions créatives en 3D, et la typographie est ronde et grasse pour accentuer l'aspect jouet et fun.\n\nCode: B5",
+          "uniqueCode": "B5"
+        }
+      ]
+    },
+    {
+      "name": "C-ecommerce",
+      "versions": [
+        {
+          "name": "v1 - Horlogerie de Luxe (Minimaliste Clair)",
+          "screen": "design sites/C-ecommerce/v1 - Horlogerie de Luxe (Minimaliste Clair)/screen.png",
+          "code": "design sites/C-ecommerce/v1 - Horlogerie de Luxe (Minimaliste Clair)/code.html",
+          "infos": "Horlogerie de Luxe (Minimaliste Clair) : \r\nUn design épuré et sophistiqué utilisant beaucoup d'espace blanc, une typographie serif élégante et des accents dorés pour mettre en valeur des montres haut de gamme.\n\nCode: C1",
+          "uniqueCode": "C1"
+        },
+        {
+          "name": "v2 - Cyber Gear (Sombre & Néon)",
+          "screen": "design sites/C-ecommerce/v2 - Cyber Gear (Sombre & Néon)/screen.png",
+          "code": "design sites/C-ecommerce/v2 - Cyber Gear (Sombre & Néon)/code.html",
+          "infos": "Cyber Gear (Sombre & Néon) : \r\nUn site pour périphériques gaming au style futuriste avec un fond noir profond, des accents néons (violet et cyan) et des effets de lueur sur les fiches produits.\n\nCode: C2",
+          "uniqueCode": "C2"
+        },
+        {
+          "name": "v3 - Terra Botanica (Naturel & Organique)",
+          "screen": "design sites/C-ecommerce/v3 - Terra Botanica (Naturel & Organique)/screen.png",
+          "code": "design sites/C-ecommerce/v3 - Terra Botanica (Naturel & Organique)/code.html",
+          "infos": "Terra Botanica (Naturel & Organique) : \r\nUne boutique de soins de la peau utilisant des tons terreux (vert sauge, terracotta) et des formes arrondies pour une ambiance douce, écologique et apaisante.\n\nCode: C3",
+          "uniqueCode": "C3"
+        },
+        {
+          "name": "v4 - Urban Edge (Brutaliste Streetwear)",
+          "screen": "design sites/C-ecommerce/v4 - Urban Edge (Brutaliste Streetwear)/screen.png",
+          "code": "design sites/C-ecommerce/v4 - Urban Edge (Brutaliste Streetwear)/code.html",
+          "infos": "Urban Edge (Brutaliste Streetwear) : \r\nUn look urbain à fort contraste (noir et blanc) avec une typographie massive, des textures brutes et une mise en page asymétrique pour une marque de mode audacieuse.\n\nCode: C4",
+          "uniqueCode": "C4"
+        },
+        {
+          "name": "v5 - Atelier Maison (Sombre & Chaleureux)",
+          "screen": "design sites/C-ecommerce/v5 - Atelier Maison (Sombre & Chaleureux)/screen.png",
+          "code": "design sites/C-ecommerce/v5 - Atelier Maison (Sombre & Chaleureux)/code.html",
+          "infos": "Atelier Maison (Sombre & Chaleureux) :\r\nUn concept de décoration artisanale utilisant un thème sombre \"moody\" avec des tons boisés et charbon, créant une atmosphère intime et premium pour des objets faits main.\n\nCode: C5",
+          "uniqueCode": "C5"
+        }
+      ]
+    },
+    {
+      "name": "E-Site_Vitrine (Corporate)",
+      "versions": [
+        {
+          "name": "v1 - Portfolio d'Architecture Minimaliste (Clair)",
+          "screen": "design sites/E-Site_Vitrine (Corporate)/v1 - Portfolio d'Architecture Minimaliste (Clair)/screen.png",
+          "code": "design sites/E-Site_Vitrine (Corporate)/v1 - Portfolio d'Architecture Minimaliste (Clair)/code.html",
+          "infos": "Portfolio d'Architecture Minimaliste (Clair) :\r\nUn design épuré utilisant beaucoup d'espaces blancs, une typographie sans-serif moderne et de grandes photos de structures en béton pour un rendu professionnel et artistique.\n\nCode: E1",
+          "uniqueCode": "E1"
+        },
+        {
+          "name": "v2 - Plateforme de Cybersécurité (Sombre)",
+          "screen": "design sites/E-Site_Vitrine (Corporate)/v2 - Plateforme de Cybersécurité (Sombre)/screen.png",
+          "code": "design sites/E-Site_Vitrine (Corporate)/v2 - Plateforme de Cybersécurité (Sombre)/code.html",
+          "infos": "Plateforme de Cybersécurité (Sombre) :\r\nUne esthétique tech et futuriste avec un fond bleu nuit profond, des accents vert néon et des motifs de grille numérique pour évoquer la protection des données.\n\nCode: E2",
+          "uniqueCode": "E2"
+        },
+        {
+          "name": "v3 - Boulangerie Artisanale (ChaudClair)",
+          "screen": "design sites/E-Site_Vitrine (Corporate)/v3 - Boulangerie Artisanale (ChaudClair)/screen.png",
+          "code": "design sites/E-Site_Vitrine (Corporate)/v3 - Boulangerie Artisanale (ChaudClair)/code.html",
+          "infos": "Boulangerie Artisanale (Chaud/Clair) :\r\nUn site accueillant aux tons crème et terre cuite, utilisant des polices sérif classiques et des illustrations faites main pour souligner le côté authentique et traditionnel.\n\nCode: E3",
+          "uniqueCode": "E3"
+        },
+        {
+          "name": "v4 - Boutique de Montres de Luxe (SombrePremium)",
+          "screen": "design sites/E-Site_Vitrine (Corporate)/v4 - Boutique de Montres de Luxe (SombrePremium)/screen.png",
+          "code": "design sites/E-Site_Vitrine (Corporate)/v4 - Boutique de Montres de Luxe (SombrePremium)/code.html",
+          "infos": "Boutique de Montres de Luxe (Sombre/Premium) :\r\nUn design noir profond avec des touches dorées, mettant l'accent sur des photographies de produits en très haute définition pour un sentiment d'exclusivité et d'élégance.\n\nCode: E4",
+          "uniqueCode": "E4"
+        },
+        {
+          "name": "v5 - Marque de Cosmétiques Éco-responsables (NaturelClair)",
+          "screen": "design sites/E-Site_Vitrine (Corporate)/v5 - Marque de Cosmétiques Éco-responsables (NaturelClair)/screen.png",
+          "code": "design sites/E-Site_Vitrine (Corporate)/v5 - Marque de Cosmétiques Éco-responsables (NaturelClair)/code.html",
+          "infos": "Marque de Cosmétiques Éco-responsables (Naturel/Clair) :\r\nUn style frais aux couleurs vert sauge et beige sable, axé sur la pureté et la nature avec des icônes douces et des visuels lumineux.\n\nCode: E5",
+          "uniqueCode": "E5"
+        }
+      ]
+    },
+    {
+      "name": "F-Blog",
+      "versions": [
+        {
+          "name": "V1 - Blog Tech Minimaliste (Clair)",
+          "screen": "design sites/F-Blog/V1 - Blog Tech Minimaliste (Clair)/screen.png",
+          "code": "design sites/F-Blog/V1 - Blog Tech Minimaliste (Clair)/code.html",
+          "infos": "Blog Tech Minimaliste (Clair) :\r\nUn design épuré type \"éditorial\" avec beaucoup d'espace blanc, une typographie avec empattements élégante et une mise en page monochrome très professionnelle.\n\nCode: F1",
+          "uniqueCode": "F1"
+        },
+        {
+          "name": "V2 - Blog Gaming Cyber (Sombre)",
+          "screen": "design sites/F-Blog/V2 - Blog Gaming Cyber (Sombre)/screen.png",
+          "code": "design sites/F-Blog/V2 - Blog Gaming Cyber (Sombre)/code.html",
+          "infos": "Blog Gaming Cyber (Sombre) :\r\nUn style dynamique et immersif avec des accents néon (violet et cyan), des cartes d'articles aux bordures lumineuses et une esthétique futuriste.\n\nCode: F2",
+          "uniqueCode": "F2"
+        },
+        {
+          "name": "V3 - Blog Lifestyle & Cuisine (Chaleureux)",
+          "screen": "design sites/F-Blog/V3 - Blog Lifestyle & Cuisine (Chaleureux)/screen.png",
+          "code": "design sites/F-Blog/V3 - Blog Lifestyle & Cuisine (Chaleureux)/code.html",
+          "infos": "Blog Lifestyle & Cuisine (Chaleureux) :\r\nUne ambiance \"cottagecore\" avec des tons pastels (crème, vert sauge), des polices manuscrites et une grille d'images organique et accueillante.\n\nCode: F3",
+          "uniqueCode": "F3"
+        },
+        {
+          "name": "V4 - Blog Design Brutaliste (Sombre)",
+          "screen": "design sites/F-Blog/V4 - Blog Design Brutaliste (Sombre)/screen.png",
+          "code": "design sites/F-Blog/V4 - Blog Design Brutaliste (Sombre)/code.html",
+          "infos": "Blog Design Brutaliste (Sombre) :\r\nUn design audacieux à haut contraste avec un fond noir pur, des typographies massives, des angles vifs et une structure expérimentale.\n\nCode: F4",
+          "uniqueCode": "F4"
+        },
+        {
+          "name": "V5 - Blog Finance & Actualités (Classique)",
+          "screen": "design sites/F-Blog/V5 - Blog Finance & Actualités (Classique)/screen.png",
+          "code": "design sites/F-Blog/V5 - Blog Finance & Actualités (Classique)/code.html",
+          "infos": "Blog Finance & Actualités (Classique) :\r\nUn style \"journal papier\" traditionnel en mode clair, utilisant une mise en page multi-colonnes dense, du bleu marine et un bandeau de flux boursier.\n\nCode: F5",
+          "uniqueCode": "F5"
+        }
+      ]
+    },
+    {
+      "name": "G-Gestion_docs",
+      "versions": [
+        {
+          "name": "v1 - Visionneuse Exécutive (Minimaliste)",
+          "screen": "design sites/G-Gestion_docs/v1 - Visionneuse Exécutive (Minimaliste)/screen.png",
+          "code": "design sites/G-Gestion_docs/v1 - Visionneuse Exécutive (Minimaliste)/code.html",
+          "infos": "Visionneuse Exécutive (Minimaliste) : \r\nUn design très aéré axé sur la typographie, utilisant des tons gris ardoise et anthracite pour une lecture claire et prestigieuse.\n\nCode: G1",
+          "uniqueCode": "G1"
+        },
+        {
+          "name": "v2 - Bibliothèque Institutionnelle (Moderne)",
+          "screen": "design sites/G-Gestion_docs/v2 - Bibliothèque Institutionnelle (Moderne)/screen.png",
+          "code": "design sites/G-Gestion_docs/v2 - Bibliothèque Institutionnelle (Moderne)/code.html",
+          "infos": "Bibliothèque Institutionnelle (Moderne) : \r\nUne interface en grille présentant les documents sous forme de cartes élégantes avec des badges de statut et une iconographie sobre.\n\nCode: G2",
+          "uniqueCode": "G2"
+        },
+        {
+          "name": "v3 - Mode Technique Sombre (High-Tech)",
+          "screen": "design sites/G-Gestion_docs/v3 - Mode Technique Sombre (High-Tech)/screen.png",
+          "code": "design sites/G-Gestion_docs/v3 - Mode Technique Sombre (High-Tech)/code.html",
+          "infos": "Mode Technique Sombre (High-Tech) : \r\nUn style sombre à fort contraste, idéal pour la lecture de spécifications techniques complexes avec des schémas de type \"blueprint\".\n\nCode: G3",
+          "uniqueCode": "G3"
+        },
+        {
+          "name": "v4 - Grille Éditoriale (Style Suisse)",
+          "screen": "design sites/G-Gestion_docs/v4 - Grille Éditoriale (Style Suisse)/screen.png",
+          "code": "design sites/G-Gestion_docs/v4 - Grille Éditoriale (Style Suisse)/code.html",
+          "infos": "Grille Éditoriale (Style Suisse) :Un design basé sur une grille rigoureuse, utilisant de grandes marges et une typographie grasse pour un aspect \"magazine de luxe\" très professionnel.\n\nCode: G4",
+          "uniqueCode": "G4"
+        },
+        {
+          "name": "v5 - Interface Verre Dépoli (Moderne)",
+          "screen": "design sites/G-Gestion_docs/v5 - Interface Verre Dépoli (Moderne)/screen.png",
+          "code": "design sites/G-Gestion_docs/v5 - Interface Verre Dépoli (Moderne)/code.html",
+          "infos": "Interface Verre Dépoli (Moderne) : \r\nUn style contemporain utilisant le \"glassmorphism\" pour donner une impression de légèreté et de transparence, avec des éléments interactifs pour la validation des documents.\n\nCode: G5",
+          "uniqueCode": "G5"
+        }
+      ]
+    },
+    {
+      "name": "H-landingpage",
+      "versions": [
+        {
+          "name": "V1 - SaaS Moderne (Clair)",
+          "screen": "design sites/H-landingpage/V1 - SaaS Moderne (Clair)/screen.png",
+          "code": "design sites/H-landingpage/V1 - SaaS Moderne (Clair)/code.html",
+          "infos": "SaaS Moderne (Clair) :\r\nUne page épurée au style minimaliste avec beaucoup d'espace blanc, une typographie sans-serif professionnelle et des illustrations 3D abstraites.\n\nCode: H1",
+          "uniqueCode": "H1"
+        },
+        {
+          "name": "V2 - Agence Créative (Sombre)",
+          "screen": "design sites/H-landingpage/V2 - Agence Créative (Sombre)/screen.png",
+          "code": "design sites/H-landingpage/V2 - Agence Créative (Sombre)/code.html",
+          "infos": "Agence Créative (Sombre) :\r\nUn design audacieux sur fond noir profond avec des accents néons (violet et vert), une typographie imposante et des effets de verre dépoli.\n\nCode: H2",
+          "uniqueCode": "H2"
+        },
+        {
+          "name": "V3 - Bio & Écologique (Clair)",
+          "screen": "design sites/H-landingpage/V3 - Bio & Écologique (Clair)/screen.png",
+          "code": "design sites/H-landingpage/V3 - Bio & Écologique (Clair)/code.html",
+          "infos": "Bio & Écologique (Clair) :\r\nUne interface aux tons terreux (vert sauge, crème) utilisant des formes arrondies et des polices avec empattement pour un aspect naturel et authentique.\n\nCode: H3",
+          "uniqueCode": "H3"
+        },
+        {
+          "name": "V4 - Luxe & Élégance (Sombre)",
+          "screen": "design sites/H-landingpage/V4 - Luxe & Élégance (Sombre)/screen.png",
+          "code": "design sites/H-landingpage/V4 - Luxe & Élégance (Sombre)/code.html",
+          "infos": "Luxe & Élégance (Sombre) :\r\nUn style sophistiqué en gris anthracite et or, mettant l'accent sur une photographie haute résolution et une mise en page centrée très raffinée.\n\nCode: H4",
+          "uniqueCode": "H4"
+        },
+        {
+          "name": "V5 - Éducation Ludique (Clair)",
+          "screen": "design sites/H-landingpage/V5 - Éducation Ludique (Clair)/screen.png",
+          "code": "design sites/H-landingpage/V5 - Éducation Ludique (Clair)/code.html",
+          "infos": "Éducation Ludique (Clair) :\r\nUn design dynamique et coloré utilisant des couleurs primaires, des boutons arrondis façon \"bulle\" et des illustrations amicales pour un aspect accessible.\n\nCode: H5",
+          "uniqueCode": "H5"
+        }
+      ]
+    }
+  ]
+}

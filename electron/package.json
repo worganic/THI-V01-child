@@ -1,0 +1,18 @@
+{
+  "name": "worganic-electron",
+  "version": "1.0.0",
+  "description": "Worganic Platform - Application bureau Electron (executor IA local)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "ANGULAR_URL=http://localhost:4202 electron .",
+    "dev-win": "set ANGULAR_URL=http://localhost:4202 && electron ."
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s /b \"design documents\"\" \"design sites\"\")",
+      "Bash(powershell -Command \"Get-ChildItem -Path ''design documents'', ''design sites'' -Recurse | Select-Object FullName\")",
+      "Bash(powershell -NoProfile -Command:*)",
+      "Bash(node generate_data.js:*)",
+      "Bash(node add_codes.js:*)",
+      "Bash(node update_standalone.js:*)",
+      "Bash(cat:*)",
+      "Bash(node rename_documents.js:*)",
+      "Bash(node update_documents_mapping.js:*)",
+      "Bash(dir:*)",
+      "Bash(powershell -ExecutionPolicy Bypass -File rename_script.ps1)"
+    ]
+  }
+}

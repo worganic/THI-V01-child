@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Playful EdTech Light Variant</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00b29b",
+                        "accent-yellow": "#FFD23F",
+                        "accent-blue": "#3B82F6",
+                        "accent-orange": "#FB8500",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#16181d",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .pop-shadow {
+            box-shadow: 8px 8px 0px 0px rgba(16, 24, 23, 1);
+        }
+        .pop-shadow-primary {
+            box-shadow: 8px 8px 0px 0px #00b29b;
+        }
+        .pop-shadow-hover:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 10px 10px 0px 0px rgba(16, 24, 23, 1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#101817] dark:text-white transition-colors duration-300">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-[#dae7e5] dark:border-[#2d323a]">
+<div class="max-w-[1200px] mx-auto flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="size-10 bg-primary rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-2xl">architecture</span>
+</div>
+<h2 class="text-xl font-black tracking-tighter">EDTECH<span class="text-primary">PLAY</span></h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-sm font-bold hover:text-primary transition-colors" href="#">Curriculum</a>
+<a class="text-sm font-bold hover:text-primary transition-colors" href="#">Methods</a>
+<a class="text-sm font-bold hover:text-primary transition-colors" href="#">Pricing</a>
+<a class="text-sm font-bold hover:text-primary transition-colors" href="#">Community</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="hidden sm:block text-sm font-bold px-4 py-2">Log In</button>
+<button class="bg-primary text-white text-sm font-black px-6 py-2 rounded-full hover:brightness-110 transition-all">
+                    GET STARTED
+                </button>
+</div>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-6 overflow-x-hidden">
+<!-- Hero Section -->
+<section class="py-16 md:py-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-7 flex flex-col gap-8">
+<div class="inline-flex items-center gap-2 bg-accent-yellow/20 text-accent-orange px-4 py-1 rounded-full w-fit">
+<span class="material-symbols-outlined text-sm">rocket_launch</span>
+<span class="text-xs font-black uppercase tracking-widest">New Learning Era</span>
+</div>
+<h1 class="text-6xl md:text-8xl font-black leading-[0.9] tracking-tighter">
+                    LEARNING <span class="text-accent-blue italic">BOLD</span> AS YOUR IMAGINATION.
+                </h1>
+<p class="text-lg md:text-xl text-[#5e8d87] dark:text-gray-400 max-w-[540px] leading-relaxed">
+                    A modular education ecosystem designed for the next generation of creative thinkers and digital builders.
+                </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-white text-lg font-black px-8 py-4 rounded-xl pop-shadow hover:translate-y-[-2px] transition-all">
+                        EXPLORE COURSES
+                    </button>
+<button class="bg-white dark:bg-gray-800 border-2 border-[#101817] dark:border-white text-lg font-black px-8 py-4 rounded-xl flex items-center gap-2">
+<span class="material-symbols-outlined">play_circle</span>
+                        WATCH DEMO
+                    </button>
+</div>
+</div>
+<div class="lg:col-span-5 relative">
+<div class="w-full aspect-square bg-accent-yellow rounded-full absolute -top-4 -right-4 -z-10 opacity-20"></div>
+<div class="relative rounded-2xl overflow-hidden pop-shadow border-4 border-[#101817]">
+<img alt="Group of diverse students collaborating on a creative digital project" class="w-full h-full object-cover aspect-[4/5]" data-alt="Group of diverse students collaborating on a creative digital project" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGqJNx81Hq2TYl7J9JJnlBCI7InClboyn0eXc31Pnxq51kk6AZ4cnBuXcXPnUZV5Ps2onH4eCNw2lkXfP4tplSc4iqo1TL8s8E4vkk877cU6ROZYL-oj-4aTRRv2_62jtNB41LUnoM2_k8KaOXtQ4JccEqOOrkH8vd0IwslYF77lu-UCOW5I7yTgR6ybJclpjV4plwXczjx-Gdhn_L8Fs_jtyz58wAduI0Hlg2D9bEIr2FURmxu2hLgE7-NeCOkAL1vR8627aQkHI"/>
+</div>
+<div class="absolute -bottom-6 -left-6 bg-accent-orange p-6 rounded-xl pop-shadow border-2 border-[#101817] text-white max-w-[200px]">
+<span class="text-4xl font-black">98%</span>
+<p class="text-xs font-bold leading-tight">Student satisfaction across 12 countries</p>
+</div>
+</div>
+</section>
+<!-- Feature Section -->
+<section class="py-20 border-y border-[#dae7e5] dark:border-[#2d323a]">
+<div class="mb-16">
+<h2 class="text-4xl font-black mb-4">WHY CHOOSE <span class="text-primary underline">US?</span></h2>
+<p class="text-[#5e8d87] max-w-md">Our platform blends modular structure with high-energy educational tools that spark actual curiosity.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Feature 1 -->
+<div class="bg-white dark:bg-gray-800 p-8 border-2 border-[#101817] dark:border-white rounded-xl pop-shadow-hover transition-all group">
+<div class="size-14 bg-accent-blue rounded-lg flex items-center justify-center text-white mb-6 group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined text-3xl">subscriptions</span>
+</div>
+<h3 class="text-xl font-black mb-3">Interactive Lessons</h3>
+<p class="text-[#5e8d87] dark:text-gray-400">Engage with modules that feel more like discovery than work. Gamified paths that adapt to you.</p>
+</div>
+<!-- Feature 2 -->
+<div class="bg-white dark:bg-gray-800 p-8 border-2 border-[#101817] dark:border-white rounded-xl pop-shadow-hover transition-all group">
+<div class="size-14 bg-primary rounded-lg flex items-center justify-center text-white mb-6 group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined text-3xl">monitoring</span>
+</div>
+<h3 class="text-xl font-black mb-3">Progress Tracking</h3>
+<p class="text-[#5e8d87] dark:text-gray-400">Stay on top of your growth with clear, teal-accented analytics and real-time skill mapping.</p>
+</div>
+<!-- Feature 3 -->
+<div class="bg-white dark:bg-gray-800 p-8 border-2 border-[#101817] dark:border-white rounded-xl pop-shadow-hover transition-all group">
+<div class="size-14 bg-accent-yellow rounded-lg flex items-center justify-center text-[#101817] mb-6 group-hover:rotate-6 transition-transform">
+<span class="material-symbols-outlined text-3xl">brush</span>
+</div>
+<h3 class="text-xl font-black mb-3">Creative Freedom</h3>
+<p class="text-[#5e8d87] dark:text-gray-400">Express your knowledge through various creative digital mediums from coding to motion design.</p>
+</div>
+</div>
+</section>
+<!-- Learning Journey (Timeline) -->
+<section class="py-24">
+<div class="flex flex-col md:flex-row gap-16 items-start">
+<div class="md:sticky md:top-32 w-full md:w-1/3">
+<h2 class="text-5xl font-black mb-6 leading-none">THE <span class="text-accent-orange">JOURNEY</span> TO MASTERY.</h2>
+<p class="text-[#5e8d87] dark:text-gray-400 mb-8">Four simple steps to transform the way you think, build, and share your creative potential.</p>
+<div class="flex gap-2">
+<div class="size-3 rounded-full bg-primary"></div>
+<div class="size-3 rounded-full bg-accent-blue"></div>
+<div class="size-3 rounded-full bg-accent-yellow"></div>
+</div>
+</div>
+<div class="w-full md:w-2/3 space-y-12 relative">
+<div class="absolute left-6 top-0 bottom-0 w-[2px] bg-[#dae7e5] dark:bg-[#2d323a] -z-10"></div>
+<div class="flex gap-8 group">
+<div class="size-12 rounded-full bg-white dark:bg-gray-900 border-4 border-primary flex-shrink-0 flex items-center justify-center z-10">
+<span class="text-primary font-black">01</span>
+</div>
+<div class="pt-2">
+<h4 class="text-2xl font-black mb-2 group-hover:text-primary transition-colors">Choose Your Path</h4>
+<p class="text-[#5e8d87] dark:text-gray-400">Pick from 100+ creative courses ranging from UI design to full-stack development and digital marketing.</p>
+</div>
+</div>
+<div class="flex gap-8 group">
+<div class="size-12 rounded-full bg-white dark:bg-gray-900 border-4 border-accent-blue flex-shrink-0 flex items-center justify-center z-10">
+<span class="text-accent-blue font-black">02</span>
+</div>
+<div class="pt-2">
+<h4 class="text-2xl font-black mb-2 group-hover:text-accent-blue transition-colors">Master New Skills</h4>
+<p class="text-[#5e8d87] dark:text-gray-400">Engage with high-production video modules, interactive quizzes, and community-led peer reviews.</p>
+</div>
+</div>
+<div class="flex gap-8 group">
+<div class="size-12 rounded-full bg-white dark:bg-gray-900 border-4 border-accent-orange flex-shrink-0 flex items-center justify-center z-10">
+<span class="text-accent-orange font-black">03</span>
+</div>
+<div class="pt-2">
+<h4 class="text-2xl font-black mb-2 group-hover:text-accent-orange transition-colors">Build Real Projects</h4>
+<p class="text-[#5e8d87] dark:text-gray-400">Apply what you've learned by building a portfolio of work that showcases your skills to future employers.</p>
+</div>
+</div>
+<div class="flex gap-8 group">
+<div class="size-12 rounded-full bg-white dark:bg-gray-900 border-4 border-accent-yellow flex-shrink-0 flex items-center justify-center z-10">
+<span class="text-accent-yellow font-black">04</span>
+</div>
+<div class="pt-2">
+<h4 class="text-2xl font-black mb-2 group-hover:text-accent-yellow transition-colors">Earn Certificates</h4>
+<p class="text-[#5e8d87] dark:text-gray-400">Showcase your achievements with verifiable blockchain certificates recognized by industry leaders.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Pricing Section -->
+<section class="py-24">
+<div class="text-center mb-16">
+<h2 class="text-5xl font-black mb-4">CHOOSE YOUR <span class="text-primary italic">PLAN</span></h2>
+<p class="text-[#5e8d87] dark:text-gray-400">Simple, transparent pricing for learners at every stage.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end">
+<!-- Free Plan -->
+<div class="bg-white dark:bg-gray-800 border-2 border-[#101817] dark:border-white rounded-xl p-8 pop-shadow flex flex-col gap-6">
+<div>
+<h3 class="text-2xl font-black">Basic</h3>
+<p class="text-[#5e8d87] text-sm">For the curious</p>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-black">$0</span>
+<span class="text-[#5e8d87]">/mo</span>
+</div>
+<ul class="space-y-3 py-6 border-y border-[#dae7e5] dark:border-[#2d323a]">
+<li class="flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+                            5 Free modules per month
+                        </li>
+<li class="flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-primary text-lg">check_circle</span>
+                            Community support
+                        </li>
+<li class="flex items-center gap-2 text-sm text-gray-400">
+<span class="material-symbols-outlined text-lg">cancel</span>
+                            Project certification
+                        </li>
+</ul>
+<button class="w-full py-3 font-black border-2 border-[#101817] dark:border-white rounded-lg hover:bg-[#101817] hover:text-white transition-all">
+                        START FREE
+                    </button>
+</div>
+<!-- Pro Plan (Primary) -->
+<div class="bg-primary text-white border-2 border-[#101817] rounded-xl p-8 pop-shadow-primary scale-105 relative z-10 flex flex-col gap-6">
+<div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-accent-orange text-white px-4 py-1 rounded-full text-xs font-black uppercase tracking-widest border-2 border-[#101817]">
+                        Most Popular
+                    </div>
+<div>
+<h3 class="text-3xl font-black">Pro Access</h3>
+<p class="text-white/80 text-sm">For serious builders</p>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-5xl font-black">$29</span>
+<span class="text-white/80">/mo</span>
+</div>
+<ul class="space-y-3 py-6 border-y border-white/20">
+<li class="flex items-center gap-2 text-sm font-bold">
+<span class="material-symbols-outlined text-white text-lg">verified</span>
+                            Unlimited course access
+                        </li>
+<li class="flex items-center gap-2 text-sm font-bold">
+<span class="material-symbols-outlined text-white text-lg">verified</span>
+                            Priority mentor support
+                        </li>
+<li class="flex items-center gap-2 text-sm font-bold">
+<span class="material-symbols-outlined text-white text-lg">verified</span>
+                            Custom learning path
+                        </li>
+<li class="flex items-center gap-2 text-sm font-bold">
+<span class="material-symbols-outlined text-white text-lg">verified</span>
+                            Verified certificates
+                        </li>
+</ul>
+<button class="w-full py-4 font-black bg-[#101817] text-white rounded-lg hover:brightness-125 transition-all">
+                        GET PRO ACCESS
+                    </button>
+</div>
+<!-- School Plan -->
+<div class="bg-white dark:bg-gray-800 border-2 border-[#101817] dark:border-white rounded-xl p-8 pop-shadow flex flex-col gap-6">
+<div>
+<h3 class="text-2xl font-black text-accent-orange">School</h3>
+<p class="text-[#5e8d87] text-sm">For institutions</p>
+</div>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-black">Custom</span>
+</div>
+<ul class="space-y-3 py-6 border-y border-[#dae7e5] dark:border-[#2d323a]">
+<li class="flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-accent-orange text-lg">check_circle</span>
+                            Bulk student licenses
+                        </li>
+<li class="flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-accent-orange text-lg">check_circle</span>
+                            Admin dashboard &amp; tools
+                        </li>
+<li class="flex items-center gap-2 text-sm">
+<span class="material-symbols-outlined text-accent-orange text-lg">check_circle</span>
+                            LMS integration
+                        </li>
+</ul>
+<button class="w-full py-3 font-black bg-accent-yellow text-[#101817] rounded-lg border-2 border-[#101817] hover:brightness-105 transition-all">
+                        CONTACT SALES
+                    </button>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24">
+<div class="bg-accent-blue rounded-3xl p-12 md:p-20 text-center text-white relative overflow-hidden pop-shadow border-4 border-[#101817]">
+<div class="absolute top-0 right-0 w-64 h-64 bg-accent-yellow/20 rounded-full -mr-20 -mt-20 blur-3xl"></div>
+<div class="absolute bottom-0 left-0 w-64 h-64 bg-primary/20 rounded-full -ml-20 -mb-20 blur-3xl"></div>
+<h2 class="text-4xl md:text-6xl font-black mb-8 relative z-10 leading-none">READY TO BUILD THE FUTURE OF YOU?</h2>
+<div class="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
+<input class="px-6 py-4 rounded-xl text-[#101817] w-full max-w-sm border-2 border-[#101817] focus:ring-0 focus:border-primary outline-none font-bold" placeholder="Enter your email" type="email"/>
+<button class="bg-[#101817] text-white px-10 py-4 rounded-xl font-black hover:bg-primary transition-colors">
+                        JOIN THE WAITLIST
+                    </button>
+</div>
+<p class="mt-8 text-white/70 text-sm font-bold uppercase tracking-widest relative z-10">Joined by 50,000+ creators this month</p>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-gray-950 border-t-2 border-[#101817] py-20">
+<div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-1">
+<div class="flex items-center gap-3 mb-6">
+<div class="size-8 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined text-xl">architecture</span>
+</div>
+<h2 class="text-lg font-black tracking-tighter uppercase">EdTechPlay</h2>
+</div>
+<p class="text-sm text-[#5e8d87] leading-relaxed mb-6">Redefining digital education through playful, modular learning experiences for a new generation of builders.</p>
+<div class="flex gap-4">
+<a class="size-10 bg-[#f0f5f4] dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+</a>
+<a class="size-10 bg-[#f0f5f4] dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">alternate_email</span>
+</a>
+<a class="size-10 bg-[#f0f5f4] dark:bg-gray-800 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined">podcasts</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="font-black mb-6 uppercase tracking-widest text-xs">Platform</h4>
+<ul class="space-y-4 text-sm font-bold text-[#5e8d87] dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Course Catalog</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Skill Assessments</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Student Projects</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Mobile App</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-black mb-6 uppercase tracking-widest text-xs">Community</h4>
+<ul class="space-y-4 text-sm font-bold text-[#5e8d87] dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Success Stories</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Mentorship</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Global Events</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Forum</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-black mb-6 uppercase tracking-widest text-xs">Legal</h4>
+<ul class="space-y-4 text-sm font-bold text-[#5e8d87] dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Cookie Settings</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Accessibility</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto px-6 mt-20 pt-8 border-t border-[#dae7e5] dark:border-[#2d323a] flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs font-bold text-[#5e8d87]">© 2024 EDTECHPLAY INC. ALL RIGHTS RESERVED.</p>
+<div class="flex items-center gap-2">
+<span class="text-xs font-bold text-[#5e8d87]">MADE WITH</span>
+<span class="material-symbols-outlined text-accent-orange text-sm">favorite</span>
+<span class="text-xs font-bold text-[#5e8d87]">FOR CREATORS</span>
+</div>
+</div>
+</footer>
+</body></html>

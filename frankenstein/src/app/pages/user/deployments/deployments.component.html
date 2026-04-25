@@ -1,0 +1,150 @@
+<div class="max-w-4xl mx-auto px-6 py-8 pb-20">
+
+  <!-- En-tête -->
+  <div class="flex items-center gap-4 mb-8">
+    <a routerLink="/admin" [queryParams]="{tab: 'deploiement'}"
+       class="p-2 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-all">
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+    </a>
+    <div class="w-10 h-10 rounded-xl bg-light-primary/10 dark:bg-primary/10 border border-light-primary/20 dark:border-primary/20 flex items-center justify-center">
+      <span class="material-symbols-outlined text-light-primary dark:text-primary text-xl">rocket_launch</span>
+    </div>
+    <div>
+      <h1 class="text-2xl font-bold text-light-text dark:text-white tracking-tight">Historique des déploiements</h1>
+      <p class="text-sm text-light-text-muted dark:text-white/40 mt-0.5">Suivi des versions déployées sur ce poste</p>
+    </div>
+  </div>
+
+  <!-- Statut version actuelle -->
+  @if (versionStatus()) {
+    <div class="mb-6 flex items-center gap-4 p-4 rounded-xl border"
+         [class]="versionStatus()!.upToDate
+           ? 'bg-yellow-500/5 border-yellow-500/20'
+           : 'bg-red-500/5 border-red-500/20'">
+      <span class="material-symbols-outlined text-2xl"
+            [class]="versionStatus()!.upToDate ? 'text-yellow-400' : 'text-red-400'">
+        {{ versionStatus()!.upToDate ? 'check_circle' : 'warning' }}
+      </span>
+      <div>
+        <p class="text-sm font-bold"
+           [class]="versionStatus()!.upToDate ? 'text-yellow-400' : 'text-red-400'">
+          @if (versionStatus()!.upToDate) {
+            Ce poste est à jour — v{{ versionStatus()!.localVersion }}
+          } @else {
+            Mise à jour requise — ce poste est en v{{ versionStatus()!.localVersion }}, la dernière version est v{{ versionStatus()!.latestDeployment?.version }}
+          }
+        </p>
+        @if (versionStatus()!.latestDeployment) {
+          <p class="text-xs text-light-text-muted dark:text-white/40 mt-0.5">
+            Dernier déploiement :
+            <strong>{{ versionStatus()!.latestDeployment.commit_name || '—' }}</strong>
+            le {{ formatDate(versionStatus()!.latestDeployment.deployed_at) }}
+            par {{ versionStatus()!.latestDeployment.deployed_by }}
+          </p>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Erreur -->
+  @if (error()) {
+    <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error() }}</div>
+  }
+
+  <!-- Spinner -->
+  @if (loading()) {
+    <div class="flex items-center justify-center py-16">
+      <span class="material-symbols-outlined text-3xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+    </div>
+  }
+
+  <!-- Tableau -->
+  @if (!loading()) {
+    <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+
+      <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between">
+        <span class="text-sm font-semibold text-light-text dark:text-white">Tous les déploiements</span>
+        <button (click)="loadDeployments()"
+                class="p-1.5 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-all" title="Rafraîchir">
+          <span class="material-symbols-outlined text-sm">refresh</span>
+        </button>
+      </div>
+
+      @if (deployments().length === 0) {
+        <div class="text-center py-12 text-light-text-muted dark:text-white/40 text-sm">Aucun déploiement enregistré</div>
+      }
+
+      @if (deployments().length > 0) {
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="border-b border-light-border dark:border-white/10 text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30">
+                <th class="text-left px-5 py-3">Version</th>
+                <th class="text-left px-5 py-3">Commit</th>
+                <th class="text-left px-5 py-3">Date</th>
+                <th class="text-left px-5 py-3">Par</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (dep of deployments(); track dep.id) {
+                <tr class="border-b border-light-border/50 dark:border-white/5 hover:bg-light-primary/5 dark:hover:bg-primary/5 transition-colors"
+                    [class]="dep.version === versionStatus()?.localVersion ? 'bg-yellow-500/5' : ''">
+                  <td class="px-5 py-3">
+                    <div class="flex flex-col items-center gap-0.5">
+                      <span class="font-mono text-xs font-bold px-2 py-1 rounded-md bg-light-primary/10 dark:bg-primary/10 text-light-primary dark:text-primary">
+                        v{{ dep.version }}
+                      </span>
+                      @if (dep.version === versionStatus()?.localVersion) {
+                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">
+                          actuel
+                        </span>
+                      }
+                    </div>
+                  </td>
+                  <td class="px-5 py-3">
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-1.5 shrink-0">
+                        @if (extractCommitType(dep.commit_name)) {
+                          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                                [class]="commitTypeClass(extractCommitType(dep.commit_name))">
+                            {{ shortCommitType(extractCommitType(dep.commit_name)) }}
+                          </span>
+                        }
+                        @if (dep.scope) {
+                          <div class="flex flex-col gap-0.5">
+                            @for (row of getScopedRows(dep.scope, dep.features); track row.scope) {
+                              <div class="flex items-center gap-1">
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                                      [class]="scopeClass(row.scope)">
+                                  {{ row.scope }}
+                                </span>
+                                @for (f of row.features; track f) {
+                                  <span class="text-[10px] font-medium px-2 py-0.5 rounded-md bg-slate-500/10 text-slate-400 border border-slate-500/20 whitespace-nowrap">
+                                    ● {{ f }}
+                                  </span>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <span class="text-light-text dark:text-white/80 text-sm">{{ extractCommitTitle(dep.commit_name) || '—' }}</span>
+                    </div>
+                  </td>
+                  <td class="px-5 py-3 text-light-text-muted dark:text-white/40 text-xs whitespace-nowrap">
+                    {{ formatDate(dep.deployed_at) }}
+                  </td>
+                  <td class="px-5 py-3 text-light-text-muted dark:text-white/40 text-xs">
+                    {{ dep.deployed_by || '—' }}
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+    </div>
+  }
+
+</div>

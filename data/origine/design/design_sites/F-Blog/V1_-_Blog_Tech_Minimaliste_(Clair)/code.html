@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>TechMinimalist | Engineering the Invisible</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335157",
+                        "accent-terracotta": "#D69781",
+                        "accent-olive": "#8C9C88",
+                        "background-light": "#fbfaf9",
+                        "background-dark": "#25292d",
+                        "border-muted": "#e0ddd9"
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Epilogue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .editorial-shadow {
+            box-shadow: 0 4px 20px -2px rgba(224, 221, 217, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#131515] dark:text-gray-100 transition-colors duration-300">
+<div class="layout-container flex h-full grow flex-col">
+<!-- Navigation -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-border-muted/50 dark:border-gray-800 px-6 md:px-20 py-6 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3 text-primary dark:text-white">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold leading-tight tracking-tight uppercase">TechMinimalist</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-10">
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Articles</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Archive</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Topics</a>
+<a class="text-sm font-medium hover:text-primary transition-colors" href="#">Manifesto</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-6 items-center">
+<div class="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-full px-4 py-2 w-64">
+<span class="material-symbols-outlined text-gray-400 text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-full placeholder:text-gray-400" placeholder="Find insights..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-primary/90 text-white text-sm font-bold px-6 py-2.5 rounded-full transition-all">
+                    Subscribe
+                </button>
+</div>
+</header>
+<main class="max-w-[1200px] mx-auto px-6 py-12 lg:py-24">
+<!-- Hero Section -->
+<section class="mb-24">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-2">
+<span class="bg-accent-terracotta/10 text-accent-terracotta text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full">Featured Analysis</span>
+<span class="text-gray-400 text-xs">•</span>
+<span class="text-gray-500 text-xs font-medium">12 Oct 2023 • 12 min read</span>
+</div>
+<h1 class="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] tracking-tight max-w-4xl text-[#131515] dark:text-white">
+                        The Future of Minimalist Interfaces: Engineering the <span class="text-primary italic">Invisible</span>.
+                    </h1>
+<p class="text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl font-light leading-relaxed mt-4">
+                        How software architecture is evolving to prioritize human cognitive load over visual complexity, and why the next decade of UI is about what we remove, not what we add.
+                    </p>
+<div class="w-full h-[500px] bg-center bg-no-repeat bg-cover rounded-xl mt-8 editorial-shadow" data-alt="Minimalist abstract desk setup with clean lines" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuD78nxxtuaEU735mNmMKAxLcHp_Om3ZmCB6ywDji8_JrS9VCYOL6-Z5kr-xhb3Syg7inkOmzSVB4w3tej-zY_Rc3xn2-mrj1qKN9LBupdOK5XowGtu5L9W57d02KnUts4_ttqbO2P--3rIdvgPfSzObjsOvSYXyzt1zIAO9Fz5M_Vx-QNYsi73OeA_RfoQ2PQj4Ehrd3R9bj0xZ6iqnn7ideRW2XQctlNue3qvP3uQZmq8ZLsC5FxUlrF3nTnsuMbSt_iVVhWTnxxw");'></div>
+</div>
+</section>
+<!-- Section Split -->
+<div class="flex items-center justify-between mb-12 border-b border-border-muted dark:border-gray-800 pb-6">
+<h2 class="text-2xl font-bold tracking-tight">Recent Perspectives</h2>
+<div class="flex gap-4">
+<button class="p-2 border border-border-muted dark:border-gray-700 rounded-full hover:bg-gray-50 dark:hover:bg-gray-800">
+<span class="material-symbols-outlined text-sm">filter_list</span>
+</button>
+</div>
+</div>
+<!-- Two-Column Article Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-20">
+<!-- Article 1 -->
+<article class="group cursor-pointer">
+<div class="overflow-hidden rounded-xl mb-6 bg-gray-100 aspect-[16/10]">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Detailed server rack with minimalist lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCh79mRG8xk3X-lhlEHvqD_LFYM0FHcnuFDjANaSzzmdgd4PdT2a8FtXEUOhqzK0yNasw1MpeDlK6IGtz6iV-BshLNswuhGvaM5b1UlIGHIirDdMwLTLN68iweQlW_pKs5A3VT5MCzw3ycSelwh0CnSyX_xRr-Eo4j9-uWAzErjg0HqbaxyEfnkMWnxVrym1ul5eJs7T1zoIHpSp4z3XYDfz4Q24OpgGEhVo_DL7uya7vk-nqXvsiEr0nAd4xsowrUXHH3-Cro76QM");'></div>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<span class="text-accent-olive text-[10px] font-bold tracking-widest uppercase">Infrastructure</span>
+<span class="text-gray-300">•</span>
+<span class="text-gray-500 text-xs">8 min read</span>
+</div>
+<h3 class="text-2xl font-bold mb-3 leading-snug group-hover:text-primary transition-colors">Scaling Distributed Systems in 2024</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed font-light mb-6">A deep dive into modular architecture and cloud-native patterns that define modern scalability.</p>
+<a class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#131515] dark:text-white" href="#">
+                        Read Story 
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</article>
+<!-- Article 2 -->
+<article class="group cursor-pointer">
+<div class="overflow-hidden rounded-xl mb-6 bg-gray-100 aspect-[16/10]">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Neural network visualization with soft colors" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuBQL5C4KTCbp7CMvqXpbivRsagi5y501F8pbFP8ZVu3AIzXRuvI5dZKUdcnPPVV_Zg0rEM7Nv6T2R9HUyHlzkIYUIjWppp3pu9ZSiWYRYNoxgwxWRt5TlN7DmBIXEiSxbAZfaQ7XLegCMXobfTiLUYYLE3mnKtkEmvMhWoVMG3d0n_GOdyL0TjyymTmcNmwI6bSMK_tJorBIfpnLExCbSRrK6ws-GALof2ciGRwS-jX-0lFL5EH5GlV7Yrt7O3ooJO-ypPyNHSKoMA");'></div>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<span class="text-accent-terracotta text-[10px] font-bold tracking-widest uppercase">Ethics</span>
+<span class="text-gray-300">•</span>
+<span class="text-gray-500 text-xs">15 min read</span>
+</div>
+<h3 class="text-2xl font-bold mb-3 leading-snug group-hover:text-primary transition-colors">The Ethics of Generative AI</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed font-light mb-6">Navigating the boundaries between human creativity and algorithmic automation in professional workflows.</p>
+<a class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#131515] dark:text-white" href="#">
+                        Read Story 
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</article>
+<!-- Article 3 -->
+<article class="group cursor-pointer">
+<div class="overflow-hidden rounded-xl mb-6 bg-gray-100 aspect-[16/10]">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Minimalist desk setup with keyboard and plant" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCAP7dfee9jp0QFA4ZoSC_PQTq5zQvDF0NbVdFcZxz2Mrns-7my5L_GOM6fl-p0LmmwdKMEbi8WtgkiXCPU3MYAsimVBb9sRSW9VawFxRQpDBfvubWWVKSg_wsjNI7nly5pp4HsrnRV7SmtgaCT0eX4r8une-Of9i3cFC7GopfMoJm28SClNY_2amsSMk0JCIKeyBCoqFUC4M4Yaf0HP6uIFuKDARHafCpvUanmPEjZf7bUALuC53M0IZNYou9e7xwHMIwFVvu0TIk");'></div>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<span class="text-primary text-[10px] font-bold tracking-widest uppercase">Productivity</span>
+<span class="text-gray-300">•</span>
+<span class="text-gray-500 text-xs">6 min read</span>
+</div>
+<h3 class="text-2xl font-bold mb-3 leading-snug group-hover:text-primary transition-colors">Cognitive Load and Tooling</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed font-light mb-6">How simple text editors are making a comeback in an era of complex IDEs and notification fatigue.</p>
+<a class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#131515] dark:text-white" href="#">
+                        Read Story 
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</article>
+<!-- Article 4 -->
+<article class="group cursor-pointer">
+<div class="overflow-hidden rounded-xl mb-6 bg-gray-100 aspect-[16/10]">
+<div class="w-full h-full bg-center bg-no-repeat bg-cover transition-transform duration-700 group-hover:scale-105" data-alt="Abstract hardware components in soft lighting" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA5DRvq0rNDHXC0MOQpRqE7oMlgjdp05p3CZRgMMy-zqDU0BUGpr_kVFGB5zZqVCUSZXvxdeyYM51ev2G3oBn3juOMGpbVKps9hWUubszGVli1zTIQUrXOuQieTXoFt4AY-03qak6GwuJ2QpiM_ARcPNc8GBZqZvmUzF3InZzxjCYPgArzvjOLEy5uCi5B-bSvahmqkD2ap48jg4GNzlBozDpVDAbgN1-W_OvFRyaOSsl59T6A9EpiHBd93k5Xf5wA15zI1dMR2Vgc");'></div>
+</div>
+<div class="flex items-center gap-3 mb-4">
+<span class="text-accent-olive text-[10px] font-bold tracking-widest uppercase">Hardware</span>
+<span class="text-gray-300">•</span>
+<span class="text-gray-500 text-xs">10 min read</span>
+</div>
+<h3 class="text-2xl font-bold mb-3 leading-snug group-hover:text-primary transition-colors">The Silicon Frontier</h3>
+<p class="text-gray-500 dark:text-gray-400 leading-relaxed font-light mb-6">Why custom silicon is becoming the ultimate differentiator for both mobile and server environments.</p>
+<a class="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-[#131515] dark:text-white" href="#">
+                        Read Story 
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</article>
+</div>
+<!-- Newsletter Bar -->
+<section class="mt-32 p-12 bg-primary rounded-xl text-white text-center flex flex-col items-center gap-8">
+<div class="max-w-xl">
+<h2 class="text-3xl font-bold mb-4">Insights delivered directly.</h2>
+<p class="text-white/70 font-light text-lg">Every Friday, we send out a curated selection of deep-dives into the architecture of the web. No noise, just engineering.</p>
+</div>
+<form class="flex flex-col sm:flex-row gap-4 w-full max-w-lg">
+<input class="flex-1 rounded-full bg-white/10 border-white/20 text-white placeholder:text-white/50 px-6 py-3 focus:ring-2 focus:ring-accent-terracotta border-none" placeholder="Email address" type="email"/>
+<button class="bg-white text-primary font-bold px-8 py-3 rounded-full hover:bg-white/90 transition-colors">Join 12k Readers</button>
+</form>
+</section>
+</main>
+<!-- Footer -->
+<footer class="border-t border-border-muted dark:border-gray-800 bg-[#f4f2f0] dark:bg-background-dark/50 py-20">
+<div class="max-w-[1200px] mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-3 text-primary dark:text-white mb-6">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold uppercase tracking-tight">TechMinimalist</h2>
+</div>
+<p class="text-gray-500 dark:text-gray-400 font-light leading-relaxed max-w-xs">
+                        A curated publication exploring the intersection of high-performance engineering and minimalist design principles.
+                    </p>
+</div>
+<div>
+<h4 class="font-bold text-sm uppercase tracking-widest mb-6">Explore</h4>
+<ul class="space-y-4 text-sm text-gray-500 dark:text-gray-400 font-medium">
+<li><a class="hover:text-primary" href="#">Featured Series</a></li>
+<li><a class="hover:text-primary" href="#">Engineering Wiki</a></li>
+<li><a class="hover:text-primary" href="#">Design Tokens</a></li>
+<li><a class="hover:text-primary" href="#">Podcast</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold text-sm uppercase tracking-widest mb-6">Connect</h4>
+<ul class="space-y-4 text-sm text-gray-500 dark:text-gray-400 font-medium">
+<li><a class="hover:text-primary" href="#">GitHub</a></li>
+<li><a class="hover:text-primary" href="#">Twitter / X</a></li>
+<li><a class="hover:text-primary" href="#">LinkedIn</a></li>
+<li><a class="hover:text-primary" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1200px] mx-auto px-6 mt-20 pt-8 border-t border-border-muted/50 dark:border-gray-800 flex justify-between items-center text-[10px] text-gray-400 uppercase tracking-[0.2em]">
+<p>© 2024 TechMinimalist Editorial. All rights reserved.</p>
+<div class="flex gap-8">
+<a href="#">Privacy</a>
+<a href="#">Terms</a>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

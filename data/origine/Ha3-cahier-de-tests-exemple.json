@@ -1,0 +1,582 @@
+{
+  "metadata": {
+    "title": "Cahier de Tests - ProjectForge Platform11",
+    "version": "1.0",
+    "createdAt": "2026-01-23",
+    "totalTests": 108,
+    "exigences": {
+      "must": 52,
+      "should": 32,
+      "could": 24
+    },
+    "reference": "docs/Bg0-Exigences_Fonctionnelles_Structurees.md"
+  },
+  "categories": [
+    {
+      "id": "templates",
+      "name": "Gestion des Templates",
+      "section": 1,
+      "tests": [
+        {
+          "id": "EF-SYS-001",
+          "title": "55Afficher la liste des templates",
+          "description": "Le systeme doit afficher une grille de toutes les templates disponibles avec leur icone, nom, description courte, nombre de phases et tags.",
+          "priority": "must",
+          "objective": "Valider que toutes les templates du dossier structure/ sont correctement chargees et affichees dans une grille responsive.",
+          "references": [
+            "EU-01 : Decouvrir les templates disponibles",
+            "BM-01 : Simplifier la creation de projets",
+            "docs/Bg0-Exigences_Fonctionnelles_Structurees.md"
+          ],
+          "preconditions": [
+            "Serveur backend demarre",
+            "Au moins 1 template presente dans structure/",
+            "Navigateur moderne (Chrome, Firefox, Edge)"
+          ],
+          "steps": [
+            "Ouvrir la page d'accueil de l'application",
+            "Verifier que la section \"Templates disponibles\" s'affiche",
+            "Compter le nombre de templates affichees",
+            "Pour chaque template, verifier la presence de: icone, nom, description, nombre de phases, tags",
+            "Redimensionner la fenetre pour tester le responsive"
+          ],
+          "expectedResults": [
+            "Toutes les templates sont listees",
+            "Chaque carte affiche: icone, nom, description, phases_count, tags",
+            "Grille responsive (1-4 colonnes selon largeur)",
+            "Clic sur template affiche les details"
+          ]
+        },
+        {
+          "id": "EF-SYS-002",
+          "title": "Afficher les details d'une template",
+          "description": "Le systeme doit afficher une modale avec tous les details de la template selectionnee.",
+          "priority": "must",
+          "steps": [
+            "Cliquer sur une carte template",
+            "Verifier l'ouverture de la modale",
+            "Verifier la presence de: nom complet, description, liste des phases, duree estimee",
+            "Verifier le bouton \"Utiliser cette template\"",
+            "Fermer la modale avec X ou clic exterieur"
+          ],
+          "expectedResults": [
+            "Modale s'ouvre avec animation fluide",
+            "Tous les details sont affiches",
+            "Bouton \"Utiliser\" lance la creation",
+            "Modale se ferme correctement"
+          ]
+        },
+        {
+          "id": "EF-SYS-003",
+          "title": "Charger les phases d'une template",
+          "description": "Le systeme doit charger et indexer toutes les phases d'une template depuis le dossier _phases/.",
+          "priority": "must",
+          "steps": [
+            "Creer un projet depuis une template",
+            "Verifier que les phases sont chargees dans le bon ordre",
+            "Verifier les attributs de chaque phase (id, name, description, type, order, icon)",
+            "Verifier qu'aucune phase n'est dupliquee"
+          ],
+          "expectedResults": [
+            "Phases chargees dans l'ordre numerique",
+            "Tous les attributs presents",
+            "Pas de duplication",
+            "Phases required identifiees"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "projets",
+      "name": "Gestion des Projets",
+      "section": 2,
+      "tests": [
+        {
+          "id": "EF-SYS-010",
+          "title": "Creer un nouveau projet",
+          "description": "Le systeme doit creer un nouveau projet avec un ID unique, enregistrer ses metadonnees et initialiser la structure de dossiers.",
+          "priority": "must",
+          "steps": [
+            "Cliquer sur \"Nouveau projet\"",
+            "Remplir le nom du projet",
+            "Selectionner une template",
+            "Valider la creation",
+            "Verifier la redirection vers le projet",
+            "Verifier les fichiers crees (project.json, history.json)"
+          ],
+          "expectedResults": [
+            "ID unique genere",
+            "project.json et history.json crees",
+            "Statut \"in_progress\", completion 0%",
+            "Timestamps created_at et updated_at corrects",
+            "Redirection vers questionnaire phase 1"
+          ]
+        },
+        {
+          "id": "EF-SYS-011",
+          "title": "Afficher la liste des projets",
+          "description": "Le systeme doit afficher la liste de tous les projets avec leur progression, statut et derniere modification.",
+          "priority": "must",
+          "steps": [
+            "Acceder a la page d'accueil",
+            "Verifier la section \"Mes projets\"",
+            "Verifier les informations de chaque projet",
+            "Tester le tri par date et progression"
+          ],
+          "expectedResults": [
+            "Tous les projets listes",
+            "Nom, template, %, phase actuelle affiches",
+            "Tri fonctionnel",
+            "Projets termines identifies visuellement"
+          ]
+        },
+        {
+          "id": "EF-SYS-015",
+          "title": "Calculer la progression globale",
+          "description": "Le systeme doit calculer automatiquement le pourcentage de progression du projet.",
+          "priority": "must",
+          "steps": [
+            "Creer un nouveau projet (0%)",
+            "Repondre a quelques questions",
+            "Verifier la mise a jour de la progression",
+            "Completer une phase entiere",
+            "Verifier la progression finale (100%)"
+          ],
+          "expectedResults": [
+            "Projet vide = 0%",
+            "Progression mise a jour en temps reel",
+            "Projet termine = 100%",
+            "Affichage sur carte et page projet"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phases",
+      "name": "Gestion des Phases",
+      "section": 3,
+      "tests": [
+        {
+          "id": "EF-SYS-020",
+          "title": "Afficher les phases du projet",
+          "description": "Le systeme doit afficher une sidebar avec toutes les phases du projet avec icones visuelles indiquant leur statut.",
+          "priority": "must",
+          "steps": [
+            "Ouvrir un projet existant",
+            "Verifier la sidebar des phases",
+            "Verifier les icones de statut (completed, in_progress, pending)",
+            "Cliquer sur une phase pour naviguer"
+          ],
+          "expectedResults": [
+            "Phases listees dans le bon ordre",
+            "Statut affiche avec icone/couleur",
+            "Phase actuelle mise en evidence",
+            "Navigation fonctionnelle"
+          ]
+        },
+        {
+          "id": "EF-SYS-023",
+          "title": "Naviguer entre les phases",
+          "description": "Le systeme doit permettre la navigation entre les phases via la sidebar et les boutons Precedent/Suivant.",
+          "priority": "must",
+          "steps": [
+            "Cliquer sur une phase dans la sidebar",
+            "Utiliser le bouton \"Suivant\"",
+            "Utiliser le bouton \"Precedent\"",
+            "Verifier l'URL de la page",
+            "Verifier que les reponses sont conservees"
+          ],
+          "expectedResults": [
+            "Navigation instantanee",
+            "Boutons desactives aux limites",
+            "URL mise a jour",
+            "Reponses conservees"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "questionnaires",
+      "name": "Gestion des Questionnaires",
+      "section": 4,
+      "tests": [
+        {
+          "id": "EF-SYS-031",
+          "title": "Afficher une question a la fois",
+          "description": "Le systeme doit afficher une seule question a la fois avec son label, description d'aide et barre de progression.",
+          "priority": "must",
+          "steps": [
+            "Ouvrir un questionnaire",
+            "Verifier qu'une seule question est affichee",
+            "Verifier le label et la description d'aide",
+            "Verifier la progression \"Question X/Y\"",
+            "Naviguer a la question suivante"
+          ],
+          "expectedResults": [
+            "Une seule question visible",
+            "Label et aide lisibles",
+            "Progression correcte",
+            "Animations fluides"
+          ]
+        },
+        {
+          "id": "EF-SYS-032",
+          "title": "Supporter les differents types de questions",
+          "description": "Le systeme doit supporter 10 types de questions: text, textarea, number, date, select, checkbox, radio, boolean, range, file.",
+          "priority": "must",
+          "steps": [
+            "Tester un champ text (saisie libre)",
+            "Tester un champ textarea (texte long)",
+            "Tester un champ number (validation numerique)",
+            "Tester un champ date (datepicker)",
+            "Tester un champ select (liste deroulante)",
+            "Tester checkbox et radio",
+            "Tester range (slider)",
+            "Tester file (upload)"
+          ],
+          "expectedResults": [
+            "Chaque type affiche le bon composant",
+            "Validations appropriees",
+            "Options select/checkbox/radio correctes",
+            "Upload fichiers fonctionnel"
+          ]
+        },
+        {
+          "id": "EF-SYS-033",
+          "title": "Sauvegarder la reponse a une question",
+          "description": "Le systeme doit sauvegarder automatiquement chaque reponse dans le fichier JSON du projet.",
+          "priority": "must",
+          "steps": [
+            "Saisir une reponse a une question",
+            "Verifier la notification de sauvegarde",
+            "Quitter et revenir au projet",
+            "Verifier que la reponse est restauree",
+            "Verifier le timestamp answered_at"
+          ],
+          "expectedResults": [
+            "Sauvegarde en moins de 1 seconde",
+            "Timestamp enregistre",
+            "Reponse persistante",
+            "Aucune reponse perdue"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "claude",
+      "name": "Integration Claude Code",
+      "section": 5,
+      "tests": [
+        {
+          "id": "EF-SYS-041",
+          "title": "Appeler Claude Code CLI",
+          "description": "Le systeme doit executer la commande Claude Code CLI avec le prompt genere et capturer la sortie.",
+          "priority": "must",
+          "steps": [
+            "Completer un questionnaire",
+            "Cliquer sur \"Generer\"",
+            "Verifier que la generation demarre",
+            "Verifier les fichiers crees dans _outputs/",
+            "Tester avec une erreur Claude"
+          ],
+          "expectedResults": [
+            "Commande claude executee",
+            "Generation demarre en moins de 2s",
+            "Fichiers crees dans _outputs/",
+            "Erreurs capturees et affichees"
+          ]
+        },
+        {
+          "id": "EF-SYS-042",
+          "title": "Afficher la reponse en streaming",
+          "description": "Le systeme doit afficher la reponse de Claude en temps reel avec mise a jour progressive du texte.",
+          "priority": "must",
+          "steps": [
+            "Lancer une generation",
+            "Observer l'affichage en temps reel",
+            "Verifier le curseur/spinner de generation",
+            "Verifier l'auto-scroll",
+            "Copier la reponse finale"
+          ],
+          "expectedResults": [
+            "Texte apparait progressivement",
+            "Latence moins de 100ms",
+            "Scroll automatique",
+            "Reponse copiable"
+          ]
+        },
+        {
+          "id": "EF-SYS-045",
+          "title": "Telecharger les fichiers generes",
+          "description": "Le systeme doit permettre le telechargement de fichiers individuels ou tous les fichiers en archive ZIP.",
+          "priority": "must",
+          "steps": [
+            "Generer des fichiers",
+            "Cliquer sur \"Telecharger\" pour un fichier",
+            "Verifier le contenu du fichier",
+            "Cliquer sur \"Telecharger tout\"",
+            "Verifier l'archive ZIP"
+          ],
+          "expectedResults": [
+            "Bouton \"Telecharger\" fonctionnel",
+            "Fichiers avec bons noms et contenus",
+            "Archive ZIP valide",
+            "Telechargement en moins de 5s"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "historique",
+      "name": "Historique et Versioning",
+      "section": 6,
+      "tests": [
+        {
+          "id": "EF-SYS-050",
+          "title": "Enregistrer l'historique des modifications",
+          "description": "Le systeme doit enregistrer chaque modification dans history.json avec timestamp, action et details.",
+          "priority": "must",
+          "steps": [
+            "Effectuer plusieurs actions sur un projet",
+            "Verifier le fichier history.json",
+            "Verifier les timestamps",
+            "Verifier les types d'actions"
+          ],
+          "expectedResults": [
+            "Historique enregistre",
+            "Timestamps corrects",
+            "Actions detaillees",
+            "Ordre chronologique"
+          ]
+        },
+        {
+          "id": "EF-SYS-051",
+          "title": "Afficher l'historique du projet",
+          "description": "Le systeme doit afficher une timeline de l'historique des modifications du projet.",
+          "priority": "should",
+          "steps": [
+            "Ouvrir un projet",
+            "Acceder a la section historique",
+            "Verifier l'affichage de la timeline",
+            "Verifier les details de chaque entree"
+          ],
+          "expectedResults": [
+            "Timeline lisible",
+            "Actions identifiables",
+            "Dates formatees",
+            "Navigation possible"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "name": "Interface Utilisateur",
+      "section": 7,
+      "tests": [
+        {
+          "id": "UI-001",
+          "title": "Navigation globale",
+          "description": "Verifier que la navigation entre les pages est fluide et coherente.",
+          "priority": "must",
+          "steps": [
+            "Verifier le header sur toutes les pages",
+            "Tester les liens de navigation",
+            "Verifier le breadcrumb",
+            "Tester le retour arriere"
+          ],
+          "expectedResults": [
+            "Header coherent",
+            "Liens fonctionnels",
+            "Breadcrumb correct",
+            "Navigation fluide"
+          ]
+        },
+        {
+          "id": "UI-002",
+          "title": "Messages de feedback",
+          "description": "Verifier que les messages de succes, erreur et loading sont affiches correctement.",
+          "priority": "must",
+          "steps": [
+            "Effectuer une action reussie",
+            "Effectuer une action echouee",
+            "Observer le loading pendant une operation",
+            "Verifier les styles des messages"
+          ],
+          "expectedResults": [
+            "Toast de succes visible",
+            "Toast d'erreur visible",
+            "Spinner de chargement",
+            "Styles coherents"
+          ]
+        },
+        {
+          "id": "UI-003",
+          "title": "Accessibilite clavier",
+          "description": "Verifier que l'interface est navigable au clavier.",
+          "priority": "should",
+          "steps": [
+            "Naviguer avec Tab",
+            "Activer les boutons avec Enter/Space",
+            "Verifier le focus visible",
+            "Tester les raccourcis clavier"
+          ],
+          "expectedResults": [
+            "Ordre de tabulation logique",
+            "Boutons activables au clavier",
+            "Focus visible",
+            "Raccourcis fonctionnels"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "design",
+      "name": "Design System",
+      "section": 8,
+      "tests": [
+        {
+          "id": "DS-001",
+          "title": "Palette de couleurs Lavande Dreams",
+          "description": "Verifier que toutes les couleurs de la palette sont correctement appliquees sur l'ensemble de l'interface.",
+          "priority": "must",
+          "references": [
+            "docs/Gg0-design.md",
+            "docs/Gg1-design_exemple.html"
+          ],
+          "colors": {
+            "primary": "#e0aaff",
+            "secondary": "#c77dff",
+            "accent": "#9d4edd",
+            "accentDark": "#7b2cbf",
+            "accentDarker": "#5a189a"
+          },
+          "steps": [
+            "Ouvrir la page exemple (Gg1-design_exemple.html)",
+            "Verifier les boutons primaires (#9d4edd)",
+            "Verifier les textes neon (#c77dff)",
+            "Verifier les bordures neon",
+            "Verifier le fond (#0a0a0f)"
+          ],
+          "expectedResults": [
+            "Toutes les couleurs conformes au guide",
+            "Effets neon visibles",
+            "Contraste suffisant (WCAG AA)"
+          ]
+        },
+        {
+          "id": "DS-002",
+          "title": "Typographie Space Grotesk",
+          "description": "Verifier que la police Space Grotesk est correctement chargee et appliquee avec la hierarchie definie.",
+          "priority": "must",
+          "steps": [
+            "Verifier le chargement de la police (Network tab)",
+            "Verifier H1 (4rem, bold, italic)",
+            "Verifier H2 (2.5rem, bold)",
+            "Verifier H3, H4, body, small, caption",
+            "Verifier le fallback (sans-serif)"
+          ],
+          "expectedResults": [
+            "Police Space Grotesk chargee",
+            "Hierarchie respectee",
+            "Poids 300-700 disponibles",
+            "Fallback fonctionnel"
+          ]
+        },
+        {
+          "id": "DS-003",
+          "title": "Composants UI interactifs",
+          "description": "Verifier que tous les composants UI (boutons, cartes, formulaires, modales) fonctionnent correctement.",
+          "priority": "must",
+          "steps": [
+            "Tester les boutons (hover, click, disabled)",
+            "Tester les cartes (hover effect)",
+            "Tester les formulaires (focus, validation)",
+            "Tester les onglets (navigation)",
+            "Tester les modales (open/close)",
+            "Tester les accordions",
+            "Tester les tooltips"
+          ],
+          "expectedResults": [
+            "Tous les etats visuels presents",
+            "Transitions fluides (300ms)",
+            "Effets neon sur focus/hover",
+            "Accessibilite clavier"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "performance",
+      "name": "Performance (ENF)",
+      "section": 9,
+      "tests": [
+        {
+          "id": "ENF-SYS-001",
+          "title": "Temps de chargement des pages",
+          "description": "Les pages doivent etre entierement chargees et interactives en moins de 3 secondes sur une connexion 4G.",
+          "priority": "should",
+          "steps": [
+            "Ouvrir DevTools Performance",
+            "Simuler connexion 4G (Network throttling)",
+            "Charger la page d'accueil",
+            "Mesurer FCP et TTI",
+            "Charger une page projet"
+          ],
+          "expectedResults": [
+            "FCP moins de 1.5s",
+            "TTI moins de 3s",
+            "Page projet moins de 2s",
+            "Transitions fluides"
+          ]
+        },
+        {
+          "id": "ENF-SYS-032",
+          "title": "Responsive design multi-appareils",
+          "description": "L'application doit etre responsive et fonctionnelle sur mobile (320px), tablet (768px) et desktop (1920px).",
+          "priority": "must",
+          "steps": [
+            "Tester sur mobile (320px)",
+            "Tester sur tablet (768px)",
+            "Tester sur desktop (1920px)",
+            "Verifier la reorganisation des 3 colonnes",
+            "Verifier les gestes tactiles"
+          ],
+          "expectedResults": [
+            "Pas de scroll horizontal",
+            "Colonnes empilees sur mobile",
+            "Gestes tactiles fonctionnels",
+            "Inputs plus de 44px"
+          ]
+        }
+      ]
+    }
+  ],
+  "testStatuses": {
+    "EF-SYS-001": "pending",
+    "EF-SYS-002": "failed",
+    "EF-SYS-003": "pending",
+    "EF-SYS-010": "pending",
+    "EF-SYS-011": "pending",
+    "EF-SYS-015": "pending",
+    "EF-SYS-020": "pending",
+    "EF-SYS-023": "pending",
+    "EF-SYS-031": "pending",
+    "EF-SYS-032": "pending",
+    "EF-SYS-033": "pending",
+    "EF-SYS-041": "pending",
+    "EF-SYS-042": "pending",
+    "EF-SYS-045": "pending",
+    "EF-SYS-050": "pending",
+    "EF-SYS-051": "pending",
+    "UI-001": "pending",
+    "UI-002": "pending",
+    "UI-003": "pending",
+    "DS-001": "pending",
+    "DS-002": "pending",
+    "DS-003": "pending",
+    "ENF-SYS-001": "pending",
+    "ENF-SYS-032": "pending"
+  },
+  "lastUpdated": "2026-01-24T16:50:38.966Z"
+}

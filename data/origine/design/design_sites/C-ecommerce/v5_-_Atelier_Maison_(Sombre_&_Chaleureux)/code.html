@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Atelier Maison - Moody Artisanal Decor</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;700;900&amp;family=Manrope:wght@300;400;500;600&amp;family=La+Belle+Aurore&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#118192",
+                        "background-light": "#fcfbf8",
+                        "background-dark": "#1a1a1a",
+                        "surface-dark": "#252525",
+                        "accent-wood": "#8B5E3C"
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"],
+                        "script": ["'La Belle Aurore'", "cursive"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 200px;
+            gap: 1rem;
+        }
+        .bento-item-large { grid-row: span 3; grid-column: span 2; }
+        .bento-item-tall { grid-row: span 2; }
+        .bento-item-wide { grid-column: span 2; }
+        
+        .whisper-soft {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.5);
+        }
+        
+        body {
+            scrollbar-width: thin;
+            scrollbar-color: #118192 #1a1a1a;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-body text-zinc-800 dark:text-zinc-200 antialiased selection:bg-primary/30">
+<!-- Navigation -->
+<header class="fixed top-0 w-full z-50 bg-background-dark/80 backdrop-blur-md border-b border-white/5 px-6 lg:px-12 py-4">
+<div class="max-w-[1440px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-12">
+<a class="flex items-center gap-2" href="#">
+<span class="material-symbols-outlined text-primary text-3xl">filter_vintage</span>
+<h1 class="font-display font-bold text-xl tracking-widest uppercase dark:text-white">Atelier Maison</h1>
+</a>
+<nav class="hidden md:flex items-center gap-8 text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">
+<a class="hover:text-primary transition-colors" href="#">Ceramics</a>
+<a class="hover:text-primary transition-colors" href="#">Textiles</a>
+<a class="hover:text-primary transition-colors" href="#">Lighting</a>
+<a class="hover:text-primary transition-colors" href="#">Journal</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-zinc-400 hover:text-white transition-colors">search</button>
+<button class="material-symbols-outlined text-zinc-400 hover:text-white transition-colors">person</button>
+<button class="relative group">
+<span class="material-symbols-outlined text-zinc-400 group-hover:text-white transition-colors">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-primary text-[10px] font-bold text-white size-4 rounded-full flex items-center justify-center">2</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative h-[85vh] flex items-center justify-center overflow-hidden px-6">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-background-dark/20 z-10"></div>
+<div class="absolute inset-0 bg-black/40 z-10"></div>
+<img alt="Moody lighting on dark ceramic vase" class="w-full h-full object-cover scale-105" data-alt="Dramatic spotlight on a charcoal clay vase" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGV28CyoICzZX6lfd6p3uxzPdB9uChj0UYmzVM8gKz5TfmUpbsjbvG06dIAAuGRAKNqXpcnjsm9Ve_pVE_MQvaEP_LxlI0cE9Pfy40Ab4h9R3cUdR93W7RFj7G4XB6EdvgbRsmzzWqUfnW47x3kDl136MiJZBEgu3IHh2mTW_no4OlxCm-ihRKK0YB2V-tYnkfytAKO1i6e3aOBH8D5QLyiq9vrPqSJj441dnyijX5d1W_NSHG2aE2lsCyWoaTqNNXWyNMrujpg5en"/>
+</div>
+<div class="relative z-20 text-center max-w-3xl px-4">
+<span class="font-display text-primary uppercase tracking-[0.4em] text-sm mb-4 block">Limited Series 01</span>
+<h2 class="font-display text-5xl md:text-7xl font-light text-white mb-8 leading-tight">Handcrafted for the <br/><span class="italic font-normal">Intimate Home</span></h2>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="bg-primary hover:bg-primary/90 text-white px-10 py-4 rounded-lg font-bold transition-all transform hover:scale-105 tracking-widest uppercase text-xs">
+                        Shop Collection
+                    </button>
+<button class="border border-white/20 hover:border-white/40 text-white px-10 py-4 rounded-lg font-bold transition-all tracking-widest uppercase text-xs backdrop-blur-sm">
+                        The Story
+                    </button>
+</div>
+</div>
+<div class="absolute bottom-12 left-12 hidden lg:block">
+<div class="flex items-center gap-4 text-zinc-500 text-xs tracking-tighter">
+<span class="w-12 h-px bg-zinc-800"></span>
+<span>SCROLL TO EXPLORE</span>
+</div>
+</div>
+</section>
+<!-- Product Grid (Bento Style) -->
+<section class="max-w-[1440px] mx-auto py-24 px-6 lg:px-12">
+<div class="flex items-end justify-between mb-12 border-b border-white/5 pb-8">
+<div>
+<h3 class="font-display text-3xl text-white mb-2">Curated Objects</h3>
+<p class="text-zinc-500 max-w-md">Each piece is individually wheel-thrown and wood-fired in our coastal studio, ensuring no two items are identical.</p>
+</div>
+<button class="text-xs uppercase tracking-[0.2em] text-primary flex items-center gap-2 group">
+                    View All <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<div class="bento-grid">
+<!-- Large Feature Item -->
+<div class="bento-item-large relative group overflow-hidden rounded-xl bg-surface-dark whisper-soft">
+<img alt="Kyoto Clay Vessel in low light" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Close up of textured ceramic bowl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGHGvHOUNvNNh9daZMVH9EAs6ibjT2IzGG1cy0P9m8WbhKoDjN83IM67pQIi8RhM90tHAb3-MNgvHO9i4xjPIOZjKOs-eedOO6819SV7qY9yUgCNSYQbCz6l00faW0lg0CyX8ohfnaxQNruzYB5JhFvlZJEDa9_kEhvvxxzHvJxAnz9urM73QGhd6Vy81ri4Hr028aRnnsi2tduex9O7iui400yLwJfbhpfTHgjGQgPh7AgDVwkW67OmyJMS6Do-VP9-eQK8kez7fT"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-8 flex flex-col justify-end">
+<p class="text-primary text-xs uppercase tracking-widest mb-2">Obsidian Series</p>
+<h4 class="text-white text-2xl font-display mb-4">The Earthbound Bowl</h4>
+<button class="bg-white text-black text-xs font-bold py-3 px-6 rounded w-fit uppercase tracking-widest">Add to Cart — $145</button>
+</div>
+</div>
+<!-- Tall Item -->
+<div class="bento-item-tall relative group overflow-hidden rounded-xl bg-surface-dark whisper-soft">
+<img alt="Hand-spun Linen" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Draped raw linen textile over chair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCKe0K1DxazCdI2TzqNZ-OPls2DsA42flRhIPQossHoVkTJZ29i4b-Di1vE3vIG56ae9rkyRVYIUXuy8J9SN6Odp6nekMD7BeW3EtiKOLeSzu5H6P_0MuCodTm-s4FREJd5ov2wwFeVrnnqouwPJI_Qp2CFQKkp9YDr6WyI6S65KC3B-lft8JtCSPUHBJiWxlnaqUBmfG85FoswWY6fAdkHeqk4WzboSvWpUGNDN1ApATJayLoI1F633TXNA8x7YFDJBbjfIC7_42u9"/>
+<div class="absolute top-4 right-4 bg-background-dark/60 backdrop-blur-md px-3 py-1 rounded text-[10px] uppercase text-zinc-300">New Arrival</div>
+</div>
+<!-- Standard Item -->
+<div class="relative group overflow-hidden rounded-xl bg-surface-dark whisper-soft">
+<img alt="Ceramic candle holder" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Minimalist candle holder on wood table" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhhEaLzok5IXlRPWJUqoaYeenJAVg07thQK_63quF2qcQh5I5j1-9h3bX9TxDqHro9jeMnSFTEiactgr4_h2nr6AWGy_sWKLCORZp3ASO3piROL_-8-6wGTaUllhy2TTSYJHpNRAsThVkTnSY3YyOE5OzuNvSEohZocVFzzZZ6oOBSK7dQtK0ScVaWzHHHM9Qm3C240Hf1KChajcY_K9aBqMUW6-zp1MncRZf_5c1z2iTJ2STLpZL6oaKxVIw0BgypUwR0FeXo4Xue"/>
+</div>
+<!-- Wide Item -->
+<div class="bento-item-wide relative group overflow-hidden rounded-xl bg-surface-dark whisper-soft">
+<img alt="Sculptural lighting fixture" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Geometric warm light lamp pendant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJ3xfZ95ltb5poMwjaH3VCyT9I-ChkCPOHBXrOoCeoanNXndBaaM1GXNOpTxkbxHHuv93OAqWpEoHSlTewQARzPL8YjLSi5Q0UHD6pnRRxik0vWtBHQYW8srXeD72ryWDf9HkzmRAdKGsBihvig67A-KOLRC4geXctbA_Ou6TraIDnV5Mtttrnlmk8s5e9lpkRCjXZ_EtlDlY9otWd5iuTEuW_CUyLFJYbqb7gcqKlY3_a2Yc-_Fin_nltwbxJuyhtmbyhztFuV6BV"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+<span class="text-white text-xs uppercase tracking-[0.3em] font-light border-b border-white/40 pb-1">Shop Lighting</span>
+</div>
+</div>
+<!-- Standard Item -->
+<div class="relative group overflow-hidden rounded-xl bg-surface-dark whisper-soft">
+<img alt="Textured vase" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Wabi-sabi style grey textured vase" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDpK1LZrMk-xUXZQzUn9oZeLmiT6Hysh7C8y_jhp8oKDmlhpChyTsjbiwlmfcnYoDg2bu4ioCgvq9uLoEj8JWetY89D599SWo8IsuUtDtpe03HPthIgfK-GQ8PKgJomYuhvNf59d3R1FGP9EWItowsi76i9Sp-o1uZeHiqW6y7_JJ21DSAPpusWwnOPZ27yp3WTCidbhS5pkR89JUvizLsIlxRi_VmjZfj6_WGVPUCgbA8HYcIN75QHO6IiZ5zl1COaJhH7WY-vgrij"/>
+</div>
+</div>
+</section>
+<!-- The Maker's Story -->
+<section class="bg-surface-dark/30 py-24">
+<div class="max-w-[1440px] mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-16 items-center">
+<div class="relative group">
+<div class="absolute -inset-4 border border-primary/20 rounded-xl group-hover:scale-105 transition-transform duration-500"></div>
+<img alt="Artisan at work" class="relative rounded-lg w-full aspect-[4/5] object-cover grayscale hover:grayscale-0 transition-all duration-1000" data-alt="Woman working on pottery wheel studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4hdb1CPPvFQDVOpU2-qaKzlykms8cXnDCgcApZMltfwRe97NAsloTZmRfEhgtkyV2ra5zir3gQt2kxIp78WrTstI7IhUOH8d3YU_7ZS7fPlpDEBH4xTMHJRi79lYLWQqv7X3d_s1e1oQLcx_oIsJq3_zdRkAwXk_r0tqYaeFUzNfyLkG_jjIwYMatHzKTd5fwIfX70s0UYvoqz87YSw36WYUeWMxTC2pucRrXl2o8w6YzW1blvGKnjTpIoU9RBxXjIgLy9SY7hO2F"/>
+</div>
+<div>
+<span class="font-display text-primary uppercase tracking-[0.3em] text-xs mb-6 block">The Maker's Story</span>
+<h3 class="font-display text-4xl md:text-5xl text-white mb-8 leading-tight">Finding perfection in the <span class="italic font-light">imperfect</span>.</h3>
+<p class="text-zinc-400 text-lg mb-8 leading-relaxed">
+                        "For me, pottery isn't about mass production. It's about the conversation between the hand and the clay. Each mark, each slight asymmetry tells the story of its creation under the soft light of my studio."
+                    </p>
+<p class="font-script text-3xl text-primary mb-12">- Elara Vance, Founder</p>
+<div class="flex items-center gap-12 border-t border-white/5 pt-8">
+<div>
+<p class="text-white font-display text-2xl">100%</p>
+<p class="text-zinc-500 text-xs uppercase tracking-widest mt-1">Natural Clays</p>
+</div>
+<div class="w-px h-10 bg-white/10"></div>
+<div>
+<p class="text-white font-display text-2xl">Kyoto</p>
+<p class="text-zinc-500 text-xs uppercase tracking-widest mt-1">Technique Inspired</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Collections Split -->
+<section class="max-w-[1440px] mx-auto py-24 px-6 lg:px-12 grid md:grid-cols-2 gap-8">
+<div class="relative aspect-[16/10] group overflow-hidden rounded-xl">
+<img alt="Pottery collection" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Assortment of dark grey ceramic plates" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApCu1xOWS5MvLCvEDR4-NHhjMLnxq-zAZuTCEpl_mkNVQurRwBd5t-Tne7WuWJ9s91i1N7BuCHvXhHamig9aNJ3cIsguZG1MQvP1sEANIxesiHCMoCKc43x7pl5X80SEq65JiC6h6_oYDg_ZQ_zuWwu6hN62jdyZGzfSZRue8QDmXj7IlguLySgeLfFjtei6vC1HsoYzj_caNWzsyDU0uvmWq0YnPcKv6PvfWFHogipRds_peB51TWV0guDlUe_A8FAcIsovkFpg_H"/>
+<div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
+<h4 class="text-white text-3xl font-display mb-4">The Obsidian Series</h4>
+<a class="text-xs uppercase tracking-[0.4em] text-white border-b border-white/40 pb-1 hover:border-white transition-colors" href="#">Explore Ceramics</a>
+</div>
+</div>
+<div class="relative aspect-[16/10] group overflow-hidden rounded-xl">
+<img alt="Textile close up" class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" data-alt="Close up of raw handwoven fabric" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-4hDOQ2_NCrMS2m3iXHYPS3t-Z1eLeXQpcFT2LtKv5kK9g9cdZHZy3beZNXgNo4kBKVDwEsroztrg6fsb5USsWnyPHqxO-20cNPHZ5u-fCJ7LqorjMEsv1OdV6cbl2Mjbz7jjF3ufRdAuG3mk-D10-Tj-A8396a6aWcFK4Mg7rB-M8DftyF-foIjnjTWKMLzF-d61W9PfoQj87ea33Ohjrt1H5T1VLvSmkHjL_358K3pYwylNizO8xzzwxq_rl-JZ0_oZIy0mLkU5"/>
+<div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center p-8 text-center">
+<h4 class="text-white text-3xl font-display mb-4">Woven Textures</h4>
+<a class="text-xs uppercase tracking-[0.4em] text-white border-b border-white/40 pb-1 hover:border-white transition-colors" href="#">Explore Textiles</a>
+</div>
+</div>
+</section>
+<!-- Newsletter -->
+<section class="border-y border-white/5 py-24 px-6">
+<div class="max-w-xl mx-auto text-center">
+<span class="material-symbols-outlined text-primary text-4xl mb-6">mail</span>
+<h3 class="font-display text-3xl text-white mb-4 italic">Join the Atelier Journal</h3>
+<p class="text-zinc-500 mb-10">Receive early access to limited edition drops and stories from the studio. No clutter, just craft.</p>
+<form class="flex flex-col sm:flex-row gap-2">
+<input class="flex-1 bg-surface-dark border-transparent focus:border-primary focus:ring-0 rounded-lg text-white px-6 py-4" placeholder="Your email address" type="email"/>
+<button class="bg-primary text-white font-bold px-8 py-4 rounded-lg uppercase tracking-widest text-xs hover:bg-primary/80 transition-all">Subscribe</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background-dark py-16 px-6 lg:px-12 border-t border-white/5">
+<div class="max-w-[1440px] mx-auto grid md:grid-cols-4 gap-12">
+<div class="col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<span class="material-symbols-outlined text-primary text-2xl">filter_vintage</span>
+<h1 class="font-display font-bold text-lg tracking-widest uppercase text-white">Atelier Maison</h1>
+</div>
+<p class="text-zinc-500 max-w-sm mb-8">Crafting intimate atmospheres through artisanal objects. Sustainably sourced, human-made, and designed to last lifetimes.</p>
+<div class="flex gap-4">
+<a class="size-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">share</span>
+</a>
+<a class="size-10 rounded-full border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white transition-all" href="#">
+<span class="material-symbols-outlined text-xl">camera</span>
+</a>
+</div>
+</div>
+<div>
+<h5 class="text-white font-display uppercase tracking-widest text-xs mb-6">Shop</h5>
+<ul class="space-y-4 text-zinc-500 text-sm">
+<li><a class="hover:text-primary" href="#">New Arrivals</a></li>
+<li><a class="hover:text-primary" href="#">Ceramics</a></li>
+<li><a class="hover:text-primary" href="#">Textiles</a></li>
+<li><a class="hover:text-primary" href="#">Lighting</a></li>
+</ul>
+</div>
+<div>
+<h5 class="text-white font-display uppercase tracking-widest text-xs mb-6">Service</h5>
+<ul class="space-y-4 text-zinc-500 text-sm">
+<li><a class="hover:text-primary" href="#">Shipping &amp; Returns</a></li>
+<li><a class="hover:text-primary" href="#">Care Guide</a></li>
+<li><a class="hover:text-primary" href="#">Contact Us</a></li>
+<li><a class="hover:text-primary" href="#">Stockists</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto mt-16 pt-8 border-t border-white/5 flex flex-col md:row items-center justify-between gap-4">
+<p class="text-zinc-600 text-[10px] uppercase tracking-widest">© 2024 Atelier Maison Studios. All rights reserved.</p>
+<div class="flex gap-8 text-zinc-600 text-[10px] uppercase tracking-widest">
+<a class="hover:text-zinc-400" href="#">Privacy Policy</a>
+<a class="hover:text-zinc-400" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</body></html>

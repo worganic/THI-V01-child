@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Institutional Library - Variant 2</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d485d",
+                        "background-light": "#fcfcfc",
+                        "background-dark": "#0a1929",
+                        "accent-gray": "#e9eef1",
+                        "border-muted": "#E8EDF1",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .document-card:hover {
+            box-shadow: 0 4px 12px rgba(29, 72, 93, 0.08);
+            border-color: #1d485d;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<!-- Global Navigation Sidebar -->
+<aside class="w-64 border-r border-border-muted dark:border-slate-800 bg-white dark:bg-background-dark flex flex-col h-screen sticky top-0">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-10 h-10 bg-primary flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-white !text-2xl">account_balance</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-primary dark:text-white text-sm font-bold tracking-wider uppercase leading-none">Institutional</h1>
+<p class="text-slate-400 text-[10px] font-medium tracking-[0.2em] uppercase">Library System</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<div class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<p class="text-sm font-semibold">Library Home</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-accent-gray dark:hover:bg-slate-800 rounded transition-all cursor-pointer group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">folder_shared</span>
+<p class="text-sm font-medium">My Workspace</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-accent-gray dark:hover:bg-slate-800 rounded transition-all cursor-pointer group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">history</span>
+<p class="text-sm font-medium">Archive</p>
+</div>
+<div class="flex items-center gap-3 px-3 py-2.5 text-slate-500 hover:bg-accent-gray dark:hover:bg-slate-800 rounded transition-all cursor-pointer group">
+<span class="material-symbols-outlined group-hover:text-primary transition-colors">settings</span>
+<p class="text-sm font-medium">System Settings</p>
+</div>
+</nav>
+</div>
+<div class="mt-auto p-6 border-t border-border-muted dark:border-slate-800">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-accent-gray dark:bg-slate-800 flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="User profile avatar portrait" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiApwAAb9jatUPNwNL3bZHT-XxoKFZTLA8d7Yv48UAzMB0DH4KktlXvur32m-A7gZBp_Yb4NTAIDTXXBem1uZIHQ5jlqIri4InCJCfILoWmlz-fCmW4_-u5bNxGf3lovuUZvZ_NxuBeoiafkiW0AIPmQnHe3YyJBkB6ysmgQMFVeLdZynme7SAO08iN7qjpWyloPUATh4rLcvW69PaC2c2-0f2auhW9_PpZRSi_OBCcS0CuYhs4-7GOmPMsDrW3wYI-aezO8OM4V6A"/>
+</div>
+<div class="flex flex-col overflow-hidden">
+<p class="text-xs font-bold truncate">E. Richardson</p>
+<p class="text-[10px] text-slate-400 truncate">Senior Technical Lead</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="h-16 border-b border-border-muted dark:border-slate-800 bg-white dark:bg-background-dark flex items-center justify-between px-8 sticky top-0 z-10">
+<div class="flex items-center gap-8 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+<input class="w-full pl-10 pr-4 py-1.5 bg-accent-gray dark:bg-slate-800 border-none rounded text-sm focus:ring-1 focus:ring-primary" placeholder="Search official documents, protocols, or standards..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<nav class="flex items-center gap-6 mr-6 border-r border-border-muted dark:border-slate-800 pr-6">
+<a class="text-xs font-bold text-slate-400 hover:text-primary tracking-widest uppercase" href="#">Documents</a>
+<a class="text-xs font-bold text-slate-400 hover:text-primary tracking-widest uppercase" href="#">Standards</a>
+<a class="text-xs font-bold text-slate-400 hover:text-primary tracking-widest uppercase" href="#">Protocols</a>
+</nav>
+<div class="flex gap-2">
+<button class="w-9 h-9 flex items-center justify-center rounded bg-accent-gray dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded bg-accent-gray dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Hero Section with Architectural Texture -->
+<section class="relative h-48 w-full overflow-hidden bg-primary flex items-end">
+<div class="absolute inset-0 opacity-20 mix-blend-overlay grayscale" data-alt="Abstract architectural lines and glass skyscraper patterns" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCP_kUb9PZyOIy17IhHwikIrlIzxG7YbnH_pMsY_pw9Zpxn-sfCreiMPHLGvDP-dlIOcUY0HWz0IVRcM4_mm8U9kucKahmk16s7tyHl9EiSNJDIkkZxFDU57UqfRVOTXv0RW7Os7W2ZD6PANtIh-c-PLbPmgvL0aLVlvZOj8c1o2L0oyuN8uBMWCRGTKjb_-5QTTGpaSv562K5zpu6543HX53qntnGe6zO245FCDTiv0hgdncgmGEcQ2qo4KavvZaACilA8Qi_Zywaa"); background-size: cover; background-position: center;'>
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="relative z-10 p-8 w-full max-w-6xl mx-auto">
+<h2 class="text-white text-3xl font-light tracking-tight">Official Specifications <span class="font-bold">&amp; Guidelines</span></h2>
+<p class="text-primary/30 text-xs font-bold uppercase tracking-[0.3em] mt-2">Centralized Institutional Knowledge Base</p>
+</div>
+</section>
+<!-- Filter Bar -->
+<div class="bg-white dark:bg-background-dark border-b border-border-muted dark:border-slate-800 px-8 py-4 sticky top-16 z-10">
+<div class="max-w-6xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-2">
+<button class="px-4 py-1.5 rounded-full bg-primary text-white text-xs font-bold tracking-wide">All Documents</button>
+<button class="px-4 py-1.5 rounded-full bg-accent-gray dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold tracking-wide hover:bg-slate-200">Approved</button>
+<button class="px-4 py-1.5 rounded-full bg-accent-gray dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold tracking-wide hover:bg-slate-200">Under Review</button>
+<button class="px-4 py-1.5 rounded-full bg-accent-gray dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold tracking-wide hover:bg-slate-200">Standard Protocols</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mr-2">Sort By:</span>
+<button class="flex items-center gap-2 px-3 py-1.5 border border-border-muted dark:border-slate-800 rounded text-xs font-medium text-slate-600">
+                        Date Modified
+                        <span class="material-symbols-outlined !text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Document Grid -->
+<section class="p-8 bg-background-light dark:bg-background-dark flex-1">
+<div class="max-w-6xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+<!-- Document Card 1 -->
+<div class="document-card bg-white dark:bg-slate-900 border border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col h-full group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary/5 text-primary rounded flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-3xl">architecture</span>
+</div>
+<span class="bg-primary text-[10px] font-bold text-white px-2 py-0.5 rounded uppercase tracking-wider">Approved</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1 line-clamp-2">Structural Specification v2.1: Steel Reinforcement</h3>
+<p class="text-xs text-slate-400 mb-6">Department: Infrastructure</p>
+<div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Modified</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Oct 12, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+<span class="text-[10px] font-bold">1.2k</span>
+</div>
+</div>
+</div>
+<!-- Document Card 2 -->
+<div class="document-card bg-white dark:bg-slate-900 border border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col h-full group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary/5 text-primary rounded flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-3xl">thermostat</span>
+</div>
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 px-2 py-0.5 rounded uppercase tracking-wider border border-slate-200 dark:border-slate-700">Under Review</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1 line-clamp-2">HVAC Technical Protocol: Ventilation Calibration</h3>
+<p class="text-xs text-slate-400 mb-6">Department: Maintenance</p>
+<div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Modified</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Oct 15, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+<span class="text-[10px] font-bold">842</span>
+</div>
+</div>
+</div>
+<!-- Document Card 3 -->
+<div class="document-card bg-white dark:bg-slate-900 border border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col h-full group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary/5 text-primary rounded flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-3xl">security</span>
+</div>
+<span class="bg-primary text-[10px] font-bold text-white px-2 py-0.5 rounded uppercase tracking-wider">Approved</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1 line-clamp-2">Security Infrastructure: Encrypted Access Nodes</h3>
+<p class="text-xs text-slate-400 mb-6">Department: Security</p>
+<div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Modified</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Oct 18, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+<span class="text-[10px] font-bold">3.1k</span>
+</div>
+</div>
+</div>
+<!-- Document Card 4 -->
+<div class="document-card bg-white dark:bg-slate-900 border border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col h-full group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary/5 text-primary rounded flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-3xl">electric_bolt</span>
+</div>
+<span class="bg-primary text-[10px] font-bold text-white px-2 py-0.5 rounded uppercase tracking-wider">Approved</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1 line-clamp-2">Electrical Safety Standards: High Voltage Shielding</h3>
+<p class="text-xs text-slate-400 mb-6">Department: Safety</p>
+<div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Modified</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Oct 20, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+<span class="text-[10px] font-bold">2.4k</span>
+</div>
+</div>
+</div>
+<!-- Document Card 5 -->
+<div class="document-card bg-white dark:bg-slate-900 border border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col h-full group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary/5 text-primary rounded flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-3xl">eco</span>
+</div>
+<span class="bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 px-2 py-0.5 rounded uppercase tracking-wider border border-slate-200 dark:border-slate-700">Under Review</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1 line-clamp-2">Environmental Impact Assessment: Site B-12</h3>
+<p class="text-xs text-slate-400 mb-6">Department: Compliance</p>
+<div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Modified</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Oct 22, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+<span class="text-[10px] font-bold">560</span>
+</div>
+</div>
+</div>
+<!-- Document Card 6 -->
+<div class="document-card bg-white dark:bg-slate-900 border border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col h-full group">
+<div class="flex justify-between items-start mb-6">
+<div class="w-12 h-12 bg-primary/5 text-primary rounded flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined !text-3xl">construction</span>
+</div>
+<span class="bg-primary text-[10px] font-bold text-white px-2 py-0.5 rounded uppercase tracking-wider">Approved</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 dark:text-white mb-1 line-clamp-2">Facility Maintenance Guide: Annual Audit Checklist</h3>
+<p class="text-xs text-slate-400 mb-6">Department: Operations</p>
+<div class="mt-auto pt-4 border-t border-slate-50 dark:border-slate-800 flex items-center justify-between">
+<div class="flex flex-col">
+<span class="text-[10px] text-slate-400 uppercase tracking-tighter">Modified</span>
+<span class="text-xs font-medium text-slate-600 dark:text-slate-300">Oct 25, 2023</span>
+</div>
+<div class="flex items-center gap-1 text-primary">
+<span class="material-symbols-outlined !text-sm">visibility</span>
+<span class="text-[10px] font-bold">1.8k</span>
+</div>
+</div>
+</div>
+<!-- Add New Document Card (Empty State Trigger) -->
+<div class="border-2 border-dashed border-border-muted dark:border-slate-800 p-5 transition-all cursor-pointer flex flex-col items-center justify-center text-center group hover:border-primary/40 min-h-[220px]">
+<div class="w-10 h-10 bg-accent-gray dark:bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary group-hover:text-white transition-all">
+<span class="material-symbols-outlined">add</span>
+</div>
+<p class="text-sm font-bold text-slate-500 group-hover:text-primary">Upload New Document</p>
+<p class="text-[10px] text-slate-400 mt-1 uppercase tracking-widest">PDF, DOCX, CAD Files</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer / Metadata Bar -->
+<footer class="bg-white dark:bg-background-dark border-t border-border-muted dark:border-slate-800 px-8 py-4">
+<div class="max-w-6xl mx-auto flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">
+<div>© 2023 Institutional Library Framework</div>
+<div class="flex gap-6">
+<a class="hover:text-primary" href="#">Data Privacy</a>
+<a class="hover:text-primary" href="#">Audit Log</a>
+<a class="hover:text-primary" href="#">Access Control</a>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    System Synchronized
+                </div>
+</div>
+</footer>
+</main>
+</body></html>

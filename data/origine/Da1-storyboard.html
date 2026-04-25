@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectForge - Storyboard Complet du Système</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="styles-storyboard.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e0aaff",
+                        "secondary": "#c77dff",
+                        "accent": "#9d4edd",
+                        "accent-dark": "#7b2cbf",
+                        "accent-darker": "#5a189a",
+                        "background": "#0a0a0f",
+                        "surface": "#12121a",
+                        "surface-light": "#1a1a25",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-white font-display min-h-screen">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <a href="../index.html" class="back-button">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Retour
+                    </a>
+                    <div class="w-10 h-10 neon-border flex items-center justify-center">
+                        <span class="material-symbols-outlined neon-text">movie</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold" id="headerTitle">Storyboard</h1>
+                        <p class="text-xs text-white/50" id="headerSubtitle"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-xs text-white/50">Serveur actif</p>
+                        <p class="text-sm font-mono text-green-400" id="headerServerUrl"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-6xl mx-auto">
+
+            <div class="page-header">
+                <h1>ProjectForge Platform</h1>
+                <p class="subtitle">Storyboard Complet du Système</p>
+                <p class="subtitle">Architecture, flux, et expérience utilisateur</p>
+            </div>
+
+            <div class="nav-tabs">
+                <button class="nav-btn active" onclick="showTab('parcours')">Parcours Principal</button>
+                <button class="nav-btn" onclick="showTab('architecture')">Architecture Système</button>
+                <button class="nav-btn" onclick="showTab('avance')">Fonctionnalités Avancées</button>
+                <button class="nav-btn" onclick="showTab('technique')">Vue Technique</button>
+            </div>
+
+            <!-- TAB 1: Parcours Principal -->
+            <div id="parcours" class="storyboards active">
+                <div class="flow-diagram">
+                    <h3>Flux Principal - De la Découverte à la Livraison</h3>
+                    <div class="flow-chart">
+                        <div class="flow-item">Templates</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-item">Création</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-item">Questions</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-item">Génération</div>
+                        <div class="flow-arrow">→</div>
+                        <div class="flow-item">Livraison</div>
+                    </div>
+                </div>
+
+                <div class="storyboard">
+                    <div class="sb-header">
+                        <h2>Parcours Principal : De Zéro à Livrable</h2>
+                        <p>Le voyage complet en 5 étapes simples</p>
+                    </div>
+                    <div class="sb-content">
+                        <div class="steps">
+                            <!-- STEP 1 -->
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">1</div>
+                                    <div class="step-number-text">Découverte</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Explorer les Templates</div>
+                                    <div class="step-description">L'utilisateur arrive sur la page d'accueil et découvre les templates disponibles.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Voir la grille de templates avec descriptions</div>
+                                        <div class="detail-item">Filtrer par type et popularité</div>
+                                        <div class="detail-item">Consulter les détails (phases, temps estimé, tags)</div>
+                                        <div class="detail-item">Estimer la durée totale du projet</div>
+                                    </div>
+                                    <div class="benefit">Bénéfice : Clarté immédiate sur les options disponibles</div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 2 -->
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">2</div>
+                                    <div class="step-number-text">Création</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Créer un Nouveau Projet</div>
+                                    <div class="step-description">Sélectionner une template et initialiser le projet en 3 clics.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Cliquer sur "Utiliser cette template"</div>
+                                        <div class="detail-item">Entrer le nom du projet</div>
+                                        <div class="detail-item">Validation et création de la structure</div>
+                                        <div class="detail-item">Redirection automatique vers la phase 1</div>
+                                    </div>
+                                    <div class="benefit">Bénéfice : Démarrage sans friction, zéro erreur possible</div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 3 -->
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">3</div>
+                                    <div class="step-number-text">Questionnaire</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Répondre aux Questions</div>
+                                    <div class="step-description">Remplir progressivement le questionnaire phase par phase.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Une question à la fois pour réduire la charge cognitive</div>
+                                        <div class="detail-item">Navigation fluide (précédent/suivant)</div>
+                                        <div class="detail-item">Aide contextuelle pour chaque question</div>
+                                        <div class="detail-item">Barre de progression en temps réel</div>
+                                        <div class="detail-item">Sauvegarde automatique à chaque réponse</div>
+                                    </div>
+                                    <div class="benefit">Bénéfice : Expérience guidée et rassurante</div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 4 -->
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">4</div>
+                                    <div class="step-number-text">Génération IA</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Générer les Documents</div>
+                                    <div class="step-description">Utiliser l'IA pour créer automatiquement les documents.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Cliquer sur "Générer" sur la dernière phase</div>
+                                        <div class="detail-item">Aperçu et modification du prompt proposé</div>
+                                        <div class="detail-item">Streaming en temps réel de la génération</div>
+                                        <div class="detail-item">Multiples formats supportés (Markdown, DOCX, etc.)</div>
+                                        <div class="detail-item">Traçabilité complète de l'action</div>
+                                    </div>
+                                    <div class="benefit">Bénéfice : Qualité IA + contrôle utilisateur</div>
+                                </div>
+                            </div>
+
+                            <!-- STEP 5 -->
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">5</div>
+                                    <div class="step-number-text">Livraison</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Télécharger les Résultats</div>
+                                    <div class="step-description">Récupérer les documents générés et les utiliser immédiatement.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Liste des fichiers générés avec métadonnées</div>
+                                        <div class="detail-item">Téléchargement individuel de chaque fichier</div>
+                                        <div class="detail-item">Télécharger tout en archive ZIP</div>
+                                        <div class="detail-item">Fichiers prêts pour utilisation immédiate</div>
+                                        <div class="detail-item">Entrée d'historique créée automatiquement</div>
+                                    </div>
+                                    <div class="benefit">Bénéfice : Résultats immédiatement utilisables</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: Architecture Système -->
+            <div id="architecture" class="storyboards">
+                <div class="flow-diagram">
+                    <h3>Architecture Système - Composants Clés</h3>
+                    <div class="flow-chart">
+                        <div class="flow-item">Frontend<br><small>(React)</small></div>
+                        <div class="flow-arrow">↔</div>
+                        <div class="flow-item">Backend<br><small>(Node.js)</small></div>
+                        <div class="flow-arrow">↔</div>
+                        <div class="flow-item">Stockage<br><small>(JSON)</small></div>
+                    </div>
+                </div>
+
+                <div class="storyboard">
+                    <div class="sb-header">
+                        <h2>Composants du Système</h2>
+                        <p>Organisation technique et flux de données</p>
+                    </div>
+                    <div class="sb-content">
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">A</div>
+                                    <div class="step-number-text">Gestion Templates</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Système de Templates</div>
+                                    <div class="step-description">Fondation du système - templates structurées et réutilisables.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Afficher la liste des templates disponibles</div>
+                                        <div class="detail-item">Afficher les détails d'une template</div>
+                                        <div class="detail-item">Charger les phases d'une template</div>
+                                    </div>
+                                    <div class="benefit">Base solide pour la création de projets</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">B</div>
+                                    <div class="step-number-text">Gestion Projets</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Gestion des Projets</div>
+                                    <div class="step-description">Création, suivi et gestion du cycle de vie des projets.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Créer un nouveau projet</div>
+                                        <div class="detail-item">Afficher la liste des projets</div>
+                                        <div class="detail-item">Afficher les détails d'un projet</div>
+                                        <div class="detail-item">Calculer la progression globale</div>
+                                    </div>
+                                    <div class="benefit">Suivi cohérent de chaque projet</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">C</div>
+                                    <div class="step-number-text">Phases & Questions</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Gestion des Phases et Questionnaires</div>
+                                    <div class="step-description">Navigation et remplissage des questionnaires structurés.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Afficher les phases du projet</div>
+                                        <div class="detail-item">Charger et afficher les questions</div>
+                                        <div class="detail-item">Supporter 10 types de questions différents</div>
+                                        <div class="detail-item">Sauvegarder les réponses en temps réel</div>
+                                    </div>
+                                    <div class="benefit">Expérience de questionnaire intuitive</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">D</div>
+                                    <div class="step-number-text">Génération IA</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Intégration Claude Code</div>
+                                    <div class="step-description">Automatisation intelligente via l'IA Claude.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Générer un prompt à partir des réponses</div>
+                                        <div class="detail-item">Appeler Claude Code CLI</div>
+                                        <div class="detail-item">Afficher la réponse en streaming</div>
+                                        <div class="detail-item">Créer les fichiers générés</div>
+                                    </div>
+                                    <div class="benefit">Automatisation complète et de qualité</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">E</div>
+                                    <div class="step-number-text">Historique & Données</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Historique et Persistance des Données</div>
+                                    <div class="step-description">Traçabilité complète et stockage fiable.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Créer des entrées d'historique</div>
+                                        <div class="detail-item">Afficher la timeline du projet</div>
+                                        <div class="detail-item">Stocker les données en JSON</div>
+                                        <div class="detail-item">Garantir l'intégrité des données</div>
+                                    </div>
+                                    <div class="benefit">Traçabilité et récupération possibles</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: Fonctionnalités Avancées -->
+            <div id="avance" class="storyboards">
+                <div class="storyboard">
+                    <div class="sb-header">
+                        <h2>Fonctionnalités Avancées</h2>
+                        <p>Workflows et cas d'usage avancés</p>
+                    </div>
+                    <div class="sb-content">
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">►</div>
+                                    <div class="step-number-text">Reprendre</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Reprendre un Projet Existant</div>
+                                    <div class="step-description">Continuer un projet abandonné sans perte de données.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Dashboard montrant tous les projets en cours</div>
+                                        <div class="detail-item">Progression visuelle claire (% complété)</div>
+                                        <div class="detail-item">Reprise instantanée à la dernière phase</div>
+                                        <div class="detail-item">Toutes les réponses précédentes restaurées</div>
+                                    </div>
+                                    <div class="benefit">Aucune perte de travail, continuité garantie</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">►</div>
+                                    <div class="step-number-text">Naviguer</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Naviguer entre les Phases</div>
+                                    <div class="step-description">Flexibilité complète de navigation dans le projet.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Vue complète de la structure du projet (sidebar)</div>
+                                        <div class="detail-item">Indicateurs visuels de progression (completed, in_progress, pending)</div>
+                                        <div class="detail-item">Sauter entre phases librement</div>
+                                        <div class="detail-item">Modifier les réponses précédentes</div>
+                                    </div>
+                                    <div class="benefit">Contrôle total et clarté de la structure</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">►</div>
+                                    <div class="step-number-text">Historique</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Consulter l'Historique Complet</div>
+                                    <div class="step-description">Tracer toutes les actions et modifications du projet.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Timeline visuelle de toutes les actions</div>
+                                        <div class="detail-item">Filtrage par type d'action</div>
+                                        <div class="detail-item">Détails complets de chaque action</div>
+                                        <div class="detail-item">Audit complet pour conformité</div>
+                                    </div>
+                                    <div class="benefit">Transparence totale et traçabilité</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 4: Vue Technique -->
+            <div id="technique" class="storyboards">
+                <div class="storyboard">
+                    <div class="sb-header">
+                        <h2>Spécifications Techniques</h2>
+                        <p>Architecture, technologies et infrastructure</p>
+                    </div>
+                    <div class="sb-content">
+                        <div class="steps">
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">⚙</div>
+                                    <div class="step-number-text">Frontend</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Technologies Frontend</div>
+                                    <div class="step-description">Stack technique côté client.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">React.js pour l'interface utilisateur</div>
+                                        <div class="detail-item">TailwindCSS pour le design responsive</div>
+                                        <div class="detail-item">Composants réutilisables (shadcn/ui)</div>
+                                        <div class="detail-item">Animations fluides (Framer Motion)</div>
+                                    </div>
+                                    <div class="benefit">UX professionnelle et performante</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">⚙</div>
+                                    <div class="step-number-text">Backend</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Technologies Backend</div>
+                                    <div class="step-description">Stack technique côté serveur.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Node.js pour l'exécution serveur</div>
+                                        <div class="detail-item">Express.js pour les API REST</div>
+                                        <div class="detail-item">Claude Code CLI pour la génération IA</div>
+                                        <div class="detail-item">Server-Sent Events (SSE) pour le streaming</div>
+                                    </div>
+                                    <div class="benefit">Architecture scalable et modulaire</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">⚙</div>
+                                    <div class="step-number-text">Données</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Stockage et Données</div>
+                                    <div class="step-description">Persistance et gestion des données.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Fichiers JSON pour la configuration des templates</div>
+                                        <div class="detail-item">Structure de dossiers organisée par projet</div>
+                                        <div class="detail-item">Historique immuable (append-only)</div>
+                                        <div class="detail-item">Validation et intégrité des données</div>
+                                    </div>
+                                    <div class="benefit">Fiabilité et traçabilité garanties</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">⚙</div>
+                                    <div class="step-number-text">Performance</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Optimisations de Performance</div>
+                                    <div class="step-description">Assurer une expérience rapide et fluide.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Temps de chargement &lt; 3 secondes</div>
+                                        <div class="detail-item">Réactivité de l'interface &lt; 200ms</div>
+                                        <div class="detail-item">Streaming en temps réel &lt; 100ms de latence</div>
+                                        <div class="detail-item">Code splitting et lazy loading</div>
+                                    </div>
+                                    <div class="benefit">Expérience utilisateur fluide</div>
+                                </div>
+                            </div>
+
+                            <div class="step">
+                                <div class="step-number">
+                                    <div class="step-number-circle">⚙</div>
+                                    <div class="step-number-text">Sécurité</div>
+                                </div>
+                                <div class="step-content">
+                                    <div class="step-title">Mesures de Sécurité</div>
+                                    <div class="step-description">Protéger l'intégrité et la confidentialité.</div>
+                                    <div class="step-details">
+                                        <div class="detail-item">Pas de données sensibles en JSON</div>
+                                        <div class="detail-item">Sandboxing des commandes Claude Code</div>
+                                        <div class="detail-item">Validation des chemins de fichiers</div>
+                                        <div class="detail-item">Pas d'authentification requise (au stade initial)</div>
+                                    </div>
+                                    <div class="benefit">Sécurité par conception</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="border-t border-white/10 pt-8 mt-12">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-white/40" id="footerTitle"></p>
+                        <p class="text-xs text-white/30">Basé sur 69 exigences fonctionnelles structurées</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-white/40" id="footerPort"></p>
+                        <p class="text-xs text-white/30" id="footerDesign"></p>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        function showTab(tabName) {
+            const storyboards = document.querySelectorAll('.storyboards');
+            storyboards.forEach(sb => sb.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+
+            const buttons = document.querySelectorAll('.nav-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // Load metadata from JSON
+        async function loadMetadata() {
+            try {
+                const response = await fetch('../index.json?' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const meta = data.metadata;
+
+                    document.getElementById('headerTitle').textContent = 'Storyboard';
+                    document.getElementById('headerSubtitle').textContent = `${meta.platform} v${meta.version}`;
+                    document.getElementById('headerServerUrl').textContent = meta.server.url;
+
+                    document.getElementById('footerTitle').textContent = `${meta.title} - ${meta.platform}`;
+                    document.getElementById('footerPort').textContent = `Port: ${meta.server.port}`;
+                    document.getElementById('footerDesign').textContent = `Design: ${meta.design}`;
+                }
+            } catch (e) {
+                console.log('Metadata not available');
+            }
+        }
+
+        loadMetadata();
+    </script>
+</body>
+</html>

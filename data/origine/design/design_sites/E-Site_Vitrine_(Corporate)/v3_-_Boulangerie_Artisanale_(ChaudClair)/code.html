@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crust Lab | Technical Artistry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06e4f9",
+                        "background-light": "#f9fafb",
+                        "background-dark": "#111818",
+                        "accent-rust": "#d97706",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #111818;
+        }
+        .glow-hover:hover {
+            box-shadow: 0 0 20px rgba(6, 228, 249, 0.3);
+        }
+        .glass-panel {
+            background: rgba(39, 56, 58, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white selection:bg-primary selection:text-background-dark">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- TopNavBar -->
+<div class="w-full flex justify-center sticky top-0 z-50 glass-panel">
+<div class="layout-content-container flex flex-col max-w-[1200px] flex-1">
+<header class="flex items-center justify-between whitespace-nowrap px-6 py-4">
+<div class="flex items-center gap-4 text-white group cursor-pointer">
+<div class="size-8 text-primary transition-transform group-hover:scale-110">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z" fill="currentColor"></path>
+<path clip-rule="evenodd" d="M39.998 12.236C39.9944 12.2537 39.9875 12.2845 39.9748 12.3294C39.9436 12.4399 39.8949 12.5741 39.8346 12.7175C39.8168 12.7597 39.7989 12.8007 39.7813 12.8398C38.5103 13.7113 35.9788 14.9393 33.7095 15.4811C30.9875 16.131 27.6413 16.5217 24 16.5217C20.3587 16.5217 17.0125 16.131 14.2905 15.4811C12.0012 14.9346 9.44505 13.6897 8.18538 12.8168C8.17384 12.7925 8.16216 12.767 8.15052 12.7408C8.09919 12.6249 8.05721 12.5114 8.02977 12.411C8.00356 12.3152 8.00039 12.2667 8.00004 12.2612C8.00004 12.261 8 12.2607 8.00004 12.2612C8.00004 12.2359 8.0104 11.9233 8.68485 11.3686C9.34546 10.8254 10.4222 10.2469 11.9291 9.72276C14.9242 8.68098 19.1919 8 24 8C28.8081 8 33.0758 8.68098 36.0709 9.72276C37.5778 10.2469 38.6545 10.8254 39.3151 11.3686C39.9006 11.8501 39.9857 12.1489 39.998 12.236ZM4.95178 15.2312L21.4543 41.6973C22.6288 43.5809 25.3712 43.5809 26.5457 41.6973L43.0534 15.223C43.0709 15.1948 43.0878 15.1662 43.104 15.1371L41.3563 14.1648C43.104 15.1371 43.1038 15.1374 43.104 15.1371L43.1051 15.135L43.1065 15.1325L43.1101 15.1261L43.1199 15.1082C43.1276 15.094 43.1377 15.0754 43.1497 15.0527C43.1738 15.0075 43.2062 14.9455 43.244 14.8701C43.319 14.7208 43.4196 14.511 43.5217 14.2683C43.6901 13.8679 44 13.0689 44 12.2609C44 10.5573 43.003 9.22254 41.8558 8.2791C40.6947 7.32427 39.1354 6.55361 37.385 5.94477C33.8654 4.72057 29.133 4 24 4C18.867 4 14.1346 4.72057 10.615 5.94478C8.86463 6.55361 7.30529 7.32428 6.14419 8.27911C4.99695 9.22255 3.99999 10.5573 3.99999 12.2609C3.99999 13.1275 4.29264 13.9078 4.49321 14.3607C4.60375 14.6102 4.71348 14.8196 4.79687 14.9689C4.83898 15.0444 4.87547 15.1065 4.9035 15.1529C4.91754 15.1762 4.92954 15.1957 4.93916 15.2111L4.94662 15.223L4.95178 15.2312ZM35.9868 18.996L24 38.22L12.0131 18.996C12.4661 19.1391 12.9179 19.2658 13.3617 19.3718C16.4281 20.1039 20.0901 20.5217 24 20.5217C27.9099 20.5217 31.5719 20.1039 34.6383 19.3718C35.082 19.2658 35.5339 19.1391 35.9868 18.996Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="text-white text-xl font-bold leading-tight tracking-[-0.015em] uppercase font-display">Crust Lab</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8 items-center">
+<nav class="hidden md:flex items-center gap-9">
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal uppercase tracking-wider" href="#">The Lab</a>
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal uppercase tracking-wider" href="#">Specimen</a>
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal uppercase tracking-wider" href="#">Protocol</a>
+<a class="text-white hover:text-primary transition-colors text-sm font-medium leading-normal uppercase tracking-wider" href="#">Order</a>
+</nav>
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-6 bg-primary text-background-dark text-xs font-black uppercase leading-normal tracking-widest hover:bg-white transition-all">
+<span>Locate</span>
+</button>
+</div>
+</header>
+</div>
+</div>
+<main class="flex-1 flex flex-col items-center">
+<!-- HeroSection -->
+<div class="w-full max-w-[1200px] px-6 py-12 md:py-24">
+<div class="@container">
+<div class="flex flex-col gap-10 @[864px]:flex-row items-center">
+<div class="w-full relative group">
+<div class="absolute -inset-1 bg-primary/20 rounded-xl blur-xl opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200"></div>
+<div class="relative w-full bg-center bg-no-repeat aspect-[4/3] bg-cover rounded-xl border border-white/10" data-alt="Macro photo of artisan sourdough crust textures" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuA14Aq0pDDsJYNsQZAQ1S2M0CzT-zoPBfkXVRwrrZY_HWrIq7S_fDCSNyclhqk41s4SAjmzCNBE_K352hbP4oX-a55sPOpeRG5ES8qD7HIjUR3ng1T1XlJfGw2U_ckj8bTVHe_5nCaxuah_QQhzh768d-rkhPSkAP2cAUZVkD84jtH_aQ_IPo6jB3Y9NdQ65R0-5e3pfQoycfVCt45zQSQe-gzcvN-ZD6ExYwDUqdpZutidfc9wVch9GjC-nOnMzNAmQlZBqPaGIHr_");'></div>
+</div>
+<div class="flex flex-col gap-8 @[864px]:w-1/2">
+<div class="flex flex-col gap-4">
+<span class="text-primary text-xs font-black tracking-[0.3em] uppercase">Batch No. 882 // 2024</span>
+<h1 class="text-white text-5xl font-black leading-[1.1] tracking-tighter @[480px]:text-7xl font-display italic">
+                                    THERMAL<br/><span class="text-primary">ARTISTRY</span>
+</h1>
+<p class="text-gray-400 text-lg font-light leading-relaxed max-w-[480px]">
+                                    Where ancient grain traditions meet modern precision. We treat the oven as a particle accelerator and the dough as our canvas.
+                                </p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-primary text-background-dark text-sm font-bold uppercase tracking-widest hover:scale-105 transition-transform glow-hover">
+<span>View Lab Specimen</span>
+</button>
+<button class="flex min-w-[160px] cursor-pointer items-center justify-center rounded-lg h-14 px-8 bg-white/5 text-white border border-white/10 text-sm font-bold uppercase tracking-widest hover:bg-white/10 transition-all">
+<span>Our Protocol</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SectionHeader: Collection -->
+<div class="w-full max-w-[1200px] px-6 pt-20">
+<div class="flex items-end justify-between border-b border-white/10 pb-4">
+<h2 class="text-white text-3xl font-black leading-tight tracking-tighter uppercase font-display italic">Active Specimen</h2>
+<span class="text-primary text-xs font-mono mb-1">AVAILABLE NOW [04]</span>
+</div>
+</div>
+<!-- ImageGrid -->
+<div class="w-full max-w-[1200px] p-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="group relative bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-6 aspect-square overflow-hidden border border-white/10 transition-all hover:border-primary/50" data-alt="Close up of a perfect baguette with neon lighting" style='background-image: linear-gradient(0deg, rgba(17, 24, 24, 0.9) 0%, rgba(17, 24, 24, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCE-6X2Ju0Z4xwkFQ2oSc3CApvq3YZFqlEuVP8fWO7zWyVMdRSO-gD629iF6ZoVtjFa3puuVyuOkUHiMYXY579ZVgWQBw_9aY4A9zsTMnUWBNIYSMIP4tiE-evegM47P6m96iknbZDKMFr52qX_LJMi3wXNSshobHGosoGUfZddS8jOxNVo9BOy0RxX_XNfWI2rivrJc3e5So_kzd5edLZgA8Dc0fwaiPo94wvJT7fvlV3f-Zi48xU84E_XuuMXqayKZTuTv9dVbbao");'>
+<div class="absolute top-4 right-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<p class="text-white text-xl font-bold leading-tight font-display tracking-tight">Molecular Baguette</p>
+<p class="text-primary/70 text-xs font-mono">01. HYDRATION: 82%</p>
+</div>
+<div class="group relative bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-6 aspect-square overflow-hidden border border-white/10 transition-all hover:border-primary/50" data-alt="Buttery croissant with sharp shadows" style='background-image: linear-gradient(0deg, rgba(17, 24, 24, 0.9) 0%, rgba(17, 24, 24, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuA0mECzPfS8P956UrCU8dtoHF8PfnZyJ0vpj-8O_Iy7ViCPqazfyuD7-N39-17fNgM7h5YjK5NxHNrAabOF2NK3r-gUQxO5-EW1c7U9oXBehmSWUsqdJH0ZoDtDBXUFnfF7P0Stmv2rKa3g_jsrHu9YbzDq-_rwIEXLY2tx8AC_nykmTo9lCm7kqydsODH043bx0FyZEz6GsseLYOBqK2N193Ue-S9gRlYTpu-mAg9RA12YfybN7FqOXIs6jfUZgaHKrGpgsLizScv5");'>
+<div class="absolute top-4 right-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<p class="text-white text-xl font-bold leading-tight font-display tracking-tight">Kinetic Croissant</p>
+<p class="text-primary/70 text-xs font-mono">02. LAMINATION: 12 LAYERS</p>
+</div>
+<div class="group relative bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-6 aspect-square overflow-hidden border border-white/10 transition-all hover:border-primary/50" data-alt="Rustic sourdough loaf on dark surface" style='background-image: linear-gradient(0deg, rgba(17, 24, 24, 0.9) 0%, rgba(17, 24, 24, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRKb4P7jzkZMm6FhfVPk9L_abDqhp4ki6VgQZJLu9lRJDh4oeZn672oWsErAQU8T2533xWpzIRRjsrmyta7ipGeOcQaX-zJG1kqV_VGYB10gehExNSM3AGwPiDa9jV27EtKP_kr5Rtf8ctwJBNqg5VabUYsrMHNewcJ-0Gg5qYEJwZvaaZhAgnpUkDZvA5rwmh-Vw_kgY4fDEnTVJpMpK2L6gM9x0FPK5nWn3ecm5yhZXYAM2PLLvnNIRgswgAiPEoqBE5O00dnZVF");'>
+<div class="absolute top-4 right-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<p class="text-white text-xl font-bold leading-tight font-display tracking-tight">Levain .01 Prime</p>
+<p class="text-primary/70 text-xs font-mono">03. FERMENT: 72H</p>
+</div>
+<div class="group relative bg-cover bg-center flex flex-col gap-3 rounded-xl justify-end p-6 aspect-square overflow-hidden border border-white/10 transition-all hover:border-primary/50" data-alt="Soft brioche bun with egg wash shine" style='background-image: linear-gradient(0deg, rgba(17, 24, 24, 0.9) 0%, rgba(17, 24, 24, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuZ0ARHSvtvj1mL2cmxZbBgEaUX6Fu1b0KtGNK52Tf-OcOiuuMu5iFu1LLu-bT7XQDu7c2gZiLlHvOhSfk8cInorVcBmt78HoTa3DaqKu__xuwCwuOREGPfSzIhvdgzuCywU70GAZ5f_DomSBTbzdDyy_ywJ6f0dTmc_x22c8JENrdiUQLSIu7eVtc6uxgjMO90sRSghMQpvnQe_NfIQ8ZPrzFubgNw-AnfoRJPgn5kKZueSeZb6H79ovyEb_1S_9BBICHo70guNzI");'>
+<div class="absolute top-4 right-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined">add_circle</span>
+</div>
+<p class="text-white text-xl font-bold leading-tight font-display tracking-tight">Midnight Brioche</p>
+<p class="text-primary/70 text-xs font-mono">04. FAT: 24% BUTTER</p>
+</div>
+</div>
+</div>
+<!-- SectionHeader: Process -->
+<div class="w-full max-w-[1200px] px-6 pt-24">
+<div class="flex flex-col gap-2 items-center text-center">
+<span class="text-primary text-xs font-black tracking-[0.3em] uppercase">The Science of Soul</span>
+<h2 class="text-white text-4xl font-black leading-tight tracking-tighter uppercase font-display italic">THE CRUST PROTOCOL</h2>
+</div>
+</div>
+<!-- Process Grid (Replacement for Section with "hand-drawn illustrations") -->
+<div class="w-full max-w-[1200px] p-6 grid grid-cols-1 md:grid-cols-3 gap-8 py-12">
+<div class="glass-panel p-8 rounded-xl border-l-4 border-l-primary group hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl mb-4 group-hover:scale-110 transition-transform">water_drop</span>
+<h3 class="text-xl font-bold mb-3 font-display">01. MOLECULAR MESH</h3>
+<p class="text-gray-400 text-sm leading-relaxed">Precision hydration using filtered alkaline water at exactly 14°C to optimize gluten network integrity.</p>
+</div>
+<div class="glass-panel p-8 rounded-xl border-l-4 border-l-primary group hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl mb-4 group-hover:scale-110 transition-transform">hourglass_empty</span>
+<h3 class="text-xl font-bold mb-3 font-display">02. TEMPORAL SHIFT</h3>
+<p class="text-gray-400 text-sm leading-relaxed">A 72-hour cold fermentation cycle allows enzymes to break down complex sugars for peak bioavailability.</p>
+</div>
+<div class="glass-panel p-8 rounded-xl border-l-4 border-l-primary group hover:bg-white/5 transition-colors">
+<span class="material-symbols-outlined text-primary text-4xl mb-4 group-hover:scale-110 transition-transform">local_fire_department</span>
+<h3 class="text-xl font-bold mb-3 font-display">03. THERMAL SHOCK</h3>
+<p class="text-gray-400 text-sm leading-relaxed">Blasted in a stone-hearth vapor oven at 550°F to achieve the signature 'glassy' crust and open crumb.</p>
+</div>
+</div>
+<!-- Instagram Feed Integration -->
+<div class="w-full bg-white/5 py-16 mt-20 border-y border-white/5">
+<div class="max-w-[1200px] mx-auto px-6 mb-8 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">sensors</span>
+<h3 class="text-xl font-black font-display uppercase tracking-widest">LIVE_FEED</h3>
+</div>
+<a class="text-xs font-mono text-gray-400 hover:text-primary transition-colors" href="#">FOLLOW @CRUST.LAB</a>
+</div>
+<div class="flex overflow-x-auto gap-4 px-6 pb-4 no-scrollbar">
+<div class="flex-none w-64 aspect-square rounded-lg bg-cover bg-center grayscale hover:grayscale-0 transition-all cursor-crosshair border border-white/10" data-alt="Instagram post of bakery interior" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCIpfNPgLQxat5gGECJBmS1ByNkkHEgyhadD_HYSImRsg5d-Yn_P6PmRT-owB-OOsTiZpIrYzvHsvDIjjuDn2qerUYdRJ0lQ63IVDXtCF5ec-IEfclrY7q-oq5L1YVfClthFatq3fTxsX1DcOoIiv4I7v5hO9KQm6j_A5CEI3jtoRwgooumRKrN54zkdt716aYfkQW9KvcLj45CfgwEtWqwEXQ-Qwjl_pq1N4er0dsZXzU-1nOOegTPX4VYUtkOGXZ8IVJv-YatGwsS");'></div>
+<div class="flex-none w-64 aspect-square rounded-lg bg-cover bg-center grayscale hover:grayscale-0 transition-all cursor-crosshair border border-white/10" data-alt="Instagram post of steaming bread" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDm59TfJs7MIwaEt7rSPbcKtphzeXhxTaheJJxBIlMVvpB0ov5JvHVgGHAbL441oKwcA2LFLopTnYpRJ8zjoXk3G4drHH_XWpW7tkm37dOZ-4a92hc3kCqKtlkNv-PKVegZntKB-_06n2tRKZHgs2EYuf0moVWBY6NWLN69B3P37XxYAc2m_qjqln3629_UYHq3TBaJETwaxrZewp2kWfJ1Rl8iE8pDPDrdid67rhAeioWdZf48o5yRJGIRYLTZEgIbS2vqZ6j8Mkda");'></div>
+<div class="flex-none w-64 aspect-square rounded-lg bg-cover bg-center grayscale hover:grayscale-0 transition-all cursor-crosshair border border-white/10" data-alt="Instagram post of bakers hands" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAFcDJWVZltitAkGqgVDCGbcoQp-BDRNHE77CjMTq9FiqZz9T2aKuTka1c4RCUSrhovh1IFYKh_7e7kSKKqzFg159dnhoe56g-znAISP8VVallIm-dXcj52pbT2kSIxUXYolKs-22Pbqh91WkOZjZaxFAUcItP7Uj0ubMI4ooRFmVoBVtki7HSsYr0HR8PHTXACAHtSsWzMjEFeAVt4GfX-oLNPAgxX8YspQNXZZl3NQEkcMO3GlPdMjKqZNg4xha6lZPMzpiNJ1psH");'></div>
+<div class="flex-none w-64 aspect-square rounded-lg bg-cover bg-center grayscale hover:grayscale-0 transition-all cursor-crosshair border border-white/10" data-alt="Instagram post of golden pastries" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAJ0Gfv0In3w-6OPqnpC5OXowMn-wf_FeNfs_q2kTipwGcnYrmLJR6XVgonWqLtahUxQiqYtmgce0N1bCpq_L2clQOn9VwE6VsncHlBGYGxH88R0s474UiuyWHgpOLbrJejTi8_2XBOgWRkI8viR5T2sNd8UaVJga7YSm7satvu1GZHbcc-KAxPBdBjh1GxOMJWi8EBAV8mRops0P4MNRHR79V0wIvwKpg1lvLuqaRznJlIc2zT6wtgKPi5R_FezMGOzJBQJUC-qxAz");'></div>
+<div class="flex-none w-64 aspect-square rounded-lg bg-cover bg-center grayscale hover:grayscale-0 transition-all cursor-crosshair border border-white/10" data-alt="Instagram post of bakery storefront" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCoIiug_w5156XxjPpAJhYQASN9oYkqokjcYo4Zji0V5lzdulNQOEDcJ3yQ0WA_jtI3Z5vtKBi8MEp-xMTLzQQff7MfYZo_zIQV7DpC6BmGIDD2r_G5TVv5nUSUd3w8d1TX861_cgcMuqHBcamdPGdgqaP3OmiHWb_-CDLhs-hI6A-jjijXPD0nMbDk5YM_hr0rl9FXSYULnvmd1ilJNN9sFP1odP4IPjVoolhMf5UGuaBtw_Xnr_fsnZQKzO6dp-yBhJrE40-xt4nO");'></div>
+<div class="flex-none w-64 aspect-square rounded-lg bg-cover bg-center grayscale hover:grayscale-0 transition-all cursor-crosshair border border-white/10" data-alt="Instagram post of flour dusted counter" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2CdmbYYHMq8rN94Ol2lQbNqrEjexp2Ivs_e7jDF-IB2Tib1UeFduFJiRyUcNHCa2lWh13D-RZYcDMK8ujNjmMkEAx7XTTlIuHHGso_eWSGqJlhCpBUrMfLo8swhg4m8emuMT5I2eK5pWPTipSRwu0Rt5jHb2t5Vw9B5vRzOL0YtrKMd2Gtpf0H83hPpiY4Xh0P3nDEL8fGMi6nhnX1jVFQ1oxiakC9a-ayCZzDAB57vcUOX7ILgyYRfCfb7A0yjzLMDwdB0ONKl31");'></div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full max-w-[1200px] px-6 py-20 flex flex-col md:flex-row justify-between items-start gap-12">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-2">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg"><path d="M13.8261 17.4264C16.7203 18.1174 20.2244 18.5217 24 18.5217C27.7756 18.5217 31.2797 18.1174 34.1739 17.4264C36.9144 16.7722 39.9967 15.2331 41.3563 14.1648L24.8486 40.6391C24.4571 41.267 23.5429 41.267 23.1514 40.6391L6.64374 14.1648C8.00331 15.2331 11.0856 16.7722 13.8261 17.4264Z" fill="currentColor"></path></svg>
+</div>
+<h2 class="text-white text-lg font-bold uppercase font-display">Crust Lab</h2>
+</div>
+<p class="text-gray-500 text-sm max-w-xs">Operating from the intersection of tradition and technology. Quality is our only constant.</p>
+</div>
+<div class="grid grid-cols-2 gap-12">
+<div class="flex flex-col gap-4">
+<h4 class="text-xs font-black uppercase text-primary tracking-widest">Connect</h4>
+<nav class="flex flex-col gap-2 text-sm text-gray-400 font-mono">
+<a class="hover:text-white" href="#">Instagram</a>
+<a class="hover:text-white" href="#">Terminal_V1</a>
+<a class="hover:text-white" href="#">Discord</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<h4 class="text-xs font-black uppercase text-primary tracking-widest">Location</h4>
+<div class="text-sm text-gray-400 font-mono" data-location="Brooklyn, NY" style="https://lh3.googleusercontent.com/aida-public/AB6AXuCUoJVE7kd8clAsAHeKgFerYjoS0TSw2vtWM6v12Rpxx1i0tBVV54h8flR4SWMMlWcENFKF3tssV1So60oOyvL86sS2COf3Llv8DXiLedzrregPKSZuuTfaXJI5heYmeAXAtuPL8aBS15cqtUIV6FOBorC_ZIitSbRCh4UEEaGZ8B3x-vTupgXzuFjjVt7U13--G-wN8QGGCB0N8rm-dTkymUfi7W89ktvGa_zNuz-UGNFw54iwGi0PwD9Jhj4528FDivIHUztotZWb">
+                            Sector 07 // Brooklyn<br/>
+                            Tue-Sun: 06:00-14:00
+                        </div>
+</div>
+</div>
+</footer>
+</main>
+</div>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</body></html>

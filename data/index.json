@@ -1,0 +1,3944 @@
+{
+  "metadata": {
+    "title": "Create App Worganic",
+    "platform": "Worganic Platform",
+    "version": "2.0.0",
+    "server": {
+      "status": "En ligne",
+      "port": 3001,
+      "url": "localhost:3001"
+    },
+    "selectedProjectType": "full-web",
+    "aiConfig": {
+      "provider": "claude-cli",
+      "model": "claude-sonnet-4-6",
+      "lastUpdated": "2026-02-20T17:06:52.704Z"
+    }
+  },
+  "currentProjectId": "projet-001-worganic-platform",
+  "projects": [
+    {
+      "id": "projet-001-worganic-platform",
+      "userId": "d78ab175-0755-4d09-9c4d-120e628a2b2c",
+      "name": "Worganic Platform - Create App",
+      "type": "full-web",
+      "createdAt": "2026-01-31T20:00:00.000Z",
+      "updatedAt": "2026-02-17T20:43:50.349Z",
+      "status": "in-progress",
+      "description": "Site Web Complet - Application de création de projets avec pipeline d'étapes",
+      "aiConfig": {
+        "provider": "claude",
+        "model": "claude-sonnet-4-5"
+      },
+      "design": "Lavande Dreams",
+      "folder": "projets/projet-001-worganic-platform",
+      "progress": {
+        "totalSteps": 16,
+        "completedSteps": 5,
+        "currentStep": "F"
+      },
+      "workflowCount": 2
+    }
+  ],
+  "projectTypes": [
+    {
+      "id": "full-web",
+      "name": "Site Web Complet",
+      "description": "Site internet/intranet avec interface utilisateur complète (frontend + backend)",
+      "icon": "language",
+      "color": "blue",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156007",
+        "etape-1770394156008",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "backend",
+      "name": "Application Backend",
+      "description": "API, services backend, microservices sans interface graphique",
+      "icon": "dns",
+      "color": "green",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156007",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "script-cli",
+      "name": "Script/CLI",
+      "description": "Script automatisé, outil en ligne de commande, automation",
+      "icon": "terminal",
+      "color": "purple",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156007",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "documentation",
+      "name": "Documentation",
+      "description": "Document (recette, guide, manuel, rapport, documentation technique)",
+      "icon": "description",
+      "color": "orange",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "design-mockup",
+      "name": "Design/Maquette",
+      "description": "Maquettes UI/UX, prototypes, design system, planches graphiques",
+      "icon": "palette",
+      "color": "pink",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156008"
+      ]
+    },
+    {
+      "id": "api-service",
+      "name": "API/Microservice",
+      "description": "API REST, GraphQL, services web, endpoints",
+      "icon": "api",
+      "color": "teal",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156007",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard/Admin",
+      "description": "Interface d'administration, tableau de bord, back-office",
+      "icon": "dashboard",
+      "color": "indigo",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156007",
+        "etape-1770394156008",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "mobile-app",
+      "name": "Application Mobile",
+      "description": "Application mobile iOS/Android, PWA",
+      "icon": "phone_android",
+      "color": "cyan",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156007",
+        "etape-1770394156008",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "data-analysis",
+      "name": "Analyse de Données",
+      "description": "Script d'analyse, visualisation, reporting, ETL",
+      "icon": "analytics",
+      "color": "amber",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156007",
+        "etape-1770394156009"
+      ]
+    },
+    {
+      "id": "custom",
+      "name": "Projet Personnalisé",
+      "description": "Choisissez manuellement les étapes nécessaires à votre projet",
+      "icon": "tune",
+      "color": "gray",
+      "steps": [
+        "etape-1770394156001"
+      ]
+    }
+  ],
+  "pipelineTemplate": {
+    "steps": [
+      {
+        "id": "A",
+        "ia": [
+          {
+            "name": "gemini",
+            "model": "2.0 Flash"
+          }
+        ],
+        "name": "Prompt Initial",
+        "shortName": "Prompt Initial",
+        "file": "prompt.md",
+        "prompt": "prompt.md",
+        "summary": "Définir la vision globale du projet, les objectifs principaux et le contexte métier. Ce prompt initial sert de base pour toutes les étapes suivantes.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 0
+      },
+      {
+        "id": "B",
+        "ia": [
+          {
+            "name": "gemini",
+            "model": "gemini-2.0-flash"
+          }
+        ],
+        "name": "Extraction Exigences",
+        "shortName": "Exigences Fct.",
+        "file": [
+          "Bg0-Prompt.md",
+          "Bg0-Exigences_Fonctionnelles_Structurees.md"
+        ],
+        "prompt": "origine/Ba0-Prompt.md",
+        "summary": "Analyser le prompt initial pour extraire et structurer les exigences fonctionnelles. Identifier les fonctionnalités clés, les contraintes et les critères d'acceptation.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "C",
+        "ia": [
+          {
+            "name": "gemini",
+            "model": "gemini-2.0-flash"
+          }
+        ],
+        "name": "Creation Prompt",
+        "shortName": "Prompt Ex.Fct",
+        "file": [
+          "Cg0-Prompt.md",
+          "Cg1-prompt-final.md"
+        ],
+        "prompt": "origine/Ca0-Prompt.md",
+        "summary": "Créer un prompt détaillé basé sur les exigences fonctionnelles extraites. Ce prompt servira de guide pour la génération du storyboard.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "D",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "name": "Storyboard",
+        "shortName": "Storyboard",
+        "file": [
+          "Dg0-Prompt.md",
+          "Dg1-storyboard.html"
+        ],
+        "prompt": "origine/Da0-Prompt.md",
+        "summary": "Créer le storyboard visuel du projet : scénarios utilisateur, parcours, écrans clés et flux de navigation entre les différentes sections.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "E",
+        "name": "Mockup",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Mockup",
+        "file": [
+          "Eg0-Prompt.md",
+          "Eg1-mockup.html"
+        ],
+        "prompt": "origine/Ea0-Prompt.md",
+        "summary": "Concevoir les maquettes haute-fidélité de l'interface utilisateur. Définir la structure des pages, les composants UI et l'ergonomie générale.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "F",
+        "name": "Design",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Design Selection",
+        "file": [
+          "Fa1-design.html",
+          "Gg2-design-choix.md"
+        ],
+        "prompt": "",
+        "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "G",
+        "name": "Design création",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Design",
+        "file": [
+          "Gg1-design.html",
+          "Gg2-design-choix.md"
+        ],
+        "prompt": "",
+        "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "H",
+        "name": "Cahier de Tests",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Cahier Tests",
+        "file": [
+          "Hg0-Prompt.md",
+          "Hg1-tests.html"
+        ],
+        "prompt": "origine/Ha0-Prompt.md",
+        "summary": "Rédiger le cahier de tests fonctionnels et techniques. Définir les cas de test, les scénarios de validation et les critères de succès.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "I",
+        "name": "Ordre Execution",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Ordre Exec.",
+        "file": [
+          "Ig0-Prompt.md",
+          "Ig6-ordre.html"
+        ],
+        "prompt": "origine/Ia0-Prompt.md",
+        "summary": "Établir l'ordre d'exécution des tâches de développement. Prioriser les fonctionnalités et créer un planning de réalisation.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0,
+        "type": 1
+      },
+      {
+        "id": "J",
+        "name": "Fiche Suivi",
+        "ia": [
+          {
+            "name": "",
+            "model": ""
+          }
+        ],
+        "shortName": "Fiche Suivi",
+        "file": [
+          "Jg0-Prompt.md",
+          "Jg1-fiche.html"
+        ],
+        "prompt": "origine/Ja0-Prompt.md",
+        "summary": "Créer la fiche de suivi du projet pour tracker l'avancement, les décisions prises et les points d'attention.",
+        "status": "pending",
+        "outClaude": "",
+        "tokensUsed": 0,
+        "tokensBegin": 0,
+        "tokensEnd": 0
+      }
+    ]
+  },
+  "pagesExemples": [
+    {
+      "id": "ex-storyboard",
+      "title": "Storyboard Systeme Exemple",
+      "file": "origine/Da1-storyboard.html",
+      "href": "origine/Da1-storyboard.html",
+      "icon": "movie",
+      "iconColor": "text-blue-400",
+      "category": "Storyboard",
+      "categoryBadge": "badge-storyboard",
+      "description": "Template storyboard complet"
+    },
+    {
+      "id": "ex-parcours",
+      "title": "Parcours Utilisateur Exemple",
+      "file": "origine/Da2-infographie-parcours-utilisateur.html",
+      "href": "origine/Da2-infographie-parcours-utilisateur.html",
+      "icon": "route",
+      "iconColor": "text-blue-400",
+      "category": "Infographie",
+      "categoryBadge": "badge-storyboard",
+      "description": "Template infographie parcours"
+    },
+    {
+      "id": "ex-mockup",
+      "title": "Mockup Complet Exemple",
+      "file": "origine/Ea1-mockup.html",
+      "href": "origine/Ea1-mockup.html",
+      "icon": "web",
+      "iconColor": "text-yellow-400",
+      "category": "Mockup",
+      "categoryBadge": "badge-mockup",
+      "description": "Template mockup interface"
+    },
+    {
+      "id": "ex-tests",
+      "title": "Cahier de Tests Exemple",
+      "file": "origine/Ha2-cahier-de-tests.html",
+      "href": "origine/Ha2-cahier-de-tests.html",
+      "icon": "fact_check",
+      "iconColor": "text-red-400",
+      "category": "Tests",
+      "categoryBadge": "badge-tests",
+      "description": "Template cahier de tests interactif"
+    },
+    {
+      "id": "ex-design",
+      "title": "Selecteur Design",
+      "file": "origine/design/Ga1-design-choice.html",
+      "href": "origine/design/Ga1-design-choice.html",
+      "icon": "palette",
+      "iconColor": "text-pink-400",
+      "category": "Design",
+      "categoryBadge": "badge-design",
+      "description": "Selecteur de templates et palettes"
+    },
+    {
+      "id": "ex-design-exemple",
+      "title": "Design type Exemple",
+      "file": "origine/Ga1-design_exemple.html",
+      "href": "origine/Ga1-design_exemple.html",
+      "icon": "palette",
+      "iconColor": "text-pink-400",
+      "category": "Design",
+      "categoryBadge": "badge-design",
+      "description": "Exemple des éléments du design"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-1770394156553",
+      "name": "extraction_exigences-Redaction_et_Qualite_des_Exigences_Fonctionnelles.md",
+      "file": "extraction_exigences-Redaction_et_Qualite_des_Exigences_Fonctionnelles.md",
+      "type": "fichier-explication",
+      "comment": "Document d'exigences fonctionnelles",
+      "linkedDocIds": [
+        "doc-1770394156554"
+      ]
+    },
+    {
+      "id": "doc-1770394156554",
+      "name": "Extraction Exigences - Prompt",
+      "file": "Prompt-extraction_exigences.md",
+      "type": "prompt",
+      "comment": "Prompt initial pour l'étape B",
+      "linkedDocIds": [
+        "doc-1770394156553"
+      ]
+    },
+    {
+      "id": "doc-1770394156555",
+      "name": "Ca0-Prompt.md",
+      "file": "Ca0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour création de prompt",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1770394156556",
+      "name": "Da1-storyboard.html",
+      "file": "Da1-storyboard.html",
+      "type": "fichier-exemple",
+      "comment": "Template storyboard complet",
+      "linkedDocIds": [
+        "doc-1770394156557",
+        "doc-1770394156558",
+        "doc-1770394156559"
+      ]
+    },
+    {
+      "id": "doc-1770394156557",
+      "name": "Da2-infographie-parcours-utilisateur.html",
+      "file": "Da2-infographie-parcours-utilisateur.html",
+      "type": "fichier-exemple",
+      "comment": "Infographie parcours utilisateur",
+      "linkedDocIds": [
+        "doc-1770394156556",
+        "doc-1770394156558",
+        "doc-1770394156559"
+      ]
+    },
+    {
+      "id": "doc-1770394156558",
+      "name": "Da0-Prompt.md",
+      "file": "Da0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour création du storyboardssssss",
+      "linkedDocIds": [
+        "doc-1770394156556",
+        "doc-1770394156557",
+        "doc-1770394156559"
+      ]
+    },
+    {
+      "id": "doc-1770394156559",
+      "name": "Da3-STORYBOARDS-SYNTHESE.md",
+      "file": "Da3-STORYBOARDS-SYNTHESE.md",
+      "type": "fichier-exemple",
+      "comment": "Synthèse des storyboards",
+      "linkedDocIds": [
+        "doc-1770394156556",
+        "doc-1770394156557",
+        "doc-1770394156558"
+      ]
+    },
+    {
+      "id": "doc-1770394156560",
+      "name": "Ea0-Prompt.md",
+      "file": "Ea0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour création du mockup",
+      "linkedDocIds": [
+        "doc-1770394156561"
+      ]
+    },
+    {
+      "id": "doc-1770394156561",
+      "name": "Ea1-mockup.html",
+      "file": "Ea1-mockup.html",
+      "type": "fichier-exemple",
+      "comment": "Template mockup interface",
+      "linkedDocIds": [
+        "doc-1770394156560"
+      ]
+    },
+    {
+      "id": "doc-1770394156562",
+      "name": "Fa0-Prompt.md",
+      "file": "Fa0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour sélection du design",
+      "linkedDocIds": [
+        "doc-1770394156563",
+        "doc-1770394156564",
+        "doc-1770554482063"
+      ]
+    },
+    {
+      "id": "doc-1770394156563",
+      "name": "Fa1-design_exemple.html",
+      "file": "Fa1-design_exemple.html",
+      "type": "fichier-exemple",
+      "comment": "Exemple de design type",
+      "linkedDocIds": [
+        "doc-1770394156562",
+        "doc-1770394156564",
+        "doc-1770554482063"
+      ]
+    },
+    {
+      "id": "doc-1770394156564",
+      "name": "Fa2-design-choix-exemple.md",
+      "file": "Fa2-design-choix-exemple.md",
+      "type": "fichier-exemple",
+      "comment": "Exemple de choix de design",
+      "linkedDocIds": [
+        "doc-1770394156562",
+        "doc-1770394156563",
+        "doc-1770554482063"
+      ]
+    },
+    {
+      "id": "doc-1770394156565",
+      "name": "Ga0-Prompt.md",
+      "file": "Ga0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour création du design",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1770394156566",
+      "name": "Ha0-Prompt.md",
+      "file": "Ha0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour création du cahier de tests",
+      "linkedDocIds": [
+        "doc-1770394156567",
+        "doc-1770394156568",
+        "doc-1770394156569"
+      ]
+    },
+    {
+      "id": "doc-1770394156567",
+      "name": "Ha1-cahier-de-tests.md",
+      "file": "Ha1-cahier-de-tests.md",
+      "type": "fichier-exemple",
+      "comment": "Cahier de tests en markdown",
+      "linkedDocIds": [
+        "doc-1770394156566",
+        "doc-1770394156568",
+        "doc-1770394156569"
+      ]
+    },
+    {
+      "id": "doc-1770394156568",
+      "name": "Ha2-cahier-de-tests.html",
+      "file": "Ha2-cahier-de-tests.html",
+      "type": "fichier-exemple",
+      "comment": "Cahier de tests interactif",
+      "linkedDocIds": [
+        "doc-1770394156566",
+        "doc-1770394156567",
+        "doc-1770394156569"
+      ]
+    },
+    {
+      "id": "doc-1770394156569",
+      "name": "Ha3-cahier-de-tests-exemple.json",
+      "file": "Ha3-cahier-de-tests-exemple.json",
+      "type": "fichier-exemple",
+      "comment": "Exemple de structure JSON pour tests",
+      "linkedDocIds": [
+        "doc-1770394156566",
+        "doc-1770394156567",
+        "doc-1770394156568"
+      ]
+    },
+    {
+      "id": "doc-1770394156570",
+      "name": "Ia0-Prompt.md",
+      "file": "Ia0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour ordre d'exécution",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1770394156571",
+      "name": "Ja0-Prompt.md",
+      "file": "Ja0-Prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour fiche de suivi",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1770507845764",
+      "name": "initial-prompt",
+      "file": "Aa0-prompt.md",
+      "type": "prompt",
+      "comment": "Prompt initial exemple pour un projet intranet",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1770554482063",
+      "name": "Selection du design",
+      "file": "Fa1-design.html",
+      "type": "fichier-html-selection",
+      "comment": "",
+      "linkedDocIds": [
+        "doc-1770394156562",
+        "doc-1770394156563",
+        "doc-1770394156564"
+      ]
+    },
+    {
+      "id": "doc-1770639879864-0",
+      "name": "analyse-ingredients-prompt.md",
+      "file": "analyse-ingredients-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour l'IA qui analyse et catégorise les ingrédients saisis par l'utilisateur",
+      "linkedDocIds": [
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ]
+    },
+    {
+      "id": "doc-1770639879864-1",
+      "name": "categories-ingredients.md",
+      "file": "categories-ingredients.md",
+      "type": "fichier-explication",
+      "comment": "Documentation de référence sur les catégories d'ingrédients (viandes, poissons, légumes, féculents, condiments, etc.)",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ],
+      "aiModifiedAt": "2026-02-09T18:15:05.860Z"
+    },
+    {
+      "id": "doc-1770639879864-2",
+      "name": "generation-recettes-prompt.md",
+      "file": "generation-recettes-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour l'IA qui génère plusieurs recettes possibles avec les ingrédients disponibles",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ]
+    },
+    {
+      "id": "doc-1770639879864-3",
+      "name": "principes-cuisine.md",
+      "file": "principes-cuisinemd.md",
+      "type": "fichier-explication",
+      "comment": "Documentation sur les principes culinaires, associations d'ingrédients et techniques de base",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ],
+      "aiModifiedAt": "2026-02-09T18:25:53.001Z"
+    },
+    {
+      "id": "doc-1770639879864-4",
+      "name": "types-recettes.md",
+      "file": "types-recettesmd.md",
+      "type": "fichier-explication",
+      "comment": "Classification des types de recettes (entrées, plats, desserts, cuisine du monde, etc.)",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ]
+    },
+    {
+      "id": "doc-1770639879864-5",
+      "name": "selection-recette.html",
+      "file": "selection-recette.html",
+      "type": "fichier-html-selection",
+      "comment": "Interface HTML pour visualiser et sélectionner une recette parmi les propositions générées",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ],
+      "aiModifiedAt": "2026-02-09T19:45:29.965Z"
+    },
+    {
+      "id": "doc-1770639879864-6",
+      "name": "details-recette-prompt.md",
+      "file": "details-recette-prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour l'IA qui génère les instructions détaillées étape par étape de la recette",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ]
+    },
+    {
+      "id": "doc-1770639879864-7",
+      "name": "techniques-culinaires.md",
+      "file": "techniques-culinaires.md",
+      "type": "fichier-explication",
+      "comment": "Documentation sur les techniques de cuisine (découpe, cuisson, assaisonnement, etc.)",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-8",
+        "doc-1770639879864-9"
+      ],
+      "aiModifiedAt": "2026-02-09T19:51:34.268Z"
+    },
+    {
+      "id": "doc-1770639879864-8",
+      "name": "suggestions-prompt.md",
+      "file": "suggestions-prompt.md",
+      "type": "prompt",
+      "comment": "Prompt pour l'IA qui propose des améliorations, substitutions ou variations de la recette",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-9"
+      ]
+    },
+    {
+      "id": "doc-1770639879864-9",
+      "name": "substitutions-ingredients.md",
+      "file": "substitutions-ingredients.md",
+      "type": "fichier-explication",
+      "comment": "Guide des substitutions possibles d'ingrédients (alternatives, allergènes, régimes spéciaux)",
+      "linkedDocIds": [
+        "doc-1770639879864-0",
+        "doc-1770639879864-1",
+        "doc-1770639879864-2",
+        "doc-1770639879864-3",
+        "doc-1770639879864-4",
+        "doc-1770639879864-5",
+        "doc-1770639879864-6",
+        "doc-1770639879864-7",
+        "doc-1770639879864-8"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-0",
+      "name": "analyse-besoins-prompt.md",
+      "file": "analyse-besoins-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour guider l'IA à extraire les besoins, objectifs financiers, contraintes budgétaires et profil de clientèle cible",
+      "linkedDocIds": [
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-1",
+      "name": "criteres-maison-hote.md",
+      "file": "criteres-maison-hotemd.md",
+      "type": "fichier-explication",
+      "comment": "Documentation sur les critères de réussite d'une maison d'hôte, réglementations et standards du secteur",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-2",
+      "name": "etude-localisation-prompt.md",
+      "file": "etude-localisation-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour générer une analyse des zones géographiques adaptées selon les critères du projet",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-3",
+      "name": "criteres-localisation.md",
+      "file": "criteres-localisationmd.md",
+      "type": "fichier-explication",
+      "comment": "Documentation sur les facteurs clés de localisation: accessibilité, attractivité touristique, concurrence locale",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-4",
+      "name": "reglementation-territoriale.md",
+      "file": "reglementation-territorialemd.md",
+      "type": "fichier-explication",
+      "comment": "Informations sur les réglementations locales, zonages et autorisations nécessaires selon les régions",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-5",
+      "name": "business-plan-prompt.md",
+      "file": "business-plan-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour générer un business plan structuré avec calculs de rentabilité et prévisions financières",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-6",
+      "name": "modele-financier-maison-hote.md",
+      "file": "modele-financier-maison-hotemd.md",
+      "type": "fichier-explication",
+      "comment": "Modèles financiers types, ratios clés et benchmarks du secteur des maisons d'hôtes",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-7",
+      "name": "sources-financement.md",
+      "file": "sources-financementmd.md",
+      "type": "fichier-explication",
+      "comment": "Options de financement disponibles: prêts bancaires, aides régionales, subventions touristiques",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-8",
+      "name": "conception-espaces-prompt.md",
+      "file": "conception-espaces-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour générer des propositions d'aménagement selon le type de bâtiment et la clientèle cible",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-9",
+      "name": "standards-chambres-hotes.md",
+      "file": "standards-chambres-hotesmd.md",
+      "type": "fichier-explication",
+      "comment": "Standards de qualité, équipements requis et aménagements recommandés pour chaque niveau de standing",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-10",
+      "name": "accessibilite-normes.md",
+      "file": "accessibilite-normesmd.md",
+      "type": "fichier-explication",
+      "comment": "Normes d'accessibilité, sécurité incendie et réglementations ERP",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-11",
+      "name": "strategie-marketing-prompt.md",
+      "file": "strategie-marketing-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour élaborer une stratégie marketing complète adaptée au positionnement choisi",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-12",
+      "name": "canaux-distribution-tourisme.md",
+      "file": "canaux-distribution-tourismemd.md",
+      "type": "fichier-explication",
+      "comment": "Panorama des plateformes de réservation, OTA, marketing digital et communication locale",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-13",
+      "name": "tarification-hebergement.md",
+      "file": "tarification-hebergementmd.md",
+      "type": "fichier-explication",
+      "comment": "Méthodes de tarification, yield management et stratégies de prix selon la saisonnalité",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-14",
+      "name": "planning-realisation-prompt.md",
+      "file": "planning-realisation-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour générer un planning de projet détaillé avec jalons et échéances",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-15",
+      "name": "etapes-creation-maison-hote.md",
+      "file": "etapes-creation-maison-hotemd.md",
+      "type": "fichier-explication",
+      "comment": "Séquençage type d'un projet de création: acquisitions, travaux, démarches administratives, ouverture",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-16"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-16",
+      "name": "demarches-administratives.md",
+      "file": "demarches-administrativesmd.md",
+      "type": "fichier-explication",
+      "comment": "Liste des démarches obligatoires: statut juridique, déclarations, assurances, licences",
+      "linkedDocIds": [
+        "doc-1770666982816-0",
+        "doc-1770666982816-1",
+        "doc-1770666982816-2",
+        "doc-1770666982816-3",
+        "doc-1770666982816-4",
+        "doc-1770666982816-5",
+        "doc-1770666982816-6",
+        "doc-1770666982816-7",
+        "doc-1770666982816-8",
+        "doc-1770666982816-9",
+        "doc-1770666982816-10",
+        "doc-1770666982816-11",
+        "doc-1770666982816-12",
+        "doc-1770666982816-13",
+        "doc-1770666982816-14",
+        "doc-1770666982816-15"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-17",
+      "name": "synthese-projet-prompt.md",
+      "file": "synthese-projet-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour générer un document de synthèse consolidant tous les livrables précédents",
+      "linkedDocIds": [
+        "doc-1770666982816-18"
+      ]
+    },
+    {
+      "id": "doc-1770666982816-18",
+      "name": "structure-dossier-projet.md",
+      "file": "structure-dossier-projetmd.md",
+      "type": "fichier-explication",
+      "comment": "Modèle de structuration d'un dossier de projet complet pour présentation",
+      "linkedDocIds": [
+        "doc-1770666982816-17"
+      ]
+    },
+    {
+      "id": "doc-1770756925000-0",
+      "name": "concept-restaurant-prompt.md",
+      "file": "concept-restaurant-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour définir le concept, le type de cuisine, l'ambiance et le positionnement du restaurant",
+      "linkedDocIds": [
+        "doc-1770756925000-1",
+        "doc-1770756925000-2",
+        "doc-1770756925000-3",
+        "doc-1770756925000-4",
+        "doc-1770756925000-5"
+      ]
+    },
+    {
+      "id": "doc-1770756925000-1",
+      "name": "types-restauration.md",
+      "file": "types-restaurationmd.md",
+      "type": "fichier-explication",
+      "comment": "Documentation sur les différents types de restauration (gastronomique, brasserie, fast-casual, etc.) et leurs caractéristiques",
+      "linkedDocIds": [
+        "doc-1770756925000-0",
+        "doc-1770756925000-2",
+        "doc-1770756925000-3",
+        "doc-1770756925000-4",
+        "doc-1770756925000-5"
+      ]
+    },
+    {
+      "id": "doc-1770756925000-2",
+      "name": "analyse-concurrentielle.md",
+      "file": "analyse-concurrentiellemd.md",
+      "type": "fichier-explication",
+      "comment": "Méthodologie d'analyse concurrentielle et critères de différenciation dans la restauration",
+      "linkedDocIds": [
+        "doc-1770756925000-0",
+        "doc-1770756925000-1",
+        "doc-1770756925000-3",
+        "doc-1770756925000-4",
+        "doc-1770756925000-5"
+      ]
+    },
+    {
+      "id": "doc-1770756925000-3",
+      "name": "plan-operationnel-prompt.md",
+      "file": "plan-operationnel-promptmd.md",
+      "type": "prompt",
+      "comment": "Prompt pour structurer l'organisation opérationnelle, les ressources humaines et les processus du restaurant",
+      "linkedDocIds": [
+        "doc-1770756925000-0",
+        "doc-1770756925000-1",
+        "doc-1770756925000-2",
+        "doc-1770756925000-4",
+        "doc-1770756925000-5"
+      ]
+    },
+    {
+      "id": "doc-1770756925000-4",
+      "name": "normes-hygiene-restauration.md",
+      "file": "normes-hygiene-restaurationmd.md",
+      "type": "fichier-explication",
+      "comment": "Normes HACCP, réglementations sanitaires et obligations légales pour un restaurant",
+      "linkedDocIds": [
+        "doc-1770756925000-0",
+        "doc-1770756925000-1",
+        "doc-1770756925000-2",
+        "doc-1770756925000-3",
+        "doc-1770756925000-5"
+      ]
+    },
+    {
+      "id": "doc-1770756925000-5",
+      "name": "gestion-stocks-restaurant.md",
+      "file": "gestion-stocks-restaurantmd.md",
+      "type": "fichier-explication",
+      "comment": "Méthodes de gestion des stocks, sélection des fournisseurs et calcul des coûts matières",
+      "linkedDocIds": [
+        "doc-1770756925000-0",
+        "doc-1770756925000-1",
+        "doc-1770756925000-2",
+        "doc-1770756925000-3",
+        "doc-1770756925000-4"
+      ]
+    },
+    {
+      "id": "doc-1771162436992",
+      "name": "test role design",
+      "file": "role.design.md",
+      "type": "role",
+      "linkedDocIds": [],
+      "comment": "bla bla bla",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "gemini",
+        "model": "gemini-3-flash-preview",
+        "date": "2026-02-16T16:53:37.896Z"
+      }
+    },
+    {
+      "id": "doc-1771178971388",
+      "name": "Cadre IA - Project Manager (PM)",
+      "file": "role-project-manager--PM-.md",
+      "type": "role",
+      "comment": "Document généré par IA pour le rôle Project Manager (PM)",
+      "linkedDocIds": [],
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "gemini",
+        "model": "gemini-3-flash-preview",
+        "date": "2026-02-16T16:59:37.366Z"
+      }
+    },
+    {
+      "id": "doc-1771180336797",
+      "name": "Cadre IA - Product Owner (PO)",
+      "file": "role-product-owner--PO-.md",
+      "type": "role",
+      "comment": "Document généré par IA pour le rôle Product Owner (PO)",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771180619062",
+      "name": "Cadre IA - Scrum Master",
+      "file": "role-scrum-master.md",
+      "type": "role",
+      "comment": "Document généré par IA pour le rôle Scrum Master",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "gemini",
+        "model": "gemini-2.0-flash",
+        "date": "2026-02-15T18:36:59.062Z"
+      },
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771181012829",
+      "name": "Cadre IA - Product Owner (PO)",
+      "file": "role-product-owner--PO-.md",
+      "type": "role",
+      "comment": "Document généré par IA pour le rôle Product Owner (PO)",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "gemini",
+        "model": "gemini-3-flash-preview",
+        "date": "2026-02-15T18:43:32.829Z"
+      },
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771770907334",
+      "name": "Prompt Custom - Extraction Exigences",
+      "file": "prompt-extraction-exigences-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771782171517",
+      "name": "Prompt Custom - Creation Storyboard",
+      "file": "prompt-creation-storyboard-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771797387849",
+      "name": "Prompt Custom - Design Selection",
+      "file": "prompt-design-selection-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771797422197",
+      "name": "Prompt Custom - Cahier de Tests",
+      "file": "prompt-cahier-de-tests-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771797463134",
+      "name": "Prompt Custom - Ordre Execution",
+      "file": "prompt-ordre-execution-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1771866851373",
+      "name": "Prompt Custom - Prompt Initial",
+      "file": "prompt-prompt-initial-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1772137131148",
+      "name": "Cadre IA - Script analytiqye",
+      "file": "role-script-analytiqye.md",
+      "type": "doccat-1772196295085",
+      "comment": "Document généré par IA pour le rôle Script analytiqye",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "claude",
+        "model": "claude-sonnet-4-6",
+        "date": "2026-02-26T20:18:51.148Z"
+      },
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1772138244661",
+      "name": "PARS Exemple",
+      "file": "PARS_exemple.md",
+      "type": "doccat-1772196295085",
+      "linkedDocIds": [],
+      "comment": "",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "claude",
+        "model": "claude-sonnet-4-6",
+        "date": "2026-02-26T20:38:40.011Z"
+      }
+    },
+    {
+      "id": "doc-1772209090554",
+      "name": "Cadre IA - Product Manager",
+      "file": "role-product-manager.md",
+      "type": "role",
+      "comment": "Document généré par IA pour le rôle Product Manager",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "claude",
+        "model": "claude-sonnet-4-6",
+        "date": "2026-02-27T16:18:10.554Z"
+      },
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1772223689538",
+      "name": "Prompt Custom - Framework_P.A.R.S.",
+      "file": "prompt-framework-p-a-r-s-custom.md",
+      "type": "prompt",
+      "comment": "Généré automatiquement lors de la modification du prompt dans le framework.",
+      "linkedDocIds": []
+    },
+    {
+      "id": "doc-1773174676561",
+      "name": "Cadre IA - Orchestrateur de Processus d'Analyse.",
+      "file": "role-orchestrateur-de-processus-d-analyse.md",
+      "type": "role",
+      "comment": "Document généré par IA pour le rôle Orchestrateur de Processus d'Analyse.",
+      "aiGenerated": true,
+      "aiConfig": {
+        "provider": "claude-cli",
+        "model": "claude-haiku-4-5-20251001",
+        "date": "2026-03-10T20:31:16.561Z"
+      }
+    }
+  ],
+  "etapes": [
+    {
+      "id": "etape-1770394156001",
+      "name": "Prompt Initial",
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [],
+      "documentsAttendusDetails": [],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "promptDocumentId": null,
+      "selectionScriptId": null,
+      "filePattern": "initialtest",
+      "prompt": "",
+      "summary": "Définir la vision globale du projet, les objectifs principaux et le contexte métier. Ce prompt initial sert de base pour toutes les étapes suivantes.",
+      "steps": [
+        "Utilise le thème du projet pour posé des questions dans le but de créé un projet."
+      ],
+      "allowPromptEdit": true,
+      "promptEditExplication": "Définissez la vision globale de votre projet.",
+      "showPrompt": true,
+      "promptAsQuestionnaire": false,
+      "questionnaireResponseOnly": true,
+      "showEtapeSteps": true,
+      "chatSystem": true,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": false,
+      "selectDocOutput": false,
+      "roles": "Product Owner (PO)",
+      "temperature": 7,
+      "definition": "",
+      "summaryUser": ""
+    },
+    {
+      "id": "etape-1770394156002",
+      "name": "Extraction Exigences",
+      "documentsExplicationId": [
+        "doc-1770394156553"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [],
+      "documentsAttendusDetails": [],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "promptDocumentId": "doc-1771770907334",
+      "selectionScriptId": null,
+      "filePattern": "Exigences Fonctionnelles Structurees",
+      "prompt": "Utilise le document du projet pour rédiger les exigences.",
+      "summary": "Analyser le prompt initial pour extraire et structurer les exigences fonctionnelles. Identifier les fonctionnalités clés, les contraintes et les critères d'acceptation.",
+      "steps": [],
+      "allowPromptEdit": false,
+      "promptEditExplication": "",
+      "showPrompt": true,
+      "promptAsQuestionnaire": false,
+      "questionnaireResponseOnly": false,
+      "showEtapeSteps": true,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": true,
+      "selectDocOutput": false,
+      "roles": "Business Analyst (BA)",
+      "temperature": 5,
+      "definition": "",
+      "summaryUser": ""
+    },
+    {
+      "id": "etape-1770394156003",
+      "name": "Creation Storyboard",
+      "documentsExplicationId": [
+        "doc-1770394156555"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [],
+      "documentsAttendusDetails": [],
+      "outputAttendusDetails": [
+        {
+          "file": "Da1-storyboard.html",
+          "linkedDocId": "doc-1770394156556"
+        }
+      ],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "promptDocumentId": "doc-1771782171517",
+      "selectionScriptId": null,
+      "filePattern": "",
+      "prompt": "Créer un prompt détaillé basé sur les exigences",
+      "summary": "Créer un prompt détaillé basé sur les exigences fonctionnelles extraites. Ce prompt servira de guide pour la génération du storyboard.",
+      "steps": [],
+      "allowPromptEdit": false,
+      "showPrompt": true,
+      "promptAsQuestionnaire": false,
+      "showEtapeSteps": true,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": true,
+      "roles": "Business Analyst (BA)",
+      "temperature": 5
+    },
+    {
+      "id": "etape-1770394156004",
+      "name": "Storyboard",
+      "type": 0,
+      "documentsExplicationId": [
+        "doc-1770394156559"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Dg1-storyboard.html",
+        "Dg2-infographie-parcours-utilisateur.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "Dg1-storyboard.html",
+          "linkedDocId": "doc-1770394156556"
+        },
+        {
+          "file": "Dg2-infographie-parcours-utilisateur.html",
+          "linkedDocId": "doc-1770394156557"
+        }
+      ],
+      "filePattern": "",
+      "prompt": "Créer le storyboard visuel du projet",
+      "summary": "Créer le storyboard visuel du projet : scénarios utilisateur, parcours, écrans clés et flux de navigation entre les différentes sections.",
+      "promptDocumentId": "doc-1770394156558",
+      "roles": "UX Researcher"
+    },
+    {
+      "id": "etape-1770394156005",
+      "name": "Mockup",
+      "type": 0,
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Eg1-mockup.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "Eg1-mockup.html",
+          "linkedDocId": "doc-1770394156561"
+        }
+      ],
+      "filePattern": "mockup",
+      "prompt": "Concevoir les maquettes haute-fidélité",
+      "summary": "Concevoir les maquettes haute-fidélité de l'interface utilisateur. Définir la structure des pages, les composants UI et l'ergonomie générale.",
+      "promptDocumentId": "doc-1770394156560",
+      "roles": "UX/UI Designer"
+    },
+    {
+      "id": "etape-1770394156006",
+      "name": "Cahier de Tests",
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Hg1-cahier-de-tests.md",
+        "Hg2-cahier-de-tests.html",
+        "Hg3-cahier-de-tests-exemple.json"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "Hg1-cahier-de-tests.md",
+          "linkedDocId": "doc-1770394156567"
+        },
+        {
+          "file": "Hg2-cahier-de-tests.html",
+          "linkedDocId": "doc-1770394156568"
+        },
+        {
+          "file": "Hg3-cahier-de-tests-exemple.json",
+          "linkedDocId": "doc-1770394156569"
+        }
+      ],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "promptDocumentId": "doc-1771797422197",
+      "selectionScriptId": null,
+      "filePattern": "",
+      "prompt": "Rédiger le cahier de tests fonctionnels et techniques",
+      "summary": "Rédiger le cahier de tests fonctionnels et techniques. Définir les cas de test, les scénarios de validation et les critères de succès.",
+      "steps": [],
+      "allowPromptEdit": false,
+      "showPrompt": true,
+      "promptAsQuestionnaire": false,
+      "showEtapeSteps": true,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": false,
+      "selectDocOutput": true,
+      "roles": "QA Lead",
+      "temperature": 5
+    },
+    {
+      "id": "etape-1770394156007",
+      "name": "Design Selection",
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Fa2-design-choix-exemple.md",
+        "Fa1-design_exemple.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "Fa2-design-choix-exemple.md",
+          "linkedDocId": "doc-1770394156564"
+        },
+        {
+          "file": "Fa1-design_exemple.html",
+          "linkedDocId": "doc-1770394156563"
+        }
+      ],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "promptDocumentId": "doc-1771797387849",
+      "selectionScriptId": "doc-1770554482063",
+      "filePattern": "design selection",
+      "prompt": "Sélectionner le design system pour le projet",
+      "summary": "Définir le design system : palette de couleurs, typographie, composants réutilisables et guidelines visuelles du projet.",
+      "steps": [],
+      "allowPromptEdit": false,
+      "showPrompt": true,
+      "promptAsQuestionnaire": false,
+      "showEtapeSteps": true,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": false,
+      "roles": "UI Designer",
+      "temperature": 5
+    },
+    {
+      "id": "etape-1770394156008",
+      "name": "Design Création",
+      "type": 2,
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Gg2-design-choix.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "Gg2-design-choix.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "",
+      "prompt": "Créer le design system personnalisé",
+      "summary": "Créer le design system personnalisé avec palette de couleurs, typographie et composants réutilisables adaptés au projet.",
+      "promptDocumentId": null,
+      "selectionScriptId": "doc-1770394156563",
+      "roles": "UI Designer"
+    },
+    {
+      "id": "etape-1770394156009",
+      "name": "Ordre Execution",
+      "documentsExplicationId": [
+        "doc-1770394156570"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Ig0-Prompt.md",
+        "Ig6-ordre.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "Ig0-Prompt.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "Ig6-ordre.html",
+          "linkedDocId": ""
+        }
+      ],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "promptDocumentId": "doc-1771797463134",
+      "selectionScriptId": null,
+      "filePattern": "",
+      "prompt": "Établir l'ordre d'exécution des tâches",
+      "summary": "Établir l'ordre d'exécution des tâches de développement. Prioriser les fonctionnalités et créer un planning de réalisation.",
+      "steps": [],
+      "allowPromptEdit": false,
+      "showPrompt": true,
+      "promptAsQuestionnaire": false,
+      "showEtapeSteps": true,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": false,
+      "selectDocOutput": true,
+      "roles": "Project Manager (PM)",
+      "temperature": 5
+    },
+    {
+      "id": "etape-1770394156010",
+      "name": "Fiche Suivi",
+      "type": 0,
+      "documentsExplicationId": [
+        "doc-1770394156571"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "Jg0-Prompt.md",
+        "Jg1-fiche.html"
+      ],
+      "prompt": "Créer la fiche de suivi du projet",
+      "summary": "Créer la fiche de suivi du projet pour tracker l'avancement, les décisions prises et les points d'attention.",
+      "roles": "Scrum Master"
+    },
+    {
+      "id": "etape-1770466985006",
+      "name": "etape test type 0",
+      "type": 0,
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [],
+      "filePattern": "modelTest2",
+      "prompt": "",
+      "summary": "ceci est un test",
+      "promptDocumentId": "doc-1770394156554",
+      "roles": ""
+    },
+    {
+      "id": "etape-1770639879864-0",
+      "name": "Analyse Ingrédients",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770639879864-1"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "ingredients-analyses.json"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "ingredients-analyses.json",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "analyse-ingr-dients",
+      "prompt": "Extraction et catégorisation des ingrédients fournis (protéines, légumes, féculents, épices, etc.)",
+      "summary": "Extraction et catégorisation des ingrédients fournis (protéines, légumes, féculents, épices, etc.)",
+      "promptDocumentId": "doc-1770639879864-0",
+      "selectionScriptId": null,
+      "roles": "Business Analyst (BA)"
+    },
+    {
+      "id": "etape-1770639879864-1",
+      "name": "Génération Recettes",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770639879864-3",
+        "doc-1770639879864-4"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "recettes-proposees.json"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "recettes-proposees.json",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "g-n-ration-recettes",
+      "prompt": "Création de propositions de recettes basées sur les ingrédients disponibles",
+      "summary": "Création de propositions de recettes basées sur les ingrédients disponibles",
+      "promptDocumentId": "doc-1770639879864-2",
+      "selectionScriptId": null,
+      "roles": "Content Writer / Rédacteur"
+    },
+    {
+      "id": "etape-1770639879864-2",
+      "name": "Sélection Recette",
+      "type": 2,
+      "documentsExplicationId": [],
+      "documentsSelectionId": [
+        "doc-1770639879864-5"
+      ],
+      "documentsAttendus": [
+        "recette-choisie.json"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "recette-choisie.json",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "s-lection-recette",
+      "prompt": "Interface de sélection de la recette à développer parmi les propositions",
+      "summary": "Interface de sélection de la recette à développer parmi les propositions",
+      "promptDocumentId": null,
+      "selectionScriptId": "doc-1770639879864-5",
+      "roles": "UX/UI Designer"
+    },
+    {
+      "id": "etape-1770639879864-3",
+      "name": "Détails Recette",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770639879864-7"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "recette-complete.md",
+        "recette-complete.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "recette-complete.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "recette-complete.html",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "d-tails-recette",
+      "prompt": "Génération des instructions détaillées, quantités précises et conseils de préparation",
+      "summary": "Génération des instructions détaillées, quantités précises et conseils de préparation",
+      "promptDocumentId": "doc-1770639879864-6",
+      "selectionScriptId": null,
+      "roles": "Technical Writer"
+    },
+    {
+      "id": "etape-1770639879864-4",
+      "name": "Suggestions Améliorations",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770639879864-9"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "suggestions-ameliorations.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "suggestions-ameliorations.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "suggestions-am-liorations",
+      "prompt": "Propositions d'ingrédients complémentaires ou variantes pour améliorer la recette",
+      "summary": "Propositions d'ingrédients complémentaires ou variantes pour améliorer la recette",
+      "promptDocumentId": "doc-1770639879864-8",
+      "selectionScriptId": null,
+      "roles": "Product Manager"
+    },
+    {
+      "id": "etape-1770666982816-0",
+      "name": "Analyse Besoins et Objectifs",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-1"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "analyse-besoins.json",
+        "synthese-besoins.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "analyse-besoins.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "synthese-besoins.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "analyse-besoins-et-objectifs",
+      "prompt": "Définir les objectifs du projet, le budget disponible, le type de clientèle visée et les ambitions personnelles",
+      "summary": "Définir les objectifs du projet, le budget disponible, le type de clientèle visée et les ambitions personnelles",
+      "promptDocumentId": "doc-1770666982816-0",
+      "selectionScriptId": null,
+      "roles": "Business Analyst (BA)"
+    },
+    {
+      "id": "etape-1770666982816-1",
+      "name": "Étude de Localisation",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-3",
+        "doc-1770666982816-4"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "zones-recommandees.json",
+        "rapport-localisation.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "zones-recommandees.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "rapport-localisation.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "-tude-de-localisation",
+      "prompt": "Analyser les critères de localisation idéale, zones géographiques pertinentes et attractivité touristique",
+      "summary": "Analyser les critères de localisation idéale, zones géographiques pertinentes et attractivité touristique",
+      "promptDocumentId": "doc-1770666982816-2",
+      "selectionScriptId": null,
+      "roles": "Business Intelligence Analyst"
+    },
+    {
+      "id": "etape-1770666982816-2",
+      "name": "Plan Financier et Business Plan",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-6",
+        "doc-1770666982816-7"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "business-plan.json",
+        "business-plan-complet.md",
+        "tableau-previsions.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "business-plan.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "business-plan-complet.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "tableau-previsions.html",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "plan-financier-et-business-plan",
+      "prompt": "Élaborer le business plan complet avec projections financières, coûts d'investissement et rentabilité prévisionnelle",
+      "summary": "Élaborer le business plan complet avec projections financières, coûts d'investissement et rentabilité prévisionnelle",
+      "promptDocumentId": "doc-1770666982816-5",
+      "selectionScriptId": null,
+      "roles": "Business Analyst (BA)"
+    },
+    {
+      "id": "etape-1770666982816-3",
+      "name": "Conception des Espaces",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-9",
+        "doc-1770666982816-10"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "plan-amenagement.json",
+        "descriptif-espaces.md",
+        "visualisation-espaces.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "plan-amenagement.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "descriptif-espaces.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "visualisation-espaces.html",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "conception-des-espaces",
+      "prompt": "Concevoir l'aménagement des chambres, espaces communs et services proposés",
+      "summary": "Concevoir l'aménagement des chambres, espaces communs et services proposés",
+      "promptDocumentId": "doc-1770666982816-8",
+      "selectionScriptId": null,
+      "roles": "Product Designer"
+    },
+    {
+      "id": "etape-1770666982816-4",
+      "name": "Stratégie Marketing et Communication",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-12",
+        "doc-1770666982816-13"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "strategie-marketing.json",
+        "plan-communication.md",
+        "grille-tarifaire.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "strategie-marketing.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "plan-communication.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "grille-tarifaire.html",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "strat-gie-marketing-et-communication",
+      "prompt": "Définir la stratégie de communication, positionnement, tarification et canaux de distribution",
+      "summary": "Définir la stratégie de communication, positionnement, tarification et canaux de distribution",
+      "promptDocumentId": "doc-1770666982816-11",
+      "selectionScriptId": null,
+      "roles": "Marketing Manager"
+    },
+    {
+      "id": "etape-1770666982816-5",
+      "name": "Planning de Réalisation",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-15",
+        "doc-1770666982816-16"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "planning-projet.json",
+        "calendrier-realisation.md",
+        "diagramme-gantt.html"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "planning-projet.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "calendrier-realisation.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "diagramme-gantt.html",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "planning-de-r-alisation",
+      "prompt": "Établir le calendrier détaillé de réalisation du projet avec étapes, délais et dépendances",
+      "summary": "Établir le calendrier détaillé de réalisation du projet avec étapes, délais et dépendances",
+      "promptDocumentId": "doc-1770666982816-14",
+      "selectionScriptId": null,
+      "roles": "Project Manager (PM)"
+    },
+    {
+      "id": "etape-1770666982816-6",
+      "name": "Dossier de Synthèse Final",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770666982816-18"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "dossier-complet.md",
+        "presentation-projet.html",
+        "checklist-lancement.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "dossier-complet.md",
+          "linkedDocId": ""
+        },
+        {
+          "file": "presentation-projet.html",
+          "linkedDocId": ""
+        },
+        {
+          "file": "checklist-lancement.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "dossier-de-synth-se-final",
+      "prompt": "Compiler tous les éléments du projet dans un dossier de synthèse complet et présentable",
+      "summary": "Compiler tous les éléments du projet dans un dossier de synthèse complet et présentable",
+      "promptDocumentId": "doc-1770666982816-17",
+      "selectionScriptId": null,
+      "roles": "Technical Writer"
+    },
+    {
+      "id": "etape-1770756925000-0",
+      "name": "Concept et Positionnement Restaurant",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770756925000-1",
+        "doc-1770756925000-2"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "concept-restaurant.json",
+        "fiche-concept.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "concept-restaurant.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "fiche-concept.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "concept-et-positionnement-restaurant",
+      "prompt": "Définition du concept culinaire, du positionnement marché et de la cible clientèle",
+      "summary": "Définition du concept culinaire, du positionnement marché et de la cible clientèle",
+      "promptDocumentId": "doc-1770756925000-0",
+      "selectionScriptId": null,
+      "roles": "Marketing Manager"
+    },
+    {
+      "id": "etape-1770756925000-1",
+      "name": "Plan Opérationnel Restaurant",
+      "type": 1,
+      "documentsExplicationId": [
+        "doc-1770756925000-4",
+        "doc-1770756925000-5"
+      ],
+      "documentsSelectionId": [],
+      "documentsAttendus": [
+        "plan-operationnel.json",
+        "organisation-restaurant.md"
+      ],
+      "documentsAttendusDetails": [
+        {
+          "file": "plan-operationnel.json",
+          "linkedDocId": ""
+        },
+        {
+          "file": "organisation-restaurant.md",
+          "linkedDocId": ""
+        }
+      ],
+      "filePattern": "plan-op-rationnel-restaurant",
+      "prompt": "Organisation opérationnelle : équipe, fournisseurs, gestion des stocks et processus de service",
+      "summary": "Organisation opérationnelle : équipe, fournisseurs, gestion des stocks et processus de service",
+      "promptDocumentId": "doc-1770756925000-3",
+      "selectionScriptId": null,
+      "roles": "Project Manager (PM)"
+    },
+    {
+      "id": "etape-1772139013100",
+      "name": "Framework_P.A.R.S.",
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [],
+      "documentsAttendusDetails": [],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "doc-1770554482063",
+      "inputChoiceExplication": "",
+      "inputChoiceFile": "",
+      "promptDocumentId": null,
+      "selectionScriptId": null,
+      "filePattern": "",
+      "prompt": "",
+      "summary": "Guider le business owner dans un atelier d'écriture libre afin de produire le \"Rapport de Synthèse Free Writing\". Il est le sous framework du framework_C.I.S.",
+      "steps": [
+        "#1. P - Préparation\n## Objectif\n* Mettre en place un environnement propice à la créativité et définir un cadre clair pour la session d'écriture libre afin de maximiser le flux d'idées.\n## Instructions\n* Le système énonce les règles fondamentales de l'atelier Freewriting : écrire sans s'arrêter, sans jugement ni censure.\n* Le système demande au business owner de valider la durée de la session (en suggérant une durée standard de 10 à 15 minutes).\n## Interaction\n* Le système présente les règles, puis guide le business owner dans le choix du point de départ et de la durée.\n## Exemple\n* `Système: \"Bienvenue dans l'atelier P.A.R.S. La règle est simple : pendant la durée fixée, vous écrirez sans jamais vous arrêter, sans vous juger ni vous corriger. L'objectif est le flux, pas la perfection.\"`\n* `Système: \"Je vous propose une durée de 15 minutes. Est-ce que cela vous convient ?\"`\n* `Business Owner: \"Oui.\"`\n",
+        "#2. A - Action\n## Objectif\n* Lancer la session d'écriture et permettre au business owner de produire un texte brut et continu, en respectant le cadre défini à l'étape précédente. \n## Instructions\n* Le système invite le business owner à lancer un minuteur pour la durée convenue.\n* Le système invite le business owner à commencer à écrire immédiatement et à ne s'arrêter qu'à la fin du temps imparti.\n* Le système précise qu'il attendra la fin de la session pour recevoir l'intégralité du texte produit en un seul bloc.\n## In&Out\n* **Output :** La confirmation de la réception du texte brut.\n* **Input :** Le texte complet et non-édité du business owner.\n## Interaction\n* Le système donne le signal de départ, puis se met en attente de la saisie d'un bloc de texte par le business owner.\n## Exemple\n* `Système: \"Parfait. Le déclencheur est : 'Ce qui manque vraiment aux randonneurs, c'est...'. Je vous invite à lancer votre minuteur pour 15 minutes et à commencer à écrire maintenant. N'oubliez pas : ne vous arrêtez pas, ne vous corrigez pas. Écrivez. Je suis en attente de votre texte à la fin du temps imparti.\"`\n* `(Le Business Owner lance son minuteur et écrit pendant 15 minutes)`\n* `Business Owner: \"(colle ici l'intégralité du texte produit... un long texte décousu parlant de la peur de se perdre, de la difficulté à trouver des sentiers peu connus, du poids des guides papier, de la joie de partager une découverte...)\"`\n* `Système: \"Texte reçu.\"`\n",
+        "#3. R - Récolte\n## Objectif\n* Analyser le texte brut pour extraire et qualifier (attribuer une étiquette) toutes les unités de sens.\n## Instructions\n* Le système analyse l'intégralité du texte reçu à l'étape \"Action\".\n* Le système identifie et extrait *verbatim* chaque unité de sens.\n* Le système assigne une qualification (ex: Idée, Problème, Émotion, Frustration) à chaque unité extraite.\n* Le système présente la liste des unités qualifiées au business owner pour validation.\n## In&Out\n* **Output :** Une liste d'unités de sens qualifiées, validée par le business owner.\n* **Input :** Le texte brut complet de l'étape `A`.\n## Interaction\n* Le système présente sa liste qualifiée. Le business owner valide l'ensemble.\n## Exemple\n* `Système: \"Analyse et qualification terminées. Voici la liste des unités de sens extraites :\"`\n* `* Idée : \"peur de se perdre\"`\n* `* Idée : \"trouver des sentiers peu connus\"`\n* `* Problème : \"poids des guides papier\"`\n* `* Émotion : \"joie de partager une découverte\"`\n* `* Frustration : \"ne pas avoir de réseau\"`\n* `Système: \"Validez-vous cette liste qualifiée ?\"`\n",
+        "#4. S - Synthèse\n## Objectif\n* Compiler la liste finale des unités de sens qualifiées en un document de synthèse structuré au format Markdown, servant de livrable final \n## Instructions\n* Le système collecte la liste complète et validée des unités qualifiées de l'étape \"Récolte\".\n* Le système formate ces données en une structure de listes imbriquées à l'intérieur d'un bloc de code Markdown.\n* Le système présente ce rapport final au business owner, clôturant ainsi l'atelier.\n* Le système génère le rapport final (Payload).\n    * ** Action d'affichage : ** Le système appelle le ** Framework_B.L.O.C. ** pour garantir l'affichage dans un bloc code.\n## In&Out\n* **Output :** Le rapport de synthèse final, au format Markdown et prêt à l'emploi.\n* **Input :** La liste complète et validée des unités qualifiées de l'étape `R`.\n## Interaction\n* Cette étape est non-interactive. Le système produit le rapport final sur la base des données précédemment validées.\n## Exemple\n* `Système: \"Toutes les étapes sont terminées. Voici le rapport de synthèse structuré de votre atelier P.A.R.S. Ces données sont prêtes à être utilisées dans un framework de Mind Mapping.\"`\n* `(Le système génère le rapport au format Markdown)`\n",
+        "#F. Formalisation & Sauvegarde\n## Objectif\n* Archiver le rapport final sur instruction du business owner.\n## Instructions\n* Le système exécute le Framework_I.V.A.\n## In&Out\n* **Output :** Confirmation de la sauvegarde.\n"
+      ],
+      "allowPromptEdit": true,
+      "promptEditExplication": "Explication sur le prompt que le user doit remplire :",
+      "showPrompt": true,
+      "promptAsQuestionnaire": true,
+      "questionnaireResponseOnly": true,
+      "showEtapeSteps": true,
+      "chatSystem": true,
+      "showInputList": true,
+      "showOutputList": false,
+      "usePrevOutput": true,
+      "selectDocOutput": false,
+      "roles": "Scrum Master",
+      "temperature": 5,
+      "definition": "* **Business owner :** Celui qui exécute l'atelier d'écriture et valide les outputs.\n* **Système :** Le Scribe Analytique qui pilote l'atelier et structure les données.\n* **Unité de sens :** Un fragment de texte brut (idée, problème, émotion, etc.) extrait par le système.",
+      "summaryUser": "Pour consulter le manuel du framework, les définitions et les tutoriels, voir : \nhttps://docs.google.com/document/d/1Xk9KHQWmNWxzKgj2ApaKPDpMN2DDW4GWGXlzSkg1v88/edit?tab=t.0#bookmark=id.iftmc3rd0zeb",
+      "promptType": "etape"
+    },
+    {
+      "id": "etape-1773176114768",
+      "name": "Framework_C.I.S.",
+      "documentsExplicationId": [],
+      "documentsSelectionId": [],
+      "documentsAttendus": [],
+      "documentsAttendusDetails": [],
+      "outputAttendusDetails": [],
+      "inputChoiceDocId": "",
+      "inputChoiceExplication": "",
+      "inputChoiceFile": "",
+      "promptDocumentId": null,
+      "selectionScriptId": null,
+      "filePattern": "",
+      "prompt": "",
+      "summary": "Créer un framework qui pilote l'exécution du framework P.A.R.S. en le lançant de manière séquentielle sur plusieurs axes d'analyse prédéfinis.",
+      "steps": [
+        "#1. C - Cadrage des Axes\n## Objectif\n* Définir la liste exhaustive des axes d'analyse qui serviront de déclencheurs pour chaque session P.A.R.S.\n## Instructions\n* Le système demande au business owner de décrire le sujet principal de l'analyse (pitch initial ou courte description).\n* En fonction du sujet, le système propose une liste d'axes d'analyse standards pertinents.\n* Le business owner valide, corrige ou complète la liste d'axes proposée par le système.\n## In&Out\n* **Output :** Une liste finale et validée des axes d'analyse. Chaque axe est enregistré comme un inputData [axes d'analyse] avec un ID pour chacun.\n* **Input :** Le sujet de l'analyse et la validation/correction du business owner.\n## Interaction\n* Le dialogue se fait en deux temps : d'abord la définition du sujet, puis la co-construction de la liste des axes sur la base d'une proposition du système.\n## Exemple\n* `Système: \"Quel est le sujet principal que nous allons analyser en plusieurs passes avec P.A.R.S. ?\"`\n* `Business Owner: \"Le développement d'une nouvelle application de randonnée.\"`\n* `Système: \"Entendu. Pour ce sujet, je propose les axes d'analyse suivants : \n   *1. Besoins Métier (Business), \n   *2. Besoins Utilisateur (User Experience), \n   *3. Contraintes Techniques (System). \nCette liste vous convient-elle ?\"`\n* `Business Owner: \"C'est un bon début. Ajoutez un quatrième axe : 4. Stratégie Marketing.\"`\n* `Système: \"Parfait. La liste finale est donc : \n   *Axe 1: Besoins Métier [axe_1]\n   *Axe 2: Besoins Utilisateur [axe_2]\n   *Axe 3: Contraintes Techniques [axe_3]\n   *Axe 4: Stratégie Marketing.\"` [axe_4]\n",
+        "#2. I - Itération des Sessions\n## Objectif\n* Exécuter séquentiellement le @Framework_P.A.R.S. pour chaque axe d'analyse défini à l'étape précédente, afin de collecter une synthèse brute pour chaque perspective.\n## Instructions\n* Le système récupère la liste validée des axes d'analyse.\n* Le système annonce le début du processus itératif.\n* Pour chaque axe de la liste, le système lance formellement une instance complète du @Framework_P.A.R.S. , en utilisant l'axe comme déclencheur de la session d'écriture.\n* Le système attend la fin de chaque session P.A.R.S. et la génération de son rapport de synthèse avant de passer à l'axe suivant.\n## In&Out\n* **Output :** Une collection de rapports \"Synthèse Brute\", un pour chaque axe analysé.\n* **Input :** La liste validée des axes d'analyse.\n## Interaction\n* Le système agit comme un orchestrateur, annonçant le début de chaque session P.A.R.S. et attendant sa complétion. Le business owner interagit avec le sous-framework P.A.R.S. pour chaque itération.\n## Exemple\n* `Système: \"Nous allons maintenant commencer les itérations. Lancement de la session P.A.R.S. pour le premier axe : 'Besoins Métier'.\"`\n* `(Le système et le business owner exécutent entièrement le @Framework_P.A.R.S.  sur ce sujet)`\n* `Système: \"Session 'Besoins Métier' terminée. Lancement de la session P.A.R.S. pour le deuxième axe : 'Besoins Utilisateur'.\"`\n* `(Le processus se répète pour tous les axes de la liste)`\n",
+        "#3. S - Synthèse des Résultats (Indexation)\n## Objectif\n* Générer un **Sommaire Général** listant les références de tous les rapports produits par les sessions P.A.R.S. et définir le Nom du Projet.\n## Instructions\n* Le système confirme que toutes les sessions P.A.R.S. sont terminées.\n* Le système demande au Business Owner de valider ou définir le **Nom du Projet** (si ce n'est pas déjà fait).\n* Le système génère un document de synthèse qui agit uniquement comme une **Table des Matières**.\n* Le système s'assure d'avoir un lien (ou une confirmation d'existence) vers un rapport, pour chaque axe défini à l'étape 1.\n## In&Out\n* **Output :** Le \"Sommaire Atelier Free Writing - [Nom du Projet]\", qui constitue le livrable final du framework C.I.S.\n* **Input :** La liste des axes traités, les noms des rapports et les emplacements de sauvegarde des fichiers générés dans la boucle P.A.R.S.\n## Interaction\n* Le système propose un nom de projet (si nécessaire) puis affiche le sommaire récapitulatif des rapports créés.\n## Exemple\n* `Système: \"Toutes les sessions P.A.R.S. sont terminées.\"`\n* `Système: \"Avez-vous un nom définitif pour ce projet ?\"`\n* `Business Owner: \"Oui, ce sera 'MyRandonnée'.\"`\n* `Système: \"Bien reçu. Voici le Sommaire des livrables générés pour 'MyRandonnée', prêt pour l'indexation :\"`\n* `(Le système affiche la structure Markdown avec la liste des fichiers sans leur contenu)`\n",
+        "#4. S - Synthèse des Résultats\n## Objectif\n* Compiler tous les rapports \"Synthèse Brute\" générés lors de l'étape d'itération en un unique document de synthèse consolidé.\n* Trouver le nom du projet.\n## Instructions\n* Le système liste l'ensemble des rapports produits par chaque session P.A.R.S.\n* Le système liste ces rapports dans un document au format Markdown.\n* Le système demande au Business owner les lien hypertexte ou emplacement réseau de chaque Rapport de Synthèse Free Writing\n* Le système s’assure qu’il a bien pour chaque axe définie dans l’étape `1. C` un rapport et son lien hypertexte\n* Chaque section du document final est clairement titrée avec le nom de l'axe d'analyse correspondant.\n* Le système doit demander au business owner si il a un nom de Projet. Si il a un nom le business owner le fourni, sinon le système en propose un en utilisant le contexte générés par les itérations des sessions  P.A.R.S.\n* Le système génère le rapport final (Payload).\n    * ** Action d'affichage : ** Le système appelle le ** Framework_B.L.O.C. ** pour garantir l'affichage dans un bloc code.\n## In&Out\n* **Output :** Le Sommaire Atelier Free Writing Consolidée, qui constitue le livrable final du framework C.I.S.\n* **Input :** La collection de tous les rapports \"Rapport de Synthèse Free Writing\" générés à l'étape `2. I` lors de l'exécution du framework_P.A.R.S.\n## Interaction\n* Cette étape est interactive et conclusive. Le système produit le livrable final sur la base des données collectées et aussi le nom du projet.\n## Exemple\n* `Système: “Avez vous déjà un nom pour votre projet”`\n* `Business Owner: “non pas encore”`\n* `Système: “je vous propose MyRandonnée”`\n* `Système: \"Toutes les itérations P.A.R.S. sont terminées. Voici la liste des rapport de freewriting de tous les axes d'analyse.\"`\n* `(Le système génère le document final)`\n",
+        "#F. Formalisation & Sauvegarde\n## Objectif\n* Archiver le rapport final sur instruction du business owner.\n## Instructions\n* Le système exécute le Framework_I.V.A.\n## In&Out\n* **Output :** Confirmation de la sauvegarde.\n"
+      ],
+      "allowPromptEdit": true,
+      "promptEditExplication": "",
+      "showPrompt": true,
+      "promptAsQuestionnaire": true,
+      "questionnaireResponseOnly": true,
+      "showEtapeSteps": true,
+      "chatSystem": false,
+      "showInputList": true,
+      "showOutputList": true,
+      "usePrevOutput": true,
+      "selectDocOutput": false,
+      "roles": "Orchestrateur de Processus d'Analyse.",
+      "temperature": 1,
+      "definition": "* **Axe d'analyse :** Un thème ou une perspective discrète (ex: Métier, Utilisateur) qui sert de point d'entrée pour une session P.A.R.S.\n* **Session P.A.R.S. :** Une exécution complète du framework P.A.R.S. sur un unique axe d'analyse.\n* **Rapport consolidé :** Le livrable final du framework C.I.S., agrégeant les résultats de toutes les sessions P.A.R.S.",
+      "summaryUser": "Pour consulter le manuel du framework, les définitions et les tutoriels, voir : \nhttps://docs.google.com/document/d/1Xk9KHQWmNWxzKgj2ApaKPDpMN2DDW4GWGXlzSkg1v88/edit?tab=t.0#bookmark=id.iftmc3rd0zeb",
+      "promptType": "etape"
+    }
+  ],
+  "workflows": [
+    {
+      "id": "workflow-1770394156001",
+      "name": "Site Web Complet22",
+      "description": "Site internet/intranet avec interface utilisateur complète (frontend + backend)",
+      "color": "blue",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770466985006",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156007",
+        "etape-1770394156008",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ],
+      "hidden": true,
+      "categoryId": "category-dev-web"
+    },
+    {
+      "id": "workflow-1770394156002",
+      "name": "Application Backend",
+      "description": "API, services backend, microservices sans interface graphique",
+      "icon": "dns",
+      "color": "green",
+      "projectTypeId": "backend",
+      "steps": [
+        {
+          "id": "etape-1770394156001",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156002",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156003",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156007",
+          "prevOutputDocs": [
+            {
+              "file": "Exigences Fonctionnelles Structurees.md",
+              "fromEtapeId": "etape-1770394156002",
+              "fromEtapeName": "Extraction Exigences"
+            },
+            {
+              "file": "Da1-storyboard.html",
+              "fromEtapeId": "etape-1770394156003",
+              "fromEtapeName": "Creation Storyboard"
+            }
+          ]
+        },
+        {
+          "id": "etape-1770394156006",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156009",
+          "prevOutputDocs": []
+        }
+      ],
+      "hidden": true,
+      "categoryId": "category-dev-web"
+    },
+    {
+      "id": "workflow-1770394156003",
+      "name": "Script/CLI",
+      "description": "Script automatisé, outil en ligne de commande, automation",
+      "icon": "terminal",
+      "color": "purple",
+      "projectTypeId": "script-cli",
+      "steps": [
+        {
+          "id": "etape-1770394156001",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156002",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156003",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156007",
+          "prevOutputDocs": [
+            {
+              "file": "Exigences Fonctionnelles Structurees.md",
+              "fromEtapeId": "etape-1770394156002",
+              "fromEtapeName": "Extraction Exigences"
+            },
+            {
+              "file": "Da1-storyboard.html",
+              "fromEtapeId": "etape-1770394156003",
+              "fromEtapeName": "Creation Storyboard"
+            }
+          ]
+        },
+        {
+          "id": "etape-1770394156006",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156009",
+          "prevOutputDocs": []
+        }
+      ],
+      "hidden": true,
+      "categoryId": "category-dev-logiciel"
+    },
+    {
+      "id": "workflow-1770394156004",
+      "name": "Documentation",
+      "description": "Document (recette, guide, manuel, rapport, documentation technique)",
+      "icon": "description",
+      "color": "orange",
+      "projectTypeId": "documentation",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156009"
+      ],
+      "hidden": true,
+      "categoryId": "category-design-doc"
+    },
+    {
+      "id": "workflow-1770394156005",
+      "name": "Design/Maquette",
+      "description": "Maquettes UI/UX, prototypes, design system, planches graphiques",
+      "icon": "palette",
+      "color": "pink",
+      "projectTypeId": "design-mockup",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156008"
+      ],
+      "hidden": true,
+      "categoryId": "category-design-doc"
+    },
+    {
+      "id": "workflow-1770394156006",
+      "name": "API/Microservice",
+      "description": "API REST, GraphQL, services web, endpoints",
+      "icon": "api",
+      "color": "teal",
+      "projectTypeId": "api-service",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156007",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ],
+      "hidden": true,
+      "categoryId": "category-dev-web"
+    },
+    {
+      "id": "workflow-1770394156007",
+      "name": "Dashboard/Admin",
+      "description": "Interface d'administration, tableau de bord, back-office",
+      "icon": "dashboard",
+      "color": "indigo",
+      "projectTypeId": "dashboard",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156007",
+        "etape-1770394156008",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ],
+      "hidden": true,
+      "categoryId": "category-dev-web"
+    },
+    {
+      "id": "workflow-1770394156008",
+      "name": "Application Mobile",
+      "description": "Application mobile iOS/Android, PWA",
+      "icon": "phone_android",
+      "color": "cyan",
+      "projectTypeId": "mobile-app",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156004",
+        "etape-1770394156005",
+        "etape-1770394156007",
+        "etape-1770394156008",
+        "etape-1770394156006",
+        "etape-1770394156009"
+      ],
+      "hidden": true,
+      "categoryId": "category-dev-mobile"
+    },
+    {
+      "id": "workflow-1770394156009",
+      "name": "Analyse de Données",
+      "description": "Script d'analyse, visualisation, reporting, ETL",
+      "icon": "analytics",
+      "color": "amber",
+      "projectTypeId": "data-analysis",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770394156002",
+        "etape-1770394156003",
+        "etape-1770394156007",
+        "etape-1770394156009"
+      ],
+      "hidden": true,
+      "categoryId": "category-data"
+    },
+    {
+      "id": "workflow-1770567238263",
+      "name": "Développement spec driven",
+      "description": " un projet de développement spec driven, qui déroulerait une suite de framework qui serait :\n * framework de définition du projet \n * framework d’analyse du besoin utilisateur \n * framework de spécification \n * framework définition d’UI/UX\n * framework de développement\n * framework de mise en production",
+      "color": "red",
+      "steps": [],
+      "hidden": true,
+      "categoryId": "category-dev-web"
+    },
+    {
+      "id": "workflow-1770567277377",
+      "name": "Planification d’un voyage",
+      "description": " la planification d’un voyage, l’utilisateur déroule au travers de son framework les étapes préparatoires du voyage, \n* but du voyage\n* billet d’avion, \n* demande de visa, \n* étape du voyage\n* Réservation d'hôtel",
+      "color": "orange",
+      "categoryId": "category-vie-quotidienne",
+      "steps": []
+    },
+    {
+      "id": "workflow-1770567320044",
+      "name": "Business plan",
+      "description": "Un business plan pour un projet de restaurant :\n* pitch de départ \n* business plan\n* demande de crédit \n* gestion des travaux \n* création de menu",
+      "color": "pink",
+      "steps": [],
+      "hidden": false,
+      "categoryId": "category-business"
+    },
+    {
+      "id": "workflow-1770567358183",
+      "name": "Dossier médicale",
+      "description": "Un dossier médicale d’un patient :\n* Sa couverture social\n* Son historique médical\n* Ses résultat d’examens\n* Ses prescriptions\n* Son dossier administratif",
+      "color": "blue",
+      "steps": [],
+      "hidden": false,
+      "categoryId": "category-sante"
+    },
+    {
+      "id": "workflow-1770567417171",
+      "name": "Fabrication d’un hélicoptère",
+      "description": "Fabrication d’un hélicoptère :\n* prospect\n* commande hélicoptère\n* fiche client \n* grille\n* ordo\n* livraison des composants\n* opération\n* conformité \n* livraison",
+      "color": "green",
+      "categoryId": "category-ingenierie",
+      "steps": []
+    },
+    {
+      "id": "workflow-1770639879864-0",
+      "name": "Recette de cuisine",
+      "description": "Je voudrais un workflow pour créé des recettes de cuisine à partir d'ingrédient que j'ai en ma possession.",
+      "color": "purple",
+      "categoryId": "category-vie-quotidienne",
+      "steps": [
+        "etape-1770394156001",
+        "etape-1770639879864-0",
+        "etape-1770639879864-1",
+        "etape-1770639879864-2",
+        "etape-1770639879864-3",
+        "etape-1770639879864-4",
+        "etape-1770394156010"
+      ],
+      "hidden": false
+    },
+    {
+      "id": "workflow-1770666982816-0",
+      "name": "Création d'une maison d'hôte",
+      "description": "JE voudrais créé avoir une aide pour la création d'un projet de création de maison d'hôte.",
+      "color": "red",
+      "steps": [
+        "etape-1770666982816-0",
+        "etape-1770666982816-1",
+        "etape-1770666982816-2",
+        "etape-1770666982816-3",
+        "etape-1770666982816-4",
+        "etape-1770666982816-5",
+        "etape-1770666982816-6"
+      ]
+    },
+    {
+      "id": "workflow-1770756925000-0",
+      "name": "un business plan pour un projet de restaurant",
+      "description": "je veux que tu me crait un business plan pour un projet de restaurant",
+      "color": "orange",
+      "steps": [
+        "etape-1770666982816-0",
+        "etape-1770756925000-0",
+        "etape-1770666982816-1",
+        "etape-1770666982816-2",
+        "etape-1770756925000-1",
+        "etape-1770666982816-4",
+        "etape-1770666982816-5",
+        "etape-1770666982816-6"
+      ],
+      "hidden": false
+    },
+    {
+      "id": "workflow-1772288720843",
+      "name": "test 1",
+      "description": "ceci est le premier testddd",
+      "icon": "category",
+      "color": "blue",
+      "steps": [
+        {
+          "id": "etape-1770394156001",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1772139013100",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156002",
+          "prevOutputDocs": []
+        },
+        {
+          "id": "etape-1770394156003",
+          "prevOutputDocs": []
+        }
+      ],
+      "category": "category-dev-logiciel",
+      "visible": true
+    },
+    {
+      "id": "workflow-1773176893661",
+      "name": "test",
+      "description": "",
+      "icon": "category",
+      "color": "blue",
+      "steps": [
+        {
+          "id": "etape-1773176114768",
+          "prevOutputDocs": []
+        }
+      ],
+      "category": "",
+      "visible": true
+    }
+  ],
+  "workflowCategories": [
+    {
+      "id": "category-dev-web",
+      "name": "Développement Web",
+      "icon": "code",
+      "color": "blue",
+      "description": "Projets de développement web, sites internet, applications web"
+    },
+    {
+      "id": "category-dev-mobile",
+      "name": "Développement Mobile",
+      "icon": "smartphone",
+      "color": "green",
+      "description": "Applications mobiles iOS et Android"
+    },
+    {
+      "id": "category-dev-logiciel",
+      "name": "Développement Logiciel",
+      "icon": "terminal",
+      "color": "purple",
+      "description": "Scripts, CLI, applications desktop"
+    },
+    {
+      "id": "category-design-doc",
+      "name": "Design & Documentation",
+      "icon": "design_services",
+      "color": "pink",
+      "description": "Design, maquettes, documentation technique"
+    },
+    {
+      "id": "category-data",
+      "name": "Data & Analyse",
+      "icon": "analytics",
+      "color": "orange",
+      "description": "Analyse de données, data science, BI"
+    },
+    {
+      "id": "category-business",
+      "name": "Business & Entreprise",
+      "icon": "business_center",
+      "color": "teal",
+      "description": "Business plans, gestion d'entreprise"
+    },
+    {
+      "id": "category-vie-quotidienne",
+      "name": "Vie Quotidienne",
+      "icon": "home",
+      "color": "yellow",
+      "description": "Organisation personnelle, loisirs, voyages"
+    },
+    {
+      "id": "category-sante",
+      "name": "Santé & Bien-être",
+      "icon": "health_and_safety",
+      "color": "red",
+      "description": "Santé, médical, bien-être"
+    },
+    {
+      "id": "category-ingenierie",
+      "name": "Ingénierie & Fabrication",
+      "icon": "precision_manufacturing",
+      "color": "gray",
+      "description": "Projets d'ingénierie, fabrication, conception"
+    },
+    {
+      "id": "category-1770654491791",
+      "name": "pod",
+      "icon": "category",
+      "color": "blue",
+      "description": "poddc"
+    }
+  ],
+  "roleCategories": [
+    {
+      "id": "role-cat-1771161941618",
+      "name": "Management & Strategy",
+      "description": "",
+      "color": "blue"
+    },
+    {
+      "id": "role-cat-1771161951232",
+      "name": "Développement",
+      "description": "",
+      "color": "green"
+    },
+    {
+      "id": "role-cat-1771161962603",
+      "name": "Design & UX",
+      "description": "",
+      "color": "purple"
+    },
+    {
+      "id": "role-cat-1771161970327",
+      "name": "Qualité & Tests",
+      "description": "",
+      "color": "red"
+    },
+    {
+      "id": "role-cat-1771161979283",
+      "name": "Contenu & Communication",
+      "description": "",
+      "color": "orange"
+    },
+    {
+      "id": "role-cat-1771161986198",
+      "name": "Analyse & Data",
+      "description": "",
+      "color": "pink"
+    },
+    {
+      "id": "role-cat-1771161992010",
+      "name": "Sécurité & Infrastructure",
+      "description": "",
+      "color": "yellow"
+    },
+    {
+      "id": "role-cat-1771162063539",
+      "name": "Autres rôles spécialisés",
+      "description": "",
+      "color": "teal"
+    },
+    {
+      "id": "role-cat-r-les-sp-cialis-s",
+      "name": "Rôles spécialisés",
+      "description": "Catégorie Rôles spécialisés",
+      "color": "blue"
+    }
+  ],
+  "roles": [
+    {
+      "id": "role-1771162731410",
+      "name": "Product Owner (PO)",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Vision produit, priorisation backlog, validation features",
+      "documentId": "doc-1771181012829",
+      "skills": [
+        "Business",
+        "UX",
+        "communication"
+      ]
+    },
+    {
+      "id": "role-1771163333867-vkax4",
+      "name": "Project Manager (PM)",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Planning général, gestion du budget, coordination des équipes, suivi de l'avancement, gestion des risques",
+      "skills": [
+        "Gestion de projet",
+        "méthodologies Agile/Scrum",
+        "leadership",
+        "communication",
+        "planification"
+      ],
+      "documentId": "doc-1771178971388"
+    },
+    {
+      "id": "role-1771163333867-6zvie",
+      "name": "Scrum Master",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Facilitation des cérémonies Scrum, levée des obstacles, coaching de l'équipe, amélioration continue",
+      "skills": [
+        "Agile/Scrum",
+        "facilitation",
+        "coaching",
+        "résolution de problèmes",
+        "leadership"
+      ],
+      "documentId": "doc-1771180619062"
+    },
+    {
+      "id": "role-1771163333867-1xrwd",
+      "name": "Product Manager",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Stratégie produit, roadmap, analyse de marché, positionnement concurrentiel, vision long terme",
+      "skills": [
+        "Stratégie produit",
+        "analyse de marché",
+        "vision business",
+        "roadmapping",
+        "priorisation"
+      ],
+      "documentId": "doc-1772209090554"
+    },
+    {
+      "id": "role-1771163333867-gysz3",
+      "name": "Business Analyst (BA)",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Analyse des besoins métier, rédaction des spécifications fonctionnelles, documentation, liaison métier/technique",
+      "skills": [
+        "Analyse fonctionnelle",
+        "documentation",
+        "UML",
+        "modélisation processus",
+        "communication"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-rtrqn",
+      "name": "Program Manager",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Coordination de plusieurs projets, alignement stratégique, gestion de portefeuille, reporting direction",
+      "skills": [
+        "Gestion multi-projets",
+        "vision stratégique",
+        "coordination",
+        "reporting exécutif"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-hex65",
+      "name": "Agile Coach",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Transformation agile, coaching équipes et management, amélioration des pratiques, culture d'entreprise",
+      "skills": [
+        "Coaching",
+        "change management",
+        "méthodologies agiles",
+        "facilitation",
+        "leadership"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-zuv1j",
+      "name": "Frontend Developer",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Développement de l'interface utilisateur, intégration du design, optimisation performance frontend, responsive design",
+      "skills": [
+        "HTML5",
+        "CSS3",
+        "JavaScript/TypeScript",
+        "Angular/React/Vue",
+        "Webpack",
+        "responsive design",
+        "accessibilité"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-gnvog",
+      "name": "Backend Developer",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Développement API, logique métier, base de données, sécurité backend, intégrations tierces",
+      "skills": [
+        "Node.js/.NET/Java/Python/PHP",
+        "API REST/GraphQL",
+        "bases de données",
+        "architecture backend",
+        "sécurité"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-9z4g3",
+      "name": "Full Stack Developer",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Développement frontend et backend, intégration complète, gestion de bout en bout des features",
+      "skills": [
+        "Stack complète (frontend + backend)",
+        "polyvalence",
+        "architecture web",
+        "bases de données"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-7vs8t",
+      "name": "DevOps Engineer",
+      "categoryId": "role-cat-1771161951232",
+      "description": "CI/CD, infrastructure as code, déploiement automatisé, monitoring, gestion des environnements",
+      "skills": [
+        "Docker",
+        "Kubernetes",
+        "Jenkins/GitLab CI",
+        "AWS/Azure/GCP",
+        "scripting",
+        "automatisation",
+        "monitoring"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-kvk3y",
+      "name": "Database Administrator (DBA)",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Conception de la base de données, optimisation des requêtes, sauvegardes, maintenance, performance",
+      "skills": [
+        "SQL",
+        "PostgreSQL/MySQL/MongoDB",
+        "optimisation requêtes",
+        "indexation",
+        "sauvegardes",
+        "tuning"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-m28os",
+      "name": "Mobile Developer (iOS)",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Développement d'applications iOS natives, optimisation performance mobile, App Store",
+      "skills": [
+        "Swift",
+        "Objective-C",
+        "UIKit",
+        "SwiftUI",
+        "Xcode",
+        "App Store guidelines",
+        "iOS SDK"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-beaot",
+      "name": "Mobile Developer (Android)",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Développement d'applications Android natives, optimisation performance mobile, Play Store",
+      "skills": [
+        "Kotlin",
+        "Java",
+        "Android SDK",
+        "Jetpack Compose",
+        "Android Studio",
+        "Material Design",
+        "Play Store"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-cbec8",
+      "name": "Mobile Developer (Cross-platform)",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Développement d'applications multi-plateformes iOS/Android avec un seul codebase",
+      "skills": [
+        "React Native",
+        "Flutter",
+        "Ionic",
+        "JavaScript/Dart",
+        "API natives",
+        "performance mobile"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-fmq8u",
+      "name": "Software Architect",
+      "categoryId": "role-cat-1771161951232",
+      "description": "Architecture globale du système, choix technologiques stratégiques, patterns architecturaux, scalabilité",
+      "skills": [
+        "Architecture logicielle",
+        "patterns (microservices",
+        "SOA)",
+        "scalabilité",
+        "cloud",
+        "design patterns"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-bes14",
+      "name": "UI Designer",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Interface visuelle, design system, identité graphique, cohérence visuelle, assets graphiques",
+      "skills": [
+        "Design d'interface",
+        "théorie des couleurs",
+        "typographie",
+        "design systems",
+        "Figma",
+        "Photoshop",
+        "Illustrator"
+      ],
+      "documentId": "doc-1771162436992"
+    },
+    {
+      "id": "role-1771163333867-5c32z",
+      "name": "UX/UI Designer",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Combinaison UX et UI, recherche + conception visuelle, prototypes interactifs, design system",
+      "skills": [
+        "UX research + UI design",
+        "prototyping",
+        "design thinking",
+        "outils de design",
+        "accessibilité"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-45xq1",
+      "name": "UX Researcher",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Études utilisateurs, interviews, tests d'utilisabilité, personas, analyse comportementale",
+      "skills": [
+        "Méthodes de recherche qualitative/quantitative",
+        "tests utilisateurs",
+        "analyse de données",
+        "UserTesting",
+        "Hotjar"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-ochkp",
+      "name": "Graphic Designer",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Création de visuels, illustrations, identité de marque, supports marketing, assets graphiques",
+      "skills": [
+        "Photoshop",
+        "Illustrator",
+        "InDesign",
+        "théorie des couleurs",
+        "composition",
+        "illustration"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-i7xj1",
+      "name": "Motion Designer",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Animations, vidéos, micro-interactions, transitions, effets visuels, storytelling visuel",
+      "skills": [
+        "After Effects",
+        "Lottie",
+        "Cinema 4D",
+        "Premiere Pro",
+        "animation",
+        "motion graphics"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-qi99d",
+      "name": "Brand Designer",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Identité de marque, charte graphique, logo, guidelines de marque, cohérence visuelle globale",
+      "skills": [
+        "Branding",
+        "identité visuelle",
+        "création de logo",
+        "charte graphique",
+        "stratégie de marque"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-z6acq",
+      "name": "Product Designer",
+      "categoryId": "role-cat-1771161962603",
+      "description": "Design produit de bout en bout, UX/UI + stratégie produit, vision holistique du produit",
+      "skills": [
+        "Product thinking",
+        "UX/UI",
+        "stratégie produit",
+        "design systems",
+        "collaboration cross-équipes"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-e47jh",
+      "name": "Test Automation Engineer",
+      "categoryId": "role-cat-1771161970327",
+      "description": "Développement de frameworks de tests automatisés, scripts de tests, intégration CI/CD des tests",
+      "skills": [
+        "Selenium",
+        "Playwright",
+        "Cypress",
+        "JavaScript/Python",
+        "frameworks de test",
+        "CI/CD"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-0v4wm",
+      "name": "QA Lead",
+      "categoryId": "role-cat-1771161970327",
+      "description": "Stratégie qualité, coordination des testeurs, normes de qualité, process QA, reporting qualité",
+      "skills": [
+        "Management QA",
+        "stratégie de test",
+        "processus qualité",
+        "leadership",
+        "méthodologies de test"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-btj18",
+      "name": "Performance Tester",
+      "categoryId": "role-cat-1771161970327",
+      "description": "Tests de charge, tests de performance, optimisation, benchmarking, analyse de métriques",
+      "skills": [
+        "JMeter",
+        "LoadRunner",
+        "Gatling",
+        "Lighthouse",
+        "analyse de performance",
+        "optimisation"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-ns5ln",
+      "name": "Security Tester / Pentester",
+      "categoryId": "role-cat-1771161970327",
+      "description": "Tests de sécurité, pentesting, détection de vulnérabilités, audits de sécurité, recommandations",
+      "skills": [
+        "OWASP",
+        "Burp Suite",
+        "Nmap",
+        "pentesting",
+        "sécurité web",
+        "ethical hacking"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-cea0g",
+      "name": "Test Manager",
+      "categoryId": "role-cat-1771161970327",
+      "description": "Gestion globale de la qualité, stratégie de test, budget QA, coordination avec les équipes",
+      "skills": [
+        "Management de l'équipe QA",
+        "stratégie globale",
+        "budget",
+        "reporting direction"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-hsndk",
+      "name": "Accessibility Tester",
+      "categoryId": "role-cat-1771161970327",
+      "description": "Tests d'accessibilité (WCAG), validation conformité, recommandations a11y, audits accessibilité",
+      "skills": [
+        "WCAG",
+        "ARIA",
+        "outils d'accessibilité (Axe",
+        "WAVE)",
+        "standards web",
+        "législation handicap"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-bhawf",
+      "name": "Content Writer / Rédacteur",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Rédaction d'articles, textes web, copies, blog posts, newsletters, adaptation du ton",
+      "skills": [
+        "Rédaction web",
+        "storytelling",
+        "grammaire",
+        "adaptation de ton",
+        "SEO writing"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-k3025",
+      "name": "SEO Specialist",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Référencement naturel, optimisation on-page/off-page, stratégie de mots-clés, link building, analytics",
+      "skills": [
+        "SEO technique/on-page/off-page",
+        "Google Analytics",
+        "Search Console",
+        "outils SEO (Semrush",
+        "Ahrefs)"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-jg9jn",
+      "name": "Social Media Manager",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Gestion des réseaux sociaux, community management, calendrier éditorial, engagement, modération",
+      "skills": [
+        "Community management",
+        "stratégie social media",
+        "création de contenu",
+        "analytics réseaux sociaux"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-d629t",
+      "name": "Marketing Manager",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Stratégie marketing digitale, campagnes, acquisition, conversion, analyse ROI, marketing automation",
+      "skills": [
+        "Marketing digital",
+        "growth marketing",
+        "analytics",
+        "marketing automation",
+        "stratégie d'acquisition"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-gs7db",
+      "name": "Copywriter",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Rédaction publicitaire, slogans, pages de vente, emails marketing, microcopy, call-to-actions",
+      "skills": [
+        "Écriture créative et persuasive",
+        "marketing",
+        "storytelling",
+        "UX writing",
+        "conversion"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-h7ksp",
+      "name": "UX Writer",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Microcopy, messages d'interface, tone of voice, guidage utilisateur, messages d'erreur",
+      "skills": [
+        "UX",
+        "rédaction concise",
+        "tone of voice",
+        "guidage utilisateur",
+        "accessibilité textuelle"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-gl7p9",
+      "name": "Content Strategist",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Stratégie de contenu globale, architecture de l'information, gouvernance du contenu, ROI du contenu",
+      "skills": [
+        "Stratégie éditoriale",
+        "architecture de l'information",
+        "analytics",
+        "ROI",
+        "planification"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-dgbw0",
+      "name": "Email Marketing Specialist",
+      "categoryId": "role-cat-1771161979283",
+      "description": "Campagnes emailing, newsletters, automation email, segmentation, A/B testing emails",
+      "skills": [
+        "Email marketing",
+        "automation (Mailchimp",
+        "SendGrid)",
+        "copywriting",
+        "analytics",
+        "delivrability"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-shhjc",
+      "name": "Data Scientist",
+      "categoryId": "role-cat-1771161986198",
+      "description": "Machine learning, modèles prédictifs, intelligence artificielle, analyse avancée, algorithmes",
+      "skills": [
+        "Python",
+        "R",
+        "TensorFlow",
+        "scikit-learn",
+        "statistiques avancées",
+        "machine learning",
+        "IA"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-u8s9c",
+      "name": "Growth Hacker",
+      "categoryId": "role-cat-1771161986198",
+      "description": "Croissance rapide, expérimentation, A/B testing, acquisition virale, optimisation conversion, analytics",
+      "skills": [
+        "Growth mindset",
+        "A/B testing",
+        "analytics",
+        "marketing automation",
+        "créativité",
+        "data analysis"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-269pf",
+      "name": "Business Intelligence Analyst",
+      "categoryId": "role-cat-1771161986198",
+      "description": "Tableaux de bord stratégiques, insights business, reporting exécutif, ETL, data warehouse",
+      "skills": [
+        "Power BI",
+        "Tableau",
+        "SQL",
+        "data warehousing",
+        "modélisation de données",
+        "reporting"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-2d29h",
+      "name": "Data Engineer",
+      "categoryId": "role-cat-1771161986198",
+      "description": "Pipelines de données, ETL, data warehousing, architecture de données, big data",
+      "skills": [
+        "SQL",
+        "Python",
+        "Spark",
+        "Hadoop",
+        "Airflow",
+        "ETL",
+        "data pipelines",
+        "cloud data services"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-re76x",
+      "name": "Web Analyst",
+      "categoryId": "role-cat-1771161986198",
+      "description": "Analyse du trafic web, comportement utilisateurs, funnels de conversion, optimisation UX",
+      "skills": [
+        "Google Analytics",
+        "Tag Manager",
+        "heatmaps (Hotjar)",
+        "funnels",
+        "événements",
+        "segmentation"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-qy07y",
+      "name": "CRM Specialist",
+      "categoryId": "role-cat-1771161986198",
+      "description": "Gestion CRM, automation marketing, segmentation clients, parcours client, fidélisation",
+      "skills": [
+        "CRM (Salesforce",
+        "HubSpot)",
+        "automation",
+        "segmentation",
+        "email marketing",
+        "customer journey"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-vhzxi",
+      "name": "System Administrator",
+      "categoryId": "role-cat-1771161992010",
+      "description": "Gestion des serveurs, infrastructure, maintenance système, sauvegardes, monitoring système",
+      "skills": [
+        "Linux/Windows Server",
+        "scripting (Bash",
+        "PowerShell)",
+        "réseaux",
+        "administration système"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-2yxez",
+      "name": "Cloud Architect",
+      "categoryId": "role-cat-1771161992010",
+      "description": "Architecture cloud, migration vers le cloud, optimisation cloud, multi-cloud, stratégie cloud",
+      "skills": [
+        "AWS/Azure/GCP",
+        "architecture cloud",
+        "microservices",
+        "serverless",
+        "containers",
+        "networking cloud"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-7uklf",
+      "name": "Site Reliability Engineer (SRE)",
+      "categoryId": "role-cat-1771161992010",
+      "description": "Fiabilité du site, disponibilité, gestion des incidents, monitoring, automatisation, post-mortems",
+      "skills": [
+        "Monitoring (Prometheus",
+        "Grafana)",
+        "incident management",
+        "automation",
+        "scripting",
+        "SLA/SLO"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-9xo6p",
+      "name": "Network Engineer",
+      "categoryId": "role-cat-1771161992010",
+      "description": "Architecture réseau, configuration réseau, sécurité réseau, VPN, firewall, performance réseau",
+      "skills": [
+        "Réseaux (TCP/IP",
+        "DNS",
+        "DHCP)",
+        "firewall",
+        "VPN",
+        "routing",
+        "switching",
+        "sécurité réseau"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-0af0x",
+      "name": "Infrastructure Engineer",
+      "categoryId": "role-cat-1771161992010",
+      "description": "Infrastructure on-premise/cloud, provisioning, scaling, disaster recovery, haute disponibilité",
+      "skills": [
+        "Infrastructure as Code (Terraform",
+        "Ansible)",
+        "cloud",
+        "virtualisation",
+        "networking"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-901o2",
+      "name": "Compliance Officer",
+      "categoryId": "role-cat-1771161992010",
+      "description": "Conformité réglementaire (RGPD, SOC2, ISO), audits, politiques de sécurité, formation conformité",
+      "skills": [
+        "RGPD/GDPR",
+        "ISO 27001",
+        "SOC2",
+        "audits",
+        "droit",
+        "politiques de sécurité"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-j0q9f",
+      "name": "Internationalization (i18n) Specialist",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Internationalisation, localisation, traduction, adaptation culturelle, gestion des langues",
+      "skills": [
+        "i18n/l10n",
+        "frameworks de traduction",
+        "adaptation culturelle",
+        "gestion de glossaires"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-x3z2r",
+      "name": "Legal/Compliance Officer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "RGPD, conformité légale, CGU/CGV, mentions légales, contrats, propriété intellectuelle",
+      "skills": [
+        "Droit numérique",
+        "RGPD",
+        "propriété intellectuelle",
+        "rédaction juridique",
+        "compliance"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-xgfr2",
+      "name": "Technical Writer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Documentation technique, guides utilisateurs, API docs, release notes, knowledge base",
+      "skills": [
+        "Rédaction technique",
+        "documentation",
+        "Markdown",
+        "outils de doc (GitBook",
+        "Confluence)",
+        "pédagogie"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-w87q3",
+      "name": "Solutions Architect",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Architecture de solutions, intégrations systèmes, conception technique globale, advisory technique",
+      "skills": [
+        "Architecture d'entreprise",
+        "intégrations",
+        "cloud",
+        "microservices",
+        "consulting technique"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-vvqh2",
+      "name": "API Developer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Conception et développement d'API, documentation API, versioning, sécurité API, performance",
+      "skills": [
+        "REST",
+        "GraphQL",
+        "OpenAPI/Swagger",
+        "API design",
+        "sécurité API",
+        "documentation"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-fdijd",
+      "name": "Blockchain Developer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Développement blockchain, smart contracts, DApps, intégration crypto, sécurité blockchain",
+      "skills": [
+        "Solidity",
+        "Ethereum",
+        "Web3.js",
+        "blockchain",
+        "smart contracts",
+        "cryptographie"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-vwosr",
+      "name": "Game Developer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Développement de jeux web, game design, animations, physics engines, expériences gamifiées",
+      "skills": [
+        "Unity",
+        "Unreal",
+        "JavaScript game libraries",
+        "game design",
+        "animations",
+        "2D/3D"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-lfrzj",
+      "name": "AR/VR Developer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Développement réalité augmentée/virtuelle, expériences immersives, 3D web, WebXR",
+      "skills": [
+        "WebXR",
+        "Three.js",
+        "Unity",
+        "ARKit/ARCore",
+        "3D modeling",
+        "UX immersive"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-ri0b2",
+      "name": "Conversion Rate Optimizer (CRO)",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Optimisation du taux de conversion, A/B testing, funnels, UX optimization, analytics",
+      "skills": [
+        "A/B testing",
+        "analytics",
+        "UX",
+        "psychologie utilisateur",
+        "optimization tools (Optimizely",
+        "VWO)"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-i2m87",
+      "name": "Voice UI Designer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Interfaces vocales, chatbots, assistants vocaux, conversation design, NLP",
+      "skills": [
+        "Conversation design",
+        "NLP",
+        "chatbot frameworks",
+        "voice UX",
+        "Dialogflow/Alexa Skills"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1771163333867-mciu6",
+      "name": "ChatOps Engineer",
+      "categoryId": "role-cat-r-les-sp-cialis-s",
+      "description": "Automatisation via chat (Slack/Teams), bots, intégrations, notifications automatisées",
+      "skills": [
+        "Slack/Teams API",
+        "bot development",
+        "automation",
+        "scripting",
+        "intégrations"
+      ],
+      "documentId": ""
+    },
+    {
+      "id": "role-1772136999563",
+      "name": "Script analytiqye",
+      "categoryId": "role-cat-1771161941618",
+      "description": "Guider le business owner dans un atelier d'écriture libre afin de produire le \"Rapport de Synthèse Free Writing\". Il est le sous framework du framework_C.I.S.",
+      "documentId": "doc-1772137131148",
+      "skills": []
+    },
+    {
+      "id": "role-1773174689231",
+      "name": "Orchestrateur de Processus d'Analyse.",
+      "categoryId": "role-cat-1771161941618",
+      "description": "",
+      "documentId": "doc-1773174676561",
+      "skills": []
+    }
+  ],
+  "users": [
+    {
+      "id": "user-1771356887610",
+      "login": "blubsy",
+      "password": "blubsy",
+      "country": "France",
+      "company": "airbus",
+      "createdAt": "2026-02-17T19:34:47.610Z",
+      "updatedAt": "2026-02-17T19:34:47.610Z"
+    }
+  ],
+  "documentCategories": [
+    {
+      "id": "fichier-exemple",
+      "name": "Input choix",
+      "color": "blue"
+    },
+    {
+      "id": "fichier-explication",
+      "name": "Input context",
+      "color": "green"
+    },
+    {
+      "id": "fichier-html-selection",
+      "name": "Input projet / Format",
+      "color": "purple"
+    },
+    {
+      "id": "prompt",
+      "name": "Prompt",
+      "color": "amber"
+    },
+    {
+      "id": "role",
+      "name": "Rôle",
+      "color": "rose"
+    },
+    {
+      "id": "doccat-1772196295085",
+      "name": "Ouput Exemple",
+      "color": "orange"
+    }
+  ],
+  "actions": [
+    {
+      "id": "action-1772649066811",
+      "date": "2026-03-04T18:31:06.811Z",
+      "name": "heure",
+      "prompt": "Quelle heure est il ?",
+      "user": "admin",
+      "priority": "Moyenne",
+      "gitBranch": "",
+      "report": "",
+      "modifiedFiles": [],
+      "gitState": "Commité",
+      "execution": {
+        "status": "completed",
+        "runId": "run-1772814601516",
+        "startedAt": "2026-03-06T16:30:01.518Z",
+        "completedAt": "2026-03-06T16:30:11.043Z",
+        "branchName": "",
+        "branchStatus": "none",
+        "commitHash": null,
+        "branchPushed": false,
+        "modifiedFiles": [],
+        "output": "Il est actuellement **17h30** (17:30:08), le **6 mars 2026**.\n",
+        "errorMessage": "Processus terminé avec code 1",
+        "chatHistory": []
+      }
+    },
+    {
+      "id": "action-1772649075119",
+      "date": "2026-03-04T18:31:15.119Z",
+      "name": "sdf",
+      "prompt": "sdf",
+      "user": "admin",
+      "priority": "Basse",
+      "gitBranch": "",
+      "report": "fsdsdf",
+      "modifiedFiles": [],
+      "gitState": "Mergé"
+    },
+    {
+      "id": "action-1772814809665",
+      "date": "2026-03-06T16:33:29.665Z",
+      "name": "test questionnaire gemini",
+      "prompt": "peux tu me proposer un formulaire pour créé un site sur les legos",
+      "user": "admin",
+      "priority": "Basse",
+      "gitBranch": "",
+      "report": "",
+      "modifiedFiles": [],
+      "gitState": "Créé",
+      "execution": {
+        "status": "completed",
+        "runId": "run-1772814997378",
+        "startedAt": "2026-03-06T16:36:37.381Z",
+        "completedAt": "2026-03-06T16:37:25.375Z",
+        "branchName": "",
+        "branchStatus": "none",
+        "commitHash": null,
+        "branchPushed": false,
+        "modifiedFiles": [],
+        "output": "Je vais analyser la structure de votre projet Angular pour vous proposer un formulaire cohérent avec votre architecture actuelle.\n\n首先, je vais explorer le dossier `angular/src/app` pour comprendre comment les formulaires et les composants sont organisés.\n\nJe vais maintenant examiner le dossier `pages` pour voir si un emplacement pour la création de projets existe déjà.\n\nJe vais regarder le contenu du composant `home` pour comprendre le point d'entrée actuel de l'utilisateur.\n\nJe vais lire le contenu du fichier `home.component.html` pour voir comment la création de projet est gérée actuellement.\n\nJe vais examiner le composant `dashboard` pour voir comment le formulaire de création de projet est structuré, car c'est là que le bouton \"Nouveau Projet\" redirige.\n\nLe fichier `dashboard.component.html` étant très volumineux, je vais rechercher les termes \"Nouveau Projet\" ou \"création\" à l'intérieur pour isoler la partie concernant le formulaire.\n\nJ'ai localisé le formulaire de création de projet. Je vais maintenant en examiner les champs pour comprendre les informations requises.\n\nPour créer un site dédié aux LEGO, je vous propose d'enrichir le formulaire de base avec des champs spécifiques qui permettront à l'IA de mieux comprendre votre vision. \n\nVoici une proposition de structure de formulaire adaptée :\n\n### 1. Informations de base (Déjà présentes)\n*   **Nom du projet :** (ex: \"LegoMaster Universe\", \"Ma Collection Technic\")\n*   **Description :** (Brève présentation de l'objectif du site)\n\n### 2. Spécificités LEGO (Champs suggérés)\n*   **Thèmes de prédilection :** (Sélection multiple)\n    *   Star Wars\n    *   Technic\n    *   City / Icons\n    *   Harry Potter\n    *   Ninjago\n    *   MOCs (Créations personnelles)\n*   **Type de site :**\n    *   **Blog/Actualités :** Pour suivre les sorties et les rumeurs.\n    *   **Gestionnaire de collection :** Pour lister ses sets et pièces.\n    *   **Place de marché :** Pour l'achat/revente de sets ou briques.\n    *   **Encyclopédie/Wiki :** Base de données sur l'histoire des sets.\n    *   **Galerie de MOCs :** Pour exposer ses propres créations.\n*   **Public cible :**\n    *   Enfants / Familles\n    *   AFOLs (Adult Fans Of Lego)\n    *   Collectionneurs / Investisseurs\n\n### 3. Fonctionnalités souhaitées\n*   **Inventaire Bricks :** Intégration avec des bases comme BrickLink/Rebrickable.\n*   **Système de notation :** Avis sur les nouveaux sets.\n*   **Espace communautaire :** Forum ou commentaires pour les constructeurs.\n*   **Calculateur de prix au kilo/pièce :** Pour les collectionneurs.\n\n### 4. Style Visuel\n*   **Palette de couleurs :** Couleurs LEGO classiques (Rouge/Jaune/Bleu) ou plus sobre (Dark Mode/Technic).\n*   **Typographie :** Ludique ou technique.\n\n---\n\n**Souhaitez-vous que je génère le code Angular (HTML/TS) pour intégrer ces champs spécifiques dans votre interface actuelle ?**\n",
+        "errorMessage": null,
+        "chatHistory": []
+      }
+    },
+    {
+      "id": "action-1772815179946",
+      "date": "2026-03-06T16:39:39.946Z",
+      "name": "Test Q claude",
+      "prompt": "peux tu me proposé un questionnaire pour la création d'un site lego",
+      "user": "admin",
+      "priority": "Basse",
+      "gitBranch": "",
+      "report": "",
+      "modifiedFiles": [],
+      "gitState": "Créé",
+      "execution": {
+        "status": "completed",
+        "runId": "run-1773173751086",
+        "startedAt": "2026-03-10T20:15:51.092Z",
+        "completedAt": "2026-03-10T20:16:08.723Z",
+        "branchName": "",
+        "branchStatus": "none",
+        "commitHash": null,
+        "branchPushed": false,
+        "modifiedFiles": [],
+        "output": "Je vais te proposer un questionnaire complet pour la création d'un site LEGO :\n\n---\n\n## **Questionnaire de création de site LEGO**\n\n### **1. Objectifs & Public**\n- Quel est l'objectif principal ? (vente, catalogue, communauté, portfolio, ludique)\n- Public cible ? (enfants, adultes collectionneurs, fans, grand public)\n- Région/Langue(s) supportées ?\n\n### **2. Fonctionnalités principales**\n- [ ] Catalogue de produits/sets\n- [ ] Système de recherche et filtres (par thème, âge, prix)\n- [ ] Panier et commande (e-commerce)\n- [ ] Galerie de constructions/créations utilisateurs\n- [ ] Forum ou communauté\n- [ ] Tutoriels de construction\n- [ ] Blog/actualités\n- [ ] Compte utilisateur / Wishlist\n- [ ] Notifications / Newsletter\n\n### **3. Contenu**\n- Nombre de sets/produits initial ?\n- Contenu statique (pages À propos, FAQ, Conditions d'utilisation) ?\n- Modération requise (pour les uploads utilisateurs) ?\n\n### **4. Technique**\n- Budget/Timing ?\n- Maintenance en interne ou prestataire ?\n- Intégration avec stock/inventaire existant ?\n- Paiements : PayPal, Stripe, autre ?\n- Analytics / Tracking requis ?\n\n### **5. Design & UX**\n- Style visuel : officiel LEGO, playful, minimaliste ?\n- Responsive (mobile/tablette/desktop) ?\n- Accessibilité (WCAG) importante ?\n\n### **6. Données & Performance**\n- Volume d'utilisateurs simultanés estimé ?\n- Images haute résolution requises ?\n- Besoin d'API publique pour partenaires ?\n\n---\n\n**Question pour toi :** Veux-tu que j'adapte ce questionnaire à un **contexte spécifique** (e-commerce, fan-site, plateforme collaborative) ? Ou que je te propose un **template d'intégration** dans le **Worganic Platform** pour structurer ce questionnaire ?\n",
+        "errorMessage": null,
+        "chatHistory": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "ui": {
+    "hideFooter": false,
+    "footer": {
+      "hideModelInfo": false,
+      "hideCWD": false,
+      "hideSandboxStatus": false,
+      "hideContextPercentage": false
+    },
+    "showModelInfoInChat": true
+  }
+}

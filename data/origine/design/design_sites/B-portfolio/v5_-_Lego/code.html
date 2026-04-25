@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BrickPortfolio | Build Your World</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#53d22d",
+                        "brick-red": "#ff3e3e",
+                        "brick-blue": "#2e74ff",
+                        "brick-yellow": "#ffcf00",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#152012",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        'brick': '0 4px 0 0 rgba(0,0,0,0.3)',
+                        'brick-lg': '0 8px 0 0 rgba(0,0,0,0.4)',
+                        'stud': 'inset 0 2px 4px rgba(255,255,255,0.3)'
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .baseplate-pattern {
+            background-image: radial-gradient(circle, #2d372a 1.5px, transparent 1.5px);
+            background-size: 24px 24px;
+        }
+        .stud-detail::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 16px;
+            height: 16px;
+            background: inherit;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 0 rgba(0,0,0,0.2);
+        }
+        .stud-detail::after {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 44px;
+            width: 16px;
+            height: 16px;
+            background: inherit;
+            border-radius: 50%;
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2), 0 4px 0 rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-900 dark:text-white min-h-screen baseplate-pattern">
+<!-- TopNavBar -->
+<div class="px-4 md:px-20 lg:px-40 flex justify-center py-5 sticky top-0 z-50">
+<header class="w-full max-w-[1200px] flex items-center justify-between whitespace-nowrap bg-background-dark/80 backdrop-blur-md border-4 border-white/10 p-4 rounded-xl shadow-brick-lg">
+<div class="flex items-center gap-4 text-white">
+<div class="size-10 bg-primary rounded-lg flex items-center justify-center shadow-brick">
+<span class="material-symbols-outlined text-background-dark font-bold">extension</span>
+</div>
+<h2 class="text-white text-xl font-extrabold leading-tight tracking-tighter">BRICKPORTFOLIO</h2>
+</div>
+<div class="hidden md:flex flex-1 justify-end gap-6 items-center">
+<nav class="flex items-center gap-2">
+<a class="px-4 py-2 bg-brick-red rounded-lg text-white text-sm font-bold shadow-brick hover:translate-y-1 hover:shadow-none transition-all" href="#">Projects</a>
+<a class="px-4 py-2 bg-brick-blue rounded-lg text-white text-sm font-bold shadow-brick hover:translate-y-1 hover:shadow-none transition-all" href="#">Manual</a>
+<a class="px-4 py-2 bg-brick-yellow rounded-lg text-background-dark text-sm font-bold shadow-brick hover:translate-y-1 hover:shadow-none transition-all" href="#">Part Bin</a>
+</nav>
+<button class="flex min-w-[120px] cursor-pointer items-center justify-center rounded-full h-11 px-6 bg-primary text-background-dark text-sm font-black uppercase tracking-widest shadow-brick hover:bg-white transition-colors">
+                    Hire Me
+                </button>
+</div>
+<button class="md:hidden text-white">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</header>
+</div>
+<!-- HeroSection -->
+<div class="px-4 md:px-20 lg:px-40 flex justify-center py-10">
+<div class="max-w-[1200px] w-full">
+<div class="bg-brick-blue rounded-xl p-8 md:p-12 relative overflow-hidden shadow-brick-lg border-4 border-white/20">
+<!-- Decorative Studs -->
+<div class="absolute -top-4 left-10 flex gap-4">
+<div class="w-8 h-8 rounded-full bg-brick-blue shadow-stud"></div>
+<div class="w-8 h-8 rounded-full bg-brick-blue shadow-stud"></div>
+<div class="w-8 h-8 rounded-full bg-brick-blue shadow-stud"></div>
+</div>
+<div class="flex flex-col @[864px]:flex-row gap-12 items-center">
+<div class="w-full @[864px]:w-1/2 flex flex-col gap-8">
+<div class="flex flex-col gap-4">
+<span class="bg-white/20 text-white text-xs font-black px-3 py-1 rounded-full w-fit uppercase tracking-widest">Version 2.0.4</span>
+<h1 class="text-white text-5xl md:text-7xl font-black leading-[0.9] tracking-tighter uppercase">
+                                Building <br/><span class="text-brick-yellow">My World</span>
+</h1>
+<p class="text-white/90 text-lg md:text-xl font-medium leading-relaxed max-w-md">
+                                A playful, modular, and vibrant creative portfolio inspired by interlocking bricks. Every pixel is a block, every project a masterpiece.
+                            </p>
+</div>
+<div class="flex gap-4">
+<button class="flex min-w-[180px] cursor-pointer items-center justify-center rounded-xl h-14 px-8 bg-brick-yellow text-background-dark text-lg font-black shadow-brick-lg hover:translate-y-1 hover:shadow-brick transition-all">
+                                EXPLORE BLOCKS
+                            </button>
+<button class="flex size-14 items-center justify-center rounded-xl bg-white/10 text-white border-2 border-white/20 shadow-brick">
+<span class="material-symbols-outlined">play_arrow</span>
+</button>
+</div>
+</div>
+<div class="w-full @[864px]:w-1/2">
+<div class="aspect-square bg-white rounded-xl shadow-brick-lg border-[12px] border-white relative group overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="3D render of creative LEGO character build" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB92uYIs9mEpdkpfODWP8rDlRuz9vfrj-C51xfzfThbHlwbrbSGWq_jlAu7gAbaADux0ofZZO2ix01vPACpHELecy_zaNuLyksh32Rlr3__UjQmjkBRMVLYoNmiStMsmWHEIUgcKe4jGQfnbtPnbxVTp4BjJ_dpZRKhHzoaH9nODsY3Unko3rnk_Z4H6Wp3_cVogn-dmYDWCWW_76JQ703YoabifWeiok55bAK5g3DHPixuh6LKLjtJWD-YmOsVdEwnYVBwIBED1A");'>
+</div>
+<!-- Floating Elements -->
+<div class="absolute top-4 right-4 bg-primary p-3 rounded-lg shadow-brick rotate-12">
+<span class="material-symbols-outlined text-white text-3xl">token</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- SectionHeader: Projects -->
+<div class="px-4 md:px-20 lg:px-40 flex justify-center">
+<div class="max-w-[1200px] w-full flex items-center gap-4 px-4 pb-6 pt-10">
+<div class="h-12 w-4 bg-brick-red rounded-full shadow-brick"></div>
+<h2 class="text-white text-3xl md:text-4xl font-black uppercase tracking-tighter">My Project Baseplate</h2>
+</div>
+</div>
+<!-- ImageGrid: Projects -->
+<div class="px-4 md:px-20 lg:px-40 flex justify-center pb-20">
+<div class="max-w-[1200px] w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-4">
+<!-- Project 1 -->
+<div class="flex flex-col gap-4 group">
+<div class="bg-brick-red p-3 rounded-xl shadow-brick-lg stud-detail relative border-4 border-white/10 transition-transform hover:-translate-y-2">
+<div class="aspect-square bg-white rounded-lg overflow-hidden border-4 border-white shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Mechanical brick wonder construction project" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAA08OlgKcYjnI0TaSW2JgoMY5Bawx6ipAjQo8Tax6cfT21gt322PqvXxM-z_StXBXUQ5L5bqieuHBBBQ3M8ETReHYEhWuqVTVv0VQfIT6pE3hhXFgJM07xyyoxHPZq4OJBsE-tKHMKBoRbySXjRLYGc5CKvE5UYUEkqpLp12gsQQ1blhLmG205pXROp9WyKicZVwS-M9EiDU74iUUxaL0Se1xejcE8IwypvQ4lIG7-eKRpJZuPdwBucyCJei29a7l4oFTr_lXulw");'></div>
+</div>
+</div>
+<div class="px-2">
+<p class="text-white text-xl font-black uppercase tracking-tight">Mechanical Wonder</p>
+<p class="text-gray-400 text-sm font-bold">TECHNIC / ENGINEERING</p>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="flex flex-col gap-4 group">
+<div class="bg-brick-blue p-3 rounded-xl shadow-brick-lg stud-detail relative border-4 border-white/10 transition-transform hover:-translate-y-2">
+<div class="aspect-square bg-white rounded-lg overflow-hidden border-4 border-white shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Neon cityscape build with translucent bricks" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAtoVZiD_0Jbtbx2OD1S2rQBH2W15knodv8AK0FjA3fX3chP1tNBbXD5HI1MrvdPkLFKMVxzu30kQkVNRB-ahCKRScsSHil0D-Ll9ywdibUktgpP_4ucdtPNhw6D_z5hpSu2cuqjfQGNCpjHBtWFcBoCQSvGdMkQgiZH1YrRkiRp5kBAPIhWkrTxGmQwREgFSO5XlEKzFd-ZRx0x6ztPjK_1NE_gJav05US5rupipRleM_kxfMWEMgZiIAHd3MsAm8nKJNstYaCIA");'></div>
+</div>
+</div>
+<div class="px-2">
+<p class="text-white text-xl font-black uppercase tracking-tight">Neon Cityscape</p>
+<p class="text-gray-400 text-sm font-bold">ARCHITECTURE / LIGHTING</p>
+</div>
+</div>
+<!-- Project 3 -->
+<div class="flex flex-col gap-4 group">
+<div class="bg-brick-yellow p-3 rounded-xl shadow-brick-lg stud-detail relative border-4 border-white/10 transition-transform hover:-translate-y-2">
+<div class="aspect-square bg-white rounded-lg overflow-hidden border-4 border-white shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Space explorer vehicle made of bricks" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDl7hKcq5uLLcp9rw-JHZ3AlhYGl2h8vFviwuOUXAzZK6b5j2PNFRJbHlQYl7uAqB5Z0XZZ8CNWcAokCUmujvD0DS1t3C0dtVMUiyTwcpQ22K1UD1TX7JAjABiWI6SKUEEkq3YbTQgyR-3LCd7hBqijVePrh6tB-YFLCiyNbYqxJgJt2G5PLKOixk6i7NFsBCWnabT7sz_eIABWh9qRodHUcJ4czGJHhGttvB1-3tcjjH4p1LAS6K42Y6nfTZXqDhn4dVLMZEkm3g");'></div>
+</div>
+</div>
+<div class="px-2">
+<p class="text-white text-xl font-black uppercase tracking-tight">Space Explorer</p>
+<p class="text-gray-400 text-sm font-bold">CREATIVE / SCI-FI</p>
+</div>
+</div>
+<!-- Project 4 -->
+<div class="flex flex-col gap-4 group">
+<div class="bg-primary p-3 rounded-xl shadow-brick-lg stud-detail relative border-4 border-white/10 transition-transform hover:-translate-y-2">
+<div class="aspect-square bg-white rounded-lg overflow-hidden border-4 border-white shadow-inner">
+<div class="w-full h-full bg-cover bg-center" data-alt="Deep sea base underwater brick habitat" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC6YhCVPqhb03f7wS7epfsZN8D_9dgPXUc0rtllpmzw9tiS-3S9xY6mE2K1o4BOKT-1WFKSFAKETp_o32wYB-pYx-Yr8IqLQJwmY6AIpEWlptqxyMgJ_7QU1DSR6ATW0ukb_cGrSVsrnJxSfxekApodZjItHQFxwwf7XGPqGyTHwrM1sOfHlZsh33mDrUewsvvKk9tj3zof0vgwMMhEqgtGAZO6SmR23_QJmOOToHZdzswUu82YxxBOAHxtaAeUIkE9BmQaPbMdSQ");'></div>
+</div>
+</div>
+<div class="px-2">
+<p class="text-white text-xl font-black uppercase tracking-tight">Deep Sea Base</p>
+<p class="text-gray-400 text-sm font-bold">DIORAMA / NATURE</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: The Manual -->
+<div class="px-4 md:px-20 lg:px-40 flex justify-center pb-20">
+<div class="max-w-[1200px] w-full bg-white rounded-xl overflow-hidden shadow-brick-lg flex flex-col md:flex-row">
+<div class="w-full md:w-1/3 bg-brick-blue p-10 flex flex-col justify-between">
+<div>
+<h3 class="text-white text-4xl font-black uppercase leading-none mb-4">The Instruction Manual</h3>
+<p class="text-white/80 font-bold uppercase tracking-widest text-sm">How I build things</p>
+</div>
+<div class="mt-20">
+<div class="size-16 bg-white rounded-full flex items-center justify-center text-brick-blue shadow-brick">
+<span class="material-symbols-outlined text-4xl font-bold">import_contacts</span>
+</div>
+</div>
+</div>
+<div class="w-full md:w-2/3 p-10 bg-white text-background-dark">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="size-8 rounded-full bg-brick-red flex items-center justify-center text-white font-black">1</span>
+<h4 class="text-xl font-black uppercase tracking-tight">Sorting the Parts</h4>
+</div>
+<p class="text-gray-600 font-medium">Every project starts with a clear brief and a deep dive into the requirements. We sort ideas until only the best remain.</p>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="size-8 rounded-full bg-brick-yellow flex items-center justify-center text-background-dark font-black">2</span>
+<h4 class="text-xl font-black uppercase tracking-tight">Prototyping</h4>
+</div>
+<p class="text-gray-600 font-medium">Quick iterations are like connecting basic blocks. We build, break, and rebuild until the structure is sound.</p>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="size-8 rounded-full bg-brick-blue flex items-center justify-center text-white font-black">3</span>
+<h4 class="text-xl font-black uppercase tracking-tight">Detailing</h4>
+</div>
+<p class="text-gray-600 font-medium">This is where the magic happens. Adding the smooth tiles and the tiny details that make the design pop.</p>
+</div>
+<div class="flex flex-col gap-4">
+<div class="flex items-center gap-3">
+<span class="size-8 rounded-full bg-primary flex items-center justify-center text-background-dark font-black">4</span>
+<h4 class="text-xl font-black uppercase tracking-tight">Final Snap</h4>
+</div>
+<p class="text-gray-600 font-medium">Everything clicks into place. The project is delivered, ready for play and expansion.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Part Bin (Skill Grid) -->
+<div class="px-4 md:px-20 lg:px-40 flex justify-center pb-20">
+<div class="max-w-[1200px] w-full flex flex-col gap-8">
+<h2 class="text-white text-3xl font-black uppercase tracking-tighter text-center px-4">Available Parts (Skills)</h2>
+<div class="flex flex-wrap justify-center gap-4 px-4">
+<div class="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-xl flex items-center gap-3 shadow-brick group hover:bg-brick-red hover:border-brick-red transition-all cursor-default">
+<span class="material-symbols-outlined text-brick-red group-hover:text-white">brush</span>
+<span class="text-white font-black uppercase">UI Design</span>
+</div>
+<div class="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-xl flex items-center gap-3 shadow-brick group hover:bg-brick-blue hover:border-brick-blue transition-all cursor-default">
+<span class="material-symbols-outlined text-brick-blue group-hover:text-white">code</span>
+<span class="text-white font-black uppercase">Frontend</span>
+</div>
+<div class="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-xl flex items-center gap-3 shadow-brick group hover:bg-brick-yellow hover:border-brick-yellow transition-all cursor-default">
+<span class="material-symbols-outlined text-brick-yellow group-hover:text-background-dark">view_in_ar</span>
+<span class="text-white group-hover:text-background-dark font-black uppercase">3D Modeling</span>
+</div>
+<div class="px-6 py-3 bg-white/5 border-2 border-white/10 rounded-xl flex items-center gap-3 shadow-brick group hover:bg-primary hover:border-primary transition-all cursor-default">
+<span class="material-symbols-outlined text-primary group-hover:text-background-dark">animation</span>
+<span class="text-white group-hover:text-background-dark font-black uppercase">Motion</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="bg-primary text-background-dark py-12 px-4 md:px-20 lg:px-40 flex justify-center mt-20 relative">
+<!-- Footer Studs -->
+<div class="absolute -top-6 left-0 right-0 flex justify-around opacity-40">
+<div class="w-12 h-12 rounded-full bg-primary shadow-stud"></div>
+<div class="w-12 h-12 rounded-full bg-primary shadow-stud"></div>
+<div class="w-12 h-12 rounded-full bg-primary shadow-stud"></div>
+<div class="w-12 h-12 rounded-full bg-primary shadow-stud"></div>
+<div class="w-12 h-12 rounded-full bg-primary shadow-stud"></div>
+</div>
+<div class="max-w-[1200px] w-full flex flex-col md:flex-row justify-between items-center gap-10">
+<div class="flex flex-col gap-2">
+<h3 class="text-3xl font-black uppercase tracking-tighter">BrickPortfolio</h3>
+<p class="font-bold uppercase tracking-widest text-sm opacity-80">© 2024 Built Block by Block</p>
+</div>
+<div class="flex gap-4">
+<a class="size-12 bg-background-dark text-primary rounded-xl flex items-center justify-center shadow-brick hover:translate-y-1 hover:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined">public</span>
+</a>
+<a class="size-12 bg-background-dark text-primary rounded-xl flex items-center justify-center shadow-brick hover:translate-y-1 hover:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined">alternate_email</span>
+</a>
+<a class="size-12 bg-background-dark text-primary rounded-xl flex items-center justify-center shadow-brick hover:translate-y-1 hover:shadow-none transition-all" href="#">
+<span class="material-symbols-outlined">smart_display</span>
+</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,65 @@
+<!-- Barre d'outils — toujours visible, hors scroll -->
+<div class="flex flex-wrap items-center gap-1 p-2 bg-light-surface dark:bg-surface border-b border-light-border dark:border-white/10 flex-shrink-0">
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Gras" (click)="insertMarkdown('**', '**')"><strong>B</strong></button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Italique" (click)="insertMarkdown('*', '*')"><em>I</em></button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Barré" (click)="insertMarkdown('~~', '~~')"><s>S</s></button>
+  <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Titre 1" (click)="insertMarkdown('# ')">H1</button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Titre 2" (click)="insertMarkdown('## ')">H2</button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Titre 3" (click)="insertMarkdown('### ')">H3</button>
+  <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Liste à puces" (click)="insertMarkdown('- ')">&#8226; Liste</button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Liste numérotée" (click)="insertMarkdown('1. ')">1. Liste</button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Citation" (click)="insertMarkdown('> ')">&#8220; Citation</button>
+  <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-mono text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Code inline" (click)="insertMarkdown('`', '`')">&lt;/&gt;</button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Bloc de code" (click)="insertMarkdown('```\n', '\n```')">Bloc code</button>
+  <button type="button"
+          class="px-2.5 py-1 rounded text-xs font-medium text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 hover:text-light-primary dark:hover:text-primary border border-transparent hover:border-light-border dark:hover:border-white/10 transition-all"
+          title="Lien" (click)="insertMarkdown('[', '](url)')">Lien</button>
+  <div class="flex-1"></div>
+  <button type="button" (click)="togglePreview()"
+          class="px-3 py-1 rounded text-xs font-semibold border transition-all"
+          [class]="isPreviewMode
+            ? 'bg-light-primary/10 dark:bg-primary/10 border-light-primary/30 dark:border-primary/30 text-light-primary dark:text-primary'
+            : 'bg-light-surface dark:bg-surface border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:border-light-primary dark:hover:border-primary'">
+    {{ isPreviewMode ? '✎ Éditer' : '👁 Aperçu' }}
+  </button>
+</div>
+
+<!-- Zone édition / aperçu — scrollable -->
+<div class="flex-1 overflow-y-auto min-h-0">
+  @if (!isPreviewMode) {
+    <textarea
+      [id]="editorId"
+      class="w-full min-h-full p-4 bg-white dark:bg-surface text-light-text dark:text-white font-mono text-sm outline-none placeholder:text-light-text-muted/50 dark:placeholder:text-white/20 transition-colors resize-none block"
+      [value]="value"
+      [placeholder]="placeholder"
+      (input)="onInput($event)"></textarea>
+  } @else {
+    <div class="p-6 bg-white dark:bg-surface prose prose-sm dark:prose-invert max-w-none"
+         [innerHTML]="livePreviewHtml"></div>
+  }
+</div>

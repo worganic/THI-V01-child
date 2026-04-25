@@ -1,0 +1,70 @@
+@if (helpService.isOpen()) {
+
+  <!-- Overlay -->
+  <div @fadeIn
+       class="fixed inset-0 z-[90] bg-black/30 backdrop-blur-[2px]"
+       (click)="helpService.close()"></div>
+
+  <!-- Volet droit -->
+  <div @slideIn
+       class="fixed top-0 right-0 h-full w-full max-w-sm z-[91]
+              bg-white dark:bg-surface
+              border-l border-light-border dark:border-white/10
+              shadow-2xl flex flex-col">
+
+    <!-- En-tête -->
+    <div class="flex items-center gap-3 px-5 py-4 border-b border-light-border dark:border-white/10 shrink-0">
+      <div class="w-8 h-8 rounded-full bg-light-primary/10 dark:bg-primary/10 border border-light-primary/20 dark:border-primary/20 flex items-center justify-center shrink-0">
+        <span class="text-sm font-black text-light-primary dark:text-primary leading-none">?</span>
+      </div>
+      <span class="text-sm font-bold text-light-text dark:text-white flex-1">Aide</span>
+      @if (authService.currentUser()?.role === 'admin' && helpService.helpData()) {
+        <span class="font-mono text-[10px] font-bold px-2 py-1 rounded-md bg-light-primary/10 dark:bg-primary/10 text-light-primary dark:text-primary">
+          #{{ helpService.helpData()!.id }}
+        </span>
+        <button (click)="goToAdminEdit(helpService.helpData()!.id)"
+                title="Modifier dans l'admin"
+                class="p-1.5 rounded-lg hover:bg-light-primary/10 dark:hover:bg-primary/10 text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-all">
+          <span class="material-symbols-outlined text-sm">edit</span>
+        </button>
+      }
+      <button (click)="helpService.close()"
+              class="p-1.5 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-all">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
+    </div>
+
+    <!-- Contenu -->
+    <div class="flex-1 overflow-y-auto px-5 py-5">
+
+      @if (helpService.loading()) {
+        <div class="flex items-center justify-center py-16">
+          <span class="material-symbols-outlined text-3xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+        </div>
+      }
+
+      @if (helpService.error()) {
+        <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+          {{ helpService.error() }}
+        </div>
+      }
+
+      @if (helpService.helpData(); as data) {
+        <h2 class="text-base font-bold text-light-text dark:text-white mb-4 leading-snug">
+          {{ data.title }}
+        </h2>
+        <div class="text-sm text-light-text dark:text-white/80 leading-relaxed whitespace-pre-wrap">
+          {{ data.text }}
+        </div>
+        @if (data.page) {
+          <div class="mt-6 pt-4 border-t border-light-border dark:border-white/10">
+            <span class="text-[10px] font-mono text-light-text-muted dark:text-white/30">Page : {{ data.page }}</span>
+          </div>
+        }
+      }
+
+    </div>
+
+  </div>
+
+}

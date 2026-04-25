@@ -1,0 +1,60 @@
+{
+  "categories": [
+    {
+      "id": "cat-001",
+      "name": "Authentification",
+      "description": "Connexion, inscription, déconnexion, mot de passe",
+      "icon": "login",
+      "color": "blue",
+      "order": 1
+    },
+    {
+      "id": "cat-002",
+      "name": "Navigation",
+      "description": "Menu, routing, breadcrumb, liens",
+      "icon": "route",
+      "color": "teal",
+      "order": 2
+    },
+    {
+      "id": "cat-003",
+      "name": "Formulaires",
+      "description": "Validation, soumission, erreurs",
+      "icon": "edit_note",
+      "color": "violet",
+      "order": 3
+    },
+    {
+      "id": "cat-004",
+      "name": "Tableau de bord",
+      "description": "Affichage des données, filtres, tri",
+      "icon": "dashboard",
+      "color": "amber",
+      "order": 4
+    },
+    {
+      "id": "cat-1773075895216-kqahu",
+      "name": "Admin/Documents/form",
+      "description": "",
+      "icon": "layers",
+      "color": "orange",
+      "order": 5
+    },
+    {
+      "id": "cat-1773088394139-k1a54",
+      "name": "Admin/documents",
+      "description": "Générée par analyse IA",
+      "icon": "psychology",
+      "color": "violet",
+      "order": 6
+    },
+    {
+      "id": "cat-1773173980631-pif7u",
+      "name": "test 34",
+      "description": "Générée par analyse IA",
+      "icon": "psychology",
+      "color": "violet",
+      "order": 7
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<div class="min-h-screen flex items-center justify-center px-6">
+  <div class="text-center max-w-md">
+
+    <div class="w-16 h-16 neon-border rounded-2xl flex items-center justify-center mx-auto mb-6">
+      <span class="material-symbols-outlined neon-text text-3xl">rocket_launch</span>
+    </div>
+
+    <h2 class="text-2xl font-bold text-light-text dark:text-white mb-3 tracking-tight">
+      Frankenstein Junior
+    </h2>
+    <p class="text-light-text-muted dark:text-white/50 text-sm mb-10 max-w-xs mx-auto">
+      Créez et gérez vos projets de documentation Markdown avec prévisualisation live.
+    </p>
+
+    <div class="flex flex-col gap-3 items-center">
+
+      <!-- Bouton principal : Mes Projets -->
+      <button
+        (click)="goToProjets()"
+        class="flex items-center gap-2 px-6 py-3 rounded-xl bg-light-primary dark:bg-primary text-white font-bold transition-all hover:scale-105 shadow-lg shadow-light-primary/20 dark:shadow-primary/20 w-56">
+        <span class="material-symbols-outlined text-lg">folder_open</span>
+        Mes projets
+      </button>
+
+      <!-- Bouton admin : visible uniquement pour les admins -->
+      @if (isAdmin) {
+        <button
+          (click)="goToAdmin()"
+          class="flex items-center gap-2 px-6 py-3 rounded-xl bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 hover:border-red-400/50 text-light-text-muted dark:text-white/50 hover:text-red-400 font-semibold transition-all text-sm w-56">
+          <span class="material-symbols-outlined text-base">admin_panel_settings</span>
+          Administration
+        </button>
+      }
+
+    </div>
+
+  </div>
+</div>

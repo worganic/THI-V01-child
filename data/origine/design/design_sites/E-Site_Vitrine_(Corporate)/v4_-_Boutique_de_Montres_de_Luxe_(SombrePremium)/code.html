@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HOROLOGE | The Pinnacle of Precision</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06e4f9",
+                        "accent": "#E633CC",
+                        "background-light": "#f9fafb",
+                        "background-dark": "#17191c",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(6, 228, 249, 0.2);
+        }
+        .neon-border {
+            border: 1px solid rgba(6, 228, 249, 0.3);
+        }
+        .magenta-glow:hover {
+            box-shadow: 0 0 20px rgba(230, 51, 204, 0.4);
+        }
+        /* Custom scrollbar for dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #17191c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06e4f9;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+<!-- Navigation -->
+<header class="fixed top-0 w-full z-50 bg-background-dark/80 backdrop-blur-md border-b border-white/5 px-6 lg:px-20 py-4">
+<div class="max-w-7xl mx-auto flex items-center justify-between">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl">precision_manufacturing</span>
+<h1 class="text-2xl font-bold tracking-tighter text-white">HOROLOGE</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Collections</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Heritage</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Atelier</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-white/5 rounded-full px-4 py-1.5 border border-white/10">
+<span class="material-symbols-outlined text-sm opacity-50 mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-40 placeholder:text-white/30 p-0" placeholder="Search models..." type="text"/>
+</div>
+<button class="bg-primary hover:bg-white text-background-dark px-6 py-2 rounded-full text-sm font-bold transition-all uppercase tracking-tighter">
+                    Shop Now
+                </button>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden px-6">
+<div class="absolute inset-0 z-0">
+<div class="absolute inset-0 bg-gradient-to-b from-transparent via-background-dark/20 to-background-dark z-10"></div>
+<div class="w-full h-full bg-cover bg-center opacity-60 scale-105" data-alt="Macro close up of a tourbillon watch movement" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAnJiUNkO7rZWX7rlYkP7toyoXtAfV7BZMOE9ms5M_VAprkLMDSI2N_letd0gqAovHlDBxgakAZUjWJpAyAGoukZIDI3jAnOeMnWhJn-CUZZ8a_bquUN4OqCluefA-RNw3oxjVDN037Pd2fzUYfMbL4djbF9YOvjd6oYqD1bmo1vpH7SSvkxzv863h3kLXNW-9ACjARPk2k9WJcEXrvDgeVYK4p73F3sQ7cULP2d1S7Pg_PPs6USZJq5YqCwMcB7aEOin38IUw5mKbx');">
+</div>
+</div>
+<div class="relative z-20 text-center max-w-4xl">
+<span class="text-primary font-bold tracking-[0.5em] uppercase text-xs mb-4 block">The 2024 Chrono-Tech Series</span>
+<h1 class="text-6xl md:text-8xl font-black text-white mb-6 leading-none tracking-tighter">
+                    ENGINEERED <br/> <span class="text-transparent border-text stroke-white" style="-webkit-text-stroke: 1px white;">PRECISION</span>
+</h1>
+<p class="text-lg md:text-xl text-white/60 mb-10 max-w-2xl mx-auto font-light leading-relaxed">
+                    Merging haute horology with cybernetic aesthetics. Witness the evolution of time through our patented sapphire-cased movements.
+                </p>
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+<button class="w-full sm:w-auto px-10 py-4 bg-primary text-background-dark font-bold rounded-full hover:scale-105 transition-transform uppercase tracking-widest text-sm">
+                        Explore Collection
+                    </button>
+<button class="w-full sm:w-auto px-10 py-4 border border-white/20 text-white font-bold rounded-full hover:bg-white/10 transition-colors uppercase tracking-widest text-sm">
+                        View Heritage
+                    </button>
+</div>
+</div>
+</section>
+<!-- Featured Product Grid -->
+<section class="py-24 px-6 lg:px-20 max-w-7xl mx-auto">
+<div class="flex items-end justify-between mb-16">
+<div>
+<h2 class="text-4xl font-bold mb-2">CURATED SERIES</h2>
+<p class="text-white/50">Hand-assembled masterpieces for the digital aristocrat.</p>
+</div>
+<div class="hidden md:block h-px flex-1 mx-12 bg-white/10"></div>
+<a class="text-primary text-sm font-bold flex items-center gap-2 group" href="#">
+                    VIEW ALL <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Card 1 -->
+<div class="group relative bg-white/5 border border-white/10 p-8 rounded-xl hover:border-primary/50 transition-all duration-500 overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary">north_east</span>
+</div>
+<div class="h-64 mb-8 flex items-center justify-center relative">
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+<img alt="Celestial Phantom" class="h-full object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" data-alt="Modern minimalist black watch on dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBEm9ZnM1PdGJNF9QrvgH2sMDBa7v_6YsrKqQeMfCLMCrdq2sqxkiETemWhZnwYgzSsrahIGESPd-WXFKXJ1TjJh_7xtfwnd9PJK8dZM137P9T1TRfkpaS62AqUqT_nJ8T0UsHdWa5JKqOe2lGOLPGupeh76O6S2oddvmZQ1GYlbYr1zc8TAwevKA4anfZ7N_Xm_avKdXV14YeMmO6-gjhJmDuhxzjZINB6dF8G9nb41VnMOZ-f4178BfysE7u0nRJAN30p5CgwxfB1"/>
+</div>
+<h3 class="text-2xl font-bold mb-2">CELESTIAL PHANTOM</h3>
+<p class="text-white/40 text-sm mb-6 leading-relaxed">Vantablack dial with floating luminescent hour markers and a titanium-carbide chassis.</p>
+<div class="flex items-center justify-between">
+<span class="text-primary font-mono">$12,400</span>
+<button class="text-xs font-bold uppercase tracking-widest border-b border-primary/40 pb-1">Pre-Order</button>
+</div>
+</div>
+<!-- Card 2 (Highlight) -->
+<div class="group relative bg-white/5 border border-primary p-8 rounded-xl transition-all duration-500 overflow-hidden md:scale-105 z-10">
+<div class="absolute top-4 left-4 bg-primary text-background-dark text-[10px] font-black px-2 py-1 rounded">LIMITED EDITION</div>
+<div class="h-64 mb-8 flex items-center justify-center relative">
+<div class="absolute inset-0 bg-accent/10 rounded-full blur-3xl"></div>
+<img alt="Nebula Chrono" class="h-full object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" data-alt="Luxury metal watch macro photography" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEE1nZxOj5wt-WKuA3HjkFpj7qkiEOvVljjw_vECPSI622EjBMGMXa89SMIvWUciCBLhLJv59uDJGRa2Sh8gSk0q2YalvjE5keoWXFUeI6AjFB-fKSIZF5pxRjO2bPMB6y0P7b66I0wSRhZLZXcz0VoCkpPTWKC9kY-ojVEE4lGgV84iFmv8df_l11tmOBOWXTLRQb_uF9gmwnJbzouKAcvvc8Dfq8jq1MP1TFhvWP8eFlozmNYalrW-NuUJIEqnd_xmEuVDRDt652"/>
+</div>
+<h3 class="text-2xl font-bold mb-2">NEBULA CHRONO</h3>
+<p class="text-white/40 text-sm mb-6 leading-relaxed">Featuring the caliber H-92 movement and a self-winding mechanism with 72-hour reserve.</p>
+<div class="flex items-center justify-between">
+<span class="text-primary font-mono">$18,900</span>
+<button class="bg-primary text-background-dark px-4 py-1.5 rounded-full text-[10px] font-black uppercase">Buy Now</button>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="group relative bg-white/5 border border-white/10 p-8 rounded-xl hover:border-primary/50 transition-all duration-500 overflow-hidden">
+<div class="h-64 mb-8 flex items-center justify-center relative">
+<div class="absolute inset-0 bg-primary/5 rounded-full blur-3xl"></div>
+<img alt="Azure Skeleton" class="h-full object-contain relative z-10 group-hover:scale-110 transition-transform duration-700" data-alt="Classic watch with leather strap in modern setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDSB0M77oncuXjJPKlmsFL0mpAJtJ1MKQWb4s7H73MzVfIeCXAb38VLXrp6DoqItpr7oKXmAT08HSkdb-6XVsM4ndwWFFmpRuPrOqa4-SSh-haYAyAC4N4m0ymDSmc1fSFzB4f-OeYDlYHDa01JihqlGC_SlV6AEYg4gHkFskgM0RgDF0vxf52iVoLl_vCggXKif5skpHj86LJCreSgudbmFf30OhFaFFSbNM3clM5rAW0jcyWjbWeqvkd8_dqyCJz3FYD-JHZIXKJ"/>
+</div>
+<h3 class="text-2xl font-bold mb-2">AZURE SKELETON</h3>
+<p class="text-white/40 text-sm mb-6 leading-relaxed">Fully exposed internal gears with electric teal bridge plates and sapphire crystal front/back.</p>
+<div class="flex items-center justify-between">
+<span class="text-primary font-mono">$15,200</span>
+<button class="text-xs font-bold uppercase tracking-widest border-b border-primary/40 pb-1">Explore</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Heritage Timeline -->
+<section class="py-24 bg-black/40 border-y border-white/5">
+<div class="max-w-7xl mx-auto px-6 lg:px-20">
+<div class="text-center mb-20">
+<h2 class="text-4xl font-bold mb-4">THE HERITAGE PATH</h2>
+<p class="text-white/40">From traditional watchmaking to digital futurism.</p>
+</div>
+<div class="relative">
+<!-- Progress Line -->
+<div class="absolute top-1/2 left-0 w-full h-0.5 bg-white/10 -translate-y-1/2"></div>
+<div class="absolute top-1/2 left-0 w-2/3 h-0.5 bg-primary -translate-y-1/2 neon-glow"></div>
+<div class="relative grid grid-cols-1 md:grid-cols-4 gap-12">
+<!-- Step 1 -->
+<div class="flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-background-dark border-2 border-primary flex items-center justify-center mb-8 relative z-10 neon-glow">
+<span class="material-symbols-outlined text-primary text-xl">history_edu</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">FOUNDATION</h4>
+<span class="text-primary font-mono text-sm block mb-3">1892 · GENEVA</span>
+<p class="text-sm text-white/40 leading-relaxed">Started as a small atelier focusing on astronomical clocks.</p>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-background-dark border-2 border-primary flex items-center justify-center mb-8 relative z-10 neon-glow">
+<span class="material-symbols-outlined text-primary text-xl">watch_off</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">FIRST TOURBILLON</h4>
+<span class="text-primary font-mono text-sm block mb-3">1925 · INNOVATION</span>
+<p class="text-sm text-white/40 leading-relaxed">Revolutionized gravity-defying accuracy in pocket watches.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col items-center text-center">
+<div class="w-12 h-12 rounded-full bg-background-dark border-2 border-primary flex items-center justify-center mb-8 relative z-10 neon-glow">
+<span class="material-symbols-outlined text-primary text-xl">public</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">GLOBAL REACH</h4>
+<span class="text-primary font-mono text-sm block mb-3">1970 · EXPANSION</span>
+<p class="text-sm text-white/40 leading-relaxed">Opening flagship boutiques in Tokyo, Paris, and New York.</p>
+</div>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col items-center text-center opacity-40">
+<div class="w-12 h-12 rounded-full bg-background-dark border-2 border-white/20 flex items-center justify-center mb-8 relative z-10">
+<span class="material-symbols-outlined text-white/50 text-xl">memory</span>
+</div>
+<div>
+<h4 class="text-xl font-bold mb-2">DIGITAL ERA</h4>
+<span class="text-white/50 font-mono text-sm block mb-3">2024 · FUTURE</span>
+<p class="text-sm text-white/40 leading-relaxed">Integrating smart diagnostics with mechanical purity.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Craftsmanship Macro Detail -->
+<section class="grid grid-cols-1 lg:grid-cols-2">
+<div class="relative min-h-[600px] overflow-hidden group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-[3000ms] group-hover:scale-110" data-alt="Abstract macro detail of high precision watch gears" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCaXLJcNdVFGRNZQmKxA87_GzL23YS1WbfkqfNWSwwoJyxYg2sIhnFxNJEzQG2tElqN6iV_v0f3otht6TKiUaHKlXvjKmCIaaYPruzGU2kGXCe5fNeIpHgSKN1PqDT2nTIygDkR48dru9QH3JWd9BrQ4tkgMJaahKvrqIb6_Oy-nyMLfJxo-IifrZV4DIv80_VvdAJl9VdwyFT0Fx_Rj3B3t3NLBqlH7qb14Ezf7hTkjqU6wbjBfFHHpb927AyWdK2xmL0p9k9EONYk');">
+</div>
+<div class="absolute inset-0 bg-primary/20 mix-blend-overlay"></div>
+</div>
+<div class="bg-background-dark flex flex-col justify-center p-12 lg:p-24 border-l border-white/5">
+<span class="text-accent font-bold tracking-[0.2em] uppercase text-xs mb-6">Mastering the Escapement</span>
+<h2 class="text-5xl font-black mb-8 leading-tight">CRAFTED FOR <br/> ETERNITY</h2>
+<p class="text-white/60 text-lg mb-12 font-light leading-relaxed">
+                    Every Horologe timepiece undergoes 600 hours of stress testing. Our master watchmakers assemble each of the 348 components by hand under 20x magnification to ensure a deviation of less than 1 second per year.
+                </p>
+<div class="grid grid-cols-2 gap-8 mb-12">
+<div>
+<div class="text-primary text-3xl font-mono mb-2">348</div>
+<div class="text-white/40 text-xs uppercase tracking-widest">Components</div>
+</div>
+<div>
+<div class="text-primary text-3xl font-mono mb-2">0.02g</div>
+<div class="text-white/40 text-xs uppercase tracking-widest">Spring Weight</div>
+</div>
+</div>
+<button class="flex items-center gap-4 group">
+<span class="w-12 h-12 rounded-full border border-primary flex items-center justify-center group-hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-primary group-hover:text-background-dark transition-colors">play_arrow</span>
+</span>
+<span class="font-bold text-sm tracking-[0.2em]">WATCH THE ATELIER FILM</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-black border-t border-white/5 py-20 px-6 lg:px-20">
+<div class="max-w-7xl mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-3 mb-8">
+<span class="material-symbols-outlined text-primary text-3xl">precision_manufacturing</span>
+<h2 class="text-2xl font-bold tracking-tighter text-white">HOROLOGE</h2>
+</div>
+<p class="text-white/40 max-w-sm mb-8 leading-relaxed">
+                        Redefining luxury through the lens of technical supremacy and futuristic design. 
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">alternate_email</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">share</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:border-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">language</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest mb-6">Collections</h4>
+<ul class="space-y-4 text-sm text-white/40">
+<li><a class="hover:text-primary" href="#">Chrono-Tech</a></li>
+<li><a class="hover:text-primary" href="#">Heritage Series</a></li>
+<li><a class="hover:text-primary" href="#">Titanium Pilots</a></li>
+<li><a class="hover:text-primary" href="#">Limited Editions</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-sm font-bold uppercase tracking-widest mb-6">Stay Informed</h4>
+<p class="text-xs text-white/40 mb-4">Join our inner circle for early access to limited releases.</p>
+<div class="flex items-center border-b border-primary/50 pb-2">
+<input class="bg-transparent border-none focus:ring-0 text-sm p-0 flex-1 placeholder:text-white/20" placeholder="Email address" type="email"/>
+<button class="material-symbols-outlined text-primary">arrow_right_alt</button>
+</div>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 gap-4">
+<span class="text-[10px] text-white/20 uppercase tracking-widest">© 2024 HOROLOGE MANUFACTURE. ALL RIGHTS RESERVED.</span>
+<div class="flex gap-8 text-[10px] text-white/20 uppercase tracking-widest">
+<a class="hover:text-white" href="#">Privacy Policy</a>
+<a class="hover:text-white" href="#">Terms of Service</a>
+<a class="hover:text-white" href="#">Cookies</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

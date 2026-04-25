@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design System - Exemple Complet</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="../assets/css/styles.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e0aaff",
+                        "secondary": "#c77dff",
+                        "accent": "#9d4edd",
+                        "accent-dark": "#7b2cbf",
+                        "accent-darker": "#5a189a",
+                        "background": "#0a0a0f",
+                        "surface": "#12121a",
+                        "surface-light": "#1a1a25",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #0a0a0f;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Effets Neon */
+        .neon-border {
+            border: 1px solid #9d4edd;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3);
+        }
+
+        .neon-border-light {
+            border: 1px solid #c77dff;
+            box-shadow: 0 0 10px rgba(199, 125, 255, 0.3);
+        }
+
+        .neon-text {
+            color: #c77dff;
+            text-shadow: 0 0 8px rgba(199, 125, 255, 0.6);
+        }
+
+        .neon-text-strong {
+            color: #e0aaff;
+            text-shadow: 0 0 12px rgba(224, 170, 255, 0.8);
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.3),
+                        0 0 20px rgba(157, 78, 221, 0.2);
+        }
+
+        /* Animation Pulse */
+        @keyframes neon-pulse {
+            0%, 100% { box-shadow: 0 0 10px rgba(157, 78, 221, 0.3); }
+            50% { box-shadow: 0 0 25px rgba(157, 78, 221, 0.6); }
+        }
+
+        .pulse-glow {
+            animation: neon-pulse 2s infinite;
+        }
+
+        /* Status Dot */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #9d4edd;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #9d4edd;
+        }
+
+        .status-dot.active {
+            background-color: #00ff88;
+            box-shadow: 0 0 8px #00ff88;
+        }
+
+        /* Tabs */
+        .tab-item {
+            position: relative;
+            padding: 12px 24px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-item:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .tab-item.active {
+            color: #c77dff;
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #9d4edd, #c77dff);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7b2cbf, #c77dff);
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px 12px;
+            background: #1a1a25;
+            border: 1px solid #9d4edd;
+            color: #fff;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.5);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .data-table tr:hover {
+            background: rgba(157, 78, 221, 0.05);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #5a189a;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7b2cbf;
+        }
+
+        /* Accordion */
+        .accordion-item {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 8px;
+        }
+
+        .accordion-header {
+            padding: 16px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background: rgba(157, 78, 221, 0.1);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .accordion-item.open .accordion-content {
+            max-height: 200px;
+        }
+
+        .accordion-item.open .accordion-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background: rgba(157, 78, 221, 0.2);
+            color: #c77dff;
+            border: 1px solid #9d4edd;
+        }
+
+        .badge-success {
+            background: rgba(0, 255, 136, 0.1);
+            color: #00ff88;
+            border: 1px solid rgba(0, 255, 136, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .badge-danger {
+            background: rgba(255, 77, 77, 0.1);
+            color: #ff4d4d;
+            border: 1px solid rgba(255, 77, 77, 0.3);
+        }
+    </style>
+</head>
+
+<body class="bg-background text-white font-display">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <a href="../index.html" class="back-button">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Retour
+                    </a>
+                    <div class="w-10 h-10 neon-border flex items-center justify-center">
+                        <span class="material-symbols-outlined neon-text">terminal</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold" id="headerTitle">Design System</h1>
+                        <p class="text-xs text-white/50" id="headerSubtitle"></p>
+                    </div>
+                </div>
+
+                <!-- Menu Central -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Accueil</a>
+                    <a href="#" class="text-sm neon-text">Composants</a>
+                    <a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Documentation</a>
+                    <a href="#" class="text-sm text-white/60 hover:text-white transition-colors">Contact</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-xs text-white/50">Serveur actif</p>
+                        <p class="text-sm font-mono text-green-400" id="headerServerUrl"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-8">
+
+            <!-- Header Section -->
+            <header class="mb-16">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="status-dot active"></div>
+                    <span class="text-xs tracking-widest text-white/50 uppercase">System_Online</span>
+                </div>
+                <h1 class="text-6xl font-bold tracking-tighter mb-4">
+                    <span class="neon-text-strong">Design</span> System
+                </h1>
+                <p class="text-xl text-white/60 max-w-2xl">
+                    Collection complete de composants UI pour le style Noir Neon Futuriste avec la palette Lavande Dreams.
+                </p>
+            </header>
+
+            <!-- Section: Typographie -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">01 // Typographie</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-surface p-8 neon-border">
+                        <h1 class="text-5xl font-bold tracking-tighter italic mb-4">Titre H1</h1>
+                        <h2 class="text-3xl font-bold mb-4">Titre H2</h2>
+                        <h3 class="text-xl font-semibold mb-4">Titre H3</h3>
+                        <h4 class="text-sm font-semibold uppercase tracking-widest mb-4 text-white/70">Titre H4</h4>
+                        <p class="text-base text-white/80 mb-4">
+                            Paragraphe standard avec du texte regulier. Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        </p>
+                        <p class="text-sm text-white/60 mb-4">Texte secondaire plus petit</p>
+                        <p class="text-xs uppercase tracking-[0.2em] text-white/40">Caption / Label</p>
+                    </div>
+
+                    <div class="bg-surface p-8 border border-white/10">
+                        <p class="text-white/60 mb-4">Texte avec <span class="neon-text font-bold">accent neon</span> et <span class="neon-text-strong">accent fort</span>.</p>
+                        <p class="text-white/60 mb-4">
+                            <a href="#" class="text-secondary hover:text-primary underline transition-colors">Lien hypertexte</a>
+                        </p>
+                        <blockquote class="border-l-2 border-accent pl-4 italic text-white/70 mb-4">
+                            "Citation mise en evidence avec une bordure accent."
+                        </blockquote>
+                        <code class="bg-white/5 px-3 py-1 text-sm font-mono text-secondary">code inline</code>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Boutons -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">02 // Boutons</h2>
+
+                <div class="bg-surface p-8 border border-white/10">
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <!-- Primary Button -->
+                        <button class="px-6 py-3 bg-gradient-to-r from-accent to-accent-dark text-white font-semibold uppercase tracking-wider text-sm hover:from-secondary hover:to-accent transition-all neon-glow">
+                            Bouton Primaire
+                        </button>
+
+                        <!-- Secondary Button -->
+                        <button class="px-6 py-3 bg-transparent border border-accent text-secondary font-semibold uppercase tracking-wider text-sm hover:bg-accent/10 transition-all">
+                            Bouton Secondaire
+                        </button>
+
+                        <!-- Ghost Button -->
+                        <button class="px-6 py-3 bg-transparent text-white/60 font-semibold uppercase tracking-wider text-sm hover:text-white hover:bg-white/5 transition-all">
+                            Bouton Ghost
+                        </button>
+
+                        <!-- Icon Button -->
+                        <button class="w-12 h-12 neon-border flex items-center justify-center text-secondary hover:bg-accent/10 transition-all">
+                            <span class="material-symbols-outlined">add</span>
+                        </button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4 mb-8">
+                        <!-- Sizes -->
+                        <button class="px-4 py-2 bg-accent text-white text-xs font-semibold uppercase tracking-wider">Small</button>
+                        <button class="px-6 py-3 bg-accent text-white text-sm font-semibold uppercase tracking-wider">Medium</button>
+                        <button class="px-8 py-4 bg-accent text-white text-base font-semibold uppercase tracking-wider">Large</button>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <!-- States -->
+                        <button class="px-6 py-3 bg-accent/50 text-white/50 font-semibold uppercase tracking-wider text-sm cursor-not-allowed" disabled>
+                            Disabled
+                        </button>
+                        <button class="px-6 py-3 bg-accent text-white font-semibold uppercase tracking-wider text-sm pulse-glow">
+                            Loading...
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Cartes -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">03 // Cartes</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Card Simple -->
+                    <div class="bg-surface p-6 border border-white/10 hover:border-white/20 transition-all">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="material-symbols-outlined text-white/40">folder</span>
+                            <span class="text-xs uppercase tracking-widest text-white/50">Categorie</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Carte Simple</h3>
+                        <p class="text-white/60 text-sm mb-4">Description courte de la carte avec quelques informations supplementaires.</p>
+                        <a href="#" class="text-secondary text-sm hover:text-primary transition-colors">En savoir plus &rarr;</a>
+                    </div>
+
+                    <!-- Card Elevated -->
+                    <div class="bg-surface p-6 neon-border">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="badge badge-primary">New</span>
+                            <span class="material-symbols-outlined neon-text">star</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2 neon-text">Carte Elevated</h3>
+                        <p class="text-white/60 text-sm mb-4">Carte mise en avant avec bordure neon et effet de lueur.</p>
+                        <div class="flex gap-2">
+                            <button class="flex-1 py-2 bg-accent text-white text-xs uppercase tracking-wider font-semibold">Action</button>
+                            <button class="px-4 py-2 border border-white/20 text-white/60 text-xs uppercase tracking-wider">Info</button>
+                        </div>
+                    </div>
+
+                    <!-- Card Stats -->
+                    <div class="bg-surface p-6 border border-white/10">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs uppercase tracking-widest text-white/50">Revenue</span>
+                            <span class="material-symbols-outlined text-sm text-green-400">trending_up</span>
+                        </div>
+                        <div class="text-4xl font-bold tracking-tighter mb-1 neon-text-strong">42.8K</div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-green-400 text-sm font-semibold">+12.5%</span>
+                            <span class="text-white/40 text-xs">vs mois dernier</span>
+                        </div>
+                        <div class="mt-4 progress-bar">
+                            <div class="fill" style="width: 72%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Formulaires -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">04 // Formulaires</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-surface p-8 border border-white/10">
+                        <h3 class="text-lg font-semibold mb-6">Connexion</h3>
+
+                        <form class="space-y-6">
+                            <!-- Input Text -->
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Email</label>
+                                <input type="email" placeholder="votre@email.com"
+                                    class="w-full bg-white/5 border border-white/20 px-4 py-3 text-white placeholder-white/30 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all">
+                            </div>
+
+                            <!-- Input Password -->
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Mot de passe</label>
+                                <div class="relative">
+                                    <input type="password" placeholder="********"
+                                        class="w-full bg-white/5 border border-white/20 px-4 py-3 text-white placeholder-white/30 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all">
+                                    <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white">
+                                        <span class="material-symbols-outlined text-xl">visibility</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Checkbox -->
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="remember" class="w-4 h-4 bg-white/5 border-white/20 text-accent focus:ring-accent focus:ring-offset-0 focus:ring-1">
+                                <label for="remember" class="text-sm text-white/60">Se souvenir de moi</label>
+                            </div>
+
+                            <button type="submit" class="w-full py-3 bg-gradient-to-r from-accent to-accent-dark text-white font-semibold uppercase tracking-wider text-sm hover:from-secondary hover:to-accent transition-all neon-glow">
+                                Se connecter
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-surface p-8 border border-white/10">
+                        <h3 class="text-lg font-semibold mb-6">Autres Champs</h3>
+
+                        <div class="space-y-6">
+                            <!-- Select -->
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Selection</label>
+                                <select class="w-full bg-white/5 border border-white/20 px-4 py-3 text-white focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all">
+                                    <option value="">Choisir une option</option>
+                                    <option value="1">Option 1</option>
+                                    <option value="2">Option 2</option>
+                                    <option value="3">Option 3</option>
+                                </select>
+                            </div>
+
+                            <!-- Textarea -->
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-white/50 mb-2">Message</label>
+                                <textarea rows="4" placeholder="Votre message..."
+                                    class="w-full bg-white/5 border border-white/20 px-4 py-3 text-white placeholder-white/30 focus:border-accent focus:ring-1 focus:ring-accent outline-none transition-all resize-none"></textarea>
+                            </div>
+
+                            <!-- Radio Buttons -->
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-white/50 mb-3">Type</label>
+                                <div class="flex gap-6">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="type" value="1" class="w-4 h-4 bg-white/5 border-white/20 text-accent focus:ring-accent">
+                                        <span class="text-sm text-white/70">Personnel</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="type" value="2" class="w-4 h-4 bg-white/5 border-white/20 text-accent focus:ring-accent">
+                                        <span class="text-sm text-white/70">Professionnel</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Toggle Switch -->
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-white/70">Notifications</span>
+                                <button class="relative w-12 h-6 bg-white/10 rounded-full transition-colors" onclick="this.classList.toggle('bg-accent')">
+                                    <span class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform" style="transform: translateX(0)"></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Onglets -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">05 // Onglets & Navigation</h2>
+
+                <div class="bg-surface border border-white/10">
+                    <!-- Tabs -->
+                    <div class="flex border-b border-white/10">
+                        <div class="tab-item active" onclick="switchTab(this, 'tab1')">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">dashboard</span>
+                                Vue d'ensemble
+                            </span>
+                        </div>
+                        <div class="tab-item" onclick="switchTab(this, 'tab2')">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">analytics</span>
+                                Statistiques
+                            </span>
+                        </div>
+                        <div class="tab-item" onclick="switchTab(this, 'tab3')">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">settings</span>
+                                Parametres
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="p-8">
+                        <div id="tab1" class="tab-content">
+                            <h3 class="text-xl font-semibold mb-4">Vue d'ensemble</h3>
+                            <p class="text-white/60">Contenu de l'onglet Vue d'ensemble. Vous pouvez afficher des statistiques, graphiques ou informations importantes ici.</p>
+                        </div>
+                        <div id="tab2" class="tab-content hidden">
+                            <h3 class="text-xl font-semibold mb-4">Statistiques</h3>
+                            <p class="text-white/60">Contenu de l'onglet Statistiques avec des donnees detaillees.</p>
+                        </div>
+                        <div id="tab3" class="tab-content hidden">
+                            <h3 class="text-xl font-semibold mb-4">Parametres</h3>
+                            <p class="text-white/60">Contenu de l'onglet Parametres pour configurer l'application.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Table -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">06 // Tableau de Donnees</h2>
+
+                <div class="bg-surface border border-white/10 overflow-hidden">
+                    <table class="data-table">
+                        <thead>
+                            <tr class="bg-surface-light">
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Montant</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-mono text-white/50">#0001</td>
+                                <td class="font-semibold">Transaction Alpha</td>
+                                <td><span class="badge badge-success">Complete</span></td>
+                                <td class="text-white/60">23/01/2026</td>
+                                <td class="font-bold neon-text">+2,450.00 EUR</td>
+                                <td>
+                                    <button class="text-white/40 hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-xl">more_vert</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-mono text-white/50">#0002</td>
+                                <td class="font-semibold">Transaction Beta</td>
+                                <td><span class="badge badge-warning">En attente</span></td>
+                                <td class="text-white/60">22/01/2026</td>
+                                <td class="font-bold">-890.00 EUR</td>
+                                <td>
+                                    <button class="text-white/40 hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-xl">more_vert</span>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="font-mono text-white/50">#0003</td>
+                                <td class="font-semibold">Transaction Gamma</td>
+                                <td><span class="badge badge-danger">Echoue</span></td>
+                                <td class="text-white/60">21/01/2026</td>
+                                <td class="font-bold text-red-400">-1,200.00 EUR</td>
+                                <td>
+                                    <button class="text-white/40 hover:text-white transition-colors">
+                                        <span class="material-symbols-outlined text-xl">more_vert</span>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: Badges & Alerts -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">07 // Badges & Alertes</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Badges -->
+                    <div class="bg-surface p-8 border border-white/10">
+                        <h3 class="text-lg font-semibold mb-6">Badges</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="badge badge-primary">Primary</span>
+                            <span class="badge badge-success">Success</span>
+                            <span class="badge badge-warning">Warning</span>
+                            <span class="badge badge-danger">Danger</span>
+                        </div>
+                    </div>
+
+                    <!-- Alerts -->
+                    <div class="bg-surface p-8 border border-white/10">
+                        <h3 class="text-lg font-semibold mb-6">Alertes</h3>
+                        <div class="space-y-4">
+                            <div class="p-4 bg-accent/10 border border-accent flex items-start gap-3">
+                                <span class="material-symbols-outlined text-secondary">info</span>
+                                <div>
+                                    <div class="font-semibold text-sm">Information</div>
+                                    <div class="text-white/60 text-sm">Message informatif pour l'utilisateur.</div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-green-500/10 border border-green-500/30 flex items-start gap-3">
+                                <span class="material-symbols-outlined text-green-400">check_circle</span>
+                                <div>
+                                    <div class="font-semibold text-sm">Succes</div>
+                                    <div class="text-white/60 text-sm">Operation effectuee avec succes.</div>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-red-500/10 border border-red-500/30 flex items-start gap-3">
+                                <span class="material-symbols-outlined text-red-400">error</span>
+                                <div>
+                                    <div class="font-semibold text-sm">Erreur</div>
+                                    <div class="text-white/60 text-sm">Une erreur s'est produite.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Accordion -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">08 // Accordion / FAQ</h2>
+
+                <div class="bg-surface p-8 border border-white/10">
+                    <div class="accordion-item open" onclick="toggleAccordion(this)">
+                        <div class="accordion-header">
+                            <span class="font-semibold">Comment fonctionne le systeme ?</span>
+                            <span class="material-symbols-outlined text-white/40">expand_more</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="p-4 text-white/60">
+                                Le systeme utilise une architecture moderne avec des composants reutilisables et un design system coherent base sur la palette Lavande Dreams.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" onclick="toggleAccordion(this)">
+                        <div class="accordion-header">
+                            <span class="font-semibold">Quelles sont les technologies utilisees ?</span>
+                            <span class="material-symbols-outlined text-white/40">expand_more</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="p-4 text-white/60">
+                                Tailwind CSS pour le styling, Material Symbols pour les icones, et Space Grotesk pour la typographie.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="accordion-item" onclick="toggleAccordion(this)">
+                        <div class="accordion-header">
+                            <span class="font-semibold">Comment personnaliser les couleurs ?</span>
+                            <span class="material-symbols-outlined text-white/40">expand_more</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="p-4 text-white/60">
+                                Modifiez les variables CSS dans le fichier de configuration ou directement dans le tailwind.config pour adapter les couleurs a votre projet.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Modal -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">09 // Modal / Popup</h2>
+
+                <div class="bg-surface p-8 border border-white/10">
+                    <button onclick="openModal()" class="px-6 py-3 bg-gradient-to-r from-accent to-accent-dark text-white font-semibold uppercase tracking-wider text-sm hover:from-secondary hover:to-accent transition-all neon-glow">
+                        Ouvrir Modal
+                    </button>
+                </div>
+            </section>
+
+            <!-- Section: Tooltips -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">10 // Tooltips</h2>
+
+                <div class="bg-surface p-8 border border-white/10">
+                    <div class="flex flex-wrap gap-4">
+                        <button class="tooltip px-6 py-3 border border-white/20 text-white/70 hover:text-white transition-colors" data-tooltip="Information supplementaire">
+                            Survolez-moi
+                        </button>
+                        <button class="tooltip neon-border px-6 py-3 text-secondary" data-tooltip="Action importante">
+                            <span class="flex items-center gap-2">
+                                <span class="material-symbols-outlined text-sm">help</span>
+                                Aide
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Progress & Loading -->
+            <section class="mb-20">
+                <h2 class="text-xs tracking-[0.3em] text-white/40 uppercase mb-8">11 // Progress & Loading</h2>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="bg-surface p-8 border border-white/10">
+                        <h3 class="text-lg font-semibold mb-6">Barres de Progression</h3>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-white/60">Telechargement</span>
+                                    <span class="neon-text">75%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 75%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-white/60">Installation</span>
+                                    <span class="neon-text">45%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-2">
+                                    <span class="text-white/60">Configuration</span>
+                                    <span class="neon-text">90%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 90%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-surface p-8 border border-white/10">
+                        <h3 class="text-lg font-semibold mb-6">Indicateurs de Chargement</h3>
+                        <div class="flex items-center gap-8">
+                            <!-- Spinner -->
+                            <div class="w-10 h-10 border-2 border-white/20 border-t-accent rounded-full animate-spin"></div>
+
+                            <!-- Pulse Dots -->
+                            <div class="flex gap-2">
+                                <div class="w-3 h-3 bg-accent rounded-full animate-pulse"></div>
+                                <div class="w-3 h-3 bg-accent rounded-full animate-pulse" style="animation-delay: 0.2s"></div>
+                                <div class="w-3 h-3 bg-accent rounded-full animate-pulse" style="animation-delay: 0.4s"></div>
+                            </div>
+
+                            <!-- Skeleton -->
+                            <div class="flex-1 space-y-2">
+                                <div class="h-4 bg-white/10 animate-pulse rounded"></div>
+                                <div class="h-4 bg-white/10 animate-pulse rounded w-3/4"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="border-t border-white/10 pt-8 mt-12">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-white/40" id="footerTitle"></p>
+                        <p class="text-xs text-white/30">Design System Noir Neon Futuriste - Palette Lavande Dreams</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-white/40" id="footerPort"></p>
+                        <p class="text-xs text-white/30" id="footerDesign"></p>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <!-- Modal -->
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="bg-surface border neon-border max-w-lg w-full mx-4 p-0" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center p-6 border-b border-white/10">
+                <h3 class="text-xl font-bold">Titre du Modal</h3>
+                <button onclick="closeModal()" class="text-white/40 hover:text-white transition-colors">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div class="p-6">
+                <p class="text-white/60 mb-6">
+                    Contenu du modal avec des informations importantes ou un formulaire de confirmation.
+                    Ce popup peut etre ferme en cliquant sur le bouton X ou en cliquant en dehors du modal.
+                </p>
+                <div class="flex gap-3 justify-end">
+                    <button onclick="closeModal()" class="px-4 py-2 border border-white/20 text-white/60 hover:text-white text-sm uppercase tracking-wider transition-colors">
+                        Annuler
+                    </button>
+                    <button onclick="closeModal()" class="px-4 py-2 bg-accent text-white text-sm uppercase tracking-wider font-semibold hover:bg-accent-dark transition-colors">
+                        Confirmer
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tabs
+        function switchTab(element, tabId) {
+            // Remove active from all tabs
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            // Add active to clicked tab
+            element.classList.add('active');
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            // Show selected content
+            document.getElementById(tabId).classList.remove('hidden');
+        }
+
+        // Accordion
+        function toggleAccordion(element) {
+            element.classList.toggle('open');
+        }
+
+        // Modal
+        function openModal() {
+            document.getElementById('modal').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target === event.currentTarget) {
+                document.getElementById('modal').classList.remove('active');
+            }
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Load metadata from JSON
+        async function loadMetadata() {
+            try {
+                const response = await fetch('../index.json?' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const meta = data.metadata;
+
+                    document.getElementById('headerTitle').textContent = 'Design System';
+                    document.getElementById('headerSubtitle').textContent = `${meta.platform} v${meta.version}`;
+                    document.getElementById('headerServerUrl').textContent = meta.server.url;
+
+                    document.getElementById('footerTitle').textContent = `${meta.title} - ${meta.platform}`;
+                    document.getElementById('footerPort').textContent = `Port: ${meta.server.port}`;
+                    document.getElementById('footerDesign').textContent = `Design: ${meta.design}`;
+                }
+            } catch (e) {
+                console.log('Metadata not available');
+            }
+        }
+
+        loadMetadata();
+    </script>
+
+</body>
+</html>

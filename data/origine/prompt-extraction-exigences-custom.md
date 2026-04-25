@@ -1,0 +1,1 @@
+Utilise le document du projet pour rédiger les exigences.

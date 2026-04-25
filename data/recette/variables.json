@@ -1,0 +1,22 @@
+{
+  "variables": [
+    {
+      "id": "var-001",
+      "name": "BASE_URL",
+      "value": "http://localhost:4200",
+      "description": "URL de base du site testé"
+    },
+    {
+      "id": "var-002",
+      "name": "TEST_USER_EMAIL",
+      "value": "user@test.com",
+      "description": "Email du compte de test"
+    },
+    {
+      "id": "var-003",
+      "name": "TEST_USER_PASSWORD",
+      "value": "password123",
+      "description": "Mot de passe du compte de test"
+    }
+  ]
+}

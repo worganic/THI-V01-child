@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Financial News Blog (Classic) | Market Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@100..900&amp;family=Noto+Sans:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335157",
+                        "background-light": "#fbfaf9",
+                        "background-dark": "#25292d",
+                        "accent-news": "#D69781",
+                        "trend-up": "#4F7C73",
+                        "trend-down": "#A64D3D",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "serif": ["Georgia", "Times New Roman", "serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .ticker-container {
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .ticker-content {
+            display: inline-block;
+            animation: ticker 30s linear infinite;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        /* Custom serif feel for density */
+        .news-copy {
+            font-family: 'Noto Sans', sans-serif;
+            line-height: 1.45;
+            letter-spacing: -0.01em;
+        }
+        .newspaper-border {
+            border-right: 1px solid #dfe1e2;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#131515] transition-colors duration-300">
+<!-- Top Stock Ticker -->
+<div class="w-full bg-primary text-white py-2 overflow-hidden border-b border-white/10 sticky top-0 z-50">
+<div class="ticker-container flex items-center">
+<div class="ticker-content flex gap-12 text-xs font-bold uppercase tracking-wider items-center">
+<span>$SPX +1.24% <span class="text-green-300">▲</span></span>
+<span>$DJI -0.42% <span class="text-red-300">▼</span></span>
+<span>$NDAQ +0.81% <span class="text-green-300">▲</span></span>
+<span>GOLD +0.22% <span class="text-green-300">▲</span></span>
+<span>BRENT -1.15% <span class="text-red-300">▼</span></span>
+<span>EUR/USD +0.05% <span class="text-green-300">▲</span></span>
+<span>BTC/USD +3.41% <span class="text-green-300">▲</span></span>
+<span>10Y YIELD 4.21% <span class="text-red-300">▼</span></span>
+<!-- Repeat for seamless loop -->
+<span>$SPX +1.24% <span class="text-green-300">▲</span></span>
+<span>$DJI -0.42% <span class="text-red-300">▼</span></span>
+<span>$NDAQ +0.81% <span class="text-green-300">▲</span></span>
+<span>GOLD +0.22% <span class="text-green-300">▲</span></span>
+</div>
+</div>
+</div>
+<div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+<!-- Header -->
+<header class="flex flex-col items-center py-8 border-b-4 border-double border-primary/20">
+<div class="flex justify-between items-center w-full mb-6">
+<div class="text-xs font-bold uppercase tracking-[0.2em] flex-1">
+                    EST. 1924 <span class="mx-2">|</span> <span id="current-date">October 24, 2023</span>
+</div>
+<div class="flex items-center gap-4 flex-1 justify-center">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
+</svg>
+</div>
+<h1 class="text-4xl lg:text-5xl font-black tracking-tighter text-primary uppercase leading-none italic">
+                        The Financial Gazette
+                    </h1>
+</div>
+<div class="flex items-center justify-end gap-6 flex-1">
+<button class="material-symbols-outlined text-primary">search</button>
+<button class="bg-primary text-white px-6 py-2 rounded-lg font-bold text-xs uppercase tracking-widest hover:bg-primary/90 transition-all">
+                        Subscribe
+                    </button>
+</div>
+</div>
+<nav class="flex items-center gap-10 text-[11px] font-black uppercase tracking-[0.25em] text-primary/70">
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Markets</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Technology</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Global Economy</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Policy &amp; Regulation</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Wealth Management</a>
+<a class="hover:text-primary transition-colors border-b-2 border-transparent hover:border-primary" href="#">Opinion</a>
+</nav>
+</header>
+<!-- Main Content Area: 3 Column Asymmetric Grid -->
+<main class="grid grid-cols-12 gap-8 py-8">
+<!-- Left Column: Trending & Editor's Picks (Narrow) -->
+<aside class="col-span-12 lg:col-span-2 newspaper-border pr-4 space-y-8 order-2 lg:order-1">
+<section>
+<h3 class="text-xs font-black uppercase tracking-widest border-b border-primary/20 pb-2 mb-4">Latest Briefs</h3>
+<div class="space-y-6">
+<div class="group cursor-pointer">
+<span class="text-[10px] font-bold text-accent-news uppercase tracking-tighter">09:12 AM</span>
+<h4 class="text-sm font-bold leading-tight group-hover:text-primary">Japan's Nikkei slides on weak export data.</h4>
+</div>
+<div class="group cursor-pointer">
+<span class="text-[10px] font-bold text-accent-news uppercase tracking-tighter">08:45 AM</span>
+<h4 class="text-sm font-bold leading-tight group-hover:text-primary">Oil futures stabilize amid Middle East tensions.</h4>
+</div>
+<div class="group cursor-pointer">
+<span class="text-[10px] font-bold text-accent-news uppercase tracking-tighter">07:20 AM</span>
+<h4 class="text-sm font-bold leading-tight group-hover:text-primary">Bond yields hover near multi-year highs.</h4>
+</div>
+</div>
+</section>
+<section class="bg-primary/5 p-4 rounded-lg">
+<h3 class="text-[10px] font-black uppercase tracking-widest text-primary/60 mb-2">Exclusive Report</h3>
+<p class="text-xs italic leading-relaxed text-[#6f797b]">
+                        "The decoupling of US and EU interest rate policies marks a significant shift in global capital flows."
+                    </p>
+<p class="text-[10px] font-bold mt-2">— Sir Marcus Thorne</p>
+</section>
+</aside>
+<!-- Center Column: Main News (Wide) -->
+<section class="col-span-12 lg:col-span-7 newspaper-border pr-4 order-1 lg:order-2">
+<!-- Hero Article -->
+<article class="mb-10">
+<div class="mb-4">
+<span class="bg-accent-news text-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest rounded-sm">Featured Analysis</span>
+</div>
+<h2 class="text-4xl lg:text-5xl font-black tracking-tight leading-[0.95] mb-6 text-[#131515]">
+                        Global Markets Bracing for Central Bank Pivot as Inflation Cools
+                    </h2>
+<div class="w-full h-[400px] bg-center bg-no-repeat bg-cover rounded-xl mb-6 shadow-xl grayscale-[30%] hover:grayscale-0 transition-all duration-700" data-alt="Modern stock exchange floor with busy traders and large digital screens" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCQ0TJz-ZNNiG383sP69yR-WIfccxn31z7CKJeVHyiCZUJ69wBrzfpwqYrfmvRl6WPHujUzQ_rDFfFUTIizXZjWZ5awsGm6NguD0NwUhf2cuxsxoydY7bUWpgu1g1hgLgnk3wpD7aQqoNGT15CcdxyEsOJSuWjliGpC-Ybr2hYZ5wr_mKXSjyurDgIP9zxEKCpwpI8CD7klQvdh4Szukzv7CDnu5DzNZlzNVtwK_EXudRSqspP8-yMgYnIIa8cb17toRRJWqT8_Sjc");'>
+</div>
+<div class="grid grid-cols-2 gap-8">
+<p class="news-copy text-sm text-[#131515] first-letter:text-5xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:text-primary first-letter:leading-none">
+                            The era of aggressive rate hikes may be nearing its conclusion. Analysts across Wall Street and the City of London are recalibrating their models as recent data suggests a faster-than-anticipated slowdown in consumer price growth across the G7 nations. This shift comes at a critical juncture for emerging markets.
+                        </p>
+<p class="news-copy text-sm text-[#6f797b]">
+                            While the Fed remains officially hawkish, the undercurrents of the bond market tell a different story. "The market is smelling a pivot," says Elena Rossi, Chief Economist at Vertex Capital. "We are seeing unprecedented positioning in anticipation of the first cut in Q3."
+                        </p>
+</div>
+<div class="mt-6 flex justify-between items-center border-t border-b border-primary/10 py-3">
+<div class="flex items-center gap-3">
+<div class="size-8 rounded-full bg-cover" data-alt="Author portrait" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCvGbIm-vM_4VPAziRc7Evy99_c4IbpFLwZRMruwC55d4kkG7rD73B7FizRbFy5c35_E0cNyVGJKABtmD05tw8Jyif7sbFKcR99CFBqLWQtH92FYSJw9tU1DHbo2D3W7r7ovdt7QdcqlaG2DonAw4Gt8uwCZNomOB2sxuj_hMuUSQtn6Zs9GQwdXDuppcUHdr8CbGBqk2YeysRfWFRTJnJLK940xQZwVUbSZinaE6kkVD6hwHJ88NkoHvgY0yXAfzPmg6Asc-Rd56o')"></div>
+<span class="text-xs font-bold uppercase tracking-widest">By David H. Sterling</span>
+</div>
+<button class="text-xs font-bold uppercase tracking-widest text-primary flex items-center gap-2 hover:translate-x-1 transition-transform">
+                            Read Full Report <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- Sub-articles Grid -->
+<div class="grid grid-cols-2 gap-8 border-t border-primary/20 pt-8">
+<div class="group">
+<div class="w-full aspect-[16/9] bg-cover rounded-lg mb-4" data-alt="Container ships at a busy international port" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDvmYJR6bBrgFNmuDWCXKOa_T_JW2pjjHbsEb59XFqS-IUoJkA5VuZ3d1OJXGz4o9tG9BOpiZyKnKARMRQ0eYOiSmUJ0WLjeLD_ISIoEnsbZyCYfMSVBsvTfouYkV8N14Q25U6c6Ulml-Auv6q16yQ8bIkE1dhCC9wWSioZCKGxfUlsuUPzTQ99rHF2Ed6UprlwcF5kd40Am6RiiNGgJRhyElDYxuYHgUTrVsZJvgJr2vr3-W_OWRJEDsSctC-1Ui7T4eU9RWRS8xk')"></div>
+<h4 class="text-lg font-bold leading-tight group-hover:text-primary transition-colors">Supply Chain Pressures Ease to Pre-Pandemic Levels</h4>
+<p class="text-xs text-[#6f797b] mt-2 line-clamp-2">Logistics hubs reporting significant reduction in backlog as demand for consumer durables softens.</p>
+</div>
+<div class="group">
+<div class="w-full aspect-[16/9] bg-cover rounded-lg mb-4" data-alt="Clean energy infrastructure with wind turbines and solar panels" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBhmpiDI4k6VT33pA4lBlO0-UwiCk00tP7ebQ2Q6th3F50SRC6TP64yrXZb_5UHS2vxWHNt4Hbwq_HtB4j4MYjs8ujaVGZKH7iuMI_wSl8XHCvn_VY0z9-QoMz4ajstkDxj12uURTBe0G_EGYzwZj12-KV7JNy5NwzrWoR1ErzwRoMEUO3z7MxfZ7Iv6X0vfdd-vx5en5Rc1liEmUi1QP1z7QXvEPdKSUStJhTluchqbh82tzyKDgYOG2YECRtadJ_ZBtAQ4mr1uX0')"></div>
+<h4 class="text-lg font-bold leading-tight group-hover:text-primary transition-colors">ESG Investment Trends: A Resilience Test Amid High Rates</h4>
+<p class="text-xs text-[#6f797b] mt-2 line-clamp-2">Sustainable funds face outflows but core institutional mandates remain committed to green energy.</p>
+</div>
+</div>
+</section>
+<!-- Right Column: Market Watch & Newsletter (Medium) -->
+<aside class="col-span-12 lg:col-span-3 space-y-8 order-3">
+<div class="bg-white border border-[#dfe1e2] rounded-xl overflow-hidden shadow-sm">
+<div class="bg-primary text-white px-4 py-3 flex justify-between items-center">
+<h3 class="text-xs font-black uppercase tracking-widest">Market Watch</h3>
+<span class="text-[10px] opacity-80">Real-time Data</span>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-sm">
+<thead class="bg-background-light border-b border-[#dfe1e2]">
+<tr>
+<th class="px-4 py-2 font-medium text-[10px] uppercase">Symbol</th>
+<th class="px-4 py-2 font-medium text-[10px] uppercase">Price</th>
+<th class="px-4 py-2 font-medium text-[10px] uppercase">Change</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-[#dfe1e2]">
+<tr class="hover:bg-primary/5">
+<td class="px-4 py-3 font-bold text-xs">S&amp;P 500</td>
+<td class="px-4 py-3 text-xs text-[#6f797b]">4,450.32</td>
+<td class="px-4 py-3 text-[10px] font-black text-trend-up">+1.2%</td>
+</tr>
+<tr class="hover:bg-primary/5">
+<td class="px-4 py-3 font-bold text-xs">NASDAQ</td>
+<td class="px-4 py-3 text-xs text-[#6f797b]">13,710.15</td>
+<td class="px-4 py-3 text-[10px] font-black text-trend-up">+0.8%</td>
+</tr>
+<tr class="hover:bg-primary/5">
+<td class="px-4 py-3 font-bold text-xs">DOW 30</td>
+<td class="px-4 py-3 text-xs text-[#6f797b]">34,120.50</td>
+<td class="px-4 py-3 text-[10px] font-black text-trend-down">-0.4%</td>
+</tr>
+<tr class="hover:bg-primary/5">
+<td class="px-4 py-3 font-bold text-xs">BRENT OIL</td>
+<td class="px-4 py-3 text-xs text-[#6f797b]">78.45</td>
+<td class="px-4 py-3 text-[10px] font-black text-trend-down">-1.1%</td>
+</tr>
+<tr class="hover:bg-primary/5">
+<td class="px-4 py-3 font-bold text-xs">USD/JPY</td>
+<td class="px-4 py-3 text-xs text-[#6f797b]">149.22</td>
+<td class="px-4 py-3 text-[10px] font-black text-trend-up">+0.3%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 border-t border-[#dfe1e2] bg-background-light">
+<button class="w-full py-2 text-[10px] font-black uppercase tracking-widest text-primary border border-primary/20 rounded-lg hover:bg-primary/5 transition-colors">
+                            View All Markets
+                        </button>
+</div>
+</div>
+<div class="bg-[#335157] text-white p-6 rounded-xl shadow-lg relative overflow-hidden">
+<div class="absolute -right-10 -top-10 size-32 bg-white/5 rounded-full"></div>
+<h3 class="text-xl font-black mb-2 relative z-10">The Morning Brief</h3>
+<p class="text-xs text-white/70 mb-6 relative z-10">Get the essential market opening news delivered to your inbox before the bell rings.</p>
+<div class="space-y-3 relative z-10">
+<input class="w-full bg-white/10 border-white/20 rounded-lg text-white placeholder:text-white/40 focus:ring-accent-news focus:border-accent-news text-sm" placeholder="Email Address" type="email"/>
+<button class="w-full bg-accent-news text-white font-bold py-3 rounded-lg text-xs uppercase tracking-[0.2em] shadow-lg hover:shadow-xl hover:bg-accent-news/90 transition-all">
+                            Sign Up Free
+                        </button>
+</div>
+</div>
+<div>
+<h3 class="text-xs font-black uppercase tracking-widest border-b border-primary/20 pb-2 mb-4">Most Read</h3>
+<ol class="space-y-6 list-decimal list-inside text-primary font-black">
+<li class="pl-2">
+<span class="text-sm text-[#131515] font-bold tracking-tight inline-block align-top -mt-1 ml-2 leading-tight hover:text-primary cursor-pointer transition-colors">Why the Semiconductor Boom is Far From Over</span>
+</li>
+<li class="pl-2">
+<span class="text-sm text-[#131515] font-bold tracking-tight inline-block align-top -mt-1 ml-2 leading-tight hover:text-primary cursor-pointer transition-colors">The Hidden Risks in Private Equity Portfolios</span>
+</li>
+<li class="pl-2">
+<span class="text-sm text-[#131515] font-bold tracking-tight inline-block align-top -mt-1 ml-2 leading-tight hover:text-primary cursor-pointer transition-colors">Cryptocurrency Regulation: A Global Overview</span>
+</li>
+</ol>
+</div>
+</aside>
+</main>
+<!-- Opinion & Editorial Section (Image Grid Style) -->
+<section class="py-12 border-t-4 border-double border-primary/20">
+<div class="flex justify-between items-end mb-8">
+<div>
+<h2 class="text-3xl font-black tracking-tighter italic uppercase text-primary">Voices of Influence</h2>
+<p class="text-sm text-[#6f797b]">Exclusive op-eds from leaders in finance and policy</p>
+</div>
+<button class="text-xs font-bold uppercase tracking-widest underline decoration-2 underline-offset-4 decoration-accent-news">All Opinions</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="flex flex-col gap-4 group">
+<div class="w-full aspect-square bg-center bg-no-repeat bg-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Corporate professional woman in a modern office" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuB2etPj8d8a8kPJXF7pvGm3XQg5iLFzy26TR4B6qAe9vAE3cDVbSBuACk4kSVJP63xTcTL2Mwjhx67PuMtvh9tjw38idp1y973q11w3LRqBQstne1qL7IEPRcFSJZPzEPHvB9W7myVI2S98PHku0DFcigfM9ONgtfniNkz54SprWwsGf25NIkUevtQIRgyzQLToY5U2ZxO2fzzIS6FaddbZPMMVn_tdBopCSKxe0V8r2YTFyOF0jQC-2YPSEtFHgqDPr7GiMJjSWXE");'></div>
+<div>
+<p class="text-primary text-[10px] font-black uppercase tracking-widest mb-1">Dr. Sarah Jenkins</p>
+<h5 class="text-[#131515] text-base font-bold leading-tight group-hover:text-primary">The Future of Central Bank Digital Currencies</h5>
+</div>
+</div>
+<div class="flex flex-col gap-4 group">
+<div class="w-full aspect-square bg-center bg-no-repeat bg-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Thoughtful man looking at market charts" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7nChNsw6jHQtdqZ7aJ55lbN7VVm2V-2T0BOmaqkbUpo-TQMO6JtJdmJ6vEhbbf4UQISzotrW59geAR71IANTmNtxQDKOge1FoblqhuBjx7jUr-k9H0nFZDP7JekDFAiF1acfs8Qpn9n2dxrdk4qdvOgx4raC481zpwJEIO96Kf929kiEPWUg8TkuM_U-G8fN-7iA9OakFpLqdO0dCD93jxiKndmFJIuJf6jrJJemFEsa6LuZ9tnHzsHN-_lwSPhjVtkEa3VFp8OU");'></div>
+<div>
+<p class="text-primary text-[10px] font-black uppercase tracking-widest mb-1">Robert Chen</p>
+<h5 class="text-[#131515] text-base font-bold leading-tight group-hover:text-primary">Why Emerging Markets are Decoupling from the Dollar</h5>
+</div>
+</div>
+<div class="flex flex-col gap-4 group">
+<div class="w-full aspect-square bg-center bg-no-repeat bg-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="A scientist working in a clean lab environment" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCA3euDyWxMScnTCNCRhK6m8JcGxuqHrCi8F0U5nyTL6qaX2m26RZOSGGozsxZBDDqhifWN5ImNPrWlQRpge0aNnJ9DVTvkeFRaBXRBy0i7GdcVL6ihrqnqRvBYMrR4lyyQwj-MzU7a-oxXWjwfPeKo4fpncI0Z7bwutFS9FdKKC9HF-uOunrWuZWqQNmLWIoWFL4JoxGCghpMJK1QOjfWEOupOIo1S_VZDwYHzEa7isKfbPPtpO22szoBCxOoL2Ecm6qLgWpkEc-Y");'></div>
+<div>
+<p class="text-primary text-[10px] font-black uppercase tracking-widest mb-1">Ingrid Berg</p>
+<h5 class="text-[#131515] text-base font-bold leading-tight group-hover:text-primary">Biotech: The Next Trillion-Dollar Frontier</h5>
+</div>
+</div>
+<div class="flex flex-col gap-4 group">
+<div class="w-full aspect-square bg-center bg-no-repeat bg-cover rounded-xl grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Aerial view of a sustainable city concept" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuDEW1ekEqKwwWQ3BP2f7EjPA7IqN90-Vgmk27rIS6fAh4L2v4mNyDv-DwJPU5Y82I_RCY0bhOn5RmeQ-3On6EK3QewvpTj75JJMgBk7I2bxJ1Plq_xRq8P2ulokgVBABlT0R6Mwjmv1okPSAHh3sEX6Nefa6wPkEEZXZFKqHOEo6DOT4pog5NrrXXeXJoyq-48QdRE0MkOvp52BbygijVw4jyWtbf4JFWFrvVyBNo_PKpja_0aZyMw6tl9-dWLUF5vc9PDQ6_zIb6s");'></div>
+<div>
+<p class="text-primary text-[10px] font-black uppercase tracking-widest mb-1">Michael Vane</p>
+<h5 class="text-[#131515] text-base font-bold leading-tight group-hover:text-primary">Urban Rejuvenation: The Infrastructure Play</h5>
+</div>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mt-12 py-12 border-t border-primary/10">
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-12">
+<div class="col-span-2">
+<div class="flex items-center gap-2 text-primary mb-6">
+<div class="size-6">
+<svg fill="currentColor" viewbox="0 0 48 48">
+<path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-black uppercase italic tracking-tighter">The Financial Gazette</h2>
+</div>
+<p class="text-sm news-copy text-[#6f797b] max-w-md">
+                        Independent, authoritative, and indispensable reporting on the global financial markets. Providing the intelligence needed for the modern investor since 1924.
+                    </p>
+</div>
+<div>
+<h4 class="text-[10px] font-black uppercase tracking-[0.2em] mb-6">Navigation</h4>
+<ul class="space-y-3 text-xs font-bold uppercase tracking-widest text-[#6f797b]">
+<li><a class="hover:text-primary" href="#">Editorial Board</a></li>
+<li><a class="hover:text-primary" href="#">Advertising</a></li>
+<li><a class="hover:text-primary" href="#">Archive</a></li>
+<li><a class="hover:text-primary" href="#">Careers</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-[10px] font-black uppercase tracking-[0.2em] mb-6">Legal</h4>
+<ul class="space-y-3 text-xs font-bold uppercase tracking-widest text-[#6f797b]">
+<li><a class="hover:text-primary" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-primary" href="#">Terms of Service</a></li>
+<li><a class="hover:text-primary" href="#">Cookie Policy</a></li>
+<li><a class="hover:text-primary" href="#">Accessibility</a></li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row justify-between items-center border-t border-primary/5 pt-8 gap-4">
+<span class="text-[10px] uppercase font-bold tracking-[0.2em] text-[#6f797b]">© 2023 Gazette Media Group. All rights reserved.</span>
+<div class="flex gap-6">
+<a class="size-8 rounded-full border border-[#dfe1e2] flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-sm">alternate_email</span>
+</a>
+<a class="size-8 rounded-full border border-[#dfe1e2] flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#">
+<span class="material-symbols-outlined text-sm">share</span>
+</a>
+</div>
+</div>
+</footer>
+</div>
+<script>
+        // Set dynamic date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', options);
+    </script>
+</body></html>

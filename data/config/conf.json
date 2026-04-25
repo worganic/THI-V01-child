@@ -1,0 +1,34 @@
+{
+  "apiKeys": {
+    "gemini": {
+      "key": "aaaaazzzzz",
+      "active": true
+    },
+    "claude": {
+      "key": "bbbb",
+      "active": false
+    }
+  },
+  "appVersion": "aaaaa",
+  "ticketsEnabled": false,
+  "lastUpdated": "2026-04-19T10:51:26.408Z",
+  "cliConfig": {
+    "activeProviders": [
+      "claude",
+      "gemini"
+    ],
+    "enabledModels": {
+      "claude": [
+        "claude-haiku-4-5",
+        "claude-opus-4-6",
+        "claude-sonnet-4-6",
+        "claude-haiku-4-5-20251001"
+      ],
+      "gemini": [
+        "gemini-2.5-pro-preview",
+        "gemini-3-flash-preview"
+      ]
+    }
+  },
+  "recetteWidgetEnabled": false
+}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BRUTAL/FORM - Architecture &amp; Design Blog</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;700;800&amp;family=Noto+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#335157",
+                        "background-light": "#fbfaf9",
+                        "background-dark": "#25292d",
+                        "surface-dark": "#32363A",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .brutalist-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+        }
+        .text-overlap {
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        .outline-text {
+            -webkit-text-stroke: 1px #fbfaf9;
+            color: transparent;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display selection:bg-primary selection:text-white">
+<div class="relative min-h-screen w-full flex flex-col overflow-x-hidden brutalist-grid">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-20 py-4">
+<div class="max-w-[1400px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary flex items-center justify-center rounded">
+<span class="material-symbols-outlined text-white text-xl">grid_view</span>
+</div>
+<h2 class="text-white text-2xl font-extrabold tracking-tighter">BRUTAL/FORM</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-white hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest" href="#">Architecture</a>
+<a class="text-white/60 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest" href="#">Texture</a>
+<a class="text-white/60 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest" href="#">Modular</a>
+<a class="text-white/60 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<button class="material-symbols-outlined text-white/60 hover:text-white transition-colors">search</button>
+<button class="bg-primary hover:bg-primary/80 text-white px-6 py-2 rounded-lg text-sm font-bold uppercase tracking-widest transition-all">
+                        Subscribe
+                    </button>
+</div>
+</div>
+</header>
+<main class="flex-1 w-full max-w-[1400px] mx-auto px-6 md:px-20 py-12">
+<!-- Hero Section: Experimental Overlap -->
+<section class="relative mb-32">
+<div class="grid grid-cols-12 gap-0 items-end">
+<div class="col-span-12 lg:col-span-8 relative z-10">
+<h1 class="text-[64px] md:text-[120px] font-extrabold leading-[0.9] tracking-tighter text-white uppercase text-overlap">
+                            The Concrete <br/>
+<span class="outline-text">Revival</span>
+</h1>
+</div>
+<div class="col-span-12 lg:col-span-7 lg:col-start-6 -mt-12 lg:-mt-24 relative">
+<div class="aspect-[16/9] bg-surface-dark overflow-hidden border border-white/10 rounded-xl">
+<div class="w-full h-full bg-cover bg-center grayscale hover:grayscale-0 transition-all duration-700 transform hover:scale-105" data-alt="Monolithic brutalist concrete building with sharp angles" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCzKnyHDm2ZsgmWn77ls05aA_xIz1VWN2MqEiWax696c2HWp3PsMoNsteNCS1-3jTc1EdbApGwKgilxBF338ktJdIjKMxh1HDiOIXTl--xt7BGjpnl1mppC498I7RK82lJndKbvNB-eagm6eIYB5WPVP6Yr0tH9Ia8E8oQV9CoBxb0Geh7PtOUCoIf6x-cyKYdeP1403vqUmsSwEJ2CgFH8rLLacSPQSSE5hn-kpryZ6u87QV0B0zx-7T-pzaX_i4LO04mmm23a2Kg');">
+</div>
+</div>
+<div class="absolute -bottom-8 -left-8 bg-primary p-8 hidden md:block rounded-lg shadow-2xl">
+<p class="text-white text-lg font-bold max-w-[200px] leading-tight">
+                                Exploring the intersection of raw material and refined aesthetics.
+                            </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Grid Content -->
+<section class="mb-24">
+<div class="flex items-baseline justify-between border-b border-white/10 pb-6 mb-12">
+<h2 class="text-3xl font-extrabold tracking-tighter uppercase">Latest Perspectives</h2>
+<span class="text-white/40 font-mono">/ 001 - 004</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+<!-- Card 1 -->
+<article class="group cursor-pointer">
+<div class="relative overflow-hidden mb-6 border border-white/5 rounded-xl aspect-square">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Abstract architectural lines and shadows on concrete" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCW-JsIRMCq9BaUkXs0wBYup3x0c99FQ7xA9UR4gIKb6dNIpMHDJEdviXEISsSaP9822LuecHs9VzlHAJaLoiMu-CJOVb1ENsxI5hb2NOeF2tHMrnmrGNggCYf1wVKwEHEnUXKl7VzQymFgkCk77qYzYncQo6V-RBRomymHkLmyhZM4pRqIIMUuKerx-S3zCKxYVB3zzFra8AC0zS6ONUzoR5qrhsEeCm75nqwLJqJgXE54biDXQXOFrsKA8emn-s9FNVq6IGQ92FI');">
+</div>
+<div class="absolute top-4 left-4">
+<span class="bg-background-dark/90 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest rounded-full border border-white/10">Architecture</span>
+</div>
+</div>
+<div class="space-y-3">
+<h3 class="text-2xl font-bold leading-tight group-hover:text-primary transition-colors">Shadow as Material: The Art of Void</h3>
+<p class="text-white/60 text-sm leading-relaxed font-sans line-clamp-2">
+                                How contemporary architects are using negative space and natural light to redefine the boundaries of physical structures.
+                            </p>
+<div class="flex items-center gap-4 pt-2">
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">04 May 2024</span>
+<span class="w-8 h-px bg-white/20"></span>
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">6 min read</span>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="group cursor-pointer">
+<div class="relative overflow-hidden mb-6 border border-white/5 rounded-xl aspect-square">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Minimalist modular living unit design" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDSZjF7MeEwWd0awIwiGzJvw7lrq3-kHvbs5N_PMj3uT33cCq4vbMLUjLLp4kJ58Y2HOvbeYBOMdyO2co0gyRfTtLBXcuH5Ek68MmJwuy140stokYC_mzkUwNCyhaWgNa8fCWwKJBidpXuqf4Ex_o03cd7TMYdXDoEZuV2bq4oz_KA0R6Loh-N_WKmRWjMKrB67ziy2-mjQTTkVe65yABZmzidbCE2JO-XRFsJ8JYwNrGKwRoiWx8DiuvRcH2221flfuNwRjF26sXI');">
+</div>
+<div class="absolute top-4 left-4">
+<span class="bg-background-dark/90 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest rounded-full border border-white/10">Modular</span>
+</div>
+</div>
+<div class="space-y-3">
+<h3 class="text-2xl font-bold leading-tight group-hover:text-primary transition-colors">Modular Living: Efficiency in Form</h3>
+<p class="text-white/60 text-sm leading-relaxed font-sans line-clamp-2">
+                                The resurgence of pre-fabricated brutalism in modern urban housing solutions.
+                            </p>
+<div class="flex items-center gap-4 pt-2">
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">02 May 2024</span>
+<span class="w-8 h-px bg-white/20"></span>
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">4 min read</span>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="group cursor-pointer lg:col-span-1">
+<div class="relative overflow-hidden mb-6 border border-white/5 rounded-xl aspect-square">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Extreme close up of raw stone and concrete textures" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAxoBhaDpqkc1lzVQrQl6eanFQDp51acLEYgKqvYmsoMCDcoLDqAQ66EerBE_EXrX1-fzDY-wOq1IO2BMTLHNWjuKUL75vPIJr5TaSicp095-p--KK0W55cmQkxxmTQcCK__UWiZybgNHfIrjrZ98OoAsVxeKYb6w8iN5NqPb-M9VOtoZoCFip0r2npjKlDFzN2I0XI3LOhv3J3dQaABGag5MqLnBKKnj6gRlbyvx7xMgjnzXhJ_jDf2MmebFMiF4GBFMisINx3ZpE');">
+</div>
+<div class="absolute top-4 left-4">
+<span class="bg-background-dark/90 text-white text-[10px] font-bold px-3 py-1 uppercase tracking-widest rounded-full border border-white/10">Texture</span>
+</div>
+</div>
+<div class="space-y-3">
+<h3 class="text-2xl font-bold leading-tight group-hover:text-primary transition-colors">Raw Surfaces &amp; Tactile Integrity</h3>
+<p class="text-white/60 text-sm leading-relaxed font-sans line-clamp-2">
+                                Why the physical touch of a building matters more than its visual silhouette in the digital age.
+                            </p>
+<div class="flex items-center gap-4 pt-2">
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">28 April 2024</span>
+<span class="w-8 h-px bg-white/20"></span>
+<span class="text-[10px] font-bold text-white/40 uppercase tracking-widest">8 min read</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Featured Section: Split Layout -->
+<section class="bg-surface-dark rounded-xl overflow-hidden border border-white/10 mb-24">
+<div class="grid grid-cols-1 lg:grid-cols-2">
+<div class="p-12 md:p-20 flex flex-col justify-center space-y-8">
+<span class="text-primary font-bold uppercase tracking-[0.3em] text-sm">Long Read / 05</span>
+<h2 class="text-4xl md:text-5xl font-extrabold tracking-tighter uppercase leading-none">The Ethics of <br/>Modern Brutalism</h2>
+<p class="text-white/60 text-lg leading-relaxed font-sans">
+                            In an era of disposable design, we investigate why heavy, permanent structures are making a comeback in the hearts of European cities.
+                        </p>
+<div>
+<button class="bg-primary hover:bg-white hover:text-primary text-white px-8 py-4 rounded-lg font-bold uppercase tracking-widest transition-all inline-flex items-center gap-3">
+                                Read Full Essay
+                                <span class="material-symbols-outlined">arrow_right_alt</span>
+</button>
+</div>
+</div>
+<div class="h-80 lg:h-auto min-h-[400px] bg-cover bg-center grayscale" data-alt="Massive concrete stairs in a modern gallery space" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDsm9Em2Hm00r9DGmDCEXI6TckCMCLqxL7ac1yikC-xZn-uZYtxI0POfrmdKxEHfja0Ypv4cWY6cgXltkPZ4KJLSTOb5PTM-ygVSeN_CaThCt16QQlD-19WnnkCAOvOeb5yU7-f2hLAg6YxSWCD3BvTiYKQHCZrsKD2XYJkKgzSBJVVcjHSNiAzM_jsxC0Ljlp8lYrIWHW6vY-DPDFlDBR5T53JbconIPxfrtPNNcqxvH-f8LF_TPppBR7gMwy9UTPi7hiS2LlBlF4');">
+</div>
+</div>
+</section>
+</main>
+<!-- Newsletter & Footer -->
+<footer class="bg-black py-20 px-6 md:px-20 border-t border-white/10">
+<div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-12 gap-12">
+<div class="md:col-span-5 space-y-8">
+<h2 class="text-4xl font-extrabold tracking-tighter uppercase">Manifesto</h2>
+<p class="text-white/40 text-lg font-light leading-relaxed">
+                        We believe in the honesty of materials. In the weight of space. In the permanence of form. BRUTAL/FORM is a digital archive of architectural integrity.
+                    </p>
+<div class="flex gap-6">
+<a class="size-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">alternate_email</span>
+</a>
+<a class="size-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">camera</span>
+</a>
+</div>
+</div>
+<div class="md:col-span-6 md:col-start-8 space-y-8">
+<h3 class="text-sm font-bold uppercase tracking-[0.3em] text-white/60">The Journal Weekly</h3>
+<div class="flex flex-col sm:flex-row gap-4">
+<input class="bg-surface-dark border-white/10 rounded-lg text-white px-6 py-4 flex-1 focus:ring-primary focus:border-primary uppercase font-bold text-xs tracking-widest" placeholder="YOUR@EMAIL.COM" type="email"/>
+<button class="bg-primary hover:bg-white hover:text-primary text-white px-10 py-4 rounded-lg font-bold uppercase tracking-widest transition-all">
+                            Join
+                        </button>
+</div>
+<div class="grid grid-cols-2 gap-8 text-xs font-bold uppercase tracking-widest pt-8 border-t border-white/5">
+<div class="flex flex-col gap-4">
+<a class="text-white/40 hover:text-white transition-colors" href="#">Submit Project</a>
+<a class="text-white/40 hover:text-white transition-colors" href="#">Advertising</a>
+</div>
+<div class="flex flex-col gap-4">
+<a class="text-white/40 hover:text-white transition-colors" href="#">Privacy</a>
+<a class="text-white/40 hover:text-white transition-colors" href="#">Terms</a>
+</div>
+</div>
+</div>
+</div>
+<div class="max-w-[1400px] mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">© 2024 BRUTAL FORM — ESTABLISHED IN BERLIN</p>
+<p class="text-[10px] font-bold text-white/20 uppercase tracking-[0.4em]">ALL RIGHTS RESERVED</p>
+</div>
+</footer>
+</div>
+</body></html>

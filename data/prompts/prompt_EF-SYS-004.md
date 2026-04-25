@@ -1,0 +1,1 @@
+Le système doit permettre à l'utilisateur de sélectionner une template structurée pour un nouveau projet.

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Technical Dark Mode - Variant 3</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d485d",
+                        "accent": "#00f2ff", // Neon Cyan
+                        "background-light": "#fcfcfc",
+                        "background-dark": "#0a1929",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .blueprint-grid {
+            background-image: radial-gradient(rgba(0, 242, 255, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0a1929;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1d485d;
+        }
+        .neon-glow {
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-800 dark:text-slate-200 overflow-hidden">
+<div class="flex h-screen w-full flex-col">
+<!-- Top Navigation -->
+<header class="flex h-16 items-center justify-between border-b border-primary/30 px-6 bg-background-light dark:bg-background-dark z-20">
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-3">
+<div class="size-8 text-accent">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 4L44 24L24 44L4 24L24 4Z" stroke="currentColor" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M24 14V34M14 24H34" stroke="currentColor" stroke-linecap="round" stroke-width="2"></path>
+</svg>
+</div>
+<h2 class="text-xl font-extrabold tracking-tighter uppercase italic">Spec<span class="text-accent">Core</span></h2>
+</div>
+<nav class="hidden md:flex items-center gap-6 border-l border-primary/30 pl-6 h-8">
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#">Workspace</a>
+<a class="text-sm font-medium text-accent" href="#">Spec Viewer</a>
+<a class="text-sm font-medium hover:text-accent transition-colors" href="#">Integrations</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-center max-w-xl px-8">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-primary text-xl">search</span>
+<input class="w-full h-10 bg-primary/10 border border-primary/30 rounded-lg pl-10 pr-4 text-sm focus:border-accent focus:ring-0 transition-all outline-none" placeholder="Search spec requirements, tags, or authors..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary hover:bg-primary/80 text-white text-sm font-bold transition-all">
+<span class="material-symbols-outlined text-sm">ios_share</span>
+<span>Export</span>
+</button>
+<div class="h-10 w-10 rounded-full border-2 border-accent/30 p-0.5">
+<div class="h-full w-full rounded-full bg-cover bg-center" data-alt="User profile avatar circle" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuC1GuWwExduZsOgcyqSInCsF0LrAC1_mdy18ruP3UsUJONcKv5iz86jI8sKVQxms9tSNU3wbfrhnr689AkCAjCMfDCqhkWEDJJXdoD8vuHIGwWcM12NlCRRKEup8FH5bgd-i8AbgPrbjBTT8d9uM-xKQsVGynS_6BMRJ9X7LO5Lmg8v5woCgKsyAdhODUVevu_CCtIkLyzuzWIqYxJa0WHKSs8BeOVM49Pdg6U_KL4pwuKYEYpklkb5I-F7jWR-tTOFsgYMkA_Yg_gY')"></div>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar Navigation -->
+<aside class="w-72 border-r border-primary/20 bg-background-light dark:bg-background-dark flex flex-col justify-between">
+<div class="flex flex-col flex-1 overflow-y-auto custom-scrollbar p-6">
+<div class="mb-8">
+<div class="flex items-center justify-between mb-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Active Document</span>
+<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-accent/10 text-accent">LIVE</span>
+</div>
+<h1 class="text-lg font-bold leading-tight">ISO-9001 System Architecture</h1>
+<p class="text-xs text-primary font-medium mt-1">v2.4.1 - Engineering Final</p>
+</div>
+<div class="space-y-1">
+<div class="group flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl text-primary group-hover:text-accent">info</span>
+<span class="text-sm font-semibold">1.0 Introduction</span>
+</div>
+<div class="group flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl text-primary group-hover:text-accent">account_tree</span>
+<span class="text-sm font-semibold">2.0 System Architecture</span>
+</div>
+<div class="flex flex-col gap-1 ml-4 border-l border-accent/30">
+<div class="flex items-center gap-3 px-6 py-2.5 rounded-r-lg bg-primary/20 border-r-4 border-accent relative">
+<span class="material-symbols-outlined text-xl text-accent fill-1">memory</span>
+<span class="text-sm font-bold text-white">2.1 Hardware Req.</span>
+<div class="absolute -left-[1px] top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-accent"></div>
+</div>
+<div class="group flex items-center gap-3 px-6 py-2.5 rounded-r-lg cursor-pointer hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl text-primary group-hover:text-accent">layers</span>
+<span class="text-sm font-semibold">2.2 Network Topology</span>
+</div>
+</div>
+<div class="group flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl text-primary group-hover:text-accent">schema</span>
+<span class="text-sm font-semibold">3.0 Data Flow</span>
+</div>
+<div class="group flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-xl text-primary group-hover:text-accent">verified_user</span>
+<span class="text-sm font-semibold">4.0 Compliance</span>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-primary/20">
+<div class="mb-4">
+<div class="flex justify-between items-end mb-2">
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Reading Progress</span>
+<span class="text-xs font-bold text-accent">45%</span>
+</div>
+<div class="h-1.5 w-full bg-primary/20 rounded-full overflow-hidden">
+<div class="h-full bg-accent neon-glow rounded-full" style="width: 45%;"></div>
+</div>
+</div>
+<button class="w-full flex items-center justify-center gap-2 h-10 rounded-lg border border-primary text-primary hover:text-accent hover:border-accent transition-all text-xs font-bold uppercase tracking-widest">
+<span class="material-symbols-outlined text-sm">history</span>
+                        Version History
+                    </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto custom-scrollbar bg-[#08121d] relative">
+<!-- Reading Progress Bar (Top of Content) -->
+<div class="sticky top-0 z-10 w-full h-[2px] bg-transparent">
+<div class="h-full bg-accent shadow-[0_0_8px_#00f2ff]" style="width: 45%;"></div>
+</div>
+<div class="max-w-4xl mx-auto px-12 py-12">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-primary mb-8">
+<a class="hover:text-accent" href="#">Project Alpha</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<a class="hover:text-accent" href="#">Technical Specs</a>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-accent">2.1 Hardware Requirements</span>
+</nav>
+<!-- Page Heading -->
+<div class="flex justify-between items-start mb-12 border-b border-primary/30 pb-8">
+<div>
+<h1 class="text-5xl font-extrabold tracking-tighter mb-4 text-slate-100">
+                                2.1 <span class="italic">Hardware Requirements</span>
+</h1>
+<div class="flex items-center gap-6 text-sm text-primary">
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg">calendar_today</span>
+                                    Oct 24, 2023
+                                </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg">person_edit</span>
+                                    Engineering Dept
+                                </span>
+<span class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-lg">lock</span>
+                                    Restricted (L3)
+                                </span>
+</div>
+</div>
+<button class="p-2 border border-primary/30 rounded-lg hover:border-accent transition-colors group">
+<span class="material-symbols-outlined text-primary group-hover:text-accent">edit_square</span>
+</button>
+</div>
+<!-- Document Body -->
+<div class="prose prose-invert max-w-none text-slate-300 leading-relaxed space-y-8">
+<section>
+<h3 class="text-xl font-bold text-accent mb-4 flex items-center gap-2">
+<span class="h-px w-8 bg-accent"></span>
+                                Core Processing Unit
+                            </h3>
+<p class="text-lg font-light leading-8">
+                                The central processing cluster MUST utilize a minimum of <span class="bg-primary/30 text-accent px-1.5 py-0.5 rounded border border-accent/20">AMD EPYC™ 7763</span> architecture or equivalent high-performance computing units. Each node requires a specialized cooling manifold to handle a thermal design power (TDP) exceeding 280W during peak inference loads.
+                            </p>
+<div class="grid grid-cols-3 gap-6 mt-8">
+<div class="bg-primary/10 border border-primary/20 p-4 rounded-lg">
+<p class="text-[10px] font-bold uppercase text-primary mb-1">Cores</p>
+<p class="text-2xl font-bold text-slate-100 tracking-tight">64 Physical</p>
+</div>
+<div class="bg-primary/10 border border-primary/20 p-4 rounded-lg">
+<p class="text-[10px] font-bold uppercase text-primary mb-1">Cache</p>
+<p class="text-2xl font-bold text-slate-100 tracking-tight">256MB L3</p>
+</div>
+<div class="bg-primary/10 border border-primary/20 p-4 rounded-lg">
+<p class="text-[10px] font-bold uppercase text-primary mb-1">Clock Speed</p>
+<p class="text-2xl font-bold text-slate-100 tracking-tight">3.5 GHz</p>
+</div>
+</div>
+</section>
+<!-- Blueprint-Style Diagram -->
+<section class="py-6">
+<div class="relative w-full aspect-[16/9] bg-background-dark blueprint-grid border border-accent/20 rounded-xl overflow-hidden flex items-center justify-center group">
+<div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent"></div>
+<!-- Blueprint SVG Content -->
+<svg class="relative z-10 opacity-70 group-hover:opacity-100 transition-opacity" height="80%" viewbox="0 0 800 450" width="80%">
+<rect fill="none" height="250" stroke="#00f2ff" stroke-dasharray="4 2" stroke-width="1.5" width="150" x="100" y="100"></rect>
+<rect fill="none" height="250" stroke="#00f2ff" stroke-width="1.5" width="150" x="325" y="100"></rect>
+<rect fill="none" height="250" stroke="#00f2ff" stroke-dasharray="4 2" stroke-width="1.5" width="150" x="550" y="100"></rect>
+<path d="M250 150 H325 M475 150 H550" stroke="#00f2ff" stroke-width="1"></path>
+<path d="M250 225 H325 M475 225 H550" stroke="#00f2ff" stroke-width="1"></path>
+<path d="M250 300 H325 M475 300 H550" stroke="#00f2ff" stroke-width="1"></path>
+<text fill="#00f2ff" font-family="Manrope" font-size="12" font-weight="bold" text-anchor="middle" x="175" y="80">MODULE A1 (REDUNDANT)</text>
+<text fill="#00f2ff" font-family="Manrope" font-size="12" font-weight="bold" text-anchor="middle" x="400" y="80">CORE NODE 01</text>
+<text fill="#00f2ff" font-family="Manrope" font-size="12" font-weight="bold" text-anchor="middle" x="625" y="80">MODULE A2 (REDUNDANT)</text>
+<circle cx="400" cy="225" fill="none" r="40" stroke="#00f2ff" stroke-width="2"></circle>
+<path d="M400 185 V265 M360 225 H440" stroke="#00f2ff" stroke-width="1"></path>
+</svg>
+<div class="absolute bottom-4 right-6 text-[10px] font-mono text-accent/50 uppercase tracking-tighter">
+                                    Fig 2.1.A - Interconnect Topology Scale: 1:12
+                                </div>
+<button class="absolute top-4 right-4 bg-primary/40 backdrop-blur-md p-2 rounded-lg text-accent border border-accent/20 hover:bg-accent/10 transition-all">
+<span class="material-symbols-outlined text-xl">zoom_in</span>
+</button>
+</div>
+</section>
+<section>
+<h3 class="text-xl font-bold text-accent mb-4 flex items-center gap-2">
+<span class="h-px w-8 bg-accent"></span>
+                                Memory Subsystem
+                            </h3>
+<p class="text-lg font-light leading-8">
+                                System memory must consist of <span class="text-white font-semibold underline decoration-accent/50 decoration-2">DDR5 ECC-Ready DIMMs</span> with a minimum transfer rate of 4800MT/s. Data integrity is paramount; any hardware non-compliance with parity check requirements will trigger an immediate Level 4 failure alert in the diagnostic hub.
+                            </p>
+<blockquote class="border-l-4 border-primary bg-primary/5 p-6 rounded-r-lg mt-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary text-3xl">warning</span>
+<div>
+<p class="text-sm font-bold text-primary uppercase tracking-widest mb-1">Compliance Note</p>
+<p class="text-slate-400 italic font-medium">Mixing memory brands within a single channel is strictly prohibited and voids Tier-1 system warranties under ISO-9001 protocols.</p>
+</div>
+</div>
+</blockquote>
+</section>
+</div>
+<!-- Footer Section Actions -->
+<div class="mt-24 pt-12 border-t border-primary/20 flex justify-between items-center">
+<div class="flex gap-4">
+<button class="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary/20 border border-primary/40 text-slate-300 hover:text-accent hover:border-accent transition-all">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span>Previous Section</span>
+</button>
+<button class="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary/20 border border-primary/40 text-slate-300 hover:text-accent hover:border-accent transition-all">
+<span>Next Section</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="flex items-center gap-3">
+<span class="text-xs font-bold text-primary uppercase">Sign-off Status:</span>
+<span class="px-3 py-1 rounded-full text-[10px] font-black tracking-widest bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">APPROVED</span>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

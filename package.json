@@ -1,0 +1,8 @@
+{
+  "name": "worganic-platform",
+  "scripts": {
+    "ng": "npm run --prefix angular",
+    "start": "npm run --prefix angular start",
+    "build": "npm run --prefix angular build"
+  }
+}

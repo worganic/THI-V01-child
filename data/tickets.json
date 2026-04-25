@@ -1,0 +1,106 @@
+{
+  "tickets": [
+    {
+      "id": "ticket-1771700277852",
+      "createdAt": "2026-02-21T18:57:57.852Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "xwc",
+      "description": "xwc",
+      "url": "xwc",
+      "type": "bug",
+      "status": "en_cours",
+      "resolutionComment": ""
+    },
+    {
+      "id": "ticket-1772138324760",
+      "createdAt": "2026-02-26T20:38:44.760Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "erreur creatrion document",
+      "description": "le document doit ce créé même vide sans IA",
+      "url": "",
+      "type": "bug",
+      "status": "signale",
+      "resolutionComment": ""
+    },
+    {
+      "id": "ticket-1772138772769",
+      "createdAt": "2026-02-26T20:46:12.769Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "Framework document",
+      "description": "reactualisation direct et automatique de la liste des documents pour ajouté un doc à la volé.",
+      "url": "",
+      "type": "amelioration",
+      "status": "signale",
+      "resolutionComment": ""
+    },
+    {
+      "id": "ticket-1772139070880",
+      "createdAt": "2026-02-26T20:51:10.880Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "Framework bug affichage etape",
+      "description": "Amélioré l'affichage",
+      "url": "",
+      "type": "bug",
+      "status": "signale",
+      "resolutionComment": ""
+    },
+    {
+      "id": "ticket-1772139878360",
+      "createdAt": "2026-02-26T21:04:38.360Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "Framework output ne sort pas le bon format",
+      "description": "mauvais type en sortie\nRajouté un type \"Exemple\".",
+      "url": "",
+      "type": "bug",
+      "status": "signale",
+      "resolutionComment": ""
+    },
+    {
+      "id": "ticket-1772929297525",
+      "createdAt": "2026-03-08T00:21:37.530Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "aaa",
+      "description": "zzzz",
+      "url": "a",
+      "type": "amelioration",
+      "priority": "haute",
+      "status": "signale",
+      "resolutionComment": "",
+      "screenshotFile": "ticket-1772929297525.png"
+    },
+    {
+      "id": "ticket-1773173645372",
+      "createdAt": "2026-03-10T20:14:05.387Z",
+      "userId": "8fe80e98-7358-42ff-9f73-05de6e2fdff7",
+      "username": "admin",
+      "title": "sfd",
+      "description": "fdssfd",
+      "url": "http://localhost:4200/admin?section=etapes",
+      "type": "amelioration",
+      "priority": "normale",
+      "status": "signale",
+      "resolutionComment": "",
+      "screenshotFile": "ticket-1773173645372.png"
+    },
+    {
+      "id": "ticket-1773521975779",
+      "createdAt": "2026-03-14T20:59:35.784Z",
+      "userId": "a1b2c3d4-0000-0000-0000-frankenstein1",
+      "username": "admin",
+      "title": "dsf",
+      "description": "sfd",
+      "url": "http://localhost:4202/home",
+      "type": "bug",
+      "priority": "normale",
+      "status": "signale",
+      "resolutionComment": "",
+      "screenshotFile": "ticket-1773521975779.png"
+    }
+  ]
+}

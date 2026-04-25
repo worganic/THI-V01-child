@@ -1,0 +1,44 @@
+{
+  "campaigns": [
+    {
+      "id": "camp-001",
+      "name": "Smoke Test",
+      "description": "Tests critiques de validation rapide — à exécuter avant chaque déploiement",
+      "testIds": [
+        "test-001",
+        "test-003"
+      ],
+      "tags": [
+        "smoke"
+      ],
+      "createdAt": "2026-03-08T10:00:00.000Z",
+      "updatedAt": "2026-03-08T10:00:00.000Z"
+    },
+    {
+      "id": "camp-002",
+      "name": "Campagne Authentification complète",
+      "description": "Tous les tests liés à l'authentification",
+      "testIds": [
+        "test-001",
+        "test-002"
+      ],
+      "tags": [
+        "auth"
+      ],
+      "createdAt": "2026-03-08T10:00:00.000Z",
+      "updatedAt": "2026-03-08T10:00:00.000Z"
+    },
+    {
+      "id": "camp-1773174145369-ardqn",
+      "name": "campagne 1",
+      "description": "",
+      "testIds": [
+        "test-002",
+        "test-1773084512248-rn52i"
+      ],
+      "tags": [],
+      "createdAt": "2026-03-10T20:22:25.369Z",
+      "updatedAt": "2026-03-10T20:22:25.369Z"
+    }
+  ]
+}

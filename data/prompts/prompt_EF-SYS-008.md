@@ -1,0 +1,1 @@
+Le clic sur le bouton 'Traitement rapide' doit valider la commande, générer la facture et envoyer un email de confirmation à l'expéditeur (mentionnée dans Ba1, liée à EU3).

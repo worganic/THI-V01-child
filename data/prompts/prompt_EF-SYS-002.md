@@ -1,0 +1,1 @@
+Le système doit permettre à l'utilisateur de modifier les informations d'un projet existant.

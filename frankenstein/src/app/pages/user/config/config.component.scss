@@ -1,0 +1,8 @@
+// Toggle checkbox custom styling
+.peer:checked ~ div {
+  background-color: currentColor;
+}
+
+.peer:checked ~ div + div {
+  transform: translateX(1.25rem);
+}

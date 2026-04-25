@@ -1,0 +1,1 @@
+Le système doit permettre à l'utilisateur de créer un nouveau projet à partir d'une template existante.

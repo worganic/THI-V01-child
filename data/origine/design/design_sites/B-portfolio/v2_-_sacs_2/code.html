@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Studio Indie Bags | Artistic Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e28060", // Terracotta
+                        "sage": "#8A9A87",
+                        "cream": "#fcf7ed",
+                        "rich-brown": "#4A3C33",
+                        "background-light": "#fcf7ed",
+                        "background-dark": "#201512",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Plus Jakarta Sans", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.5rem",
+                        "lg": "1rem",
+                        "xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>body {
+    font-family: "Space Grotesk", sans-serif;
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuBOTZE786x7qFTEUVPo72XJ280A0PutA6SWRQzAdQ98PJ-aJcHoVDNl2waw0p0Rfi0o7h7lKxgDM9dQax71YKlNAZFXV5z0t3pX_YADjhRFsR6T3Yw81UCgu2DsmCMrdaQPolMNfm9pyFZGYyVEJ9N9doSP4RioEgmRjFqlyK5iQ-CSrA4JgEGIxeSRh8lrRUXxrfJ5g04fEjNKGZesO2l60FfUr5twl7BeMsRZkt9iARi_W6eM8Sp8qXUaPSjDq3GtnejumfSo6w)
+    }
+.masonry-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-auto-rows: 10px
+    }
+.masonry-item {
+    grid-row-end: span 40
+    }
+.masonry-item-tall {
+    grid-row-end: span 60
+    }
+.hard-shadow {
+    box-shadow: 12px 12px 0 0 rgba(226, 128, 96, 0.2)
+    }
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: mixed
+    }
+.marquee {
+    white-space: nowrap;
+    overflow: hidden;
+    display: inline-block
+    }</style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-rich-brown dark:text-cream">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-primary/20 px-6 lg:px-20 py-4">
+<div class="max-w-[1440px] mx-auto flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-1 rounded-sm text-cream">
+<span class="material-symbols-outlined text-2xl">auto_awesome</span>
+</div>
+<h2 class="text-xl font-bold tracking-tighter uppercase">Studio Indie</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10 font-medium text-sm uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">The Gallery</a>
+<a class="hover:text-primary transition-colors" href="#">Process</a>
+<a class="hover:text-primary transition-colors" href="#">Stockists</a>
+<a class="hover:text-primary transition-colors" href="#">Contact</a>
+</nav>
+<button class="bg-primary text-cream px-6 py-2 rounded-full font-bold text-sm uppercase tracking-tighter hover:bg-rich-brown transition-all hover:scale-105 active:scale-95">
+                Shop Now
+            </button>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto overflow-hidden">
+<!-- Hero Section -->
+<section class="relative px-6 lg:px-20 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-7 z-10">
+<div class="inline-block bg-sage/20 text-sage px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest mb-6">
+                    Autumn 2024 Collection
+                </div>
+<h1 class="text-6xl md:text-8xl lg:text-[100px] font-bold leading-[0.9] tracking-tighter mb-8">
+                    WEARABLE <br/>
+<span class="text-primary italic">SCULPTURES</span>
+</h1>
+<p class="max-w-md text-lg leading-relaxed font-body text-rich-brown/80 dark:text-cream/80 mb-10">
+                    A maximalist exploration of form and function through artisanal leatherwork. Hand-stitched in our Milan studio for the modern eccentric.
+                </p>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 bg-rich-brown text-cream px-8 py-4 rounded-xl font-bold uppercase tracking-tighter">
+                        View Collection <span class="material-symbols-outlined">arrow_outward</span>
+</button>
+<button class="border-2 border-rich-brown px-8 py-4 rounded-xl font-bold uppercase tracking-tighter">
+                        Our Story
+                    </button>
+</div>
+</div>
+<div class="lg:col-span-5 relative">
+<div class="absolute -top-10 -right-10 w-64 h-64 bg-sage rounded-full mix-blend-multiply opacity-30"></div>
+<div class="relative hard-shadow rounded-2xl overflow-hidden aspect-[4/5] bg-cream border-2 border-rich-brown">
+<img class="w-full h-full object-cover" data-alt="Avant-garde designer leather bag in earthy tones" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOqP_QSkYW3OPApTobpTyoFNu3jbBWaRkPUrECZIvYicKJSa2xUScGj-qggjOA-3_lJz4lPl7PY0dMpkilDzn0TAtTBEuvl1uEOVQSF86oHCWc2vpGeO5E808y35Jb53QjD7eq4qq_g82bNQkXKqhM2vUWPoeEE4bSbyaWKGReUoxsdFG0Vs9MyHK3FGzHzj22mB_CZKrbVB_wGnFAsSXqj-JwI0f_4YFSsoKsC9oYGhiispkaZQi4eHzTINYiM2Yo_IqwO0KeRg"/>
+</div>
+<div class="absolute -bottom-8 -left-8 bg-primary p-6 rounded-2xl text-cream max-w-[200px] shadow-xl">
+<p class="text-sm font-bold leading-tight">"A dialogue between tradition and rebellion."</p>
+</div>
+</div>
+</section>
+<!-- Manifesto Strip -->
+<section class="bg-sage text-cream py-10 rotate-[-1deg] w-[110%] -ml-[5%] overflow-hidden border-y-2 border-rich-brown">
+<div class="flex whitespace-nowrap gap-12 text-3xl font-black uppercase tracking-tighter opacity-90 marquee">
+<span>Handcrafted in Milan</span>
+<span class="text-rich-brown">●</span>
+<span>Small Batch Production</span>
+<span class="text-rich-brown">●</span>
+<span>Artisanal Excellence</span>
+<span class="text-rich-brown">●</span>
+<span>Eco-Tanned Leathers</span>
+<span class="text-rich-brown">●</span>
+<span>Limited Editions</span>
+<span class="text-rich-brown">●</span>
+<span>Handcrafted in Milan</span>
+</div>
+</section>
+<!-- Masonry Gallery -->
+<section class="px-6 lg:px-20 py-24">
+<div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+<div class="max-w-xl">
+<h2 class="text-5xl font-bold tracking-tighter uppercase mb-4 leading-none">The <span class="text-sage">Archive</span></h2>
+<p class="font-body text-rich-brown/60 dark:text-cream/60">Exploring silhouettes that challenge the expected. Each piece is unique, numbered, and signed by the craftsperson.</p>
+</div>
+<div class="flex gap-2">
+<button class="p-4 border border-rich-brown rounded-full hover:bg-primary hover:text-cream transition-colors">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+</div>
+</div>
+<div class="masonry-grid gap-8">
+<!-- Item 1 -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative h-full overflow-hidden rounded-2xl border-2 border-rich-brown hard-shadow transition-transform hover:-translate-y-2">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Handmade green leather bucket bag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtv5qNslJDfLf6V4SifPxYzzK3i9_CELZSJNFAJYSQXwuSp82Yis8ohnKoEehe2hkBBvvHEh5Jj2b3A74uIwiLrwlxN62SrlpVWcT6J1zymCwVjyVg5POSu--D_Mk7D1RQqOKKqB2AtalKhskR6P6dO1nbNZayNssP5-Y3iE28Onko73GQ7xSYYW-vFkcJyYYh7Mz5cF06CPK5Gtghz9c_5HdVXZDCFB4KmihH3hlcZWRKunu7Bnd1S6D3tT4vsKFZIUyfrKwiGw"/>
+<div class="absolute bottom-4 left-4 right-4 bg-cream/90 backdrop-blur p-4 border border-rich-brown rounded-lg flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
+<div>
+<h4 class="font-bold text-sm uppercase">Sage Bucket #04</h4>
+<p class="text-xs font-body opacity-60">Vegetable Tanned</p>
+</div>
+<span class="text-primary font-bold">€420</span>
+</div>
+</div>
+</div>
+<!-- Item 2 Tall -->
+<div class="masonry-item-tall group cursor-pointer mt-12">
+<div class="relative h-full overflow-hidden rounded-2xl border-2 border-rich-brown hard-shadow transition-transform hover:-translate-y-2">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Artistic terracotta shoulder bag detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJXXrd5vnUgM4uBLLhg8j1EtBIXtkew8lIpXETTn9i721xOL4NRhOCPkfitmbBGshXQSh3I7doxpcIYWXTn3X5-g0mDnSZ9bzNP8atfROPOQr_bs53jyfvRFbYSiu1Q-XohzpebIyawghbPxfCdZtgUlgsCFZgey7sdNO7RvkZqwpzMlQQGQj9dTDN5OjiNivkCI9c5yrTj-sq-8EyVRHS04f9N46LSNLfiJ1tWxHfSEVxStYlaOL6Jw5WKjFimQBHmCojoaAjDw"/>
+<div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+<span class="bg-cream text-rich-brown px-6 py-2 rounded-full font-bold uppercase text-xs">View Details</span>
+</div>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="masonry-item group cursor-pointer">
+<div class="relative h-full overflow-hidden rounded-2xl border-2 border-rich-brown hard-shadow transition-transform hover:-translate-y-2">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Minimalist architectural handbag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALy_9cvojkONfo6NjDf6YOtSu23E2hztUY-ukUqElmAEvlOGfQ8VOmKwGA0buTvMLh3kLIxKclbowr3sIRT7iZQx5xr4rlgWNqp4YZ-Plj3XE3i76q7Yeks701IMRa5axOolWsUfZM5RaP2d7A1mpqlrtVheKrwVqiJtIySq43BjrE1CUqk5pq1inyjjGOGjv8ojw4A9kwVZvqbH9CAm8Jur2kqmJeRCtj3s5ZXnvU0zKp_Somm8sHtL0DNLSJ1Jmpwe_9cCCeIQ"/>
+</div>
+</div>
+<!-- Item 4 -->
+<div class="masonry-item-tall group cursor-pointer lg:-mt-10">
+<div class="relative h-full overflow-hidden rounded-2xl border-2 border-rich-brown hard-shadow transition-transform hover:-translate-y-2">
+<img class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" data-alt="Bold red textured leather handbag" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDv9RH1D-3wgZhlA_8nvQQMjFmIMw3m9t_1oZjDGGE9Z7_MEmgHu832aNv8XCvtZT9BgsFTQFtCoMb_V4VBCmSiiWD8GRFUe2l4xVCMBqpoipAdW9KsClbIse2yX302eXhUv7TPOAFG7hIMa0l_hoVteOPtfQuVAaB51TCxMJqVq-eXPAQ6ysFGFFuXTva_gmkMWUh6TOOLkTiapVsjEyMp8ptblgRHI6i2c3-xXYdPm0ma60bc9dCiKTbecrIszknxKqDaoTh-Og"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Behind the Scenes (Vertical Scrolling Text) -->
+<section class="bg-rich-brown text-cream py-32 relative overflow-hidden">
+<div class="absolute right-10 top-0 h-full flex flex-col justify-center">
+<h2 class="vertical-text text-[14vw] font-black uppercase leading-none opacity-10 select-none">CRAFT</h2>
+</div>
+<div class="absolute left-10 bottom-0 h-full flex flex-col justify-center">
+<h2 class="vertical-text text-[14vw] font-black uppercase leading-none opacity-10 select-none">VISION</h2>
+</div>
+<div class="px-6 lg:px-20 relative z-10">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+<div class="space-y-12">
+<div class="bg-primary/20 p-8 rounded-3xl border border-primary/30">
+<h3 class="text-4xl font-bold mb-4 uppercase tracking-tighter italic">The Studio Manifesto</h3>
+<p class="font-body text-xl leading-relaxed opacity-90">
+                                We believe in slow objects. In a world of fleeting trends, we anchor our practice in the tactile, the smell of genuine hide, and the weight of solid brass hardware.
+                            </p>
+</div>
+<div class="flex items-center gap-6">
+<div class="w-24 h-24 rounded-full border-2 border-sage overflow-hidden p-1">
+<img class="w-full h-full object-cover rounded-full" data-alt="Portrait of the designer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAc6kqDHMYT4SOuxQ27Tddwp4K4OYFWj1EbK897KVZ9-dwi4lr7EQ0RkQA5fwPLD6YQ6TYIe-BMjXQVxnEgwqTQWFANuWeQW-oJimLeHq-IbFBy-VZoF18ryyBdBA6Lx5ozdWctifOqdq70DByFVVQ5Oe0aewW0PYUv9zKwhOwChv6CwtdQnAeZcY_X9p10gxedVNpubpQRZgH_OHk0QNON7Sgu_1U-DyhNJHJf1kQgnkhNbt_50LsqxWnq7NfeV6KWlTo96ywFzA"/>
+</div>
+<div>
+<p class="text-xl font-bold italic tracking-tighter">"I don't design bags, I design moments of confidence."</p>
+<p class="text-sm uppercase tracking-widest text-sage font-bold mt-1">— Giulia Rossi, Creative Director</p>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<img class="rounded-xl border border-cream/20 grayscale hover:grayscale-0 transition-all" data-alt="Leather workshop tools" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnJMgsbhzxcF3Y231Y4ijYBcPTvz7hzrVDQDI4c-KyAbF8F39CsdhDgb088k-34bKtaY3HWMDTcMKwo7TL9869hqTyJFJBo8PBmwr3uHAkEK0JlQ3WUEuKNoSOsNRr83o_oyTH9MNjp1TgDYV0MMYMta0vLLOjASHxZH1HWwQPfhc5bUbdxtWO2hsnQZUKBaFpgtw9z7v5t19OkFtPNt8enlOoH4myS01pUSM2_lvN3vkXz_utLRa0IDCkjeGP9FDnv9Yt4ImPQQ"/>
+<img class="rounded-xl border border-cream/20 mt-8 grayscale hover:grayscale-0 transition-all" data-alt="Working with leather detail" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwalc5U7CXwnHR4UPKZ_rQeUzo4EDdd6cXbevQLQIMthTM-cn_Ngqk9y4cg97poniFw73rPsnWT_482Ph5uaKgEC0MXbkcW6GlhQt9p8Y5rB9djer-AYIhoCqfN5_kW5oSguy7lQGSKt6ldRryd0YPdg2DN2RO5a4mYIc7_gzU_3wrZEZ694W5kvYoDpaO-jg1d-0FaaE1H8z9hFHUpLwALEviAdJ-8ZKu8GjnGlcNGUEdhzOg5NpayzPTrud6VRgeja4fUhpMzQ"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter / CTA -->
+<section class="px-6 lg:px-20 py-24 bg-cream">
+<div class="max-w-4xl mx-auto text-center border-4 border-dashed border-primary/40 p-12 lg:p-20 rounded-[4rem]">
+<h2 class="text-5xl lg:text-7xl font-black uppercase tracking-tighter mb-6">Join the <span class="text-primary italic">Circle</span></h2>
+<p class="font-body text-lg text-rich-brown/70 mb-10 max-w-lg mx-auto leading-relaxed">
+                    Be the first to access limited experimental drops and behind-the-scenes studio sessions.
+                </p>
+<form class="flex flex-col md:flex-row gap-4 max-w-md mx-auto">
+<input class="flex-1 bg-background-light border-2 border-rich-brown rounded-xl px-6 py-4 focus:ring-0 focus:border-primary placeholder:text-rich-brown/30" placeholder="Your Art-Minded Email" type="email"/>
+<button class="bg-primary text-cream px-10 py-4 rounded-xl font-bold uppercase tracking-tighter hover:bg-rich-brown transition-all">
+                        Subscribe
+                    </button>
+</form>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-background-light px-6 lg:px-20 py-20 border-t-2 border-rich-brown">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-20">
+<div class="md:col-span-2">
+<h2 class="text-4xl font-black tracking-tighter uppercase mb-6">Studio Indie</h2>
+<p class="font-body text-rich-brown/60 max-w-sm mb-8">
+                        Artisanal leather goods crafted with intent. Made for the dreamers, the doers, and the collectors of beauty.
+                    </p>
+<div class="flex gap-4">
+<a class="w-10 h-10 border border-rich-brown rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all" href="#">
+<span class="material-symbols-outlined text-sm">public</span>
+</a>
+<a class="w-10 h-10 border border-rich-brown rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all" href="#">
+<span class="material-symbols-outlined text-sm">share</span>
+</a>
+<a class="w-10 h-10 border border-rich-brown rounded-full flex items-center justify-center hover:bg-primary hover:border-primary transition-all" href="#">
+<span class="material-symbols-outlined text-sm">mail</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-widest text-xs mb-6 text-primary">Discover</h4>
+<ul class="space-y-4 font-medium uppercase text-sm tracking-tighter">
+<li><a class="hover:underline" href="#">The Gallery</a></li>
+<li><a class="hover:underline" href="#">Production Ethos</a></li>
+<li><a class="hover:underline" href="#">Care Guide</a></li>
+<li><a class="hover:underline" href="#">Shipping</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-widest text-xs mb-6 text-primary">Studio</h4>
+<ul class="space-y-4 font-body text-sm">
+<li>Via Brera 14</li>
+<li>Milan, IT 20121</li>
+<li>+39 02 123 4567</li>
+<li>hello@studioindie.it</li>
+</ul>
+</div>
+</div>
+<div class="pt-10 border-t border-rich-brown/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest opacity-40">
+<p>© 2024 Studio Indie Bags. All Rights Reserved.</p>
+<div class="flex gap-8">
+<a href="#">Privacy</a>
+<a href="#">Terms</a>
+<a href="#">Cookies</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Floating Action Button -->
+<div class="fixed bottom-8 right-8 z-50">
+<button class="bg-primary text-cream w-16 h-16 rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform group">
+<span class="material-symbols-outlined text-2xl group-hover:rotate-12 transition-transform">shopping_bag</span>
+</button>
+</div>
+</body></html>

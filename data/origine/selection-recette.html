@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sélection de Recette - Générateur de Contenu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            border-color: #667eea;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .recipe-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .recipe-card.selected {
+            border: 3px solid #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            position: relative;
+        }
+
+        .recipe-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .recipe-content {
+            padding: 20px;
+        }
+
+        .recipe-header {
+            margin-bottom: 15px;
+        }
+
+        .recipe-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .recipe-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .meta-icon {
+            font-size: 1.1em;
+        }
+
+        .recipe-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .recipe-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #555;
+        }
+
+        .recipe-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .selection-panel {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 20px;
+        }
+
+        .selection-header {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .selection-info {
+            color: #666;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .selection-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            width: 100%;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 2em;
+            cursor: pointer;
+            color: #999;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .modal-section {
+            margin-bottom: 25px;
+        }
+
+        .modal-section h3 {
+            font-size: 1.3em;
+            margin-bottom: 12px;
+            color: #667eea;
+        }
+
+        .modal-section ul {
+            list-style-position: inside;
+            line-height: 1.8;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Sélection de Recette</h1>
+            <p>Choisissez la recette parfaite parmi nos propositions personnalisées</p>
+        </header>
+
+        <div class="filters">
+            <div class="filter-group">
+                <label for="difficultyFilter">Difficulté :</label>
+                <select id="difficultyFilter">
+                    <option value="all">Toutes</option>
+                    <option value="facile">Facile</option>
+                    <option value="moyen">Moyen</option>
+                    <option value="difficile">Difficile</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="timeFilter">Temps de préparation :</label>
+                <select id="timeFilter">
+                    <option value="all">Tous</option>
+                    <option value="rapide">Moins de 30 min</option>
+                    <option value="moyen">30-60 min</option>
+                    <option value="long">Plus de 60 min</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchInput">Rechercher :</label>
+                <input type="text" id="searchInput" placeholder="Nom de recette...">
+            </div>
+        </div>
+
+        <div id="loadingState" class="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p>Chargement des recettes...</p>
+        </div>
+
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <h2>Aucune recette disponible</h2>
+            <p>Générez d'abord des recettes pour pouvoir les sélectionner</p>
+        </div>
+
+        <div id="recipesContainer" class="recipes-grid"></div>
+
+        <div class="selection-panel" id="selectionPanel" style="display: none;">
+            <div class="selection-header">Recette sélectionnée</div>
+            <div class="selection-info" id="selectionInfo">
+                Aucune recette sélectionnée
+            </div>
+            <div class="selection-actions">
+                <button class="btn btn-success" id="confirmBtn" disabled>✓ Confirmer la sélection</button>
+                <button class="btn btn-secondary" id="cancelBtn">✕ Annuler</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="recipeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle"></h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <div id="modalBody"></div>
+            <div class="modal-section">
+                <button class="btn btn-primary" id="selectFromModal" style="width: 100%;">Sélectionner cette recette</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Données simulées des recettes
+        let recipes = [
+            {
+                id: 1,
+                title: "Poulet Rôti aux Herbes",
+                difficulty: "facile",
+                time: 60,
+                servings: 4,
+                description: "Un poulet rôti tendre et savoureux, mariné dans un mélange d'herbes fraîches et d'huile d'olive.",
+                tags: ["Viande", "Traditionnel", "Four"],
+                icon: "🍗",
+                ingredients: ["1 poulet entier", "Thym frais", "Romarin", "Ail", "Huile d'olive", "Citron"],
+                steps: ["Préchauffer le four à 180°C", "Préparer la marinade", "Badigeonner le poulet", "Cuire pendant 1h"]
+            },
+            {
+                id: 2,
+                title: "Salade César Gourmande",
+                difficulty: "facile",
+                time: 20,
+                servings: 2,
+                description: "Une salade César classique avec une sauce crémeuse maison, des croûtons croustillants et du parmesan.",
+                tags: ["Salade", "Rapide", "Frais"],
+                icon: "🥗",
+                ingredients: ["Laitue romaine", "Parmesan", "Croûtons", "Poulet grillé", "Anchois", "Sauce César"],
+                steps: ["Laver la salade", "Préparer la sauce", "Griller le poulet", "Assembler la salade"]
+            },
+            {
+                id: 3,
+                title: "Risotto aux Champignons",
+                difficulty: "moyen",
+                time: 45,
+                servings: 4,
+                description: "Un risotto crémeux et réconfortant aux champignons de saison, parfumé au vin blanc et parmesan.",
+                tags: ["Italien", "Végétarien", "Réconfort"],
+                icon: "🍄",
+                ingredients: ["Riz arborio", "Champignons mélangés", "Bouillon de légumes", "Vin blanc", "Parmesan", "Oignon"],
+                steps: ["Faire revenir l'oignon", "Toaster le riz", "Ajouter le bouillon progressivement", "Incorporer les champignons"]
+            },
+            {
+                id: 4,
+                title: "Saumon Grillé Teriyaki",
+                difficulty: "facile",
+                time: 25,
+                servings: 2,
+                description: "Filets de saumon grillés avec une sauce teriyaki maison, servis avec du riz et légumes sautés.",
+                tags: ["Poisson", "Asiatique", "Sain"],
+                icon: "🐟",
+                ingredients: ["Filets de saumon", "Sauce soja", "Mirin", "Sucre", "Gingembre", "Ail"],
+                steps: ["Préparer la sauce teriyaki", "Mariner le saumon", "Griller le poisson", "Glacer avec la sauce"]
+            },
+            {
+                id: 5,
+                title: "Tarte Tatin aux Pommes",
+                difficulty: "moyen",
+                time: 75,
+                servings: 6,
+                description: "La célèbre tarte renversée aux pommes caramélisées, croustillante et fondante à la fois.",
+                tags: ["Dessert", "Français", "Classique"],
+                icon: "🥧",
+                ingredients: ["Pommes", "Sucre", "Beurre", "Pâte feuilletée", "Vanille"],
+                steps: ["Caraméliser le sucre", "Disposer les pommes", "Couvrir de pâte", "Cuire et renverser"]
+            },
+            {
+                id: 6,
+                title: "Curry de Légumes Thaï",
+                difficulty: "facile",
+                time: 35,
+                servings: 4,
+                description: "Un curry végétarien parfumé au lait de coco, citronnelle et pâte de curry rouge.",
+                tags: ["Végétarien", "Épicé", "Thaï"],
+                icon: "🍛",
+                ingredients: ["Légumes variés", "Lait de coco", "Pâte de curry rouge", "Citronnelle", "Basilic thaï"],
+                steps: ["Faire revenir la pâte de curry", "Ajouter le lait de coco", "Incorporer les légumes", "Mijoter et servir"]
+            }
+        ];
+
+        let selectedRecipe = null;
+
+        // Fonction pour afficher les recettes
+        function displayRecipes(recipesToShow = recipes) {
+            const container = document.getElementById('recipesContainer');
+            const emptyState = document.getElementById('emptyState');
+            
+            if (recipesToShow.length === 0) {
+                container.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            container.innerHTML = recipesToShow.map(recipe => `
+                <div class="recipe-card ${selectedRecipe?.id === recipe.id ? 'selected' : ''}" data-id="${recipe.id}">
+                    <div class="recipe-image">
+                        ${recipe.icon}
+                        <span class="recipe-badge">${recipe.difficulty}</span>
+                    </div>
+                    <div class="recipe-content">
+                        <div class="recipe-header">
+                            <h3 class="recipe-title">${recipe.title}</h3>
+                        </div>
+                        <div class="recipe-meta">
+                            <span class="meta-item">
+                                <span class="meta-icon">⏱️</span>
+                                ${recipe.time} min
+                            </span>
+                            <span class="meta-item">
+                                <span class="meta-icon">👥</span>
+                                ${recipe.servings} personnes
+                            </span>
+                        </div>
+                        <p class="recipe-description">${recipe.description}</p>
+                        <div class="recipe-tags">
+                            ${recipe.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        <div class="recipe-actions">
+                            <button class="btn btn-secondary view-details" data-id="${recipe.id}">👁️ Voir détails</button>
+                            <button class="btn btn-primary select-recipe" data-id="${recipe.id}">
+                                ${selectedRecipe?.id === recipe.id ? '✓ Sélectionnée' : 'Sélectionner'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            attachEventListeners();
+        }
+
+        // Fonction pour attacher les événements
+        function attachEventListeners() {
+            document.querySelectorAll('.select-recipe').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.dataset.id);
+                    selectRecipe(id);
+                });
+            });
+
+            document.querySelectorAll('.view-details').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = parseInt(btn.dataset.id);
+                    showRecipeDetails(id);
+                });
+            });
+        }
+
+        // Fonction pour sélectionner une recette
+        function selectRecipe(id) {
+            selectedRecipe = recipes.find(r => r.id === id);
+            const panel = document.getElementById('selectionPanel');
+            const info = document.getElementById('selectionInfo');
+            const confirmBtn = document.getElementById('confirmBtn');
+
+            if (selectedRecipe) {
+                panel.style.display = 'block';
+                info.innerHTML = `
+                    <strong>${selectedRecipe.title}</strong><br>
+                    Difficulté: ${selectedRecipe.difficulty}<br>
+                    Temps: ${selectedRecipe.time} minutes<br>
+                    Pour ${selectedRecipe.servings} personnes
+                `;
+                confirmBtn.disabled = false;
+                displayRecipes(getFilteredRecipes());
+            }
+        }
+
+        // Fonction pour afficher les détails
+        function showRecipeDetails(id) {
+            const recipe = recipes.find(r => r.id === id);
+            if (!recipe) return;
+
+            document.getElementById('modalTitle').textContent = recipe.title;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="modal-section">
+                    <h3>📋 Informations</h3>
+                    <p><strong>Difficulté:</strong> ${recipe.difficulty}</p>
+                    <p><strong>Temps:</strong> ${recipe.time} minutes</p>
+                    <p><strong>Portions:</strong> ${recipe.servings} personnes</p>
+                    <p>${recipe.description}</p>
+                </div>
+                <div class="modal-section">
+                    <h3>🛒 Ingrédients</h3>
+                    <ul>
+                        ${recipe.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="modal-section">
+                    <h3>👨‍🍳 Étapes</h3>
+                    <ul>
+                        ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            document.getElementById('selectFromModal').dataset.id = id;
+            document.getElementById('recipeModal').classList.add('active');
+        }
+
+        // Fonction de filtrage
+        function getFilteredRecipes() {
+            const difficulty = document.getElementById('difficultyFilter').value;
+            const timeFilter = document.getElementById('timeFilter').value;
+            const search = document.getElementById('searchInput').value.toLowerCase();
+
+            return recipes.filter(recipe => {
+                const matchDifficulty = difficulty === 'all' || recipe.difficulty === difficulty;
+                
+                let matchTime = true;
+                if (timeFilter === 'rapide') matchTime = recipe.time < 30;
+                else if (timeFilter === 'moyen') matchTime = recipe.time >= 30 && recipe.time <= 60;
+                else if (timeFilter === 'long') matchTime = recipe.time > 60;
+
+                const matchSearch = search === '' || recipe.title.toLowerCase().includes(search);
+
+                return matchDifficulty && matchTime && matchSearch;
+            });
+        }
+
+        // Événements des filtres
+        document.getElementById('difficultyFilter').addEventListener('change', () => {
+            displayRecipes(getFilteredRecipes());
+        });
+
+        document.getElementById('timeFilter').addEventListener('change', () => {
+            displayRecipes(getFilteredRecipes());
+        });
+
+        document.getElementById('searchInput').addEventListener('input', () => {
+            displayRecipes(getFilteredRecipes());
+        });
+
+        // Événements de la modal
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('recipeModal').classList.remove('active');
+        });
+
+        document.getElementById('selectFromModal').addEventListener('click', (e) => {
+            const id = parseInt(e.target.dataset.id);
+            selectRecipe(id);
+            document.getElementById('recipeModal').classList.remove('active');
+        });
+
+        // Événements du panneau de sélection
+        document.getElementById('confirmBtn').addEventListener('click', () => {
+            if (selectedRecipe) {
+                alert(`Recette "${selectedRecipe.title}" confirmée!\nVous pouvez maintenant passer à la génération du contenu.`);
+                // Ici, vous pouvez rediriger vers la page suivante ou sauvegarder la sélection
+            }
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', () => {
+            selectedRecipe = null;
+            document.getElementById('selectionPanel').style.display = 'none';
+            document.getElementById('confirmBtn').disabled = true;
+            displayRecipes(getFilteredRecipes());
+        });
+
+        // Fermer la modal en cliquant à l'extérieur
+        document.getElementById('recipeModal').addEventListener('click', (e) => {
+            if (e.target.id === 'recipeModal') {
+                document.getElementById('recipeModal').classList.remove('active');
+            }
+        });
+
+        // Initialisation
+        displayRecipes();
+    </script>
+</body>
+</html>

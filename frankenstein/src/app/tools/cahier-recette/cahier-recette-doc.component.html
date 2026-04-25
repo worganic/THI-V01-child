@@ -1,0 +1,336 @@
+<div class="min-h-screen bg-gray-950 text-white">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+
+    <!-- Back link -->
+    <button
+      (click)="goBack()"
+      class="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-teal-400 mb-8 transition-colors"
+    >
+      <span class="material-symbols-outlined text-base">arrow_back</span>
+      Retour
+    </button>
+
+    <!-- Page title -->
+    <div class="flex items-center gap-3 mb-3">
+      <span class="material-symbols-outlined text-teal-400 text-4xl">checklist</span>
+      <h1 class="text-3xl font-bold text-white">Cahier de Recette — Documentation</h1>
+    </div>
+    <p class="text-gray-400 text-lg mb-10">
+      Système de tests de recette avec exécution IA
+    </p>
+
+    <!-- ── 1. Vue d'ensemble ───────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">info</span>
+        1. Vue d'ensemble
+      </h2>
+      <p class="text-gray-300 mb-4">
+        Le <strong class="text-white">Cahier de Recette</strong> est une plateforme intégrée de gestion des tests de recette.
+        Elle permet de définir des cas de test structurés, de les exécuter automatiquement via des agents IA
+        (Claude ou Gemini), et de produire des rapports détaillés avec historique et analyses automatiques.
+      </p>
+      <p class="text-gray-400 text-sm mb-4">
+        L'interface principale est organisée en <strong class="text-white">5 onglets</strong> :
+      </p>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+        @for (tab of [
+          {icon: 'library_books', label: 'Catalogue'},
+          {icon: 'campaign', label: 'Campagnes'},
+          {icon: 'play_circle', label: 'Lancer'},
+          {icon: 'bar_chart', label: 'Rapports'},
+          {icon: 'settings', label: 'Avancé'}
+        ]; track tab.label) {
+          <div class="flex items-center gap-2 bg-gray-800 rounded-lg px-3 py-2 border border-white/5">
+            <span class="material-symbols-outlined text-teal-400 text-base">{{ tab.icon }}</span>
+            <span class="text-sm text-gray-200">{{ tab.label }}</span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <!-- ── 2. Accès ──────────────────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">login</span>
+        2. Accès
+      </h2>
+      <ul class="space-y-3 text-gray-300 text-sm">
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-teal-400 text-base mt-0.5">radio_button_unchecked</span>
+          <span>
+            <strong class="text-white">Bouton flottant teal</strong> (bas droite de l'écran) — visible sur toutes les pages si activé en configuration.
+            Ouvre un popup affichant les tests liés à la page courante.
+          </span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-teal-400 text-base mt-0.5">radio_button_unchecked</span>
+          <span>
+            <strong class="text-white">Page /home</strong> — bouton "Cahier de recette" pour ouvrir directement le catalogue complet.
+          </span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-teal-400 text-base mt-0.5">radio_button_unchecked</span>
+          <span>
+            L'accès peut être restreint aux <strong class="text-white">administrateurs</strong> ou ouvert à tous les utilisateurs selon la configuration.
+          </span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── 3. Onglet Catalogue ───────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">library_books</span>
+        3. Onglet Catalogue
+      </h2>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Catégories</h3>
+      <p class="text-gray-300 text-sm mb-4">
+        Organisez vos tests par domaine fonctionnel (authentification, CRUD, navigation, formulaires, etc.).
+        Chaque catégorie dispose d'un icône, d'une couleur et d'un ordre d'affichage.
+      </p>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Structure d'un test</h3>
+      <p class="text-gray-300 text-sm mb-3">Chaque cas de test contient :</p>
+      <ul class="space-y-1.5 text-sm text-gray-300 mb-4">
+        <li class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
+          <strong class="text-white">Nom</strong>, <strong class="text-white">priorité</strong> (critique / haute / normale / basse), <strong class="text-white">statut</strong> (active / draft / deprecated)
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
+          <strong class="text-white">Préconditions</strong> — état requis avant l'exécution
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
+          <strong class="text-white">Étapes détaillées</strong> (voir format ci-dessous)
+        </li>
+        <li class="flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0"></span>
+          <strong class="text-white">Pages cibles</strong>, <strong class="text-white">tags</strong>, <strong class="text-white">dépendances</strong>, <strong class="text-white">durée estimée</strong>
+        </li>
+      </ul>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Format des étapes</h3>
+      <p class="text-gray-300 text-sm mb-2">
+        Chaque étape est définie sur 4 colonnes séparées par un pipe <code class="bg-gray-800 rounded font-mono text-sm text-teal-300 px-1.5 py-0.5">|</code> :
+      </p>
+      <div class="bg-gray-800 rounded-lg p-3 mb-2 font-mono text-xs text-teal-300">
+        Page | Action | Élément | Résultat attendu
+      </div>
+      <p class="text-gray-500 text-xs mb-1">Exemple :</p>
+      <div class="bg-gray-800 rounded-lg p-3 font-mono text-xs text-teal-300">
+        /login | Saisir email | input[type=email] | Le champ accepte la valeur
+      </div>
+    </section>
+
+    <!-- ── 4. Onglet Campagnes ───────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">campaign</span>
+        4. Onglet Campagnes
+      </h2>
+      <ul class="space-y-2 text-sm text-gray-300">
+        <li class="flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+          <span>Regroupements <strong class="text-white">prédéfinis</strong> de tests pour des scénarios métier récurrents (ex : smoke test, test de régression).</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+          <span><strong class="text-white">Durée estimée automatique</strong> — calculée en additionnant les durées des tests inclus.</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+          <span><strong class="text-white">Lancement direct</strong> d'une campagne depuis l'onglet Campagnes ou depuis l'onglet Lancer.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── 5. Onglet Lancer ──────────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">play_circle</span>
+        5. Onglet Lancer
+      </h2>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Configuration du run</h3>
+      <p class="text-gray-300 text-sm mb-4">
+        Avant de lancer, configurez : nom du run, URL du site, navigateur cible, environnement (local / staging / production) et le fournisseur IA.
+      </p>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Modes de sélection des tests</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-4">
+        @for (mode of [
+          {label: 'Tous', desc: 'Tous les tests actifs'},
+          {label: 'Campagne', desc: 'Une campagne prédéfinie'},
+          {label: 'Tags', desc: 'Filtrage par tags'},
+          {label: 'Sélection', desc: 'Choix manuel'},
+          {label: 'Replay', desc: 'Tests échoués seulement'}
+        ]; track mode.label) {
+          <div class="bg-gray-800 rounded-lg p-2.5 border border-white/5">
+            <p class="text-sm font-medium text-white">{{ mode.label }}</p>
+            <p class="text-xs text-gray-400">{{ mode.desc }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="space-y-2 text-sm text-gray-300">
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">I</span>
+          <span><strong class="text-white">Estimation de durée</strong> — affichée avant le lancement en fonction des tests sélectionnés.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">H</span>
+          <span><strong class="text-white">Résolution des dépendances</strong> — les tests bloquants sont automatiquement ajoutés et exécutés en premier.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">SSE</span>
+          <span><strong class="text-white">Suivi en temps réel</strong> — progression et résultats partiels via Server-Sent Events.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6. Onglet Rapports ────────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">bar_chart</span>
+        6. Onglet Rapports
+      </h2>
+      <div class="space-y-2.5 text-sm text-gray-300">
+        <div class="flex items-start gap-2">
+          <span class="text-teal-400 font-bold shrink-0">→</span>
+          <span><strong class="text-white">Score global</strong> — pourcentage de réussite (0–100%) calculé sur les tests non ignorés.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">B</span>
+          <span><strong class="text-white">Historique visuel (sparkline)</strong> — évolution du score sur les derniers runs.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">C</span>
+          <span><strong class="text-white">Comparaison entre deux runs</strong> — régressions, corrections et delta de score.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">D</span>
+          <span><strong class="text-white">Export</strong> — rapport complet au format JSON ou Markdown.</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">A</span>
+          <span><strong class="text-white">Mode Replay</strong> — relance uniquement les tests ayant échoué lors du dernier run sélectionné.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7. Onglet Avancé ──────────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">settings</span>
+        7. Onglet Avancé
+      </h2>
+      <div class="space-y-2.5 text-sm text-gray-300">
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">G</span>
+          <div>
+            <strong class="text-white">Variables de contexte</strong>
+            <p class="text-gray-400 text-xs mt-0.5">
+              Définissez des variables <code class="bg-gray-800 rounded font-mono text-teal-300 px-1 py-0.5 text-xs">{{lb}}VAR_NAME{{rb}}</code>
+              substituées automatiquement dans les étapes au moment de l'exécution.
+              Exemple : <code class="bg-gray-800 rounded font-mono text-teal-300 px-1 py-0.5 text-xs">{{lb}}BASE_URL{{rb}}</code> → <code class="bg-gray-800 rounded font-mono text-teal-300 px-1 py-0.5 text-xs">https://app.example.com</code>
+            </p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">E</span>
+          <span><strong class="text-white">Bibliothèque de templates</strong> — importez des cas de test préconçus (auth, CRUD, navigation, formulaires, responsive, accessibilité).</span>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">J</span>
+          <div>
+            <strong class="text-white">Webhook CI/CD</strong>
+            <p class="text-gray-400 text-xs mt-0.5">Configurez une URL de webhook pour déclencher automatiquement un run depuis votre pipeline CI/CD.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-2">
+          <span class="bg-gray-700 text-gray-300 text-xs font-mono rounded px-1.5 py-0.5 shrink-0 mt-0.5">F</span>
+          <span><strong class="text-white">Tags</strong> — système d'étiquettes pour filtrer et regrouper les tests par thématique transversale.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 8. Bouton flottant widget ─────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-3 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">widgets</span>
+        8. Bouton flottant widget
+      </h2>
+      <p class="text-gray-300 text-sm mb-4">
+        Un bouton teal circulaire apparaît en bas à droite de chaque page (si activé en configuration).
+        Il offre deux fonctionnalités directement contextuelles :
+      </p>
+      <ul class="space-y-2.5 text-sm text-gray-300">
+        <li class="flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+          <span><strong class="text-white">Tests enregistrés</strong> — affiche la liste des tests dont l'URL correspond à la page courante (<code class="bg-gray-800 rounded font-mono text-teal-300 px-1 py-0.5 text-xs">targetPages</code>).</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-teal-400 shrink-0 mt-1.5"></span>
+          <span><strong class="text-white">Analyse IA</strong> — envoie le contenu de la page à l'IA pour suggérer automatiquement des cas de test pertinents, importables en un clic.</span>
+        </li>
+      </ul>
+    </section>
+
+    <!-- ── 9. Configuration ──────────────────────────────────────────────── -->
+    <section class="bg-gray-900 rounded-xl border border-white/10 p-6 mb-6">
+      <h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <span class="material-symbols-outlined text-teal-400">tune</span>
+        9. Configuration
+      </h2>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Widget flottant</h3>
+      <p class="text-gray-300 text-sm mb-4">
+        Activez ou désactivez le bouton flottant depuis la page
+        <code class="bg-gray-800 rounded font-mono text-sm text-teal-300 px-1.5 py-0.5">/config</code>
+        (section Cahier de Recette). Le paramètre est sauvegardé en base de configuration.
+      </p>
+
+      <h3 class="text-base font-semibold text-gray-200 mb-2">Variables d'environnement</h3>
+      <p class="text-gray-300 text-sm mb-3">
+        Les variables de contexte sont définies dans l'onglet Avancé et peuvent être personnalisées par run.
+      </p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-white/10">
+              <th class="text-left text-gray-400 font-medium py-2 pr-4">Nom</th>
+              <th class="text-left text-gray-400 font-medium py-2 pr-4">Valeur</th>
+              <th class="text-left text-gray-400 font-medium py-2">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of [
+              {name: 'BASE_URL', value: 'https://app.example.com', desc: 'URL de base du site testé'},
+              {name: 'ADMIN_EMAIL', value: 'admin&#64;example.com', desc: 'Email du compte administrateur'},
+              {name: 'TEST_PASSWORD', value: '••••••••', desc: 'Mot de passe de test'}
+            ]; track row.name) {
+              <tr class="border-b border-white/5">
+                <td class="py-2 pr-4">
+                  <code class="bg-gray-800 rounded font-mono text-teal-300 px-1.5 py-0.5 text-xs">{{ row.name }}</code>
+                </td>
+                <td class="py-2 pr-4">
+                  <span class="text-gray-300 font-mono text-xs" [innerHTML]="row.value"></span>
+                </td>
+                <td class="py-2 text-gray-400 text-xs">{{ row.desc }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <div class="text-center text-xs text-gray-600 mt-8">
+      Frankenstein Junior · Cahier de Recette · Documentation
+    </div>
+
+  </div>
+</div>

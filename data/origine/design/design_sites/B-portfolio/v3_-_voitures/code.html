@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LUXE-DRIVE | Automotive Luggage Engineering</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00bfff",
+                        "background-light": "#f5f8f8",
+                        "background-dark": "#0f1e23",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-image: radial-gradient(circle at 2px 2px, rgba(0, 191, 255, 0.05) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        .carbon-texture {
+            background: linear-gradient(45deg, #101618 25%, #141b1f 25%, #141b1f 50%, #101618 50%, #101618 75%, #141b1f 75%, #141b1f 100%);
+            background-size: 4px 4px;
+        }
+        .glow-border:hover {
+            box-shadow: 0 0 15px rgba(0, 191, 255, 0.4);
+            border-color: #00bfff;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white transition-colors duration-300">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="fixed top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-20 lg:px-40 py-4">
+<div class="flex items-center justify-between max-w-[1200px] mx-auto">
+<div class="flex items-center gap-3">
+<div class="text-primary">
+<span class="material-symbols-outlined text-3xl">precision_manufacturing</span>
+</div>
+<h2 class="text-xl font-bold tracking-[0.2em] uppercase">Luxe-Drive</h2>
+</div>
+<nav class="hidden md:flex items-center gap-10">
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">Collections</a>
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">Engineering</a>
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">Materials</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="flex items-center justify-center rounded border border-primary/50 px-4 py-2 text-xs font-bold uppercase tracking-widest text-primary hover:bg-primary hover:text-background-dark transition-all">
+                        Contact Lab
+                    </button>
+</div>
+</div>
+</header>
+<main class="flex-1 pt-24">
+<!-- Hero Section -->
+<section class="px-6 md:px-20 lg:px-40 py-10">
+<div class="max-w-[1200px] mx-auto">
+<div class="relative group overflow-hidden rounded-xl border border-white/5 bg-[#16252a]">
+<div class="flex min-h-[600px] flex-col items-center justify-center gap-8 bg-cover bg-center p-8 text-center" data-alt="Modern sports car trunk with custom leather luggage" style='background-image: linear-gradient(rgba(15, 30, 35, 0.8) 0%, rgba(15, 30, 35, 0.4) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAgnX6SFDSb2yW7LufQhID_wHlNkhpgFDwVKxwMhsSnCqds0vHaGcnwRzAxlhJSPt3X632WeMQLbWA_H4ZN9LlNfyA6SnXGwgPCBh3_57hPfBKNlPXVNM8fEUlSDIHjcGvjfRBWIoJ2fb2XKxiIeptIQwbxw27h8zg4fvuF79BoTq4FPM5g53kZRBrIA-HryZ8KH-tWeZLbiLr5e1sY2BrbrtSjiAIxCKqyC-Fg2blKgrvZ2J0e8pX-NTLaUyUULVkl6hgsBUZxYA");'>
+<div class="flex flex-col gap-4 max-w-2xl">
+<span class="text-primary font-bold tracking-[0.4em] uppercase text-xs">Aero-Dynamic Form Factor</span>
+<h1 class="text-5xl md:text-7xl font-black leading-tight tracking-tighter uppercase italic">
+                                    Engineered <span class="text-primary">Elegance</span>
+</h1>
+<p class="text-slate-300 text-lg font-light leading-relaxed">
+                                    Precision-fit luggage systems designed for the contours of high-performance racing machines. Where aerodynamics meets artisanal leather.
+                                </p>
+</div>
+<div class="flex gap-4">
+<button class="bg-primary text-background-dark px-8 py-4 rounded font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform flex items-center gap-2">
+                                    The Perfect Fit <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="bg-white/10 backdrop-blur-md text-white px-8 py-4 rounded font-bold uppercase tracking-widest text-sm hover:bg-white/20 transition-all">
+                                    Blueprint View
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Telemetry Stats -->
+<section class="px-6 md:px-20 lg:px-40 py-6">
+<div class="max-w-[1200px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="flex flex-col gap-3 rounded-lg p-8 border border-white/10 bg-background-dark/50 carbon-texture relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary text-4xl">inventory_2</span>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Cargo Optimized</p>
+<p class="text-4xl font-bold tracking-tighter text-white">450 <span class="text-sm font-light uppercase tracking-normal">Gallons</span></p>
+<div class="h-1 w-full bg-white/5 mt-2 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[85%]"></div>
+</div>
+<p class="text-primary text-xs font-medium">+15% Efficiency Increase</p>
+</div>
+<div class="flex flex-col gap-3 rounded-lg p-8 border border-white/10 bg-background-dark/50 carbon-texture relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary text-4xl">directions_car</span>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Chassis Validated</p>
+<p class="text-4xl font-bold tracking-tighter text-white">12 <span class="text-sm font-light uppercase tracking-normal">Models</span></p>
+<div class="h-1 w-full bg-white/5 mt-2 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[62%]"></div>
+</div>
+<p class="text-primary text-xs font-medium">Precision Scanning Phase</p>
+</div>
+<div class="flex flex-col gap-3 rounded-lg p-8 border border-white/10 bg-background-dark/50 carbon-texture relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4 opacity-20 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary text-4xl">layers</span>
+</div>
+<p class="text-slate-400 text-xs font-bold uppercase tracking-widest">Material Grade</p>
+<p class="text-3xl font-bold tracking-tighter text-white">Aerospace Carbon</p>
+<div class="h-1 w-full bg-white/5 mt-2 rounded-full overflow-hidden">
+<div class="h-full bg-primary w-[98%]"></div>
+</div>
+<p class="text-primary text-xs font-medium">98.4% Weight Reduction</p>
+</div>
+</div>
+</section>
+<!-- Portfolio Bento Grid -->
+<section class="px-6 md:px-20 lg:px-40 py-12">
+<div class="max-w-[1200px] mx-auto">
+<div class="flex items-end justify-between mb-8 border-l-4 border-primary pl-6">
+<div>
+<h2 class="text-3xl font-black uppercase tracking-tighter">The Telemetry Grid</h2>
+<p class="text-slate-400 text-sm tracking-widest uppercase">Select collection to view structural data</p>
+</div>
+<div class="hidden md:flex gap-2">
+<span class="size-2 bg-primary rounded-full animate-pulse"></span>
+<span class="text-[10px] text-primary uppercase font-bold tracking-widest">System Active</span>
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-4 h-[800px]">
+<!-- Large Card -->
+<div class="md:col-span-2 md:row-span-2 group relative overflow-hidden rounded-xl border border-white/10 glow-border transition-all">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="Luxury carbon fiber travel case for 911" style='background-image: linear-gradient(0deg, rgba(15, 30, 35, 0.9) 0%, rgba(15, 30, 35, 0) 60%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC9VjHcB1FMpjuytaPsKzma9CjlAb1hRdDP8Rql6iTPJrr7xU1lUeyLpEvAMfQQOKzIokKJgSSB1M0Y94xtHCMkykLL6ZZ2SbQnROPsH3_g5MJuA4t18p8kqw8pTC-BSg2kDLDHd-AwA6_7oM2YnHIQMa9DE7WpGyrPOaYSSvRiuoZ2ZX7sWsoJdIbv1J9IBIExX5p90SCt4gbV22Dtk7KOrmnchn19OSky3lIHSMMOdRL21sxWwrqUW3u9hX0ImfXATowX4RV4lA");'>
+</div>
+<div class="absolute bottom-0 p-8 w-full">
+<span class="bg-primary/20 text-primary px-3 py-1 rounded text-[10px] font-bold uppercase tracking-[0.2em] border border-primary/30 mb-4 inline-block">Flagship Series</span>
+<h3 class="text-3xl font-bold uppercase tracking-tighter mb-2">The 911 Collection</h3>
+<p class="text-slate-300 text-sm font-light max-w-sm">Custom molded to the exact geometry of the Type 992 front trunk. 3-piece set in bespoke Nappa leather.</p>
+<div class="mt-6 flex gap-4">
+<div class="text-center border-r border-white/10 pr-4">
+<p class="text-primary text-xl font-bold">1.2kg</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest">Weight</p>
+</div>
+<div class="text-center">
+<p class="text-primary text-xl font-bold">42L</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-widest">Volume</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Grid Cards -->
+<div class="group relative overflow-hidden rounded-xl border border-white/10 glow-border transition-all">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Technical drawing of a duffle bag" style='background-image: linear-gradient(0deg, rgba(15, 30, 35, 0.8) 0%, rgba(15, 30, 35, 0.2) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAnhu09o89zI0OOe7qPpZrSS-whapyPZGZbwRWvMjk8IDB5JONSQlM3pYftNk3Jx7vi-M3SnUBmAOeU429pXWkM1g4yJ5Dk9jmk1w8GytBlNkyxz9BcuJsY5iV5N9SCyZT3WO4zXokAyCSCjT8nu39ilD2YaTwxBjfOIM91goIUQtok8YL_notyuuFJbYVViqGiKARXVSCruyZHNyZI2QtECXllGPZli97x7bFhVs5efvDEUwMQO6o-hGtjpp71fgFJyTei0wlOng");'>
+</div>
+<div class="absolute bottom-0 p-6">
+<h4 class="text-lg font-bold uppercase tracking-tighter">Grand Tourer Set</h4>
+<p class="text-primary text-[10px] uppercase tracking-widest font-bold">Available Now</p>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-xl border border-white/10 glow-border transition-all">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Close up of red leather stitching" style='background-image: linear-gradient(0deg, rgba(15, 30, 35, 0.8) 0%, rgba(15, 30, 35, 0.2) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCjd67qRihNmYrhppd-GFbIBi6ujCFHSt8yadplsfUUcPf-jlOSdf8fCPuuRM6lXMq72uuyAXW1Y2mSWXGgrlFoRN2v1Hb0nJHO2tJlqOL5OSVxe6m3hbc11EYCsqsqgPuxPxXcwX7jp46VE-nRC4dHDkYejVNqju5iPRWJ2gHnircpIrFdIQTT4ThY82KahVKE5RTqF7Lc7TXo2gKNqrePnnzIbHM0kzZgRTSwGDNiTBS7PZgEPLseMOtnFUg90DZzWiw13MNZ8A");'>
+</div>
+<div class="absolute bottom-0 p-6">
+<h4 class="text-lg font-bold uppercase tracking-tighter">Circuit Series</h4>
+<p class="text-primary text-[10px] uppercase tracking-widest font-bold">Limited Edition</p>
+</div>
+</div>
+<div class="md:col-span-2 group relative overflow-hidden rounded-xl border border-white/10 glow-border transition-all">
+<div class="absolute inset-0 bg-cover bg-center" data-alt="Duffle bag in carbon fiber material" style='background-image: linear-gradient(0deg, rgba(15, 30, 35, 0.8) 0%, rgba(15, 30, 35, 0.2) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuC59OSKrI5nLer--T9J5_xVn3PC1nCgzAwOQfopn9K8xo-ERdPB1GoLl06kIZ8t67Xd9H1I3mtvLx6BgtiAaWS9_R_zTQGC9RH81SglXnSxuUr1hFHQAc7WtLyAthG2_pguZtBERaeRbP2gFlgmtU4HPuWQjC_BqKLgpoJDGJXzoe_PoZBU4UqpfhlK0xDt8DjMrQZkDpRcEDEdqLjerMY70RgSeR57xyjesOBQdHXO8pKWV-okKNGY7twLY4OBxkrizhdYV6E7yw");'>
+</div>
+<div class="absolute bottom-0 p-8">
+<h4 class="text-2xl font-bold uppercase tracking-tighter">Aero-Duffle</h4>
+<p class="text-slate-300 text-sm max-w-xs">Wind-tunnel tested geometry for roof-box optimization and cabin pressure resistance.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Technical CTA -->
+<section class="px-6 md:px-20 lg:px-40 py-20 bg-[#121c21] carbon-texture border-y border-white/5">
+<div class="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+<div class="md:w-1/2">
+<h2 class="text-4xl font-black uppercase tracking-tighter mb-6 italic">The Perfect Fit <br/><span class="text-primary tracking-widest">Protocol</span></h2>
+<ul class="space-y-4">
+<li class="flex items-center gap-4 text-slate-300">
+<span class="material-symbols-outlined text-primary">fingerprint</span>
+<span class="text-sm font-medium uppercase tracking-widest">High-fidelity 3D Laser Scanning</span>
+</li>
+<li class="flex items-center gap-4 text-slate-300">
+<span class="material-symbols-outlined text-primary">view_in_ar</span>
+<span class="text-sm font-medium uppercase tracking-widest">Digital Twin Prototype Phase</span>
+</li>
+<li class="flex items-center gap-4 text-slate-300">
+<span class="material-symbols-outlined text-primary">architecture</span>
+<span class="text-sm font-medium uppercase tracking-widest">Artisanal Italian Craftsmanship</span>
+</li>
+</ul>
+</div>
+<div class="md:w-1/2 relative">
+<div class="aspect-video bg-background-dark border border-primary/20 rounded-lg p-2 overflow-hidden shadow-2xl shadow-primary/10">
+<div class="w-full h-full bg-[#101618] relative flex items-center justify-center">
+<div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(#00bfff 0.5px, transparent 0.5px); background-size: 10px 10px;"></div>
+<span class="material-symbols-outlined text-7xl text-primary/30 animate-pulse">model_training</span>
+<div class="absolute top-4 left-4 flex gap-2">
+<div class="size-2 rounded-full bg-red-500"></div>
+<div class="size-2 rounded-full bg-yellow-500"></div>
+<div class="size-2 rounded-full bg-green-500"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="px-6 md:px-20 lg:px-40 py-12 border-t border-white/10 mt-auto">
+<div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">precision_manufacturing</span>
+<h2 class="text-lg font-bold tracking-[0.2em] uppercase">Luxe-Drive</h2>
+</div>
+<div class="flex gap-8">
+<a class="text-slate-500 hover:text-primary transition-colors uppercase text-[10px] font-bold tracking-widest" href="#">Instagram</a>
+<a class="text-slate-500 hover:text-primary transition-colors uppercase text-[10px] font-bold tracking-widest" href="#">LinkedIn</a>
+<a class="text-slate-500 hover:text-primary transition-colors uppercase text-[10px] font-bold tracking-widest" href="#">Engineering Blog</a>
+</div>
+<p class="text-slate-600 text-[10px] uppercase tracking-widest">
+                    © 2024 Luxe-Drive Design Lab. All Rights Reserved.
+                </p>
+</div>
+</footer>
+</div>
+</body></html>

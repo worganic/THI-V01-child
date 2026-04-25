@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nature 2.0 | Future-Forward Botanical Science</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#06e4f9",
+                        "background-light": "#f9fafb",
+                        "background-dark": "#17191c",
+                        "accent-purple": "#E633CC",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: #17191c;
+        }
+        .glow-border {
+            box-shadow: 0 0 15px rgba(6, 228, 249, 0.2);
+        }
+        .neon-text {
+            text-shadow: 0 0 8px rgba(6, 228, 249, 0.5);
+        }
+        .glass-nav {
+            background: rgba(23, 25, 28, 0.8);
+            backdrop-filter: blur(12px);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-white selection:bg-primary selection:text-background-dark">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<!-- Navigation -->
+<header class="fixed top-0 z-50 w-full glass-nav border-b border-white/10">
+<div class="mx-auto max-w-[1200px] px-6 py-4 flex items-center justify-between">
+<div class="flex items-center gap-10">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-background-dark font-bold">biotech</span>
+</div>
+<h1 class="text-xl font-bold tracking-tighter uppercase">Nature 2.0</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Laboratory</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Ethics</a>
+<a class="text-sm font-medium hover:text-primary transition-colors uppercase tracking-widest" href="#">Archive</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm">search</span>
+<input class="bg-white/5 border border-white/10 rounded-full pl-10 pr-4 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none w-48 uppercase tracking-tighter" placeholder="QUERY INGREDIENTS" type="text"/>
+</div>
+<button class="flex items-center gap-2 bg-primary px-5 py-2 rounded-full text-background-dark text-xs font-bold uppercase tracking-wider hover:brightness-110 transition-all">
+<span class="material-symbols-outlined text-sm">shopping_cart</span>
+<span>Access Cart</span>
+</button>
+</div>
+</div>
+</header>
+<main class="flex-1 pt-24">
+<!-- Hero Section -->
+<section class="mx-auto max-w-[1200px] px-6 py-12 md:py-20">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-7 relative">
+<div class="absolute -top-4 -left-4 w-20 h-20 border-t-2 border-l-2 border-primary"></div>
+<div class="absolute -bottom-4 -right-4 w-20 h-20 border-b-2 border-r-2 border-accent-purple"></div>
+<div class="aspect-[4/5] md:aspect-video rounded-xl bg-cover bg-center glow-border border border-white/10 relative overflow-hidden" data-alt="Woman using skincare product in high contrast digital lighting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAGgs9dSdCwFo1F7TiOi7f0pe5B9oNH0ix14Oz5RYSywnK6QqAo42-8IdkGqsVEWgvqMihpGPglFXpuLmRsjQ70Iw0xFPt-rNAUX75KBgHeMXbIuUifgq7KxxunNROZSCoLsFIHl1rkhkB647XiyhJGHgbvYpTR5vVClhOvYRC_NtGEFeS0AYzVOnbOemAQs8khyooyRSc5jl9bxa0q-jYneSEWNI_jFxkF4MWBOhuaVA_N5fuJfDF41tUDVhAGXfAvBVATy0iyh1Tx')">
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+<div class="absolute bottom-6 left-6 flex items-center gap-3">
+<div class="px-3 py-1 bg-primary/20 backdrop-blur-md border border-primary/30 rounded text-[10px] font-bold tracking-[0.2em] uppercase">Tech-Level: 04</div>
+<div class="px-3 py-1 bg-white/10 backdrop-blur-md border border-white/20 rounded text-[10px] font-bold tracking-[0.2em] uppercase">Oxygenating</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-5 flex flex-col gap-8">
+<div class="space-y-4">
+<span class="text-primary text-xs font-bold tracking-[0.4em] uppercase">Biological Precision</span>
+<h2 class="text-5xl md:text-6xl font-black leading-[0.9] tracking-tighter uppercase">
+                                Future <br/> <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent-purple">Botanical</span> <br/> Science
+                            </h2>
+<p class="text-white/60 text-lg font-light leading-relaxed max-w-md">
+                                Sustainable beauty, digitally perfected. Experience high-tech organic skincare formulated for the next generation of human ecology.
+                            </p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-background-dark px-8 py-4 rounded-lg font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform">
+                                Shop Neon Glow
+                            </button>
+<button class="border border-white/20 hover:border-primary px-8 py-4 rounded-lg font-bold uppercase tracking-widest text-sm transition-colors">
+                                Specifications
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Ethics Trinity -->
+<section class="bg-white/[0.02] border-y border-white/10 py-16">
+<div class="mx-auto max-w-[1200px] px-6">
+<div class="flex flex-col items-center mb-12">
+<div class="h-px w-20 bg-primary mb-4"></div>
+<h3 class="text-xs font-bold tracking-[0.5em] uppercase text-white/40">Our Ethics Protocol</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="group bg-background-dark border border-white/10 p-8 rounded-xl hover:border-primary/50 transition-all relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 text-[10px] text-white/20 font-mono italic">REF: 001</div>
+<div class="size-14 rounded-full border border-primary/30 flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">eco</span>
+</div>
+<h4 class="text-xl font-bold uppercase tracking-tight mb-2">100% Organic</h4>
+<p class="text-white/50 text-sm leading-relaxed">Lab-certified purity derived from regenerative neon-botanical farms.</p>
+</div>
+<!-- Card 2 -->
+<div class="group bg-background-dark border border-white/10 p-8 rounded-xl hover:border-primary/50 transition-all relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 text-[10px] text-white/20 font-mono italic">REF: 002</div>
+<div class="size-14 rounded-full border border-primary/30 flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">precision_manufacturing</span>
+</div>
+<h4 class="text-xl font-bold uppercase tracking-tight mb-2">Cruelty-Free</h4>
+<p class="text-white/50 text-sm leading-relaxed">Tested on advanced skin-cell simulations, never on sentient life.</p>
+</div>
+<!-- Card 3 -->
+<div class="group bg-background-dark border border-white/10 p-8 rounded-xl hover:border-primary/50 transition-all relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 text-[10px] text-white/20 font-mono italic">REF: 003</div>
+<div class="size-14 rounded-full border border-primary/30 flex items-center justify-center mb-6 group-hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-primary text-3xl">psychiatry</span>
+</div>
+<h4 class="text-xl font-bold uppercase tracking-tight mb-2">Vegan Prime</h4>
+<p class="text-white/50 text-sm leading-relaxed">Zero animal derivatives. Pure molecular phyto-nutrients only.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Showcase -->
+<section class="py-24 mx-auto max-w-[1200px] px-6">
+<div class="flex items-end justify-between mb-12">
+<div class="space-y-2">
+<span class="text-accent-purple text-xs font-bold tracking-[0.4em] uppercase">Core Series</span>
+<h3 class="text-4xl font-black uppercase tracking-tighter">The Future Collection</h3>
+</div>
+<div class="flex gap-4">
+<button class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<button class="size-12 rounded-full border border-white/10 flex items-center justify-center hover:border-primary hover:text-primary transition-all">
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+<!-- Product Item -->
+<div class="group cursor-pointer">
+<div class="relative aspect-square bg-white/[0.03] rounded-xl border border-white/5 overflow-hidden mb-6 flex items-center justify-center transition-all group-hover:border-primary/40">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img class="w-2/3 h-2/3 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500" data-alt="Cyber-sage cleanser bottle with glowing accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZXdFNzD9w1i_c67b2Z3W-yVqm8aXOksZToTm9be0MlrZa7INqD9qxaC0NMYPNhVKI9Vp3S8GldH4ZrN_sV82P6DSD-7GdPJEVBckp73A_Xbu1TrLRWhXySv6BUtx49PX88tYF-JzT553UtUQfL1Jm5KItZZDlYkuxKkzC-8uh1V-DlpC5ARsuC4WFnbfUdUM3ooClE0Z-jrPWvqjOpi6mXlwZ2G-7qwrlHIlnjOSeCIHIQVW9jFIjLjgUyVjWrVCUmT447_50ijnV"/>
+<div class="absolute top-4 left-4 bg-background-dark/80 px-2 py-1 border border-white/10 rounded text-[9px] font-bold uppercase tracking-widest">In Stock</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors">Neon Glow Serum</h4>
+<p class="text-white/40 text-xs uppercase tracking-[0.2em] mt-1">Illuminating Concentrate</p>
+</div>
+<span class="text-primary font-mono font-bold">$84.00</span>
+</div>
+</div>
+<!-- Product Item -->
+<div class="group cursor-pointer">
+<div class="relative aspect-square bg-white/[0.03] rounded-xl border border-white/5 overflow-hidden mb-6 flex items-center justify-center transition-all group-hover:border-primary/40">
+<div class="absolute inset-0 bg-gradient-to-br from-accent-purple/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img class="w-2/3 h-2/3 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500" data-alt="Oxygenating hydrator cream in sleek jar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe6UeLd4PN7SWdS8HZn_eKsV0qvl52-j_oBeSeA2_0JxfkcuXUlN9VdSyZl8L1RJOW88XNlGLeZke9O8sb7YfDCowLU4_nWfopv7gv5xZJmsbssny4tR_L2txs6nFDDmjBluR06iJwNAEdze506dNL1D8cOMpFRZVXCSjJ4KGQVmAskdAKy8j-In07DVhK1wprIFp4mK5Qs-NMobY3n0952D1np0FM7f_CSquegnhdYdtAQl5cZiPrJ2V_pgb7qzdodmXsDCBUAi_H"/>
+<div class="absolute top-4 left-4 bg-background-dark/80 px-2 py-1 border border-white/10 rounded text-[9px] font-bold uppercase tracking-widest">Limited</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors">Oxygen Hydrator</h4>
+<p class="text-white/40 text-xs uppercase tracking-[0.2em] mt-1">Atmos-Shield Matrix</p>
+</div>
+<span class="text-primary font-mono font-bold">$120.00</span>
+</div>
+</div>
+<!-- Product Item -->
+<div class="group cursor-pointer">
+<div class="relative aspect-square bg-white/[0.03] rounded-xl border border-white/5 overflow-hidden mb-6 flex items-center justify-center transition-all group-hover:border-primary/40">
+<div class="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<img class="w-2/3 h-2/3 object-contain drop-shadow-2xl group-hover:scale-110 transition-transform duration-500" data-alt="Cyber-Sage cleanser minimalist bottle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsna8arlFtxoOcikZsln0m0LTHHF92QEzO_jZC7GeS13nKj-8ZtO9-QNMyYb6-FDL28NyYl7V4RSVposzeiYIEXhmL539CEa1ItdblnOHIYhseIh-GqP1PHZ8OQVCYknF1nEAqDxc12HycrD4MxpXlwAAVmyobZe6hTtzfiNQdbJppxIHmalvOTasbVA9E0-sYYsVxOYLMysSYjgt2lvKiVd1k9mAh-zAivbDIwSpJjBz5_XECi6A4G5VGJJZZ5zbmU6P9OOiyDmqn"/>
+<div class="absolute top-4 left-4 bg-background-dark/80 px-2 py-1 border border-white/10 rounded text-[9px] font-bold uppercase tracking-widest">New Gen</div>
+</div>
+<div class="flex justify-between items-start">
+<div>
+<h4 class="text-lg font-bold uppercase tracking-tight group-hover:text-primary transition-colors">Cyber-Sage Wash</h4>
+<p class="text-white/40 text-xs uppercase tracking-[0.2em] mt-1">Deep Pore Defragmentation</p>
+</div>
+<span class="text-primary font-mono font-bold">$56.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter Modular -->
+<section class="mx-auto max-w-[1200px] px-6 pb-24">
+<div class="bg-gradient-to-r from-background-dark to-white/[0.05] border border-white/10 rounded-2xl p-12 flex flex-col md:flex-row items-center justify-between gap-12 overflow-hidden relative">
+<div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+<div class="space-y-4 relative z-10 text-center md:text-left">
+<h3 class="text-3xl font-black uppercase tracking-tight">Synchronize Your Skin</h3>
+<p class="text-white/50 max-w-sm">Join our digital collective for early access to synthetic botanical drops and bio-hacking tips.</p>
+</div>
+<form class="flex w-full max-w-md gap-2 relative z-10">
+<input class="flex-1 bg-white/5 border border-white/20 rounded-lg px-6 py-4 text-sm focus:ring-1 focus:ring-primary focus:border-primary outline-none uppercase font-mono" placeholder="EMAIL@PROTOCOL.COM" type="email"/>
+<button class="bg-primary text-background-dark px-6 py-4 rounded-lg font-bold uppercase text-xs tracking-widest hover:brightness-110 transition-all" type="submit">Submit</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-background-dark border-t border-white/10 pt-20 pb-10">
+<div class="mx-auto max-w-[1200px] px-6">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-20">
+<div class="col-span-2 lg:col-span-2 space-y-6">
+<div class="flex items-center gap-3">
+<div class="size-6 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-background-dark text-sm font-bold">biotech</span>
+</div>
+<h1 class="text-lg font-bold tracking-tighter uppercase">Nature 2.0</h1>
+</div>
+<p class="text-white/40 text-sm max-w-xs leading-relaxed">
+                            Pioneering the intersection of molecular biology and sustainable design. Ethical beauty for the post-digital era.
+                        </p>
+</div>
+<div class="space-y-6">
+<h5 class="text-xs font-bold uppercase tracking-widest text-primary">Explore</h5>
+<ul class="space-y-4 text-sm text-white/60">
+<li><a class="hover:text-white transition-colors" href="#">Catalog</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Ingredients</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Safety Protocols</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h5 class="text-xs font-bold uppercase tracking-widest text-primary">Company</h5>
+<ul class="space-y-4 text-sm text-white/60">
+<li><a class="hover:text-white transition-colors" href="#">Bio-Ethic Statement</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Sustainability Log</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Press</a></li>
+</ul>
+</div>
+<div class="space-y-6">
+<h5 class="text-xs font-bold uppercase tracking-widest text-primary">Connect</h5>
+<ul class="space-y-4 text-sm text-white/60">
+<li><a class="hover:text-white transition-colors" href="#">Instagram</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Discord</a></li>
+<li><a class="hover:text-white transition-colors" href="#">X / Digital</a></li>
+</ul>
+</div>
+</div>
+<div class="flex flex-col md:flex-row items-center justify-between border-t border-white/5 pt-10 gap-6">
+<p class="text-[10px] text-white/20 font-mono uppercase tracking-widest">© 2024 Nature 2.0 Protocol. All systems nominal.</p>
+<div class="flex gap-8 text-[10px] text-white/20 font-mono uppercase tracking-widest">
+<a class="hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

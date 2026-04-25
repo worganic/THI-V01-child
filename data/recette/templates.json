@@ -1,0 +1,88 @@
+{
+  "templates": [
+    {
+      "id": "tpl-001",
+      "name": "Connexion utilisateur",
+      "category": "auth",
+      "description": "Vérifie le flux de connexion standard avec identifiants valides",
+      "tags": ["auth", "smoke"],
+      "estimatedMinutes": 2,
+      "preconditions": "Compte utilisateur existant",
+      "steps": [
+        { "order": 1, "page": "/login", "action": "Naviguer vers la page de connexion", "element": "URL", "expected": "Formulaire de connexion visible" },
+        { "order": 2, "page": "/login", "action": "Saisir l'email dans le champ Email", "element": "input[type=email]", "expected": "Valeur acceptée" },
+        { "order": 3, "page": "/login", "action": "Saisir le mot de passe", "element": "input[type=password]", "expected": "Valeur masquée" },
+        { "order": 4, "page": "/login", "action": "Cliquer sur le bouton de connexion", "element": "button[type=submit]", "expected": "Redirection vers la page principale" }
+      ]
+    },
+    {
+      "id": "tpl-002",
+      "name": "Création d'un élément (CRUD)",
+      "category": "crud",
+      "description": "Vérifie la création d'un nouvel élément via formulaire",
+      "tags": ["crud"],
+      "estimatedMinutes": 3,
+      "preconditions": "Utilisateur connecté avec droits de création",
+      "steps": [
+        { "order": 1, "page": "/[page]", "action": "Cliquer sur le bouton 'Nouveau' ou '+'", "element": "button — Nouveau / Créer", "expected": "Formulaire de création visible" },
+        { "order": 2, "page": "/[page]", "action": "Remplir les champs obligatoires", "element": "Formulaire — champs requis", "expected": "Valeurs acceptées sans erreur" },
+        { "order": 3, "page": "/[page]", "action": "Cliquer sur 'Enregistrer' ou 'Créer'", "element": "button — Enregistrer", "expected": "Élément créé, visible dans la liste, message de succès" }
+      ]
+    },
+    {
+      "id": "tpl-003",
+      "name": "Validation de formulaire",
+      "category": "forms",
+      "description": "Vérifie l'affichage des erreurs de validation",
+      "tags": ["forms", "validation"],
+      "estimatedMinutes": 2,
+      "preconditions": "Aucun",
+      "steps": [
+        { "order": 1, "page": "/[page]", "action": "Accéder au formulaire", "element": "Formulaire principal", "expected": "Formulaire vide visible" },
+        { "order": 2, "page": "/[page]", "action": "Laisser les champs obligatoires vides et soumettre", "element": "button[type=submit]", "expected": "Messages d'erreur affichés sous les champs obligatoires" },
+        { "order": 3, "page": "/[page]", "action": "Remplir les champs et soumettre", "element": "Formulaire complet", "expected": "Soumission réussie, pas d'erreur" }
+      ]
+    },
+    {
+      "id": "tpl-004",
+      "name": "Navigation par liens",
+      "category": "navigation",
+      "description": "Vérifie que les liens de navigation fonctionnent",
+      "tags": ["navigation"],
+      "estimatedMinutes": 2,
+      "preconditions": "Utilisateur connecté",
+      "steps": [
+        { "order": 1, "page": "/home", "action": "Cliquer sur un lien de navigation", "element": "a — lien menu", "expected": "Navigation sans rechargement, URL mise à jour" },
+        { "order": 2, "page": "/[cible]", "action": "Vérifier le contenu de la page cible", "element": "main — contenu principal", "expected": "Contenu correct affiché" },
+        { "order": 3, "page": "/[cible]", "action": "Utiliser le bouton retour du navigateur", "element": "Bouton Back", "expected": "Retour à la page précédente" }
+      ]
+    },
+    {
+      "id": "tpl-005",
+      "name": "Déconnexion",
+      "category": "auth",
+      "description": "Vérifie la déconnexion et la protection des routes",
+      "tags": ["auth"],
+      "estimatedMinutes": 2,
+      "preconditions": "Utilisateur connecté",
+      "steps": [
+        { "order": 1, "page": "/home", "action": "Cliquer sur 'Déconnexion' ou l'icône profil", "element": "button — Déconnexion", "expected": "Déconnexion effectuée, redirection vers la page de connexion" },
+        { "order": 2, "page": "/", "action": "Tenter d'accéder à une route protégée directement (/home)", "element": "URL", "expected": "Redirection vers la page de connexion, accès refusé" }
+      ]
+    },
+    {
+      "id": "tpl-006",
+      "name": "Suppression avec confirmation",
+      "category": "crud",
+      "description": "Vérifie le flux de suppression avec dialogue de confirmation",
+      "tags": ["crud"],
+      "estimatedMinutes": 2,
+      "preconditions": "Élément existant à supprimer, droits admin",
+      "steps": [
+        { "order": 1, "page": "/[page]", "action": "Cliquer sur l'icône 'Supprimer' d'un élément", "element": "button — delete / trash", "expected": "Dialogue de confirmation affiché" },
+        { "order": 2, "page": "/[page]", "action": "Cliquer 'Annuler'", "element": "button — Annuler", "expected": "Dialogue fermé, élément toujours présent" },
+        { "order": 3, "page": "/[page]", "action": "Cliquer à nouveau sur 'Supprimer' puis confirmer", "element": "button — Confirmer / Supprimer", "expected": "Élément supprimé de la liste, message de succès" }
+      ]
+    }
+  ]
+}

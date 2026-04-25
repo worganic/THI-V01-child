@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Virements et Opérations - Ma Banque Pro</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7878",
+                        "background-light": "#f2f2f3",
+                        "background-dark": "#17191c",
+                        "card-dark": "#24272b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        /* Custom scrollbar for dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #17191c;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2b7878;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex">
+<!-- Sidebar Navigation -->
+<aside class="w-72 border-r border-slate-200 dark:border-slate-800 flex flex-col h-screen sticky top-0 bg-background-light dark:bg-background-dark">
+<div class="p-6">
+<div class="flex items-center gap-3 mb-10">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
+<span class="material-symbols-outlined">account_balance</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-lg font-bold leading-tight">Ma Banque Pro</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs">Espace Entreprise</p>
+</div>
+</div>
+<nav class="space-y-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-medium">Tableau de bord</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span class="font-medium">Comptes</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary text-white shadow-lg shadow-primary/20" href="#">
+<span class="material-symbols-outlined">swap_horiz</span>
+<span class="font-medium">Virements</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">credit_card</span>
+<span class="font-medium">Cartes</span>
+</a>
+<div class="pt-4 mt-4 border-t border-slate-200 dark:border-slate-800">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-card-dark transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-medium">Paramètres</span>
+</a>
+</div>
+</nav>
+</div>
+<div class="mt-auto p-6">
+<div class="flex items-center gap-3 p-3 rounded-xl bg-slate-100 dark:bg-card-dark">
+<div class="size-10 rounded-full bg-cover bg-center" data-alt="Portrait of Jean Dupont" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBySdC1JiYf2CBx9r-bN0aj2s_G9i2lj5oT6E4aYY0iN9OIzV5ZDmbvPP2tVN_JQhvW7lK59WFUwSkHkuuf10Zyq9XOe3rlbW85LACkoE_CZ1jxQjh6XCyXSK_02AaPSpQT8xTrFKe8EMNg5xsuY9jnfBD5QesHSXdU6wh0G1cIiINGEQvKwZIGqVxnDj57iLo5vlRHZaeGXph0eCVfCH4BFXFIcTjB9WYKhFJiPUgAWG0tQMYmWyiQK_UIoIjdtkNO4s4eStbdMlo')"></div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Jean Dupont</p>
+<p class="text-xs text-slate-500 truncate">Administrateur</p>
+</div>
+<button class="ml-auto text-slate-400 hover:text-primary">
+<span class="material-symbols-outlined text-sm">logout</span>
+</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto pb-12">
+<!-- Header & Breadcrumbs -->
+<header class="p-8">
+<nav class="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 mb-4">
+<a class="hover:text-primary transition-colors" href="#">Accueil</a>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-slate-900 dark:text-slate-100 font-medium">Virements et Opérations</span>
+</nav>
+<div class="flex flex-col gap-2">
+<h2 class="text-4xl font-black tracking-tight">Virements et Opérations</h2>
+<p class="text-slate-500 dark:text-slate-400 max-w-2xl">Effectuez des transferts ponctuels ou programmés vers vos comptes ou des bénéficiaires tiers en toute sécurité.</p>
+</div>
+</header>
+<div class="px-8 grid grid-cols-12 gap-8">
+<!-- Left Column: Main Form (8 cols) -->
+<div class="col-span-12 lg:col-span-8 space-y-8">
+<!-- Central Transfer Form -->
+<section class="bg-white dark:bg-card-dark rounded-xl p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="flex items-center gap-3 mb-8">
+<span class="p-2 bg-primary/10 text-primary rounded-lg">
+<span class="material-symbols-outlined">send</span>
+</span>
+<h3 class="text-xl font-bold">Nouveau Virement</h3>
+</div>
+<form class="space-y-8">
+<!-- Source Account -->
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Depuis le compte</label>
+<div class="relative group">
+<select class="w-full h-16 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700 text-lg font-semibold focus:ring-primary focus:border-primary appearance-none cursor-pointer">
+<option>Compte Courant Pro (....4920)</option>
+<option>Livret A Business (....1102)</option>
+<option>Compte d'Épargne (....8834)</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+<div class="mt-2 flex justify-between items-center text-sm">
+<span class="text-slate-500">Solde disponible</span>
+<span class="font-bold text-primary">42 850,00 €</span>
+</div>
+</div>
+</div>
+<!-- Target Account -->
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Vers le bénéficiaire</label>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="h-16 flex items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-primary hover:bg-primary/5 transition-all group" type="button">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary">person_add</span>
+<span class="font-medium text-slate-600 dark:text-slate-400 group-hover:text-primary">Nouveau bénéficiaire</span>
+</button>
+<div class="relative">
+<select class="w-full h-16 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700 text-lg font-semibold focus:ring-primary focus:border-primary appearance-none cursor-pointer">
+<option>Mes Comptes</option>
+<option>Sarl Transcom (FR76 ... 890)</option>
+<option>Cabinet Durand (FR76 ... 441)</option>
+</select>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+<span class="material-symbols-outlined">group</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Amount and Date -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Montant</label>
+<div class="relative">
+<input class="w-full h-16 pl-4 pr-12 rounded-xl bg-slate-50 dark:bg-background-dark border-slate-200 dark:border-slate-700 text-2xl font-black focus:ring-primary focus:border-primary" placeholder="0,00" type="number"/>
+<div class="absolute right-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">€</div>
+</div>
+</div>
+<div class="space-y-3">
+<label class="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Date d'exécution</label>
+<div class="flex bg-slate-100 dark:bg-background-dark p-1 rounded-xl h-16">
+<button class="flex-1 rounded-lg bg-white dark:bg-card-dark shadow-sm text-primary font-bold transition-all" type="button">Immédiat</button>
+<button class="flex-1 rounded-lg text-slate-500 dark:text-slate-400 font-medium hover:text-slate-700 dark:hover:text-slate-200" type="button">Différé</button>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t border-slate-100 dark:border-slate-800">
+<button class="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-5 rounded-xl text-lg shadow-xl shadow-primary/20 flex items-center justify-center gap-3">
+<span>Confirmer le virement</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<p class="text-center text-xs text-slate-500 mt-4">Un code de confirmation pourra être demandé via l'application mobile.</p>
+</div>
+</form>
+</section>
+<!-- Scheduled Transfers Module -->
+<section class="bg-white dark:bg-card-dark rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
+<div class="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary">calendar_month</span>
+<h3 class="font-bold">Opérations Programmées</h3>
+</div>
+<span class="px-3 py-1 bg-slate-100 dark:bg-background-dark rounded-full text-xs font-bold text-slate-500 uppercase">3 en attente</span>
+</div>
+<div class="divide-y divide-slate-100 dark:divide-slate-800">
+<!-- Task Item -->
+<div class="p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex gap-4 items-center">
+<div class="size-12 rounded-xl bg-orange-100 dark:bg-orange-900/20 text-orange-600 flex items-center justify-center">
+<span class="material-symbols-outlined">repeat</span>
+</div>
+<div>
+<p class="font-bold">Loyer Bureau Central</p>
+<p class="text-sm text-slate-500">Mensuel • Prochain : 05 Oct. 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold">- 2 450,00 €</p>
+<button class="text-primary text-sm font-bold hover:underline">Modifier</button>
+</div>
+</div>
+<!-- Task Item -->
+<div class="p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex gap-4 items-center">
+<div class="size-12 rounded-xl bg-blue-100 dark:bg-blue-900/20 text-blue-600 flex items-center justify-center">
+<span class="material-symbols-outlined">event</span>
+</div>
+<div>
+<p class="font-bold">Acompte TVA Q3</p>
+<p class="text-sm text-slate-500">Ponctuel • Prévu : 15 Oct. 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-bold">- 8 920,00 €</p>
+<button class="text-primary text-sm font-bold hover:underline">Détails</button>
+</div>
+</div>
+</div>
+<div class="p-4 bg-slate-50 dark:bg-slate-800/30 text-center">
+<button class="text-sm font-bold text-slate-500 hover:text-primary">Voir toutes les échéances</button>
+</div>
+</section>
+</div>
+<!-- Right Column: Quick Actions & Favorites (4 cols) -->
+<div class="col-span-12 lg:col-span-4 space-y-8">
+<!-- Beneficiary Card -->
+<section class="bg-primary/5 dark:bg-primary/10 rounded-xl p-6 border border-primary/20">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-bold text-slate-900 dark:text-white">Favoris récents</h3>
+<button class="text-primary text-sm font-bold">Tout voir</button>
+</div>
+<div class="space-y-4">
+<!-- Beneficiary -->
+<button class="w-full flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-card-dark shadow-sm hover:ring-2 hover:ring-primary transition-all text-left">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 dark:text-slate-400">AM</div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Alice Martin</p>
+<p class="text-xs text-slate-500 truncate">FR76 ... 1290</p>
+</div>
+</button>
+<!-- Beneficiary -->
+<button class="w-full flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-card-dark shadow-sm hover:ring-2 hover:ring-primary transition-all text-left">
+<div class="size-10 rounded-full bg-emerald-100 dark:bg-emerald-900/20 text-emerald-600 flex items-center justify-center font-bold">ST</div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Sarl TechFront</p>
+<p class="text-xs text-slate-500 truncate">FR76 ... 8834</p>
+</div>
+</button>
+<!-- Beneficiary -->
+<button class="w-full flex items-center gap-4 p-3 rounded-xl bg-white dark:bg-card-dark shadow-sm hover:ring-2 hover:ring-primary transition-all text-left">
+<div class="size-10 rounded-full bg-purple-100 dark:bg-purple-900/20 text-purple-600 flex items-center justify-center font-bold">JD</div>
+<div class="overflow-hidden">
+<p class="text-sm font-bold truncate">Julien Dev</p>
+<p class="text-xs text-slate-500 truncate">FR76 ... 4412</p>
+</div>
+</button>
+</div>
+</section>
+<!-- Information Card -->
+<section class="bg-card-dark rounded-xl overflow-hidden border border-slate-800">
+<div class="aspect-video bg-cover bg-center" data-alt="Abstract secure shield background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuD60QVu6DWo1qTKUgbD1Wcq1rBLv7Qk1_QkYhRXFWnhdsOFL8EwVErCKwMhvWmQROtWVcYdnMy6gbAzu5-bqRYk5ByC_JJ3Mu6b5tTcaOPAC0BQ8Vc1oRg1zsnKLZrbNASsu0KHerOscVlqQwII5up8r5FmnaAZBpDtv28svm0yIifkURGx7zmT-mlqkdenYe_GH-1oP8x5pGrbXVlq8MLjd35SXAbK3rKWug0O2bjjUyKiE7h7WFjVx64Qie-6P8lJA_MOqPmsSPk')">
+<div class="w-full h-full bg-gradient-to-t from-card-dark to-transparent flex flex-col justify-end p-6">
+<h4 class="text-white font-bold text-lg">Sécurité renforcée</h4>
+</div>
+</div>
+<div class="p-6 space-y-4">
+<p class="text-sm text-slate-400">Vos virements sont protégés par le protocole 3D-Secure 2.0. Pensez à vérifier l'IBAN avant toute validation.</p>
+<ul class="space-y-3">
+<li class="flex items-start gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+<span>Plafond journalier : 15 000,00 €</span>
+</li>
+<li class="flex items-start gap-2 text-xs text-slate-400">
+<span class="material-symbols-outlined text-primary text-sm">check_circle</span>
+<span>Virements instantanés activés</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Help Support -->
+<section class="p-6 rounded-xl border border-slate-200 dark:border-slate-800 flex flex-col items-center text-center">
+<div class="size-14 rounded-full bg-slate-100 dark:bg-background-dark flex items-center justify-center text-slate-400 mb-4">
+<span class="material-symbols-outlined text-3xl">contact_support</span>
+</div>
+<h4 class="font-bold mb-2">Besoin d'aide ?</h4>
+<p class="text-sm text-slate-500 mb-4">Consultez notre FAQ ou contactez un conseiller dédié.</p>
+<button class="text-primary font-bold hover:bg-primary/10 px-4 py-2 rounded-lg transition-colors">Contacter le support</button>
+</section>
+</div>
+</div>
+</main>
+</body></html>

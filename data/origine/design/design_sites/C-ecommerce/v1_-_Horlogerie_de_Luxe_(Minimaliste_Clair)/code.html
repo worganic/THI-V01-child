@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Horlogerie de Luxe | Minimalist Light</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#118192",
+                        "background-light": "#fcfbf8",
+                        "background-dark": "#1a1a1a",
+                        "gold-accent": "#C5A059",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Epilogue', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .luxury-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#111718] dark:text-white transition-colors duration-300">
+<!-- Navigation -->
+<header class="sticky top-0 z-50 w-full border-b border-gray-100 bg-background-light/80 backdrop-blur-md dark:bg-background-dark/80 dark:border-zinc-800">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 h-20 flex items-center justify-between">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h1 class="text-xl font-bold tracking-[0.2em] uppercase">Horlogerie</h1>
+</div>
+<nav class="hidden lg:flex items-center gap-8">
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">Heritage</a>
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">Complications</a>
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">New Arrivals</a>
+<a class="text-xs font-medium uppercase tracking-widest hover:text-primary transition-colors" href="#">Atelier</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden sm:flex items-center bg-gray-100 dark:bg-zinc-800 rounded-full px-4 py-2">
+<span class="material-symbols-outlined text-gray-400 text-lg">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-sm w-32 xl:w-48 placeholder:text-gray-400" placeholder="Search collection" type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:text-primary transition-colors"><span class="material-symbols-outlined">favorite</span></button>
+<button class="hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">shopping_bag</span>
+<span class="absolute -top-1 -right-1 bg-primary text-white text-[10px] size-4 flex items-center justify-center rounded-full">2</span>
+</button>
+<div class="size-8 rounded-full bg-gray-200 bg-cover bg-center border border-gray-100" data-alt="User profile avatar" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAD1i2aot-orEa0y5VPAvCALebJHbzV1nkwkZdpq80jYk3dbpEpG8iUniZ_vNOoRSy1sdSJPd57QIEUP6Iw-eTDMoHtOUld5B-gc1zYwb8qAfIRVgJjulavs18XwgZRanzkp-KiPo91DX6b7B8QFxcciZtdLgOgXgIc_Ifu0tQGv7wLMRvqtS9x4sYCACTChiPocA9jzQiUvDZtLeTIXY1y2C1vEiEFlWksssatttsMARXbVXFmHZ_2xz16SR8Dr8DdmGEcgcuad5V6');"></div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto">
+<!-- Hero Section -->
+<section class="relative px-6 md:px-12 py-12">
+<div class="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden luxury-shadow flex flex-col lg:flex-row min-h-[600px]">
+<div class="flex-1 p-12 lg:p-20 flex flex-col justify-center gap-8">
+<span class="text-gold-accent font-medium tracking-[0.3em] uppercase text-xs">Featured Masterpiece</span>
+<h2 class="text-5xl md:text-7xl font-light leading-tight">The Art of <br/><span class="font-bold">Precision</span></h2>
+<p class="text-gray-500 dark:text-gray-400 max-w-md text-lg leading-relaxed">
+                        Experience the pinnacle of Swiss craftsmanship with our signature tourbillon collection. Engineered for those who appreciate the poetry of time.
+                    </p>
+<div class="flex flex-wrap gap-4 pt-4">
+<button class="bg-primary text-white px-8 py-4 rounded-lg font-bold tracking-wider uppercase text-sm hover:bg-primary/90 transition-all">Explore Heritage</button>
+<button class="border border-gray-200 dark:border-zinc-700 px-8 py-4 rounded-lg font-bold tracking-wider uppercase text-sm hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all">View Technical Specs</button>
+</div>
+</div>
+<div class="flex-1 bg-gray-50 dark:bg-zinc-800 relative group overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Close up of a luxury mechanical watch movement" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBcLLG7PReTeNMOURKC_zc90eg5EjTeKRhIyObMAcVKrAzGAokT4Vah5xBv-APXadeYpL2GCuV2tbBqyPDnY8h56erhr0BYKW0sl8LHHGhghtq7bzXvaA6gkb_Dv3QnHBwpy2s5DrpOjkjXeDCngDL4SpAy7nfc8bIqsA0kdsRXf-IDrNmtIazh5r9Hb3uddy-mXP8nwnqqQj_FbE5Li4TsBg51XF7Pq5UGqfNLEt005EPZBP_x8U4qbF8v1ZUZRTwyORkKKz0ZypVH');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+</div>
+</div>
+</section>
+<!-- Filter Chips -->
+<section class="px-6 md:px-12 py-8 overflow-x-auto">
+<div class="flex items-center gap-4 min-w-max pb-4">
+<button class="px-6 py-2.5 rounded-full bg-primary text-white text-xs font-bold uppercase tracking-widest transition-all">All Timepieces</button>
+<button class="px-6 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-xs font-bold uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
+                    Chronographs <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+<button class="px-6 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-xs font-bold uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
+                    Diver Classics <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+<button class="px-6 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-xs font-bold uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
+                    Dress Watches <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+<button class="px-6 py-2.5 rounded-full bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 text-xs font-bold uppercase tracking-widest hover:border-primary transition-all flex items-center gap-2">
+                    Material <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+</section>
+<!-- Section Header -->
+<div class="px-6 md:px-12 flex justify-between items-end mb-12">
+<div>
+<h3 class="text-3xl font-light">Curated <span class="font-bold">Collections</span></h3>
+<p class="text-gray-400 mt-2">Discover our hand-picked selection of rare complications.</p>
+</div>
+<a class="text-sm font-bold uppercase tracking-widest text-primary border-b-2 border-primary/20 hover:border-primary transition-all pb-1" href="#">View Full Catalog</a>
+</div>
+<!-- Bento Grid Products -->
+<section class="px-6 md:px-12 pb-24">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+<!-- Large Feature Card -->
+<div class="md:col-span-2 lg:row-span-2 group relative bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden luxury-shadow">
+<div class="h-[500px] lg:h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Elegant silver watch on a leather strap background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuB6CZmjoZ5ya2YVxORi-Rzjg8-obOsviHh4cr2LYSTQ5gqJuW3FmdodYareGU7NnXU05z3aIshIS-3HHr2FBP3xjLpPlz-cPDCPCxhGKyiiqnysN4qMUw6JB3K8PYpzmxF5w6ZADcKuvmsY1a7pDBLUL3LnAs8u9wbHUM03vDsFxSDL87zMnBLsXiS8eHM8In20zdJEMIE2pIzehCbq4W4-bTKehpjxupqPxXPybDEzvsRwW2puMtwyIOiBMkwms_jc087KY3LpRIWu');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent p-12 flex flex-col justify-end">
+<span class="text-primary font-bold text-xs uppercase tracking-[0.3em] mb-4">New Release</span>
+<h4 class="text-white text-4xl font-light mb-4">Grand <span class="font-bold">Complication</span></h4>
+<p class="text-gray-300 max-w-sm mb-8">The pinnacle of 2024 engineering featuring perpetual calendar and moon phase.</p>
+<div class="flex items-center justify-between">
+<span class="text-white text-2xl font-medium">$45,000</span>
+<button class="bg-white text-black size-12 rounded-full flex items-center justify-center hover:bg-primary hover:text-white transition-all">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 1 -->
+<div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 luxury-shadow group flex flex-col h-full border border-transparent hover:border-primary/20 transition-all">
+<div class="aspect-[3/4] bg-gray-50 dark:bg-zinc-800 rounded-xl overflow-hidden mb-6 relative">
+<div class="w-full h-full bg-cover bg-center mix-blend-multiply dark:mix-blend-normal transition-transform duration-500 group-hover:scale-110" data-alt="Modern minimal black watch face" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuATBPc2R8J-Fuhn7wXppNRu3PoShR5AjsMDrLDb5Ky4w8WczhRj2WCJYON94cdZpBskTReh9Gg9Teb2EdbYQ_29Xplmj0LKR928glsHTzi3oTzqXh69fkddBIWsnGqe2u57HSBGYlJMpMSoGGpShQKCt8iaTgKiN8kfl2f3JCObKjG7SPj8D2UmaYy6yXK8VFWr5iyy1uvIgU-cZSg_pgOs2RrVNoMCBl3AqKQkSVk_oAE8_cCMYX0eumuVVG8SY1R6th6apGNSv3-F');"></div>
+<button class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition-colors">
+<span class="material-symbols-outlined">favorite</span>
+</button>
+</div>
+<div class="flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h5 class="text-lg font-medium">Midnight Minimalist</h5>
+<span class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Manual</span>
+</div>
+<p class="text-sm text-gray-400 mb-6">38mm • 42h Power Reserve</p>
+<div class="mt-auto flex justify-between items-center">
+<span class="text-xl font-bold">$12,000</span>
+<button class="text-primary font-bold uppercase text-xs tracking-widest flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 luxury-shadow group flex flex-col h-full border border-transparent hover:border-primary/20 transition-all">
+<div class="aspect-[3/4] bg-gray-50 dark:bg-zinc-800 rounded-xl overflow-hidden mb-6 relative">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Classic dive watch with blue bezel" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDdHjxJJnvTXZ1Z8GcD9X_CM6KPYYMSN4SSCAhsfEvZf04oubYB95j0fzEgAfImhfkHbGJU0CZW3mseht275r8IdJgoWKAsIGdBaXk0w5hQfBG0YUDdpciySl3wzvrCRa3PeWQ6BzZi1p8NxarKGvvc6wK79VJu1PwucS6ea2rhF67Jame4W_0BTe8lgEuEnoR8E8m717H9wzxYh5l7DLQdEUudF7RjPxV8Tc7f8AmErOLBOoLtHqCTrxpUZNxsf4dxpxjm7bHLbxp7');"></div>
+<span class="absolute top-4 left-4 bg-gold-accent text-white text-[10px] font-bold px-2 py-1 rounded uppercase">Limited</span>
+</div>
+<div class="flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h5 class="text-lg font-medium">Seafarer Elite</h5>
+<span class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Auto</span>
+</div>
+<p class="text-sm text-gray-400 mb-6">41mm • 300m Water Resistant</p>
+<div class="mt-auto flex justify-between items-center">
+<span class="text-xl font-bold">$8,500</span>
+<button class="text-primary font-bold uppercase text-xs tracking-widest flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Brand Story / Lifestyle Card -->
+<div class="bg-zinc-900 text-white rounded-2xl p-10 flex flex-col justify-center gap-6 luxury-shadow">
+<span class="material-symbols-outlined text-primary text-5xl">precision_manufacturing</span>
+<h4 class="text-2xl font-light leading-snug">Every gear, every spring, a <span class="font-bold italic">testament to time.</span></h4>
+<p class="text-gray-400 text-sm leading-relaxed">Our master horologists spend over 400 hours assembling each piece by hand in our Geneva atelier.</p>
+<a class="inline-flex items-center gap-2 text-primary font-bold uppercase text-xs tracking-widest hover:gap-4 transition-all" href="#">
+                        Our Process <span class="material-symbols-outlined text-sm">arrow_right_alt</span>
+</a>
+</div>
+<!-- Product Card 3 -->
+<div class="bg-white dark:bg-zinc-900 rounded-2xl p-6 luxury-shadow group flex flex-col h-full border border-transparent hover:border-primary/20 transition-all">
+<div class="aspect-[3/4] bg-gray-50 dark:bg-zinc-800 rounded-xl overflow-hidden mb-6 relative">
+<div class="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" data-alt="Rose gold luxury watch with leather strap" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAAsUQKzH1qRhmhczKtpA-Ph_IbSyMpnCR6azGGNSbPun68JQcALfL21X5OLI0e48VrRiVEfcwDXLrQsKguapyS45KalsJitAlI8DawXjNvLPiDOSsNrFpDd6Yon93UyUqUc4AZ_-s8KPjxWXIZvpwskQGh6ou01sP6i9DuH0G6ePg3KZNuAkIryLHTOD0UAQkLMSSqUs9h0oBwzWNJvK11ISJgA2u-_AwD87baiOaSj_4_YbwuxLO1Yu05qzCG1c2NQu6IjvRu5Qjz');"></div>
+</div>
+<div class="flex flex-col flex-grow">
+<div class="flex justify-between items-start mb-2">
+<h5 class="text-lg font-medium">Rose Gold Heritage</h5>
+<span class="text-xs font-bold text-gray-400 uppercase tracking-tighter">Vintage</span>
+</div>
+<p class="text-sm text-gray-400 mb-6">36mm • 18k Solid Gold</p>
+<div class="mt-auto flex justify-between items-center">
+<span class="text-xl font-bold">$22,400</span>
+<button class="text-primary font-bold uppercase text-xs tracking-widest flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                                Details <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Signature Banner -->
+<section class="px-6 md:px-12 pb-24">
+<div class="relative h-[400px] rounded-2xl overflow-hidden group">
+<div class="absolute inset-0 bg-cover bg-fixed bg-center" data-alt="Abstract macro shot of watch gears and clockwork" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAgnBztH-R7XdWccFcSrT0IKlwSa2HgX9owMbj9J8t6zFr_ms5GK7lTlpeN2IhNd4YRhJeDTd7yFZ1rLT4FSilue7NQLl4MdwFdYzSae7z0Pl5_vGHJ6w59-qSNvxESG0_ZYlBvXOF-uAjUs1FfTToEcRKAcsbFkA-vLkcskVwWm8Ctp0OsXp98Z0ZJUjXcXy0WBx2omZBEs1zVLLElvmLReYCFIZ2rbLjsbTkdFm7CEMWs6xLuhfWBI1ZmrNY4MBejf8CV3CcwzK9N');"></div>
+<div class="absolute inset-0 bg-primary/20 backdrop-blur-[2px]"></div>
+<div class="relative h-full flex flex-col items-center justify-center text-center p-12">
+<h3 class="text-white text-4xl md:text-5xl font-light mb-6 tracking-tight">Experience <span class="font-bold italic">The Atelier</span></h3>
+<p class="text-white/80 max-w-xl text-lg mb-8 font-light">Join us for a private showing of our historical archives and modern collections in our Paris, Tokyo, or New York boutiques.</p>
+<button class="bg-white text-primary px-10 py-4 rounded-lg font-bold uppercase tracking-widest text-sm hover:scale-105 transition-transform">Book Private Viewing</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-zinc-950 border-t border-gray-100 dark:border-zinc-900 pt-20 pb-10">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+<div class="flex flex-col gap-6">
+<div class="flex items-center gap-3">
+<div class="size-5 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold tracking-[0.2em] uppercase">Horlogerie</h2>
+</div>
+<p class="text-sm text-gray-400 leading-relaxed max-w-xs">Elevating the standards of haute horlogerie since 1924. Precision, elegance, and timelessness in every movement.</p>
+<div class="flex gap-4">
+<a class="size-10 rounded-full bg-gray-50 dark:bg-zinc-900 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">public</span></a>
+<a class="size-10 rounded-full bg-gray-50 dark:bg-zinc-900 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">camera</span></a>
+<a class="size-10 rounded-full bg-gray-50 dark:bg-zinc-900 flex items-center justify-center hover:bg-primary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-lg">mail</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-[0.2em] text-xs mb-8">Collections</h4>
+<ul class="flex flex-col gap-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">The Grand Master</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Sea Discovery</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Aeronautical Pilot</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Limited Editions</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-[0.2em] text-xs mb-8">Services</h4>
+<ul class="flex flex-col gap-4 text-sm text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Lifetime Warranty</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Valuation Service</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Maintenance</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Bespoke Engraving</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-[0.2em] text-xs mb-8">Newsletter</h4>
+<p class="text-xs text-gray-400 mb-6 tracking-wide">Subscribe to receive first access to new collection launches.</p>
+<div class="flex flex-col gap-3">
+<input class="bg-gray-50 dark:bg-zinc-900 border-none rounded-lg px-4 py-3 text-sm focus:ring-1 focus:ring-primary" placeholder="Email Address" type="email"/>
+<button class="bg-primary text-white py-3 rounded-lg text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all">Join The List</button>
+</div>
+</div>
+</div>
+<div class="border-t border-gray-100 dark:border-zinc-900 pt-10 flex flex-col md:flex-row justify-between items-center gap-6">
+<p class="text-[10px] uppercase tracking-widest text-gray-400">© 2024 Horlogerie de Luxe. All Rights Reserved.</p>
+<div class="flex gap-8 text-[10px] uppercase tracking-widest text-gray-400">
+<a class="hover:text-primary" href="#">Privacy Policy</a>
+<a class="hover:text-primary" href="#">Terms of Service</a>
+<a class="hover:text-primary" href="#">Cookie Settings</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

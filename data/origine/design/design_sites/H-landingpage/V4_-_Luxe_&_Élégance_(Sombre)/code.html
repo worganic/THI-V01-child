@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LUXE | The Art of Precision</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00b29b",
+                        "accent": "#FBC02D",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#16181d",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .thin-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(251, 192, 45, 0.3), transparent);
+        }
+    </style>
+</head>
+<body class="bg-background-dark font-display text-white selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Header -->
+<header class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between border-b border-white/5 bg-background-dark/80 px-6 py-4 backdrop-blur-md lg:px-20">
+<div class="flex items-center gap-2">
+<div class="size-6 text-accent">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-[0.2em]">LUXE</h2>
+</div>
+<nav class="hidden flex-1 justify-center gap-12 lg:flex">
+<a class="text-xs font-light uppercase tracking-widest text-white/70 transition-colors hover:text-accent" href="#">Heritage</a>
+<a class="text-xs font-light uppercase tracking-widest text-white/70 transition-colors hover:text-accent" href="#">Collection</a>
+<a class="text-xs font-light uppercase tracking-widest text-white/70 transition-colors hover:text-accent" href="#">Exclusivity</a>
+<a class="text-xs font-light uppercase tracking-widest text-white/70 transition-colors hover:text-accent" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-6">
+<button class="hidden border border-primary/40 bg-primary/10 px-6 py-2 text-xs font-bold uppercase tracking-widest text-primary transition-all hover:bg-primary hover:text-white lg:block">
+                    Inquire
+                </button>
+<div class="size-10 overflow-hidden rounded-full border border-white/10">
+<img class="h-full w-full object-cover" data-alt="Profile portrait of a distinguished gentleman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQOdp2HhBUbLAU3yOVMkShGotZd-U_ICL-jvRjzgyHDCuv_Xh4cGmKDe_gYLRQQ1Hz1S56UO1qigwwPf2xMPfiD5AiitYBrfdsq9jHTERm0H2VtF6LV3vbzXzQP3hrXtKif_j8rLpo52i2urDzrhZpuXEHiaaC9D5HdhhoG1EaQVr6klfSRNo5lSvfVQG2P0JPciMg0I9T2gcwmjJ8pJqZSLbH-NX895xDv89wifheApMEgiX2u552ndxbgA1B9fsPSGiYL-N-BiA"/>
+</div>
+</div>
+</header>
+<!-- Hero Section -->
+<section class="relative flex min-h-screen items-center justify-center pt-20">
+<div class="absolute inset-0 z-0 overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-background-dark/80 via-transparent to-background-dark"></div>
+<img class="h-full w-full object-cover opacity-60" data-alt="Macro shot of luxury watch movement gears" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbmDk51edcDsr_g82YOVTT9lEUtgd3QxM9mt1zCEbG7_IubrZAXdAcIAMZ4FP7ulXI9MLRVTw6uqcUR6SEcRQ8MEnco96zTZRdX1FdE4s7nIGmn4479rw8doEcyF0MCxQaQu2o3o1QchaVykT54Sjum4Wuq10yyya8oQkaOu6BYqOUVLh_Qo5xn93pZEaW6zdrQ-3IS3w8-SE7Qzw_OnhkZ2KIoPjdwBPfhOO8yu1KXzrOxrhTSsUvp9GpjqP3biok4BPr0NDzcXY"/>
+</div>
+<div class="relative z-10 flex flex-col items-center gap-8 px-4 text-center max-w-[960px]">
+<div class="flex flex-col gap-4">
+<span class="text-accent text-sm font-light tracking-[0.4em] uppercase">Est. 1924</span>
+<h1 class="text-5xl font-black leading-tight tracking-tight lg:text-8xl">
+                        The Art of <br/><span class="text-primary italic">Precision</span>
+</h1>
+<p class="mx-auto max-w-2xl text-lg font-light leading-relaxed text-white/60 lg:text-xl">
+                        Experience the pinnacle of horological excellence and automotive engineering, crafted for those who define the future.
+                    </p>
+</div>
+<div class="flex flex-col gap-4 sm:flex-row">
+<button class="bg-primary px-10 py-4 text-sm font-bold uppercase tracking-[0.2em] transition-transform hover:scale-105">
+                        Explore Collection
+                    </button>
+<button class="border border-white/20 px-10 py-4 text-sm font-bold uppercase tracking-[0.2em] backdrop-blur-sm transition-all hover:bg-white/10">
+                        Private Viewing
+                    </button>
+</div>
+</div>
+<!-- Scroll Indicator -->
+<div class="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 opacity-30">
+<span class="text-[10px] uppercase tracking-widest">Scroll</span>
+<div class="h-12 w-[1px] bg-gradient-to-b from-white to-transparent"></div>
+</div>
+</section>
+<!-- Section Header -->
+<section class="py-20">
+<div class="mx-auto max-w-[960px] px-4">
+<div class="thin-line mb-8 w-full"></div>
+<h4 class="text-center text-xs font-bold tracking-[0.5em] text-accent uppercase">The Curated Gallery</h4>
+</div>
+</section>
+<!-- Modular Image Grid -->
+<section class="mx-auto w-full max-w-[1200px] px-4 py-10">
+<div class="grid grid-cols-1 gap-6 md:grid-cols-12 md:grid-rows-2">
+<!-- Large Card -->
+<div class="group relative md:col-span-8 md:row-span-2 aspect-video md:aspect-auto overflow-hidden rounded-lg bg-white/5 border border-white/10">
+<img class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Modern minimalist luxury sports car in dark studio" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZAJ5FjkvQbRqJFDCS3mhpFJYvcFao9lekTpWHruf4sRX6IzopP40KVao6KgD5rU8pQn1P0ArGNN3tUgmhZ3UDBRXfq_aqlr7rjKM3hFXlEChnZX8-UJaGgjEdLjhTbV24e86ijtDIElYrmd47GVhjn5Pt9JmvNmpvYjLqNN_QJNQo1p7Vtkgz09kpEEoIoTSvgE3N3SZChDPjHxmNS2I99Ne5hYfmHbqInk0wxtJLv2-4wS1urTAH0-zWIU4pej8AyS1vwNYYr3Y"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/90 via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-10">
+<h3 class="text-3xl font-bold tracking-tight">Aero GT Series</h3>
+<p class="mt-2 text-primary text-sm font-bold uppercase tracking-widest">Performance Engineered</p>
+</div>
+</div>
+<!-- Small Card 1 -->
+<div class="group relative md:col-span-4 aspect-square overflow-hidden rounded-lg bg-white/5 border border-white/10">
+<img class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Luxury dress watch with leather strap" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0VnF6TeQ4G9keKu_R1WiSTxX3VUv33d1Z9UsnFmQQf1nK8J70XbH96hMjqRe_dZ1iMKQ1JJVwIBsHDv5c1QhNN2qUjY5HRBS82eYLJ2hcguegsCS0KrVeeil27XwrLGkYSxFNinflA4uLpUKKu3ypm22boWBhLDz4GuySW5Xi9buoiXQG161o1-jTcOi0FKlpbrN48LxsPZhkkeGKrQYZ9YDpLEYxO4Ly7ORVdhr-xe5QMGXgzJgF2KzmpAgqXWko7MVE3YCsdfM"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+<div class="absolute bottom-6 left-6">
+<h3 class="text-xl font-bold">Grand Complication</h3>
+</div>
+</div>
+<!-- Small Card 2 -->
+<div class="group relative md:col-span-4 aspect-square overflow-hidden rounded-lg bg-white/5 border border-white/10">
+<img class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Astronomy themed luxury watch face" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDW-UaOUgPZqnbzXCSBsIIH3rfFR2Q0iSeO0QdTVAbT_JIlpIwGB2ag0DTz8DnEODUmYbcHQ0dyM4ufhrxFxIxOmDr-LdUY12CogePVnXmLQNUh7bqodIqCu7AnjFvIFGuO6H5DaYNB9yEs9iZwLywn7YD5-8DmIHSg7jVHxe1_UtGLVpPzcpvgnvMELegtrrs2CsLn19yxkD5wt9jQQSk0-6uti62Rxpap9cjUbrZtSaPHyqIPc8WDfE6GFC_66cmhHSbyeqUewuw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark/80 to-transparent"></div>
+<div class="absolute bottom-6 left-6">
+<h3 class="text-xl font-bold">Celestial Moonphase</h3>
+</div>
+</div>
+</div>
+</section>
+<!-- Heritage / Feature Section -->
+<section class="py-32">
+<div class="mx-auto max-w-[960px] px-6">
+<div class="flex flex-col items-center gap-16 text-center lg:flex-row lg:text-left">
+<div class="flex flex-col gap-6 lg:w-1/2">
+<h2 class="text-4xl font-black leading-tight lg:text-5xl">Our Heritage &amp; <span class="text-accent italic">Philosophy</span></h2>
+<p class="text-lg leading-relaxed text-white/50">
+                            A legacy of craftsmanship spanning over a century, dedicated to those who demand nothing less than perfection. We don't just build objects; we curate experiences.
+                        </p>
+<div class="h-1 w-20 bg-primary"></div>
+</div>
+<div class="grid w-full grid-cols-1 gap-4 sm:grid-cols-2 lg:w-1/2">
+<!-- Feature 1 -->
+<div class="group border border-white/10 bg-white/[0.02] p-8 transition-all hover:border-primary/50">
+<span class="material-symbols-outlined text-accent mb-4 block text-4xl">ink_pen</span>
+<h3 class="mb-2 text-lg font-bold">Master Craft</h3>
+<p class="text-sm font-light leading-normal text-white/40">Hand-finished by master artisans in Switzerland.</p>
+</div>
+<!-- Feature 2 -->
+<div class="group border border-white/10 bg-white/[0.02] p-8 transition-all hover:border-primary/50">
+<span class="material-symbols-outlined text-accent mb-4 block text-4xl">diamond</span>
+<h3 class="mb-2 text-lg font-bold">Timeless Design</h3>
+<p class="text-sm font-light leading-normal text-white/40">Aesthetic brilliance that transcends trends.</p>
+</div>
+<!-- Feature 3 -->
+<div class="group border border-white/10 bg-white/[0.02] p-8 transition-all hover:border-primary/50">
+<span class="material-symbols-outlined text-accent mb-4 block text-4xl">speed</span>
+<h3 class="mb-2 text-lg font-bold">Unrivaled Power</h3>
+<p class="text-sm font-light leading-normal text-white/40">Engineered to exceed every standard.</p>
+</div>
+<!-- Feature 4 -->
+<div class="group border border-white/10 bg-white/[0.02] p-8 transition-all hover:border-primary/50">
+<span class="material-symbols-outlined text-accent mb-4 block text-4xl) text-accent mb-4 block text-4xl">public</span>
+<h3 class="mb-2 text-lg font-bold">Global Reach</h3>
+<p class="text-sm font-light leading-normal text-white/40">Exclusive concierge services worldwide.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="mb-20 px-4">
+<div class="mx-auto max-w-[1200px] overflow-hidden rounded-xl border border-white/10 bg-gradient-to-br from-white/[0.05] to-transparent p-12 text-center lg:p-24">
+<h2 class="text-3xl font-black uppercase tracking-widest md:text-5xl">Join the Elite</h2>
+<p class="mx-auto mt-6 max-w-xl text-lg text-white/60">Membership is by invitation only. Apply for the waiting list or schedule a private consultation at our Geneva atelier.</p>
+<div class="mt-12 flex flex-col items-center justify-center gap-6 md:flex-row">
+<button class="w-full bg-white px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] text-background-dark md:w-auto">Request Invitation</button>
+<button class="w-full border border-white/30 px-12 py-5 text-sm font-bold uppercase tracking-[0.2em] transition-all hover:bg-white/5 md:w-auto">Contact Concierge</button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="border-t border-white/10 bg-black/40 py-20">
+<div class="mx-auto max-w-[1200px] px-6">
+<div class="grid grid-cols-1 gap-12 md:grid-cols-4">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M36.7273 44C33.9891 44 31.6043 39.8386 30.3636 33.69C29.123 39.8386 26.7382 44 24 44C21.2618 44 18.877 39.8386 17.6364 33.69C16.3957 39.8386 14.0109 44 11.2727 44C7.25611 44 4 35.0457 4 24C4 12.9543 7.25611 4 11.2727 4C14.0109 4 16.3957 8.16144 17.6364 14.31C18.877 8.16144 21.2618 4 24 4C26.7382 4 29.123 8.16144 30.3636 14.31C31.6043 8.16144 33.9891 4 36.7273 4C40.7439 4 44 12.9543 44 24C44 35.0457 40.7439 44 36.7273 44Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-bold tracking-[0.2em]">LUXE</h2>
+</div>
+<p class="max-w-sm text-sm font-light leading-relaxed text-white/40">
+                            The world's premier destination for bespoke luxury. Excellence is not an act, but a habit.
+                        </p>
+</div>
+<div>
+<h4 class="mb-6 text-xs font-bold uppercase tracking-widest text-accent">Navigation</h4>
+<ul class="flex flex-col gap-4 text-sm font-light text-white/60">
+<li><a class="hover:text-primary" href="#">Our Story</a></li>
+<li><a class="hover:text-primary" href="#">Watchmaking</a></li>
+<li><a class="hover:text-primary" href="#">Automotive</a></li>
+<li><a class="hover:text-primary" href="#">Sustainability</a></li>
+</ul>
+</div>
+<div>
+<h4 class="mb-6 text-xs font-bold uppercase tracking-widest text-accent">Connect</h4>
+<ul class="flex flex-col gap-4 text-sm font-light text-white/60">
+<li><a class="hover:text-primary" href="#">Instagram</a></li>
+<li><a class="hover:text-primary" href="#">LinkedIn</a></li>
+<li><a class="hover:text-primary" href="#">Private Salon</a></li>
+</ul>
+</div>
+</div>
+<div class="mt-20 flex flex-col items-center justify-between gap-6 border-t border-white/5 pt-10 md:flex-row">
+<p class="text-[10px] uppercase tracking-widest text-white/30">© 2024 LUXE International. All Rights Reserved.</p>
+<div class="flex gap-8">
+<a class="text-[10px] uppercase tracking-widest text-white/30 hover:text-white" href="#">Privacy Policy</a>
+<a class="text-[10px] uppercase tracking-widest text-white/30 hover:text-white" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

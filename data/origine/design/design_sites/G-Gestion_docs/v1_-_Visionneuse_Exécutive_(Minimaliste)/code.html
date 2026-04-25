@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Spec Viewer - Variant 1</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d485d",
+                        "background-light": "#fcfcfc",
+                        "background-dark": "#0a1929",
+                        "slate-custom": "#5b7b8b",
+                        "border-custom": "#e9eef1",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .spec-content p {
+            line-height: 1.7;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fcfcfc;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e9eef1;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#101619] dark:text-gray-100 min-h-screen flex flex-col">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-border-custom bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-4 text-primary dark:text-blue-400">
+<div class="size-6">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 4H17.3334V17.3334H30.6666V30.6666H44V44H4V4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-lg font-bold leading-tight tracking-tight uppercase tracking-[0.05em]">SpecViewer</h2>
+</div>
+<div class="hidden lg:flex items-center gap-9">
+<a class="text-slate-custom text-sm font-medium hover:text-primary transition-colors" href="#">Dashboard</a>
+<a class="text-slate-custom text-sm font-medium hover:text-primary transition-colors" href="#">Archive</a>
+<a class="text-slate-custom text-sm font-medium hover:text-primary transition-colors" href="#">Resources</a>
+</div>
+</div>
+<div class="flex flex-1 justify-end gap-4">
+<label class="flex flex-col min-w-40 h-10 max-w-64">
+<div class="flex w-full flex-1 items-stretch rounded h-full">
+<div class="text-slate-custom flex border-none bg-border-custom dark:bg-white/5 items-center justify-center pl-4 rounded-l border-r-0">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded text-[#101619] dark:text-white focus:outline-0 focus:ring-0 border-none bg-border-custom dark:bg-white/5 focus:border-none h-full placeholder:text-slate-custom px-4 rounded-l-none border-l-0 pl-2 text-sm font-normal" placeholder="Find in document..." value=""/>
+</div>
+</label>
+<div class="flex gap-2">
+<button class="flex min-w-[100px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 px-4 bg-primary text-gray-50 text-xs font-bold uppercase tracking-widest hover:brightness-110 transition-all">
+<span>Export PDF</span>
+</button>
+<button class="flex min-w-[40px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 bg-border-custom dark:bg-white/10 text-primary dark:text-white px-3 hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="flex min-w-[40px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 bg-border-custom dark:bg-white/10 text-primary dark:text-white px-3 hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="h-10 w-px bg-border-custom mx-1"></div>
+<button class="flex min-w-[40px] cursor-pointer items-center justify-center overflow-hidden rounded h-10 bg-border-custom dark:bg-white/10 text-primary dark:text-white px-3 hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Side Navigation Bar -->
+<aside class="w-80 border-r border-border-custom dark:border-white/5 bg-background-light dark:bg-background-dark hidden lg:flex flex-col h-full sticky top-[65px]">
+<div class="flex flex-col h-full justify-between p-6">
+<div class="flex flex-col gap-8">
+<div class="flex gap-4 items-center">
+<div class="bg-primary/10 rounded flex items-center justify-center size-10 text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex flex-col">
+<h1 class="text-primary text-sm font-bold uppercase tracking-wider">Document ID</h1>
+<p class="text-slate-custom text-xs font-medium">SPEC-ALPHA-2024-v2.4</p>
+</div>
+</div>
+<nav class="flex flex-col gap-1">
+<p class="text-slate-custom text-[10px] font-bold uppercase tracking-[0.2em] mb-3 px-3">Table of Contents</p>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded group hover:bg-border-custom transition-all" href="#">
+<span class="material-symbols-outlined text-slate-custom group-hover:text-primary transition-colors text-[20px]">info</span>
+<p class="text-slate-custom group-hover:text-primary text-sm font-medium">1.0 Introduction</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded group hover:bg-border-custom transition-all" href="#">
+<span class="material-symbols-outlined text-slate-custom group-hover:text-primary transition-colors text-[20px]">target</span>
+<p class="text-slate-custom group-hover:text-primary text-sm font-medium">2.0 Project Scope</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded bg-primary/10 text-primary" href="#">
+<span class="material-symbols-outlined text-[20px] fill-1">settings_input_component</span>
+<p class="text-sm font-bold">3.0 Technical Architecture</p>
+</a>
+<div class="flex flex-col ml-9 border-l border-border-custom dark:border-white/10">
+<a class="px-4 py-2 text-xs text-slate-custom hover:text-primary font-medium" href="#">3.1 Data Schema</a>
+<a class="px-4 py-2 text-xs text-slate-custom hover:text-primary font-medium" href="#">3.2 API Interface</a>
+<a class="px-4 py-2 text-xs text-slate-custom hover:text-primary font-medium" href="#">3.3 Infrastructure</a>
+</div>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded group hover:bg-border-custom transition-all" href="#">
+<span class="material-symbols-outlined text-slate-custom group-hover:text-primary transition-colors text-[20px]">verified_user</span>
+<p class="text-slate-custom group-hover:text-primary text-sm font-medium">4.0 Security &amp; Compliance</p>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded group hover:bg-border-custom transition-all" href="#">
+<span class="material-symbols-outlined text-slate-custom group-hover:text-primary transition-colors text-[20px]">list_alt</span>
+<p class="text-slate-custom group-hover:text-primary text-sm font-medium">5.0 Appendices</p>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4 border-t border-border-custom pt-6">
+<div class="bg-border-custom/50 dark:bg-white/5 rounded-lg p-4">
+<p class="text-[10px] font-bold text-slate-custom uppercase tracking-wider mb-2">Last Modified</p>
+<div class="flex items-center gap-2">
+<div class="size-6 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">JD</div>
+<p class="text-xs text-[#101619] dark:text-gray-300">Jane Doe • 2h ago</p>
+</div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded bg-border-custom dark:bg-white/10 text-xs font-bold text-slate-custom hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">settings</span> Settings
+                        </button>
+<button class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded bg-border-custom dark:bg-white/10 text-xs font-bold text-slate-custom hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-sm">help</span> Support
+                        </button>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto bg-[#fcfcfc] dark:bg-background-dark">
+<div class="max-w-4xl mx-auto px-12 py-16">
+<!-- Breadcrumbs -->
+<nav class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-slate-custom mb-12">
+<a class="hover:text-primary transition-colors" href="#">Documents</a>
+<span class="text-border-custom">/</span>
+<a class="hover:text-primary transition-colors" href="#">2024 Specifications</a>
+<span class="text-border-custom">/</span>
+<span class="text-primary">Architecture Alpha v2</span>
+</nav>
+<!-- Page Heading -->
+<div class="mb-20">
+<div class="flex justify-between items-start mb-6">
+<div class="flex-1 pr-8">
+<h1 class="text-primary dark:text-white text-5xl font-extrabold leading-tight tracking-[-0.04em] mb-4">
+                                System Architecture Specification
+                            </h1>
+<div class="flex flex-wrap items-center gap-4">
+<span class="bg-primary text-white text-[10px] font-black px-2 py-0.5 rounded tracking-tighter">V2.4.1</span>
+<div class="flex items-center gap-2 px-3 py-1 rounded bg-green-100 text-green-800 border border-green-200 text-[11px] font-bold uppercase tracking-wider">
+<span class="size-1.5 rounded-full bg-green-600 animate-pulse"></span>
+                                    Published
+                                </div>
+<span class="text-slate-custom text-xs font-medium border-l border-border-custom pl-4">Effective: Oct 24, 2024</span>
+</div>
+</div>
+<button class="flex items-center justify-center gap-2 px-5 py-2.5 rounded border-2 border-primary text-primary hover:bg-primary hover:text-white text-xs font-bold uppercase tracking-widest transition-all">
+<span class="material-symbols-outlined text-sm">edit</span>
+                            Edit Draft
+                        </button>
+</div>
+</div>
+<!-- Document Body -->
+<article class="spec-content text-[#101619] dark:text-gray-300">
+<!-- Section 1.0 -->
+<section class="mb-20">
+<h2 class="text-primary dark:text-blue-300 text-[28px] font-bold leading-none tracking-tight mb-8 border-b-2 border-border-custom pb-4">1.0 Executive Summary</h2>
+<div class="space-y-6 text-lg leading-relaxed font-light">
+<p>This document delineates the technical architecture and core functional specifications for the <strong>Alpha System Infrastructure</strong>. It serves as the primary authority for hardware allocation, software dependency mapping, and security protocols for the upcoming fiscal cycle.</p>
+<p>The objective of this specification is to provide a comprehensive framework that ensures 99.99% system availability while maintaining strict adherence to global compliance standards ISO/IEC 27001.</p>
+</div>
+</section>
+<!-- Section 2.0 -->
+<section class="mb-20">
+<h2 class="text-primary dark:text-blue-300 text-[28px] font-bold leading-none tracking-tight mb-8 border-b-2 border-border-custom pb-4">2.0 High-Level Objectives</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="p-6 bg-border-custom/30 dark:bg-white/5 rounded-xl border border-border-custom dark:border-white/10">
+<span class="material-symbols-outlined text-primary mb-4 text-3xl">bolt</span>
+<h3 class="font-bold text-lg mb-2">Performance Scalability</h3>
+<p class="text-sm text-slate-custom">Architecture must support 4x growth in concurrent user sessions without vertical hardware scaling.</p>
+</div>
+<div class="p-6 bg-border-custom/30 dark:bg-white/5 rounded-xl border border-border-custom dark:border-white/10">
+<span class="material-symbols-outlined text-primary mb-4 text-3xl">verified_user</span>
+<h3 class="font-bold text-lg mb-2">Zero-Trust Security</h3>
+<p class="text-sm text-slate-custom">Every transaction across network segments must be authenticated, authorized, and continuously validated.</p>
+</div>
+</div>
+</section>
+<!-- Section 3.0 (Table Example) -->
+<section class="mb-20">
+<h2 class="text-primary dark:text-blue-300 text-[28px] font-bold leading-none tracking-tight mb-8 border-b-2 border-border-custom pb-4">3.0 Capacity Requirements</h2>
+<div class="overflow-hidden border border-border-custom dark:border-white/10 rounded-xl">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-primary/5 dark:bg-white/5 border-b border-border-custom">
+<th class="px-6 py-4 text-xs font-bold text-primary uppercase tracking-widest">Resource Type</th>
+<th class="px-6 py-4 text-xs font-bold text-primary uppercase tracking-widest">Initial Allocation</th>
+<th class="px-6 py-4 text-xs font-bold text-primary uppercase tracking-widest">Expansion Limit</th>
+<th class="px-6 py-4 text-xs font-bold text-primary uppercase tracking-widest">Criticality</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-custom dark:divide-white/5">
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-bold">L1 Database Cluster</td>
+<td class="px-6 py-4 text-sm">64GB RAM / 16 vCPU</td>
+<td class="px-6 py-4 text-sm">512GB RAM</td>
+<td class="px-6 py-4 text-sm"><span class="px-2 py-1 bg-red-100 text-red-700 rounded text-[10px] font-bold">MISSION CRITICAL</span></td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-bold">Edge Cache Layer</td>
+<td class="px-6 py-4 text-sm">32GB RAM / 8 vCPU</td>
+<td class="px-6 py-4 text-sm">128GB RAM</td>
+<td class="px-6 py-4 text-sm"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-[10px] font-bold">HIGH</span></td>
+</tr>
+<tr class="hover:bg-primary/5 transition-colors">
+<td class="px-6 py-4 text-sm font-bold">Cold Storage (Archive)</td>
+<td class="px-6 py-4 text-sm">10TB RAID 10</td>
+<td class="px-6 py-4 text-sm">Unlimited (S3 Tier)</td>
+<td class="px-6 py-4 text-sm"><span class="px-2 py-1 bg-gray-100 text-gray-700 rounded text-[10px] font-bold">STANDARD</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Quote/Callout -->
+<div class="my-16 pl-8 border-l-4 border-primary italic text-slate-custom text-xl font-light">
+                        "The primary goal is to abstract complexity while maintaining absolute transparency in the audit trail."
+                    </div>
+</article>
+<!-- Footer Metadata -->
+<footer class="mt-24 pt-8 border-t border-border-custom dark:border-white/10 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="flex items-center gap-6">
+<div class="flex flex-col">
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-custom">Security Level</p>
+<p class="text-sm font-bold text-red-800">Internal Use Only (Tier 2)</p>
+</div>
+<div class="h-8 w-px bg-border-custom hidden md:block"></div>
+<div class="flex flex-col">
+<p class="text-[10px] font-bold uppercase tracking-widest text-slate-custom">Review Cycle</p>
+<p class="text-sm font-bold">Quarterly (Next: Jan 2025)</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-slate-custom hover:text-primary transition-colors">
+<span class="material-symbols-outlined">print</span>
+</button>
+<button class="p-2 text-slate-custom hover:text-primary transition-colors">
+<span class="material-symbols-outlined">download</span>
+</button>
+</div>
+</footer>
+</div>
+</main>
+</div>
+<!-- Floating Back to Top -->
+<button class="fixed bottom-8 right-8 size-12 rounded-full bg-primary text-white shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+</body></html>

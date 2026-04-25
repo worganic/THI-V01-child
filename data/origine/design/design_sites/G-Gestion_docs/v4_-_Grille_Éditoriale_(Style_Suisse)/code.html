@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Editorial Grid - Variant 4 | SPEC_CORP</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d485d",
+                        "accent": "#b89e6c",
+                        "background-light": "#fcfcfc",
+                        "background-dark": "#0a1929",
+                        "border-light": "#e9eef1",
+                        "text-main": "#101619",
+                        "text-muted": "#5b7b8b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px", 
+                        "lg": "0.125rem", 
+                        "xl": "0.25rem", 
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .swiss-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            min-height: 100vh;
+        }
+        @media (max-width: 1280px) {
+            .swiss-grid {
+                grid-template-columns: 240px 1fr;
+            }
+            .meta-column { display: none; }
+        }
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+        .border-hairline {
+            border-width: 0.5px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main dark:text-gray-100 antialiased selection:bg-accent selection:text-white">
+<div class="flex flex-col min-h-screen">
+<!-- Top Navigation -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-border-light dark:border-gray-800 px-8 py-4 flex items-center justify-between">
+<div class="flex items-center gap-12">
+<div class="flex items-center gap-3">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M24 0.757355L47.2426 24L24 47.2426L0.757355 24L24 0.757355ZM21 35.7574V12.2426L9.24264 24L21 35.7574Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-xl font-extrabold tracking-tighter uppercase italic">Spec.</h2>
+</div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="text-[11px] font-bold uppercase tracking-[0.2em] text-text-main hover:text-accent transition-colors" href="#">Documents</a>
+<a class="text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted hover:text-accent transition-colors" href="#">Archive</a>
+<a class="text-[11px] font-bold uppercase tracking-[0.2em] text-text-muted hover:text-accent transition-colors" href="#">Compliance</a>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-muted text-lg">search</span>
+<input class="bg-transparent border-b border-border-light focus:border-primary focus:ring-0 text-[10px] tracking-widest pl-10 py-1 w-48 uppercase font-semibold" placeholder="SEARCH SYSTEM" type="text"/>
+</div>
+<div class="flex gap-4">
+<button class="hover:text-accent transition-colors"><span class="material-symbols-outlined text-xl">notifications</span></button>
+<button class="hover:text-accent transition-colors"><span class="material-symbols-outlined text-xl">settings</span></button>
+<div class="size-8 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden border border-border-light">
+<img class="w-full h-full object-cover" data-alt="User profile avatar" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSmgJwLPjgqjKpEd4SdhmUSIPskYXyhli1sBQOqnPP7S8igXX8E_TXRJ-6VXqkIHyZ5GPvCfMNxrgzIzN_VvQX41MnGrI9SiKWzkEqlQYr_qVbtMARREAgjaClakB3wNsXB8errNtHnDb5t4vjWwugmvUbMxAFBmtLLjlA02zMvgUDWUrZh7R-BaN81paOff3P9lKlYSSKnEm9_nZWigr92NQd0z3z2uYdm8VBd3myqAbxpqE4SoFhNCXiAj2lyPtBd0u1H8W43N6s"/>
+</div>
+</div>
+</div>
+</header>
+<main class="swiss-grid flex-1">
+<!-- Sidebar: Navigation Tree -->
+<aside class="border-r border-border-light dark:border-gray-800 p-8 flex flex-col justify-between">
+<div>
+<div class="mb-12">
+<p class="text-[10px] font-bold text-accent uppercase tracking-[0.3em] mb-2">Project Phase</p>
+<h1 class="text-xl font-bold tracking-tight">Alpha 2024</h1>
+<p class="text-xs text-text-muted mt-1 italic">Technical Spec v4.2</p>
+</div>
+<nav class="space-y-1">
+<div class="flex items-center gap-3 px-3 py-3 text-text-muted hover:text-text-main transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">dashboard</span>
+<span class="text-xs font-bold uppercase tracking-widest">Overview</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 bg-primary text-white transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-xl">account_tree</span>
+<span class="text-xs font-bold uppercase tracking-widest">Table of Contents</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 text-text-muted hover:text-text-main transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">history</span>
+<span class="text-xs font-bold uppercase tracking-widest">Revision History</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 text-text-muted hover:text-text-main transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">architecture</span>
+<span class="text-xs font-bold uppercase tracking-widest">Technical Drawings</span>
+</div>
+<div class="flex items-center gap-3 px-3 py-3 text-text-muted hover:text-text-main transition-colors group cursor-pointer">
+<span class="material-symbols-outlined text-xl group-hover:text-primary">menu_book</span>
+<span class="text-xs font-bold uppercase tracking-widest">References</span>
+</div>
+</nav>
+</div>
+<div class="pt-8">
+<button class="w-full bg-primary text-white py-4 text-[10px] font-bold uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">download</span>
+                        Generate PDF Report
+                    </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<section class="bg-background-light dark:bg-background-dark overflow-y-auto">
+<div class="max-w-[840px] mx-auto px-12 py-20">
+<!-- Breadcrumbs -->
+<div class="flex items-center gap-2 mb-12">
+<a class="text-[10px] font-bold uppercase tracking-widest text-text-muted hover:text-accent" href="#">Project Alpha</a>
+<span class="text-text-muted text-[10px]">/</span>
+<a class="text-[10px] font-bold uppercase tracking-widest text-text-muted hover:text-accent" href="#">Technical Documents</a>
+<span class="text-text-muted text-[10px]">/</span>
+<span class="text-[10px] font-bold uppercase tracking-widest text-primary">Specifications</span>
+</div>
+<!-- Page Heading -->
+<div class="mb-16">
+<div class="h-1 w-20 bg-accent mb-8"></div>
+<h2 class="text-6xl font-black leading-[1.1] tracking-[-0.05em] text-text-main dark:text-white mb-6">
+                            Structural Integrity Standards for High-Altitude Infrastructure
+                        </h2>
+<div class="flex items-center justify-between border-t border-b border-border-light py-6">
+<p class="text-sm font-medium italic text-text-muted">Revised Edition: October 2023</p>
+<p class="text-xs font-mono font-bold text-primary tracking-tighter">DOCID: SPEC-7742-ALPHA</p>
+</div>
+</div>
+<!-- Article Grid -->
+<div class="prose prose-slate max-w-none dark:prose-invert">
+<div class="mb-16">
+<h3 class="text-xs font-black uppercase tracking-[0.4em] text-accent mb-6">01. Executive Summary</h3>
+<p class="text-xl leading-relaxed font-light text-text-main/80 mb-8 first-letter:text-5xl first-letter:font-black first-letter:mr-3 first-letter:float-left first-letter:leading-none">
+                                This document establishes the mandatory structural requirements for all permanent and semi-permanent assets deployed at altitudes exceeding 3,000 meters above sea level. It addresses thermal expansion coefficients, shear stress variances, and atmospheric pressure mitigation strategies essential for long-term viability in extreme environments.
+                            </p>
+</div>
+<div class="grid grid-cols-2 gap-12 mb-16">
+<div class="border-t border-border-light pt-6">
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-primary mb-4">Methodology</h4>
+<p class="text-sm leading-relaxed text-text-muted">
+                                    Utilizing finite element analysis (FEA) combined with empirical data gathered from the 2022 Himalayan test sites, our team has refined the stress models for carbon-composite lattices.
+                                </p>
+</div>
+<div class="border-t border-border-light pt-6">
+<h4 class="text-[10px] font-bold uppercase tracking-widest text-primary mb-4">Compliance</h4>
+<p class="text-sm leading-relaxed text-text-muted">
+                                    All blueprints must adhere to ISO 16773 standards for aerospace-grade structural integrity, with an additional 15% safety margin for wind-shear.
+                                </p>
+</div>
+</div>
+<!-- Technical Visualization Placeholder -->
+<div class="relative bg-gray-100 dark:bg-gray-800 aspect-[16/9] mb-16 flex items-center justify-center overflow-hidden">
+<div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle,theme(colors.primary)_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+<img class="relative z-10 mix-blend-multiply dark:mix-blend-screen opacity-60" data-alt="Technical blueprint of a high-altitude structure" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSOmXzDrUkVJHDC3oLd2JKUnu6FMKPHhY1WhKbnLZYE4m268JsI3t-htoJkjSLJYSj0F1s5TEx1jDREoodoZHVgWcrg_-pHrRKlD42ZAWp2WFc1EA8p91gdbNRMfv8xBpNwBpTxzOhNxz0cCehqSKiw2vPi3KYsf-WDnKYngKvD0zQa6XLBHG_Wy0zyZEdVNc-FS4g1JyR2zRNgrJ2bsq5g97xTe43MsKCtq7X0PCiJXzW1DM-zv-WqZXXFzfECUWYn2SNSc04Lvu2"/>
+<div class="absolute bottom-4 right-4 text-[9px] font-mono font-bold text-text-muted bg-white/80 px-2 py-1 uppercase tracking-widest">FIG 4.2: LATTICE STRESS MAP</div>
+</div>
+<div class="mb-16">
+<h3 class="text-xs font-black uppercase tracking-[0.4em] text-accent mb-6">02. Material Specifications</h3>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b-2 border-primary">
+<th class="py-4 text-[10px] font-bold uppercase tracking-widest">Component</th>
+<th class="py-4 text-[10px] font-bold uppercase tracking-widest">Material Grade</th>
+<th class="py-4 text-[10px] font-bold uppercase tracking-widest">Tensile Strength</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr class="border-b border-border-light">
+<td class="py-4 font-bold">Primary Core</td>
+<td class="py-4 text-text-muted">Ti-6Al-4V Grade 5</td>
+<td class="py-4 font-mono">880 MPa</td>
+</tr>
+<tr class="border-b border-border-light">
+<td class="py-4 font-bold">External Cladding</td>
+<td class="py-4 text-text-muted">Silicon-Carbide Fiber</td>
+<td class="py-4 font-mono">2,200 MPa</td>
+</tr>
+<tr class="border-b border-border-light">
+<td class="py-4 font-bold">Base Connectors</td>
+<td class="py-4 text-text-muted">Aerospace Aluminum 7075</td>
+<td class="py-4 font-mono">570 MPa</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<!-- Metadata Column -->
+<aside class="meta-column border-l border-border-light dark:border-gray-800 p-10 flex flex-col gap-10">
+<div class="flex justify-between items-start">
+<span class="text-[9px] font-bold uppercase tracking-[0.3em] text-accent">Document Metadata</span>
+<button class="text-primary hover:text-accent"><span class="material-symbols-outlined">more_vert</span></button>
+</div>
+<div class="space-y-8">
+<div class="flex flex-col gap-1">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest">Lead Engineer</p>
+<p class="text-sm font-bold text-text-main">Dr. Aris Thorne</p>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest">Status</p>
+<div class="flex items-center gap-2">
+<span class="size-2 bg-green-500 rounded-full"></span>
+<p class="text-sm font-bold text-text-main uppercase tracking-tighter">Approved for Deployment</p>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest">Publication Date</p>
+<p class="text-sm font-bold text-text-main">2023-10-12</p>
+</div>
+<div class="flex flex-col gap-1">
+<p class="text-[10px] font-bold text-text-muted uppercase tracking-widest">Review Cycle</p>
+<p class="text-sm font-bold text-text-main">Bi-annual</p>
+</div>
+</div>
+<div class="mt-auto pt-8 border-t border-border-light">
+<div class="flex items-center gap-4 mb-6">
+<div class="bg-primary/5 p-4 flex-1 text-center border-hairline border-primary/20">
+<p class="text-[18px] font-black text-primary leading-none">1.4k</p>
+<p class="text-[8px] font-bold uppercase tracking-widest mt-1">Reads</p>
+</div>
+<div class="bg-primary/5 p-4 flex-1 text-center border-hairline border-primary/20">
+<p class="text-[18px] font-black text-primary leading-none">24</p>
+<p class="text-[8px] font-bold uppercase tracking-widest mt-1">Versions</p>
+</div>
+</div>
+<button class="w-full flex items-center justify-between group">
+<span class="text-[10px] font-black uppercase tracking-[0.2em] group-hover:text-accent transition-colors">Audit Log</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-1 transition-transform">arrow_right_alt</span>
+</button>
+</div>
+<!-- Vertical Text Accent -->
+<div class="absolute right-0 bottom-1/4 opacity-[0.03] select-none pointer-events-none hidden xl:block">
+<p class="vertical-text text-[120px] font-black leading-none uppercase tracking-tighter">TECHNICAL</p>
+</div>
+</aside>
+</main>
+<!-- Footer Bar -->
+<footer class="bg-white border-t border-border-light px-8 py-3 flex items-center justify-between text-[9px] font-bold uppercase tracking-[0.4em] text-text-muted">
+<div class="flex gap-8">
+<span>© 2024 SPEC_CORP INDUSTRIES</span>
+<span>SECURE TERMINAL 04</span>
+</div>
+<div class="flex gap-8 items-center">
+<span class="flex items-center gap-2"><span class="size-1 bg-primary rounded-full animate-pulse"></span> SYSTEM NOMINAL</span>
+<span>ENC: AES-256-GCM</span>
+</div>
+</footer>
+</div>
+</body></html>

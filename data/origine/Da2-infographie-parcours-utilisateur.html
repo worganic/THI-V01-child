@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectForge - Infographie Parcours Utilisateur</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="../assets/css/styles.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e0aaff",
+                        "secondary": "#c77dff",
+                        "accent": "#9d4edd",
+                        "accent-dark": "#7b2cbf",
+                        "accent-darker": "#5a189a",
+                        "background": "#0a0a0f",
+                        "surface": "#12121a",
+                        "surface-light": "#1a1a25",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* Infographie specific styles */
+        .infographic-section {
+            background: #12121a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 1.6em;
+            color: #e0aaff;
+            margin-bottom: 35px;
+            text-align: center;
+            position: relative;
+            padding-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #9d4edd, #c77dff);
+            border-radius: 2px;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #5a189a, #7b2cbf, #9d4edd);
+            border-radius: 2px;
+        }
+
+        .timeline-item {
+            margin-bottom: 40px;
+            width: 45%;
+        }
+
+        .timeline-item:nth-child(odd) {
+            margin-left: 0;
+            text-align: right;
+            padding-right: 5%;
+        }
+
+        .timeline-item:nth-child(even) {
+            margin-left: 55%;
+            padding-left: 5%;
+        }
+
+        .timeline-content {
+            background: #1a1a25;
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.2);
+            border-color: #9d4edd;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 14px;
+            background: #0a0a0f;
+            border: 3px solid #9d4edd;
+            border-radius: 50%;
+            top: 30px;
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(157, 78, 221, 0.5);
+        }
+
+        .timeline-time {
+            font-weight: 700;
+            color: #c77dff;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+
+        .timeline-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #e0aaff;
+            margin-bottom: 10px;
+        }
+
+        .timeline-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        /* Comparison */
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .comparison-card {
+            background: #1a1a25;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid #ef4444;
+        }
+
+        .comparison-card.after {
+            border-left-color: #10b981;
+        }
+
+        .comparison-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #e0aaff;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .comparison-list {
+            list-style: none;
+            display: grid;
+            gap: 12px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .comparison-list li {
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding-left: 40px;
+            position: relative;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95em;
+        }
+
+        .comparison-list li::before {
+            content: '✗';
+            position: absolute;
+            left: 15px;
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .comparison-card.after .comparison-list li::before {
+            content: '✓';
+            color: #10b981;
+        }
+
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(157, 78, 221, 0.3);
+        }
+
+        .metric-number {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.95;
+            line-height: 1.4;
+        }
+
+        /* Architecture */
+        .architecture {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .arch-box {
+            background: linear-gradient(135deg, #5a189a 0%, #7b2cbf 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            flex: 1;
+            min-width: 130px;
+            max-width: 170px;
+            font-weight: 600;
+            font-size: 0.9em;
+            border: 1px solid rgba(157, 78, 221, 0.5);
+        }
+
+        .arch-arrow {
+            font-size: 1.5em;
+            color: #c77dff;
+            text-shadow: 0 0 10px rgba(199, 125, 255, 0.5);
+        }
+
+        .data-flow-box {
+            background: #1a1a25;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+        }
+
+        .data-flow-box h3 {
+            color: #e0aaff;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .data-flow-box p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+
+        /* Use Cases */
+        .use-cases {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .use-case {
+            background: #1a1a25;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+
+        .use-case:hover {
+            border-color: #9d4edd;
+            box-shadow: 0 5px 25px rgba(157, 78, 221, 0.2);
+            transform: translateY(-3px);
+        }
+
+        .use-case-title {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #e0aaff;
+            margin-bottom: 12px;
+        }
+
+        .use-case-description {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+
+        .use-case-benefit {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            border-left: 3px solid #10b981;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: #1a1a25;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 3px solid #9d4edd;
+        }
+
+        .feature-card h4 {
+            color: #c77dff;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .feature-card p {
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        @media (max-width: 768px) {
+            .comparison {
+                grid-template-columns: 1fr;
+            }
+
+            .timeline::before {
+                left: 20px;
+            }
+
+            .timeline-item,
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                width: 100%;
+                margin-left: 0;
+                padding-left: 50px;
+                text-align: left;
+                padding-right: 0;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .architecture {
+                flex-direction: column;
+            }
+
+            .arch-arrow {
+                transform: rotate(90deg);
+            }
+
+            .arch-box {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-white font-display min-h-screen">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <a href="../index.html" class="back-button">
+                        <span class="material-symbols-outlined text-lg">arrow_back</span>
+                        Retour
+                    </a>
+                    <div class="w-10 h-10 neon-border flex items-center justify-center">
+                        <span class="material-symbols-outlined neon-text">route</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold" id="headerTitle">Parcours Utilisateur</h1>
+                        <p class="text-xs text-white/50" id="headerSubtitle"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-xs text-white/50">Serveur actif</p>
+                        <p class="text-sm font-mono text-green-400" id="headerServerUrl"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-6">
+        <div class="max-w-6xl mx-auto">
+
+            <div class="page-header">
+                <h1>Parcours Utilisateur ProjectForge</h1>
+                <p class="subtitle">Infographie interactive du flux complet - De la découverte à la livraison</p>
+            </div>
+
+            <!-- Timeline Section -->
+            <div class="infographic-section">
+                <h2 class="section-title">Chronologie du Parcours (0 à 15 minutes)</h2>
+
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">00-01 min</div>
+                            <div class="timeline-title">Découverte</div>
+                            <div class="timeline-description">
+                                L'utilisateur explore la page d'accueil et voit les templates disponibles. Il peut filtrer par type, consulter les descriptions et estimer le temps nécessaire.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">01-04 min</div>
+                            <div class="timeline-title">Création du Projet</div>
+                            <div class="timeline-description">
+                                En 3 clics simples : sélectionner une template, nommer le projet, et la structure est créée automatiquement. Zéro friction, zéro erreur possible.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">04-10 min</div>
+                            <div class="timeline-title">Réponse aux Questions</div>
+                            <div class="timeline-description">
+                                Navigation progressive question par question. Chaque question a une aide contextuelle, une validation en temps réel et une barre de progression. Les réponses se sauvegardent automatiquement.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">10-11 min</div>
+                            <div class="timeline-title">Génération IA</div>
+                            <div class="timeline-description">
+                                Un clic lance la génération par Claude. L'utilisateur voit un aperçu modifiable du prompt, puis regarde le streaming en temps réel de la génération des documents.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div class="timeline-time">11-15 min</div>
+                            <div class="timeline-title">Téléchargement & Livraison</div>
+                            <div class="timeline-description">
+                                Les documents générés sont listés et prêts. L'utilisateur peut télécharger chaque fichier individuellement ou tout en une archive ZIP. Utilisables immédiatement.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comparison Section -->
+            <div class="infographic-section">
+                <h2 class="section-title">Avant vs. Après</h2>
+
+                <div class="comparison">
+                    <div class="comparison-card">
+                        <div class="comparison-title">Avant ProjectForge</div>
+                        <ul class="comparison-list">
+                            <li>30-45 minutes pour créer un projet</li>
+                            <li>Risques d'erreurs et d'oublis</li>
+                            <li>Pas de structure standardisée</li>
+                            <li>Génération manuelle de documents</li>
+                            <li>Qualité variable selon la personne</li>
+                            <li>Aucune traçabilité</li>
+                            <li>Perte de temps sur tâches répétitives</li>
+                        </ul>
+                    </div>
+
+                    <div class="comparison-card after">
+                        <div class="comparison-title">Avec ProjectForge</div>
+                        <ul class="comparison-list">
+                            <li>5 minutes pour créer un projet</li>
+                            <li>Zéro erreur grâce aux validations</li>
+                            <li>Structure 100% cohérente</li>
+                            <li>Génération automatique par IA</li>
+                            <li>Qualité professionnelle garantie</li>
+                            <li>Historique complet de chaque action</li>
+                            <li>Automatisation complète</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Impact Metrics -->
+            <div class="infographic-section">
+                <h2 class="section-title">Impact Chiffré</h2>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-number">6x</div>
+                        <div class="metric-label">Plus rapide<br>(45 min → 5 min)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">100%</div>
+                        <div class="metric-label">Cohérence<br>entre projets</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">90%</div>
+                        <div class="metric-label">Temps gagné<br>sur génération docs</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">70%</div>
+                        <div class="metric-label">Réduction effort<br>manuel</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Architecture -->
+            <div class="infographic-section">
+                <h2 class="section-title">Architecture Technique</h2>
+
+                <div class="architecture">
+                    <div class="arch-box">React Frontend<br><small>(UX fluide)</small></div>
+                    <div class="arch-arrow">↔</div>
+                    <div class="arch-box">Node.js Backend<br><small>(API REST)</small></div>
+                    <div class="arch-arrow">↔</div>
+                    <div class="arch-box">JSON Storage<br><small>(Données)</small></div>
+                    <div class="arch-arrow">↔</div>
+                    <div class="arch-box">Claude Code<br><small>(Génération IA)</small></div>
+                </div>
+
+                <div class="data-flow-box">
+                    <h3>Flux de Données Clé</h3>
+                    <p>
+                        1. L'utilisateur saisit ses réponses dans le formulaire React<br>
+                        2. Sauvegarde automatique en JSON (1 sec max)<br>
+                        3. À la génération : création d'un prompt structuré<br>
+                        4. Appel à Claude Code CLI en streaming<br>
+                        5. Fichiers créés dans _outputs/<br>
+                        6. Historique enregistré de manière immuable
+                    </p>
+                </div>
+            </div>
+
+            <!-- Use Cases -->
+            <div class="infographic-section">
+                <h2 class="section-title">Cas d'Utilisation Principaux</h2>
+
+                <div class="use-cases">
+                    <div class="use-case">
+                        <div class="use-case-title">Consultant Junior</div>
+                        <div class="use-case-description">
+                            Crée rapidement un cahier des charges professionnel pour chaque nouveau client, sans risque d'erreur ou d'oubli.
+                        </div>
+                        <div class="use-case-benefit">Gagne 40 min par projet</div>
+                    </div>
+
+                    <div class="use-case">
+                        <div class="use-case-title">Chef de Projet</div>
+                        <div class="use-case-description">
+                            Gère une structure cohérente entre tous ses projets, avec traçabilité complète de chaque décision et modification.
+                        </div>
+                        <div class="use-case-benefit">Améliore la qualité de 30%</div>
+                    </div>
+
+                    <div class="use-case">
+                        <div class="use-case-title">Équipe Service</div>
+                        <div class="use-case-description">
+                            Standardise la création de propositions commerciales avec IA, assurant une qualité uniforme quelle que soit la personne.
+                        </div>
+                        <div class="use-case-benefit">Scalabilité garantie</div>
+                    </div>
+
+                    <div class="use-case">
+                        <div class="use-case-title">Reprise de Projets</div>
+                        <div class="use-case-description">
+                            Revient à un projet interrompu et reprend exactement où on l'avait laissé, sans perdre aucune information.
+                        </div>
+                        <div class="use-case-benefit">Continuité 100%</div>
+                    </div>
+
+                    <div class="use-case">
+                        <div class="use-case-title">Génération Automatique</div>
+                        <div class="use-case-description">
+                            Génère automatiquement des documents professionnels (cahier des charges, propositions, plans) en moins d'une minute.
+                        </div>
+                        <div class="use-case-benefit">60x plus rapide</div>
+                    </div>
+
+                    <div class="use-case">
+                        <div class="use-case-title">Audit & Conformité</div>
+                        <div class="use-case-description">
+                            Accède à l'historique complet de chaque projet pour démontrer la conformité et la traçabilité des décisions.
+                        </div>
+                        <div class="use-case-benefit">Audit-ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Features -->
+            <div class="infographic-section">
+                <h2 class="section-title">Fonctionnalités Clés</h2>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h4>70+ Templates</h4>
+                        <p>Templates structurées pour tous les cas d'usage, prêtes à l'emploi avec des métadonnées complètes.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Formulaires Intuitifs</h4>
+                        <p>10 types de questions différents, validation en temps réel, aide contextuelle pour chaque champ.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Génération IA</h4>
+                        <p>Intégration Claude Code, streaming en temps réel, documents professionnels en moins d'1 min.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Dashboard Complet</h4>
+                        <p>Vue d'ensemble de tous les projets, progression visuelle, reprise instantanée.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Historique Complet</h4>
+                        <p>Timeline immuable de toutes les actions, filtrage par type, audit-ready.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <h4>Responsive Design</h4>
+                        <p>Accessible sur mobile, tablet et desktop, UX fluide sur tous les appareils.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="border-t border-white/10 pt-8 mt-12">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-white/40" id="footerTitle"></p>
+                        <p class="text-xs text-white/30">Basé sur 69 exigences fonctionnelles structurées</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-white/40" id="footerPort"></p>
+                        <p class="text-xs text-white/30" id="footerDesign"></p>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </main>
+
+    <script>
+        // Load metadata from JSON
+        async function loadMetadata() {
+            try {
+                const response = await fetch('../index.json?' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const meta = data.metadata;
+
+                    document.getElementById('headerTitle').textContent = 'Parcours Utilisateur';
+                    document.getElementById('headerSubtitle').textContent = `${meta.platform} v${meta.version}`;
+                    document.getElementById('headerServerUrl').textContent = meta.server.url;
+
+                    document.getElementById('footerTitle').textContent = `${meta.title} - ${meta.platform}`;
+                    document.getElementById('footerPort').textContent = `Port: ${meta.server.port}`;
+                    document.getElementById('footerDesign').textContent = `Design: ${meta.design}`;
+                }
+            } catch (e) {
+                console.log('Metadata not available');
+            }
+        }
+
+        loadMetadata();
+    </script>
+</body>
+</html>

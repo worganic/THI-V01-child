@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>BOLD. | Creative Architecture</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00b29b",
+                        "background-light": "#f8f7f6",
+                        "background-dark": "#0a0a0b",
+                        "card-dark": "#16181d",
+                    },
+                    fontFamily: {
+                        "display": ["Epilogue", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .grainy-gradient {
+            background: radial-gradient(circle at 50% 50%, #00b29b33 0%, #0a0a0b 100%),
+                        url("https://www.transparenttextures.com/patterns/stardust.png");
+        }
+        .glass-card {
+            background: rgba(22, 24, 29, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-stroke {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+            color: transparent;
+        }
+        .marquee {
+            white-space: nowrap;
+            overflow: hidden;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 transition-colors duration-300">
+<!-- Navigation -->
+<header class="fixed top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 md:px-20 py-4">
+<nav class="flex items-center justify-between max-w-[1440px] mx-auto">
+<div class="flex items-center gap-2">
+<div class="size-6 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+</svg>
+</div>
+<h2 class="text-xl font-black tracking-tighter uppercase">Bold.</h2>
+</div>
+<div class="hidden md:flex items-center gap-10">
+<a class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Work</a>
+<a class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Services</a>
+<a class="text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">Studio</a>
+<button class="bg-primary text-white text-xs font-black uppercase tracking-[0.2em] px-6 py-3 rounded-sm hover:brightness-110 transition-all">
+                    Start Project
+                </button>
+</div>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</nav>
+</header>
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center pt-20 overflow-hidden grainy-gradient">
+<div class="absolute top-1/4 -right-20 w-96 h-96 bg-primary/20 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 -left-20 w-80 h-80 bg-blue-500/10 rounded-full blur-[100px]"></div>
+<div class="px-6 md:px-20 w-full max-w-[1440px] mx-auto z-10">
+<div class="max-w-4xl">
+<span class="text-primary font-bold tracking-[0.4em] uppercase text-sm mb-6 block">Future-Proof Digital Design</span>
+<h1 class="text-white text-6xl md:text-8xl lg:text-9xl font-black leading-[0.9] tracking-[-0.05em] mb-10">
+                    WE ARCHITECT <br/>
+<span class="text-stroke">DIGITAL</span> EMOTION.
+                </h1>
+<div class="flex flex-col md:flex-row items-start md:items-center gap-8">
+<p class="text-slate-400 text-lg md:text-xl max-w-lg leading-relaxed">
+                        A boutique design studio crafting high-impact digital experiences through Bauhaus modularity and futuristic aesthetics.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary hover:bg-white hover:text-black text-white px-8 py-4 font-black uppercase tracking-widest transition-all">
+                            View Work
+                        </button>
+<button class="border border-white/20 hover:border-primary px-8 py-4 font-black uppercase tracking-widest transition-all">
+                            About Us
+                        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Scroll Indicator -->
+<div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+<div class="w-[1px] h-20 bg-gradient-to-b from-primary to-transparent"></div>
+<span class="text-[10px] tracking-[0.3em] uppercase font-bold text-white/40">Scroll</span>
+</div>
+</section>
+<!-- Marquee -->
+<div class="marquee py-8 bg-background-dark">
+<div class="flex gap-20 animate-none opacity-50">
+<span class="text-4xl font-black uppercase tracking-tighter text-white/20">Experience Design</span>
+<span class="text-4xl font-black uppercase tracking-tighter text-primary">Visual Identity</span>
+<span class="text-4xl font-black uppercase tracking-tighter text-white/20">Digital Strategy</span>
+<span class="text-4xl font-black uppercase tracking-tighter text-primary">Web3.0 Interaction</span>
+<span class="text-4xl font-black uppercase tracking-tighter text-white/20">Motion Systems</span>
+</div>
+</div>
+<!-- Portfolio Section -->
+<section class="py-32 px-6 md:px-20 max-w-[1440px] mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
+<div class="max-w-xl">
+<h2 class="text-primary font-bold tracking-[0.4em] uppercase text-xs mb-4">Selected Works</h2>
+<h3 class="text-4xl md:text-6xl font-black tracking-tight leading-none uppercase">Crafting the <br/>New Standard.</h3>
+</div>
+<a class="group flex items-center gap-4 text-sm font-bold uppercase tracking-widest hover:text-primary transition-colors" href="#">
+                All Projects 
+                <span class="material-symbols-outlined group-hover:translate-x-2 transition-transform">arrow_right_alt</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Large Card -->
+<div class="md:col-span-8 group relative aspect-[16/9] overflow-hidden bg-card-dark rounded-sm">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" data-alt="Futuristic neon city interface abstract concept" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDE8Y6cdpyA6GZzTDvdxH1s6Z3GwTX6leVk7fg3QRaN2TopUjH2KVGocb_sKYGEipHFjqvGhKiUcsBW-UwBuHmUhharmPmpeks8qh_0EfPDuii9u6T54wCcdVs5UAPf2z27uFWDp_QFVxiWKO_yGERgnEpnm-yhcaJNGyM1ArxSnY7wcmbS57tHw1kSJz51Axcyz-qNi5gJnSzF6Ie6lWBGU591Ck8VZjx4dSsDaNZY2Uwc0NmXWpCaAv71zIkezSdc3oEB4AKJkfo');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-10">
+<p class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Branding &amp; Interaction</p>
+<h4 class="text-3xl font-black uppercase">Cyber-Physical Identity</h4>
+</div>
+<div class="absolute top-10 right-10 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-4xl text-primary">north_east</span>
+</div>
+</div>
+<!-- Small Card 1 -->
+<div class="md:col-span-4 group relative aspect-square md:aspect-auto overflow-hidden bg-card-dark rounded-sm">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-50" data-alt="Abstract glowing grid and lines" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCpyiIM9BYp3DYYpfzjDjR9eEdl1j79k9-3YLUIl0_5I5Xleh7s0r--QgxpQ7mEH9ZQMjTkbTpx7wE5CKY6oJFDp20fQhvP4JJkeZ7xawgu7s37OFtWjkYZHADTviV076ON41HufOZd73Q8YsXRnHSmN7nPmwvjO2Vjo-Cm9uPYYVjiXT-1nxF8LQIUp4vyu0bDq9XbsFP2cLybbMPAmo5m1lTVillCkJk7Tbv1KHEPqamXxXlqiJbQvdMIUJdYN7D2Zf66HS7J6j8');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-10">
+<p class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Mobile App</p>
+<h4 class="text-2xl font-black uppercase">Neon Flux</h4>
+</div>
+</div>
+<!-- Small Card 2 -->
+<div class="md:col-span-4 group relative aspect-square md:aspect-auto overflow-hidden bg-card-dark rounded-sm">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-50" data-alt="Geometric minimalist sculpture digital render" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAqZ8tEX1zwDDP9IavDUm3pHUoL_Ux47AAP8sC_90hkCsRen1LJIY1pwad7n7As-PcTEuPPVb_kSc1fcW1lsSgtwjakfl-QFL9BryEqcL2SyiXneO7nOkn8Miz2tmt9WvD1ipYjC6i6Djlz3ZUTEl8_L1e1Z-hegWOu5GoVAf50GdXYpeY0rJ8lj53hM5m5iDjQoydojDHI5K2ojiXXz1ykBstI6zOeZ1am2GsguMMXlgJj0bysIzA8qKPiJHQWq-UxbfCVsplTLbQ');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-10">
+<p class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Web Design</p>
+<h4 class="text-2xl font-black uppercase">Modular Reality</h4>
+</div>
+</div>
+<!-- Medium Card -->
+<div class="md:col-span-8 group relative aspect-[16/9] overflow-hidden bg-card-dark rounded-sm">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110 opacity-60" data-alt="Modern editorial layout on dark background" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA_p8UCGLYAorA2HkyVl8y09HCh8GkAXb9tQzwfm4a1bTdECijaDjjIEMY4ATCOIXgwWZvUaxLhXQueTBbc9mmIztqLhZ-AhyvyANE9ObGupFZ_pXXUYF14Ho_rSWSJkhhOduTLY1YZ7u8oJPUWe2iElsXNHBwB4rhJ108MdnOo_p1MLlftmDt05RLEy_mf1YOBRCdQTJKIHLBqVFz5n-H1kIwK_WniBiEFtpKwrIocFMv9k1l99R90Ow1Pd2NYCrJNKMr6qCtJotM');"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent"></div>
+<div class="absolute bottom-10 left-10">
+<p class="text-primary font-bold uppercase tracking-widest text-xs mb-2">Editorial</p>
+<h4 class="text-3xl font-black uppercase">Edge Digital Journal</h4>
+</div>
+</div>
+</div>
+</section>
+<!-- Services Section -->
+<section class="py-32 bg-card-dark relative overflow-hidden">
+<div class="absolute top-0 right-0 w-1/3 h-full bg-primary/5 -skew-x-12 translate-x-1/2"></div>
+<div class="px-6 md:px-20 max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20">
+<div>
+<h2 class="text-primary font-bold tracking-[0.4em] uppercase text-xs mb-4">Capabilities</h2>
+<h3 class="text-5xl md:text-7xl font-black uppercase tracking-tight leading-none mb-8">Redefining the <br/>possible.</h3>
+<p class="text-slate-400 text-xl leading-relaxed max-w-lg mb-12">
+                    We combine analytical precision with unbridled creativity to build platforms that don't just work—they resonate.
+                </p>
+<div class="space-y-6">
+<div class="flex items-start gap-6 pb-6 border-b border-white/10 group cursor-default">
+<span class="text-primary font-black text-2xl">01</span>
+<div>
+<h4 class="text-xl font-bold uppercase mb-2 group-hover:text-primary transition-colors">Digital Strategy</h4>
+<p class="text-slate-500 text-sm">Market disruption through precise data-driven positioning.</p>
+</div>
+</div>
+<div class="flex items-start gap-6 pb-6 border-b border-white/10 group cursor-default">
+<span class="text-primary font-black text-2xl">02</span>
+<div>
+<h4 class="text-xl font-bold uppercase mb-2 group-hover:text-primary transition-colors">Experience Design</h4>
+<p class="text-slate-500 text-sm">Immersive UI/UX that prioritizes emotion and conversion.</p>
+</div>
+</div>
+<div class="flex items-start gap-6 group cursor-default">
+<span class="text-primary font-black text-2xl">03</span>
+<div>
+<h4 class="text-xl font-bold uppercase mb-2 group-hover:text-primary transition-colors">Future Tech</h4>
+<p class="text-slate-500 text-sm">High-performance deployment using cutting-edge stacks.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-card p-8 flex flex-col justify-between aspect-square">
+<span class="material-symbols-outlined text-4xl text-primary">bolt</span>
+<h5 class="font-black uppercase tracking-widest text-xs">High Velocity</h5>
+</div>
+<div class="bg-primary p-8 flex flex-col justify-between aspect-square translate-y-12">
+<span class="material-symbols-outlined text-4xl text-white">architecture</span>
+<h5 class="font-black uppercase tracking-widest text-xs text-white">Pure Bauhaus</h5>
+</div>
+<div class="glass-card p-8 flex flex-col justify-between aspect-square -translate-y-12">
+<span class="material-symbols-outlined text-4xl text-primary">token</span>
+<h5 class="font-black uppercase tracking-widest text-xs">Web3 Integrated</h5>
+</div>
+<div class="glass-card p-8 flex flex-col justify-between aspect-square">
+<span class="material-symbols-outlined text-4xl text-primary">auto_awesome</span>
+<h5 class="font-black uppercase tracking-widest text-xs">Emotion First</h5>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-40 px-6 md:px-20 text-center relative overflow-hidden">
+<div class="absolute inset-0 grainy-gradient opacity-30"></div>
+<div class="max-w-4xl mx-auto relative z-10">
+<h2 class="text-5xl md:text-8xl font-black uppercase tracking-tighter mb-10 leading-[0.9]">
+                LET'S BUILD THE <br/><span class="text-primary">UNIMAGINABLE.</span>
+</h2>
+<p class="text-slate-400 text-xl mb-12 max-w-xl mx-auto">
+                Ready to transform your digital presence into a masterpiece? Our team is waiting for the next challenge.
+            </p>
+<div class="flex flex-col md:flex-row items-center justify-center gap-6">
+<button class="w-full md:w-auto bg-primary text-white text-lg font-black uppercase tracking-widest px-12 py-6 hover:scale-105 transition-transform">
+                    Start a Project
+                </button>
+<button class="w-full md:w-auto border border-white/10 text-white text-lg font-black uppercase tracking-widest px-12 py-6 hover:bg-white hover:text-black transition-all">
+                    Careers
+                </button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-background-dark border-t border-white/5 py-20 px-6 md:px-20">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-2 mb-8">
+<div class="size-8 text-primary">
+<svg fill="currentColor" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.4379 44C42.4379 44 36.0744 33.9038 41.1692 24C46.8624 12.9336 42.2078 4 42.2078 4L7.01134 4C7.01134 4 11.6577 12.932 5.96912 23.9969C0.876273 33.9029 7.27094 44 7.27094 44L42.4379 44Z"></path>
+</svg>
+</div>
+<h2 class="text-2xl font-black tracking-tighter uppercase">Bold.</h2>
+</div>
+<p class="text-slate-500 max-w-sm text-sm leading-relaxed">
+                    Architecting the future of digital interactions through bold aesthetics and uncompromising performance. Based in London, working globally.
+                </p>
+</div>
+<div>
+<h4 class="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8">Navigation</h4>
+<ul class="space-y-4">
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">Portfolio</a></li>
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">Services</a></li>
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">Our Process</a></li>
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">About Bold</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-xs font-black uppercase tracking-[0.3em] text-white/40 mb-8">Connect</h4>
+<ul class="space-y-4">
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">Instagram</a></li>
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">Dribbble</a></li>
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">LinkedIn</a></li>
+<li><a class="text-sm font-bold hover:text-primary transition-colors" href="#">Behance</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] uppercase font-bold tracking-widest text-slate-600">
+<p>© 2024 BOLD DIGITAL DESIGN STUDIO. ALL RIGHTS RESERVED.</p>
+<div class="flex gap-8">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</footer>
+</body></html>

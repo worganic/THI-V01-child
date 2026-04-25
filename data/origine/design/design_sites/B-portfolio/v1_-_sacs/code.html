@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Light Theme Designer Portfolio | LUXE BAGS</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#124759",
+                        "accent": "#C9AE80",
+                        "background-light": "#fafafa",
+                        "background-dark": "#17191c",
+                    },
+                    fontFamily: {
+                        "display": ["Newsreader", "serif"],
+                        "sans": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+        }
+        .serif-display {
+            font-family: 'Newsreader', serif;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-[#121617] dark:text-gray-100 transition-colors duration-300">
+<!-- TopNavBar -->
+<header class="sticky top-0 z-50 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-[#f1f3f4] dark:border-gray-800">
+<div class="max-w-[1440px] mx-auto px-6 md:px-12 lg:px-24 flex items-center justify-between py-4">
+<div class="flex items-center gap-2">
+<div class="text-primary dark:text-accent">
+<svg class="size-6" fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M13.8261 30.5736C16.7203 29.8826 20.2244 29.4783 24 29.4783C27.7756 29.4783 31.2797 29.8826 34.1739 30.5736C36.9144 31.2278 39.9967 32.7669 41.3563 33.8352L24.8486 7.36089C24.4571 6.73303 23.5429 6.73303 23.1514 7.36089L6.64374 33.8352C8.00331 32.7669 11.0856 31.2278 13.8261 30.5736Z" fill="currentColor"></path>
+<path clip-rule="evenodd" d="M39.998 35.764C39.9944 35.7463 39.9875 35.7155 39.9748 35.6706C39.9436 35.5601 39.8949 35.4259 39.8346 35.2825C39.8168 35.2403 39.7989 35.1993 39.7813 35.1602C38.5103 34.2887 35.9788 33.0607 33.7095 32.5189C30.9875 31.8691 27.6413 31.4783 24 31.4783C20.3587 31.4783 17.0125 31.8691 14.2905 32.5189C12.0012 33.0654 9.44505 34.3104 8.18538 35.1832C8.17384 35.2075 8.16216 35.233 8.15052 35.2592C8.09919 35.3751 8.05721 35.4886 8.02977 35.589C8.00356 35.6848 8.00039 35.7333 8.00004 35.7388C8.00004 35.739 8 35.7393 8.00004 35.7388C8.00004 35.7641 8.0104 36.0767 8.68485 36.6314C9.34546 37.1746 10.4222 37.7531 11.9291 38.2772C14.9242 39.319 19.1919 40 24 40C28.8081 40 33.0758 39.319 36.0709 38.2772C37.5778 37.7531 38.6545 37.1746 39.3151 36.6314C39.9006 36.1499 39.9857 35.8511 39.998 35.764ZM4.95178 32.7688L21.4543 6.30267C22.6288 4.4191 25.3712 4.41909 26.5457 6.30267L43.0534 32.777C43.0709 32.8052 43.0878 32.8338 43.104 32.8629L41.3563 33.8352C43.104 32.8629 43.1038 32.8626 43.104 32.8629L43.1051 32.865L43.1065 32.8675L43.1101 32.8739L43.1199 32.8918C43.1276 32.906 43.1377 32.9246 43.1497 32.9473C43.1738 32.9925 43.2062 33.0545 43.244 33.1299C43.319 33.2792 43.4196 33.489 43.5217 33.7317C43.6901 34.1321 44 34.9311 44 35.7391C44 37.4427 43.003 38.7775 41.8558 39.7209C40.6947 40.6757 39.1354 41.4464 37.385 42.0552C33.8654 43.2794 29.133 44 24 44C18.867 44 14.1346 43.2794 10.615 42.0552C8.86463 41.4464 7.30529 40.6757 6.14419 39.7209C4.99695 38.7775 3.99999 37.4427 3.99999 35.7391C3.99999 34.8725 4.29264 34.0922 4.49321 33.6393C4.60375 33.3898 4.71348 33.1804 4.79687 33.0311C4.83898 32.9556 4.87547 32.8935 4.9035 32.8471C4.91754 32.8238 4.92954 32.8043 4.93916 32.7889L4.94662 32.777L4.95178 32.7688ZM35.9868 29.004L24 9.77997L12.0131 29.004C12.4661 28.8609 12.9179 28.7342 13.3617 28.6282C16.4281 27.8961 20.0901 27.4783 24 27.4783C27.9099 27.4783 31.5719 27.8961 34.6383 28.6282C35.082 28.7342 35.5339 28.8609 35.9868 29.004Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="serif-display text-lg font-bold tracking-widest uppercase">LUXE BAGS</h2>
+</div>
+<nav class="hidden lg:flex items-center gap-12">
+<a class="text-sm font-semibold tracking-wide hover:text-primary transition-colors" href="#">Collections</a>
+<a class="text-sm font-semibold tracking-wide hover:text-primary transition-colors" href="#">Process</a>
+<a class="text-sm font-semibold tracking-wide hover:text-primary transition-colors" href="#">About</a>
+<a class="text-sm font-semibold tracking-wide hover:text-primary transition-colors" href="#">Contact</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-primary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">search</span>
+</button>
+<button class="p-2 hover:bg-primary/5 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">shopping_bag</span>
+</button>
+</div>
+</div>
+</header>
+<main class="max-w-[1440px] mx-auto">
+<!-- HeroSection -->
+<section class="px-6 md:px-12 lg:px-24 pt-8 pb-16">
+<div class="relative overflow-hidden rounded-xl bg-[#e5e7eb] dark:bg-gray-800 h-[600px] flex items-center group">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" data-alt="Luxury leather handbag in warm soft morning light" style='background-image: linear-gradient(rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.5) 100%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuCSbdHHJrxpBwhB_UaFGm3KqR45A3VFcFTB8pzOjIR8-MhPaAQv_v6ek9qTQq4Rf6M5rZetJV2BCvDAkFb9yFtdM5FTCIOY4tXNOzoyFwNbx9KtbyoVFxxI3exL-I8iGuHBz_8qFEOAFML__DrjlGP3MZj68YlBHs8UmOKpU-h-jePtsgeBoAB-MtVjgZ-RfBc4q9wxPVwrltoJR5bGEOom4RANWqAcajRCw1udODoaC_c8k1t4B5hnvMOuRb7nBkZ5ElNVfE2gSQ");'>
+</div>
+<div class="relative z-10 px-8 md:px-20 max-w-2xl text-white">
+<span class="inline-block px-4 py-1 mb-6 text-[10px] tracking-[0.4em] uppercase font-bold bg-white/10 backdrop-blur-md rounded-full border border-white/20">Autumn / Winter '24</span>
+<h1 class="serif-display text-5xl md:text-7xl font-light italic leading-tight mb-6">
+                        The Art of <br/>the Carry
+                    </h1>
+<p class="text-lg md:text-xl font-light opacity-90 mb-10 leading-relaxed max-w-lg">
+                        Elegantly handcrafted leather goods for the modern woman. Discover our artisanal approach to functional luxury.
+                    </p>
+<div class="flex gap-4">
+<button class="bg-primary text-white px-8 py-4 rounded-lg font-bold tracking-wide hover:bg-primary/90 transition-all transform hover:-translate-y-1 shadow-lg">
+                            View Collection
+                        </button>
+<button class="bg-white/10 backdrop-blur-md text-white border border-white/30 px-8 py-4 rounded-lg font-bold tracking-wide hover:bg-white/20 transition-all">
+                            Our Story
+                        </button>
+</div>
+</div>
+</div>
+</section>
+<!-- SectionHeader -->
+<div class="px-6 md:px-12 lg:px-24 flex flex-col items-center text-center py-12">
+<div class="w-12 h-[1px] bg-accent mb-6"></div>
+<h2 class="serif-display text-4xl font-bold tracking-tight text-[#121617] dark:text-gray-100 mb-4">Curated Works</h2>
+<p class="text-sm uppercase tracking-[0.2em] text-primary/60 dark:text-accent/60 font-semibold">Limited Release Series</p>
+</div>
+<!-- ImageGrid (Asymmetrical Layout) -->
+<section class="px-6 md:px-12 lg:px-24 mb-24">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[1200px]">
+<!-- Large Featured Item -->
+<div class="md:col-span-8 group relative overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Large black leather nocturne tote bag detail" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, transparent 40%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDBMXL0w3pEF5AAFokC4VDDWubyZhrd2fxUww1EZNOicVdZR5mpYUW2RgaG4kbzOxabNyPz5__gjNOVoE63ANXNDN_Y-uvfopVPsXe2wBrSFH384b-tnnU-_dLlQZDsj69OrPChwNTVREht8txGqv8thedhB8mAobv8XquXHBk4_BZIHV4j4DfsFIg7qvu_P_ZmVT-UQlQEgGP_BN6w53Vc1lnibQKDsjm1weWko6YWrQPuLda8fQZJ6DDMs_x0WXbg9n2iW-uIug");'></div>
+<div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+<p class="serif-display text-3xl text-white font-medium mb-1">The Nocturne Tote</p>
+<p class="text-white/70 text-sm tracking-widest uppercase">Signature Collection</p>
+</div>
+</div>
+<!-- Vertical Card -->
+<div class="md:col-span-4 group relative overflow-hidden rounded-xl cursor-pointer">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Slim minimal beige leather clutch bag" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, transparent 40%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuDRsmBFU-KcgDCgXv00TD0d27MXNMVvokd4Sie_j09RxT-4AtO_-tEdndJigsDa4dmUmeDugg73iRIm3Xf0dRzcRsJ5-fQ0SzQfbB_QA7zGvSzPryhIZ4k0m0rtQwFN5xEgaQAPH1kj_WnWdmTvZYyYlmpo-ho_Ypuma6Ob4ZSzihs9MaIQwCf46fVuLFhns2vVqEUfH8zcJg8GTvHb_3DVx7KhoZEjixU_8Q31QmaD7fp6QhiUGcYXTylS7czhvf_q7cq6YiEI6g");'></div>
+<div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+<p class="serif-display text-2xl text-white font-medium mb-1">The Aurora Clutch</p>
+<p class="text-white/70 text-sm tracking-widest uppercase">Evening Series</p>
+</div>
+</div>
+<!-- Horizontal Card Bottom -->
+<div class="md:col-span-4 group relative overflow-hidden rounded-xl cursor-pointer h-80 md:h-auto">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Rich sienna brown leather satchel bag" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, transparent 40%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuB1z4KYlsroz6wi5L2TuUqOD7rxpwEur9UhGZEZhQbW6CEMtfAuMWHO-hFTnApeU-ypfFvvDH9xxWbfp97C46Bw7oaLc3aMcUQ5ol7vMt2IpwSkR7f71Yguzl35efM5WIHWgAyIL3NsfdaN-0w4ajSQxPtbtIxwCE8p5FH2WUuaf4sH6Wn9HKV8CCjU_KF9XSh_TsLWyjk_3GrWQYfM4VvR5iP9MRxfm6pujUXsCSSTKgSBII51qCcGOahYLmWwtn6nzzRqXKQcPg");'></div>
+<div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+<p class="serif-display text-2xl text-white font-medium mb-1">Sienna Satchel</p>
+<p class="text-white/70 text-sm tracking-widest uppercase">Classic Utility</p>
+</div>
+</div>
+<div class="md:col-span-8 group relative overflow-hidden rounded-xl cursor-pointer h-80 md:h-auto">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" data-alt="Mink colored leather shoulder bag against white wall" style='background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.5) 0%, transparent 40%), url("https://lh3.googleusercontent.com/aida-public/AB6AXuAEDg6weFFE0BZTEXaU7nPpQO3GQ53izryeKFKdxOfH1nE-CP2_kgG7VQWdhmjmlJoTVC2HW2TodD5M7qsWBsq9qGa88xGAhadH9Qf9bvA7P69GkCFLPd0yRvZkgB0rL_yR-HzspL8fGrn1zfUcE0I0lj09RsATEBhnzVquE_aXxJDqUhbIsqCnBDwPnSJh8eag0ERLXQSxPHuTGPDfSilsgFyHrTWPjdW0hEMJgBrdxDKhjANczoFS9vtpylK0Mv7CpglU8GSK9Q");'></div>
+<div class="absolute bottom-0 left-0 p-8 transform translate-y-2 group-hover:translate-y-0 transition-transform">
+<p class="serif-display text-2xl text-white font-medium mb-1">Mink Shoulder Bag</p>
+<p class="text-white/70 text-sm tracking-widest uppercase">The Daily Essential</p>
+</div>
+</div>
+</div>
+</section>
+<!-- FeatureSection / Philosophy -->
+<section class="bg-white dark:bg-gray-900 border-y border-[#f1f3f4] dark:border-gray-800 py-24 px-6 md:px-12 lg:px-24">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+<div class="lg:col-span-5">
+<span class="text-accent font-bold uppercase tracking-[0.3em] text-[10px] mb-4 block">Craftsmanship</span>
+<h2 class="serif-display text-5xl font-bold leading-tight mb-8">Material <br/>&amp; Soul</h2>
+<p class="text-lg text-[#667d85] dark:text-gray-400 leading-relaxed mb-8">
+                        Our process focuses on the wabi-sabi of fine leather and hand-stitched precision. We believe in objects that age gracefully, gaining character with every mile traveled.
+                    </p>
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-accent">eco</span>
+<div>
+<h4 class="font-bold text-sm uppercase tracking-wider mb-1">Sourced Leather</h4>
+<p class="text-sm text-[#667d85] dark:text-gray-400">Premium hides from gold-rated tanneries across Europe.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<span class="material-symbols-outlined text-accent">handyman</span>
+<div>
+<h4 class="font-bold text-sm uppercase tracking-wider mb-1">Hand Stitched</h4>
+<p class="text-sm text-[#667d85] dark:text-gray-400">Every seam is traditionally saddle-stitched for lifelong durability.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7">
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-4">
+<div class="aspect-[4/5] overflow-hidden rounded-xl">
+<img class="w-full h-full object-cover" data-alt="Close up of artisan hands cutting leather" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7QTlmMJp5ZmVkTJY2aXkhEsInmZ__rUOQf6uLTn34jJzL8fGdVanMVRH_KzcRzAvSfr3DM9pmw1ihTfJiSfMTgO5q7jbGzdzeV6cGz9-7DjdlT8qH1r0o66biRzX1Hg8ddhLHTZ0rZxT8KWcAFv47SFuGIb09WWh8PN3uwLQ_qsPTKL7s71B-rbati2C1acKeE_IgTLV2Qv3gqH0nsuXWs541k1bCMgUj19Pt802w0yLOOn0_Ejd4y0t5gnz4YbW_UQ18bhq2vw"/>
+</div>
+<div class="aspect-square overflow-hidden rounded-xl">
+<img class="w-full h-full object-cover" data-alt="Various leather tools on a wooden workbench" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBX-Pe-o6zw_5mWf5jC8FT-I8_c4GURQdAuwW2D6x0OfrjHVw9srG6wPN6WnMneXGEjgGxNoC4w4zh2Mk0ylRWAM-7P0ilTMrFAg1GWlG04acmW3M0dn7CY0MtxZig-EQJSyFX-bGByS5uk9yArRNpJ_WbfFrZlHNhjSDi8ZhmvXBCR3zW1uycdvQuG_08hm_XAAaTcJYvUtiSwjJKpCljFJkkjyK77-WpjIKIFnFiN4bsborkE2lm0kb0m1OyuSoSZzvfnt_Zyig"/>
+</div>
+</div>
+<div class="space-y-4 pt-12">
+<div class="aspect-square overflow-hidden rounded-xl">
+<img class="w-full h-full object-cover" data-alt="Thread rolls for hand stitching" src="https://lh3.googleusercontent.com/aida-public/AB6AXuACeoB0lyFpckHI0nfPKYXk9wchIYur8Es2FMcQELezKqLU2_eGIvyIXiTGw6R28bNvjKj2Ytq5i0EUWerKR6yPFZRPtUBLAKT-HEDiZ2XAl9Wgww_yBRuyU4sLZEpaDzNo1FcqPIbrWP0W1C6mPzQ7ds4GUEeEfTsDcOuY844gH36JX603K3izgfRGwIQqFQL4Nb-llBLHKIWbyk2tOuFn_cO39rUfz9C_1lusb6gUEk1FYsZmuQ7iMxjsl_tUloCF3fJdhngQeQ"/>
+</div>
+<div class="aspect-[4/5] overflow-hidden rounded-xl">
+<img class="w-full h-full object-cover" data-alt="Finished leather bag details" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEKo0le8Wtz9jekV9TxqPNwzqvkvt3wBFdJQm20r1tdA2YxnE7MswAlQ2YE4FCgDn0u8iYuB4eQbsvz9NZaf4cZZfm7N0lBomy6qw0a6EJIWtwRPgFBa0fyGOh53cnckTd_0GszQFDc-em-UrLH9HdA934LORaRzIHgOP0UCXigDhk2XEF1Nt4SRaRzEknL7Sny_6zZJMJ8t006lR7BjdYFzPWkUuyit89B7K_SDLCgXM4EGjldFZ0RosBmX3Obx1aiyDVPIHyEQ"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Newsletter Signup -->
+<section class="py-24 px-6 text-center bg-background-light dark:bg-background-dark">
+<h3 class="serif-display text-3xl font-bold mb-4 italic">Join the Circle</h3>
+<p class="text-[#667d85] dark:text-gray-400 mb-8 max-w-md mx-auto">Be the first to hear about new collection drops and artisanal workshops.</p>
+<form class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+<input class="flex-1 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 text-sm focus:ring-primary focus:border-primary" placeholder="your@email.com" type="email"/>
+<button class="bg-primary text-white px-8 py-3 rounded-lg font-bold text-sm tracking-wide hover:bg-primary/90 transition-colors uppercase" type="submit">Subscribe</button>
+</form>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-white dark:bg-gray-900 border-t border-[#f1f3f4] dark:border-gray-800 py-16 px-6 md:px-12 lg:px-24">
+<div class="max-w-[1440px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12">
+<div class="col-span-1 md:col-span-2">
+<div class="flex items-center gap-2 mb-6">
+<h2 class="serif-display text-xl font-bold tracking-widest uppercase">LUXE BAGS</h2>
+</div>
+<p class="text-[#667d85] dark:text-gray-400 max-w-xs leading-relaxed mb-6">
+                    Makers of fine leather goods. Designed in Paris, handcrafted for the world. Built for durability, styled for elegance.
+                </p>
+<div class="flex gap-4">
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined">camera</span></a>
+<a class="text-primary hover:text-accent transition-colors" href="#"><span class="material-symbols-outlined">alternate_email</span></a>
+</div>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-widest text-xs mb-6">Shop</h4>
+<ul class="space-y-4 text-sm text-[#667d85] dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">All Bags</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Accessories</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Gift Cards</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Care Kits</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-bold uppercase tracking-widest text-xs mb-6">Support</h4>
+<ul class="space-y-4 text-sm text-[#667d85] dark:text-gray-400">
+<li><a class="hover:text-primary transition-colors" href="#">Shipping</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Returns</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Repairs</a></li>
+<li><a class="hover:text-primary transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-[1440px] mx-auto border-t border-[#f1f3f4] dark:border-gray-800 mt-16 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="text-xs text-[#667d85] dark:text-gray-500 uppercase tracking-widest">© 2024 LUXE BAGS Studio. All rights reserved.</p>
+<div class="flex gap-6 text-xs text-[#667d85] dark:text-gray-500 uppercase tracking-widest">
+<a class="hover:text-primary" href="#">Privacy</a>
+<a class="hover:text-primary" href="#">Terms</a>
+</div>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html class="dark" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectForge - Mockup Complet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            corePlugins: {
+                preflight: false,
+            },
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#e0aaff",
+                        "secondary": "#c77dff",
+                        "accent": "#9d4edd",
+                        "accent-dark": "#7b2cbf",
+                        "accent-darker": "#5a189a",
+                        "background": "#0a0a0f",
+                        "surface": "#12121a",
+                        "surface-light": "#1a1a25",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                },
+            },
+        }
+    </script>
+
+    <style>
+        /* ========================================
+           SITE HEADER & FOOTER STYLES (ISOLATED)
+           ======================================== */
+        .site-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .site-header .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: transparent;
+            border: 1px solid rgba(224, 170, 255, 0.3);
+            border-radius: 8px;
+            color: #e0aaff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .site-header .back-button:hover {
+            background: rgba(224, 170, 255, 0.1);
+            border-color: #e0aaff;
+        }
+
+        .header-icon {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(224, 170, 255, 0.5);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 10px rgba(224, 170, 255, 0.3);
+        }
+
+        .header-icon .material-symbols-outlined {
+            color: #e0aaff;
+            text-shadow: 0 0 10px rgba(224, 170, 255, 0.5);
+        }
+
+        .header-title h1 {
+            font-size: 18px;
+            font-weight: bold;
+            color: white;
+            margin: 0;
+        }
+
+        .header-title p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0;
+        }
+
+        .header-right {
+            text-align: right;
+        }
+
+        .server-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin: 0;
+        }
+
+        .server-url {
+            font-size: 14px;
+            font-family: monospace;
+            color: #4ade80;
+            margin: 0;
+        }
+
+        .site-footer {
+            background: #0a0a0f;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 32px 24px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .footer-content {
+            max-width: 1152px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-left p,
+        .footer-right p {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        /* ========================================
+           MOCKUP STYLES (IDENTICAL TO mockup.html)
+           ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            padding: 10px;
+            padding-top: 80px;
+        }
+
+        .mockup-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border: 3px solid #333;
+            min-height: 100vh;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            border-bottom: 2px solid #333;
+            background: #f0f0f0;
+            flex-wrap: wrap;
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 12px 15px;
+            cursor: pointer;
+            border: none;
+            background: #f0f0f0;
+            border-bottom: 3px solid transparent;
+            font-weight: bold;
+            font-size: 12px;
+            white-space: nowrap;
+            transition: all 0.2s;
+            color: #333;
+            border-radius: 0;
+        }
+
+        .nav-tab:hover {
+            background: #e0e0e0;
+        }
+
+        .nav-tab.active {
+            background: white;
+            border-bottom: 3px solid #0066cc;
+            color: #0066cc;
+        }
+
+        .page {
+            display: none;
+            padding: 25px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Header inside mockup */
+        .mockup-container .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px dashed #999;
+        }
+
+        .mockup-container .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .user-info {
+            border: 1px solid #333;
+            padding: 8px 12px;
+            background: #f0f0f0;
+            font-size: 12px;
+        }
+
+        /* Templates Grid */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .template-card {
+            border: 2px solid #333;
+            padding: 15px;
+            cursor: pointer;
+            background: white;
+        }
+
+        .template-image {
+            width: 100%;
+            height: 120px;
+            background: #e0e0e0;
+            border: 1px solid #999;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #666;
+        }
+
+        .template-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .template-description {
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .template-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 10px;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: #f9f9f9;
+            border: 1px dashed #ccc;
+        }
+
+        .template-tags {
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e0e0e0;
+            padding: 2px 6px;
+            margin: 2px;
+            font-size: 10px;
+            border: 1px solid #999;
+        }
+
+        /* Projects Grid */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .project-card {
+            border: 2px solid #333;
+            padding: 15px;
+            background: white;
+        }
+
+        .project-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .project-meta {
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e0e0e0;
+            border: 1px solid #333;
+            margin-bottom: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0066cc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid #333;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            margin-top: 8px;
+            margin-right: 5px;
+            border-radius: 0 !important;
+            color: #333;
+        }
+
+        button.btn {
+            border-radius: 0 !important;
+        }
+
+        .btn:hover {
+            background: #0066cc;
+            color: white;
+        }
+
+        .btn.primary {
+            background: #0066cc;
+            color: white;
+        }
+
+        .btn.primary:hover {
+            background: #0052a3;
+        }
+
+        .btn.small {
+            padding: 5px 8px;
+            font-size: 11px;
+            margin: 0;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #333;
+            font-family: Arial;
+            font-size: 12px;
+            border-radius: 0;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 3px solid #333;
+            overflow: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border: 3px solid #333;
+            padding: 25px;
+            max-width: 600px;
+            width: 90%;
+        }
+
+        .modal-header {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border-bottom: 2px dashed #999;
+            padding-bottom: 10px;
+        }
+
+        /* Layout 3 Colonnes */
+        .layout-3col {
+            display: grid;
+            grid-template-columns: 200px 1fr 250px;
+            gap: 20px;
+        }
+
+        .sidebar {
+            border: 2px solid #333;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        .sidebar-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 12px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 8px;
+        }
+
+        .phase-item {
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #999;
+            cursor: pointer;
+            font-size: 11px;
+            background: white;
+        }
+
+        .phase-item.active {
+            background: #0066cc;
+            color: white;
+            font-weight: bold;
+        }
+
+        .main-content {
+            border: 2px solid #333;
+            padding: 15px;
+        }
+
+        .right-panel {
+            border: 2px solid #333;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+
+        /* Questionnaire */
+        .question-display {
+            border: 2px solid #999;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+        }
+
+        .question-label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .question-help {
+            background: #f0f8ff;
+            border-left: 3px solid #0066cc;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            color: #333;
+        }
+
+        .question-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            font-family: Arial;
+        }
+
+        .progress {
+            margin-bottom: 15px;
+            font-size: 11px;
+        }
+
+        .progress-text {
+            margin-bottom: 5px;
+        }
+
+        /* Streaming Content */
+        .streaming-box {
+            border: 2px solid #0066cc;
+            padding: 15px;
+            background: #f0f8ff;
+            min-height: 200px;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Summary Panel */
+        .summary-item {
+            border-left: 3px solid #0066cc;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 11px;
+            background: white;
+        }
+
+        .summary-label {
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .summary-value {
+            color: #555;
+            margin-top: 3px;
+        }
+
+        /* Timeline */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline-item {
+            border-left: 3px solid #0066cc;
+            padding-left: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .timeline-time {
+            font-weight: bold;
+            font-size: 11px;
+            color: #0066cc;
+            margin-bottom: 5px;
+        }
+
+        .timeline-action {
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .timeline-details {
+            font-size: 11px;
+            color: #555;
+            background: #f9f9f9;
+            padding: 8px;
+            border: 1px solid #ccc;
+        }
+
+        /* Files List */
+        .file-item {
+            border: 1px solid #999;
+            padding: 10px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            font-size: 11px;
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .file-meta {
+            color: #666;
+            font-size: 10px;
+        }
+
+        /* Accessibility */
+        .label {
+            display: inline-block;
+            padding: 3px 6px;
+            margin: 2px;
+            border: 1px solid #333;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .label.status {
+            background: #e0e0e0;
+        }
+
+        .label.type {
+            background: #f0f8ff;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .layout-3col {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin: 20px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.2);
+            display: none;
+            z-index: 100;
+        }
+
+        .modal-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="../index.html" class="back-button">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    Retour
+                </a>
+                <div class="header-icon">
+                    <span class="material-symbols-outlined">dashboard</span>
+                </div>
+                <div class="header-title">
+                    <h1 id="headerTitle">Mockup</h1>
+                    <p id="headerSubtitle"></p>
+                </div>
+            </div>
+            <div class="header-right">
+                <p class="server-label">Serveur actif</p>
+                <p class="server-url" id="headerServerUrl"></p>
+            </div>
+        </div>
+    </header>
+
+    <div class="mockup-container">
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchPage('home')">1. Accueil</button>
+            <button class="nav-tab" onclick="switchPage('template-detail')">2. Details Template</button>
+            <button class="nav-tab" onclick="switchPage('create-project')">3. Creation Projet</button>
+            <button class="nav-tab" onclick="switchPage('project')">4. Page Projet</button>
+            <button class="nav-tab" onclick="switchPage('questionnaire')">5. Questionnaire</button>
+            <button class="nav-tab" onclick="switchPage('generation')">6. Generation IA</button>
+            <button class="nav-tab" onclick="switchPage('history')">7. Historique</button>
+            <button class="nav-tab" onclick="switchPage('mockup-info')">Info Mockup</button>
+        </div>
+
+        <!-- PAGE 1: ACCUEIL -->
+        <div id="home" class="page active">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <div class="user-info">Utilisateur | Deconnexion</div>
+            </div>
+
+            <div class="section-title">Mes Projets en Cours</div>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-name">Cahier des charges - Client ABC</div>
+                    <div class="project-meta">
+                        Template: Cahier des charges<br>
+                        Cree: 15/01/2026<br>
+                        Phase: 2 / 3<br>
+                        Etat: En cours
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 65%;">65%</div>
+                    </div>
+                    <button class="btn primary small">Continuer</button>
+                    <button class="btn small">Details</button>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-name">Proposition Commerciale - XYZ Inc</div>
+                    <div class="project-meta">
+                        Template: Proposition<br>
+                        Cree: 10/01/2026<br>
+                        Phase: 3 / 3<br>
+                        Etat: Pret pour generation
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95%;">95%</div>
+                    </div>
+                    <button class="btn primary small">Generer</button>
+                    <button class="btn small">Voir</button>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-name">Plan de Projet - Agence</div>
+                    <div class="project-meta">
+                        Template: Plan de Projet<br>
+                        Cree: 05/01/2026<br>
+                        Phase: 1 / 4<br>
+                        Etat: Commence
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 25%;">25%</div>
+                    </div>
+                    <button class="btn primary small">Continuer</button>
+                    <button class="btn small">Voir</button>
+                </div>
+            </div>
+
+            <div class="section-title">Templates Disponibles</div>
+            <div class="templates-grid">
+                <div class="template-card">
+                    <div class="template-image">Image Template</div>
+                    <div class="template-name">Cahier des Charges</div>
+                    <div class="template-description">Complete specification fonctionnelle et technique avec sections detaillees.</div>
+                    <div class="template-meta">
+                        <div>Duree: 15-20 min</div>
+                        <div>Phases: 3</div>
+                    </div>
+                    <div class="template-tags">
+                        <span class="tag">Documentation</span>
+                        <span class="tag">Specification</span>
+                    </div>
+                    <button class="btn primary small" onclick="switchPage('template-detail')">Voir details</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-image">Image Template</div>
+                    <div class="template-name">Proposition Commerciale</div>
+                    <div class="template-description">Proposition d'offre professionnelle avec tarification et planning.</div>
+                    <div class="template-meta">
+                        <div>Duree: 10-15 min</div>
+                        <div>Phases: 3</div>
+                    </div>
+                    <div class="template-tags">
+                        <span class="tag">Commercial</span>
+                        <span class="tag">Vente</span>
+                    </div>
+                    <button class="btn primary small" onclick="switchPage('template-detail')">Voir details</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-image">Image Template</div>
+                    <div class="template-name">Plan de Projet</div>
+                    <div class="template-description">Planification detaillee avec phases, livrables et risques.</div>
+                    <div class="template-meta">
+                        <div>Duree: 20-25 min</div>
+                        <div>Phases: 4</div>
+                    </div>
+                    <div class="template-tags">
+                        <span class="tag">Planification</span>
+                        <span class="tag">Methodologie</span>
+                    </div>
+                    <button class="btn primary small" onclick="switchPage('template-detail')">Voir details</button>
+                </div>
+
+                <div class="template-card">
+                    <div class="template-image">Image Template</div>
+                    <div class="template-name">Audit IT</div>
+                    <div class="template-description">Rapport d'audit informatique avec recommandations et priorites.</div>
+                    <div class="template-meta">
+                        <div>Duree: 30-40 min</div>
+                        <div>Phases: 4</div>
+                    </div>
+                    <div class="template-tags">
+                        <span class="tag">Audit</span>
+                        <span class="tag">Technique</span>
+                    </div>
+                    <button class="btn primary small">Voir details</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 2: DETAILS TEMPLATE -->
+        <div id="template-detail" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <button class="btn" onclick="switchPage('home')">Retour</button>
+            </div>
+
+            <div class="section-title">Cahier des Charges - Details</div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div style="border: 2px solid #333; padding: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Description</div>
+                    <div style="font-size: 12px; line-height: 1.6; color: #555;">
+                        Ce template permet de creer un cahier des charges complet incluant :
+                        <ul style="margin-top: 10px; margin-left: 20px;">
+                            <li>Contexte et objectifs du projet</li>
+                            <li>Perimetre fonctionnel detaille</li>
+                            <li>Exigences techniques specifiques</li>
+                            <li>Planning et ressources</li>
+                            <li>Criteres d'acceptation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="border: 2px solid #333; padding: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Metadonnees</div>
+                    <div style="font-size: 12px; line-height: 1.8;">
+                        Duree estimee: 15-20 minutes<br>
+                        Nombre de phases: 3<br>
+                        Nombre de questions: 25<br>
+                        Public: Consultants, Chefs de Projet<br>
+                        Popularite: 4.5/5 (89 utilisations)
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-title">Phases de ce Template</div>
+            <div style="border: 2px solid #333; padding: 15px;">
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Phase 1: Contexte et Objectifs</div>
+                    <div style="font-size: 11px; color: #555; margin-bottom: 10px;">
+                        Definition du cadre du projet et des objectifs attendus
+                    </div>
+                    <div style="font-size: 11px;">8 questions</div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Phase 2: Perimetre Fonctionnel</div>
+                    <div style="font-size: 11px; color: #555; margin-bottom: 10px;">
+                        Description detaillee des besoins fonctionnels
+                    </div>
+                    <div style="font-size: 11px;">12 questions</div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <div style="font-weight: bold; margin-bottom: 5px;">Phase 3: Exigences Techniques</div>
+                    <div style="font-size: 11px; color: #555; margin-bottom: 10px;">
+                        Specifications techniques et constraints
+                    </div>
+                    <div style="font-size: 11px;">5 questions</div>
+                </div>
+            </div>
+
+            <div class="section-title">Tags et Filtres</div>
+            <div style="margin-bottom: 20px;">
+                <span class="tag" style="padding: 6px 10px; margin: 5px;">Documentation</span>
+                <span class="tag" style="padding: 6px 10px; margin: 5px;">Specification</span>
+                <span class="tag" style="padding: 6px 10px; margin: 5px;">Projet</span>
+                <span class="tag" style="padding: 6px 10px; margin: 5px;">Methodologie</span>
+            </div>
+
+            <button class="btn primary" onclick="switchPage('create-project')">Utiliser cette Template</button>
+        </div>
+
+        <!-- PAGE 3: CREATION PROJET -->
+        <div id="create-project" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <button class="btn" onclick="switchPage('home')">Retour</button>
+            </div>
+
+            <div class="section-title">Creer un Nouveau Projet</div>
+
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div style="border: 3px solid #333; padding: 30px;">
+                    <div style="text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 25px;">
+                        Creer un nouveau projet
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Selectionner une Template *</label>
+                        <select class="form-select">
+                            <option>-- Choisir une template --</option>
+                            <option selected>Cahier des Charges</option>
+                            <option>Proposition Commerciale</option>
+                            <option>Plan de Projet</option>
+                            <option>Audit IT</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nom du Projet *</label>
+                        <input type="text" class="form-input" placeholder="Ex: Cahier des charges - Client ABC" value="">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description (Optionnel)</label>
+                        <textarea class="form-textarea" placeholder="Descriptions additionnelles..."></textarea>
+                    </div>
+
+                    <div style="background: #f0f8ff; border: 1px solid #0066cc; padding: 12px; margin-bottom: 20px; font-size: 11px;">
+                        Le projet sera cree avec la structure de la template selectionnee. Vous pourrez commencer le questionnaire immediatement apres.
+                    </div>
+
+                    <button class="btn primary" onclick="switchPage('project')" style="width: 100%; padding: 12px;">
+                        Creer le Projet
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 4: PAGE PROJET (3 COLONNES) -->
+        <div id="project" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <div class="user-info">Projet: Cahier des charges - Client ABC | 65% complete</div>
+            </div>
+
+            <div class="layout-3col">
+                <!-- Sidebar Phases -->
+                <div class="sidebar">
+                    <div class="sidebar-title">Phases du Projet</div>
+
+                    <div class="phase-item active">
+                        Phase 1<br>
+                        <span style="font-size: 9px; color: #666;">Contexte (8/8)</span>
+                    </div>
+
+                    <div class="phase-item">
+                        Phase 2<br>
+                        <span style="font-size: 9px;">Perimetre (5/12)</span>
+                    </div>
+
+                    <div class="phase-item">
+                        Phase 3<br>
+                        <span style="font-size: 9px;">Technique (0/5)</span>
+                    </div>
+
+                    <div style="border-top: 1px solid #999; margin-top: 10px; padding-top: 10px;">
+                        <div class="sidebar-title">Actions</div>
+                        <button class="btn small" style="width: 100%; margin-bottom: 5px;">Voir Progression</button>
+                        <button class="btn small" style="width: 100%;">Historique</button>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="main-content">
+                    <div style="text-align: center; font-weight: bold; margin-bottom: 15px;">
+                        Phase 2 - Perimetre Fonctionnel
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-text">Progression: Question 6 / 12</div>
+                        <div class="progress-bar" style="height: 15px;">
+                            <div class="progress-fill" style="width: 50%; font-size: 10px;">50%</div>
+                        </div>
+                    </div>
+
+                    <div class="question-display">
+                        <div class="question-label">
+                            Quelles sont les fonctionnalites principales attendues ?
+                        </div>
+                        <div class="question-help">
+                            Decrivez les 3-5 fonctionnalites cles que doit avoir la solution
+                        </div>
+                        <textarea class="question-input" style="height: 100px;" placeholder="Repondez ici..."></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button class="btn">Precedent</button>
+                        <button class="btn primary">Suivant</button>
+                        <button class="btn small">Voir tout</button>
+                    </div>
+
+                    <div style="background: #f9f9f9; border: 1px dashed #ccc; padding: 10px; font-size: 11px; color: #666;">
+                        Reponse sauvegardee automatiquement
+                    </div>
+                </div>
+
+                <!-- Right Panel Summary -->
+                <div class="right-panel">
+                    <div class="sidebar-title">Resume du Projet</div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Nom</div>
+                        <div class="summary-value">Cahier des charges - Client ABC</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Template</div>
+                        <div class="summary-value">Cahier des Charges</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Cree</div>
+                        <div class="summary-value">15/01/2026 14:30</div>
+                    </div>
+
+                    <div class="summary-item">
+                        <div class="summary-label">Progression</div>
+                        <div class="summary-value">21 / 25 questions</div>
+                    </div>
+
+                    <div style="border-top: 1px solid #0066cc; margin-top: 10px; padding-top: 10px;">
+                        <div class="sidebar-title">Dernieres Reponses</div>
+
+                        <div class="summary-item">
+                            <div class="summary-label" style="font-size: 10px;">Q1: Objectif</div>
+                            <div class="summary-value">Creer une plateforme web...</div>
+                        </div>
+
+                        <div class="summary-item">
+                            <div class="summary-label" style="font-size: 10px;">Q2: Budget</div>
+                            <div class="summary-value">50 000 EUR</div>
+                        </div>
+
+                        <div class="summary-item">
+                            <div class="summary-label" style="font-size: 10px;">Q3: Delai</div>
+                            <div class="summary-value">6 mois</div>
+                        </div>
+                    </div>
+
+                    <button class="btn small" style="width: 100%; margin-top: 10px;">Editer Reponses</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: QUESTIONNAIRE (Alternative) -->
+        <div id="questionnaire" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <button class="btn" onclick="switchPage('project')">Retour au Projet</button>
+            </div>
+
+            <div class="section-title">Repondre au Questionnaire - Phase 2</div>
+
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="progress">
+                    <div class="progress-text">Progression: 5 / 12 questions repondues</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 41.67%;">42%</div>
+                    </div>
+                </div>
+
+                <div class="question-display">
+                    <div class="question-label">Question 6 / 12</div>
+                    <div class="question-label" style="font-size: 14px;">Quels sont les utilisateurs principaux du systeme ?</div>
+                    <div class="question-help">
+                        Decrivez les differents types d'utilisateurs et leurs roles (ex: admin, utilisateur standard, guest)
+                    </div>
+                    <textarea class="question-input" style="height: 100px;" placeholder="Decrivez les utilisateurs..."></textarea>
+                    <div style="margin-top: 10px; font-size: 11px; color: #0066cc;">
+                        Besoin d'aide ? <a href="#" style="color: #0066cc;">Voir les exemples</a>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn">Precedent</button>
+                    <button class="btn primary">Suivant</button>
+                    <button class="btn">Voir tout (12)</button>
+                </div>
+
+                <div style="border: 2px solid #999; padding: 15px; background: white;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Navigation Rapide</div>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 11px;">
+                        <button class="btn small" style="background: #0066cc; color: white;">1</button>
+                        <button class="btn small" style="background: #0066cc; color: white;">2</button>
+                        <button class="btn small" style="background: #0066cc; color: white;">3</button>
+                        <button class="btn small" style="background: #0066cc; color: white;">4</button>
+                        <button class="btn small" style="background: #0066cc; color: white;">5</button>
+                        <button class="btn small" style="background: #f0f0f0;">6</button>
+                        <button class="btn small">7</button>
+                        <button class="btn small">8</button>
+                        <button class="btn small">9</button>
+                        <button class="btn small">10</button>
+                        <button class="btn small">11</button>
+                        <button class="btn small">12</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: GENERATION IA -->
+        <div id="generation" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <button class="btn" onclick="switchPage('project')">Retour au Projet</button>
+            </div>
+
+            <div class="section-title">Generer les Documents avec l'IA</div>
+
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <div style="border: 2px solid #333; padding: 15px; margin-bottom: 20px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Apercu du Prompt (Modifiable)</div>
+                    <textarea class="form-textarea" style="height: 200px; font-family: monospace; font-size: 11px;">Contexte du projet: Cahier des charges - Client ABC
+Objectif: Creer une plateforme web de gestion de projets
+
+Questions et reponses:
+Q1: Quels sont les objectifs?
+R1: Augmenter la productivite de 30%
+
+Q2: Quel est le budget?
+R2: 50 000 EUR
+
+Instructions de la template:
+- Generer un cahier des charges professionnel
+- Format: Markdown
+- Inclure description, objectives, scope, technical requirements
+- Assurer la clarte et la coherence
+
+Veuillez generer un cahier des charges complet...</textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                    <button class="btn primary" onclick="document.getElementById('streaming-box').style.display='block';">
+                        Lancer la generation
+                    </button>
+                    <button class="btn">Copier le prompt</button>
+                </div>
+
+                <div class="section-title">Parametres de Generation</div>
+                <div style="border: 2px solid #333; padding: 15px; margin-bottom: 20px;">
+                    <div class="form-group">
+                        <label class="form-label">Format de sortie</label>
+                        <select class="form-select">
+                            <option selected>Markdown (.md)</option>
+                            <option>Microsoft Word (.docx)</option>
+                            <option>PDF (.pdf)</option>
+                            <option>HTML (.html)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Niveau de detail</label>
+                        <select class="form-select">
+                            <option>Resume</option>
+                            <option selected>Standard</option>
+                            <option>Detaille</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="section-title" id="streaming-header" style="display: none;">Generation en cours...</div>
+
+                <div class="streaming-box" id="streaming-box" style="display: none;">
+                    # Cahier des Charges - Client ABC
+
+## 1. Objectifs du Projet
+
+L'objectif principal de ce projet est de creer une plateforme web de gestion et de generation de projets...
+
+## 2. Perimetre Fonctionnel
+
+### 2.1 Fonctionnalites principales
+- Gestion complete des templates
+- Creation de projets avec structure standardisee
+- Questionnaire progressif et intuitif
+- Generation automatique de documents avec IA
+
+### 2.2 Modules integres
+- Interface utilisateur responsive
+- Systeme de sauvegarde automatique
+- Historique complet des actions
+
+## 3. Exigences Techniques
+
+### 3.1 Stack technologique
+- Frontend: React.js, TailwindCSS
+- Backend: Node.js, Express.js
+- Base de donnees: JSON files
+- IA: Claude Code CLI
+
+### 3.2 Performance
+- Temps de chargement &lt; 3 secondes
+- Reactivite &lt; 200ms
+- Streaming &lt; 100ms de latence
+
+<span class="cursor">|</span>
+                </div>
+
+                <script>
+                    document.querySelector('button:nth-of-type(1)').addEventListener('click', function() {
+                        document.getElementById('streaming-box').style.display = 'block';
+                        document.getElementById('streaming-header').style.display = 'block';
+                    });
+                </script>
+
+                <div class="section-title">Fichiers Generes</div>
+                <div style="border: 2px solid #333; padding: 15px;">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-name">cahier-des-charges.md</div>
+                            <div class="file-meta">Markdown | 15 KB | Genere: 17/01/2026 14:35</div>
+                        </div>
+                        <button class="btn small">Telecharger</button>
+                    </div>
+
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-name">cahier-des-charges.docx</div>
+                            <div class="file-meta">Word | 45 KB | Genere: 17/01/2026 14:35</div>
+                        </div>
+                        <button class="btn small">Telecharger</button>
+                    </div>
+
+                    <div class="file-item">
+                        <div class="file-info">
+                            <div class="file-name">cahier-des-charges.pdf</div>
+                            <div class="file-meta">PDF | 35 KB | Genere: 17/01/2026 14:35</div>
+                        </div>
+                        <button class="btn small">Telecharger</button>
+                    </div>
+
+                    <button class="btn" style="margin-top: 15px;">Telecharger tout (ZIP)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGE 7: HISTORIQUE -->
+        <div id="history" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <button class="btn" onclick="switchPage('project')">Retour au Projet</button>
+            </div>
+
+            <div class="section-title">Historique du Projet</div>
+
+            <div style="max-width: 900px; margin: 0 auto; margin-bottom: 20px;">
+                <label class="form-label">Filtrer par type d'action</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn small" style="background: #0066cc; color: white;">Tous (8)</button>
+                    <button class="btn small">Creation (1)</button>
+                    <button class="btn small">Questions (5)</button>
+                    <button class="btn small">Generation (1)</button>
+                    <button class="btn small">Telechargement (1)</button>
+                </div>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-time">17/01/2026 14:35</div>
+                    <div class="timeline-action">Generation IA - Cahier des charges genere</div>
+                    <div class="timeline-details">
+                        <strong>Documents crees:</strong> cahier-des-charges.md, cahier-des-charges.docx, cahier-des-charges.pdf<br>
+                        <strong>Statut:</strong> Succes<br>
+                        <strong>Duree:</strong> 45 secondes
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-time">17/01/2026 14:30</div>
+                    <div class="timeline-action">Reponse a Question 5</div>
+                    <div class="timeline-details">
+                        <strong>Phase:</strong> 2 - Perimetre Fonctionnel<br>
+                        <strong>Question:</strong> Quels sont les utilisateurs principaux ?<br>
+                        <strong>Reponse:</strong> Consultants, chefs de projet...
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-time">17/01/2026 13:45</div>
+                    <div class="timeline-action">Phase 1 Completee</div>
+                    <div class="timeline-details">
+                        <strong>Phase:</strong> 1 - Contexte et Objectifs<br>
+                        <strong>Questions:</strong> 8 / 8 repondues<br>
+                        <strong>Temps:</strong> 45 minutes
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-time">17/01/2026 13:00</div>
+                    <div class="timeline-action">Reponse a Question 4</div>
+                    <div class="timeline-details">
+                        <strong>Phase:</strong> 1 - Contexte et Objectifs<br>
+                        <strong>Question:</strong> Quel est le budget estime ?<br>
+                        <strong>Reponse:</strong> 50 000 EUR
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-time">16/01/2026 15:30</div>
+                    <div class="timeline-action">Projet cree</div>
+                    <div class="timeline-details">
+                        <strong>Nom:</strong> Cahier des charges - Client ABC<br>
+                        <strong>Template:</strong> Cahier des Charges<br>
+                        <strong>Phases:</strong> 3<br>
+                        <strong>Questions:</strong> 25
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 15px; background: #f0f8ff; border: 1px solid #0066cc; text-align: center; font-size: 12px;">
+                Total: 8 actions enregistrees | Duree totale: ~2 heures
+            </div>
+        </div>
+
+        <!-- PAGE 8: INFO MOCKUP -->
+        <div id="mockup-info" class="page">
+            <div class="header">
+                <div class="logo">ProjectForge</div>
+                <button class="btn" onclick="switchPage('home')">Retour</button>
+            </div>
+
+            <div class="section-title">Information sur ce Mockup</div>
+
+            <div style="max-width: 900px; margin: 0 auto;">
+                <div style="border: 2px solid #0066cc; padding: 20px; margin-bottom: 20px; background: #f0f8ff;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Qu'est-ce qu'un Mockup ?</div>
+                    <div style="font-size: 12px; line-height: 1.6; color: #333;">
+                        Un mockup (ou maquette) est un rendu realiste d'une interface utilisateur montrant :
+                        <ul style="margin: 10px 0 0 20px;">
+                            <li>L'emplacement de tous les elements</li>
+                            <li>La structure generale de chaque page</li>
+                            <li>Les fonctionnalites disponibles</li>
+                            <li>Des donnees simulees pour montrer le rendu</li>
+                        </ul>
+                        <strong style="display: block; margin-top: 10px;">Ce mockup n'est PAS fonctionnel - il montre la structure UI uniquement</strong>
+                    </div>
+                </div>
+
+                <div class="section-title">Pages Incluses dans ce Mockup</div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">1. Accueil</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Liste des projets en cours<br>
+                            - Grille des templates disponibles<br>
+                            - Boutons d'action (Continuer, Creer)
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">2. Details Template</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Description complete<br>
+                            - Phases et questions<br>
+                            - Metadonnees (duree, popularite)
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">3. Creation Projet</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Formulaire de creation<br>
+                            - Selection template<br>
+                            - Validation et creation
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">4. Page Projet</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Layout 3 colonnes<br>
+                            - Sidebar phases<br>
+                            - Questionnaire + Resume
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">5. Questionnaire</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Vue alternative du questionnaire<br>
+                            - Navigation question par question<br>
+                            - Barre de progression
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">6. Generation IA</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Apercu du prompt<br>
+                            - Simulation streaming<br>
+                            - Liste des fichiers
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">7. Historique</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Timeline des actions<br>
+                            - Filtrage par type<br>
+                            - Details complets
+                        </div>
+                    </div>
+
+                    <div style="border: 2px solid #333; padding: 15px;">
+                        <div style="font-weight: bold; margin-bottom: 8px;">8. Info Mockup</div>
+                        <div style="font-size: 11px; color: #555; line-height: 1.6;">
+                            - Ce fichier<br>
+                            - Documentation du mockup<br>
+                            - Elements a valider
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">Elements Cles a Valider</div>
+
+                <div style="border: 2px solid #f0ad4e; padding: 15px; background: #fffbf0; margin-bottom: 20px;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Points de Validation</div>
+                    <ul style="font-size: 12px; color: #333; line-height: 1.8;">
+                        <li><strong>Layout 3 colonnes:</strong> Est-il clair et fonctionnel ?</li>
+                        <li><strong>Navigation:</strong> Les onglets et boutons sont-ils bien places ?</li>
+                        <li><strong>Formulaires:</strong> Tous les champs sont-ils presents ?</li>
+                        <li><strong>Donnees simulees:</strong> Sont-elles realistes et completes ?</li>
+                        <li><strong>Flux utilisateur:</strong> Le parcours est-il intuitif ?</li>
+                        <li><strong>Barres de progression:</strong> Montrent-elles clairement l'avancement ?</li>
+                        <li><strong>Pages/etapes:</strong> Aucune page manquante ?</li>
+                        <li><strong>Elements visuels:</strong> Placeholders, icones, bordures clairs ?</li>
+                    </ul>
+                </div>
+
+                <div class="section-title">Instructions d'Utilisation</div>
+
+                <div style="background: #f9f9f9; border: 1px solid #999; padding: 15px; margin-bottom: 20px; font-size: 12px;">
+                    <div style="margin-bottom: 10px;">
+                        <strong>1. Explorez chaque page:</strong> Cliquez sur les onglets du haut pour voir les differentes pages
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>2. Validez l'interface:</strong> Verifiez que tous les elements sont bien places
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>3. Testez les interactions:</strong> Les boutons ont des styles (ils changent si vous les survolez)
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>4. Verifiez les donnees:</strong> Les donnees simulees sont-elles realistes ?
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <strong>5. Identifiez les modifications:</strong> Notez les changements a apporter aux exigences
+                    </div>
+                    <div>
+                        <strong>6. Validez avec le client:</strong> Assurez-vous que la structure repond aux besoins
+                    </div>
+                </div>
+
+                <div class="section-title">Processus de Validation</div>
+
+                <div style="border: 2px solid #10b981; padding: 15px; background: #ecfdf5;">
+                    <div style="font-size: 12px; color: #333; line-height: 1.8;">
+                        <div style="margin-bottom: 10px;">
+                            <strong>Phase 1 - Exploration (Jour 1)</strong><br>
+                            Examiner le mockup et identifier les questions
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Phase 2 - Discussion (Jour 2-3)</strong><br>
+                            Discuter des modifications potentielles avec l'equipe
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>Phase 3 - Validation (Jour 4-5)</strong><br>
+                            Valider avec les stakeholders
+                        </div>
+                        <div>
+                            <strong>Phase 4 - Approbation (Jour 6)</strong><br>
+                            Obtenir l'approbation finale avant developpement
+                        </div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f0f8ff; border: 1px solid #0066cc;">
+                    <div style="font-weight: bold; margin-bottom: 10px;">Prochaines Etapes</div>
+                    <div style="font-size: 12px; margin-bottom: 15px;">
+                        Une fois le mockup valide, les exigences fonctionnelles peuvent etre affinees.<br>
+                        Les specifications seront ensuite mises a jour et le developpement pourra commencer.
+                    </div>
+                    <button class="btn primary">Marquer Mockup comme Valide</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Remove active from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+
+            // Add active to clicked tab
+            event.target.classList.add('active');
+
+            // Scroll to top
+            document.querySelector('.mockup-container').scrollTop = 0;
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p id="footerTitle"></p>
+                <p>Mockup interactif du systeme ProjectForge</p>
+            </div>
+            <div class="footer-right">
+                <p id="footerPort"></p>
+                <p id="footerDesign"></p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Load metadata from JSON
+        async function loadMetadata() {
+            try {
+                const response = await fetch('../index.json?' + Date.now());
+                if (response.ok) {
+                    const data = await response.json();
+                    const meta = data.metadata;
+
+                    document.getElementById('headerTitle').textContent = 'Mockup';
+                    document.getElementById('headerSubtitle').textContent = `${meta.platform} v${meta.version}`;
+                    document.getElementById('headerServerUrl').textContent = meta.server.url;
+
+                    document.getElementById('footerTitle').textContent = `${meta.title} - ${meta.platform}`;
+                    document.getElementById('footerPort').textContent = `Port: ${meta.server.port}`;
+                    document.getElementById('footerDesign').textContent = `Design: ${meta.design}`;
+                }
+            } catch (e) {
+                console.log('Metadata not available');
+            }
+        }
+
+        loadMetadata();
+    </script>
+</body>
+</html>

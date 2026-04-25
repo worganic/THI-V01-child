@@ -1,0 +1,1 @@
+Le système doit permettre à l'utilisateur d'accéder aux détails d'un projet spécifique.

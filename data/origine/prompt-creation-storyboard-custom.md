@@ -1,0 +1,1 @@
+Créer un prompt détaillé basé sur les exigences

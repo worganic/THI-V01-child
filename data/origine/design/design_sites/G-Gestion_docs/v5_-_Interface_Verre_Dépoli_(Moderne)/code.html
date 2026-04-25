@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Glassmorphic Official - Variant 5</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1d485d",
+                        "background-light": "#fcfcfc",
+                        "background-dark": "#0a1929",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-header {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+        .document-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+        }
+        .bg-gradient-mesh {
+            background-color: #fcfcfc;
+            background-image: radial-gradient(at 0% 0%, rgba(29, 72, 93, 0.03) 0px, transparent 50%),
+                              radial-gradient(at 100% 100%, rgba(29, 72, 93, 0.03) 0px, transparent 50%);
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-[#101619] min-h-screen overflow-x-hidden bg-gradient-mesh">
+<!-- Top Navigation Bar (Glassmorphic) -->
+<header class="fixed top-0 left-0 right-0 z-50 glass-header px-6 py-3 flex items-center justify-between">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary text-white rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-xl">description</span>
+</div>
+<div class="flex flex-col">
+<h2 class="text-primary text-sm font-extrabold leading-none tracking-tight">SPEC-2024-001</h2>
+<span class="text-[10px] text-[#5b7b8b] uppercase tracking-widest font-bold">Official Document</span>
+</div>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<div class="group relative">
+<button class="flex items-center gap-1 text-[#101619] text-sm font-semibold hover:text-primary transition-colors">
+                        File <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+<div class="group relative">
+<button class="flex items-center gap-1 text-[#101619] text-sm font-semibold hover:text-primary transition-colors">
+                        Edit <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+<div class="group relative">
+<button class="flex items-center gap-1 text-[#101619] text-sm font-semibold hover:text-primary transition-colors">
+                        View <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+<div class="group relative">
+<button class="flex items-center gap-1 text-[#101619] text-sm font-semibold hover:text-primary transition-colors">
+                        Share <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</button>
+</div>
+</nav>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#5b7b8b] text-lg">search</span>
+<input class="w-64 bg-gray-100/50 border-none rounded-lg py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary/20 focus:bg-white transition-all" placeholder="Search specifications..."/>
+</div>
+<div class="flex items-center gap-3">
+<span class="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-bold uppercase tracking-wide">
+<span class="size-2 bg-primary rounded-full animate-pulse"></span>
+                    Review Phase
+                </span>
+<div class="size-9 rounded-full bg-cover bg-center border-2 border-white shadow-sm" data-alt="User profile picture of the document reviewer" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC5uQerGNZS8sioOuP1Jqt2q2LaHntds--Ei4Swlafirm0Yp6wMASvuTu12Er_z8WHfQxhLt9-AdNjVjtLe_Blbp8Ct0djkOsCi8Q7u44yIcGpiyo-pYWE96Hn6LTq32OZGILnRuGJdEnMTrtKoVfW27sON8m5IRbgrroL5TUGbLpn47XzXT6SJAc_ocyJA1NY_MV1lv5_OdNEc8j7Aiyk3mmlF2gHPaR2fMsy-DCDF1p9_yZenNPlEUkgfz6TVL_OQTdz9kRRVclwz");'></div>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-20 px-4 md:px-0 flex flex-col items-center">
+<!-- Breadcrumbs -->
+<div class="w-full max-w-[850px] flex items-center gap-2 mb-6 px-4">
+<a class="text-[#5b7b8b] text-xs font-semibold hover:text-primary" href="#">Repository</a>
+<span class="material-symbols-outlined text-[14px] text-[#5b7b8b]">chevron_right</span>
+<a class="text-[#5b7b8b] text-xs font-semibold hover:text-primary" href="#">Technical Specs</a>
+<span class="material-symbols-outlined text-[14px] text-[#5b7b8b]">chevron_right</span>
+<span class="text-primary text-xs font-bold">SPEC-2024-001</span>
+</div>
+<!-- Floating Document Canvas -->
+<article class="w-full max-w-[850px] bg-white rounded-xl document-shadow min-h-[1200px] border border-[#e9eef1] relative overflow-hidden">
+<!-- Document Header -->
+<div class="px-12 pt-16 pb-8 border-b border-gray-50">
+<div class="flex justify-between items-start mb-6">
+<div class="bg-primary/5 p-4 rounded-xl border border-primary/10">
+<span class="material-symbols-outlined text-primary text-3xl">ac_unit</span>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-[#5b7b8b] uppercase tracking-[0.2em] font-bold mb-1">Confidentiality Level</p>
+<p class="text-sm font-bold text-red-600">INTERNAL USE ONLY</p>
+</div>
+</div>
+<h1 class="text-[#101619] text-4xl font-extrabold leading-tight tracking-tight mb-4">Technical Specification: Industrial Cooling Systems</h1>
+<p class="text-[#5b7b8b] text-sm font-medium">Version 5.2 • Last updated: Oct 24, 2023 • Managed by Engineering Div.</p>
+</div>
+<!-- Tabs -->
+<div class="px-12 border-b border-gray-100">
+<div class="flex gap-8">
+<a class="border-b-2 border-primary py-4 text-sm font-bold text-primary" href="#">Content</a>
+<a class="border-b-2 border-transparent py-4 text-sm font-bold text-[#5b7b8b] hover:text-primary transition-colors" href="#">Metadata</a>
+<a class="border-b-2 border-transparent py-4 text-sm font-bold text-[#5b7b8b] hover:text-primary transition-colors" href="#">Audit Log</a>
+<a class="border-b-2 border-transparent py-4 text-sm font-bold text-[#5b7b8b] hover:text-primary transition-colors" href="#">References</a>
+</div>
+</div>
+<!-- Document Content Body -->
+<div class="px-12 py-10 text-[#101619] leading-relaxed">
+<section class="mb-10">
+<h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="text-primary/40">01.</span> Scope of Work
+                    </h3>
+<p class="mb-4">This document outlines the mandatory technical requirements for the installation and maintenance of the IC-900 series industrial cooling units. The objective is to ensure thermal stability across the production floor with a variance of no more than ±0.5°C.</p>
+<ul class="space-y-3 list-none pl-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
+<span>Integration with existing SCADA monitoring systems.</span>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-sm mt-1">check_circle</span>
+<span>Deployment of liquid-nitrogen backup cycles.</span>
+</li>
+</ul>
+</section>
+<section class="mb-10">
+<h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="text-primary/40">02.</span> System Architecture
+                    </h3>
+<div class="w-full h-64 bg-gray-50 rounded-xl border border-gray-200 flex flex-col items-center justify-center p-8 mb-4">
+<!-- Placeholder for technical diagram -->
+<div class="w-full h-full flex items-center justify-center border-2 border-dashed border-gray-300 rounded-lg">
+<div class="text-center">
+<span class="material-symbols-outlined text-gray-400 text-4xl mb-2">schema</span>
+<p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Fig 1.1: Cooling Cycle Topology</p>
+</div>
+</div>
+</div>
+<p class="text-sm text-[#5b7b8b] italic text-center mb-6">Note: Diagram excludes the secondary pressure release valves for clarity.</p>
+<p>The IC-900 architecture utilizes a dual-redundant compressor layout. In the event of primary failure, the system initiates a "Quiet-Cool" mode, maintaining 70% efficiency while reducing acoustic noise below 45dB.</p>
+</section>
+<section class="mb-10">
+<h3 class="text-xl font-bold mb-4 flex items-center gap-2">
+<span class="text-primary/40">03.</span> Compliance Requirements
+                    </h3>
+<table class="w-full border-collapse">
+<thead>
+<tr class="bg-gray-50">
+<th class="text-left py-3 px-4 text-xs font-bold uppercase tracking-wider text-[#5b7b8b] border border-gray-200">Parameter</th>
+<th class="text-left py-3 px-4 text-xs font-bold uppercase tracking-wider text-[#5b7b8b] border border-gray-200">Requirement</th>
+<th class="text-left py-3 px-4 text-xs font-bold uppercase tracking-wider text-[#5b7b8b] border border-gray-200">Standard</th>
+</tr>
+</thead>
+<tbody class="text-sm">
+<tr>
+<td class="py-3 px-4 border border-gray-200 font-semibold">Max Operating Temp</td>
+<td class="py-3 px-4 border border-gray-200">45°C (113°F)</td>
+<td class="py-3 px-4 border border-gray-200">ISO-9001</td>
+</tr>
+<tr>
+<td class="py-3 px-4 border border-gray-200 font-semibold">Energy Coefficient</td>
+<td class="py-3 px-4 border border-gray-200">&gt; 4.2 COP</td>
+<td class="py-3 px-4 border border-gray-200">EU-662/2023</td>
+</tr>
+</tbody>
+</table>
+</section>
+<!-- Official Signature Section -->
+<section class="mt-20 pt-10 border-t border-gray-200">
+<h3 class="text-xs font-extrabold uppercase tracking-widest text-[#5b7b8b] mb-8">Official Validation</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="glass-panel rounded-xl p-6 relative overflow-hidden group hover:border-primary/30 transition-all">
+<div class="absolute -right-4 -bottom-4 opacity-5 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[100px]">verified_user</span>
+</div>
+<p class="text-xs font-bold text-[#5b7b8b] uppercase mb-4">Authorizing Signature</p>
+<div class="h-24 flex items-center justify-center border-b border-gray-300 mb-4 bg-white/50 rounded">
+<p class="font-serif italic text-2xl text-primary opacity-80">Marcus V. Sterling</p>
+</div>
+<div class="flex justify-between text-[10px] font-bold text-[#5b7b8b]">
+<span>CHIEF ENGINEER</span>
+<span>SIGNED: 2023-10-24 09:12 GMT</span>
+</div>
+</div>
+<div class="rounded-xl border border-dashed border-gray-300 p-6 flex flex-col items-center justify-center text-center bg-gray-50/50 hover:bg-gray-50 transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-primary/40 text-4xl mb-3 group-hover:scale-110 transition-transform">stylus_note</span>
+<p class="text-sm font-bold text-[#101619] mb-1">Approval Required</p>
+<p class="text-xs text-[#5b7b8b] mb-4">Pending signature from Department Head</p>
+<button class="bg-primary text-white text-xs font-extrabold uppercase tracking-widest px-6 py-2.5 rounded-lg shadow-lg shadow-primary/20 hover:bg-primary/90 transition-all">
+                                Apply Official Signature
+                            </button>
+</div>
+</div>
+<div class="mt-8 p-4 bg-gray-50 rounded-lg flex gap-4 items-center">
+<span class="material-symbols-outlined text-primary">verified</span>
+<div>
+<p class="text-[10px] font-extrabold text-[#5b7b8b] uppercase tracking-wider">Blockchain Digital ID Hash</p>
+<code class="text-[11px] text-primary font-mono bg-primary/5 px-2 py-0.5 rounded">0x7a2b...4f9c1e2d3f4a5b6c7d8e9f0a1b2c3d4e5f</code>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer Metadata -->
+<footer class="px-12 py-8 bg-gray-50/50 border-t border-gray-100 flex justify-between items-center text-[10px] text-[#5b7b8b] font-bold uppercase tracking-widest">
+<div>Document ID: SPEC-2024-001 | Page 1 of 12</div>
+<div class="flex items-center gap-4">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">lock</span> Confidential</span>
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">print</span> Export PDF</span>
+</div>
+</footer>
+</article>
+</main>
+<!-- Interactive Sidebar (Minimalist) -->
+<aside class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
+<button class="glass-panel size-12 rounded-xl flex items-center justify-center text-primary shadow-sm hover:bg-white hover:shadow-md transition-all">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="glass-panel size-12 rounded-xl flex items-center justify-center text-primary shadow-sm hover:bg-white hover:shadow-md transition-all">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+<div class="h-px w-8 bg-gray-200 mx-auto my-1"></div>
+<button class="glass-panel size-12 rounded-xl flex items-center justify-center text-primary shadow-sm hover:bg-white hover:shadow-md transition-all">
+<span class="material-symbols-outlined">comment</span>
+</button>
+<button class="glass-panel size-12 rounded-xl flex items-center justify-center text-primary shadow-sm hover:bg-white hover:shadow-md transition-all">
+<span class="material-symbols-outlined">share</span>
+</button>
+<button class="bg-primary size-12 rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20 hover:scale-105 transition-all">
+<span class="material-symbols-outlined">download</span>
+</button>
+</aside>
+<!-- Table of Contents Toggle (Slide-in) -->
+<div class="fixed left-6 bottom-6 z-50">
+<button class="glass-panel px-4 py-3 rounded-xl flex items-center gap-3 text-primary shadow-sm hover:bg-white hover:shadow-md transition-all font-bold text-xs uppercase tracking-widest">
+<span class="material-symbols-outlined">list_alt</span>
+            Table of Contents
+        </button>
+</div>
+</body></html>

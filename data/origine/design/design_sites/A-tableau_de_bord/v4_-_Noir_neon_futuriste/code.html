@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00ffff",
+                        "neon-lime": "#00ff00",
+                        "background-dark": "#000000",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0px",
+                        "lg": "0px",
+                        "xl": "0px",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .neon-border-cyan {
+            border: 1px solid #00ffff;
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+        }
+        .neon-border-lime {
+            border: 1px solid #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+        .neon-text-cyan {
+            color: #00ffff;
+            text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+        }
+        .neon-text-lime {
+            color: #00ff00;
+            text-shadow: 0 0 8px rgba(0, 255, 0, 0.6);
+        }
+        .asymmetric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr 1.2fr;
+            gap: 2rem;
+        }
+        .glitch-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #00ff00;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px #00ff00;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-white font-display overflow-x-hidden">
+<div class="flex min-h-screen">
+<!-- Sidebar: Icon-Only Thin Navigation -->
+<aside class="w-16 border-r border-white/10 flex flex-col items-center py-8 gap-10">
+<div class="mb-4">
+<div class="w-10 h-10 neon-border-cyan flex items-center justify-center">
+<span class="material-symbols-outlined neon-text-cyan text-2xl">terminal</span>
+</div>
+</div>
+<nav class="flex flex-col gap-8 flex-1">
+<a class="group relative" href="#">
+<span class="material-symbols-outlined neon-text-cyan text-3xl">grid_view</span>
+<div class="absolute -right-4 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary shadow-[0_0_8px_#00ffff]"></div>
+</a>
+<a class="text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-3xl">account_balance_wallet</span>
+</a>
+<a class="text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-3xl">query_stats</span>
+</a>
+<a class="text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-3xl">shield</span>
+</a>
+</nav>
+<div class="mt-auto">
+<a class="text-white/40 hover:text-white transition-colors" href="#">
+<span class="material-symbols-outlined text-3xl">settings</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 p-12 overflow-y-auto">
+<!-- Top Header & Security Pulse -->
+<header class="flex justify-between items-start mb-16">
+<div>
+<h1 class="text-xs font-bold tracking-[0.3em] text-white/40 mb-2 uppercase">Système de Gestion Bancaire</h1>
+<div class="flex items-center gap-3">
+<span class="glitch-dot"></span>
+<span class="text-xs tracking-widest font-medium neon-text-lime uppercase">Secure_Connection_Active</span>
+</div>
+</div>
+<div class="text-right">
+<p class="text-xs text-white/40 uppercase tracking-widest mb-1">Dernière Sync</p>
+<p class="text-sm font-mono tracking-tighter">12.04.2024 // 14:02:11</p>
+</div>
+</header>
+<!-- Hero: Total Net Worth -->
+<section class="mb-20">
+<div class="flex flex-col gap-2">
+<h2 class="text-sm tracking-[0.4em] text-white/30 uppercase pl-1">SOLDE_TOTAL_NET</h2>
+<div class="flex items-baseline gap-4">
+<span class="text-8xl font-bold tracking-tighter neon-text-cyan italic">482.903</span>
+<span class="text-4xl font-light text-primary/60">EUR</span>
+</div>
+<div class="mt-4 flex gap-6 items-center">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined neon-text-lime text-sm">north_east</span>
+<span class="text-sm font-bold neon-text-lime">+14.2%</span>
+</div>
+<div class="h-[1px] w-24 bg-white/20"></div>
+<span class="text-[10px] tracking-widest text-white/40 uppercase">Performance Annuelle</span>
+</div>
+</div>
+</section>
+<!-- Asymmetric Grid Content -->
+<div class="asymmetric-grid">
+<!-- Column 1: Accounts Breakdown -->
+<div class="flex flex-col gap-6">
+<h3 class="text-xs tracking-[0.2em] text-white/50 uppercase mb-2">Comptes</h3>
+<div class="neon-border-cyan p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase tracking-widest text-white/60">Courant</span>
+<span class="material-symbols-outlined text-sm text-primary">credit_card</span>
+</div>
+<div class="text-3xl font-bold tracking-tight">€42.100</div>
+<div class="text-[10px] text-white/40 font-mono">FR76 3000 1234 5678 9012</div>
+</div>
+<div class="border border-white/20 p-6 flex flex-col gap-4">
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase tracking-widest text-white/60">Épargne</span>
+<span class="material-symbols-outlined text-sm text-white/40">savings</span>
+</div>
+<div class="text-3xl font-bold tracking-tight">€125.000</div>
+</div>
+<div class="neon-border-lime p-6 flex flex-col gap-4 mt-4">
+<div class="flex justify-between items-center">
+<span class="text-xs uppercase tracking-widest text-white/60">Crypto Assets</span>
+<span class="material-symbols-outlined text-sm text-neon-lime">currency_bitcoin</span>
+</div>
+<div class="text-3xl font-bold tracking-tight neon-text-lime">€315.803</div>
+</div>
+</div>
+<!-- Column 2: Chart & Velocity -->
+<div class="flex flex-col gap-10">
+<div class="neon-border-cyan p-10 relative overflow-hidden h-full flex flex-col">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h3 class="text-xs tracking-[0.2em] text-white/50 uppercase mb-4">Vélocité des Dépenses</h3>
+<div class="text-5xl font-bold tracking-tighter italic">€4.200</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] uppercase text-white/40 mb-1">30 Derniers Jours</p>
+<p class="text-sm neon-text-cyan font-bold">-5.2% VS MOIS DERNIER</p>
+</div>
+</div>
+<!-- Minimalist Chart -->
+<div class="flex-1 min-h-[200px] flex items-end">
+<svg class="overflow-visible" height="150" preserveaspectratio="none" viewbox="0 0 500 150" width="100%">
+<defs>
+<lineargradient id="chartGradient" x1="0%" x2="0%" y1="0%" y2="100%">
+<stop offset="0%" style="stop-color:#00ffff;stop-opacity:0.2"></stop>
+<stop offset="100%" style="stop-color:#00ffff;stop-opacity:0"></stop>
+</lineargradient>
+</defs>
+<path d="M0,120 Q50,110 80,40 T160,60 T240,100 T320,30 T400,80 T500,20" fill="none" stroke="#00ffff" stroke-width="3"></path>
+<path d="M0,120 Q50,110 80,40 T160,60 T240,100 T320,30 T400,80 T500,20 V150 H0 Z" fill="url(#chartGradient)"></path>
+<!-- Pulse point -->
+<circle cx="500" cy="20" fill="#00ffff" r="4">
+<animate attributename="r" dur="1s" repeatcount="indefinite" values="4;6;4"></animate>
+</circle>
+</svg>
+</div>
+<div class="flex justify-between mt-6 text-[10px] font-mono text-white/30 uppercase tracking-[0.2em]">
+<span>01_AVR</span>
+<span>10_AVR</span>
+<span>20_AVR</span>
+<span>30_AVR</span>
+</div>
+</div>
+</div>
+<!-- Column 3: Quick Actions & Transactions -->
+<div class="flex flex-col gap-8">
+<div class="flex flex-col gap-4">
+<h3 class="text-xs tracking-[0.2em] text-white/50 uppercase">Actions_Rapides</h3>
+<div class="grid grid-cols-2 gap-4">
+<button class="neon-border-cyan py-6 flex flex-col items-center gap-2 group hover:bg-primary/10 transition-all">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">send</span>
+<span class="text-[10px] uppercase tracking-widest font-bold">Virement</span>
+</button>
+<button class="border border-white/20 py-6 flex flex-col items-center gap-2 group hover:border-white/40 transition-all">
+<span class="material-symbols-outlined text-white/40 group-hover:scale-110 transition-transform">swap_horiz</span>
+<span class="text-[10px] uppercase tracking-widest font-bold text-white/40">Échange</span>
+</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<h3 class="text-xs tracking-[0.2em] text-white/50 uppercase">Activité_Récente</h3>
+<div class="flex flex-col">
+<!-- Transaction 1 -->
+<div class="border-b border-white/10 py-4 flex justify-between items-center group cursor-pointer hover:bg-white/5 transition-all px-2">
+<div class="flex flex-col gap-1">
+<span class="text-sm font-bold tracking-tight">Apple Store Paris</span>
+<span class="text-[10px] uppercase text-white/40 tracking-wider">Électronique • Aujourd'hui</span>
+</div>
+<span class="text-sm font-bold tracking-tighter">- €1.299,00</span>
+</div>
+<!-- Transaction 2 -->
+<div class="border-b border-white/10 py-4 flex justify-between items-center group cursor-pointer hover:bg-white/5 transition-all px-2">
+<div class="flex flex-col gap-1">
+<span class="text-sm font-bold tracking-tight">Virement Entrant: Tesla Inc.</span>
+<span class="text-[10px] uppercase text-neon-lime tracking-wider">Dividendes • Hier</span>
+</div>
+<span class="text-sm font-bold tracking-tighter neon-text-lime">+ €4.500,00</span>
+</div>
+<!-- Transaction 3 -->
+<div class="border-b border-white/10 py-4 flex justify-between items-center group cursor-pointer hover:bg-white/5 transition-all px-2">
+<div class="flex flex-col gap-1">
+<span class="text-sm font-bold tracking-tight">Coinbase Europe</span>
+<span class="text-[10px] uppercase text-white/40 tracking-wider">Trading • 12 Avr</span>
+</div>
+<span class="text-sm font-bold tracking-tighter">- €8.000,00</span>
+</div>
+</div>
+</div>
+<!-- Decorative Data Element -->
+<div class="mt-auto opacity-20 flex flex-col gap-1 select-none pointer-events-none">
+<div class="text-[8px] font-mono uppercase tracking-[0.3em]">Hash_verification_success</div>
+<div class="w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
+<div class="text-[8px] font-mono overflow-hidden whitespace-nowrap">
+                            0x71C7656EC7ab88b098defB751B7401B5f6d8976F 0x71C7656EC7ab88b098defB751B7401B5f6d8976F
+                        </div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Floating Global Footer Indicator -->
+<div class="fixed bottom-6 left-24 right-12 flex justify-between items-center pointer-events-none">
+<div class="text-[10px] font-mono text-white/20 uppercase tracking-[0.5em]">System_State: Stable</div>
+<div class="flex gap-4 items-center">
+<div class="h-[1px] w-48 bg-white/10"></div>
+<div class="text-[10px] font-mono text-white/20 uppercase">Node_Paris_04</div>
+</div>
+</div>
+</body></html>
