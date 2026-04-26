@@ -459,7 +459,9 @@
       "date": "2026-04-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "MERGE",
-      "scope": ["frankenstein"],
+      "scope": [
+        "frankenstein"
+      ],
       "features": "frankenstein:admin",
       "title": "Sync base B0.18 — couleur & police titres + groupe Textes (p)",
       "description": "Propagation base B0.18. Titres (h1-h4) : sélecteur couleur (h-color) + police (h-font-family). Nouveau groupe Textes (p) : couleur, taille, police, graisse, interligne. Type 'color' dans StyleSettingItem avec picker HTML5 + bouton reset. styles.scss : variables CSS --h-color, --h-font-family, --p-* + règles globales. Aperçu live mis à jour.",
@@ -480,7 +482,9 @@
       "date": "2026-04-26T01:00:00.000Z",
       "type": "feature",
       "commitType": "MERGE",
-      "scope": ["frankenstein"],
+      "scope": [
+        "frankenstein"
+      ],
       "features": "frankenstein:admin",
       "title": "Sync base B0.19 — H1-H4 séparés + fix .rounded-xl + compact",
       "description": "Propagation base B0.19. H1-H4 contrôlés séparément (couleur, police, graisse, espacement par niveau). Fix cards : .rounded-xl et .rounded-xl.border utilisent désormais --card-radius et --card-border-width. Layout compact (tout sur une ligne par groupe).",
@@ -501,7 +505,9 @@
       "date": "2026-04-26T10:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["frankenstein"],
+      "scope": [
+        "frankenstein"
+      ],
       "features": "frankenstein:admin",
       "title": "Fix priorité CSS h1-h4 : !important pour surcharger Tailwind",
       "description": "Les règles CSS pour h1-h4 n'étaient pas appliquées car les classes Tailwind (.text-light-text-muted, .dark:text-white/50) ont une spécificité supérieure. Fix : !important sur toutes les propriétés h1-h4 dans styles.scss. Fix parallèle : [class.dark:border-white/5] remplacé par [ngClass] (syntaxe invalide en Angular).",
@@ -514,6 +520,210 @@
       "prompt": "les style h comme h3 dans l'exemple ne sont pas pris en compte sur le site car 2 class sont prioritaire (.dark\\:text-white\\/50:is(.dark *) et .text-light-text-muted), corrige ça et verifi les autre \"h\"",
       "startedAt": "2026-04-26T09:50:00.000Z",
       "completedAt": "2026-04-26T10:00:00.000Z"
+    },
+    {
+      "id": "mod-022",
+      "version": "THI-0.19",
+      "date": "2026-04-26T12:00:00.000Z",
+      "type": "feature",
+      "commitType": "",
+      "scope": [
+        "server",
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets,server:projets",
+      "title": "Gestion fichiers projet : arborescence Z3 + éditeur unifié Z4",
+      "description": "Implémentation complète du système de gestion de fichiers pour le composant projet. Backend (server-data.js) : ajout des routes /api/projects/* pour CRUD dossiers/fichiers basés sur data/projets/, avec config.json par projet. Frontend : refonte ProjetSidebarComponent (arborescence réelle avec menu contextuel clic droit, renommage inline, suppression avec confirmation), refonte ProjetEditorZoneComponent (éditeur unifié multi-fichiers avec autosave 500ms debounce et indicateur de statut), nouveau ProjectFilesService, mise à jour ProjetEditorComponent (chargement et liaison des données réelles).",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/core/services/project-files.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "execute les instruction du fichier @THI-2026-04-gestion-fichiers-v2.md pour le component projet",
+      "startedAt": "2026-04-26T10:30:00.000Z",
+      "completedAt": "2026-04-26T12:00:00.000Z"
+    },
+    {
+      "id": "mod-023",
+      "version": "THI-0.19",
+      "date": "2026-04-26T14:30:00.000Z",
+      "type": "feature",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : zone 4 unifiée + navigation zone 3 synchronisée",
+      "description": "Refonte complète du comportement de l'éditeur projet. Zone 4 : passage d'un éditeur multi-textarea (un par fichier) à un seul textarea unifié. Le contenu de tous les dossiers est concaténé avec des titres Markdown H1 (# NomDossier) comme séparateurs. Zone 3 (sidebar) : cliquer sur un dossier scrolle directement vers la section correspondante dans zone 4 via setSelectionRange. Synchronisation bidirectionnelle : (1) taper '# Nouveau titre' dans zone 4 crée automatiquement le dossier + fichier content via API au bout de 600ms de debounce ; (2) créer un dossier depuis la sidebar appelle appendSection() sur zone 4 pour ajouter '# NomDossier' en fin de texte. Gestion des sections sans fichier (folderId connu mais fileId null). Suppression des dépendances FormsModule/signal inutiles dans ProjetEditorZoneComponent.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Cela ne me conviens pas parfaitement, un titre markdown doit corespondre à un dossier. Tous le contenue des documents du projet doivent être dans une seul zone de texte dans la zone 4. Les textes sont séparé par les menu. Exemple si tu à un dossier menu 1 du texte et menu 2 et du texte, dans la Z4 tu ne doit avoir qu'une zone de texte avec # Menu1  le texte du contenu.md du dossier menu1 puis # Menu 2 et le texte. la zone 3 est la représentation des différente partis de l'ensemble des textes qui est affiché dans la zone 4. lorsqu'on clique sur un dossier on doit aller direct à l'endroit du texte dans la zone 4. Si on ajoute un menu # dans la zone 4 cela doit créé automatiquement le dossier corespondant. Idem si on crait un nouveau dossier cela doit créé le menu dans la zone 4",
+      "startedAt": "2026-04-26T13:30:00.000Z",
+      "completedAt": "2026-04-26T14:30:00.000Z"
+    },
+    {
+      "id": "mod-024",
+      "version": "THI-0.19",
+      "date": "2026-04-26T15:00:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur : fix chargement zone 4 + sync suppression dossiers vers zone 3",
+      "description": "Fix 1 : zone 4 restait vide (placeholder affiché) car hasLoaded passait à true lors du premier ngOnChanges avec files=[] (valeur initiale du signal). Correction : on attend que files.length > 0 avant d'initialiser le contenu unifié. Fix 2 : la modification de zone 4 ne supprimait pas les dossiers absents dans zone 3. Ajout de la logique de suppression dans onSectionsChange : on compare les dossiers existants (this.files) avec les sections parsées de zone 4, et on supprime via API les dossiers qui ne sont plus présents dans zone 4. Après chaque changement, loadFiles() rafraîchit automatiquement la sidebar (zone 3).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je modifi la zone 4 cela doit mettre à jour automatiquement la zone 3 hors il n'y a que 2 dossiers dans la zone 4 on ne devrait donc avoir que 2 dossier et leur fichier contenu",
+      "startedAt": "2026-04-26T14:30:00.000Z",
+      "completedAt": "2026-04-26T15:00:00.000Z"
+    },
+    {
+      "id": "mod-025",
+      "version": "THI-0.19",
+      "date": "2026-04-26T15:30:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : fix doublons fichier contenu en zone 3",
+      "description": "Fix des doublons de fichiers contenu dans la sidebar (zone 3). Cause : createFile était appelé deux fois pour le même dossier en raison d'une race condition (les données du composant enfant étaient périmées au moment de la vérification fileId). Deux corrections : (1) déduplication client-side dans loadFiles() via deduplicateTree() — filtre les entrées de même nom dans les children de chaque dossier ; (2) vérification de needsFile basée sur this.files() (signal parent, source de vérité) plutôt que sur s.fileId (données de la zone enfant potentiellement périmées). Prévient toute création future de doublons.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 3 on à 2 fois le nom contenu dans chaque dossier, alors que dans les dossiers phisique on a qu'un fichier contenu.md",
+      "startedAt": "2026-04-26T15:00:00.000Z",
+      "completedAt": "2026-04-26T15:30:00.000Z"
+    },
+    {
+      "id": "mod-026",
+      "version": "THI-0.19",
+      "date": "2026-04-26T16:30:00.000Z",
+      "type": "feature",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : sous-menus ## ### #### = sous-répertoires hiérarchiques",
+      "description": "Ajout du support de la hiérarchie complète de titres Markdown (# ## ### ####) dans la zone 4 comme représentation des dossiers et sous-dossiers. buildUnifiedContent() devient récursif avec paramètre depth (profondeur = niveau de titre). buildFolderMap() devient récursif, clé = chemin complet (ex: 'dossier1/sous-dossier') pour distinguer les homonymes. parseContent() détecte tous les niveaux de titres (regex #{1,4}), reconstruit le parentPath de chaque section en remontant les ancêtres, calcule parentFolderId. SectionInfo étendu avec level, parentPath, parentFolderId. onSectionsChange() dans le parent gère la création hiérarchique en cascade : sections triées par level, newFolderIds map dynamique pour résoudre les IDs des parents créés dans la même passe. scrollToFolderById() mise à jour pour chercher #{1,4} au lieu de # uniquement. Fix import FileNode dupliqué.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je crait un sous menu ## dans la zone 4 cela doit me créer un sous répertoir et ainsi de suite avec ### et ####, les menus sont les repertoires et sous repertoires",
+      "startedAt": "2026-04-26T15:30:00.000Z",
+      "completedAt": "2026-04-26T16:30:00.000Z"
+    },
+    {
+      "id": "mod-027",
+      "version": "THI-0.19",
+      "date": "2026-04-26T17:00:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : fix renommage dossier via zone 4 (détection rename)",
+      "description": "Fix : modifier un titre ## en zone 4 créait un nouveau dossier au lieu de renommer l'existant. Ajout de la détection de renommage dans onSectionsChange : les sections sont groupées par parentPath, et pour chaque groupe, si exactement 1 section n'a pas de folderId ET exactement 1 dossier frère n'est pas référencé dans zone 4 → c'est un renommage (pas une création). On appelle renameFolder() via API, puis on sauvegarde immédiatement le contenu dans le fichier existant. Les dossiers renommés sont exclus de toDelete (via renamedIds). La méthode getFolderChildren() permet de récupérer les enfants dossier d'un chemin donné dans l'arbre. Fonctionne à tous les niveaux de profondeur (sous-dossiers inclus).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "A chaque fois que je modifi le nom d'un sous dossier cela me crait un nouveau sous dossier au lieu de renommé le dossier",
+      "startedAt": "2026-04-26T16:30:00.000Z",
+      "completedAt": "2026-04-26T17:00:00.000Z"
+    },
+    {
+      "id": "mod-028",
+      "version": "THI-0.19",
+      "date": "2026-04-26T18:00:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : fix sync complète Z3↔Z4 (suppression, création, renommage sous-dossiers)",
+      "description": "Fix 1 — Suppression sous-dossier Z4→Z3 : toDelete utilisait uniquement this.files() (racine), les sous-dossiers n'étaient jamais supprimés. Nouveau : collectAllFolderPaths() parcourt l'arbre entier, calcule les orphanPaths (chemins absents de sectionPaths), et ne supprime que le dossier le plus haut de chaque branche orpheline (la cascade API nettoie les enfants). Fix 2 — Création sous-dossier Z3→Z4 : folderCreated n'émettait que pour les dossiers racine. Nouveau type {name, parentId}. onFolderCreated() après loadFiles() appelle appendSection (racine) ou insertSectionInParent (sous-dossier via getFolderDepth). insertSectionInParent insère ## sous-titre après le bloc du parent dans la zone 4, avant le prochain titre de même niveau ou supérieur. Fix 3 — Renommage : plus robuste avec collectAllFolderPaths et sectionPaths comparaison en chemin complet.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "cela ne fonctionne pas, le nom des sous dossier ne ce mette pas à jour, si je supprime le dossier dans la Z4 il ne ce supprime pas dans la zone 3. Si je rajoute un sous dossier dans la zone 3 il ne s'affiche pas dans la zone 4",
+      "startedAt": "2026-04-26T17:00:00.000Z",
+      "completedAt": "2026-04-26T18:00:00.000Z"
+    },
+    {
+      "id": "mod-030",
+      "version": "THI-0.20",
+      "date": "2026-04-26T21:25:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : fix sync arborescence après clic sidebar",
+      "description": "Fix : cliquer sur un heading ### dans la zone texte ne sélectionnait pas le nœud correspondant dans l'arborescence si l'utilisateur avait précédemment été sur cette même ligne. Cause : syncActiveNode() n'était appelée que si currentLine !== previousCursorLine. Lorsque l'utilisateur cliquait sur E 2-2-1 (→ previousCursorLine = ligne E), puis sélectionnait D 2-2 cccc via la sidebar (activeNodeId change), puis re-cliquait sur ### E 2-2-1, la condition currentLine === previousCursorLine empêchait syncActiveNode de s'exécuter, laissant la sélection sur D 2-2 cccc. Correctif : syncActiveNode est désormais appelée inconditionnellement sur chaque mouseup/keyup ; saveAll() reste conditionnel au changement de ligne.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je voudrais que tu verifi pourquoi lorsque je clique sur le menu ### E 2-2-1 dans la zone 4 (texte markdown), cela ne selectionne pas le même menu E 2-2-1 dans la zone 3 de l'arborescence. Cela fonctionne bien avec tous les autres menu et sur les documents et je n'ai pas d'erreur dans la consol quii indiquerais un problème",
+      "startedAt": "2026-04-26T21:10:00.000Z",
+      "completedAt": "2026-04-26T21:25:00.000Z"
+    },
+    {
+      "id": "mod-029",
+      "version": "THI-0.19",
+      "date": "2026-04-26T17:13:35.665Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Éditeur projet : fix ordre dossier après renommage Z4 (race condition)",
+      "description": "Fix race condition : saveAll() émettait fileSave (updateFile concurrent) ET sectionsChange simultanément. Les appels updateFile appelaient saveProjectConfig côté serveur pendant que renameFolder tournait, écrasant le renommage dans config.json. Résultat : renameFolder retournait une erreur, le fallback delete+create s'exécutait, déplaçant le dossier renommé en bas de liste. Correctifs : (1) Suppression de l'émission fileSave dans saveAll() — les sauvegardes de contenu sont désormais gérées séquentiellement dans onSectionsChange APRÈS les changements structurels (aucune concurrence possible). (2) Suppression du fallback delete+create dans le catch du renommage — si renameFolder échoue, l'ordre des dossiers est préservé (erreur reportée sans déplacement). (3) Correction de la corruption de config.json existante (doublons contenu.md masqués par deduplicateTree).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "le renommage fonctionne bien mais si je renomme un sous dossier celui change d'ordre et passe en dessous du dossier d'en dessous",
+      "startedAt": "2026-04-26T18:00:00.000Z",
+      "completedAt": "2026-04-26T17:13:35.666Z"
     }
   ]
 }
