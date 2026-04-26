@@ -44,9 +44,20 @@
     /* Customizable style settings — admin/theme */
     --card-radius: 12px;
     --card-border-width: 1px;
-    --h-weight: 700;
-    --h-letter-spacing: -0.02em;
     --input-radius: 10px;
+
+    /* Per-heading typography */
+    --h1-color: inherit; --h1-font-family: inherit; --h1-weight: 700; --h1-letter-spacing: -0.02em;
+    --h2-color: inherit; --h2-font-family: inherit; --h2-weight: 700; --h2-letter-spacing: -0.02em;
+    --h3-color: inherit; --h3-font-family: inherit; --h3-weight: 700; --h3-letter-spacing: -0.02em;
+    --h4-color: inherit; --h4-font-family: inherit; --h4-weight: 700; --h4-letter-spacing: -0.02em;
+
+    /* Paragraph typography */
+    --p-color: inherit;
+    --p-size: inherit;
+    --p-font-family: inherit;
+    --p-weight: inherit;
+    --p-line-height: inherit;
 }
 
 .dark {
@@ -133,10 +144,15 @@ body {
 .pink .dark\:group-hover\:text-primary { color: #f472b6 !important; }
 
 /* Style settings — global rules */
-h1, h2, h3, h4, h5, h6 {
-    font-weight: var(--h-weight, 700);
-    letter-spacing: var(--h-letter-spacing, -0.02em);
-}
+h1 { font-weight: var(--h1-weight, 700) !important; letter-spacing: var(--h1-letter-spacing, -0.02em) !important; color: var(--h1-color, inherit) !important; font-family: var(--h1-font-family, inherit) !important; }
+h2 { font-weight: var(--h2-weight, 700) !important; letter-spacing: var(--h2-letter-spacing, -0.02em) !important; color: var(--h2-color, inherit) !important; font-family: var(--h2-font-family, inherit) !important; }
+h3 { font-weight: var(--h3-weight, 700) !important; letter-spacing: var(--h3-letter-spacing, -0.02em) !important; color: var(--h3-color, inherit) !important; font-family: var(--h3-font-family, inherit) !important; }
+h4 { font-weight: var(--h4-weight, 700) !important; letter-spacing: var(--h4-letter-spacing, -0.02em) !important; color: var(--h4-color, inherit) !important; font-family: var(--h4-font-family, inherit) !important; }
+p { color: var(--p-color, inherit); font-size: var(--p-size, inherit); font-family: var(--p-font-family, inherit); font-weight: var(--p-weight, inherit); line-height: var(--p-line-height, inherit); }
+
+/* Override Tailwind's .rounded-xl to follow --card-radius */
+.rounded-xl { border-radius: var(--card-radius, 0.75rem); }
+.rounded-xl.border { border-width: var(--card-border-width, 1px); }
 .modal-content, .modal-box {
     border-radius: var(--card-radius, 12px);
 }

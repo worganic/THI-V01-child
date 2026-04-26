@@ -452,6 +452,68 @@
       "prompt": "Sync base B0.17 — styles avancés admin/theme",
       "startedAt": "2026-04-25T08:00:00.000Z",
       "completedAt": "2026-04-25T10:00:00.000Z"
+    },
+    {
+      "id": "mod-019",
+      "version": "THI-0.17",
+      "date": "2026-04-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "MERGE",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:admin",
+      "title": "Sync base B0.18 — couleur & police titres + groupe Textes (p)",
+      "description": "Propagation base B0.18. Titres (h1-h4) : sélecteur couleur (h-color) + police (h-font-family). Nouveau groupe Textes (p) : couleur, taille, police, graisse, interligne. Type 'color' dans StyleSettingItem avec picker HTML5 + bouton reset. styles.scss : variables CSS --h-color, --h-font-family, --p-* + règles globales. Aperçu live mis à jour.",
+      "files": [
+        "frankenstein/src/styles.scss",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "système base : dans l'admin/themes je voudrais que tu rajoute des options pour la modification des cards principal qui à l'air de venir de la class .rounded-xl, et les titres h1 h2 h3 et h4 et les textes avec la balise \"p\" : couleur taille type de police, epaisseur etc",
+      "startedAt": "2026-04-26T00:00:00.000Z",
+      "completedAt": "2026-04-26T00:00:00.000Z"
+    },
+    {
+      "id": "mod-020",
+      "version": "THI-0.18",
+      "date": "2026-04-26T01:00:00.000Z",
+      "type": "feature",
+      "commitType": "MERGE",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:admin",
+      "title": "Sync base B0.19 — H1-H4 séparés + fix .rounded-xl + compact",
+      "description": "Propagation base B0.19. H1-H4 contrôlés séparément (couleur, police, graisse, espacement par niveau). Fix cards : .rounded-xl et .rounded-xl.border utilisent désormais --card-radius et --card-border-width. Layout compact (tout sur une ligne par groupe).",
+      "files": [
+        "frankenstein/src/styles.scss",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je ne comprend pas ta logique, je veux la modification de h1 avec sur une ligne : la couleur, la police, l'epaisseur, espacement lettre, idem pour h2 h3 et h4, ensuite je veux les cartes et panneaux, actuellement si je change les paramètres lmes card (class : .rounded-xl), ne change pas. Si possible pour chaque element, il faut mettre les options sur une seul ligne pour avoir de la place.",
+      "startedAt": "2026-04-26T00:30:00.000Z",
+      "completedAt": "2026-04-26T01:00:00.000Z"
+    },
+    {
+      "id": "mod-021",
+      "version": "THI-0.19",
+      "date": "2026-04-26T10:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:admin",
+      "title": "Fix priorité CSS h1-h4 : !important pour surcharger Tailwind",
+      "description": "Les règles CSS pour h1-h4 n'étaient pas appliquées car les classes Tailwind (.text-light-text-muted, .dark:text-white/50) ont une spécificité supérieure. Fix : !important sur toutes les propriétés h1-h4 dans styles.scss. Fix parallèle : [class.dark:border-white/5] remplacé par [ngClass] (syntaxe invalide en Angular).",
+      "files": [
+        "frankenstein/src/styles.scss",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "les style h comme h3 dans l'exemple ne sont pas pris en compte sur le site car 2 class sont prioritaire (.dark\\:text-white\\/50:is(.dark *) et .text-light-text-muted), corrige ça et verifi les autre \"h\"",
+      "startedAt": "2026-04-26T09:50:00.000Z",
+      "completedAt": "2026-04-26T10:00:00.000Z"
     }
   ]
 }
