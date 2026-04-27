@@ -29,9 +29,8 @@
 
     <!-- Arbre récursif -->
     @if (isExpanded('root')) {
-      <ng-container *ngTemplateOutlet="treeNodes; context: { nodes: files, depth: 1 }"></ng-container>
+      <ng-container *ngTemplateOutlet="treeNodes; context: { nodes: files, depth: 1, parentId: null }"></ng-container>
 
-      <!-- Input inline pour nouveau dossier/fichier à la racine -->
       @if (inlineInputIsFor('new-folder', null) || inlineInputIsFor('new-file', null)) {
         <div class="flex items-center gap-1 mx-1 px-2 py-0.5 rounded bg-light-primary/5 dark:bg-primary/5" [style.padding-left.px]="8 + 10">
           <span class="material-symbols-outlined text-xs text-light-text-muted dark:text-white/40">
@@ -52,9 +51,14 @@
 </div>
 
 <!-- Template récursif -->
-<ng-template #treeNodes let-nodes="nodes" let-depth="depth">
+<ng-template #treeNodes let-nodes="nodes" let-depth="depth" let-parentId="parentId">
   @for (node of nodes; track node.id) {
     @if (!(node.type === 'file' && node.name === 'contenu.md')) {
+
+    <!-- Indicateur avant -->
+    @if (isDragOver(node.id) && dragPos() === 'before') {
+      <div class="h-0.5 rounded-full bg-light-primary dark:bg-primary mx-1" [style.margin-left.px]="8 + depth * 10"></div>
+    }
 
     <!-- Ligne noeud -->
     @if (isRenaming(node.id)) {
@@ -72,8 +76,14 @@
       </div>
     } @else {
       <div class="flex items-center gap-1 px-2 py-0.5 rounded mx-1 cursor-pointer group transition-colors"
-           [class]="activeFileId === node.id ? 'bg-light-primary/10 dark:bg-primary/10' : 'hover:bg-light-surface dark:hover:bg-white/5'"
+           [class]="getNodeClasses(node)"
+           [class.opacity-40]="isDragging(node.id)"
            [style.padding-left.px]="8 + depth * 10"
+           draggable="true"
+           (dragstart)="onDragStart($event, node, parentId)"
+           (dragover)="onDragOver($event, node)"
+           (drop)="onDrop($event, node, nodes, parentId)"
+           (dragend)="onDragEnd()"
            (click)="selectFile(node)"
            (contextmenu)="onContextMenu($event, node); $event.stopPropagation()">
 
@@ -90,21 +100,26 @@
 
         <!-- Icône -->
         <span class="material-symbols-outlined text-xs flex-shrink-0"
-              [class]="activeFileId === node.id ? 'text-light-primary dark:text-primary' : 'text-light-text-muted dark:text-white/40'">
-          {{ node.type === 'folder' ? (isExpanded(node.id) ? 'folder_open' : 'folder') : 'description' }}
+              [class]="getNodeIconClasses(node)">
+          {{ node.type === 'folder' ? (isExpanded(node.id) ? 'folder_open' : 'folder') : (isImageFile(node.name) ? 'image' : 'description') }}
         </span>
 
         <!-- Label -->
         <span class="text-[11px] truncate leading-5 flex-1"
-              [class]="activeFileId === node.id ? 'text-light-primary dark:text-primary font-semibold' : 'text-light-text dark:text-white/70'">
+              [class]="getNodeLabelClasses(node)">
           {{ node.type === 'file' ? node.name.replace('.md', '') : node.name }}
         </span>
       </div>
     }
 
-    <!-- Input inline pour enfants -->
+    <!-- Indicateur après -->
+    @if (isDragOver(node.id) && dragPos() === 'after') {
+      <div class="h-0.5 rounded-full bg-light-primary dark:bg-primary mx-1" [style.margin-left.px]="8 + depth * 10"></div>
+    }
+
+    <!-- Enfants récursifs -->
     @if (node.type === 'folder' && isExpanded(node.id)) {
-      <ng-container *ngTemplateOutlet="treeNodes; context: { nodes: node.children || [], depth: depth + 1 }"></ng-container>
+      <ng-container *ngTemplateOutlet="treeNodes; context: { nodes: node.children || [], depth: depth + 1, parentId: node.id }"></ng-container>
 
       @if (inlineInputIsFor('new-folder', node.id) || inlineInputIsFor('new-file', node.id)) {
         <div class="flex items-center gap-1 mx-1 px-2 py-0.5 rounded bg-light-primary/5 dark:bg-primary/5"

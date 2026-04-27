@@ -159,7 +159,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   }
 
   private async processSectionsChange(sections: SectionInfo[]) {
-    const currentFiles = this.files();
+    let currentFiles = this.files();
     // Mutable copy so we can patch folderId/fileId after rename resolution
     const resolved = sections.map(s => ({ ...s }));
 
@@ -278,6 +278,21 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       }
     }
 
+    // Détection de déplacement de fichiers additionnels
+    const filesToMove: { fileId: string, targetFolderId: string }[] = [];
+    for (const s of resolved) {
+      if (!s.folderId) continue;
+      s.additionalFiles?.forEach(af => {
+        if (af.fileId) {
+          const existingFolder = this.findParentFolder(af.fileId, currentFiles);
+          if (existingFolder && existingFolder.id !== s.folderId) {
+            console.log(`[EDITOR] File move detected for ${af.name}: ${existingFolder.name} -> ${s.folderName}`);
+            filesToMove.push({ fileId: af.fileId as string, targetFolderId: s.folderId as string });
+          }
+        }
+      });
+    }
+
     const toCreate = resolved
       .filter(s => {
         if (s.folderId || renameOps.some(op => op.section === s)) return false;
@@ -294,7 +309,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       return !(folder?.children || []).some(c => c.type === 'file');
     });
 
-    const hasStructural = renameOps.length > 0 || toDelete.length > 0 || toCreate.length > 0 || needsFile.length > 0 || additionalFileDeleted;
+    const hasStructural = renameOps.length > 0 || toDelete.length > 0 || toCreate.length > 0 || needsFile.length > 0 || additionalFileDeleted || filesToMove.length > 0;
     const sectionsWithFile = resolved.filter(s => s.fileId || s.folderId); // Tous ceux qui ont potentiellement du contenu à sauver
 
     if (!hasStructural && sectionsWithFile.length === 0 && !resolved.some(s => s.additionalFiles?.some(af => !af.fileId))) return;
@@ -307,8 +322,17 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
     try {
       if (hasStructural) {
-        // ... (reste du bloc structural inchangé)
+        // 0. Moves
+        for (const move of filesToMove) {
+          try {
+            console.log(`[EDITOR] Moving file ${move.fileId} to folder ${move.targetFolderId}...`);
+            await this.projectFilesService.moveFile(this.projectFolderName, move.fileId, move.targetFolderId);
+          } catch (e) {
+            console.error('File move failed:', e);
+          }
+        }
 
+        // 1. Renames
         for (const op of renameOps) {
           try {
             console.log(`[EDITOR] Renaming folder ${op.folderId} to "${op.newName}"...`);
@@ -365,12 +389,12 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
         // Rafraîchir l'arborescence dès que la structure est prête
         await this.loadFiles().catch(() => {});
-        const freshFiles = this.files();
+        currentFiles = this.files();
 
         // On remet à jour les IDs de fichiers dans resolved pour la sauvegarde finale
         for (const s of resolved) {
           const path = [...s.parentPath, s.folderName].map(p => this.slugify(p)).join('/');
-          const freshFolder = this.findFolderByPath(path, freshFiles);
+          const freshFolder = this.findFolderByPath(path, currentFiles);
           if (freshFolder) {
             s.folderId = freshFolder.id;
             const contentFile = (freshFolder.children || []).find(c => c.type === 'file');
@@ -525,10 +549,34 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           }
         }
       } else {
-        // Fichier : déplacer vers le dossier cible
-        const targetFolderId = targetNode.type === 'folder' ? targetNode.id : targetParentId;
+        // Fichier : déterminer le dossier parent cible selon la position
+        let targetFolderId: string | null = null;
+        
+        if (position === 'inside' && targetNode.type === 'folder') {
+          targetFolderId = targetNode.id;
+        } else {
+          // Si on lâche 'avant' ou 'après' un nœud (fichier ou dossier), 
+          // la cible est le dossier parent de ce nœud.
+          targetFolderId = targetParentId;
+        }
+
         if (targetFolderId !== draggedParentId) {
           await this.projectFilesService.moveFile(this.projectFolderName, draggedNode.id, targetFolderId);
+        }
+
+        // Pour un drop 'inside' : recharger puis placer les fichiers avant les sous-dossiers
+        if (position === 'inside' && targetNode.type === 'folder') {
+          await this.loadFiles();
+          const targetFolder = this.findFolderById(targetNode.id, this.files());
+          if (targetFolder?.children) {
+            const childFiles = targetFolder.children.filter(c => c.type === 'file');
+            const childFolders = targetFolder.children.filter(c => c.type === 'folder');
+            if (childFiles.length > 0 && childFolders.length > 0) {
+              const structure: FileNode[] = JSON.parse(JSON.stringify(this.files()));
+              this.applyOrderInStructure(structure, targetNode.id, [...childFiles, ...childFolders].map(n => n.id));
+              await this.projectFilesService.updateStructure(this.projectFolderName, structure);
+            }
+          }
         }
       }
       await this.loadFiles();

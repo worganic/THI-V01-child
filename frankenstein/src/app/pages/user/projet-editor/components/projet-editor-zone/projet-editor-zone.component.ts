@@ -26,7 +26,7 @@ export interface SectionInfo {
 }
 
 type DocBlock =
-  | { kind: 'text'; key: string; text: string }
+  | { kind: 'text'; key: string; text: string; fileId?: string | null; folderId?: string | null }
   | { kind: 'image'; key: string; image: FileNode };
 
 interface DocSection {
@@ -35,6 +35,7 @@ interface DocSection {
   textContent: string; // full text with {{IMG:id}} markers
   blocks: DocBlock[];
   images: FileNode[];
+  mainFileId: string | null;
 }
 
 @Component({
@@ -69,6 +70,9 @@ export class ProjetEditorZoneComponent implements OnChanges {
   docSections: DocSection[] = [];
   private sectionTextMap = new Map<string, string>();
   focusedSectionId: string | null = null;
+  private highlightedSectionIds = new Set<string>();
+  private highlightPositions = new Map<string, 'only' | 'first' | 'middle' | 'last'>();
+  private fileBlockPositions = new Map<string, 'only' | 'first' | 'middle' | 'last'>();
   private lastFocusedTextareaEl: HTMLTextAreaElement | null = null;
   private lastCursorPos = 0;
 
@@ -76,15 +80,20 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private hasLoaded = false;
   private lastSavedContent = '';
   private saveTimeout: any;
+  private lastStructureKey: string | null = null;
 
   // ── Lifecycle ──────────────────────────────────────────────
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['files'] && this.files.length > 0) {
+      const currentStructure = this.getFileStructureKey(this.files);
+      const hasStructuralChange = this.lastStructureKey !== null && this.lastStructureKey !== currentStructure;
+      this.lastStructureKey = currentStructure;
+
       const newSections = this.buildDocSections(this.files, 1);
       const newContent = this.reconstructContentFromSections(newSections);
 
-      if (!this.hasLoaded) {
+      if (!this.hasLoaded || hasStructuralChange) {
         this.docSections = newSections;
         this.sectionTextMap.clear();
         this.docSections.forEach(s => this.sectionTextMap.set(s.folderId, s.textContent));
@@ -95,12 +104,19 @@ export class ProjetEditorZoneComponent implements OnChanges {
         // Fresh images from server, text preserved from sectionTextMap
         this.docSections = newSections.map(s => {
           const preservedText = this.sectionTextMap.get(s.folderId) ?? s.textContent;
-          return { ...s, textContent: preservedText, blocks: this.buildBlocks(preservedText, s.images, s.folderId) };
+          return { ...s, textContent: preservedText, blocks: this.buildBlocks(preservedText, s.images, s.folderId, s.mainFileId) };
         });
         this.unifiedContent = this.reconstructUnifiedContent();
         setTimeout(() => this.autoResizeAllSectionTextareas(), 50);
       }
       this.hasLoaded = true;
+      this.highlightedSectionIds = this.computeHighlightedIds(this.activeNodeId);
+      this.rebuildHighlightPositions();
+    }
+    if (changes['activeNodeId']) {
+      this.focusedSectionId = null;
+      this.highlightedSectionIds = this.computeHighlightedIds(this.activeNodeId);
+      this.rebuildHighlightPositions();
     }
     if (changes['scrollToNodeId'] && this.scrollToNodeId) {
       setTimeout(() => this.scrollToNodeById(this.scrollToNodeId!), 150);
@@ -132,15 +148,16 @@ export class ProjetEditorZoneComponent implements OnChanges {
         folderId: node.id,
         folderName: node.name,
         textContent,
-        blocks: this.buildBlocks(textContent, images, node.id),
+        blocks: this.buildBlocks(textContent, images, node.id, mainFile?.id || null),
         images,
+        mainFileId: mainFile?.id || null,
       });
       result.push(...this.buildDocSections(node.children || [], depth + 1));
     }
     return result;
   }
 
-  private buildBlocks(fullText: string, imageNodes: FileNode[], folderId: string): DocBlock[] {
+  private buildBlocks(fullText: string, imageNodes: FileNode[], folderId: string, mainFileId: string | null = null): DocBlock[] {
     const markerRe = /\n\{\{IMG:([a-f0-9-]+)\}\}\n/g;
     const blocks: DocBlock[] = [];
     let lastIndex = 0;
@@ -149,7 +166,9 @@ export class ProjetEditorZoneComponent implements OnChanges {
     let m: RegExpExecArray | null;
 
     while ((m = markerRe.exec(fullText)) !== null) {
-      blocks.push({ kind: 'text', key: `${folderId}-t${textIdx++}`, text: fullText.substring(lastIndex, m.index) });
+      const text = fullText.substring(lastIndex, m.index);
+      this.pushTextBlocks(blocks, text, folderId, mainFileId, textIdx);
+      textIdx += 2;
       const imgId = m[1];
       const imgNode = imageNodes.find(n => n.id === imgId);
       if (imgNode) {
@@ -158,7 +177,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
       }
       lastIndex = m.index + m[0].length;
     }
-    blocks.push({ kind: 'text', key: `${folderId}-t${textIdx}`, text: fullText.substring(lastIndex) });
+    const finalEx = fullText.substring(lastIndex);
+    this.pushTextBlocks(blocks, finalEx, folderId, mainFileId, textIdx);
 
     // Images without marker → append at end (backward compat)
     for (const img of imageNodes) {
@@ -167,6 +187,101 @@ export class ProjetEditorZoneComponent implements OnChanges {
       }
     }
     return blocks;
+  }
+
+  private pushTextBlocks(blocks: DocBlock[], text: string, folderId: string, mainFileId: string | null, startIndex: number) {
+    if (!text) return;
+    let currentText = text;
+    let localIdx = startIndex;
+
+    // 1. Heading extraction
+    const trimmed = currentText.trimStart();
+    if (trimmed.startsWith('#')) {
+      const firstNL = currentText.indexOf('\n');
+      const heading = (firstNL !== -1) ? currentText.substring(0, firstNL + 1) : currentText + '\n';
+      blocks.push({ 
+        kind: 'text', 
+        key: `${folderId}-t${localIdx++}`, 
+        text: heading,
+        folderId: folderId
+      });
+      currentText = (firstNL !== -1) ? currentText.substring(firstNL + 1) : '';
+    }
+
+    if (!currentText) return;
+
+    // 2. Split between main content and additional files using manual scan
+    let lastPos = 0;
+    const delimiters = ["'", "`", "^"];
+    
+    while (lastPos < currentText.length) {
+      let foundStart = -1;
+      let usedDelim = "";
+      
+      for (const d of delimiters) {
+        const idx = currentText.indexOf(d, lastPos);
+        if (idx !== -1 && (foundStart === -1 || idx < foundStart)) {
+          // Block must be at start of text or after a newline
+          if (idx === 0 || currentText[idx-1] === '\n') {
+            foundStart = idx;
+            usedDelim = d;
+          }
+        }
+      }
+
+      if (foundStart === -1) {
+        const remaining = currentText.substring(lastPos);
+        if (remaining.trim() || !blocks.some(b => b.kind === 'text' && b.fileId === mainFileId)) {
+          blocks.push({ kind: 'text', key: `${folderId}-t${localIdx++}`, text: remaining, fileId: mainFileId });
+        }
+        break;
+      }
+
+      const nextNL = currentText.indexOf('\n', foundStart + 1);
+      const closingDelim = (nextNL !== -1) ? currentText.indexOf('\n' + usedDelim, nextNL) : -1;
+
+      if (nextNL === -1 || closingDelim === -1) {
+        // Not a complete block, treat the rest as normal text
+        blocks.push({ kind: 'text', key: `${folderId}-t${localIdx++}`, text: currentText.substring(lastPos), fileId: mainFileId });
+        break;
+      }
+
+      // Found a valid block
+      const before = currentText.substring(lastPos, foundStart);
+      if (before.trim()) {
+        blocks.push({ kind: 'text', key: `${folderId}-t${localIdx++}`, text: before, fileId: mainFileId });
+      }
+
+      const blockEnd = closingDelim + usedDelim.length + 1;
+      const fileBlockText = currentText.substring(foundStart, blockEnd);
+      const fileName = currentText.substring(foundStart + 1, nextNL).trim();
+      const fileNode = this.findNodeBySlug(fileName, 'file');
+
+      blocks.push({
+        kind: 'text',
+        key: `${folderId}-t${localIdx++}`,
+        text: fileBlockText,
+        fileId: fileNode?.id || null
+      });
+
+      lastPos = blockEnd;
+    }
+  }
+
+  private guessFileId(text: string, mainFileId: string | null): string | null {
+    const trimmed = text.trim();
+    if (!trimmed) return null;
+    
+    // Check for additional file block
+    const blockRegex = /^(['`^])([^\n]+)\n/m;
+    const m = blockRegex.exec(trimmed);
+    if (m) {
+      const name = m[2].trim();
+      const node = this.findNodeBySlug(name, 'file');
+      if (node) return node.id;
+    }
+    
+    return mainFileId;
   }
 
   private reconstructContentFromSections(sections: DocSection[]): string {
@@ -319,23 +434,35 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const newFullText = this.reconstructSectionFullText(folderId);
     this.sectionTextMap.set(folderId, newFullText);
     this.unifiedContent = this.reconstructUnifiedContent();
-    clearTimeout(this.saveTimeout);
-    this.saveTimeout = setTimeout(() => this.saveAll(), 2000);
+    // Suppression du saveTimeout pour privilégier le changement de ligne ou le blur
   }
 
   onSectionBlur(folderId: string) {
-    clearTimeout(this.saveTimeout);
+    this.focusedSectionId = null;
     const newFullText = this.reconstructSectionFullText(folderId);
     this.sectionTextMap.set(folderId, newFullText);
     this.unifiedContent = this.reconstructUnifiedContent();
-    this.saveAll();
+    this.saveAll(); // Sauvegarde immédiate au défocus
   }
+
+  private lastLineNumber = -1;
 
   onSectionCursorMove(folderId: string, event: Event) {
     const ta = event.target as HTMLTextAreaElement;
     this.lastFocusedTextareaEl = ta;
-    this.lastCursorPos = ta.selectionStart;
-    const pos = ta.selectionStart;
+    
+    // Détection du changement de ligne pour déclencher la sauvegarde
+    const currentPos = ta.selectionStart;
+    const textBefore = ta.value.substring(0, currentPos);
+    const currentLineNumber = textBefore.split('\n').length;
+
+    if (this.lastLineNumber !== -1 && currentLineNumber !== this.lastLineNumber) {
+      this.saveAll(); // Sauvegarde car on a changé de ligne
+    }
+    this.lastLineNumber = currentLineNumber;
+
+    this.lastCursorPos = currentPos;
+    const pos = currentPos;
     const sectionText = ta.value;
     const blockRegex = /^(['`^])([^\n]+)\n([\s\S]*?)\n\1/gm;
     let blockMatch: RegExpExecArray | null;
@@ -413,6 +540,18 @@ export class ProjetEditorZoneComponent implements OnChanges {
     ta.style.height = ta.scrollHeight + 'px';
   }
 
+  private getFileStructureKey(nodes: FileNode[], parentId: string = 'root'): string {
+    let key = '';
+    for (const node of nodes) {
+      if (node.type === 'file') {
+        key += `|f:${node.id}-p:${parentId}`;
+      } else if (node.children) {
+        key += this.getFileStructureKey(node.children, node.id);
+      }
+    }
+    return key;
+  }
+
   // ── Tree helpers ───────────────────────────────────────────
 
   private findNode(id: string, nodes: FileNode[]): FileNode | null {
@@ -470,6 +609,122 @@ export class ProjetEditorZoneComponent implements OnChanges {
       return base + ' outline outline-2 outline-light-primary dark:outline-primary';
     return base + ' hover:outline hover:outline-1 hover:outline-light-border dark:hover:outline-white/20';
   }
+
+  getSectionClasses(folderId: string): string {
+    const pos = this.highlightPositions.get(folderId);
+    // On garde un padding constant pour l'alignement
+    const basePadding = 'px-6 py-2';
+
+    if (!pos) return `mb-1 rounded-lg ${basePadding} transition-all`;
+
+    // Couleur BLEUE pour toute la zone de menu
+    const borderColor = 'border-blue-500/30';
+    const bgColor = 'bg-blue-500/5';
+    const base = `mb-0 ${basePadding} transition-all border-l border-r ${borderColor} ${bgColor}`;
+
+    switch (pos) {
+      case 'only':   return `mb-1 rounded-lg border ${borderColor} ${bgColor} transition-all ${basePadding}`;
+      case 'first':  return `${base} rounded-t-lg border-t`;
+      case 'middle': return `${base} border-t-0 border-b-0`;
+      case 'last':   return `mb-1 ${base} rounded-b-lg border-b`;
+      default:       return `mb-1 rounded-lg ${basePadding} transition-all`;
+    }
+  }
+
+  private rebuildHighlightPositions() {
+    this.highlightPositions.clear();
+    this.fileBlockPositions.clear();
+
+    // Section-level (folder) positions — bleu
+    const ordered = this.docSections
+      .map((s, idx) => ({ folderId: s.folderId, idx }))
+      .filter(item => this.highlightedSectionIds.has(item.folderId));
+    for (let i = 0; i < ordered.length; i++) {
+      const { folderId, idx } = ordered[i];
+      const prevConsec = i > 0 && ordered[i - 1].idx === idx - 1;
+      const nextConsec = i < ordered.length - 1 && ordered[i + 1].idx === idx + 1;
+      if (!prevConsec && !nextConsec) this.highlightPositions.set(folderId, 'only');
+      else if (!prevConsec)           this.highlightPositions.set(folderId, 'first');
+      else if (!nextConsec)           this.highlightPositions.set(folderId, 'last');
+      else                            this.highlightPositions.set(folderId, 'middle');
+    }
+
+    // Block-level (file) positions — vert
+    if (this.activeNodeId) {
+      const node = this.findNode(this.activeNodeId, this.files);
+      if (node?.type === 'file' && !this.isImageFile(node.name)) {
+        for (const section of this.docSections) {
+          const matching = section.blocks
+            .map((b, i) => ({ b, i }))
+            .filter(item => (item.b as any).fileId === this.activeNodeId);
+          for (let j = 0; j < matching.length; j++) {
+            const { b, i } = matching[j];
+            const prevConsec = j > 0 && matching[j - 1].i === i - 1;
+            const nextConsec = j < matching.length - 1 && matching[j + 1].i === i + 1;
+            if (!prevConsec && !nextConsec) this.fileBlockPositions.set(b.key, 'only');
+            else if (!prevConsec)           this.fileBlockPositions.set(b.key, 'first');
+            else if (!nextConsec)           this.fileBlockPositions.set(b.key, 'last');
+            else                            this.fileBlockPositions.set(b.key, 'middle');
+          }
+        }
+      }
+    }
+  }
+
+  getFileBlockClasses(block: DocBlock): string {
+    const pos = this.fileBlockPositions.get(block.key);
+    if (!pos) return '';
+    const border = 'border-green-500/40';
+    const bg = 'bg-green-500/5';
+    switch (pos) {
+      case 'only':   return `rounded-lg border ${border} ${bg}`;
+      case 'first':  return `rounded-t-lg border-t border-l border-r ${border} ${bg}`;
+      case 'middle': return `border-l border-r ${border} ${bg}`;
+      case 'last':   return `rounded-b-lg border-b border-l border-r ${border} ${bg}`;
+    }
+  }
+
+  private computeHighlightedIds(nodeId: string | null): Set<string> {
+    const result = new Set<string>();
+    if (!nodeId) return result;
+    const node = this.findNode(nodeId, this.files);
+    if (node?.type === 'folder') {
+      this.addAllDescendantFolders(node, result);
+    }
+    return result;
+  }
+
+  getTextareaClasses(block: any): string {
+    const base = "section-textarea w-full bg-transparent text-light-text dark:text-white font-mono text-sm outline-none focus:outline-none focus:ring-0 resize-none block leading-relaxed transition-all p-0 border-0 overflow-hidden";
+    
+    // Si l'ID actif est celui du fichier lié à ce bloc -> VERT
+    if (block.kind === 'text' && block.fileId && block.fileId === this.activeNodeId) {
+      return base.replace('p-0 border-0', 'border border-green-500/40 bg-green-500/10 rounded-lg px-4 py-2 my-1 shadow-[0_0_10px_rgba(34,197,94,0.1)]');
+    }
+
+    return base;
+  }
+
+  private collectFolderAndDescendants(nodeId: string, nodes: FileNode[], result: Set<string>): boolean {
+    for (const n of nodes) {
+      if (n.type === 'folder') {
+        if (n.id === nodeId) {
+          this.addAllDescendantFolders(n, result);
+          return true;
+        }
+        if (this.collectFolderAndDescendants(nodeId, n.children || [], result)) return true;
+      }
+    }
+    return false;
+  }
+
+  private addAllDescendantFolders(node: FileNode, result: Set<string>) {
+    result.add(node.id);
+    for (const child of node.children || []) {
+      if (child.type === 'folder') this.addAllDescendantFolders(child, result);
+    }
+  }
+
 
   getAllFolders(nodes: FileNode[] = this.files, result: FileNode[] = []): FileNode[] {
     for (const n of nodes) {

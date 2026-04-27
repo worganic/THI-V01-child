@@ -48,14 +48,15 @@
     }
 
     @for (section of docSections; track section.folderId) {
-      <div [id]="'section-' + section.folderId">
+      <div [id]="'section-' + section.folderId" [class]="getSectionClasses(section.folderId)">
 
         @for (block of section.blocks; track block.key) {
+          <div [class]="getFileBlockClasses(block)">
 
           @if (block.kind === 'text') {
             <!-- Bloc texte éditable -->
             <textarea
-              class="section-textarea w-full bg-transparent text-light-text dark:text-white font-mono text-sm outline-none resize-none block leading-relaxed border-0 p-0"
+              [class]="getTextareaClasses(block)"
               [value]="block.text"
               [attr.data-block-key]="block.key"
               (focus)="onSectionFocus(section.folderId, $event)"
@@ -142,6 +143,7 @@
             </div>
           }
 
+          </div><!-- /wrapper fileBlock -->
         }
 
       </div>

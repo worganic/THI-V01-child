@@ -1058,6 +1058,160 @@
       "prompt": "j'ai rajouté une image à un endroit précis et celle ci c'est rajouté à la fin de la section je veux que l'image s'insert exactement ou je veux et cela peux être au milieu d'une section de menu ou d'un document",
       "startedAt": "2026-04-27T17:00:00.000Z",
       "completedAt": "2026-04-27T18:00:00.000Z"
+    },
+    {
+      "id": "mod-046",
+      "version": "THI-0.23",
+      "date": "2026-04-27T18:30:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : surlignage de la section entière (textes + images)",
+      "description": "Le cadre de focus ne s'appliquait qu'au premier textarea d'une section. Correction : [class]=\"getSectionClasses(section.folderId)\" appliqué au div conteneur de chaque section (qui englobe tous les blocs texte et image). Les textareas reçoivent focus:outline-none et focus:ring-0 pour supprimer l'anneau natif par bloc. La méthode getSectionClasses() génère outline-1 outline-light-primary dark:outline-primary sur le container quand la section est active.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je selectionne une zone de menu il faut encadré toutes la zone même si une image ou document font partis de ce menu",
+      "startedAt": "2026-04-27T18:20:00.000Z",
+      "completedAt": "2026-04-27T18:30:00.000Z"
+    },
+    {
+      "id": "mod-047",
+      "version": "THI-0.23",
+      "date": "2026-04-27T19:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : surlignage hiérarchique par sélection Zone 3",
+      "description": "Le surlignage de section s'adapte selon le nœud sélectionné en Zone 3 (sidebar). Si un dossier menu est sélectionné, toutes ses sections descendantes (récursivement) sont encadrées. Si une section feuille est sélectionnée, seule cette section est encadrée. Si une textarea est focusée en Zone 4, seule cette section est encadrée (override). Implémentation : highlightedSectionIds recalculé dans ngOnChanges sur activeNodeId et files, via computeHighlightedIds > collectFolderAndDescendants > addAllDescendantFolders. getSectionClasses utilise focusedSectionId en priorité, puis highlightedSectionIds.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Si je selectionne un menu cela doit selectionné toutes les données dans ce menu ce qui inclus les sous menu. Si je selectionne une section code, cela dois selectionné uniquement la partie du code et non tous le menu entourant le code.",
+      "startedAt": "2026-04-27T18:35:00.000Z",
+      "completedAt": "2026-04-27T19:00:00.000Z"
+    },
+    {
+      "id": "mod-048",
+      "version": "THI-0.23",
+      "date": "2026-04-27T19:15:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : cadre unique multi-sections pour groupe sélectionné",
+      "description": "Correction du surlignage : au lieu d'un cadre individuel par section, les sections consécutives d'un même groupe sélectionné forment visuellement un seul cadre continu. Implémentation via border partielle selon la position dans le groupe : première section = border-t + border-l + border-r + rounded-t, milieu = border-l + border-r, dernière = border-b + border-l + border-r + rounded-b. mb-0 sur first/middle pour zéro espace entre sections du groupe.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "cela ne fonctionne pas, si je selectionne ## D 2-2 cela doit selectionné aussi les sous section ### et #### comme sur la zone entouré en vert dans mon image",
+      "startedAt": "2026-04-27T19:05:00.000Z",
+      "completedAt": "2026-04-27T19:15:00.000Z"
+    },
+    {
+      "id": "mod-049",
+      "version": "THI-0.23",
+      "date": "2026-04-27T19:45:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : fix surlignage groupe dès la première sélection sidebar",
+      "description": "Le surlignage multi-sections ne s'appliquait pas au premier clic sur le sidebar : focusedSectionId restait setté (le sidebar ne provoque pas toujours un blur de la textarea active via preventDefault). Fix : (1) rebuildHighlightPositions() pré-calcule les positions only/first/middle/last via indices consécutifs dans docSections, appelé dès ngOnChanges(activeNodeId) ; (2) ngOnChanges force focusedSectionId=null sur tout changement d'activeNodeId ; (3) getSectionClasses simplifié en switch sur highlightPositions — plus de dépendance à focusedSectionId pour le CSS.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "En faite quand je selectionne un menu cela m'entoure que ce menu et n'intègre pas les autres sous menu, mais si je ensuite je clique autre part dans la page, toutes la zone ce selectionne il faut qu'a la première selection cela selectionne tous et non lorsque je clique ensuite quelques part",
+      "startedAt": "2026-04-27T19:20:00.000Z",
+      "completedAt": "2026-04-27T19:45:00.000Z"
+    },
+    {
+      "id": "mod-050",
+      "version": "THI-0.23",
+      "date": "2026-04-27T20:15:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 3 : fond bleu/vert actif + fichiers avant sous-dossiers au drop",
+      "description": "Deux améliorations sidebar : (1) getNodeClasses différencie fond bleu (bg-light-primary/15) pour les dossiers actifs et fond vert (bg-green-500/15) pour les fichiers actifs. Ajout de getNodeIconClasses/getNodeLabelClasses pour adapter icône et texte en conséquence. (2) onDragDrop : lors d'un drop 'inside' sur un dossier, après moveFile on recharge puis on réordonne les enfants du dossier pour placer les fichiers avant les sous-dossiers via applyOrderInStructure + updateStructure.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "cela fonctionne mais lorsque je selectionne un document '...' je veux que seul la section de ce document soi selectionné. Autre chose avant lorsqu'on selectionnait un menu dans la zone 3 celui si était selectionné (fond bleu pour les dossier et fond vert pour document) il me faut cette fonction",
+      "startedAt": "2026-04-27T19:50:00.000Z",
+      "completedAt": "2026-04-27T20:15:00.000Z"
+    },
+    {
+      "id": "mod-051",
+      "version": "THI-0.23",
+      "date": "2026-04-27T20:30:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 3 : document déposé avant les sous-menus au drop inside",
+      "description": "Lors d'un drag-and-drop d'un document à l'intérieur d'un dossier, le fichier était placé après les sous-dossiers. Fix : après moveFile pour un drop 'inside', rechargement puis réordonnancement des enfants du dossier cible pour positionner tous les fichiers avant les sous-dossiers (files first, folders after).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le projet dans la zone 3 lorsque je deplace un document dans un menu, le document doit ce placer entre le menu dans lequel j'ai deposé le document et le sous menu pas après le sous menu",
+      "startedAt": "2026-04-27T20:16:00.000Z",
+      "completedAt": "2026-04-27T20:30:00.000Z"
+    },
+    {
+      "id": "mod-052",
+      "version": "THI-0.23",
+      "date": "2026-04-27T21:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 3 : couleurs icône/label actif bleu/vert dans sidebar",
+      "description": "Mise à jour du template HTML de la sidebar pour utiliser les méthodes getNodeIconClasses(node) et getNodeLabelClasses(node) à la place des ternaires inline. Les dossiers actifs affichent icône et label en bleu (primary), les fichiers en vert (green-400/green-500).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "(continuation session précédente) mise à jour HTML sidebar pour méthodes getNodeIconClasses/getNodeLabelClasses",
+      "startedAt": "2026-04-27T20:55:00.000Z",
+      "completedAt": "2026-04-27T21:00:00.000Z"
+    },
+    {
+      "id": "mod-053",
+      "version": "THI-0.24",
+      "date": "2026-04-27T21:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : fond vert sur blocs document sélectionné",
+      "description": "Ajout d'un surlignage vert au niveau des blocs individuels (fileBlockPositions) pour les fichiers/documents sélectionnés dans la sidebar. Quand un document est sélectionné, seuls les blocs dont le fileId correspond à l'activeNodeId reçoivent un fond et une bordure verts. Les menus/dossiers gardent le surlignage bleu par section. Chaque bloc est enveloppé dans un div wrapper avec getFileBlockClasses(block).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "on recommence le fond des zones de document entouré d'un trait vert doit avoir un fond vert (uniquement l'intérieur du contenu des document) dans la zone 4, cela ne doit pas touché les menu mais uniquement les sections document en vert",
+      "startedAt": "2026-04-27T21:15:00.000Z",
+      "completedAt": "2026-04-27T21:30:00.000Z"
     }
   ]
 }
