@@ -131,28 +131,50 @@ export class ProjetEditorZoneComponent implements OnChanges {
     for (const node of sorted) {
       if (node.type !== 'folder') continue;
       const heading = '#'.repeat(Math.min(depth, 4)) + ' ' + node.name;
-      const mainFile = (node.children || []).find(c => c.type === 'file' && c.name === 'contenu.md')
-                    || (node.children || []).find(c => c.type === 'file' && !this.isImageFile(c.name));
+      const nodeChildren = node.children || [];
+      const hasSubFolders = nodeChildren.some(c => c.type === 'folder');
+      const mainFile = nodeChildren.find(c => c.type === 'file' && c.name === 'contenu.md')
+                    || nodeChildren.find(c => c.type === 'file' && !this.isImageFile(c.name));
       const mainContent = mainFile?.content ?? '';
-      const additionalFiles = (node.children || [])
-        .filter(c => c.type === 'file' && c !== mainFile && !this.isImageFile(c.name));
-      let textContent = heading + '\n';
-      if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
-      if (additionalFiles.length > 0) {
-        const blocks = additionalFiles.map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content}\n'`).join('\n\n');
-        textContent += '\n' + blocks + '\n';
+      const images = nodeChildren.filter(c => c.type === 'file' && this.isImageFile(c.name));
+      const additionalFiles = nodeChildren.filter(c => c.type === 'file' && c !== mainFile && !this.isImageFile(c.name));
+
+      if (!hasSubFolders) {
+        // Pas de sous-dossiers : comportement existant (fichiers embarqués)
+        let textContent = heading + '\n';
+        if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
+        if (additionalFiles.length > 0) {
+          const blocks = additionalFiles.map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content}\n'`).join('\n\n');
+          textContent += '\n' + blocks + '\n';
+        }
+        textContent = textContent.trimEnd();
+        result.push({ folderId: node.id, folderName: node.name, textContent, blocks: this.buildBlocks(textContent, images, node.id, mainFile?.id || null), images, mainFileId: mainFile?.id || null });
+      } else {
+        // A des sous-dossiers : section parent (heading + contenu principal seulement),
+        // puis intercalage enfants par ordre
+        let textContent = heading + '\n';
+        if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
+        textContent = textContent.trimEnd();
+        result.push({ folderId: node.id, folderName: node.name, textContent, blocks: this.buildBlocks(textContent, images, node.id, mainFile?.id || null), images, mainFileId: mainFile?.id || null });
+
+        const sortedChildren = [...nodeChildren].sort((a, b) => (a.order || 0) - (b.order || 0));
+        for (const child of sortedChildren) {
+          if (child.type === 'folder') {
+            result.push(...this.buildDocSections([child], depth + 1));
+          } else if (child !== mainFile && !this.isImageFile(child.name) && child.type === 'file') {
+            // Fichier additionnel → sa propre section, folderId = file.id
+            const fileText = `'${child.name.replace(/\.md$/, '')}\n${child.content || ''}\n'`;
+            result.push({
+              folderId: child.id,
+              folderName: child.name.replace(/\.md$/, ''),
+              textContent: fileText,
+              blocks: this.buildBlocks(fileText, [], child.id, child.id),
+              images: [],
+              mainFileId: child.id,
+            });
+          }
+        }
       }
-      textContent = textContent.trimEnd();
-      const images = (node.children || []).filter(c => c.type === 'file' && this.isImageFile(c.name));
-      result.push({
-        folderId: node.id,
-        folderName: node.name,
-        textContent,
-        blocks: this.buildBlocks(textContent, images, node.id, mainFile?.id || null),
-        images,
-        mainFileId: mainFile?.id || null,
-      });
-      result.push(...this.buildDocSections(node.children || [], depth + 1));
     }
     return result;
   }
@@ -612,14 +634,15 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
   getSectionClasses(folderId: string): string {
     const pos = this.highlightPositions.get(folderId);
-    // On garde un padding constant pour l'alignement
     const basePadding = 'px-6 py-2';
 
     if (!pos) return `mb-1 rounded-lg ${basePadding} transition-all`;
 
-    // Couleur BLEUE pour toute la zone de menu
-    const borderColor = 'border-blue-500/30';
-    const bgColor = 'bg-blue-500/5';
+    // Section fichier (folderId = file.id) → vert ; dossier → bleu
+    const sectionNode = this.findNode(folderId, this.files);
+    const isFileSec = sectionNode?.type === 'file';
+    const borderColor = isFileSec ? 'border-green-500/40' : 'border-blue-500/30';
+    const bgColor     = isFileSec ? 'bg-green-500/5'      : 'bg-blue-500/5';
     const base = `mb-0 ${basePadding} transition-all border-l border-r ${borderColor} ${bgColor}`;
 
     switch (pos) {
@@ -650,10 +673,15 @@ export class ProjetEditorZoneComponent implements OnChanges {
     }
 
     // Block-level (file) positions — vert
+    // On cherche uniquement dans la section du dossier parent réel du fichier
     if (this.activeNodeId) {
       const node = this.findNode(this.activeNodeId, this.files);
       if (node?.type === 'file' && !this.isImageFile(node.name)) {
-        for (const section of this.docSections) {
+        const parentFolder = this.findParentFolder(this.activeNodeId, this.files);
+        const section = parentFolder
+          ? this.docSections.find(s => s.folderId === parentFolder.id)
+          : null;
+        if (section) {
           const matching = section.blocks
             .map((b, i) => ({ b, i }))
             .filter(item => (item.b as any).fileId === this.activeNodeId);
@@ -689,27 +717,27 @@ export class ProjetEditorZoneComponent implements OnChanges {
     if (!nodeId) return result;
     const node = this.findNode(nodeId, this.files);
     if (node?.type === 'folder') {
-      this.addAllDescendantFolders(node, result);
+      this.addAllDescendantIds(node, result);
+    } else if (node?.type === 'file' && !this.isImageFile(node.name)) {
+      const parent = this.findParentFolder(nodeId, this.files);
+      if (parent?.children?.some(c => c.type === 'folder')) {
+        // Fichier avec sa propre section (parent a des sous-dossiers)
+        result.add(nodeId);
+      }
+      // Sinon : fichier embarqué → fileBlockPositions gère le highlight
     }
     return result;
   }
 
   getTextareaClasses(block: any): string {
-    const base = "section-textarea w-full bg-transparent text-light-text dark:text-white font-mono text-sm outline-none focus:outline-none focus:ring-0 resize-none block leading-relaxed transition-all p-0 border-0 overflow-hidden";
-    
-    // Si l'ID actif est celui du fichier lié à ce bloc -> VERT
-    if (block.kind === 'text' && block.fileId && block.fileId === this.activeNodeId) {
-      return base.replace('p-0 border-0', 'border border-green-500/40 bg-green-500/10 rounded-lg px-4 py-2 my-1 shadow-[0_0_10px_rgba(34,197,94,0.1)]');
-    }
-
-    return base;
+    return "section-textarea w-full bg-transparent text-light-text dark:text-white font-mono text-sm outline-none focus:outline-none focus:ring-0 resize-none block leading-relaxed transition-all p-0 border-0 overflow-hidden";
   }
 
   private collectFolderAndDescendants(nodeId: string, nodes: FileNode[], result: Set<string>): boolean {
     for (const n of nodes) {
       if (n.type === 'folder') {
         if (n.id === nodeId) {
-          this.addAllDescendantFolders(n, result);
+          this.addAllDescendantIds(n, result);
           return true;
         }
         if (this.collectFolderAndDescendants(nodeId, n.children || [], result)) return true;
@@ -718,10 +746,19 @@ export class ProjetEditorZoneComponent implements OnChanges {
     return false;
   }
 
-  private addAllDescendantFolders(node: FileNode, result: Set<string>) {
+  private addAllDescendantIds(node: FileNode, result: Set<string>) {
     result.add(node.id);
-    for (const child of node.children || []) {
-      if (child.type === 'folder') this.addAllDescendantFolders(child, result);
+    const children = node.children || [];
+    const hasSubFolders = children.some(c => c.type === 'folder');
+    const mainFile = children.find(c => c.type === 'file' && c.name === 'contenu.md')
+                  || children.find(c => c.type === 'file' && !this.isImageFile(c.name));
+    for (const child of children) {
+      if (child.type === 'folder') {
+        this.addAllDescendantIds(child, result);
+      } else if (hasSubFolders && child !== mainFile && child.type === 'file' && !this.isImageFile(child.name)) {
+        // Fichiers additionnels qui ont leur propre section (folderId = file.id)
+        result.add(child.id);
+      }
     }
   }
 

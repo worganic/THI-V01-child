@@ -1212,6 +1212,44 @@
       "prompt": "on recommence le fond des zones de document entouré d'un trait vert doit avoir un fond vert (uniquement l'intérieur du contenu des document) dans la zone 4, cela ne doit pas touché les menu mais uniquement les sections document en vert",
       "startedAt": "2026-04-27T21:15:00.000Z",
       "completedAt": "2026-04-27T21:30:00.000Z"
+    },
+    {
+      "id": "mod-054",
+      "version": "THI-0.24",
+      "date": "2026-04-27T22:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : fix highlight document dans la bonne section",
+      "description": "Correction du calcul des fileBlockPositions : la recherche des blocs à surligner est maintenant limitée à la section dont le folderId correspond au dossier parent réel du fichier actif. Cela corrige un bug où des blocs dans une section voisine (via findNodeBySlug) recevaient le surlignage vert alors qu'ils n'appartiennent pas au bon dossier parent.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "il y a un problème d'ordre d'affichage, on voi dans l'exemple le document est après le menu E 2-2-1 dans la zone 4 et dans la zone 4 le document est avant, c'est illogique verifi et corrige",
+      "startedAt": "2026-04-27T21:45:00.000Z",
+      "completedAt": "2026-04-27T22:00:00.000Z"
+    },
+    {
+      "id": "mod-055",
+      "version": "THI-0.25",
+      "date": "2026-04-27T22:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : ordre sections fichiers intercalé avec sous-dossiers",
+      "description": "Refactoring de buildDocSections : quand un dossier a des sous-dossiers, les fichiers additionnels obtiennent leur propre section (folderId = file.id) intercalée par ordre avec les sous-dossiers. Plus d'affichage avant le titre du sous-dossier. addAllDescendantFolders renommé addAllDescendantIds pour inclure aussi les IDs des sections fichier. computeHighlightedIds gère les deux cas (fichier avec propre section vs embarqué). getSectionClasses utilise vert pour sections fichier et bleu pour sections dossier.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "il y a un problème d'ordre d'affichage, on voi dans l'exemple le document est après le menu E 2-2-1 dans la zone 4 et dans la zone 4 le document est avant, c'est illogique verifi et corrige",
+      "startedAt": "2026-04-27T22:00:00.000Z",
+      "completedAt": "2026-04-27T22:30:00.000Z"
     }
   ]
 }
