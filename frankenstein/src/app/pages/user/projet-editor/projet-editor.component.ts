@@ -1,65 +1,17 @@
-import { Component, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
 import { ProjectService, Project } from '../../../core/services/project.service';
+import { ProjectFilesService, FileNode } from '../../../core/services/project-files.service';
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LayoutService } from '../../../core/services/layout.service';
-import { ApiService } from '../../../core/services/api.service';
 
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
-import { ProjetSidebarComponent } from './components/projet-sidebar/projet-sidebar.component';
-import { ProjetEditorZoneComponent } from './components/projet-editor-zone/projet-editor-zone.component';
+import { ProjetSidebarComponent, DragDropEvent } from './components/projet-sidebar/projet-sidebar.component';
+import { ProjetEditorZoneComponent, FileSaveEvent, SectionInfo } from './components/projet-editor-zone/projet-editor-zone.component';
 import { ProjetConversationComponent } from './components/projet-conversation/projet-conversation.component';
 import { ProjetStatusbarComponent } from './components/projet-statusbar/projet-statusbar.component';
-
-const MOCK_CONTENT = `# Lorem ipsum >
-
-Lorem ipsum dolor sit amet. Eos dolor laborum ut dolorum aperiam sit itaque itaque.
-
-## Non maxime cupiditate est laudantium >
-
-Lorem ipsum dolor sit amet. Eos dolor laborum ut dolorum aperiam sit itaque itaque. Et eveniet ullam et consequatur amet ut nesciunt perferendis ut nulla perspiciatis ut deleniti labore ab autem consequuntur. Sit illum facere sed voluptate voluptatibus et autem impedit ab odit sint sit sequi cupiditate et unde tempore est placeat modi.
-
-Est soluta rerum est nostrum similique sit dolores nihil vel sequi quia quo voluptatum repellat sit temporibus laboriosam sit doloremque quos. Rem laboriosam odio qui laudantium reiciendis aut maxime molestias.
-
-Id optio impedit qui quia porro et illum repellat est aliquid dolor At dolorum labore non dolorem ipsa. Non maxime cupiditate est laudantium dolores qui nisi quos ut suscipit facilis sit amet labore et dignissimos inventore? In ullam iure et praesentium totam et rerum eligendi et dolores vero qui ipsum ipsum est omnis voluptatem.
-
-## Dolores nihil vel sequi quia quo voluptatu >
-
-Lorem ipsum dolor sit amet. Eos dolor laborum ut dolorum aperiam sit itaque itaque.
-
-- Et eveniet ullam et consequatur amet ut nesciunt perferendis ut nulla perspiciatis ut deleniti labore ab autem consequuntur.
-- Sit illum facere sed voluptate voluptatibus et autem impedit ab odit sint sit sequi cupiditate et unde tempore est placeat modi.
-- Est soluta rerum est nostrum similique sit dolores nihil vel sequi quia quo voluptatum repellat sit temporibus laboriosam sit doloremque quos.
-- Rem laboriosam odio qui laudantium reiciendis aut maxime molestias.
-
-Id optio impedit qui quia porro et illum repellat est aliquid dolor At dolorum labore non dolorem ipsa. Non maxime cupiditate est laudantium dolores qui nisi quos ut suscipit facilis sit amet labore et dignissimos inventore? In ullam iure et praesentium totam et rerum eligendi et dolores vero qui ipsum ipsum est omnis voluptatem.
-
-## Nesciunt perferendis ut nulla perspiciatis >
-
-Id possimus commodi eum autem beatae sed quam ipsum et maxime excepturi sed quod distinctio nam enim iure eos tempore adipisci.
-
-1. Et eveniet ullam et consequatur amet ut nesciunt perferendis ut nulla perspiciatis ut deleniti labore ab autem consequuntur.
-2. Sit illum facere sed voluptate voluptatibus et autem impedit ab odit sint sit sequi cupiditate et unde tempore est placeat modi.
-3. Est soluta rerum est nostrum similique sit dolores nihil vel sequi quia quo voluptatum repellat sit temporibus laboriosam sit doloremque quos.
-4. In explicabo magni qui rerum nostrum ut quasi minus
-
-\`\`\`xml
-<!-- In repellendus velit. -->
-<velit>Est laudantium provident ut consequatur dolor.</velit>
-<debitis>Sit rerum facilis.</debitis>
-<quod>Sit ullam enim ut dolor nihil quo neque vero.</quod>
-<veritatis>Ab perspiciatis doloribus.</veritatis>
-\`\`\`
-
-## Dolor sit amet >
-
-Ut corporis obcaecati et enim culpa aut aspernatur harum id sequi molestiae et fugiat quae aut minima voluptatem. Est voluptates molestiae quo natus totam sed velit quasi et neque dolore ex fuga cumque. In facere eligendi ea voluptas perspiciatis aut necessitatibus facilis id sint voluptatibus ea laborum nihil et ipsa eligendi.
-
-Aut numquam facilis cum corrupti molestiae id accusantium corrupti qui quia dolore! Ac debitis quo voluptate ratione qui vel fugiat totam aut minus blanditiis.
-`;
 
 @Component({
   selector: 'app-projet-editor',
@@ -76,18 +28,28 @@ Aut numquam facilis cum corrupti molestiae id accusantium corrupti qui quia dolo
   styleUrl: './projet-editor.component.scss'
 })
 export class ProjetEditorComponent implements OnInit, OnDestroy {
+  @ViewChild(ProjetEditorZoneComponent) editorZone?: ProjetEditorZoneComponent;
+
   project = signal<Project | null>(null);
+  files = signal<FileNode[]>([]);
   loading = signal(true);
-  isDirty = signal(false);
-  markdownContent = MOCK_CONTENT;
+  saveStatus = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  activeNodeId = signal<string | null>(null);
+  scrollToNodeId = signal<string | null>(null);
+
+  private projectFolderName = '';
+  private savedStatusTimer: any;
+  private pendingFolders = new Set<string>();
+  private isSaving = false;
+  private pendingSections: SectionInfo[] | null = null;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private projectService: ProjectService,
+    private projectFilesService: ProjectFilesService,
     private configService: ConfigService,
     private layoutService: LayoutService,
-    private apiService: ApiService,
     public auth: AuthService
   ) {}
 
@@ -99,35 +61,544 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       const proj = await this.projectService.getProject(id);
       this.project.set(proj);
       this.configService.setCurrentProjectId(proj.id);
-      try {
-        const res = await firstValueFrom(this.apiService.readFile('data/mock-editor.md'));
-        this.markdownContent = res.content || MOCK_CONTENT;
-      } catch {
-        this.markdownContent = proj.content || MOCK_CONTENT;
-      }
+      this.projectFolderName = id;
     } catch {
       this.router.navigate(['/projets']);
+      return;
     } finally {
       this.loading.set(false);
     }
+    await this.ensureProjectFolder(this.project()!);
+    await this.loadFiles();
   }
 
   ngOnDestroy() {
     this.layoutService.editorMode.set(false);
     this.configService.setCurrentProjectId(null);
+    clearTimeout(this.savedStatusTimer);
   }
 
-  onContentChange(content: string) {
-    this.markdownContent = content;
-    this.isDirty.set(true);
+  private async ensureProjectFolder(proj: Project) {
+    try {
+      await this.projectFilesService.getConfig(this.projectFolderName);
+    } catch {
+      try {
+        await this.projectFilesService.createProject(proj.title, this.projectFolderName);
+      } catch (e) {
+        console.warn('ensureProjectFolder create error (may already exist):', e);
+      }
+    }
   }
 
-  async save() {
-    // TODO: persist
-    this.isDirty.set(false);
+  async loadFiles() {
+    try {
+      const res = await this.projectFilesService.getFiles(this.projectFolderName);
+      this.files.set(this.sortNodesByOrder(res.files || []));
+    } catch (e) {
+      console.warn('loadFiles error:', e);
+      this.files.set([]);
+    }
+  }
+
+  private sortNodesByOrder(nodes: FileNode[]): FileNode[] {
+    return [...nodes]
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      .map(n => n.children ? { ...n, children: this.sortNodesByOrder(n.children) } : n);
+  }
+
+  onNodeSelect(node: FileNode) {
+    this.activeNodeId.set(node.id);
+    this.scrollToNodeId.set(null);
+    setTimeout(() => this.scrollToNodeId.set(node.id), 0);
+  }
+
+  onNodeActive(nodeId: string) {
+    if (this.activeNodeId() !== nodeId) {
+      this.activeNodeId.set(nodeId);
+    }
+  }
+
+  async onFolderCreated(info: { name: string; parentId: string | null }) {
+    await this.loadFiles();
+    if (!info.parentId) {
+      this.editorZone?.appendSection(info.name, 1);
+    } else {
+      const parent = this.findFolderById(info.parentId, this.files());
+      if (parent) {
+        const depth = this.getFolderDepth(info.parentId, this.files());
+        this.editorZone?.insertSectionInParent(parent.name, depth, info.name);
+      }
+    }
+  }
+
+  async onSectionsChange(sections: SectionInfo[]) {
+    if (this.isSaving) {
+      this.pendingSections = sections;
+      return;
+    }
+    this.isSaving = true;
+    this.pendingSections = null;
+
+    try {
+      await this.processSectionsChange(sections);
+    } finally {
+      this.isSaving = false;
+      if (this.pendingSections) {
+        const next = this.pendingSections;
+        this.pendingSections = null;
+        this.onSectionsChange(next);
+      }
+    }
+  }
+
+  private slugify(text: string): string {
+    return text.toString().toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-')
+      .replace(/-+/g, '-').trim();
+  }
+
+  private async processSectionsChange(sections: SectionInfo[]) {
+    const currentFiles = this.files();
+    // Mutable copy so we can patch folderId/fileId after rename resolution
+    const resolved = sections.map(s => ({ ...s }));
+
+    console.log('[EDITOR] Sections changed, analyzing structure...', { sections: resolved.length });
+
+    // 1. Liaison hiérarchique textuelle (parent direct dans le texte)
+    const parentSectionMap = new Map<SectionInfo, SectionInfo | null>();
+    const lastAtLevel = new Array(5).fill(null);
+    for (const s of resolved) {
+      parentSectionMap.set(s, lastAtLevel[s.level - 1]);
+      lastAtLevel[s.level] = s;
+    }
+
+    interface RenameOp { folderId: string; newName: string; section: typeof resolved[0] }
+    const renameOps: RenameOp[] = [];
+    const matchedFolderIds = new Set<string>();
+
+    // 2. Détection des renommages niveau par niveau pour stabiliser la hiérarchie
+    for (const s of resolved) {
+      if (s.folderId) {
+        matchedFolderIds.add(s.folderId);
+        continue;
+      }
+
+      const parentS = parentSectionMap.get(s);
+      const parentFolderId = parentS ? (parentS.folderId || renameOps.find(op => op.section === parentS)?.folderId) : null;
+      
+      const parentFolder = parentFolderId ? this.findFolderById(parentFolderId, currentFiles) : null;
+      const siblings = parentFolderId ? (parentFolder?.children || []) : currentFiles;
+      
+      const orphanFolders = siblings.filter(f => 
+        f.type === 'folder' && 
+        !matchedFolderIds.has(f.id) && 
+        !resolved.some(rs => rs.folderId === f.id)
+      );
+      
+      const unmatchedSectionsAtThisLevelUnderThisParent = resolved.filter(rs => 
+          !rs.folderId && 
+          rs.level === s.level && 
+          parentSectionMap.get(rs) === parentS &&
+          !renameOps.some(op => op.section === rs)
+      );
+
+      // Match si on a le même nombre de dossiers orphelins et de sections non matchées à ce niveau
+      // OU si on a une seule section non matchée et qu'il reste des orphelins (plus risqué mais nécessaire si doublons sur serveur)
+      if (orphanFolders.length > 0 && unmatchedSectionsAtThisLevelUnderThisParent.length > 0) {
+          const idx = unmatchedSectionsAtThisLevelUnderThisParent.indexOf(s);
+          if (idx !== -1 && idx < orphanFolders.length) {
+              const matchedFolder = orphanFolders[idx];
+              console.log('[EDITOR] Rename detected (hierarchical match):', { from: matchedFolder.name, to: s.folderName });
+              renameOps.push({ folderId: matchedFolder.id, newName: s.folderName, section: s });
+              matchedFolderIds.add(matchedFolder.id);
+              s.folderId = matchedFolder.id; // Patch immédiat pour les enfants
+          }
+      }
+    }
+
+    // 3. Mise à jour finale des parentFolderId pour les créations/déplacements
+    for (const s of resolved) {
+      const parentS = parentSectionMap.get(s);
+      s.parentFolderId = parentS?.folderId || null;
+    }
+
+    const sectionPaths = new Set(
+      resolved.map(s => [...s.parentPath, s.folderName].map(p => this.slugify(p)).join('/'))
+    );
+    const renamedIds = new Set(renameOps.map(op => op.folderId));
+
+    const allFolderPaths = this.collectAllFolderPaths(currentFiles);
+    const orphanPaths = new Set<string>();
+    for (const [fp] of allFolderPaths) {
+      if (!sectionPaths.has(fp)) orphanPaths.add(fp);
+    }
+    const toDelete: FileNode[] = [];
+    for (const [fp, folder] of allFolderPaths) {
+      // Si le dossier a été renommé, on ne le supprime pas (son ID est dans renamedIds)
+      if (renamedIds.has(folder.id)) continue;
+      
+      // Si le chemin n'existe plus dans le texte, c'est un orphelin
+      if (!sectionPaths.has(fp)) {
+          // On vérifie si un ancêtre est déjà orphelin (pour ne pas supprimer récursivement inutilement, 
+          // bien que le serveur gère le rmSync -r)
+          const parts = fp.split('/');
+          const hasOrphanAncestor = parts.slice(0, -1).some((_, i) =>
+            orphanPaths.has(parts.slice(0, i + 1).join('/'))
+          );
+          if (!hasOrphanAncestor) {
+            console.log('[EDITOR] Deletion detected:', folder.name, fp);
+            toDelete.push(folder);
+          }
+      }
+    }
+
+    // Détection de suppression de fichiers additionnels
+    const allExistingAdditionalFileIds = new Set<string>();
+    for (const folder of allFolderPaths.values()) {
+      folder.children?.forEach(c => {
+        if (c.type === 'file' && c.name !== 'contenu.md' && !this.projectFilesService.isImageFile(c.name)) {
+          allExistingAdditionalFileIds.add(c.id);
+        }
+      });
+    }
+
+    const resolvedAdditionalFileIds = new Set<string>();
+    resolved.forEach(s => {
+      s.additionalFiles?.forEach(af => {
+        if (af.fileId) resolvedAdditionalFileIds.add(af.fileId);
+      });
+    });
+
+    let additionalFileDeleted = false;
+    for (const id of allExistingAdditionalFileIds) {
+      if (!resolvedAdditionalFileIds.has(id)) {
+        additionalFileDeleted = true;
+        break;
+      }
+    }
+
+    const toCreate = resolved
+      .filter(s => {
+        if (s.folderId || renameOps.some(op => op.section === s)) return false;
+        const fp = [...s.parentPath, s.folderName].map(p => this.slugify(p)).join('/');
+        return !this.pendingFolders.has(fp);
+      })
+      .sort((a, b) => a.level - b.level);
+
+    if (toCreate.length > 0) console.log('[EDITOR] Creations detected:', toCreate.map(s => s.folderName));
+
+    const needsFile = resolved.filter(s => {
+      if (!s.folderId) return false;
+      const folder = this.findFolderById(s.folderId, currentFiles);
+      return !(folder?.children || []).some(c => c.type === 'file');
+    });
+
+    const hasStructural = renameOps.length > 0 || toDelete.length > 0 || toCreate.length > 0 || needsFile.length > 0 || additionalFileDeleted;
+    const sectionsWithFile = resolved.filter(s => s.fileId || s.folderId); // Tous ceux qui ont potentiellement du contenu à sauver
+
+    if (!hasStructural && sectionsWithFile.length === 0 && !resolved.some(s => s.additionalFiles?.some(af => !af.fileId))) return;
+
+    this.saveStatus.set('saving');
+    clearTimeout(this.savedStatusTimer);
+
+    let hasError = false;
+    let anyAdditionalFileCreated = false;
+
+    try {
+      if (hasStructural) {
+        // ... (reste du bloc structural inchangé)
+
+        for (const op of renameOps) {
+          try {
+            console.log(`[EDITOR] Renaming folder ${op.folderId} to "${op.newName}"...`);
+            await this.projectFilesService.renameFolder(this.projectFolderName, op.folderId, op.newName);
+          } catch (e) {
+            console.error('Rename failed:', e);
+            hasError = true;
+          }
+        }
+
+        // 2. Deletions
+        for (const folder of toDelete) {
+          try {
+            console.log(`[EDITOR] Deleting orphan folder ${folder.id} (${folder.name})...`);
+            await this.projectFilesService.deleteFolder(this.projectFolderName, folder.id);
+          } catch (e) {
+            console.error('Deletion failed:', e);
+          }
+        }
+
+        // 3. Creations (parents before children)
+        const newFolderIds = new Map<string, string>();
+        for (const section of toCreate) {
+          const fullPath = [...section.parentPath, section.folderName].map(p => this.slugify(p)).join('/');
+          this.pendingFolders.add(fullPath);
+          const parentKey = section.parentPath.map(p => this.slugify(p)).join('/');
+          const parentId = section.parentFolderId || (parentKey ? newFolderIds.get(parentKey) : undefined) || undefined;
+          
+          try {
+            const folder = await this.projectFilesService.createFolder(this.projectFolderName, { name: section.folderName, parentId });
+            newFolderIds.set(fullPath, folder.id);
+            section.folderId = folder.id;
+            const file = (folder.children || []).find(c => c.type === 'file') || await this.projectFilesService.createFile(this.projectFolderName, { name: 'contenu', parentId: folder.id, content: section.content });
+            section.fileId = file.id;
+          } catch (e) {
+            console.error('Creation failed:', e);
+            hasError = true;
+          } finally {
+            this.pendingFolders.delete(fullPath);
+          }
+        }
+
+        // 4. Missing content files
+        for (const section of needsFile) {
+          const folderId = section.folderId || renameOps.find(op => op.section === section)?.folderId;
+          if (!folderId) continue;
+          try {
+             const file = await this.projectFilesService.createFile(this.projectFolderName, { name: 'contenu', parentId: folderId, content: section.content });
+             section.fileId = file.id;
+          } catch (e) {
+             console.error('Create content file failed:', e);
+          }
+        }
+
+        // Rafraîchir l'arborescence dès que la structure est prête
+        await this.loadFiles().catch(() => {});
+        const freshFiles = this.files();
+
+        // On remet à jour les IDs de fichiers dans resolved pour la sauvegarde finale
+        for (const s of resolved) {
+          const path = [...s.parentPath, s.folderName].map(p => this.slugify(p)).join('/');
+          const freshFolder = this.findFolderByPath(path, freshFiles);
+          if (freshFolder) {
+            s.folderId = freshFolder.id;
+            const contentFile = (freshFolder.children || []).find(c => c.type === 'file');
+            if (contentFile) s.fileId = contentFile.id;
+          }
+        }
+      }
+
+      // 5. Save content (main content and additional files)
+      for (const s of resolved) {
+        if (s.fileId) {
+          await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, s.content);
+        }
+        
+        // Save additional files
+        if (s.folderId && s.additionalFiles && s.additionalFiles.length > 0) {
+          for (const af of s.additionalFiles) {
+            if (af.fileId) {
+              await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content);
+            } else {
+              try {
+                console.log(`[EDITOR] Creating additional file "${af.name}" in folder ${s.folderId}...`);
+                const newFile = await this.projectFilesService.createFile(this.projectFolderName, { 
+                  name: af.name, 
+                  parentId: s.folderId, 
+                  content: af.content 
+                });
+                af.fileId = newFile.id;
+                anyAdditionalFileCreated = true;
+              } catch (e) {
+                console.error(`Failed to create additional file ${af.name}:`, e);
+              }
+            }
+          }
+        }
+      }
+
+      // 6. Delete orphaned additional files (files in folders that are not 'contenu.md' and not in resolved additionalFiles)
+      let additionalFileOrphanDeleted = false;
+      if (hasStructural) {
+        const freshFiles = this.files();
+        for (const s of resolved) {
+          if (!s.folderId) continue;
+          const freshFolder = this.findFolderById(s.folderId, freshFiles);
+          if (!freshFolder || !freshFolder.children) continue;
+          
+          const existingFiles = freshFolder.children.filter(c => c.type === 'file');
+          for (const ef of existingFiles) {
+            if (ef.name === 'contenu.md') continue;
+            if (this.projectFilesService.isImageFile(ef.name)) continue;
+            const stillExists = s.additionalFiles.some(af => this.slugify(af.name) === this.slugify(ef.name.replace(/\.md$/, '')));
+            if (!stillExists) {
+              console.log(`[EDITOR] Deleting orphaned additional file ${ef.name} from ${freshFolder.name}...`);
+              await this.projectFilesService.deleteFile(this.projectFolderName, ef.id).catch(e => console.error(e));
+              additionalFileOrphanDeleted = true;
+            }
+          }
+        }
+      }
+
+      if (anyAdditionalFileCreated || additionalFileOrphanDeleted) {
+        await this.loadFiles().catch(() => {});
+      }
+
+
+      if (!hasError) {
+        this.saveStatus.set('saved');
+        this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 2000);
+      } else {
+        this.saveStatus.set('error');
+        this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 3000);
+      }
+    } catch (e) {
+      console.error('onSectionsChange error:', e);
+      this.saveStatus.set('error');
+      this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 3000);
+    }
+  }
+
+  private getFolderChildren(parentPathLower: string[], nodes: FileNode[]): FileNode[] {
+    if (parentPathLower.length === 0) return nodes.filter(n => n.type === 'folder');
+    const [first, ...rest] = parentPathLower;
+    const parent = nodes.find(n => n.type === 'folder' && this.slugify(n.name) === first);
+    return parent ? this.getFolderChildren(rest, parent.children || []) : [];
+  }
+
+  private collectAllFolderPaths(nodes: FileNode[], prefix: string[] = []): Map<string, FileNode> {
+    const map = new Map<string, FileNode>();
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        const parts = [...prefix, this.slugify(node.name)];
+        map.set(parts.join('/'), node);
+        const sub = this.collectAllFolderPaths(node.children || [], parts);
+        sub.forEach((v, k) => map.set(k, v));
+      }
+    }
+    return map;
+  }
+
+
+
+  private getFolderDepth(id: string, nodes: FileNode[], depth = 1): number {
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        if (node.id === id) return depth;
+        const d = this.getFolderDepth(id, node.children || [], depth + 1);
+        if (d > 0) return d;
+      }
+    }
+    return 0;
+  }
+
+  async onFileSave(event: FileSaveEvent) {
+    this.saveStatus.set('saving');
+    clearTimeout(this.savedStatusTimer);
+    try {
+      await this.projectFilesService.updateFile(this.projectFolderName, event.fileId, event.content);
+      this.saveStatus.set('saved');
+      this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 2000);
+    } catch {
+      this.saveStatus.set('error');
+      this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 3000);
+    }
+  }
+
+  async onDragDrop(event: DragDropEvent) {
+    const { draggedNode, draggedParentId, targetNode, targetParentId, position, targetSiblings } = event;
+    try {
+      if (draggedNode.type === 'folder') {
+        if (position === 'inside' && targetNode.type === 'folder') {
+          // Déplacer le dossier dans un autre dossier (changement de parent)
+          await this.projectFilesService.moveFolder(this.projectFolderName, draggedNode.id, targetNode.id);
+        } else if (position !== 'inside') {
+          if (draggedParentId === targetParentId) {
+            // Même parent : réordonner
+            const folderSiblings = targetSiblings.filter(n => n.type === 'folder');
+            const fromIdx = folderSiblings.findIndex(n => n.id === draggedNode.id);
+            const toIdx = folderSiblings.findIndex(n => n.id === targetNode.id);
+            if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+              const newOrder = [...folderSiblings];
+              const [item] = newOrder.splice(fromIdx, 1);
+              const targetNewIdx = toIdx > fromIdx ? toIdx - 1 : toIdx;
+              const insertAt = position === 'before' ? targetNewIdx : targetNewIdx + 1;
+              newOrder.splice(insertAt, 0, item);
+              const structure: FileNode[] = JSON.parse(JSON.stringify(this.files()));
+              this.applyOrderInStructure(structure, targetParentId, newOrder.map(n => n.id));
+              await this.projectFilesService.updateStructure(this.projectFolderName, structure);
+            }
+          } else {
+            // Parent différent : déplacer dans le même parent que la cible
+            await this.projectFilesService.moveFolder(this.projectFolderName, draggedNode.id, targetParentId);
+          }
+        }
+      } else {
+        // Fichier : déplacer vers le dossier cible
+        const targetFolderId = targetNode.type === 'folder' ? targetNode.id : targetParentId;
+        if (targetFolderId !== draggedParentId) {
+          await this.projectFilesService.moveFile(this.projectFolderName, draggedNode.id, targetFolderId);
+        }
+      }
+      await this.loadFiles();
+    } catch (e: any) {
+      console.error('DragDrop failed:', e);
+      const msg = e?.error?.error || e?.message || 'Erreur inconnue';
+      console.error(`[DragDrop] Détail: ${msg}`);
+    }
+  }
+
+  private applyOrderInStructure(nodes: FileNode[], parentId: string | null, orderedIds: string[]): boolean {
+    const reorderArray = (arr: FileNode[]) => {
+      const reordered = orderedIds.map(id => arr.find(n => n.id === id)).filter((n): n is FileNode => !!n);
+      const others = arr.filter(n => !orderedIds.includes(n.id));
+      reordered.forEach((n, idx) => { n.order = idx + 1; });
+      arr.splice(0, arr.length, ...reordered, ...others);
+    };
+    if (parentId === null) { reorderArray(nodes); return true; }
+    for (const node of nodes) {
+      if (node.id === parentId && node.children) { reorderArray(node.children); return true; }
+      if (node.children && this.applyOrderInStructure(node.children, parentId, orderedIds)) return true;
+    }
+    return false;
+  }
+
+  async onRefresh() {
+    await this.loadFiles();
+  }
+
+  private findParentFolder(fileId: string, nodes: FileNode[]): FileNode | null {
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        if ((node.children || []).some(c => c.id === fileId)) return node;
+        const found = this.findParentFolder(fileId, node.children || []);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  private findFolderById(id: string, nodes: FileNode[]): FileNode | null {
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        if (node.id === id) return node;
+        const found = this.findFolderById(id, node.children || []);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  private findFolderByPath(path: string, nodes: FileNode[]): FileNode | null {
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        const currentPath = node.path.replace(/\.md$/, ''); // Sécurité
+        if (this.slugify(node.path) === path || node.path === path) return node;
+        if (node.children) {
+          const found = this.findFolderByPath(path, node.children);
+          if (found) return found;
+        }
+      }
+    }
+    return null;
   }
 
   get statusLabel(): string {
     return this.project()?.status === 'published' ? 'Publié' : 'Brouillon';
+  }
+
+  get projectTitle(): string {
+    return this.project()?.title || '';
   }
 }

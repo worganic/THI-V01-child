@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileNode } from '../../../../../core/services/project-files.service';
+import { FormsModule } from '@angular/forms';
+import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -24,10 +25,22 @@ export interface SectionInfo {
   additionalFiles: AdditionalFile[];
 }
 
+type DocBlock =
+  | { kind: 'text'; key: string; text: string }
+  | { kind: 'image'; key: string; image: FileNode };
+
+interface DocSection {
+  folderId: string;
+  folderName: string;
+  textContent: string; // full text with {{IMG:id}} markers
+  blocks: DocBlock[];
+  images: FileNode[];
+}
+
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './projet-editor-zone.component.html',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
 })
@@ -35,55 +48,57 @@ export class ProjetEditorZoneComponent implements OnChanges {
   @Input() files: FileNode[] = [];
   @Input() scrollToNodeId: string | null = null;
   @Input() saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
+  @Input() projectName = '';
+  @Input() activeNodeId: string | null = null;
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
   @Output() nodeActive = new EventEmitter<string>();
+  @Output() refresh = new EventEmitter<void>();
 
-  @ViewChild('unifiedTextarea') textareaRef!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('imageInput') imageInputRef!: ElementRef<HTMLInputElement>;
+
+  imageUploadError = '';
+  selectedImageId: string | null = null;
+  renamingImageId: string | null = null;
+  renameImageValue = '';
+  showMoveForImageId: string | null = null;
+  deleteConfirmImageId: string | null = null;
+
+  constructor(private svc: ProjectFilesService) {}
+
+  docSections: DocSection[] = [];
+  private sectionTextMap = new Map<string, string>();
+  focusedSectionId: string | null = null;
+  private lastFocusedTextareaEl: HTMLTextAreaElement | null = null;
+  private lastCursorPos = 0;
 
   unifiedContent = '';
   private hasLoaded = false;
   private lastSavedContent = '';
-  private previousCursorLine = -1;
   private saveTimeout: any;
 
-  highlightStart = -1;
-  highlightEnd = -1;
-  highlightType: 'folder' | 'file' = 'folder';
-
-  get beforeHighlight() {
-    if (this.highlightStart < 0) return this.unifiedContent;
-    return this.unifiedContent.substring(0, this.highlightStart);
-  }
-  
-  get highlightText() {
-    if (this.highlightStart < 0) return '';
-    return this.unifiedContent.substring(this.highlightStart, this.highlightEnd);
-  }
-  
-  get afterHighlight() {
-    if (this.highlightStart < 0) return '';
-    return this.unifiedContent.substring(this.highlightEnd);
-  }
-
-  clearHighlight() {
-    this.highlightStart = -1;
-    this.highlightEnd = -1;
-  }
+  // ── Lifecycle ──────────────────────────────────────────────
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['files'] && this.files.length > 0) {
-      const newContent = this.buildUnifiedContent(this.files, 1);
-      // On ne met à jour que si le contenu physique a réellement changé (ex: suppression/ajout externe)
-      // Cela évite de perdre le focus ou le curseur pendant qu'on tape et que la sauvegarde auto tourne
-      if (!this.hasLoaded || newContent !== this.unifiedContent) {
+      const newSections = this.buildDocSections(this.files, 1);
+      const newContent = this.reconstructContentFromSections(newSections);
+
+      if (!this.hasLoaded) {
+        this.docSections = newSections;
+        this.sectionTextMap.clear();
+        this.docSections.forEach(s => this.sectionTextMap.set(s.folderId, s.textContent));
         this.unifiedContent = newContent;
-        this.lastSavedContent = this.unifiedContent;
-        setTimeout(() => {
-          this.autoResizeTextarea();
-          const ta = this.textareaRef?.nativeElement;
-          if (ta) this.syncActiveNode(ta.selectionStart);
-        }, 50);
+        this.lastSavedContent = newContent;
+        setTimeout(() => this.autoResizeAllSectionTextareas(), 50);
+      } else {
+        // Fresh images from server, text preserved from sectionTextMap
+        this.docSections = newSections.map(s => {
+          const preservedText = this.sectionTextMap.get(s.folderId) ?? s.textContent;
+          return { ...s, textContent: preservedText, blocks: this.buildBlocks(preservedText, s.images, s.folderId) };
+        });
+        this.unifiedContent = this.reconstructUnifiedContent();
+        setTimeout(() => this.autoResizeAllSectionTextareas(), 50);
       }
       this.hasLoaded = true;
     }
@@ -92,46 +107,135 @@ export class ProjetEditorZoneComponent implements OnChanges {
     }
   }
 
-  buildUnifiedContent(nodes: FileNode[], depth: number): string {
-    const parts: string[] = [];
-    // Tri par ordre si disponible
-    const sortedNodes = [...nodes].sort((a, b) => (a.order || 0) - (b.order || 0));
-    
-    for (const node of sortedNodes) {
-      if (node.type === 'folder') {
-        const heading = '#'.repeat(depth) + ' ' + node.name;
-        
-        // Fichier principal : contenu.md
-        const mainFile = (node.children || []).find(c => c.type === 'file' && c.name === 'contenu.md') 
-                      || (node.children || []).find(c => c.type === 'file'); // Fallback
-        
-        const mainContent = mainFile?.content ?? '';
-        
-        // Fichiers additionnels (délimités par ')
-        const additionalFiles = (node.children || [])
-          .filter(c => c.type === 'file' && c !== mainFile)
-          .map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content}\n'`)
-          .join('\n\n');
+  // ── Section building ───────────────────────────────────────
 
-        let section = heading + '\n';
-        if (mainContent.trim()) section += mainContent.trimEnd() + '\n';
-        if (additionalFiles.trim()) section += '\n' + additionalFiles.trim() + '\n';
+  private buildDocSections(nodes: FileNode[], depth: number): DocSection[] {
+    const sorted = [...nodes].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const result: DocSection[] = [];
+    for (const node of sorted) {
+      if (node.type !== 'folder') continue;
+      const heading = '#'.repeat(Math.min(depth, 4)) + ' ' + node.name;
+      const mainFile = (node.children || []).find(c => c.type === 'file' && c.name === 'contenu.md')
+                    || (node.children || []).find(c => c.type === 'file' && !this.isImageFile(c.name));
+      const mainContent = mainFile?.content ?? '';
+      const additionalFiles = (node.children || [])
+        .filter(c => c.type === 'file' && c !== mainFile && !this.isImageFile(c.name));
+      let textContent = heading + '\n';
+      if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
+      if (additionalFiles.length > 0) {
+        const blocks = additionalFiles.map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content}\n'`).join('\n\n');
+        textContent += '\n' + blocks + '\n';
+      }
+      textContent = textContent.trimEnd();
+      const images = (node.children || []).filter(c => c.type === 'file' && this.isImageFile(c.name));
+      result.push({
+        folderId: node.id,
+        folderName: node.name,
+        textContent,
+        blocks: this.buildBlocks(textContent, images, node.id),
+        images,
+      });
+      result.push(...this.buildDocSections(node.children || [], depth + 1));
+    }
+    return result;
+  }
 
-        const subFolders = (node.children || []).filter(c => c.type === 'folder');
-        const subContent = this.buildUnifiedContent(subFolders, depth + 1);
-        if (subContent.trim()) {
-          section = section.trimEnd() + '\n\n' + subContent;
-        }
+  private buildBlocks(fullText: string, imageNodes: FileNode[], folderId: string): DocBlock[] {
+    const markerRe = /\n\{\{IMG:([a-f0-9-]+)\}\}\n/g;
+    const blocks: DocBlock[] = [];
+    let lastIndex = 0;
+    let textIdx = 0;
+    const referencedIds = new Set<string>();
+    let m: RegExpExecArray | null;
 
-        parts.push(section.trimEnd());
+    while ((m = markerRe.exec(fullText)) !== null) {
+      blocks.push({ kind: 'text', key: `${folderId}-t${textIdx++}`, text: fullText.substring(lastIndex, m.index) });
+      const imgId = m[1];
+      const imgNode = imageNodes.find(n => n.id === imgId);
+      if (imgNode) {
+        blocks.push({ kind: 'image', key: `${folderId}-i${imgId}`, image: imgNode });
+        referencedIds.add(imgId);
+      }
+      lastIndex = m.index + m[0].length;
+    }
+    blocks.push({ kind: 'text', key: `${folderId}-t${textIdx}`, text: fullText.substring(lastIndex) });
+
+    // Images without marker → append at end (backward compat)
+    for (const img of imageNodes) {
+      if (!referencedIds.has(img.id)) {
+        blocks.push({ kind: 'image', key: `${folderId}-i${img.id}`, image: img });
       }
     }
-    return parts.join('\n\n') + (parts.length > 0 ? '\n' : '');
+    return blocks;
   }
+
+  private reconstructContentFromSections(sections: DocSection[]): string {
+    const texts = sections.map(s => s.textContent).filter(t => t.trim());
+    return texts.join('\n\n') + (texts.length > 0 ? '\n' : '');
+  }
+
+  private reconstructUnifiedContent(): string {
+    const texts = this.docSections
+      .map(s => this.sectionTextMap.get(s.folderId) ?? s.textContent)
+      .filter(t => t.trim());
+    return texts.join('\n\n') + (texts.length > 0 ? '\n' : '');
+  }
+
+  private reconstructSectionFullText(folderId: string): string {
+    const section = this.docSections.find(s => s.folderId === folderId);
+    if (!section) return this.sectionTextMap.get(folderId) ?? '';
+    const sectionEl = document.getElementById('section-' + folderId);
+    const taByKey = new Map<string, string>();
+    if (sectionEl) {
+      sectionEl.querySelectorAll<HTMLTextAreaElement>('.section-textarea').forEach(ta => {
+        const key = ta.getAttribute('data-block-key');
+        if (key) taByKey.set(key, ta.value);
+      });
+    }
+    let result = '';
+    for (const block of section.blocks) {
+      if (block.kind === 'text') {
+        result += taByKey.has(block.key) ? taByKey.get(block.key)! : block.text;
+      } else {
+        result += '\n{{IMG:' + block.image.id + '}}\n';
+      }
+    }
+    return result;
+  }
+
+  private getInsertPositionInFullText(folderId: string): number {
+    const section = this.docSections.find(s => s.folderId === folderId);
+    if (!section || !this.lastFocusedTextareaEl) {
+      return (this.sectionTextMap.get(folderId) ?? '').length;
+    }
+    const blockKey = this.lastFocusedTextareaEl.getAttribute('data-block-key');
+    if (!blockKey) return (this.sectionTextMap.get(folderId) ?? '').length;
+
+    const sectionEl = document.getElementById('section-' + folderId);
+    const taByKey = new Map<string, string>();
+    if (sectionEl) {
+      sectionEl.querySelectorAll<HTMLTextAreaElement>('.section-textarea').forEach(ta => {
+        const key = ta.getAttribute('data-block-key');
+        if (key) taByKey.set(key, ta.value);
+      });
+    }
+    let pos = 0;
+    for (const block of section.blocks) {
+      if (block.kind === 'text') {
+        if (block.key === blockKey) return pos + this.lastCursorPos;
+        pos += (taByKey.get(block.key) ?? block.text).length;
+      } else {
+        pos += `\n{{IMG:${block.image.id}}}\n`.length;
+      }
+    }
+    return pos;
+  }
+
+  // ── Content parsing / saving ───────────────────────────────
 
   private slugify(text: string): string {
     return text.toString().toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-')
       .replace(/-+/g, '-').trim();
   }
@@ -155,300 +259,166 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const text = this.unifiedContent;
     const folderMap = this.buildFolderMap(this.files);
     const sections: SectionInfo[] = [];
-
     const regex = /^(#{1,4}) (.+)$/gm;
     const matches: { level: number; name: string; index: number; contentStart: number }[] = [];
-
     let m: RegExpExecArray | null;
     while ((m = regex.exec(text)) !== null) {
-      matches.push({
-        level: m[1].length,
-        name: m[2].trim(),
-        index: m.index,
-        contentStart: m.index + m[0].length + 1
-      });
+      matches.push({ level: m[1].length, name: m[2].trim(), index: m.index, contentStart: m.index + m[0].length + 1 });
     }
-
     for (let i = 0; i < matches.length; i++) {
       const current = matches[i];
       const contentEnd = i + 1 < matches.length ? matches[i + 1].index : text.length;
       let rawContent = text.substring(current.contentStart, contentEnd).trimEnd();
-
-      // Extraction des fichiers additionnels délimités par ' ou `
       const additionalFiles: AdditionalFile[] = [];
-      // Regex plus flexible : supporte ' ou ` en début de ligne, titre, puis contenu optionnel
       const blockRegex = /^(['`^])([^\n]+)(?:\n([\s\S]*?))?\n?\1/gm;
-      
       const mainContent = rawContent.replace(blockRegex, (match, delimiter, title, content) => {
-        additionalFiles.push({
-          name: title.trim(),
-          content: (content || '').trimEnd(),
-          fileId: null
-        });
+        additionalFiles.push({ name: title.trim(), content: (content || '').trimEnd(), fileId: null });
         return '';
       }).trim();
-
-      // Build parent path
       const parentPath: string[] = [];
       let targetLevel = current.level - 1;
       for (let k = i - 1; k >= 0 && targetLevel > 0; k--) {
-        if (matches[k].level === targetLevel) {
-          parentPath.unshift(matches[k].name);
-          targetLevel--;
-        }
+        if (matches[k].level === targetLevel) { parentPath.unshift(matches[k].name); targetLevel--; }
       }
-
       const fullPath = [...parentPath.map(p => this.slugify(p)), this.slugify(current.name)].join('/');
       const parentKey = parentPath.map(p => this.slugify(p)).join('/');
-
       const info = folderMap.get(fullPath);
       const parentInfo = parentKey ? folderMap.get(parentKey) : null;
-
-      // Résolution des fileId pour contenu.md et additionnels
-      const mainFile = info?.files.find(f => f.name === 'contenu.md') || info?.files[0];
+      const mainFile = info?.files.find(f => f.name === 'contenu.md') || info?.files.find(f => !this.isImageFile(f.name));
       additionalFiles.forEach(af => {
         const found = info?.files.find(f => this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(af.name));
         if (found) af.fileId = found.id;
       });
-
       sections.push({
-        level: current.level,
-        folderName: current.name,
-        parentPath,
-        folderId: info?.folder.id ?? null,
-        parentFolderId: parentInfo?.folder.id ?? null,
-        fileId: mainFile?.id ?? null,
-        content: mainContent,
-        additionalFiles
+        level: current.level, folderName: current.name, parentPath,
+        folderId: info?.folder.id ?? null, parentFolderId: parentInfo?.folder.id ?? null,
+        fileId: mainFile?.id ?? null, content: mainContent, additionalFiles
       });
     }
-
     return sections;
   }
 
-
-
-  onInput(event: Event) {
-    this.clearHighlight();
-    this.unifiedContent = (event.target as HTMLTextAreaElement).value;
-    this.autoResizeTextarea();
-    
-    // Sauvegarde automatique après 2 secondes d'inactivité
-    clearTimeout(this.saveTimeout);
-    this.saveTimeout = setTimeout(() => this.saveAll(), 2000);
-  }
-
-  onEnter() {
-    this.clearHighlight();
-    clearTimeout(this.saveTimeout);
-    // Timeout 0 pour laisser le navigateur insérer le saut de ligne avant de sauvegarder
-    setTimeout(() => this.saveAll(), 0);
-  }
-
-  onCursorMove() {
-    this.clearHighlight();
-    const ta = this.textareaRef?.nativeElement;
-    if (!ta) return;
-
-    // Calcul de la ligne actuelle en comptant les retours à la ligne avant le curseur
-    const textBeforeCursor = ta.value.substring(0, ta.selectionStart);
-    const currentLine = (textBeforeCursor.match(/\n/g) || []).length;
-
-    // saveAll uniquement si on change de ligne (évite les sauvegardes excessives)
-    if (this.previousCursorLine !== currentLine) {
-      clearTimeout(this.saveTimeout);
-      this.saveAll();
-    }
-    // syncActiveNode toujours : la sidebar peut avoir changé activeNodeId depuis le dernier clic
-    this.syncActiveNode(ta.selectionStart);
-    this.previousCursorLine = currentLine;
-  }
-
-  private syncActiveNode(pos: number) {
-    const text = this.unifiedContent;
-    
-    // 1. Détection de si on est dans un bloc additionnel '...' ou `...`
-    // On utilise une regex qui ne matche que les délimiteurs ' ou ` en début de ligne
-    const blockRegex = /^(['`^])([^\n]+)\n([\s\S]*?)\n\1/gm;
-    let blockMatch: RegExpExecArray | null;
-    let foundBlock = false;
-
-    while ((blockMatch = blockRegex.exec(text)) !== null) {
-      const start = blockMatch.index;
-      const end = blockMatch.index + blockMatch[0].length;
-      if (pos >= start && pos <= end) {
-        const name = blockMatch[2].trim();
-        const node = this.findNodeBySlug(name, 'file');
-        if (node) {
-          console.log('[EDITOR-ZONE] Found active file block:', name, node.id);
-          this.nodeActive.emit(node.id);
-          foundBlock = true;
-          break;
-        }
-      }
-    }
-    if (foundBlock) return;
-
-    // 2. Sinon, titre le plus proche au-dessus
-    let endOfLine = text.indexOf('\n', pos);
-    if (endOfLine === -1) endOfLine = text.length;
-    const textBefore = text.substring(0, endOfLine);
-
-    // Regex plus flexible pour les titres : supporte 1 à 6 # et tolère les espaces
-    const headingMatches = [...textBefore.matchAll(/^(#{1,6})\s+(.+?)\s*$/gm)];
-    const lastHeading = headingMatches.pop();
-    if (lastHeading) {
-      const folderName = lastHeading[2].trim();
-      const folder = this.findNodeBySlug(folderName, 'folder');
-      if (folder) {
-        console.log('[EDITOR-ZONE] Found active folder heading:', folderName, folder.id);
-        this.nodeActive.emit(folder.id);
-      } else {
-        console.warn('[EDITOR-ZONE] Folder heading found but node not found in tree:', folderName);
-      }
-    }
-  }
-
-  private findNodeBySlug(name: string, type: 'file' | 'folder', nodes: FileNode[] = this.files): FileNode | null {
-    if (!name) return null;
-    const slugSearch = this.slugify(name);
-    const lowerSearch = name.trim().toLowerCase();
-    
-    for (const n of nodes) {
-      const nodeSlug = this.slugify(n.name);
-      const nodeLower = n.name.trim().toLowerCase();
-
-      if (n.type === 'folder') {
-        // Match exact ou par slug
-        if (type === 'folder' && (nodeSlug === slugSearch || nodeLower === lowerSearch)) return n;
-        if (n.children) {
-          const found = this.findNodeBySlug(name, type, n.children);
-          if (found) return found;
-        }
-      } else if (n.type === 'file' && type === 'file') {
-        const fileNameNoExt = n.name.replace(/\.md$/, '').trim().toLowerCase();
-        // Pour les fichiers additionnels, on compare le nom sans extension
-        if (n.name !== 'contenu.md' && (this.slugify(fileNameNoExt) === slugSearch || fileNameNoExt === lowerSearch)) return n;
-      }
-    }
-    return null;
-  }
-
-  private findAdditionalFileByName(name: string, nodes: FileNode[] = this.files): FileNode | null {
-    return this.findNodeBySlug(name, 'file', nodes);
-  }
-
-  private findFolderByName(name: string, nodes: FileNode[] = this.files): FileNode | null {
-    return this.findNodeBySlug(name, 'folder', nodes);
-  }
-
-  onBlur() {
-    clearTimeout(this.saveTimeout);
-    this.saveAll();
-  }
-
   private saveAll() {
-    if (this.unifiedContent === this.lastSavedContent) return; // Ne sauvegarde que si le contenu a changé
+    if (this.unifiedContent === this.lastSavedContent) return;
     this.lastSavedContent = this.unifiedContent;
     const sections = this.parseContent();
     this.sectionsChange.emit(sections);
   }
 
+  // ── Section events ─────────────────────────────────────────
 
-  appendSection(folderName: string, level = 1) {
-    const heading = '#'.repeat(Math.min(level, 4)) + ' ' + folderName;
-    this.unifiedContent = this.unifiedContent.trimEnd() + `\n\n${heading}\n`;
-    setTimeout(() => {
-      this.autoResizeTextarea();
-      const ta = this.textareaRef?.nativeElement;
-      if (ta) ta.scrollTop = ta.scrollHeight;
-    }, 50);
+  onSectionFocus(folderId: string, event: FocusEvent) {
+    this.focusedSectionId = folderId;
+    this.lastFocusedTextareaEl = event.target as HTMLTextAreaElement;
+    this.clearImageSelection();
   }
 
-  insertSectionInParent(parentName: string, parentDepth: number, sectionName: string) {
-    const text = this.unifiedContent;
-    const escapedParent = parentName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const hashes = '#'.repeat(Math.min(parentDepth, 4));
-    const parentRegex = new RegExp('^' + hashes.replace(/#/g, '\\#') + ' ' + escapedParent + '$', 'm');
-    const parentMatch = parentRegex.exec(text);
+  onBlockInput(folderId: string, event: Event) {
+    const ta = event.target as HTMLTextAreaElement;
+    this.autoResizeSectionTextarea(ta);
+    const newFullText = this.reconstructSectionFullText(folderId);
+    this.sectionTextMap.set(folderId, newFullText);
+    this.unifiedContent = this.reconstructUnifiedContent();
+    clearTimeout(this.saveTimeout);
+    this.saveTimeout = setTimeout(() => this.saveAll(), 2000);
+  }
 
-    if (!parentMatch) {
-      this.appendSection(sectionName, parentDepth + 1);
-      return;
+  onSectionBlur(folderId: string) {
+    clearTimeout(this.saveTimeout);
+    const newFullText = this.reconstructSectionFullText(folderId);
+    this.sectionTextMap.set(folderId, newFullText);
+    this.unifiedContent = this.reconstructUnifiedContent();
+    this.saveAll();
+  }
+
+  onSectionCursorMove(folderId: string, event: Event) {
+    const ta = event.target as HTMLTextAreaElement;
+    this.lastFocusedTextareaEl = ta;
+    this.lastCursorPos = ta.selectionStart;
+    const pos = ta.selectionStart;
+    const sectionText = ta.value;
+    const blockRegex = /^(['`^])([^\n]+)\n([\s\S]*?)\n\1/gm;
+    let blockMatch: RegExpExecArray | null;
+    while ((blockMatch = blockRegex.exec(sectionText)) !== null) {
+      if (pos >= blockMatch.index && pos <= blockMatch.index + blockMatch[0].length) {
+        const name = blockMatch[2].trim();
+        const node = this.findNodeBySlug(name, 'file');
+        if (node) { this.nodeActive.emit(node.id); return; }
+      }
     }
-
-    // Find where the parent section ends (next heading at same level or higher)
-    const searchFrom = parentMatch.index + parentMatch[0].length;
-    const restText = text.substring(searchFrom);
-    const endRegex = new RegExp('^#{1,' + Math.min(parentDepth, 4) + '} ', 'm');
-    const endMatch = endRegex.exec(restText);
-    const insertAt = endMatch ? searchFrom + endMatch.index : text.length;
-
-    const childHeading = '#'.repeat(Math.min(parentDepth + 1, 4)) + ' ' + sectionName;
-    const before = text.substring(0, insertAt).trimEnd();
-    const after = text.substring(insertAt);
-    this.unifiedContent = before + '\n\n' + childHeading + '\n' + (after.trimStart() ? '\n' + after.trimStart() : '');
-    setTimeout(() => this.autoResizeTextarea(), 50);
+    this.nodeActive.emit(folderId);
   }
+
+  // ── Toolbar actions ────────────────────────────────────────
+
+  insertAt(before: string, after = '') {
+    const ta = this.lastFocusedTextareaEl;
+    const folderId = this.focusedSectionId;
+    if (!ta || !folderId) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const selected = ta.value.substring(start, end);
+    const newVal = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+    ta.value = newVal;
+    const newFullText = this.reconstructSectionFullText(folderId);
+    this.sectionTextMap.set(folderId, newFullText);
+    this.unifiedContent = this.reconstructUnifiedContent();
+    this.saveAll();
+    setTimeout(() => {
+      ta.focus();
+      ta.setSelectionRange(start + before.length, start + before.length + selected.length);
+    });
+  }
+
+  // ── Called from parent (no-op: sections rebuilt via ngOnChanges) ───
+
+  appendSection(folderName: string, level = 1) {}
+
+  insertSectionInParent(parentName: string, parentDepth: number, sectionName: string) {}
+
+  // ── Scroll / navigation ────────────────────────────────────
 
   scrollToNodeById(id: string) {
     const node = this.findNode(id, this.files);
     if (!node) return;
-    const ta = this.textareaRef?.nativeElement;
-    if (!ta) return;
-
-    let startPos = -1;
-    let endPos = -1;
-
-    if (node.type === 'folder' || node.name === 'contenu.md') {
-      this.highlightType = 'folder';
-      const targetName = node.type === 'folder' ? node.name : this.findParentFolder(node.id, this.files)?.name;
-      if (!targetName) return;
-
-      const escapedName = targetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp('^#{1,4} ' + escapedName + '$', 'm');
-      const match = regex.exec(ta.value);
-      if (!match || match.index == null) return;
-
-      startPos = match.index;
-      const currentHashes = match[0].split(' ')[0];
-      const currentLevel = currentHashes.length;
-      const nextSectionRegex = new RegExp('^#{1,' + currentLevel + '} ', 'gm');
-      nextSectionRegex.lastIndex = startPos + match[0].length;
-      const nextMatch = nextSectionRegex.exec(ta.value);
-      endPos = nextMatch ? nextMatch.index : ta.value.length;
-    } else {
-      this.highlightType = 'file';
-      const targetName = node.name.replace(/\.md$/, '');
-      const escapedName = targetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      const regex = new RegExp("^(['`^` `])" + escapedName + "$", 'm');
-      const match = regex.exec(ta.value);
-      if (!match || match.index == null) return;
-
-      startPos = match.index;
-      const delimiter = match[1];
-      const endRegex = new RegExp('^' + delimiter + '$', 'gm');
-      endRegex.lastIndex = startPos + match[0].length;
-      const endMatch = endRegex.exec(ta.value);
-      endPos = endMatch ? endMatch.index + endMatch[0].length : ta.value.length;
+    if (node.type === 'file' && this.isImageFile(node.name)) {
+      setTimeout(() => {
+        document.getElementById('img-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+      return;
     }
-
-    if (startPos >= 0) {
-      const linesBefore = (ta.value.substring(0, startPos).match(/\n/g) || []).length;
-      ta.scrollTop = Math.max(0, linesBefore * 22 - 40);
-      this.highlightStart = startPos;
-      this.highlightEnd = endPos;
-      ta.focus();
+    if (node.type === 'folder') {
+      setTimeout(() => {
+        document.getElementById('section-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+      return;
+    }
+    const parent = this.findParentFolder(id, this.files);
+    if (parent) {
+      setTimeout(() => {
+        document.getElementById('section-' + parent.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
     }
   }
+
+  // ── DOM helpers ────────────────────────────────────────────
+
+  private autoResizeAllSectionTextareas() {
+    document.querySelectorAll<HTMLTextAreaElement>('.section-textarea')
+      .forEach(ta => this.autoResizeSectionTextarea(ta));
+  }
+
+  private autoResizeSectionTextarea(ta: HTMLTextAreaElement) {
+    ta.style.height = 'auto';
+    ta.style.height = ta.scrollHeight + 'px';
+  }
+
+  // ── Tree helpers ───────────────────────────────────────────
 
   private findNode(id: string, nodes: FileNode[]): FileNode | null {
     for (const n of nodes) {
       if (n.id === id) return n;
-      if (n.children) {
-        const found = this.findNode(id, n.children);
-        if (found) return found;
-      }
+      if (n.children) { const f = this.findNode(id, n.children); if (f) return f; }
     }
     return null;
   }
@@ -464,30 +434,215 @@ export class ProjetEditorZoneComponent implements OnChanges {
     return null;
   }
 
-  private findFolderNode(id: string, nodes: FileNode[]): FileNode | null {
-    return this.findNode(id, nodes);
+  private findNodeBySlug(name: string, type: 'file' | 'folder', nodes: FileNode[] = this.files): FileNode | null {
+    if (!name) return null;
+    const slugSearch = this.slugify(name);
+    const lowerSearch = name.trim().toLowerCase();
+    for (const n of nodes) {
+      const nodeSlug = this.slugify(n.name);
+      const nodeLower = n.name.trim().toLowerCase();
+      if (n.type === 'folder') {
+        if (type === 'folder' && (nodeSlug === slugSearch || nodeLower === lowerSearch)) return n;
+        if (n.children) { const found = this.findNodeBySlug(name, type, n.children); if (found) return found; }
+      } else if (n.type === 'file' && type === 'file') {
+        const fileNameNoExt = n.name.replace(/\.md$/, '').trim().toLowerCase();
+        if (n.name !== 'contenu.md' && (this.slugify(fileNameNoExt) === slugSearch || fileNameNoExt === lowerSearch)) return n;
+      }
+    }
+    return null;
   }
 
-  insertAt(before: string, after = '') {
-    const ta = this.textareaRef?.nativeElement;
-    if (!ta) return;
-    const start = ta.selectionStart;
-    const end = ta.selectionEnd;
-    const selected = ta.value.substring(start, end);
-    const newVal = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
-    ta.value = newVal;
-    this.unifiedContent = newVal;
-    this.saveAll();
-    setTimeout(() => {
-      ta.focus();
-      ta.setSelectionRange(start + before.length, start + before.length + selected.length);
-    });
+  // ── Image helpers ──────────────────────────────────────────
+
+  isImageFile(name: string): boolean {
+    return this.svc.isImageFile(name);
   }
 
-  private autoResizeTextarea() {
-    const ta = this.textareaRef?.nativeElement;
-    if (!ta) return;
-    ta.style.height = 'auto';
-    ta.style.height = ta.scrollHeight + 'px';
+  get activeImage(): FileNode | null {
+    if (!this.activeNodeId) return null;
+    const node = this.findNode(this.activeNodeId, this.files);
+    return (node?.type === 'file' && this.isImageFile(node.name)) ? node : null;
+  }
+
+  getImageCardClasses(img: FileNode): string {
+    const base = 'transition-all rounded-lg p-1 cursor-pointer';
+    if (this.selectedImageId === img.id || this.activeImage?.id === img.id)
+      return base + ' outline outline-2 outline-light-primary dark:outline-primary';
+    return base + ' hover:outline hover:outline-1 hover:outline-light-border dark:hover:outline-white/20';
+  }
+
+  getAllFolders(nodes: FileNode[] = this.files, result: FileNode[] = []): FileNode[] {
+    for (const n of nodes) {
+      if (n.type === 'folder') {
+        result.push(n);
+        this.getAllFolders(n.children || [], result);
+      }
+    }
+    return result;
+  }
+
+  selectImage(img: FileNode, event: Event) {
+    event.stopPropagation();
+    if (this.selectedImageId === img.id) {
+      this.clearImageSelection();
+    } else {
+      this.selectedImageId = img.id;
+      this.renamingImageId = null;
+      this.showMoveForImageId = null;
+      this.deleteConfirmImageId = null;
+      this.nodeActive.emit(img.id);
+    }
+  }
+
+  clearImageSelection() {
+    this.selectedImageId = null;
+    this.renamingImageId = null;
+    this.showMoveForImageId = null;
+    this.deleteConfirmImageId = null;
+  }
+
+  startRenameImage(img: FileNode) {
+    this.renamingImageId = img.id;
+    this.renameImageValue = img.name.replace(/\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i, '');
+    this.showMoveForImageId = null;
+    this.deleteConfirmImageId = null;
+  }
+
+  async confirmRenameImage(img: FileNode) {
+    const newName = this.renameImageValue.trim();
+    if (!newName || newName === img.name) { this.cancelRenameImage(); return; }
+    try {
+      await this.svc.renameFile(this.projectName, img.id, newName);
+      this.clearImageSelection();
+      this.refresh.emit();
+    } catch (e: any) {
+      console.error('[Zone4] Rename image failed:', e);
+    }
+  }
+
+  cancelRenameImage() {
+    this.renamingImageId = null;
+    this.renameImageValue = '';
+  }
+
+  askDeleteImage(img: FileNode) {
+    this.deleteConfirmImageId = img.id;
+    this.showMoveForImageId = null;
+  }
+
+  async confirmDeleteImage(img: FileNode) {
+    try {
+      await this.svc.deleteFile(this.projectName, img.id);
+      this.clearImageSelection();
+      // Remove position marker from section text
+      const sourceSection = this.docSections.find(s => s.images.some(i => i.id === img.id));
+      if (sourceSection) {
+        const markerRe = new RegExp(`\\n\\{\\{IMG:${img.id}\\}\\}\\n`, 'g');
+        const currentText = this.sectionTextMap.get(sourceSection.folderId) ?? sourceSection.textContent;
+        const newText = currentText.replace(markerRe, '\n');
+        this.sectionTextMap.set(sourceSection.folderId, newText);
+        this.unifiedContent = this.reconstructUnifiedContent();
+        this.saveAll();
+      }
+      this.refresh.emit();
+    } catch (e: any) {
+      console.error('[Zone4] Delete image failed:', e);
+    }
+  }
+
+  cancelDeleteImage() {
+    this.deleteConfirmImageId = null;
+  }
+
+  toggleMoveImage(img: FileNode) {
+    this.showMoveForImageId = this.showMoveForImageId === img.id ? null : img.id;
+    this.deleteConfirmImageId = null;
+  }
+
+  async moveImageToFolder(img: FileNode, targetFolderId: string | null) {
+    try {
+      // Remove marker from source section
+      const sourceSection = this.docSections.find(s => s.images.some(i => i.id === img.id));
+      if (sourceSection) {
+        const markerRe = new RegExp(`\\n\\{\\{IMG:${img.id}\\}\\}\\n`, 'g');
+        const currentText = this.sectionTextMap.get(sourceSection.folderId) ?? sourceSection.textContent;
+        const newText = currentText.replace(markerRe, '\n');
+        this.sectionTextMap.set(sourceSection.folderId, newText);
+        this.unifiedContent = this.reconstructUnifiedContent();
+        this.saveAll();
+      }
+      await this.svc.moveFile(this.projectName, img.id, targetFolderId);
+      this.clearImageSelection();
+      this.nodeActive.emit(img.id);
+      this.refresh.emit();
+    } catch (e: any) {
+      console.error('[Zone4] Move image failed:', e);
+    }
+  }
+
+  getImageUrl(imagePath: string): string {
+    return this.svc.getImageUrl(this.projectName, imagePath);
+  }
+
+  triggerImageUpload() {
+    this.imageUploadError = '';
+    this.imageInputRef?.nativeElement.click();
+  }
+
+  async onImageFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    if (!file) return;
+    const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/bmp'];
+    if (!allowed.includes(file.type)) {
+      this.imageUploadError = 'Type non autorisé (jpg, png, gif, webp, svg).';
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      this.imageUploadError = `Fichier trop grand (${(file.size / 1024 / 1024).toFixed(1)} Mo). Max 1 Mo.`;
+      return;
+    }
+    const folderId = this.focusedSectionId || this.getActiveFolderId();
+    try {
+      const node = await this.svc.uploadImage(this.projectName, file, folderId);
+      this.imageUploadError = '';
+
+      if (folderId) {
+        // Insert marker at cursor position in section full text
+        const insertPos = this.getInsertPositionInFullText(folderId);
+        const currentFullText = this.reconstructSectionFullText(folderId);
+        const before = currentFullText.substring(0, insertPos);
+        const after = currentFullText.substring(insertPos);
+        // Ensure exactly one newline on each side of the marker
+        const prefix = before.endsWith('\n') ? '' : '\n';
+        const suffix = after.startsWith('\n') ? '' : '\n';
+        const newFullText = before + prefix + '{{IMG:' + node.id + '}}' + suffix + after;
+
+        this.sectionTextMap.set(folderId, newFullText);
+
+        // Immediately rebuild blocks
+        const currentSection = this.docSections.find(s => s.folderId === folderId);
+        const allImages = [...(currentSection?.images ?? []), node];
+        this.docSections = this.docSections.map(s => {
+          if (s.folderId !== folderId) return s;
+          return { ...s, textContent: newFullText, images: allImages, blocks: this.buildBlocks(newFullText, allImages, folderId) };
+        });
+
+        this.unifiedContent = this.reconstructUnifiedContent();
+        this.saveAll();
+      }
+
+      this.refresh.emit();
+    } catch (e: any) {
+      this.imageUploadError = e?.error?.error || 'Erreur lors de l\'upload.';
+    }
+  }
+
+  private getActiveFolderId(): string | null {
+    if (!this.activeNodeId) return null;
+    const node = this.findNode(this.activeNodeId, this.files);
+    if (node?.type === 'folder') return node.id;
+    return this.findParentFolder(this.activeNodeId, this.files)?.id || null;
   }
 }

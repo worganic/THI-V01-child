@@ -790,6 +790,274 @@
       "prompt": "met une couleur differente dans la zone 4 lorsquon selectionne un menu ou un document : bleu menu et vert document",
       "startedAt": "2026-04-27T09:34:13.694Z",
       "completedAt": "2026-04-27T09:34:13.694Z"
+    },
+    {
+      "id": "mod-033",
+      "version": "THI-0.22",
+      "date": "2026-04-27T10:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 3 : glisser-déposer pour réordonner les menus",
+      "description": "Ajout d'un système de drag & drop natif (HTML5) sur les dossiers de l'arborescence (zone 3). Un indicateur horizontal (ligne colorée) s'affiche avant/après le nœud cible pendant le glisser. Au dépôt, les order sont recalculés, persistés via updateStructure, puis loadFiles recharge les deux zones. Zone 4 reflète automatiquement le nouvel ordre via le tri existant sur node.order dans buildUnifiedContent.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 3 dans l'arborescence ajoute un système de glisser deposé pour la modification de l'ordre des menus. La modification dans la zone 3 doit être automatiquement appliqué dans la zone 4",
+      "startedAt": "2026-04-27T10:15:00.000Z",
+      "completedAt": "2026-04-27T10:30:00.000Z"
+    },
+    {
+      "id": "mod-034",
+      "version": "THI-0.22",
+      "date": "2026-04-27T10:50:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 3 drag & drop : fix position non conservée après dépôt",
+      "description": "Correction du bug : le menu ne restait pas à la position glissée. Cause : applyOrderInStructure ne mettait à jour que les champs order sans réordonner physiquement le tableau envoyé au serveur. Le serveur renvoyait donc les nœuds dans l'ordre d'origine, et la sidebar (qui n'a pas de tri) affichait l'ancien ordre. Fix : réordonnement physique du tableau via splice dans applyOrderInStructure + tri récursif par order dans loadFiles via sortNodesByOrder.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "on arrive à deplacer un menu mais pas un document mais lorsque je lache le clique le menu ne reste pas la ou je l'ai placer",
+      "startedAt": "2026-04-27T10:40:00.000Z",
+      "completedAt": "2026-04-27T10:50:00.000Z"
+    },
+    {
+      "id": "mod-035",
+      "version": "THI-0.22",
+      "date": "2026-04-27T11:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein", "server"],
+      "features": "frankenstein:projet-editor,server:file-projects",
+      "title": "Zone 3 drag & drop : déplacement cross-parent + fichiers",
+      "description": "Refonte complète du drag & drop zone 3. Nouveau endpoint serveur move-folder (déplacement physique du répertoire + mise à jour récursive des paths). Nouvelle interface DragDropEvent exportée depuis le sidebar. 3 zones de dépôt : before (ligne au-dessus), inside (outline sur le dossier = changement de parent), after (ligne en-dessous). Dossier → dossier same parent = réordonnement. Dossier → inside = changement de parent (move-folder). Dossier → dossier différent parent before/after = move dans le même parent. Fichier → dossier = moveFile. Fichier → fichier = moveFile vers parent du fichier cible. Zone 4 se recalcule automatiquement (niveaux H1/H2... mis à jour) après loadFiles.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/core/services/project-files.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "cela ne fonctionne pas on doit pouvoir deplacer un menu, sous menu et suivant dans un autre menu, celui ci si besoin doit mettre à jour le niveau du sous menu, et on doit pouvoir deplacer un document (code) independemment du menu dans lequel il ce trouve",
+      "startedAt": "2026-04-27T11:00:00.000Z",
+      "completedAt": "2026-04-27T11:30:00.000Z"
+    },
+    {
+      "id": "mod-036",
+      "version": "THI-0.23",
+      "date": "2026-04-27T12:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein", "server"],
+      "features": "frankenstein:projet-editor,server:file-projects",
+      "title": "Zone 4 : upload image + galerie + icône sidebar",
+      "description": "Ajout du bouton image dans la barre d'outils de la Zone 4 (éditeur). L'image uploadée est sauvegardée sur le serveur comme nœud FileNode de type 'image' dans le dossier actif et apparaît dans la Zone 3 avec l'icône 'image'. Validation côté client : type MIME (jpg/png/gif/webp/svg/bmp) et taille max 1 Mo. Galerie d'images dans la Zone 4 en bas de l'éditeur, affichant les images du menu actif. buildUnifiedContent exclut désormais les fichiers image. Endpoint serveur POST /upload-image avec vérification MIME + taille buffer. Nouveau champ fileType 'image' dans FileNode. Icône sidebar conditionnelle : 'image' si fichier image, 'description' sinon.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/core/services/project-files.service.ts",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "rajoute une option qui permettrais d'inserré dans la zone 4 une image, cette image serait considéré comme un document image et devra être rajouté dans la zone 3 dans le bon menu, une limit à 1 mega max est requis pour l'upload d'image.",
+      "startedAt": "2026-04-27T11:30:00.000Z",
+      "completedAt": "2026-04-27T12:30:00.000Z"
+    },
+    {
+      "id": "mod-037",
+      "version": "THI-0.23",
+      "date": "2026-04-27T13:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : images inline par section + scroll vers image active",
+      "description": "Correction de l'affichage des images en Zone 4 : remplacement de la galerie 'menu actif uniquement' par une vue complète de toutes les images du document organisées par section/menu. Ajout du scroll automatique vers l'image dans le DOM quand elle est sélectionnée en Zone 3 (scrollToNodeById gère maintenant les FileNode de type image via getElementById). Ajout de getImageCardClasses pour highlight de l'image active avec outline. allFolderImages getter parcourt récursivement tous les dossiers. Les images apparaissent maintenant toujours en Zone 4 sans dépendre du nœud actif.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "l'upload fonctionne bien et le document s'affiche bien dans l'arborescence de la zone 3 mais l'image ne s'affiche pas dans le document Zone 4, je veux voir l'image dans le document",
+      "startedAt": "2026-04-27T12:30:00.000Z",
+      "completedAt": "2026-04-27T13:00:00.000Z"
+    },
+    {
+      "id": "mod-038",
+      "version": "THI-0.23",
+      "date": "2026-04-27T14:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : sections multiples — images inline dans le document",
+      "description": "Refonte architecture Zone 4 : passage d'une seule textarea unifiée à une liste de blocs par section (DocSection). Chaque menu (dossier) est rendu comme un bloc indépendant : textarea éditable pour son texte + images inline en dessous (rendues comme <img> dans le flux du document). L'ordre est depth-first, identique au contenu unifié précédent. buildDocSections() construit la liste plate de sections depuis le tree. reconstructUnifiedContent() rejoins les textes des textareas pour parseContent(). onSectionInput/Blur/Focus/CursorMove remplacent les événements unifiés. insertAt() utilise la section focalisée. scrollToNodeById() utilise les id DOM 'section-X' et 'img-X'. appendSection/insertSectionInParent deviennent des no-ops (ngOnChanges rebuild automatiquement). La galerie d'images en bas de page est supprimée au profit des images inline par section.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "non je voudrais que l'image s'affiche dans le document zone 4 la ou il à été insséré et pas en dessous",
+      "startedAt": "2026-04-27T13:00:00.000Z",
+      "completedAt": "2026-04-27T14:00:00.000Z"
+    },
+    {
+      "id": "mod-039",
+      "version": "THI-0.23",
+      "date": "2026-04-27T14:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : suppression des séparateurs entre sections (border-0)",
+      "description": "Les textareas de sections affichaient leurs bordures natives du navigateur, créant des boîtes visuelles séparant chaque menu. Ajout de border-0 et p-0 sur les textareas de section pour supprimer ces séparateurs. Le document s'affiche maintenant comme un flux continu avec les images embedded inline à la bonne position.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je ne veux pas que tu sépare les sections dans la zone 4, retire les séparateur et inclus l'image dans le document en entier",
+      "startedAt": "2026-04-27T14:00:00.000Z",
+      "completedAt": "2026-04-27T14:30:00.000Z"
+    },
+    {
+      "id": "mod-040",
+      "version": "THI-0.23",
+      "date": "2026-04-27T15:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : sélection image + actions renommer/supprimer/déplacer",
+      "description": "Ajout d'un système de sélection d'image en Zone 4. Cliquer sur une image l'active (outline) et affiche une barre d'actions inline : Renommer (input inline avec confirm/cancel), Déplacer (liste de dossiers cibles), Supprimer (avec confirmation en deux clics). La sélection est effacée en cliquant sur le texte du document. FormsModule ajouté pour le ngModel du champ rename. getAllFolders() parcourt récursivement le tree pour la liste de déplacement. onSectionFocus efface la sélection d'image quand l'utilisateur revient sur le texte.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "on doit pouvoir selectionné l'image dans la zone 4 pour pouvoir renommé l'image, la supprimé ou la deplacer",
+      "startedAt": "2026-04-27T14:30:00.000Z",
+      "completedAt": "2026-04-27T15:00:00.000Z"
+    },
+    {
+      "id": "mod-041",
+      "version": "THI-0.23",
+      "date": "2026-04-27T15:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein", "server"],
+      "features": "frankenstein:projet-editor,server:projet-editor",
+      "title": "Zone 4 : fix déplacement image (drag natif + mkdirSync + expand Zone 3)",
+      "description": "Trois bugs corrigés liés au déplacement d'image : (1) draggable='false' ajouté sur <img> en Zone 4 pour empêcher le navigateur d'insérer l'URL de l'image comme texte dans la textarea lors d'un drag natif. (2) fs.mkdirSync avec {recursive:true} ajouté avant fs.renameSync dans l'endpoint move-file du serveur pour créer le dossier cible si il n'existe pas encore sur disque. (3) nodeActive.emit(img.id) ajouté dans moveImageToFolder pour que la Zone 3 s'étende jusqu'au nœud déplacé et l'affiche correctement après le déplacement.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "le deplacement d'une image n'a pas fonctionné, la selection et le deplacement à bien fonctionné mais lorsque j'ai laché l'image j'ai eu l'url affiché et non l'image et le document image à disparus dans la zone 3",
+      "startedAt": "2026-04-27T15:00:00.000Z",
+      "completedAt": "2026-04-27T15:30:00.000Z"
+    },
+    {
+      "id": "mod-042",
+      "version": "THI-0.23",
+      "date": "2026-04-27T16:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein", "server"],
+      "features": "frankenstein:projet-editor,server:projet-editor",
+      "title": "Zone 4 : fix renommage image — extension .md forcée à tort",
+      "description": "Le endpoint PATCH /api/file-projects/:name/files/:id ajoutait systématiquement .md à tous les noms de fichiers, transformant logo-lego.png en logo-lego.png.md. Le fichier perdait alors son extension image, isImageFile() renvoyait false, et le contenu binaire PNG était lu comme texte et affiché dans la section textarea. Fix serveur : détection de l'extension image d'origine et conservation de l'extension (ou ré-ajout de l'ext originale si absente du nom fourni). Fix frontend : startRenameImage() retire l'extension image de la valeur initiale du champ rename, comme le sidebar retire .md pour les fichiers texte.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "j'ai renommé le fichier [Image #1] mais cela ma sortie du code bizarre [Image #2]",
+      "startedAt": "2026-04-27T15:30:00.000Z",
+      "completedAt": "2026-04-27T16:00:00.000Z"
+    },
+    {
+      "id": "mod-043",
+      "version": "THI-0.23",
+      "date": "2026-04-27T16:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : fix suppression automatique des images après sauvegarde",
+      "description": "Les fichiers images insérés dans un dossier étaient automatiquement supprimés par la routine d'orphelins (processSectionsChange) à chaque sauvegarde de texte. La cause : allExistingAdditionalFileIds collectait tous les fichiers non-contenu.md (y compris les images), alors que resolvedAdditionalFileIds n'en contenait aucune (les images ne sont pas dans additionalFiles). Résultat : additionalFileDeleted=true déclenchait hasStructural=true, puis la boucle orphan cleanup supprimait le fichier image du disque et de la config. Fix : deux exclusions isImageFile() ajoutées — dans la collecte des IDs existants et dans la boucle de suppression — pour ne jamais traiter les images comme des fichiers additionnels texte.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je rajoute une image dans la zone 4 celle ci s'affiche bien mais lorsque je rafraichi la page l'image (document) disparait, celle ci ne s'enregistre pas dans mon projet",
+      "startedAt": "2026-04-27T16:00:00.000Z",
+      "completedAt": "2026-04-27T16:30:00.000Z"
+    },
+    {
+      "id": "mod-044",
+      "version": "THI-0.23",
+      "date": "2026-04-27T17:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : suppression image live sans refresh",
+      "description": "Après suppression (ou tout autre changement d'image) en Zone 4, l'image restait affichée jusqu'au prochain refresh de page. Cause : ngOnChanges ne rebuiltait docSections que si le contenu texte changeait (newContent !== this.unifiedContent), ce qui n'est jamais le cas lors d'opérations sur les images. Fix : split du bloc ngOnChanges en deux chemins — premier chargement (init complète) vs rechargements suivants (rebuild systématique de docSections avec les nouvelles images, en préservant le texte déjà tapé via sectionTextMap). La sync du texte serveur reste déclenchée si le contenu texte a réellement changé.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je supprime une image en zone 4 l'image est bien supprimé en zone 3 mais reste affiché en zone 4, si je rafraichis la page l'image ne réapparait pas. Il faut la supprimé de la zone 4 en live",
+      "startedAt": "2026-04-27T16:30:00.000Z",
+      "completedAt": "2026-04-27T17:00:00.000Z"
+    },
+    {
+      "id": "mod-045",
+      "version": "THI-0.23",
+      "date": "2026-04-27T18:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : insertion d'image à la position curseur",
+      "description": "Refonte de l'architecture Zone 4 pour supporter le positionnement précis des images. Chaque section passe d'un textarea unique + images en bas à une liste de blocs interleaved (DocBlock = text | image). Les positions sont encodées par des marqueurs {{IMG:nodeId}} dans le texte, stockés dans contenu.md — la position est donc persistante après refresh. Lors de l'upload, le marqueur est inséré exactement à la position curseur (lastCursorPos + lastFocusedTextareaEl). buildBlocks() parse les marqueurs pour créer les blocs. Les images sans marqueur (import existant) restent en fin de section pour rétrocompatibilité. confirmDeleteImage et moveImageToFolder retirent le marqueur du texte source. Le template utilise @for (block of section.blocks) avec [attr.data-block-key] pour que reconstructSectionFullText() reconstruise le texte complet depuis le DOM.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "j'ai rajouté une image à un endroit précis et celle ci c'est rajouté à la fin de la section je veux que l'image s'insert exactement ou je veux et cela peux être au milieu d'une section de menu ou d'un document",
+      "startedAt": "2026-04-27T17:00:00.000Z",
+      "completedAt": "2026-04-27T18:00:00.000Z"
     }
   ]
 }

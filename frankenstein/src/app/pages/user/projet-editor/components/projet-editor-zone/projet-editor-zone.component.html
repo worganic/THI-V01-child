@@ -6,12 +6,17 @@
     <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Italique" (click)="insertAt('*', '*')"><em>I</em></button>
     <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Barré" (click)="insertAt('~~', '~~')"><s>S</s></button>
     <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
-    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Nouvelle section (crée un dossier)" (click)="insertAt('\n# ', '')">H1</button>
-    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 2" (click)="insertAt('## ')">H2</button>
-    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 3" (click)="insertAt('### ')">H3</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 1" (click)="insertAt('\n# ', '')">H1</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 2" (click)="insertAt('\n## ', '')">H2</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 3" (click)="insertAt('\n### ', '')">H3</button>
     <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
     <button type="button" class="px-2.5 py-1 rounded text-xs text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Liste" (click)="insertAt('- ')">&#8226; Liste</button>
     <button type="button" class="px-2.5 py-1 rounded text-xs font-mono text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Code" (click)="insertAt('`', '`')">&lt;/&gt;</button>
+    <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+    <button type="button" class="px-2.5 py-1 rounded text-xs text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10 flex items-center gap-1" title="Insérer une image au curseur (max 1 Mo)" (click)="triggerImageUpload()">
+      <span class="material-symbols-outlined text-sm leading-none">image</span>
+    </button>
+    <input #imageInput type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,image/bmp" class="hidden" (change)="onImageFileSelected($event)">
     <div class="flex-1"></div>
     @if (saveStatus === 'saving') {
       <span class="text-xs text-yellow-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Sauvegarde…</span>
@@ -22,31 +27,126 @@
     }
   </div>
 
-  <!-- Zone unifiée — un seul textarea pour tout le projet -->
-  <div class="flex-1 overflow-y-auto min-h-0 px-6 py-4">
-    <div class="relative w-full">
-      <!-- Overlay de mise en évidence (surlignage de la zone Z4) -->
-      @if (highlightStart >= 0) {
-        <div class="absolute inset-0 pointer-events-none whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-transparent z-0">
-          {{beforeHighlight}}<span [class]="highlightType === 'file'
-            ? 'bg-green-100 dark:bg-green-900/40 block rounded-md border border-green-200 dark:border-green-800/50 -mx-3 px-3 py-1'
-            : 'bg-blue-100 dark:bg-blue-900/50 block rounded-md border border-blue-200 dark:border-blue-800/50 -mx-3 px-3 py-1'">{{highlightText}}</span>{{afterHighlight}}
-        </div>
-      }
-
-      <textarea
-        #unifiedTextarea
-        class="relative z-10 w-full min-h-[400px] bg-transparent text-light-text dark:text-white font-mono text-sm outline-none resize-none block leading-relaxed"
-        [value]="unifiedContent"
-        placeholder="# Nom de section&#10;&#10;Écrivez le contenu ici…&#10;&#10;# Nouvelle section&#10;&#10;Chaque titre # crée automatiquement un dossier dans la navigation à gauche."
-        (input)="onInput($event)"
-        (keydown.enter)="onEnter()"
-        (keyup)="onCursorMove()"
-        (mouseup)="onCursorMove()"
-        (blur)="onBlur()"
-        rows="1">
-      </textarea>
+  <!-- Erreur upload image -->
+  @if (imageUploadError) {
+    <div class="flex items-center gap-2 px-4 py-1.5 bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800/40 flex-shrink-0">
+      <span class="material-symbols-outlined text-sm text-red-500">error</span>
+      <span class="text-xs text-red-500">{{ imageUploadError }}</span>
+      <button class="ml-auto text-red-400 hover:text-red-600" (click)="imageUploadError = ''">
+        <span class="material-symbols-outlined text-sm">close</span>
+      </button>
     </div>
+  }
+
+  <!-- Document — sections en ordre -->
+  <div class="flex-1 overflow-y-auto min-h-0 px-6 py-4">
+
+    @if (docSections.length === 0) {
+      <p class="text-sm text-light-text-muted dark:text-white/30 font-mono">
+        Commencez par créer un menu dans l'arborescence à gauche.
+      </p>
+    }
+
+    @for (section of docSections; track section.folderId) {
+      <div [id]="'section-' + section.folderId">
+
+        @for (block of section.blocks; track block.key) {
+
+          @if (block.kind === 'text') {
+            <!-- Bloc texte éditable -->
+            <textarea
+              class="section-textarea w-full bg-transparent text-light-text dark:text-white font-mono text-sm outline-none resize-none block leading-relaxed border-0 p-0"
+              [value]="block.text"
+              [attr.data-block-key]="block.key"
+              (focus)="onSectionFocus(section.folderId, $event)"
+              (input)="onBlockInput(section.folderId, $event)"
+              (keyup)="onSectionCursorMove(section.folderId, $event)"
+              (mouseup)="onSectionCursorMove(section.folderId, $event)"
+              (blur)="onSectionBlur(section.folderId)"
+              rows="1">
+            </textarea>
+          } @else {
+            <!-- Bloc image inline -->
+            <div [id]="'img-' + block.image.id" class="flex flex-col gap-1.5 py-2" style="max-width: 20rem">
+
+              <!-- Image cliquable -->
+              <div [class]="getImageCardClasses(block.image)" (click)="selectImage(block.image, $event)">
+                <img [src]="getImageUrl(block.image.path)"
+                     [alt]="block.image.name"
+                     draggable="false"
+                     class="max-w-xs max-h-48 w-full object-contain rounded-md border border-light-border dark:border-white/10 bg-light-surface dark:bg-white/5"
+                     loading="lazy">
+              </div>
+
+              <!-- Nom ou input renommage -->
+              @if (renamingImageId === block.image.id) {
+                <div class="flex items-center gap-1 px-1">
+                  <input class="flex-1 text-[11px] bg-transparent border-b border-light-primary dark:border-primary outline-none text-light-text dark:text-white py-0.5 font-mono"
+                         [(ngModel)]="renameImageValue"
+                         (keydown.enter)="confirmRenameImage(block.image)"
+                         (keydown.escape)="cancelRenameImage()"
+                         autofocus>
+                  <button (click)="confirmRenameImage(block.image)" class="text-light-primary dark:text-primary hover:opacity-70">
+                    <span class="material-symbols-outlined text-sm">check</span>
+                  </button>
+                  <button (click)="cancelRenameImage()" class="text-light-text-muted dark:text-white/40 hover:opacity-70">
+                    <span class="material-symbols-outlined text-sm">close</span>
+                  </button>
+                </div>
+              } @else {
+                <span class="text-[10px] text-light-text-muted dark:text-white/40 truncate px-1">{{ block.image.name }}</span>
+              }
+
+              <!-- Barre d'actions (visible quand sélectionné) -->
+              @if (selectedImageId === block.image.id && renamingImageId !== block.image.id) {
+                <div class="flex flex-wrap items-center gap-1 px-1">
+                  <button class="flex items-center gap-0.5 px-2 py-1 rounded text-[11px] text-light-text dark:text-white/70 hover:bg-light-surface dark:hover:bg-white/5 border border-light-border dark:border-white/10 transition-colors"
+                          (click)="startRenameImage(block.image)">
+                    <span class="material-symbols-outlined text-xs">edit</span> Renommer
+                  </button>
+                  <button class="flex items-center gap-0.5 px-2 py-1 rounded text-[11px] text-light-text dark:text-white/70 hover:bg-light-surface dark:hover:bg-white/5 border border-light-border dark:border-white/10 transition-colors"
+                          (click)="toggleMoveImage(block.image)">
+                    <span class="material-symbols-outlined text-xs">drive_file_move</span> Déplacer
+                  </button>
+                  @if (deleteConfirmImageId === block.image.id) {
+                    <button class="flex items-center gap-0.5 px-2 py-1 rounded text-[11px] bg-red-500 hover:bg-red-600 text-white font-semibold transition-colors"
+                            (click)="confirmDeleteImage(block.image)">
+                      <span class="material-symbols-outlined text-xs">delete</span> Confirmer
+                    </button>
+                    <button class="px-2 py-1 rounded text-[11px] text-light-text-muted dark:text-white/40 hover:bg-light-surface dark:hover:bg-white/5 transition-colors"
+                            (click)="cancelDeleteImage()">Annuler</button>
+                  } @else {
+                    <button class="flex items-center gap-0.5 px-2 py-1 rounded text-[11px] text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 border border-transparent hover:border-red-200 dark:hover:border-red-500/20 transition-colors"
+                            (click)="askDeleteImage(block.image)">
+                      <span class="material-symbols-outlined text-xs">delete</span> Supprimer
+                    </button>
+                  }
+                </div>
+
+                <!-- Liste de dossiers cibles pour déplacer -->
+                @if (showMoveForImageId === block.image.id) {
+                  <div class="flex flex-wrap gap-1 px-1">
+                    <span class="text-[10px] text-light-text-muted dark:text-white/40 w-full">Déplacer vers :</span>
+                    @for (folder of getAllFolders(); track folder.id) {
+                      @if (folder.id !== section.folderId) {
+                        <button class="text-[11px] px-2 py-0.5 rounded border border-light-border dark:border-white/10 text-light-text dark:text-white/70 hover:bg-light-primary/10 dark:hover:bg-primary/10 hover:border-light-primary dark:hover:border-primary transition-colors"
+                                (click)="moveImageToFolder(block.image, folder.id)">
+                          {{ folder.name }}
+                        </button>
+                      }
+                    }
+                  </div>
+                }
+              }
+
+            </div>
+          }
+
+        }
+
+      </div>
+    }
+
   </div>
 
 </div>
