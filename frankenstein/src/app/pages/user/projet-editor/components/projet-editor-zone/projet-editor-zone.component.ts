@@ -424,7 +424,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
       startPos = match.index;
       const delimiter = match[1];
-      const endRegex = new RegExp('^' + delimiter + '$', 'm');
+      const endRegex = new RegExp('^' + delimiter + '$', 'gm');
       endRegex.lastIndex = startPos + match[0].length;
       const endMatch = endRegex.exec(ta.value);
       endPos = endMatch ? endMatch.index + endMatch[0].length : ta.value.length;

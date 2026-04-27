@@ -686,11 +686,13 @@
     },
     {
       "id": "mod-030",
-      "version": "THI-0.20",
+      "version": "THI-0.21",
       "date": "2026-04-26T21:25:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["frankenstein"],
+      "scope": [
+        "frankenstein"
+      ],
       "features": "frankenstein:projets",
       "title": "Éditeur projet : fix sync arborescence après clic sidebar",
       "description": "Fix : cliquer sur un heading ### dans la zone texte ne sélectionnait pas le nœud correspondant dans l'arborescence si l'utilisateur avait précédemment été sur cette même ligne. Cause : syncActiveNode() n'était appelée que si currentLine !== previousCursorLine. Lorsque l'utilisateur cliquait sur E 2-2-1 (→ previousCursorLine = ligne E), puis sélectionnait D 2-2 cccc via la sidebar (activeNodeId change), puis re-cliquait sur ### E 2-2-1, la condition currentLine === previousCursorLine empêchait syncActiveNode de s'exécuter, laissant la sélection sur D 2-2 cccc. Correctif : syncActiveNode est désormais appelée inconditionnellement sur chaque mouseup/keyup ; saveAll() reste conditionnel au changement de ligne.",
@@ -724,6 +726,27 @@
       "prompt": "le renommage fonctionne bien mais si je renomme un sous dossier celui change d'ordre et passe en dessous du dossier d'en dessous",
       "startedAt": "2026-04-26T18:00:00.000Z",
       "completedAt": "2026-04-26T17:13:35.666Z"
+    },
+    {
+      "id": "mod-030",
+      "version": "THI-0.20",
+      "date": "2026-04-27T08:57:54.006Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 3 : correction surlignage trop large sur fichier additionnel",
+      "description": "Correction du bug dans scrollToNodeById : endRegex manquait le flag g, lastIndex ignore, delimiter ferme trouve depuis debut du document au mauvais endroit, substring inversait les bornes.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la section projet lorsquon selectionne un menu dans la zone 3 cela englobe une zone trop grande, seul la zone du document doit etre selectionne",
+      "startedAt": "2026-04-27T00:00:00.000Z",
+      "completedAt": "2026-04-27T08:57:54.006Z"
     }
   ]
 }
