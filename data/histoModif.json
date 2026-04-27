@@ -747,6 +747,49 @@
       "prompt": "dans la section projet lorsquon selectionne un menu dans la zone 3 cela englobe une zone trop grande, seul la zone du document doit etre selectionne",
       "startedAt": "2026-04-27T00:00:00.000Z",
       "completedAt": "2026-04-27T08:57:54.006Z"
+    },
+    {
+      "id": "mod-031",
+      "version": "THI-0.22",
+      "date": "2026-04-27T09:05:56.180Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 3 sidebar : masquer les fichiers contenu.md",
+      "description": "Ajout dun @if dans le template recursif treeNodes pour exclure de laffichage les fichiers nommes contenu.md dans larborescence du projet.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 3 il faudrait cache les fichiers contenu.md",
+      "startedAt": "2026-04-27T09:05:56.180Z",
+      "completedAt": "2026-04-27T09:05:56.180Z"
+    },
+    {
+      "id": "mod-032",
+      "version": "THI-0.22",
+      "date": "2026-04-27T09:34:13.694Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projet-editor",
+      "title": "Zone 4 : couleur surlignage bleu menu / vert document",
+      "description": "Ajout dune propriete highlightType (folder|file) dans ProjetEditorZoneComponent. Selon le type de noeud selectionne dans la zone 3, le surlignage zone 4 est bleu pour les menus/dossiers et vert pour les fichiers additionnels.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "met une couleur differente dans la zone 4 lorsquon selectionne un menu ou un document : bleu menu et vert document",
+      "startedAt": "2026-04-27T09:34:13.694Z",
+      "completedAt": "2026-04-27T09:34:13.694Z"
     }
   ]
 }

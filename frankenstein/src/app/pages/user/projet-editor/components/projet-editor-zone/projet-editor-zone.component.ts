@@ -49,6 +49,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
   highlightStart = -1;
   highlightEnd = -1;
+  highlightType: 'folder' | 'file' = 'folder';
 
   get beforeHighlight() {
     if (this.highlightStart < 0) return this.unifiedContent;
@@ -400,6 +401,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
     let endPos = -1;
 
     if (node.type === 'folder' || node.name === 'contenu.md') {
+      this.highlightType = 'folder';
       const targetName = node.type === 'folder' ? node.name : this.findParentFolder(node.id, this.files)?.name;
       if (!targetName) return;
 
@@ -416,6 +418,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
       const nextMatch = nextSectionRegex.exec(ta.value);
       endPos = nextMatch ? nextMatch.index : ta.value.length;
     } else {
+      this.highlightType = 'file';
       const targetName = node.name.replace(/\.md$/, '');
       const escapedName = targetName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       const regex = new RegExp("^(['`^` `])" + escapedName + "$", 'm');

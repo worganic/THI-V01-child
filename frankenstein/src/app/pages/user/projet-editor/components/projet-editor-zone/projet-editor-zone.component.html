@@ -1,9 +1,52 @@
-<div class="h-full flex flex-col bg-white dark:bg-[#0f0f17]">
+<div class="h-full flex flex-col bg-white dark:bg-[#0f0f17] overflow-hidden">
 
-  <app-markdown-editor
-    [value]="localContent"
-    (valueChange)="onEditorChange($event)"
-    placeholder="Commencez à écrire votre document en Markdown...">
-  </app-markdown-editor>
+  <!-- Barre d'outils formatage -->
+  <div class="flex flex-wrap items-center gap-1 p-2 bg-light-surface dark:bg-surface border-b border-light-border dark:border-white/10 flex-shrink-0">
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Gras" (click)="insertAt('**', '**')"><strong>B</strong></button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Italique" (click)="insertAt('*', '*')"><em>I</em></button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Barré" (click)="insertAt('~~', '~~')"><s>S</s></button>
+    <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Nouvelle section (crée un dossier)" (click)="insertAt('\n# ', '')">H1</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 2" (click)="insertAt('## ')">H2</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 3" (click)="insertAt('### ')">H3</button>
+    <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+    <button type="button" class="px-2.5 py-1 rounded text-xs text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Liste" (click)="insertAt('- ')">&#8226; Liste</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-mono text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Code" (click)="insertAt('`', '`')">&lt;/&gt;</button>
+    <div class="flex-1"></div>
+    @if (saveStatus === 'saving') {
+      <span class="text-xs text-yellow-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Sauvegarde…</span>
+    } @else if (saveStatus === 'saved') {
+      <span class="text-xs text-green-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Sauvegardé</span>
+    } @else if (saveStatus === 'error') {
+      <span class="text-xs text-red-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">error</span> Erreur</span>
+    }
+  </div>
+
+  <!-- Zone unifiée — un seul textarea pour tout le projet -->
+  <div class="flex-1 overflow-y-auto min-h-0 px-6 py-4">
+    <div class="relative w-full">
+      <!-- Overlay de mise en évidence (surlignage de la zone Z4) -->
+      @if (highlightStart >= 0) {
+        <div class="absolute inset-0 pointer-events-none whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-transparent z-0">
+          {{beforeHighlight}}<span [class]="highlightType === 'file'
+            ? 'bg-green-100 dark:bg-green-900/40 block rounded-md border border-green-200 dark:border-green-800/50 -mx-3 px-3 py-1'
+            : 'bg-blue-100 dark:bg-blue-900/50 block rounded-md border border-blue-200 dark:border-blue-800/50 -mx-3 px-3 py-1'">{{highlightText}}</span>{{afterHighlight}}
+        </div>
+      }
+
+      <textarea
+        #unifiedTextarea
+        class="relative z-10 w-full min-h-[400px] bg-transparent text-light-text dark:text-white font-mono text-sm outline-none resize-none block leading-relaxed"
+        [value]="unifiedContent"
+        placeholder="# Nom de section&#10;&#10;Écrivez le contenu ici…&#10;&#10;# Nouvelle section&#10;&#10;Chaque titre # crée automatiquement un dossier dans la navigation à gauche."
+        (input)="onInput($event)"
+        (keydown.enter)="onEnter()"
+        (keyup)="onCursorMove()"
+        (mouseup)="onCursorMove()"
+        (blur)="onBlur()"
+        rows="1">
+      </textarea>
+    </div>
+  </div>
 
 </div>
