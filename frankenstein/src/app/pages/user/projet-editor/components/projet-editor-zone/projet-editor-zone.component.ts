@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
+import { marked } from 'marked';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -25,17 +27,69 @@ export interface SectionInfo {
   additionalFiles: AdditionalFile[];
 }
 
-type DocBlock =
-  | { kind: 'text'; key: string; text: string; fileId?: string | null; folderId?: string | null }
-  | { kind: 'image'; key: string; image: FileNode };
-
 interface DocSection {
   folderId: string;
   folderName: string;
-  textContent: string; // full text with {{IMG:id}} markers
-  blocks: DocBlock[];
+  textContent: string;
+  level: number;
   images: FileNode[];
   mainFileId: string | null;
+}
+
+interface SectionRange {
+  folderId: string;
+  level: number;
+  lineStart: number;
+  lineEnd: number;
+}
+
+interface FileRange {
+  fileId: string;
+  lineStart: number;
+  lineEnd: number;
+}
+
+interface MirrorLine {
+  text: string;
+  isImage: boolean;
+  imageId: string;
+  imageName: string;
+  imagePath: string;
+  highlightKind: 'folder' | 'file' | null;
+  lineIndex: number;
+}
+
+interface HoverPreview {
+  url: string;
+  name: string;
+  top: number;
+  left: number;
+}
+
+interface DragHandle {
+  id: string;
+  kind: 'folder' | 'file' | 'image';
+  level: number;
+  lineStart: number;
+  lineEnd: number;
+  top: number;
+  height: number;
+  label: string;
+}
+
+export interface DragDropEvent {
+  draggedNode: FileNode;
+  draggedParentId: string | null;
+  targetNode: FileNode;
+  targetParentId: string | null;
+  position: 'before' | 'after' | 'inside';
+  targetSiblings: FileNode[];
+}
+
+interface DropIndicator {
+  top: number;
+  height: number;
+  position: 'before' | 'after' | 'inside';
 }
 
 @Component({
@@ -43,6 +97,7 @@ interface DocSection {
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './projet-editor-zone.component.html',
+  styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
 })
 export class ProjetEditorZoneComponent implements OnChanges {
@@ -51,347 +106,541 @@ export class ProjetEditorZoneComponent implements OnChanges {
   @Input() saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
   @Input() projectName = '';
   @Input() activeNodeId: string | null = null;
+
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
+  @Output() dragDrop = new EventEmitter<DragDropEvent>();
 
   @ViewChild('imageInput') imageInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('textarea') textareaRef?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('mirror') mirrorRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('overlay') overlayRef?: ElementRef<HTMLDivElement>;
+  @ViewChild('visu') visuRef?: ElementRef<HTMLDivElement>;
 
+  private sanitizer = inject(DomSanitizer);
+  private zone = inject(NgZone);
+  private cdr = inject(ChangeDetectorRef);
+
+  // Mode (toggle Edition / Visu)
+  mode: 'edit' | 'visu' = 'edit';
+
+  // Erreur upload image
   imageUploadError = '';
-  selectedImageId: string | null = null;
-  renamingImageId: string | null = null;
-  renameImageValue = '';
-  showMoveForImageId: string | null = null;
-  deleteConfirmImageId: string | null = null;
 
-  constructor(private svc: ProjectFilesService) {}
-
-  docSections: DocSection[] = [];
-  private sectionTextMap = new Map<string, string>();
-  focusedSectionId: string | null = null;
-  private highlightedSectionIds = new Set<string>();
-  private highlightPositions = new Map<string, 'only' | 'first' | 'middle' | 'last'>();
-  private fileBlockPositions = new Map<string, 'only' | 'first' | 'middle' | 'last'>();
-  private lastFocusedTextareaEl: HTMLTextAreaElement | null = null;
-  private lastCursorPos = 0;
-
+  // Contenu unifié
   unifiedContent = '';
   private hasLoaded = false;
   private lastSavedContent = '';
   private saveTimeout: any;
   private lastStructureKey: string | null = null;
 
-  // ── Lifecycle ──────────────────────────────────────────────
+  // Sections / images
+  docSections: DocSection[] = [];
+  private allImages: FileNode[] = [];
+  private sectionRanges: SectionRange[] = [];
+  private fileRanges: FileRange[] = [];
 
+  // Highlights
+  private highlightedFolderIds = new Set<string>();
+  private highlightedFileIds = new Set<string>();
+  mirrorLines: MirrorLine[] = [];
+  renderedHtml: SafeHtml = '';
+
+  // Image card interactions (edit mode)
+  hoverPreview: HoverPreview | null = null;
+  renamingImageId: string | null = null;
+  renameImageValue = '';
+  deleteConfirmImageId: string | null = null;
+
+  // Drag & drop (style Notion : une seule poignée dans la gouttière gauche,
+  // visible uniquement sur la ligne survolée)
+  private readonly LINE_HEIGHT_PX = 20.8;     // 13px * 1.6
+  private readonly PADDING_TOP_PX = 16;        // 1rem
+  handles: DragHandle[] = [];
+  hoveredHandle: DragHandle | null = null;
+  dragGhost: { label: string; kind: string; x: number; y: number } | null = null;
+  dropIndicator: DropIndicator | null = null;
+  private draggingHandle: DragHandle | null = null;
+  private dragMoveListener: ((e: MouseEvent) => void) | null = null;
+  private dragUpListener: ((e: MouseEvent) => void) | null = null;
+  private dragAutoScrollRaf: number | null = null;
+  private dragLastClientY = 0;
+  private currentDropTarget: { handle: DragHandle; position: 'before' | 'after' | 'inside' } | null = null;
+  private suppressScrollOnNextActiveChange = false;
+
+  constructor(private svc: ProjectFilesService) {}
+
+  // ── Lifecycle ──────────────────────────────────────────────
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['files'] && this.files.length > 0) {
+    if (changes['files']) {
       const currentStructure = this.getFileStructureKey(this.files);
       const hasStructuralChange = this.lastStructureKey !== null && this.lastStructureKey !== currentStructure;
       this.lastStructureKey = currentStructure;
 
-      const newSections = this.buildDocSections(this.files, 1);
-      const newContent = this.reconstructContentFromSections(newSections);
+      this.docSections = this.buildDocSections(this.files, 1);
+      this.allImages = this.collectAllImages(this.files);
 
       if (!this.hasLoaded || hasStructuralChange) {
-        this.docSections = newSections;
-        this.sectionTextMap.clear();
-        this.docSections.forEach(s => this.sectionTextMap.set(s.folderId, s.textContent));
-        this.unifiedContent = newContent;
-        this.lastSavedContent = newContent;
-        setTimeout(() => this.autoResizeAllSectionTextareas(), 50);
-      } else {
-        // Fresh images from server, text preserved from sectionTextMap
-        this.docSections = newSections.map(s => {
-          const preservedText = this.sectionTextMap.get(s.folderId) ?? s.textContent;
-          return { ...s, textContent: preservedText, blocks: this.buildBlocks(preservedText, s.images, s.folderId, s.mainFileId) };
-        });
-        this.unifiedContent = this.reconstructUnifiedContent();
-        setTimeout(() => this.autoResizeAllSectionTextareas(), 50);
+        this.unifiedContent = this.reconstructFromSections();
+        this.lastSavedContent = this.unifiedContent;
       }
       this.hasLoaded = true;
-      this.highlightedSectionIds = this.computeHighlightedIds(this.activeNodeId);
-      this.rebuildHighlightPositions();
+      this.recomputeAll();
     }
+
     if (changes['activeNodeId']) {
-      this.focusedSectionId = null;
-      this.highlightedSectionIds = this.computeHighlightedIds(this.activeNodeId);
-      this.rebuildHighlightPositions();
+      this.recomputeHighlights();
+      if (this.activeNodeId && !this.suppressScrollOnNextActiveChange) {
+        setTimeout(() => this.scrollToActive(), 50);
+      }
+      this.suppressScrollOnNextActiveChange = false;
     }
+
     if (changes['scrollToNodeId'] && this.scrollToNodeId) {
-      setTimeout(() => this.scrollToNodeById(this.scrollToNodeId!), 150);
+      setTimeout(() => this.scrollToNodeById(this.scrollToNodeId!), 100);
     }
   }
 
   // ── Section building ───────────────────────────────────────
-
   private buildDocSections(nodes: FileNode[], depth: number): DocSection[] {
     const sorted = [...nodes].sort((a, b) => (a.order || 0) - (b.order || 0));
     const result: DocSection[] = [];
     for (const node of sorted) {
       if (node.type !== 'folder') continue;
-      const heading = '#'.repeat(Math.min(depth, 4)) + ' ' + node.name;
+      const level = Math.min(depth, 4);
+      const heading = '#'.repeat(level) + ' ' + node.name;
       const nodeChildren = node.children || [];
-      const hasSubFolders = nodeChildren.some(c => c.type === 'folder');
       const mainFile = nodeChildren.find(c => c.type === 'file' && c.name === 'contenu.md')
                     || nodeChildren.find(c => c.type === 'file' && !this.isImageFile(c.name));
       const mainContent = mainFile?.content ?? '';
       const images = nodeChildren.filter(c => c.type === 'file' && this.isImageFile(c.name));
       const additionalFiles = nodeChildren.filter(c => c.type === 'file' && c !== mainFile && !this.isImageFile(c.name));
 
-      if (!hasSubFolders) {
-        // Pas de sous-dossiers : comportement existant (fichiers embarqués)
-        let textContent = heading + '\n';
-        if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
-        if (additionalFiles.length > 0) {
-          const blocks = additionalFiles.map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content}\n'`).join('\n\n');
-          textContent += '\n' + blocks + '\n';
-        }
-        textContent = textContent.trimEnd();
-        result.push({ folderId: node.id, folderName: node.name, textContent, blocks: this.buildBlocks(textContent, images, node.id, mainFile?.id || null), images, mainFileId: mainFile?.id || null });
-      } else {
-        // A des sous-dossiers : section parent (heading + contenu principal seulement),
-        // puis intercalage enfants par ordre
-        let textContent = heading + '\n';
-        if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
-        textContent = textContent.trimEnd();
-        result.push({ folderId: node.id, folderName: node.name, textContent, blocks: this.buildBlocks(textContent, images, node.id, mainFile?.id || null), images, mainFileId: mainFile?.id || null });
+      let textContent = heading + '\n';
+      if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
+      if (additionalFiles.length > 0) {
+        const blocks = additionalFiles.map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content || ''}\n'`).join('\n\n');
+        textContent += '\n' + blocks + '\n';
+      }
+      textContent = textContent.trimEnd();
 
-        const sortedChildren = [...nodeChildren].sort((a, b) => (a.order || 0) - (b.order || 0));
-        for (const child of sortedChildren) {
-          if (child.type === 'folder') {
-            result.push(...this.buildDocSections([child], depth + 1));
-          } else if (child !== mainFile && !this.isImageFile(child.name) && child.type === 'file') {
-            // Fichier additionnel → sa propre section, folderId = file.id
-            const fileText = `'${child.name.replace(/\.md$/, '')}\n${child.content || ''}\n'`;
-            result.push({
-              folderId: child.id,
-              folderName: child.name.replace(/\.md$/, ''),
-              textContent: fileText,
-              blocks: this.buildBlocks(fileText, [], child.id, child.id),
-              images: [],
-              mainFileId: child.id,
-            });
-          }
-        }
+      result.push({
+        folderId: node.id,
+        folderName: node.name,
+        textContent,
+        level,
+        images,
+        mainFileId: mainFile?.id || null,
+      });
+
+      // Recurse into sub-folders
+      const subFolders = nodeChildren.filter(c => c.type === 'folder');
+      if (subFolders.length > 0) {
+        result.push(...this.buildDocSections(subFolders, depth + 1));
       }
     }
     return result;
   }
 
-  private buildBlocks(fullText: string, imageNodes: FileNode[], folderId: string, mainFileId: string | null = null): DocBlock[] {
-    const markerRe = /\n\{\{IMG:([a-f0-9-]+)\}\}\n/g;
-    const blocks: DocBlock[] = [];
-    let lastIndex = 0;
-    let textIdx = 0;
-    const referencedIds = new Set<string>();
-    let m: RegExpExecArray | null;
-
-    while ((m = markerRe.exec(fullText)) !== null) {
-      const text = fullText.substring(lastIndex, m.index);
-      this.pushTextBlocks(blocks, text, folderId, mainFileId, textIdx);
-      textIdx += 2;
-      const imgId = m[1];
-      const imgNode = imageNodes.find(n => n.id === imgId);
-      if (imgNode) {
-        blocks.push({ kind: 'image', key: `${folderId}-i${imgId}`, image: imgNode });
-        referencedIds.add(imgId);
+  private collectAllImages(nodes: FileNode[]): FileNode[] {
+    const result: FileNode[] = [];
+    const walk = (ns: FileNode[]) => {
+      for (const n of ns) {
+        if (n.type === 'file' && this.isImageFile(n.name)) result.push(n);
+        if (n.children) walk(n.children);
       }
-      lastIndex = m.index + m[0].length;
-    }
-    const finalEx = fullText.substring(lastIndex);
-    this.pushTextBlocks(blocks, finalEx, folderId, mainFileId, textIdx);
-
-    // Images without marker → append at end (backward compat)
-    for (const img of imageNodes) {
-      if (!referencedIds.has(img.id)) {
-        blocks.push({ kind: 'image', key: `${folderId}-i${img.id}`, image: img });
-      }
-    }
-    return blocks;
+    };
+    walk(nodes);
+    return result;
   }
 
-  private pushTextBlocks(blocks: DocBlock[], text: string, folderId: string, mainFileId: string | null, startIndex: number) {
-    if (!text) return;
-    let currentText = text;
-    let localIdx = startIndex;
+  private reconstructFromSections(): string {
+    const texts = this.docSections.map(s => s.textContent).filter(t => t.trim());
+    return texts.join('\n\n') + (texts.length > 0 ? '\n' : '');
+  }
 
-    // 1. Heading extraction
-    const trimmed = currentText.trimStart();
-    if (trimmed.startsWith('#')) {
-      const firstNL = currentText.indexOf('\n');
-      const heading = (firstNL !== -1) ? currentText.substring(0, firstNL + 1) : currentText + '\n';
-      blocks.push({ 
-        kind: 'text', 
-        key: `${folderId}-t${localIdx++}`, 
-        text: heading,
-        folderId: folderId
+  // ── Recompute pipeline ─────────────────────────────────────
+  private recomputeAll() {
+    this.recomputeRanges();
+    this.recomputeHighlights();
+    this.recomputeHandles();
+    this.recomputeRenderedHtml();
+  }
+
+  private recomputeHandles() {
+    const list: DragHandle[] = [];
+    // Sections (folders)
+    for (const r of this.sectionRanges) {
+      const node = this.findNode(r.folderId, this.files);
+      if (!node) continue;
+      list.push({
+        id: r.folderId,
+        kind: 'folder',
+        level: r.level,
+        lineStart: r.lineStart,
+        lineEnd: r.lineEnd,
+        top: this.PADDING_TOP_PX + r.lineStart * this.LINE_HEIGHT_PX,
+        height: Math.max((r.lineEnd - r.lineStart + 1) * this.LINE_HEIGHT_PX, 24),
+        label: node.name,
       });
-      currentText = (firstNL !== -1) ? currentText.substring(firstNL + 1) : '';
+    }
+    // Additional files
+    for (const r of this.fileRanges) {
+      const node = this.findNode(r.fileId, this.files);
+      if (!node) continue;
+      list.push({
+        id: r.fileId,
+        kind: 'file',
+        level: 0,
+        lineStart: r.lineStart,
+        lineEnd: r.lineEnd,
+        top: this.PADDING_TOP_PX + r.lineStart * this.LINE_HEIGHT_PX,
+        height: Math.max((r.lineEnd - r.lineStart + 1) * this.LINE_HEIGHT_PX, 24),
+        label: node.name.replace(/\.md$/, ''),
+      });
+    }
+    // Image markers
+    for (const ml of this.mirrorLines) {
+      if (!ml.isImage) continue;
+      list.push({
+        id: ml.imageId,
+        kind: 'image',
+        level: 0,
+        lineStart: ml.lineIndex,
+        lineEnd: ml.lineIndex,
+        top: this.PADDING_TOP_PX + ml.lineIndex * this.LINE_HEIGHT_PX,
+        height: this.LINE_HEIGHT_PX,
+        label: ml.imageName,
+      });
+    }
+    list.sort((a, b) => a.top - b.top);
+    this.handles = list;
+  }
+
+  private recomputeRanges() {
+    const lines = this.unifiedContent.split('\n');
+    const flatHeads: { lineIdx: number; level: number; name: string }[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const m = /^(#{1,4}) (.+)$/.exec(lines[i]);
+      if (m) flatHeads.push({ lineIdx: i, level: m[1].length, name: m[2].trim() });
+    }
+    // Map docSections to flatHeads in order (by level + name)
+    this.sectionRanges = [];
+    let cursor = 0;
+    for (const sec of this.docSections) {
+      let found = -1;
+      for (let j = cursor; j < flatHeads.length; j++) {
+        if (flatHeads[j].level === sec.level && flatHeads[j].name === sec.folderName) {
+          found = j;
+          break;
+        }
+      }
+      if (found === -1) continue;
+      cursor = found + 1;
+      this.sectionRanges.push({
+        folderId: sec.folderId,
+        level: sec.level,
+        lineStart: flatHeads[found].lineIdx,
+        lineEnd: lines.length - 1, // patched below
+      });
+    }
+    // lineEnd = juste avant la prochaine section de même niveau ou inférieur (=parent)
+    for (let i = 0; i < this.sectionRanges.length; i++) {
+      const r = this.sectionRanges[i];
+      let end = lines.length - 1;
+      for (let j = i + 1; j < this.sectionRanges.length; j++) {
+        if (this.sectionRanges[j].level <= r.level) {
+          end = this.sectionRanges[j].lineStart - 1;
+          break;
+        }
+      }
+      r.lineEnd = end;
     }
 
-    if (!currentText) return;
+    // Détection des blocs de fichiers additionnels : 'name\n...content...\n'
+    this.fileRanges = [];
+    for (const r of this.sectionRanges) {
+      const folderNode = this.findNode(r.folderId, this.files);
+      if (!folderNode) continue;
+      const additionalFiles = (folderNode.children || []).filter(c =>
+        c.type === 'file' && !this.isImageFile(c.name) && c.name !== 'contenu.md'
+      );
+      if (additionalFiles.length === 0) continue;
 
-    // 2. Split between main content and additional files using manual scan
-    let lastPos = 0;
-    const delimiters = ["'", "`", "^"];
-    
-    while (lastPos < currentText.length) {
-      let foundStart = -1;
-      let usedDelim = "";
-      
-      for (const d of delimiters) {
-        const idx = currentText.indexOf(d, lastPos);
-        if (idx !== -1 && (foundStart === -1 || idx < foundStart)) {
-          // Block must be at start of text or after a newline
-          if (idx === 0 || currentText[idx-1] === '\n') {
-            foundStart = idx;
-            usedDelim = d;
+      let i = r.lineStart + 1;
+      while (i <= r.lineEnd) {
+        const m = /^(['`^])(.+)$/.exec(lines[i]);
+        if (m) {
+          const delim = m[1];
+          const name = m[2].trim();
+          let endLine = -1;
+          for (let j = i + 1; j <= r.lineEnd; j++) {
+            if (lines[j].trim() === delim) { endLine = j; break; }
+          }
+          if (endLine !== -1) {
+            const fileNode = additionalFiles.find(f =>
+              this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(name)
+            );
+            if (fileNode) {
+              this.fileRanges.push({ fileId: fileNode.id, lineStart: i, lineEnd: endLine });
+            }
+            i = endLine + 1;
+            continue;
           }
         }
+        i++;
       }
-
-      if (foundStart === -1) {
-        const remaining = currentText.substring(lastPos);
-        if (remaining.trim() || !blocks.some(b => b.kind === 'text' && b.fileId === mainFileId)) {
-          blocks.push({ kind: 'text', key: `${folderId}-t${localIdx++}`, text: remaining, fileId: mainFileId });
-        }
-        break;
-      }
-
-      const nextNL = currentText.indexOf('\n', foundStart + 1);
-      const closingDelim = (nextNL !== -1) ? currentText.indexOf('\n' + usedDelim, nextNL) : -1;
-
-      if (nextNL === -1 || closingDelim === -1) {
-        // Not a complete block, treat the rest as normal text
-        blocks.push({ kind: 'text', key: `${folderId}-t${localIdx++}`, text: currentText.substring(lastPos), fileId: mainFileId });
-        break;
-      }
-
-      // Found a valid block
-      const before = currentText.substring(lastPos, foundStart);
-      if (before.trim()) {
-        blocks.push({ kind: 'text', key: `${folderId}-t${localIdx++}`, text: before, fileId: mainFileId });
-      }
-
-      const blockEnd = closingDelim + usedDelim.length + 1;
-      const fileBlockText = currentText.substring(foundStart, blockEnd);
-      const fileName = currentText.substring(foundStart + 1, nextNL).trim();
-      const fileNode = this.findNodeBySlug(fileName, 'file');
-
-      blocks.push({
-        kind: 'text',
-        key: `${folderId}-t${localIdx++}`,
-        text: fileBlockText,
-        fileId: fileNode?.id || null
-      });
-
-      lastPos = blockEnd;
     }
   }
 
-  private guessFileId(text: string, mainFileId: string | null): string | null {
-    const trimmed = text.trim();
-    if (!trimmed) return null;
-    
-    // Check for additional file block
-    const blockRegex = /^(['`^])([^\n]+)\n/m;
-    const m = blockRegex.exec(trimmed);
+  private recomputeHighlights() {
+    this.computeHighlights();
+    this.recomputeMirrorLines();
+    this.recomputeRenderedHtml();
+  }
+
+  private computeHighlights() {
+    this.highlightedFolderIds = new Set<string>();
+    this.highlightedFileIds = new Set<string>();
+    if (!this.activeNodeId) return;
+    const node = this.findNode(this.activeNodeId, this.files);
+    if (!node) return;
+    if (node.type === 'folder') {
+      const addAll = (n: FileNode) => {
+        this.highlightedFolderIds.add(n.id);
+        for (const c of (n.children || [])) {
+          if (c.type === 'folder') addAll(c);
+        }
+      };
+      addAll(node);
+    } else if (node.type === 'file' && !this.isImageFile(node.name)) {
+      if (node.name === 'contenu.md') {
+        // Fichier principal : surligne le dossier parent (bleu)
+        const parent = this.findParentFolder(this.activeNodeId, this.files);
+        if (parent) this.highlightedFolderIds.add(parent.id);
+      } else {
+        // Document additionnel : surligne uniquement son bloc (vert)
+        this.highlightedFileIds.add(this.activeNodeId);
+      }
+    }
+  }
+
+  private recomputeMirrorLines() {
+    const lines = this.unifiedContent.split('\n');
+    const folderHl = new Set<number>();
+    const fileHl = new Set<number>();
+    for (const r of this.sectionRanges) {
+      if (this.highlightedFolderIds.has(r.folderId)) {
+        for (let i = r.lineStart; i <= r.lineEnd; i++) folderHl.add(i);
+      }
+    }
+    for (const r of this.fileRanges) {
+      if (this.highlightedFileIds.has(r.fileId)) {
+        for (let i = r.lineStart; i <= r.lineEnd; i++) fileHl.add(i);
+      }
+    }
+    this.mirrorLines = lines.map((line, i) => {
+      const kind: 'folder' | 'file' | null = fileHl.has(i) ? 'file' : (folderHl.has(i) ? 'folder' : null);
+      const m = /^\{\{IMG:([a-z0-9-]+)\}\}\s*$/i.exec(line.trim());
+      if (m) {
+        const img = this.allImages.find(im => im.id === m[1]);
+        return {
+          text: line,
+          isImage: true,
+          imageId: m[1],
+          imageName: img?.name || 'image manquante',
+          imagePath: img?.path || '',
+          highlightKind: kind,
+          lineIndex: i,
+        };
+      }
+      return { text: line, isImage: false, imageId: '', imageName: '', imagePath: '', highlightKind: kind, lineIndex: i };
+    });
+  }
+
+  private recomputeRenderedHtml() {
+    if (this.mode !== 'visu') {
+      this.renderedHtml = '';
+      return;
+    }
+    let md = this.unifiedContent.replace(/\{\{IMG:([a-z0-9-]+)\}\}/gi, (_, id) => {
+      const img = this.allImages.find(im => im.id === id);
+      if (!img) return `\n\n*[image manquante]*\n\n`;
+      const encodedPath = img.path.split('/').map(s => encodeURIComponent(s)).join('/');
+      const url = this.svc.getImageUrl(this.projectName, encodedPath);
+      return `\n\n![${this.escapeAlt(img.name)}](${url})\n\n`;
+    });
+
+    // Extraire les blocs de fichiers, les rendre séparément, remplacer par un placeholder
+    const placeholders: { token: string; html: string }[] = [];
+    md = md.replace(/^(['`^])([^\n]+)\n([\s\S]*?)\n\1\s*$/gm, (_match, _delim, name, content) => {
+      const trimmed = (name as string).trim();
+      const fileNode = this.findFileBySlug(trimmed);
+      const fileId = fileNode?.id || '';
+      const inner = marked.parse(content as string, { async: false }) as string;
+      const hlClass = fileId && this.highlightedFileIds.has(fileId) ? ' visu-file--hl' : '';
+      const token = `@@FB${placeholders.length}@@`;
+      const attr = fileId ? ` data-file-id="${fileId}"` : '';
+      placeholders.push({
+        token,
+        html: `<div class="visu-file${hlClass}"${attr}><div class="visu-file__title">${this.escapeHtml(trimmed)}</div>${inner}</div>`,
+      });
+      return `\n\n${token}\n\n`;
+    });
+
+    let html = marked.parse(md, { async: false }) as string;
+    for (const ph of placeholders) {
+      const wrapped = new RegExp(`<p>\\s*${ph.token}\\s*</p>`, 'g');
+      html = html.replace(wrapped, ph.html).replace(ph.token, ph.html);
+    }
+    // Marquer chaque heading avec data-section-id pour scroll/highlight
+    for (const sec of this.docSections) {
+      const tag = `h${sec.level}`;
+      const escaped = sec.folderName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const re = new RegExp(`<${tag}([^>]*)>${escaped}</${tag}>`);
+      const hl = this.highlightedFolderIds.has(sec.folderId) ? ' visu-section visu-section--hl' : ' visu-section';
+      html = html.replace(re, (_match, attrs) => {
+        return `<${tag}${attrs} data-section-id="${sec.folderId}" class="${hl.trim()}">${this.escapeHtml(sec.folderName)}</${tag}>`;
+      });
+    }
+    this.renderedHtml = this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  private escapeAlt(s: string): string {
+    return s.replace(/[\[\]]/g, '');
+  }
+
+  private escapeHtml(s: string): string {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  // ── Mode toggle ─────────────────────────────────────────────
+  setMode(m: 'edit' | 'visu') {
+    if (this.mode === m) return;
+    if (this.mode === 'edit') this.saveAll();
+    this.mode = m;
+    this.recomputeAll();
+    if (this.activeNodeId) {
+      setTimeout(() => this.scrollToActive(), 80);
+    }
+  }
+
+  // ── Edit-mode events ────────────────────────────────────────
+  onTextareaInput(event: Event) {
+    const ta = event.target as HTMLTextAreaElement;
+    this.unifiedContent = ta.value;
+    this.recomputeRanges();
+    this.recomputeMirrorLines();
+    this.recomputeHandles();
+    this.scheduleSave();
+  }
+
+  onTextareaScroll(event: Event) {
+    const ta = event.target as HTMLTextAreaElement;
+    const m = this.mirrorRef?.nativeElement;
     if (m) {
-      const name = m[2].trim();
-      const node = this.findNodeBySlug(name, 'file');
-      if (node) return node.id;
+      m.scrollTop = ta.scrollTop;
+      m.scrollLeft = ta.scrollLeft;
     }
-    
-    return mainFileId;
-  }
-
-  private reconstructContentFromSections(sections: DocSection[]): string {
-    const texts = sections.map(s => s.textContent).filter(t => t.trim());
-    return texts.join('\n\n') + (texts.length > 0 ? '\n' : '');
-  }
-
-  private reconstructUnifiedContent(): string {
-    const texts = this.docSections
-      .map(s => this.sectionTextMap.get(s.folderId) ?? s.textContent)
-      .filter(t => t.trim());
-    return texts.join('\n\n') + (texts.length > 0 ? '\n' : '');
-  }
-
-  private reconstructSectionFullText(folderId: string): string {
-    const section = this.docSections.find(s => s.folderId === folderId);
-    if (!section) return this.sectionTextMap.get(folderId) ?? '';
-    const sectionEl = document.getElementById('section-' + folderId);
-    const taByKey = new Map<string, string>();
-    if (sectionEl) {
-      sectionEl.querySelectorAll<HTMLTextAreaElement>('.section-textarea').forEach(ta => {
-        const key = ta.getAttribute('data-block-key');
-        if (key) taByKey.set(key, ta.value);
-      });
+    const o = this.overlayRef?.nativeElement;
+    if (o) {
+      const inner = o.firstElementChild as HTMLElement | null;
+      if (inner) inner.style.transform = `translateY(${-ta.scrollTop}px)`;
     }
-    let result = '';
-    for (const block of section.blocks) {
-      if (block.kind === 'text') {
-        result += taByKey.has(block.key) ? taByKey.get(block.key)! : block.text;
-      } else {
-        result += '\n{{IMG:' + block.image.id + '}}\n';
+  }
+
+  // ── Survol : déterminer la poignée affichée sur la ligne courante ──
+  // Priorité : image > document > dossier le plus profond.
+  // Pendant un drag, on fige (la poignée affichée reste celle qu'on déplace).
+  onWrapMouseMove(ev: MouseEvent) {
+    if (this.draggingHandle) return;
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) { this.hoveredHandle = null; return; }
+    const rect = ta.getBoundingClientRect();
+    if (ev.clientY < rect.top + 4 || ev.clientY > rect.bottom - 4) {
+      this.hoveredHandle = null;
+      return;
+    }
+    const contentY = ev.clientY - rect.top + ta.scrollTop;
+    const lineIdx = Math.floor((contentY - this.PADDING_TOP_PX) / this.LINE_HEIGHT_PX);
+    if (lineIdx < 0) { this.hoveredHandle = null; return; }
+
+    // 1) Image (ligne unique)
+    for (const ml of this.mirrorLines) {
+      if (ml.isImage && ml.lineIndex === lineIdx) {
+        const h = this.handles.find(x => x.kind === 'image' && x.id === ml.imageId);
+        if (h) { this.setHoveredHandle(h); return; }
       }
     }
-    return result;
-  }
-
-  private getInsertPositionInFullText(folderId: string): number {
-    const section = this.docSections.find(s => s.folderId === folderId);
-    if (!section || !this.lastFocusedTextareaEl) {
-      return (this.sectionTextMap.get(folderId) ?? '').length;
-    }
-    const blockKey = this.lastFocusedTextareaEl.getAttribute('data-block-key');
-    if (!blockKey) return (this.sectionTextMap.get(folderId) ?? '').length;
-
-    const sectionEl = document.getElementById('section-' + folderId);
-    const taByKey = new Map<string, string>();
-    if (sectionEl) {
-      sectionEl.querySelectorAll<HTMLTextAreaElement>('.section-textarea').forEach(ta => {
-        const key = ta.getAttribute('data-block-key');
-        if (key) taByKey.set(key, ta.value);
-      });
-    }
-    let pos = 0;
-    for (const block of section.blocks) {
-      if (block.kind === 'text') {
-        if (block.key === blockKey) return pos + this.lastCursorPos;
-        pos += (taByKey.get(block.key) ?? block.text).length;
-      } else {
-        pos += `\n{{IMG:${block.image.id}}}\n`.length;
+    // 2) Document (bloc 'name ... ')
+    for (const fr of this.fileRanges) {
+      if (lineIdx >= fr.lineStart && lineIdx <= fr.lineEnd) {
+        const h = this.handles.find(x => x.kind === 'file' && x.id === fr.fileId);
+        if (h) { this.setHoveredHandle(h); return; }
       }
     }
-    return pos;
-  }
-
-  // ── Content parsing / saving ───────────────────────────────
-
-  private slugify(text: string): string {
-    return text.toString().toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-')
-      .replace(/-+/g, '-').trim();
-  }
-
-  private buildFolderMap(nodes: FileNode[], prefix: string[] = []): Map<string, { folder: FileNode; files: FileNode[] }> {
-    const map = new Map<string, { folder: FileNode; files: FileNode[] }>();
-    for (const node of nodes) {
-      if (node.type === 'folder') {
-        const pathParts = [...prefix, this.slugify(node.name)];
-        const key = pathParts.join('/');
-        const files = (node.children || []).filter(c => c.type === 'file');
-        map.set(key, { folder: node, files });
-        const submap = this.buildFolderMap(node.children || [], pathParts);
-        submap.forEach((v, k) => map.set(k, v));
+    // 3) Dossier (le plus profond contenant la ligne)
+    let best: SectionRange | null = null;
+    for (const r of this.sectionRanges) {
+      if (lineIdx >= r.lineStart && lineIdx <= r.lineEnd) {
+        if (!best || r.level > best.level) best = r;
       }
     }
-    return map;
+    if (best) {
+      const h = this.handles.find(x => x.kind === 'folder' && x.id === best!.folderId);
+      if (h) { this.setHoveredHandle(h); return; }
+    }
+    this.hoveredHandle = null;
   }
 
+  onWrapMouseLeave() {
+    if (!this.draggingHandle) this.hoveredHandle = null;
+  }
+
+  private setHoveredHandle(h: DragHandle) {
+    if (this.hoveredHandle?.id !== h.id) this.hoveredHandle = h;
+  }
+
+  onTextareaCursor(event: Event) {
+    const ta = event.target as HTMLTextAreaElement;
+    const lineIdx = ta.value.substring(0, ta.selectionStart).split('\n').length - 1;
+    // Priorité : si dans un bloc fichier additionnel → emit fileId
+    for (const fr of this.fileRanges) {
+      if (lineIdx >= fr.lineStart && lineIdx <= fr.lineEnd) {
+        this.suppressScrollOnNextActiveChange = true;
+        this.nodeActive.emit(fr.fileId);
+        return;
+      }
+    }
+    for (let i = this.sectionRanges.length - 1; i >= 0; i--) {
+      const r = this.sectionRanges[i];
+      if (lineIdx >= r.lineStart && lineIdx <= r.lineEnd) {
+        this.suppressScrollOnNextActiveChange = true;
+        this.nodeActive.emit(r.folderId);
+        return;
+      }
+    }
+  }
+
+  onTextareaBlur() {
+    this.saveAll();
+  }
+
+  private scheduleSave() {
+    clearTimeout(this.saveTimeout);
+    this.saveTimeout = setTimeout(() => this.saveAll(), 800);
+  }
+
+  private saveAll() {
+    if (this.unifiedContent === this.lastSavedContent) return;
+    this.lastSavedContent = this.unifiedContent;
+    const sections = this.parseContent();
+    this.sectionsChange.emit(sections);
+  }
+
+  // ── Content parsing (compat existant) ──────────────────────
   parseContent(): SectionInfo[] {
     const text = this.unifiedContent;
     const folderMap = this.buildFolderMap(this.files);
@@ -408,8 +657,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
       let rawContent = text.substring(current.contentStart, contentEnd).trimEnd();
       const additionalFiles: AdditionalFile[] = [];
       const blockRegex = /^(['`^])([^\n]+)(?:\n([\s\S]*?))?\n?\1/gm;
-      const mainContent = rawContent.replace(blockRegex, (match, delimiter, title, content) => {
-        additionalFiles.push({ name: title.trim(), content: (content || '').trimEnd(), fileId: null });
+      const mainContent = rawContent.replace(blockRegex, (_match, _delimiter, title, content) => {
+        additionalFiles.push({ name: (title as string).trim(), content: ((content as string) || '').trimEnd(), fileId: null });
         return '';
       }).trim();
       const parentPath: string[] = [];
@@ -435,447 +684,48 @@ export class ProjetEditorZoneComponent implements OnChanges {
     return sections;
   }
 
-  private saveAll() {
-    if (this.unifiedContent === this.lastSavedContent) return;
-    this.lastSavedContent = this.unifiedContent;
-    const sections = this.parseContent();
-    this.sectionsChange.emit(sections);
+  private slugify(text: string): string {
+    return text.toString().toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-')
+      .replace(/-+/g, '-').trim();
   }
 
-  // ── Section events ─────────────────────────────────────────
-
-  onSectionFocus(folderId: string, event: FocusEvent) {
-    this.focusedSectionId = folderId;
-    this.lastFocusedTextareaEl = event.target as HTMLTextAreaElement;
-    this.clearImageSelection();
-  }
-
-  onBlockInput(folderId: string, event: Event) {
-    const ta = event.target as HTMLTextAreaElement;
-    this.autoResizeSectionTextarea(ta);
-    const newFullText = this.reconstructSectionFullText(folderId);
-    this.sectionTextMap.set(folderId, newFullText);
-    this.unifiedContent = this.reconstructUnifiedContent();
-    // Suppression du saveTimeout pour privilégier le changement de ligne ou le blur
-  }
-
-  onSectionBlur(folderId: string) {
-    this.focusedSectionId = null;
-    const newFullText = this.reconstructSectionFullText(folderId);
-    this.sectionTextMap.set(folderId, newFullText);
-    this.unifiedContent = this.reconstructUnifiedContent();
-    this.saveAll(); // Sauvegarde immédiate au défocus
-  }
-
-  private lastLineNumber = -1;
-
-  onSectionCursorMove(folderId: string, event: Event) {
-    const ta = event.target as HTMLTextAreaElement;
-    this.lastFocusedTextareaEl = ta;
-    
-    // Détection du changement de ligne pour déclencher la sauvegarde
-    const currentPos = ta.selectionStart;
-    const textBefore = ta.value.substring(0, currentPos);
-    const currentLineNumber = textBefore.split('\n').length;
-
-    if (this.lastLineNumber !== -1 && currentLineNumber !== this.lastLineNumber) {
-      this.saveAll(); // Sauvegarde car on a changé de ligne
-    }
-    this.lastLineNumber = currentLineNumber;
-
-    this.lastCursorPos = currentPos;
-    const pos = currentPos;
-    const sectionText = ta.value;
-    const blockRegex = /^(['`^])([^\n]+)\n([\s\S]*?)\n\1/gm;
-    let blockMatch: RegExpExecArray | null;
-    while ((blockMatch = blockRegex.exec(sectionText)) !== null) {
-      if (pos >= blockMatch.index && pos <= blockMatch.index + blockMatch[0].length) {
-        const name = blockMatch[2].trim();
-        const node = this.findNodeBySlug(name, 'file');
-        if (node) { this.nodeActive.emit(node.id); return; }
+  private buildFolderMap(nodes: FileNode[], prefix: string[] = []): Map<string, { folder: FileNode; files: FileNode[] }> {
+    const map = new Map<string, { folder: FileNode; files: FileNode[] }>();
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        const pathParts = [...prefix, this.slugify(node.name)];
+        const key = pathParts.join('/');
+        const files = (node.children || []).filter(c => c.type === 'file');
+        map.set(key, { folder: node, files });
+        const submap = this.buildFolderMap(node.children || [], pathParts);
+        submap.forEach((v, k) => map.set(k, v));
       }
     }
-    this.nodeActive.emit(folderId);
+    return map;
   }
 
-  // ── Toolbar actions ────────────────────────────────────────
-
+  // ── Toolbar formatting ──────────────────────────────────────
   insertAt(before: string, after = '') {
-    const ta = this.lastFocusedTextareaEl;
-    const folderId = this.focusedSectionId;
-    if (!ta || !folderId) return;
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const selected = ta.value.substring(start, end);
     const newVal = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
+    this.unifiedContent = newVal;
     ta.value = newVal;
-    const newFullText = this.reconstructSectionFullText(folderId);
-    this.sectionTextMap.set(folderId, newFullText);
-    this.unifiedContent = this.reconstructUnifiedContent();
-    this.saveAll();
+    this.recomputeRanges();
+    this.recomputeMirrorLines();
+    this.scheduleSave();
     setTimeout(() => {
       ta.focus();
       ta.setSelectionRange(start + before.length, start + before.length + selected.length);
     });
   }
 
-  // ── Called from parent (no-op: sections rebuilt via ngOnChanges) ───
-
-  appendSection(folderName: string, level = 1) {}
-
-  insertSectionInParent(parentName: string, parentDepth: number, sectionName: string) {}
-
-  // ── Scroll / navigation ────────────────────────────────────
-
-  scrollToNodeById(id: string) {
-    const node = this.findNode(id, this.files);
-    if (!node) return;
-    if (node.type === 'file' && this.isImageFile(node.name)) {
-      setTimeout(() => {
-        document.getElementById('img-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
-      return;
-    }
-    if (node.type === 'folder') {
-      setTimeout(() => {
-        document.getElementById('section-' + id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-      return;
-    }
-    const parent = this.findParentFolder(id, this.files);
-    if (parent) {
-      setTimeout(() => {
-        document.getElementById('section-' + parent.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  }
-
-  // ── DOM helpers ────────────────────────────────────────────
-
-  private autoResizeAllSectionTextareas() {
-    document.querySelectorAll<HTMLTextAreaElement>('.section-textarea')
-      .forEach(ta => this.autoResizeSectionTextarea(ta));
-  }
-
-  private autoResizeSectionTextarea(ta: HTMLTextAreaElement) {
-    ta.style.height = 'auto';
-    ta.style.height = ta.scrollHeight + 'px';
-  }
-
-  private getFileStructureKey(nodes: FileNode[], parentId: string = 'root'): string {
-    let key = '';
-    for (const node of nodes) {
-      if (node.type === 'file') {
-        key += `|f:${node.id}-p:${parentId}`;
-      } else if (node.children) {
-        key += this.getFileStructureKey(node.children, node.id);
-      }
-    }
-    return key;
-  }
-
-  // ── Tree helpers ───────────────────────────────────────────
-
-  private findNode(id: string, nodes: FileNode[]): FileNode | null {
-    for (const n of nodes) {
-      if (n.id === id) return n;
-      if (n.children) { const f = this.findNode(id, n.children); if (f) return f; }
-    }
-    return null;
-  }
-
-  private findParentFolder(id: string, nodes: FileNode[]): FileNode | null {
-    for (const node of nodes) {
-      if (node.type === 'folder') {
-        if ((node.children || []).some(c => c.id === id)) return node;
-        const found = this.findParentFolder(id, node.children || []);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
-
-  private findNodeBySlug(name: string, type: 'file' | 'folder', nodes: FileNode[] = this.files): FileNode | null {
-    if (!name) return null;
-    const slugSearch = this.slugify(name);
-    const lowerSearch = name.trim().toLowerCase();
-    for (const n of nodes) {
-      const nodeSlug = this.slugify(n.name);
-      const nodeLower = n.name.trim().toLowerCase();
-      if (n.type === 'folder') {
-        if (type === 'folder' && (nodeSlug === slugSearch || nodeLower === lowerSearch)) return n;
-        if (n.children) { const found = this.findNodeBySlug(name, type, n.children); if (found) return found; }
-      } else if (n.type === 'file' && type === 'file') {
-        const fileNameNoExt = n.name.replace(/\.md$/, '').trim().toLowerCase();
-        if (n.name !== 'contenu.md' && (this.slugify(fileNameNoExt) === slugSearch || fileNameNoExt === lowerSearch)) return n;
-      }
-    }
-    return null;
-  }
-
-  // ── Image helpers ──────────────────────────────────────────
-
-  isImageFile(name: string): boolean {
-    return this.svc.isImageFile(name);
-  }
-
-  get activeImage(): FileNode | null {
-    if (!this.activeNodeId) return null;
-    const node = this.findNode(this.activeNodeId, this.files);
-    return (node?.type === 'file' && this.isImageFile(node.name)) ? node : null;
-  }
-
-  getImageCardClasses(img: FileNode): string {
-    const base = 'transition-all rounded-lg p-1 cursor-pointer';
-    if (this.selectedImageId === img.id || this.activeImage?.id === img.id)
-      return base + ' outline outline-2 outline-light-primary dark:outline-primary';
-    return base + ' hover:outline hover:outline-1 hover:outline-light-border dark:hover:outline-white/20';
-  }
-
-  getSectionClasses(folderId: string): string {
-    const pos = this.highlightPositions.get(folderId);
-    const basePadding = 'px-6 py-2';
-
-    if (!pos) return `mb-1 rounded-lg ${basePadding} transition-all`;
-
-    // Section fichier (folderId = file.id) → vert ; dossier → bleu
-    const sectionNode = this.findNode(folderId, this.files);
-    const isFileSec = sectionNode?.type === 'file';
-    const borderColor = isFileSec ? 'border-green-500/40' : 'border-blue-500/30';
-    const bgColor     = isFileSec ? 'bg-green-500/5'      : 'bg-blue-500/5';
-    const base = `mb-0 ${basePadding} transition-all border-l border-r ${borderColor} ${bgColor}`;
-
-    switch (pos) {
-      case 'only':   return `mb-1 rounded-lg border ${borderColor} ${bgColor} transition-all ${basePadding}`;
-      case 'first':  return `${base} rounded-t-lg border-t`;
-      case 'middle': return `${base} border-t-0 border-b-0`;
-      case 'last':   return `mb-1 ${base} rounded-b-lg border-b`;
-      default:       return `mb-1 rounded-lg ${basePadding} transition-all`;
-    }
-  }
-
-  private rebuildHighlightPositions() {
-    this.highlightPositions.clear();
-    this.fileBlockPositions.clear();
-
-    // Section-level (folder) positions — bleu
-    const ordered = this.docSections
-      .map((s, idx) => ({ folderId: s.folderId, idx }))
-      .filter(item => this.highlightedSectionIds.has(item.folderId));
-    for (let i = 0; i < ordered.length; i++) {
-      const { folderId, idx } = ordered[i];
-      const prevConsec = i > 0 && ordered[i - 1].idx === idx - 1;
-      const nextConsec = i < ordered.length - 1 && ordered[i + 1].idx === idx + 1;
-      if (!prevConsec && !nextConsec) this.highlightPositions.set(folderId, 'only');
-      else if (!prevConsec)           this.highlightPositions.set(folderId, 'first');
-      else if (!nextConsec)           this.highlightPositions.set(folderId, 'last');
-      else                            this.highlightPositions.set(folderId, 'middle');
-    }
-
-    // Block-level (file) positions — vert
-    // On cherche uniquement dans la section du dossier parent réel du fichier
-    if (this.activeNodeId) {
-      const node = this.findNode(this.activeNodeId, this.files);
-      if (node?.type === 'file' && !this.isImageFile(node.name)) {
-        const parentFolder = this.findParentFolder(this.activeNodeId, this.files);
-        const section = parentFolder
-          ? this.docSections.find(s => s.folderId === parentFolder.id)
-          : null;
-        if (section) {
-          const matching = section.blocks
-            .map((b, i) => ({ b, i }))
-            .filter(item => (item.b as any).fileId === this.activeNodeId);
-          for (let j = 0; j < matching.length; j++) {
-            const { b, i } = matching[j];
-            const prevConsec = j > 0 && matching[j - 1].i === i - 1;
-            const nextConsec = j < matching.length - 1 && matching[j + 1].i === i + 1;
-            if (!prevConsec && !nextConsec) this.fileBlockPositions.set(b.key, 'only');
-            else if (!prevConsec)           this.fileBlockPositions.set(b.key, 'first');
-            else if (!nextConsec)           this.fileBlockPositions.set(b.key, 'last');
-            else                            this.fileBlockPositions.set(b.key, 'middle');
-          }
-        }
-      }
-    }
-  }
-
-  getFileBlockClasses(block: DocBlock): string {
-    const pos = this.fileBlockPositions.get(block.key);
-    if (!pos) return '';
-    const border = 'border-green-500/40';
-    const bg = 'bg-green-500/5';
-    switch (pos) {
-      case 'only':   return `rounded-lg border ${border} ${bg}`;
-      case 'first':  return `rounded-t-lg border-t border-l border-r ${border} ${bg}`;
-      case 'middle': return `border-l border-r ${border} ${bg}`;
-      case 'last':   return `rounded-b-lg border-b border-l border-r ${border} ${bg}`;
-    }
-  }
-
-  private computeHighlightedIds(nodeId: string | null): Set<string> {
-    const result = new Set<string>();
-    if (!nodeId) return result;
-    const node = this.findNode(nodeId, this.files);
-    if (node?.type === 'folder') {
-      this.addAllDescendantIds(node, result);
-    } else if (node?.type === 'file' && !this.isImageFile(node.name)) {
-      const parent = this.findParentFolder(nodeId, this.files);
-      if (parent?.children?.some(c => c.type === 'folder')) {
-        // Fichier avec sa propre section (parent a des sous-dossiers)
-        result.add(nodeId);
-      }
-      // Sinon : fichier embarqué → fileBlockPositions gère le highlight
-    }
-    return result;
-  }
-
-  getTextareaClasses(block: any): string {
-    return "section-textarea w-full bg-transparent text-light-text dark:text-white font-mono text-sm outline-none focus:outline-none focus:ring-0 resize-none block leading-relaxed transition-all p-0 border-0 overflow-hidden";
-  }
-
-  private collectFolderAndDescendants(nodeId: string, nodes: FileNode[], result: Set<string>): boolean {
-    for (const n of nodes) {
-      if (n.type === 'folder') {
-        if (n.id === nodeId) {
-          this.addAllDescendantIds(n, result);
-          return true;
-        }
-        if (this.collectFolderAndDescendants(nodeId, n.children || [], result)) return true;
-      }
-    }
-    return false;
-  }
-
-  private addAllDescendantIds(node: FileNode, result: Set<string>) {
-    result.add(node.id);
-    const children = node.children || [];
-    const hasSubFolders = children.some(c => c.type === 'folder');
-    const mainFile = children.find(c => c.type === 'file' && c.name === 'contenu.md')
-                  || children.find(c => c.type === 'file' && !this.isImageFile(c.name));
-    for (const child of children) {
-      if (child.type === 'folder') {
-        this.addAllDescendantIds(child, result);
-      } else if (hasSubFolders && child !== mainFile && child.type === 'file' && !this.isImageFile(child.name)) {
-        // Fichiers additionnels qui ont leur propre section (folderId = file.id)
-        result.add(child.id);
-      }
-    }
-  }
-
-
-  getAllFolders(nodes: FileNode[] = this.files, result: FileNode[] = []): FileNode[] {
-    for (const n of nodes) {
-      if (n.type === 'folder') {
-        result.push(n);
-        this.getAllFolders(n.children || [], result);
-      }
-    }
-    return result;
-  }
-
-  selectImage(img: FileNode, event: Event) {
-    event.stopPropagation();
-    if (this.selectedImageId === img.id) {
-      this.clearImageSelection();
-    } else {
-      this.selectedImageId = img.id;
-      this.renamingImageId = null;
-      this.showMoveForImageId = null;
-      this.deleteConfirmImageId = null;
-      this.nodeActive.emit(img.id);
-    }
-  }
-
-  clearImageSelection() {
-    this.selectedImageId = null;
-    this.renamingImageId = null;
-    this.showMoveForImageId = null;
-    this.deleteConfirmImageId = null;
-  }
-
-  startRenameImage(img: FileNode) {
-    this.renamingImageId = img.id;
-    this.renameImageValue = img.name.replace(/\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i, '');
-    this.showMoveForImageId = null;
-    this.deleteConfirmImageId = null;
-  }
-
-  async confirmRenameImage(img: FileNode) {
-    const newName = this.renameImageValue.trim();
-    if (!newName || newName === img.name) { this.cancelRenameImage(); return; }
-    try {
-      await this.svc.renameFile(this.projectName, img.id, newName);
-      this.clearImageSelection();
-      this.refresh.emit();
-    } catch (e: any) {
-      console.error('[Zone4] Rename image failed:', e);
-    }
-  }
-
-  cancelRenameImage() {
-    this.renamingImageId = null;
-    this.renameImageValue = '';
-  }
-
-  askDeleteImage(img: FileNode) {
-    this.deleteConfirmImageId = img.id;
-    this.showMoveForImageId = null;
-  }
-
-  async confirmDeleteImage(img: FileNode) {
-    try {
-      await this.svc.deleteFile(this.projectName, img.id);
-      this.clearImageSelection();
-      // Remove position marker from section text
-      const sourceSection = this.docSections.find(s => s.images.some(i => i.id === img.id));
-      if (sourceSection) {
-        const markerRe = new RegExp(`\\n\\{\\{IMG:${img.id}\\}\\}\\n`, 'g');
-        const currentText = this.sectionTextMap.get(sourceSection.folderId) ?? sourceSection.textContent;
-        const newText = currentText.replace(markerRe, '\n');
-        this.sectionTextMap.set(sourceSection.folderId, newText);
-        this.unifiedContent = this.reconstructUnifiedContent();
-        this.saveAll();
-      }
-      this.refresh.emit();
-    } catch (e: any) {
-      console.error('[Zone4] Delete image failed:', e);
-    }
-  }
-
-  cancelDeleteImage() {
-    this.deleteConfirmImageId = null;
-  }
-
-  toggleMoveImage(img: FileNode) {
-    this.showMoveForImageId = this.showMoveForImageId === img.id ? null : img.id;
-    this.deleteConfirmImageId = null;
-  }
-
-  async moveImageToFolder(img: FileNode, targetFolderId: string | null) {
-    try {
-      // Remove marker from source section
-      const sourceSection = this.docSections.find(s => s.images.some(i => i.id === img.id));
-      if (sourceSection) {
-        const markerRe = new RegExp(`\\n\\{\\{IMG:${img.id}\\}\\}\\n`, 'g');
-        const currentText = this.sectionTextMap.get(sourceSection.folderId) ?? sourceSection.textContent;
-        const newText = currentText.replace(markerRe, '\n');
-        this.sectionTextMap.set(sourceSection.folderId, newText);
-        this.unifiedContent = this.reconstructUnifiedContent();
-        this.saveAll();
-      }
-      await this.svc.moveFile(this.projectName, img.id, targetFolderId);
-      this.clearImageSelection();
-      this.nodeActive.emit(img.id);
-      this.refresh.emit();
-    } catch (e: any) {
-      console.error('[Zone4] Move image failed:', e);
-    }
-  }
-
-  getImageUrl(imagePath: string): string {
-    return this.svc.getImageUrl(this.projectName, imagePath);
-  }
-
+  // ── Image upload ───────────────────────────────────────────
   triggerImageUpload() {
     this.imageUploadError = '';
     this.imageInputRef?.nativeElement.click();
@@ -895,40 +745,45 @@ export class ProjetEditorZoneComponent implements OnChanges {
       this.imageUploadError = `Fichier trop grand (${(file.size / 1024 / 1024).toFixed(1)} Mo). Max 1 Mo.`;
       return;
     }
-    const folderId = this.focusedSectionId || this.getActiveFolderId();
+    const folderId = this.getCursorFolderId() || this.getActiveFolderId();
     try {
       const node = await this.svc.uploadImage(this.projectName, file, folderId);
       this.imageUploadError = '';
-
-      if (folderId) {
-        // Insert marker at cursor position in section full text
-        const insertPos = this.getInsertPositionInFullText(folderId);
-        const currentFullText = this.reconstructSectionFullText(folderId);
-        const before = currentFullText.substring(0, insertPos);
-        const after = currentFullText.substring(insertPos);
-        // Ensure exactly one newline on each side of the marker
-        const prefix = before.endsWith('\n') ? '' : '\n';
-        const suffix = after.startsWith('\n') ? '' : '\n';
-        const newFullText = before + prefix + '{{IMG:' + node.id + '}}' + suffix + after;
-
-        this.sectionTextMap.set(folderId, newFullText);
-
-        // Immediately rebuild blocks
-        const currentSection = this.docSections.find(s => s.folderId === folderId);
-        const allImages = [...(currentSection?.images ?? []), node];
-        this.docSections = this.docSections.map(s => {
-          if (s.folderId !== folderId) return s;
-          return { ...s, textContent: newFullText, images: allImages, blocks: this.buildBlocks(newFullText, allImages, folderId) };
+      const ta = this.textareaRef?.nativeElement;
+      if (ta && this.mode === 'edit') {
+        const pos = ta.selectionStart;
+        const before = ta.value.substring(0, pos);
+        const after = ta.value.substring(pos);
+        const prefix = (before.length === 0 || before.endsWith('\n')) ? '' : '\n';
+        const suffix = (after.length === 0 || after.startsWith('\n')) ? '' : '\n';
+        const marker = `${prefix}{{IMG:${node.id}}}${suffix}`;
+        const newVal = before + marker + after;
+        this.unifiedContent = newVal;
+        ta.value = newVal;
+        this.recomputeRanges();
+        this.recomputeMirrorLines();
+        setTimeout(() => {
+          ta.focus();
+          const newPos = pos + marker.length;
+          ta.setSelectionRange(newPos, newPos);
         });
-
-        this.unifiedContent = this.reconstructUnifiedContent();
-        this.saveAll();
       }
-
+      this.scheduleSave();
       this.refresh.emit();
     } catch (e: any) {
       this.imageUploadError = e?.error?.error || 'Erreur lors de l\'upload.';
     }
+  }
+
+  private getCursorFolderId(): string | null {
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return null;
+    const lineIdx = ta.value.substring(0, ta.selectionStart).split('\n').length - 1;
+    for (let i = this.sectionRanges.length - 1; i >= 0; i--) {
+      const r = this.sectionRanges[i];
+      if (lineIdx >= r.lineStart && lineIdx <= r.lineEnd) return r.folderId;
+    }
+    return null;
   }
 
   private getActiveFolderId(): string | null {
@@ -936,5 +791,374 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const node = this.findNode(this.activeNodeId, this.files);
     if (node?.type === 'folder') return node.id;
     return this.findParentFolder(this.activeNodeId, this.files)?.id || null;
+  }
+
+  // ── Image card (edit mode) ─────────────────────────────────
+  getImageUrl(path: string): string {
+    return this.svc.getImageUrl(this.projectName, path);
+  }
+
+  onImageHoverEnter(line: MirrorLine, ev: MouseEvent) {
+    if (this.renamingImageId === line.imageId) return;
+    if (!line.imagePath) return;
+    const target = ev.currentTarget as HTMLElement;
+    const rect = target.getBoundingClientRect();
+    this.hoverPreview = {
+      url: this.getImageUrl(line.imagePath),
+      name: line.imageName,
+      top: rect.bottom + 4,
+      left: rect.left,
+    };
+  }
+
+  onImageHoverLeave() {
+    this.hoverPreview = null;
+  }
+
+  onImageCardClick(line: MirrorLine, ev: MouseEvent) {
+    ev.stopPropagation();
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
+    const lines = this.unifiedContent.split('\n');
+    let pos = 0;
+    for (let i = 0; i < line.lineIndex; i++) pos += lines[i].length + 1;
+    setTimeout(() => {
+      ta.focus();
+      ta.setSelectionRange(pos, pos + (lines[line.lineIndex]?.length || 0));
+    });
+  }
+
+  startRenameImage(line: MirrorLine, ev: MouseEvent) {
+    ev.stopPropagation();
+    this.renamingImageId = line.imageId;
+    this.renameImageValue = line.imageName.replace(/\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i, '');
+    this.deleteConfirmImageId = null;
+    this.hoverPreview = null;
+  }
+
+  async confirmRenameImage(line: MirrorLine) {
+    const newBase = this.renameImageValue.trim();
+    if (!newBase) { this.cancelRenameImage(); return; }
+    const ext = (line.imageName.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i)?.[0]) || '';
+    const newName = newBase.endsWith(ext) ? newBase : newBase + ext;
+    if (newName === line.imageName) { this.cancelRenameImage(); return; }
+    try {
+      await this.svc.renameFile(this.projectName, line.imageId, newName);
+      this.renamingImageId = null;
+      this.renameImageValue = '';
+      this.refresh.emit();
+    } catch (e: any) {
+      console.error('[Zone4] rename image failed', e);
+    }
+  }
+
+  cancelRenameImage() {
+    this.renamingImageId = null;
+    this.renameImageValue = '';
+  }
+
+  askDeleteImage(line: MirrorLine, ev: MouseEvent) {
+    ev.stopPropagation();
+    this.deleteConfirmImageId = line.imageId;
+    this.renamingImageId = null;
+    this.hoverPreview = null;
+  }
+
+  cancelDeleteImage(ev?: MouseEvent) {
+    if (ev) ev.stopPropagation();
+    this.deleteConfirmImageId = null;
+  }
+
+  async confirmDeleteImage(line: MirrorLine, ev: MouseEvent) {
+    ev.stopPropagation();
+    try {
+      await this.svc.deleteFile(this.projectName, line.imageId);
+      this.deleteConfirmImageId = null;
+      // Retire la ligne du marqueur dans unifiedContent
+      const lines = this.unifiedContent.split('\n');
+      lines.splice(line.lineIndex, 1);
+      this.unifiedContent = lines.join('\n');
+      const ta = this.textareaRef?.nativeElement;
+      if (ta) ta.value = this.unifiedContent;
+      this.recomputeRanges();
+      this.recomputeMirrorLines();
+      this.scheduleSave();
+      this.refresh.emit();
+    } catch (e: any) {
+      console.error('[Zone4] delete image failed', e);
+    }
+  }
+
+  // ── Visu interactions ──────────────────────────────────────
+  onVisuClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    const fileEl = target.closest('[data-file-id]') as HTMLElement | null;
+    if (fileEl) {
+      const id = fileEl.getAttribute('data-file-id');
+      if (id) { this.nodeActive.emit(id); return; }
+    }
+    const sec = target.closest('[data-section-id]') as HTMLElement | null;
+    if (sec) {
+      const id = sec.getAttribute('data-section-id');
+      if (id) this.nodeActive.emit(id);
+    }
+  }
+
+  // ── Scroll / navigation ────────────────────────────────────
+  scrollToNodeById(id: string) {
+    if (this.mode === 'visu') {
+      const root = this.visuRef?.nativeElement;
+      const el = (root?.querySelector(`[data-file-id="${id}"]`)
+                 || root?.querySelector(`[data-section-id="${id}"]`)) as HTMLElement | null;
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const fileRange = this.fileRanges.find(r => r.fileId === id);
+    if (fileRange) { this.scrollEditToLine(fileRange.lineStart); return; }
+    let range = this.sectionRanges.find(r => r.folderId === id);
+    if (!range) {
+      const parent = this.findParentFolder(id, this.files);
+      if (parent) range = this.sectionRanges.find(r => r.folderId === parent.id);
+    }
+    if (!range) return;
+    this.scrollEditToLine(range.lineStart);
+  }
+
+  private scrollToActive() {
+    if (this.activeNodeId) this.scrollToNodeById(this.activeNodeId);
+  }
+
+  private scrollEditToLine(lineIdx: number) {
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
+    const lh = parseFloat(getComputedStyle(ta).lineHeight) || 22;
+    ta.scrollTop = Math.max(0, lineIdx * lh - 32);
+    if (this.mirrorRef) this.mirrorRef.nativeElement.scrollTop = ta.scrollTop;
+  }
+
+  // ── Compat avec parent (no-op) ─────────────────────────────
+  appendSection(_folderName: string, _level = 1) {}
+  insertSectionInParent(_parentName: string, _parentDepth: number, _sectionName: string) {}
+
+  // ── Tree helpers ───────────────────────────────────────────
+  isImageFile(name: string): boolean { return this.svc.isImageFile(name); }
+
+  private findNode(id: string, nodes: FileNode[]): FileNode | null {
+    for (const n of nodes) {
+      if (n.id === id) return n;
+      if (n.children) { const f = this.findNode(id, n.children); if (f) return f; }
+    }
+    return null;
+  }
+
+  private findFileBySlug(name: string, nodes: FileNode[] = this.files): FileNode | null {
+    const slug = this.slugify(name);
+    for (const n of nodes) {
+      if (n.type === 'file' && n.name !== 'contenu.md' && !this.isImageFile(n.name)) {
+        if (this.slugify(n.name.replace(/\.md$/, '')) === slug) return n;
+      }
+      if (n.children) {
+        const f = this.findFileBySlug(name, n.children);
+        if (f) return f;
+      }
+    }
+    return null;
+  }
+
+  private findParentFolder(id: string, nodes: FileNode[]): FileNode | null {
+    for (const node of nodes) {
+      if (node.type === 'folder') {
+        if ((node.children || []).some(c => c.id === id)) return node;
+        const found = this.findParentFolder(id, node.children || []);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  // ── Drag rail ──────────────────────────────────────────────
+  startHandleDrag(handle: DragHandle, ev: MouseEvent) {
+    ev.preventDefault();
+    ev.stopPropagation();
+    // Annule toute sauvegarde différée : sinon un parseContent sur le texte courant
+    // peut tourner en parallèle du moveFile et provoquer un effacement du document
+    // (cf. cleanup orphan additional files dans onSectionsChange).
+    clearTimeout(this.saveTimeout);
+    this.draggingHandle = handle;
+    this.hoveredHandle = handle; // gèle l'affichage sur la poignée draguée
+    this.dragLastClientY = ev.clientY;
+    this.dragGhost = { label: handle.label, kind: handle.kind, x: ev.clientX + 12, y: ev.clientY + 8 };
+    this.dropIndicator = null;
+    this.currentDropTarget = null;
+
+    // Les listeners doivent tourner DANS la NgZone pour que les mises à jour de
+    // dragGhost / dropIndicator soient reflétées par la change detection
+    // (sinon le ghost reste invisible sous le curseur).
+    this.dragMoveListener = (e: MouseEvent) => this.zone.run(() => this.onDragMove(e));
+    this.dragUpListener = (e: MouseEvent) => this.zone.run(() => this.onDragUp(e));
+    window.addEventListener('mousemove', this.dragMoveListener);
+    window.addEventListener('mouseup', this.dragUpListener);
+    document.body.style.cursor = 'grabbing';
+    document.body.style.userSelect = 'none';
+    this.startAutoScrollLoop();
+  }
+
+  private onDragMove(ev: MouseEvent) {
+    if (!this.draggingHandle) return;
+    this.dragLastClientY = ev.clientY;
+    this.dragGhost = { label: this.draggingHandle.label, kind: this.draggingHandle.kind, x: ev.clientX + 12, y: ev.clientY + 8 };
+    this.updateDropTarget(ev.clientY);
+  }
+
+  private updateDropTarget(clientY: number) {
+    const mirrorEl = this.mirrorRef?.nativeElement;
+    if (!mirrorEl || !this.draggingHandle) return;
+    const rect = mirrorEl.getBoundingClientRect();
+    const contentY = clientY - rect.top + mirrorEl.scrollTop;
+
+    // Filtrer les handles : pas soi-même, pas un descendant si on déplace un dossier
+    const draggedNode = this.findNode(this.draggingHandle.id, this.files);
+    const candidates = this.handles.filter(h => {
+      if (h.id === this.draggingHandle!.id) return false;
+      if (draggedNode?.type === 'folder' && this.isDescendantOf(h.id, this.draggingHandle!.id)) return false;
+      return true;
+    });
+
+    let target: DragHandle | null = null;
+    // On parcourt à l'envers pour trouver le handle le plus spécifique (le plus imbriqué)
+    // car les handles sont triés par top croissant, et les enfants commencent plus tard 
+    // ou en même temps que leurs parents mais finissent plus tôt ou en même temps.
+    for (let i = candidates.length - 1; i >= 0; i--) {
+      const h = candidates[i];
+      if (contentY >= h.top && contentY <= h.top + h.height) { target = h; break; }
+    }
+    if (!target) {
+      // Pas pile dans une zone : trouver la plus proche
+      let best: DragHandle | null = null;
+      let bestDist = Infinity;
+      for (const h of candidates) {
+        const center = h.top + h.height / 2;
+        const dist = Math.abs(center - contentY);
+        if (dist < bestDist) { bestDist = dist; best = h; }
+      }
+      target = best;
+    }
+
+    if (!target) {
+      this.dropIndicator = null;
+      this.currentDropTarget = null;
+      return;
+    }
+
+    // Position : dans la zone du target → before/inside/after selon Y
+    const relY = contentY - target.top;
+    const ratio = relY / target.height;
+    let position: 'before' | 'after' | 'inside';
+    if (this.draggingHandle.kind === 'folder') {
+      // Dossiers : on évite 'inside' sur un fichier/image
+      position = ratio < 0.5 ? 'before' : 'after';
+      // 'inside' uniquement si target est un dossier et qu'on est au milieu
+      if (target.kind === 'folder' && ratio > 0.25 && ratio < 0.75 && contentY >= target.top && contentY <= target.top + target.height) {
+        position = 'inside';
+      }
+    } else {
+      position = ratio < 0.3 ? 'before' : (ratio > 0.7 ? 'after' : (target.kind === 'folder' ? 'inside' : (ratio < 0.5 ? 'before' : 'after')));
+    }
+
+    this.currentDropTarget = { handle: target, position };
+    if (position === 'inside') {
+      this.dropIndicator = { top: target.top, height: target.height, position: 'inside' };
+    } else {
+      const indicatorTop = position === 'before' ? target.top : target.top + target.height;
+      this.dropIndicator = { top: indicatorTop - 1, height: 2, position };
+    }
+  }
+
+  private isDescendantOf(childId: string, ancestorId: string): boolean {
+    const ancestor = this.findNode(ancestorId, this.files);
+    if (!ancestor || ancestor.type !== 'folder') return false;
+    const walk = (nodes: FileNode[]): boolean => {
+      for (const n of nodes) {
+        if (n.id === childId) return true;
+        if (n.children && walk(n.children)) return true;
+      }
+      return false;
+    };
+    return walk(ancestor.children || []);
+  }
+
+  private startAutoScrollLoop() {
+    const loop = () => {
+      if (!this.draggingHandle) return;
+      const ta = this.textareaRef?.nativeElement;
+      if (ta) {
+        const rect = ta.getBoundingClientRect();
+        const margin = 40;
+        let dy = 0;
+        if (this.dragLastClientY < rect.top + margin) dy = -Math.min(15, (rect.top + margin - this.dragLastClientY));
+        else if (this.dragLastClientY > rect.bottom - margin) dy = Math.min(15, (this.dragLastClientY - (rect.bottom - margin)));
+        if (dy !== 0) {
+          ta.scrollTop += dy;
+          if (this.mirrorRef) this.mirrorRef.nativeElement.scrollTop = ta.scrollTop;
+          this.updateDropTarget(this.dragLastClientY);
+        }
+      }
+      this.dragAutoScrollRaf = requestAnimationFrame(loop);
+    };
+    this.dragAutoScrollRaf = requestAnimationFrame(loop);
+  }
+
+  private onDragUp(_ev: MouseEvent) {
+    const dragged = this.draggingHandle;
+    const target = this.currentDropTarget;
+    this.cleanupDrag();
+    if (!dragged || !target) return;
+    if (dragged.id === target.handle.id) return;
+
+    const draggedNode = this.findNode(dragged.id, this.files);
+    const targetNode = this.findNode(target.handle.id, this.files);
+    if (!draggedNode || !targetNode) return;
+
+    const draggedParent = this.findParentFolder(dragged.id, this.files);
+    const targetParent = this.findParentFolder(target.handle.id, this.files);
+    const targetParentId = targetParent?.id || null;
+    const targetSiblings = targetParent ? (targetParent.children || []) : this.files;
+
+    this.dragDrop.emit({
+      draggedNode,
+      draggedParentId: draggedParent?.id || null,
+      targetNode,
+      targetParentId,
+      position: target.position,
+      targetSiblings,
+    });
+  }
+
+  private cleanupDrag() {
+    if (this.dragMoveListener) window.removeEventListener('mousemove', this.dragMoveListener);
+    if (this.dragUpListener) window.removeEventListener('mouseup', this.dragUpListener);
+    this.dragMoveListener = null;
+    this.dragUpListener = null;
+    if (this.dragAutoScrollRaf) cancelAnimationFrame(this.dragAutoScrollRaf);
+    this.dragAutoScrollRaf = null;
+    this.draggingHandle = null;
+    this.dragGhost = null;
+    this.dropIndicator = null;
+    this.currentDropTarget = null;
+    this.hoveredHandle = null;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  }
+
+  private getFileStructureKey(nodes: FileNode[], parentId: string = 'root'): string {
+    let key = '';
+    for (const node of nodes) {
+      if (node.type === 'file') {
+        key += `|f:${node.id}-p:${parentId}`;
+      } else if (node.children) {
+        key += this.getFileStructureKey(node.children, node.id);
+      }
+    }
+    return key;
   }
 }

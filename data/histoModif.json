@@ -1250,6 +1250,230 @@
       "prompt": "il y a un problème d'ordre d'affichage, on voi dans l'exemple le document est après le menu E 2-2-1 dans la zone 4 et dans la zone 4 le document est avant, c'est illogique verifi et corrige",
       "startedAt": "2026-04-27T22:00:00.000Z",
       "completedAt": "2026-04-27T22:30:00.000Z"
+    },
+    {
+      "id": "mod-056",
+      "version": "THI-0.25",
+      "date": "2026-04-28T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : analyse et proposition ergonomie Single Document Flow",
+      "description": "Analyse complète de l'architecture Zone 4 (docSections, textareas multiples, navigation inter-sections). Identification du problème : navigation au clavier impossible entre sections sans clic souris. Proposition d'une refonte 'Single Document Flow' en 5 axes : (1) navigation clavier inter-sections via ArrowDown/ArrowUp en fin/début de textarea, (2) barre verticale gauche 3px au lieu de contours de boîte, (3) suppression des gaps entre sections, (4) étiquette sticky de section active en haut, (5) rail de navigation optionnel à droite. Aucun code modifié — analyse uniquement.",
+      "files": [],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Dans la page projet projets/, je veux que tu m'analyse le système pour me proposé une version différentes de la zone 4 [Image #1] Actuellement cette zone est composé de plusieurs sous section les unes sous les autres (menu, document, image etc). Pour passé d'une zone à l'autre je suis obligé de la selectionné avec la sourie, je ne peux pas comme dans un seul document navigué dedans avec les fleche haut et bas comme si j'avais un seul et même document. Je veux que l'utilisateur navigue le plus naturellement possible dans cette zone comme ci on avait qu'un seul et même document. Tu doit aussi prendre en compte les obligations du système avec la zone 3 avec les selectioons, deplacement, suppression etc. Analyse le système et propose moi un système plus ergonomique dans une seule section mais modifiable. On peux par exemple mettre en couleur les lignes selectionné au lieu de mettre en place des contours, on peux avoir des zones de selection sur la droite etc etc.",
+      "startedAt": "2026-04-28T00:00:00.000Z",
+      "completedAt": "2026-04-28T00:10:00.000Z"
+    },
+    {
+      "id": "mod-057",
+      "version": "THI-0.26",
+      "date": "2026-04-28T01:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : refonte single textarea + toggle Édition/Visu",
+      "description": "Refonte complète de la zone 4. Tous les documents fusionnés en un seul markdown unifié édité dans une textarea unique (plus de blocs/sous-sections séparés). Ajout d'un toggle Édition/Visu : mode Édition affiche le markdown brut + miroir overlay synchronisé pour le surlignage des sections (lignes en bleu) et un encart vert avec le nom du fichier sur les lignes {{IMG:id}}. Mode Visu rend le markdown via marked (titres, listes, gras, code, blockquote) avec les vraies images chargées. Sélection en zone 3 met en background bleu les lignes correspondantes dans les deux modes. Curseur dans la textarea émet nodeActive pour synchroniser zone 3. Bouton Insérer image conservé dans la toolbar, insère le marqueur {{IMG:id}} à la position du curseur. Ajout dépendance marked.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "frankenstein/package.json",
+        "frankenstein/package-lock.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "cela ne me conviens pas comme expliqué je ne veux qu'une zone de texte dans la zonz d'edition des documents, tous les documents ne font plus qu'un seul, je veux navigué dans tous le document comme si il n'y en avait qu'un sans frontière entre chaque menu et chaque sous document. prend tous les documents et fusionne les pour en faire qu'un mais met en place un système pour pouvoir selectionné les sections en mettant en couleur background les lignes qui coresponde à la section dans la zone 3, propose moi quelques chose / En faite pour la zone 4 d'edition il faut 2 version la version edition au format texte brut warkdown et la version visionnage avec la mise en forme. Pour les images en version brut on pourrais afficher un encart avec le titre de l'image et en version mise en forme (visu) on aurait le texte mise en forme et les images en réel. / point 1 : on va prendre marked.",
+      "startedAt": "2026-04-28T00:30:00.000Z",
+      "completedAt": "2026-04-28T01:00:00.000Z"
+    },
+    {
+      "id": "mod-058",
+      "version": "THI-0.27",
+      "date": "2026-04-28T01:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : surlignage vert pour documents (vs bleu menus)",
+      "description": "Distinction du surlignage selon le type de noeud sélectionné en zone 3. Les dossiers/menus restent en bleu, les fichiers additionnels (documents) sont surlignés en vert. Ajout d'une détection des blocs de fichiers (delimiteurs ', `, ^) dans unifiedContent (fileRanges) pour cibler précisément les lignes du document. Mode Édition : ed-line--hl-folder (bleu) vs ed-line--hl-file (vert). Mode Visu : pré-traitement des blocs de fichiers en HTML wrappers .visu-file avec data-file-id, surlignage .visu-file--hl en vert. Navigation curseur : si curseur dans un bloc fichier, emit fileId au lieu de folderId. Click visu sur un bloc fichier emit fileId. scrollToNodeById gère les fileRanges.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "lorsqu'on selectionne dans la zone 3 (menu) un document, exemple \"Document de la zone D 2-3\" cela doit selectionné la zone du document ave cle fond en vert (en bleu pour les zones menu).",
+      "startedAt": "2026-04-28T01:00:00.000Z",
+      "completedAt": "2026-04-28T01:30:00.000Z"
+    },
+    {
+      "id": "mod-059",
+      "version": "THI-0.28",
+      "date": "2026-04-28T02:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 édition : encart image avec aperçu et actions",
+      "description": "Refonte du rendu image en mode Édition. Le marqueur {{IMG:id}} est désormais masqué (textarea en color:transparent + miroir visible) — seul l'encart vert avec icône + nom du fichier s'affiche sur la ligne. Au survol de l'encart, un aperçu miniature de l'image apparaît en popup. Boutons d'actions Renommer (icône edit) et Supprimer (icône delete, avec étape de confirmation) intégrés à droite de l'encart. Le rename utilise un input inline avec validation Enter / annulation Escape. La suppression appelle deleteFile + retire la ligne du marqueur dans unifiedContent + déclenche le save. Click sur l'encart positionne la sélection sur la ligne du marqueur dans la textarea.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "Pour la section d'une image dans la version edition, il ne faut afficher que l'encart photo et nom de code (exemple ne pas mettre {{IMG:2e02181c-666e-4241-8afd-26864c369819}}) juste l'encarte photo en fond vert. et lorsque je passe la sourie sur l'encart de l'image, mettre un apercu de l'image (miniature). Rajouté sur action sur l'encart image bouton de dreoite pour renommé ou supprimé l'image",
+      "startedAt": "2026-04-28T01:30:00.000Z",
+      "completedAt": "2026-04-28T02:00:00.000Z"
+    },
+    {
+      "id": "mod-060",
+      "version": "THI-0.29",
+      "date": "2026-04-28T02:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 édition : rail de drag à droite pour réordonner",
+      "description": "Ajout d'un rail vertical à droite du textarea (40px) avec une poignée de drag par section/document/image. Chaque poignée est positionnée verticalement à l'emplacement de la section et a une hauteur proportionnelle au nombre de lignes (couleurs : bleu pour folder, vert pour fichier, violet pour image). Drag custom à la souris : ghost suit le curseur, indicateur de drop (barre bleue 2px pour before/after, encadré tirets pour inside), auto-scroll quand le curseur approche du haut/bas du textarea, exclusion des descendants pour éviter les boucles. Le rail synchronise sa position via transform translateY avec le scroll du textarea. À la fin du drag, émet un DragDropEvent identique à celui de la sidebar zone 3 — le parent réutilise sa logique onDragDrop existante (moveFolder/moveFile/updateStructure).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "il faudrait maintenant trouvé une solution pour deplacer une section : menu, sous menu, document ou image. je pense à une zone qui serait sur la droite du document et qui permettrais de deplacé toute la zone. (option 2 : custom mouse drag premium UX)",
+      "startedAt": "2026-04-28T02:00:00.000Z",
+      "completedAt": "2026-04-28T02:30:00.000Z"
+    },
+    {
+      "id": "mod-061",
+      "version": "THI-0.26",
+      "date": "2026-04-29T00:05:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : refonte rail drag + fix effacement document",
+      "description": "Refonte visuelle du rail de drag à droite : 3 colonnes claires (dossiers à gauche avec retrait selon le niveau, documents au milieu, images à droite) au lieu de poignées qui se chevauchaient au même offset. Poignées plus discrètes (14px, opacité 0.55, hover à 18px) pour réduire la surcharge visuelle. Fix bug d'effacement de document lors du drag : quand on déposait un document avant/après un dossier, targetParentId pouvait être null (racine du projet) → le fichier disparaissait des sections markdown (les sections ne listent que des dossiers). Maintenant un drop sur dossier place toujours le document DANS ce dossier, et un fallback empêche tout drop à la racine. Annulation de la sauvegarde différée au début d'un drag pour éviter qu'un parseContent obsolète déclenche la suppression du document détecté comme orphelin (cleanup orphan additional files).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "le système de deplacement des sections est trop bordelique, améliore l'affichage et verifi le fonctionnement car lorsque je deplace un document en glisser deposé, cela m'efface mon document",
+      "startedAt": "2026-04-29T00:00:00.000Z",
+      "completedAt": "2026-04-29T00:05:00.000Z"
+    },
+    {
+      "id": "mod-062",
+      "version": "THI-0.27",
+      "date": "2026-04-29T00:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 drag : ghost visible + niveaux dossiers distincts",
+      "description": "Fix ghost invisible pendant le drag : les listeners mousemove/mouseup étaient enregistrés via window.addEventListener et tournaient hors de la NgZone Angular, donc les mises à jour de dragGhost et dropIndicator n'étaient pas reflétées par la change detection. Wrappés via NgZone.run() pour rétablir le rendu en temps réel. Distinction visuelle des niveaux de dossiers : chaque niveau H1→H4 a maintenant sa propre nuance de bleu (intense → clair) et sa propre colonne décalée horizontalement (4px d'écart), avec un numéro de niveau (1/2/3/4) affiché dans la poignée. Les colonnes documents (vert) et images (violet) sont franchement séparées (gap suffisant pour ne plus se chevaucher). Rail élargi à 80px et marge droite du textarea ajustée à 5.75rem.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "le deplacement de document avec le glisser deposer ne fonctionne pas, lorsque je glisse la zone on ne vois rien sous la sourie. les sections et sous section ne sont pas séparé et on n'arrive pas à les distingué, trouve une solution et corrige les problème et test",
+      "startedAt": "2026-04-29T00:15:00.000Z",
+      "completedAt": "2026-04-29T00:30:00.000Z"
+    },
+    {
+      "id": "mod-063",
+      "version": "THI-0.28",
+      "date": "2026-04-29T01:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 drag : refonte style Notion (gouttière gauche)",
+      "description": "Refonte complète du système de drag-and-drop des sections/documents/images. Suppression du rail droit chargé de poignées (visuellement bordélique) au profit d'une gouttière gauche style Notion : UNE SEULE poignée visible à la fois, sur la ligne survolée. Détection de la ligne via mousemove sur le wrap, calcul de l'index de ligne depuis la position Y et le scroll du textarea, priorité image > document > dossier le plus profond. La poignée affiche le numéro de niveau (H1/H2/H3/H4) pour les dossiers, l'icône drag pour fichiers/images. Une couleur unique par type (bleu/vert/violet) — plus de variantes par niveau qui surchargeaient. Indicateur de drop redessiné : fine barre bleue traversant toute la zone d'édition (avec petits points aux extrémités) pour les positions before/after, encadré tirets pour le drop inside. La marge gauche du textarea passe de 1.5rem à 2.75rem pour réserver la place de la gouttière. La poignée se fige sur l'élément en cours de drag pour ne pas changer en route.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "revois le système de glisser deposé des sections qui est actuellement ingérable propose moi des solutions robuste et ergonomique\\n\\nmet en place la solution A mais fait attention à ce que cela ne deviennent pas bordélique",
+      "startedAt": "2026-04-29T00:35:00.000Z",
+      "completedAt": "2026-04-29T01:00:00.000Z"
+    },
+    {
+      "id": "mod-064",
+      "version": "THI-0.29",
+      "date": "2026-04-29T01:15:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 drag : fix overlay qui bloquait clics textarea",
+      "description": "Fix bug : la poignée de drag style Notion était visible mais impossible à utiliser, et le textarea ne recevait plus aucun clic. Cause : la propriété CSS pointer-events ne s'hérite pas. .ed-overlay avait pointer-events:none mais .ed-overlay__inner conservait la valeur par défaut auto, capturant tous les clics sur la zone (couvre inset:0). Ajout explicite de pointer-events:none sur __inner pour que les events traversent vers le textarea, tout en laissant .ed-handle avec pointer-events:auto pour rester drag-able.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "on voi bien la poigné à gauche des sections mais impossible de deplacer une section",
+      "startedAt": "2026-04-29T01:10:00.000Z",
+      "completedAt": "2026-04-29T01:15:00.000Z"
+    },
+    {
+      "id": "mod-065",
+      "version": "THI-0.30",
+      "date": "2026-04-30T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : suppression du scroll automatique au clic dans le textarea",
+      "description": "Fix bug : cliquer dans le texte d'une section document faisait remonter la zone en haut. Cause : onTextareaCursor émettait nodeActive, le parent mettait à jour activeNodeId, et ngOnChanges déclenchait scrollToActive() même quand l'action venait du textarea lui-même. Solution : ajout d'un flag suppressScrollOnNextActiveChange positionné à true avant l'emit dans onTextareaCursor, qui empêche le scroll dans ngOnChanges. Le scroll reste actif quand activeNodeId est changé depuis la Zone 3 (arborescence).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 4 dans l'edition lorsque je clique dans un texte d'une section document, il ne faut pas que la zone remonte automatiquement en haut, cela ne scroll pas automatiquement lorsque on clique dans une section document",
+      "startedAt": "2026-04-30T00:00:00.000Z",
+      "completedAt": "2026-04-30T00:01:00.000Z"
+    },
+    {
+      "id": "mod-066",
+      "version": "THI-0.30",
+      "date": "2026-04-30T00:10:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 visu : fix images invisibles (chemins avec espaces)",
+      "description": "Fix bug : en mode visu, les images n'apparaissaient pas. Cause : le chemin des images (ex: 'D 2-1-1 test/logo-legotest.png') peut contenir des espaces. En markdown, une URL avec espaces dans ![alt](url) n'est pas parsée correctement par marked. Fix : encodage des segments du chemin via encodeURIComponent() avant de construire l'URL markdown.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je me met en mode visu de la zone 4 je ne vois pas l'image qui devrait être visible",
+      "startedAt": "2026-04-30T00:05:00.000Z",
+      "completedAt": "2026-04-30T00:10:00.000Z"
     }
   ]
 }
