@@ -1115,6 +1115,12 @@ export class ProjetEditorZoneComponent implements OnChanges {
     if (!dragged || !target) return;
     if (dragged.id === target.handle.id) return;
 
+    // Images: déplacer le marqueur {{IMG:id}} dans le contenu (pas le fichier physique)
+    if (dragged.kind === 'image') {
+      this.moveImageMarker(dragged.lineStart, target.handle.lineStart, target.position);
+      return;
+    }
+
     const draggedNode = this.findNode(dragged.id, this.files);
     const targetNode = this.findNode(target.handle.id, this.files);
     if (!draggedNode || !targetNode) return;
@@ -1132,6 +1138,24 @@ export class ProjetEditorZoneComponent implements OnChanges {
       position: target.position,
       targetSiblings,
     });
+  }
+
+  private moveImageMarker(srcLine: number, targetLine: number, position: 'before' | 'after' | 'inside') {
+    const lines = this.unifiedContent.split('\n');
+    if (srcLine < 0 || srcLine >= lines.length) return;
+    const marker = lines[srcLine];
+    if (!/^\{\{IMG:[a-z0-9-]+\}\}/i.test(marker.trim())) return;
+
+    lines.splice(srcLine, 1);
+    const adjusted = targetLine > srcLine ? targetLine - 1 : targetLine;
+    const insertAt = Math.max(0, Math.min(position === 'before' ? adjusted : adjusted + 1, lines.length));
+    lines.splice(insertAt, 0, marker);
+
+    this.unifiedContent = lines.join('\n');
+    const ta = this.textareaRef?.nativeElement;
+    if (ta) ta.value = this.unifiedContent;
+    this.recomputeAll();
+    this.scheduleSave();
   }
 
   private cleanupDrag() {

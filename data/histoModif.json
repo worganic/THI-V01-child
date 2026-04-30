@@ -1474,6 +1474,25 @@
       "prompt": "lorsque je me met en mode visu de la zone 4 je ne vois pas l'image qui devrait être visible",
       "startedAt": "2026-04-30T00:05:00.000Z",
       "completedAt": "2026-04-30T00:10:00.000Z"
+    },
+    {
+      "id": "mod-067",
+      "version": "THI-0.31",
+      "date": "2026-04-30T00:20:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 édition : fix drag d'image non fonctionnel",
+      "description": "Fix bug : le drag d'une image dans la zone 4 ne faisait rien. Cause double : (1) le handler émettait un dragDrop vers le parent qui déplaçait le fichier physique, mais le marker {{IMG:id}} dans le texte restait à sa position d'origine, rendant le déplacement invisible ; (2) la condition targetFolderId !== draggedParentId empêchait tout réordonnancement dans le même dossier. Fix : pour les images (kind === 'image'), le drag est maintenant géré directement dans le composant zone via moveImageMarker() qui déplace la ligne {{IMG:id}} dans unifiedContent, puis recompute et sauvegarde.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 4 en mode edition lorsque je veux deplacer une image, cela ne fonctionne pas",
+      "startedAt": "2026-04-30T00:15:00.000Z",
+      "completedAt": "2026-04-30T00:20:00.000Z"
     }
   ]
 }
