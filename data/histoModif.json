@@ -1493,6 +1493,48 @@
       "prompt": "dans la zone 4 en mode edition lorsque je veux deplacer une image, cela ne fonctionne pas",
       "startedAt": "2026-04-30T00:15:00.000Z",
       "completedAt": "2026-04-30T00:20:00.000Z"
+    },
+    {
+      "id": "mod-068",
+      "version": "THI-0.31",
+      "date": "2026-05-01T00:10:00.000Z",
+      "type": "fix",
+      "commitType": "",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : fix réordonnancement des sections entre elles",
+      "description": "Fix bug : impossible de déplacer une section (dossier niveau 1) avant/après une autre. Double cause : (1) l'algo de sélection de cible prenait le handle le plus imbriqué (sous-section), ce qui donnait un targetParentId ≠ draggedParentId et déclenchait un nesting accidentel ; (2) la zone 'inside' couvrait 50% de la hauteur du target, rendant before/after presque impossibles. Fix : pour les drags de dossier, les candidats sont désormais filtrés aux seuls dossiers du même niveau, et 'inside' est supprimé (uniquement before/after).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque j'ai 3 zones de documents dans la zone 4 en mode edition, je n'arrive pas à deplacer les documents entre eux, je n'arrive pas à prendre la section 3 et la mettre avant la section 1 etc etc",
+      "startedAt": "2026-05-01T00:00:00.000Z",
+      "completedAt": "2026-05-01T00:10:00.000Z"
+    },
+    {
+      "id": "mod-069",
+      "version": "THI-0.32",
+      "date": "2026-05-01T19:41:54.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Z3/Z4 : fix réordonnancement docs/images même dossier + tests + doc",
+      "description": "Fix bug : impossible de déplacer Doc1 avant/après Doc2/Doc3 dans le même menu (Z3 sidebar et Z4 éditeur). Cause : dans onDragDrop() de projet-editor.component.ts, la branche fichier ne déclenchait moveFile que si le dossier cible différait du dossier source ; aucun chemin de réordonnancement (updateStructure) n'existait pour les fichiers — alors que la branche dossier l'avait. Fix : ajout d'une branche réordonnancement pour les fichiers/images via applyOrderInStructure + updateStructure, identique à celle des dossiers, couvrant aussi le cas 'moveFile vers autre dossier puis ré-ordonner à côté du target'. Convention conservée : fichiers d'abord puis sous-dossiers (cohérent avec la reconstruction markdown Z4). MAJ complète de REGLES_GESTION_PROJET.md (tableau drag&drop Z3/Z4, endpoints, garde-fous). Création de la suite de tests tests/TESTS_PROJET.md (checklist manuelle exhaustive Z3/Z4 + régressions historiques) et tests/test-zone-projet.js (script Node end-to-end testant CRUD dossiers/fichiers, réordonnancement, moveFile/moveFolder, upload-image, garde-fous) + tests/run-tests.bat pour relance facile.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "REGLES_GESTION_PROJET.md",
+        "tests/TESTS_PROJET.md",
+        "tests/test-zone-projet.js",
+        "tests/run-tests.bat"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "Tu es un expert en informatique et en langage angular dernière version et en javascript et tu dois verifié et résoudre le système de document lié au projet. Dans le menu projet dans le zone 4 d'edition du document complet, j'ai par exemple 3 documents dans le même menu, Exemple Doc 1, doc 2 et doc 3 dans le menu ## D 2-1 aaaaa. Il faut qu'on puisse modifié l'ordre des documents dans le menu on doit pouvoir deplacé le Doc 1 après le doc 2 le doc 3 avant le doc 2 etc etc juste avec le glisser deposé, on doit pouvoir aussi les deplacé dans le système de menu de la zone 3. Le but est de pouvoir déplacer très facilement chaque document, chaque menu et chaque image en glisser doposé très facilement. Cela devrait déjà être le cas mais cela ne fonctionne pas, verifi le fonctionnement avec le code et met à jour le doc @REGLES_GESTION_PROJET.md pour que cela prenne en compte toutes les fonctions, essai de mettre en place des tests pour pouvoir vérifier à chaque modification que toutes les fonctions mise en place fonctionne toujours, je dois pouvoir relancer le tests facilement en créant par exemple un fichier avec la liste des tests à effectué suivant les fonctions de la zone 3 et la zone 4.",
+      "startedAt": "2026-05-01T19:34:19.000Z",
+      "completedAt": "2026-05-01T19:41:54.000Z"
     }
   ]
 }

@@ -549,24 +549,65 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           }
         }
       } else {
-        // Fichier : déterminer le dossier parent cible selon la position
+        // Fichier (document additionnel ou image) : il doit TOUJOURS rester dans un dossier.
+        // On ne le laisse jamais retomber à la racine du projet (sinon il devient invisible
+        // dans l'éditeur car les sections markdown ne listent que des dossiers).
         let targetFolderId: string | null = null;
-        
+
         if (position === 'inside' && targetNode.type === 'folder') {
           targetFolderId = targetNode.id;
+        } else if (targetNode.type === 'folder') {
+          // 'before'/'after' un dossier : on dépose le document DANS ce dossier
+          // (au début pour 'before', à la fin pour 'after').
+          targetFolderId = targetNode.id;
         } else {
-          // Si on lâche 'avant' ou 'après' un nœud (fichier ou dossier), 
-          // la cible est le dossier parent de ce nœud.
+          // Cible = fichier/image → même dossier que la cible
           targetFolderId = targetParentId;
         }
 
-        if (targetFolderId !== draggedParentId) {
-          await this.projectFilesService.moveFile(this.projectFolderName, draggedNode.id, targetFolderId);
+        // Garde-fou : ne jamais retomber à la racine (file orphelin = invisible)
+        if (!targetFolderId) {
+          targetFolderId = draggedParentId;
         }
 
-        // Pour un drop 'inside' : recharger puis placer les fichiers avant les sous-dossiers
-        if (position === 'inside' && targetNode.type === 'folder') {
+        // 1) Déplacement physique si le dossier change
+        const folderChanged = !!targetFolderId && targetFolderId !== draggedParentId;
+        if (folderChanged) {
+          await this.projectFilesService.moveFile(this.projectFolderName, draggedNode.id, targetFolderId!);
           await this.loadFiles();
+        }
+
+        // 2) Réordonnancement dans le dossier cible quand on dépose
+        //    avant/après un fichier frère (Doc1 ↔ Doc2 ↔ Doc3).
+        //    C'est le cas que ne couvrait PAS le code précédent : aucun moveFile
+        //    n'était nécessaire (même dossier) donc rien ne se passait.
+        if (position !== 'inside' && targetNode.type === 'file' && targetFolderId) {
+          const currentFiles = this.files();
+          const targetFolder = this.findFolderById(targetFolderId, currentFiles);
+          const siblings = targetFolder ? (targetFolder.children || []) : currentFiles;
+          const fileSiblings = siblings.filter(n => n.type === 'file');
+          const fromIdx = fileSiblings.findIndex(n => n.id === draggedNode.id);
+          const toIdx = fileSiblings.findIndex(n => n.id === targetNode.id);
+          if (fromIdx !== -1 && toIdx !== -1 && fromIdx !== toIdx) {
+            const newOrder = [...fileSiblings];
+            const [item] = newOrder.splice(fromIdx, 1);
+            const targetNewIdx = toIdx > fromIdx ? toIdx - 1 : toIdx;
+            const insertAt = position === 'before' ? targetNewIdx : targetNewIdx + 1;
+            newOrder.splice(insertAt, 0, item);
+            // Convention : fichiers d'abord, puis sous-dossiers (cohérent avec
+            // la reconstruction markdown de la zone 4 qui place les blocs
+            // 'fichier' entre le contenu principal et les sous-sections).
+            const folderSiblings = siblings.filter(n => n.type === 'folder');
+            const allOrdered = [...newOrder, ...folderSiblings];
+            const structure: FileNode[] = JSON.parse(JSON.stringify(currentFiles));
+            this.applyOrderInStructure(structure, targetFolderId, allOrdered.map(n => n.id));
+            await this.projectFilesService.updateStructure(this.projectFolderName, structure);
+          }
+        }
+
+        // 3) Pour un drop 'inside' : placer les fichiers avant les sous-dossiers
+        if (position === 'inside' && targetNode.type === 'folder') {
+          if (!folderChanged) await this.loadFiles();
           const targetFolder = this.findFolderById(targetNode.id, this.files());
           if (targetFolder?.children) {
             const childFiles = targetFolder.children.filter(c => c.type === 'file');
@@ -580,6 +621,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
         }
       }
       await this.loadFiles();
+      this.onNodeActive(draggedNode.id);
     } catch (e: any) {
       console.error('DragDrop failed:', e);
       const msg = e?.error?.error || e?.message || 'Erreur inconnue';
