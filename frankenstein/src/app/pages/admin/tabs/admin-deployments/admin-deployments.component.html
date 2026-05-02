@@ -133,6 +133,54 @@
   </div>
 }
 
+<!-- Propagations en attente -->
+@if (pendingPropagations.length > 0) {
+  <div class="mb-6 rounded-xl border border-orange-500/30 bg-orange-500/5 overflow-hidden">
+    <div class="px-5 py-3 border-b border-orange-500/20 flex items-center gap-2">
+      <span class="material-symbols-outlined text-base text-orange-400">sync_problem</span>
+      <span class="text-sm font-bold text-orange-400">{{ pendingPropagations.length }} propagation(s) en attente</span>
+      <span class="text-xs text-orange-400/60 ml-1">— modifications de la base à répercuter dans les children</span>
+    </div>
+    <div class="divide-y divide-orange-500/10">
+      @for (entry of pendingPropagations; track entry.baseVersion) {
+        <div class="px-5 py-3">
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                  {{ entry.baseVersion }}
+                </span>
+                @if (entry.modRef) {
+                  <span class="text-xs font-mono text-light-text-muted dark:text-white/30">{{ entry.modRef }}</span>
+                }
+                <span class="text-xs text-light-text-muted dark:text-white/40">{{ entry.date | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <p class="text-sm font-medium text-light-text dark:text-white/80">{{ entry.title }}</p>
+              @if (entry.propagationNote) {
+                <p class="text-xs text-light-text-muted dark:text-white/50 mt-0.5 italic">{{ entry.propagationNote }}</p>
+              }
+              @if (entry.propagationScope?.length > 0) {
+                <div class="flex flex-wrap gap-1 mt-1.5">
+                  @for (file of entry.propagationScope; track file) {
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-light-surface dark:bg-white/5 text-light-text-muted dark:text-white/40 border border-light-border dark:border-white/10">
+                      {{ file }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+            <button (click)="markPropagationSynced(entry.baseVersion, 'THI-V01')"
+                    class="shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border border-green-500/30 text-green-400 bg-green-500/5 hover:bg-green-500/10 transition-all">
+              <span class="material-symbols-outlined text-sm">check_circle</span>
+              Marquer syncé
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+}
+
 <!-- Formulaire nouveau déploiement -->
 @if (showDeployForm()) {
   <div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-primary/30 dark:border-primary/20 overflow-hidden">

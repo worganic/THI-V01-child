@@ -16,6 +16,7 @@ export class AdminDeploymentsComponent implements OnInit {
   @Output() versionStatusChange = new EventEmitter<any>();
 
   deployments = signal<any[]>([]);
+  propagationEntries = signal<any[]>([]);
   deployFilterType = signal<string>('');
   deployFilterAi = signal<string>('');
   loadingDeploy = signal(false);
@@ -39,6 +40,7 @@ export class AdminDeploymentsComponent implements OnInit {
   ngOnInit() {
     this.loadVersionStatus();
     this.loadDeployments();
+    this.loadPropagation();
   }
 
   async loadDeployments() {
@@ -55,6 +57,31 @@ export class AdminDeploymentsComponent implements OnInit {
     } finally {
       this.loadingDeploy.set(false);
     }
+  }
+
+  async loadPropagation() {
+    try {
+      const token = this.authService.getToken();
+      const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(`${API}/api/admin/propagation`, { headers });
+      if (res.ok) this.propagationEntries.set(await res.json());
+    } catch (e) { console.error('[PROPAGATION]', e); }
+  }
+
+  async markPropagationSynced(baseVersion: string, childId: string) {
+    try {
+      const token = this.authService.getToken();
+      const headers: Record<string, string> = { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+      const res = await fetch(`${API}/api/admin/propagation/${encodeURIComponent(baseVersion)}`, {
+        method: 'PATCH', headers,
+        body: JSON.stringify({ childId })
+      });
+      if (res.ok) await this.loadPropagation();
+    } catch (e) { console.error('[PROPAGATION PATCH]', e); }
+  }
+
+  get pendingPropagations(): any[] {
+    return this.propagationEntries().filter(e => e.propagationRequired);
   }
 
   async loadVersionStatus() {

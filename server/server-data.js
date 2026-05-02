@@ -4562,9 +4562,9 @@ app.get('/api/version/check', async (req, res) => {
             return res.json(status);
         }
 
-        // Mode base (fallback)
+        // Mode base (fallback) — filtre uniquement les versions B* pour ignorer les déploiements children
         const localVersion = vf.base || vf.version || '0.00';
-        const [rows] = await pool.query('SELECT * FROM app_deployments ORDER BY deployed_at DESC LIMIT 1');
+        const [rows] = await pool.query('SELECT * FROM app_deployments WHERE version LIKE ? ORDER BY deployed_at DESC LIMIT 1', ['B%']);
         const latest = rows[0] || null;
         const upToDate = !latest || latest.version === localVersion;
         res.json({ upToDate, localVersion, latestDeployment: latest });
@@ -4578,9 +4578,20 @@ app.get('/api/admin/deployments', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
     try {
-        const [rows] = await pool.query(
-            'SELECT * FROM app_deployments ORDER BY deployed_at DESC LIMIT 50'
-        );
+        let vf = {};
+        if (fs.existsSync(VERSION_FILE)) {
+            let raw = fs.readFileSync(VERSION_FILE, 'utf8');
+            if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+            vf = JSON.parse(raw);
+        }
+        let rows;
+        if (vf.child) {
+            // Mode child : retourner tous les déploiements (child + base) triés par date
+            [rows] = await pool.query('SELECT * FROM app_deployments ORDER BY deployed_at DESC LIMIT 100');
+        } else {
+            // Mode base : uniquement les déploiements base (B*)
+            [rows] = await pool.query('SELECT * FROM app_deployments WHERE version LIKE ? ORDER BY deployed_at DESC LIMIT 50', ['B%']);
+        }
         res.json(rows);
     } catch (e) {
         console.error('[DEPLOYMENTS] List error:', e);
@@ -4621,6 +4632,49 @@ app.post('/api/admin/deployments', async (req, res) => {
         res.json({ success: true });
     } catch (e) {
         console.error('[DEPLOYMENTS] Create error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ── Propagation base → children ──────────────────────────────────────────────
+const PROPAGATION_FILE = path.join(PROJECT_ROOT, 'data', 'base-propagation.json');
+
+app.get('/api/admin/propagation', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    try {
+        if (!fs.existsSync(PROPAGATION_FILE)) return res.json([]);
+        let raw = fs.readFileSync(PROPAGATION_FILE, 'utf8');
+        if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+        const data = JSON.parse(raw);
+        res.json(data.entries || []);
+    } catch (e) {
+        console.error('[PROPAGATION] List error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+app.patch('/api/admin/propagation/:baseVersion', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    const { baseVersion } = req.params;
+    const { childId } = req.body || {};
+    try {
+        if (!fs.existsSync(PROPAGATION_FILE)) return res.status(404).json({ error: 'Fichier propagation introuvable' });
+        let raw = fs.readFileSync(PROPAGATION_FILE, 'utf8');
+        if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+        const data = JSON.parse(raw);
+        const entry = (data.entries || []).find(e => e.baseVersion === baseVersion);
+        if (!entry) return res.status(404).json({ error: 'Entrée introuvable' });
+        entry.propagationRequired = false;
+        if (childId) {
+            if (!entry.syncedBy) entry.syncedBy = [];
+            if (!entry.syncedBy.includes(childId)) entry.syncedBy.push(childId);
+        }
+        fs.writeFileSync(PROPAGATION_FILE, JSON.stringify(data, null, 2), 'utf8');
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[PROPAGATION] Patch error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });

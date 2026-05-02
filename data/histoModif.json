@@ -1721,6 +1721,32 @@
       "prompt": "je remarque que dans le git du projet enfant child--THI-V01 il n y a pas le fichier pour lancer le projet child--THI-V01 : launch-frankenstein.bat qui doit être identique au même fichier du fichier de base.",
       "startedAt": "2026-05-02T12:30:00.000Z",
       "completedAt": "2026-05-02T19:50:59.974Z"
+    },
+    {
+      "id": "mod-072",
+      "version": "THI-0.36",
+      "date": "2026-05-02T20:33:13.894Z",
+      "type": "fix",
+      "commitType": "MERGE",
+      "scope": [
+        "server",
+        "frankenstein",
+        "data"
+      ],
+      "features": "server,frankenstein:deployments|admin,data",
+      "title": "Sync base B0.23 : admin déploiements + routes propagation",
+      "description": "Propagation depuis worganic-base B0.23 : correction GET /api/admin/deployments (mode-aware : child=tous, base=B*), ajout routes GET/PATCH /api/admin/propagation. Mise à jour admin-deployments.component.ts avec signals et méthodes propagation. Mise à jour admin-deployments.component.html avec panneau propagations en attente. Ajout data/base-propagation.json dans le child.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html",
+        "data/base-propagation.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la version child tu as dans le menu admin/deploiement la liste des deploiement du child et de base, hors la il manque des infos des mise à jour requise ou non de la version en cours (child) et de la version de base. IDem on ne peux pas voir les infos détaillé en cliquant sur les mise à jour comme c est le cas sur la version de base. Verifi le fonctionnement mais attention le système en lui même doit être corrigé sur la version de base avant d être deployé dans la version child",
+      "startedAt": "2026-05-02T13:00:00.000Z",
+      "completedAt": "2026-05-02T20:33:13.894Z"
     }
   ]
 }
