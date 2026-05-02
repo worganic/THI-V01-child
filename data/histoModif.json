@@ -1773,6 +1773,26 @@
       "prompt": "dans la version child j ai l indication que la version de base est à jour dans la version child : Syncée mais après cela m indique 1 propagation en attente la B0.21, c est illogique puisqu on est en B0.23 qui est sync, corrige le problème sur le projet de base et deploi le correction sur le projet child",
       "startedAt": "2026-05-02T14:30:00.000Z",
       "completedAt": "2026-05-02T21:00:25.814Z"
+    },
+    {
+      "id": "mod-074",
+      "version": "THI-0.38",
+      "date": "2026-05-02T21:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:deployments|admin",
+      "title": "Header : fix bannière MAJ toujours visible + liens vers admin?tab=deploiement",
+      "description": "Propagation depuis worganic-base (mod-024). Fix 1 : En mode child, l'API retourne { mode:'child', child:{...}, base:{...} } mais le signal versionStatus attendait { upToDate, localVersion, latestDeployment }. upToDate était undefined → bannière 'Mise à jour requise' toujours affichée avec 'v → v'. Normalisation de la réponse dans checkVersion(). Fix 2 : Liens bannière redirigaient vers /deployments au lieu de /admin?tab=deploiement.",
+      "files": [
+        "frankenstein/src/app/shared/layout/header/header.component.ts",
+        "frankenstein/src/app/shared/layout/header/header.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la version child on à une information Mise à jour requise [Image #1], alors que la version est bien à jour : [Image #2], autre problème lorsqu'on clique sur la zone [Image #3] cela amène sur http://localhost:4202/deployments alors que la menu admin/deploiement amène vers http://localhost:4202/admin?tab=deploiement, la page qui fonctionne est bien http://localhost:4202/admin?tab=deploiement, corrige bien sur cette fonction générique sur la version de base pour la deployé ensuite sur la version child",
+      "startedAt": "2026-05-02T21:10:00.000Z",
+      "completedAt": "2026-05-02T21:30:00.000Z"
     }
   ]
 }

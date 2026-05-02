@@ -91,7 +91,8 @@
     @if (versionStatus() && !versionStatus()!.upToDate) {
       <div class="ml-auto overflow-hidden rounded-xl border border-red-500/20 bg-red-500/5 transition-[max-width] duration-500 ease-in-out"
            [class]="bannerCollapsed() ? 'max-w-[215px] cursor-pointer hover:bg-red-500/10' : 'max-w-[680px]'"
-           [routerLink]="bannerCollapsed() ? '/deployments' : null">
+           [routerLink]="bannerCollapsed() ? ['/admin'] : null"
+           [queryParams]="bannerCollapsed() ? { tab: 'deploiement' } : null">
         <div class="flex items-center gap-2 px-3 py-2">
 
           <!-- Icône (toujours visible) -->
@@ -122,7 +123,7 @@
           <!-- Bouton Historique (disparaît après 5s) -->
           <div class="overflow-hidden transition-[max-width,opacity] duration-500 ease-in-out flex-shrink-0"
                [class]="bannerCollapsed() ? 'max-w-0 opacity-0' : 'max-w-[120px] opacity-100'">
-            <a routerLink="/deployments"
+            <a [routerLink]="['/admin']" [queryParams]="{ tab: 'deploiement' }"
                class="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-400/30 text-red-400 hover:bg-red-500/10 transition-colors whitespace-nowrap">
               <span class="material-symbols-outlined text-sm">history</span>
               Historique

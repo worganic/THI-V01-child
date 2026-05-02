@@ -124,7 +124,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
     try {
       const res = await fetch(`${API}/api/version/check`);
       if (res.ok) {
-        this.versionStatus.set(await res.json());
+        const data = await res.json();
+        // Normaliser la réponse child (mode:'child') vers la structure attendue
+        if (data.mode === 'child') {
+          this.versionStatus.set({
+            upToDate: data.child.upToDate && data.base.upToDate,
+            localVersion: data.child.localVersion,
+            latestDeployment: data.child.latestDeployment || data.base.latestDeployment
+          });
+        } else {
+          this.versionStatus.set(data);
+        }
         this.updateExpanded();
         if (!this.versionStatus()?.upToDate) {
           this.bannerCollapsed.set(false);
