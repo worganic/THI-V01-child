@@ -1780,7 +1780,9 @@
       "date": "2026-05-02T21:30:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["frankenstein"],
+      "scope": [
+        "frankenstein"
+      ],
       "features": "frankenstein:deployments|admin",
       "title": "Header : fix bannière MAJ toujours visible + liens vers admin?tab=deploiement",
       "description": "Propagation depuis worganic-base (mod-024). Fix 1 : En mode child, l'API retourne { mode:'child', child:{...}, base:{...} } mais le signal versionStatus attendait { upToDate, localVersion, latestDeployment }. upToDate était undefined → bannière 'Mise à jour requise' toujours affichée avec 'v → v'. Normalisation de la réponse dans checkVersion(). Fix 2 : Liens bannière redirigaient vers /deployments au lieu de /admin?tab=deploiement.",
@@ -1793,6 +1795,28 @@
       "prompt": "dans la version child on à une information Mise à jour requise [Image #1], alors que la version est bien à jour : [Image #2], autre problème lorsqu'on clique sur la zone [Image #3] cela amène sur http://localhost:4202/deployments alors que la menu admin/deploiement amène vers http://localhost:4202/admin?tab=deploiement, la page qui fonctionne est bien http://localhost:4202/admin?tab=deploiement, corrige bien sur cette fonction générique sur la version de base pour la deployé ensuite sur la version child",
       "startedAt": "2026-05-02T21:10:00.000Z",
       "completedAt": "2026-05-02T21:30:00.000Z"
+    },
+    {
+      "id": "mod-075",
+      "version": "THI-0.39",
+      "date": "2026-05-02T10:30:00Z",
+      "type": "feature",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Bouton retour au menu projets dans la sidebar",
+      "description": "Ajout d un bouton Retour (arrow_back) en haut de la bande d icones du sidebar de l editeur de projet. Navigue vers /projets au clic. Separateur visuel ajouté entre le bouton retour et le bouton dossier.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la section projet du projet child uniquement, il faut rajouté à gauche de la zone 1 un bouton revenir au menu principal (retour)",
+      "startedAt": "2026-05-02T10:00:00Z",
+      "completedAt": "2026-05-02T10:30:00Z"
     }
   ]
 }

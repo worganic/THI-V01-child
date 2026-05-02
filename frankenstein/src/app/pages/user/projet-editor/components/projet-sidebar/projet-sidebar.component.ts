@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal, OnChanges, SimpleChanges, HostListener, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 import { ConversationService } from '../../../../../core/services/conversation.service';
 
@@ -49,7 +50,9 @@ export class ProjetSidebarComponent implements OnChanges {
 
   private convSvc = inject(ConversationService);
 
-  constructor(private svc: ProjectFilesService, private elRef: ElementRef) {}
+  constructor(private svc: ProjectFilesService, private elRef: ElementRef, private router: Router) {}
+
+  goBack() { this.router.navigate(['/projets']); }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['files']) {
