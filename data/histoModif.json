@@ -1514,6 +1514,44 @@
       "completedAt": "2026-05-01T00:10:00.000Z"
     },
     {
+      "id": "mod-070",
+      "version": "THI-0.32",
+      "date": "2026-05-01T20:30:40.000Z",
+      "type": "feature",
+      "commitType": "",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:documents",
+      "title": "Zone 4 : mode édition focalisée sur une section ou document",
+      "description": "Nouvelle fonctionnalité : bouton 'Éd.' dans la gouttière gauche de la zone 4 (au survol de chaque section ou document additionnel). Cliquer dessus isole la section/le document dans l'éditeur — seul ce contenu est visible et éditable. Un badge indigo dans la toolbar affiche le nom de la section et un bouton '← Vue complète' permet de revenir à l'édition globale. Implémentation : focusedHandle (état public), enterFocusMode() / exitFocusMode(), saveAll() modifié pour reconstruire le document complet avant de parser (évite la suppression des sections hors focus par le pipeline onSectionsChange). Drag désactivé en mode focus. Sortie automatique si un changement structurel survient. Styles : .ed-focus-btn (indigo/teal), .ed-focus-exit, .ed-focus-label.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 4 en mode edition peux tu rajouté en dessous des boutons de deplassement de chaque section menu ou document, un nouveau bouton \"Edition\", ce bouton doit permettre d'afficher dans la zone d'edition que la zone du menu ou du document lié au bouton. Seul la zone doit apparaitre, un bouton dans le menu edition en haut à droite doit permettre de retrouvé l'edition de tous les documents (version normal actuel). LE but est de pouvoir modifié une seul partie sans avoir tous le document.",
+      "startedAt": "2026-05-01T20:26:57.000Z",
+      "completedAt": "2026-05-01T20:30:40.000Z"
+    },
+    {
+      "id": "mod-071",
+      "version": "THI-0.32",
+      "date": "2026-05-02T00:00:00.000Z",
+      "type": "config",
+      "commitType": "",
+      "scope": ["system"],
+      "features": "system:workflow",
+      "title": "Workflow git : commit du projet",
+      "description": "Demande de commit du projet par l'utilisateur. Lancement du workflow de fin de prompt : choix version, type de commit, titre.",
+      "files": [],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "peux tu giter le projet",
+      "startedAt": "2026-05-02T00:00:00.000Z",
+      "completedAt": "2026-05-02T00:01:00.000Z"
+    },
+    {
       "id": "mod-069",
       "version": "THI-0.32",
       "date": "2026-05-01T19:41:54.000Z",

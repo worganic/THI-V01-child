@@ -126,6 +126,12 @@ export class ProjetEditorZoneComponent implements OnChanges {
   // Mode (toggle Edition / Visu)
   mode: 'edit' | 'visu' = 'edit';
 
+  // Mode Focus : édition d'une seule section / document
+  focusedHandle: DragHandle | null = null;
+  private fullContentBackup = '';
+  private focusedLineStart = 0;
+  private focusedOriginalLineCount = 0;
+
   // Erreur upload image
   imageUploadError = '';
 
@@ -183,8 +189,53 @@ export class ProjetEditorZoneComponent implements OnChanges {
       this.allImages = this.collectAllImages(this.files);
 
       if (!this.hasLoaded || hasStructuralChange) {
-        this.unifiedContent = this.reconstructFromSections();
-        this.lastSavedContent = this.unifiedContent;
+        const newFullContent = this.reconstructFromSections();
+
+        if (hasStructuralChange && this.focusedHandle) {
+          // Changement structurel (ex: drag réordonnancement) pendant le mode focus.
+          // On recalcule la position de la section focusée dans le nouveau document
+          // pour rester en mode focus au lieu d'en sortir.
+          const focusedId   = this.focusedHandle.id;
+          const focusedKind = this.focusedHandle.kind;
+
+          // Calcul temporaire des ranges sur le nouveau contenu complet
+          const tmpContent = this.unifiedContent;
+          this.unifiedContent = newFullContent;
+          this.recomputeRanges();
+          this.unifiedContent = tmpContent;
+
+          let newRange: { lineStart: number; lineEnd: number } | null = null;
+          if (focusedKind === 'folder') {
+            const sr = this.sectionRanges.find(r => r.folderId === focusedId);
+            if (sr) newRange = { lineStart: sr.lineStart, lineEnd: sr.lineEnd };
+          } else if (focusedKind === 'file') {
+            const fr = this.fileRanges.find(r => r.fileId === focusedId);
+            if (fr) newRange = { lineStart: fr.lineStart, lineEnd: fr.lineEnd };
+          }
+
+          if (newRange) {
+            // Rester en focus avec les nouvelles positions de lignes
+            this.fullContentBackup        = newFullContent;
+            this.focusedLineStart         = newRange.lineStart;
+            this.focusedOriginalLineCount = newRange.lineEnd - newRange.lineStart + 1;
+            this.unifiedContent  = newFullContent.split('\n').slice(newRange.lineStart, newRange.lineEnd + 1).join('\n');
+            this.lastSavedContent = this.unifiedContent;
+            setTimeout(() => {
+              const ta = this.textareaRef?.nativeElement;
+              if (ta) ta.value = this.unifiedContent;
+            });
+          } else {
+            // Section supprimée → sortir du mode focus
+            this.focusedHandle    = null;
+            this.fullContentBackup = '';
+            this.unifiedContent   = newFullContent;
+            this.lastSavedContent = this.unifiedContent;
+          }
+        } else if (!this.focusedHandle) {
+          this.unifiedContent   = newFullContent;
+          this.lastSavedContent = this.unifiedContent;
+        }
+        // Si focusedHandle && !hasStructuralChange : on garde le contenu focusé intact
       }
       this.hasLoaded = true;
       this.recomputeAll();
@@ -519,12 +570,72 @@ export class ProjetEditorZoneComponent implements OnChanges {
   // ── Mode toggle ─────────────────────────────────────────────
   setMode(m: 'edit' | 'visu') {
     if (this.mode === m) return;
-    if (this.mode === 'edit') this.saveAll();
+    if (this.mode === 'edit') {
+      if (this.focusedHandle) this.exitFocusMode(); // sortie focus avant de passer en visu
+      else this.saveAll();
+    }
     this.mode = m;
     this.recomputeAll();
     if (this.activeNodeId) {
       setTimeout(() => this.scrollToActive(), 80);
     }
+  }
+
+  // ── Mode focus : édition d'une seule section / document ─────
+  enterFocusMode(handle: DragHandle, ev?: MouseEvent) {
+    if (ev) { ev.stopPropagation(); ev.preventDefault(); }
+    clearTimeout(this.saveTimeout);
+
+    if (this.focusedHandle) {
+      // Déjà en mode focus : sortir d'abord (merge + recompute du doc complet),
+      // puis retrouver le handle cible dans les handles reconstruits du doc complet.
+      this.exitFocusModeSync();
+      const found = this.handles.find(h => h.id === handle.id);
+      if (!found) return;
+      handle = found;
+    }
+
+    if (this.unifiedContent !== this.lastSavedContent) this.saveAll();
+
+    const lines = this.unifiedContent.split('\n');
+    this.focusedLineStart = handle.lineStart;
+    this.focusedOriginalLineCount = handle.lineEnd - handle.lineStart + 1;
+    this.fullContentBackup = this.unifiedContent;
+
+    this.unifiedContent = lines.slice(handle.lineStart, handle.lineEnd + 1).join('\n');
+    this.lastSavedContent = this.unifiedContent;
+    this.focusedHandle = handle;
+
+    this.recomputeAll();
+    setTimeout(() => {
+      const ta = this.textareaRef?.nativeElement;
+      if (ta) { ta.value = this.unifiedContent; ta.focus(); ta.setSelectionRange(0, 0); }
+    });
+  }
+
+  exitFocusMode() {
+    this.exitFocusModeSync();
+    setTimeout(() => {
+      const ta = this.textareaRef?.nativeElement;
+      if (ta) ta.value = this.unifiedContent;
+    });
+    this.saveAll();
+  }
+
+  private exitFocusModeSync() {
+    if (!this.focusedHandle) return;
+    clearTimeout(this.saveTimeout);
+
+    const focusedLines = this.unifiedContent.split('\n');
+    const fullLines = this.fullContentBackup.split('\n');
+    fullLines.splice(this.focusedLineStart, this.focusedOriginalLineCount, ...focusedLines);
+
+    this.focusedHandle = null;
+    this.fullContentBackup = '';
+    this.unifiedContent = fullLines.join('\n');
+    this.lastSavedContent = '';
+
+    this.recomputeAll(); // reconstruit handles depuis le document complet
   }
 
   // ── Edit-mode events ────────────────────────────────────────
@@ -636,7 +747,27 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private saveAll() {
     if (this.unifiedContent === this.lastSavedContent) return;
     this.lastSavedContent = this.unifiedContent;
+
+    let contentToParse: string;
+    if (this.focusedHandle) {
+      // Mode focus : reconstruire le document complet avant de parser
+      // (évite que le parent ne détecte des suppressions de sections hors focus)
+      const focusedLines = this.unifiedContent.split('\n');
+      const fullLines = this.fullContentBackup.split('\n');
+      fullLines.splice(this.focusedLineStart, this.focusedOriginalLineCount, ...focusedLines);
+      // Mettre à jour le backup et le compteur de lignes pour les sauvegardes suivantes
+      this.focusedOriginalLineCount = focusedLines.length;
+      this.fullContentBackup = fullLines.join('\n');
+      contentToParse = this.fullContentBackup;
+    } else {
+      contentToParse = this.unifiedContent;
+    }
+
+    // parseContent() opère sur this.unifiedContent — on substitue temporairement
+    const saved = this.unifiedContent;
+    this.unifiedContent = contentToParse;
     const sections = this.parseContent();
+    this.unifiedContent = saved;
     this.sectionsChange.emit(sections);
   }
 
@@ -980,6 +1111,11 @@ export class ProjetEditorZoneComponent implements OnChanges {
   startHandleDrag(handle: DragHandle, ev: MouseEvent) {
     ev.preventDefault();
     ev.stopPropagation();
+    // En mode focus : forcer une sauvegarde avant de lancer le drag
+    // (le clearTimeout ci-dessous annulera le debounce, le contenu doit être persisté)
+    if (this.focusedHandle && this.unifiedContent !== this.lastSavedContent) {
+      this.saveAll();
+    }
     // Annule toute sauvegarde différée : sinon un parseContent sur le texte courant
     // peut tourner en parallèle du moveFile et provoquer un effacement du document
     // (cf. cleanup orphan additional files dans onSectionsChange).
@@ -1016,24 +1152,25 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const rect = mirrorEl.getBoundingClientRect();
     const contentY = clientY - rect.top + mirrorEl.scrollTop;
 
-    // Filtrer les handles : pas soi-même, pas un descendant si on déplace un dossier
     const draggedNode = this.findNode(this.draggingHandle.id, this.files);
+    const isDragFolder = this.draggingHandle.kind === 'folder';
+
+    // Pour un drag de dossier : cibler uniquement les dossiers du même niveau.
+    // Cela évite de tomber sur une sous-section et de déclencher un nesting
+    // accidentel au lieu d'un réordonnancement.
     const candidates = this.handles.filter(h => {
       if (h.id === this.draggingHandle!.id) return false;
       if (draggedNode?.type === 'folder' && this.isDescendantOf(h.id, this.draggingHandle!.id)) return false;
+      if (isDragFolder) return h.kind === 'folder' && h.level === this.draggingHandle!.level;
       return true;
     });
 
     let target: DragHandle | null = null;
-    // On parcourt à l'envers pour trouver le handle le plus spécifique (le plus imbriqué)
-    // car les handles sont triés par top croissant, et les enfants commencent plus tard 
-    // ou en même temps que leurs parents mais finissent plus tôt ou en même temps.
     for (let i = candidates.length - 1; i >= 0; i--) {
       const h = candidates[i];
       if (contentY >= h.top && contentY <= h.top + h.height) { target = h; break; }
     }
     if (!target) {
-      // Pas pile dans une zone : trouver la plus proche
       let best: DragHandle | null = null;
       let bestDist = Infinity;
       for (const h of candidates) {
@@ -1050,17 +1187,13 @@ export class ProjetEditorZoneComponent implements OnChanges {
       return;
     }
 
-    // Position : dans la zone du target → before/inside/after selon Y
     const relY = contentY - target.top;
     const ratio = relY / target.height;
     let position: 'before' | 'after' | 'inside';
-    if (this.draggingHandle.kind === 'folder') {
-      // Dossiers : on évite 'inside' sur un fichier/image
+
+    if (isDragFolder) {
+      // Uniquement before/after pour les dossiers de même niveau (pas de nesting accidentel)
       position = ratio < 0.5 ? 'before' : 'after';
-      // 'inside' uniquement si target est un dossier et qu'on est au milieu
-      if (target.kind === 'folder' && ratio > 0.25 && ratio < 0.75 && contentY >= target.top && contentY <= target.top + target.height) {
-        position = 'inside';
-      }
     } else {
       position = ratio < 0.3 ? 'before' : (ratio > 0.7 ? 'after' : (target.kind === 'folder' ? 'inside' : (ratio < 0.5 ? 'before' : 'after')));
     }
