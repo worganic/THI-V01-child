@@ -109,6 +109,13 @@
               [class]="getNodeLabelClasses(node)">
           {{ node.type === 'file' ? node.name.replace('.md', '') : node.name }}
         </span>
+
+        <!-- Icône Conversation (Forum) -->
+        @if (hasConversation(node.id)) {
+          <span class="material-symbols-outlined text-[10px] flex-shrink-0 text-light-primary dark:text-primary animate-pulse ml-1 opacity-70">
+            forum
+          </span>
+        }
       </div>
     }
 

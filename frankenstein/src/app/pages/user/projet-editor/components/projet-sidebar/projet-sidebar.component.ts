@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, signal, OnChanges, SimpleChanges, HostListener, ElementRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, OnChanges, SimpleChanges, HostListener, ElementRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
+import { ConversationService } from '../../../../../core/services/conversation.service';
 
 interface ContextMenu { x: number; y: number; node: FileNode | null; }
 interface InlineInput { type: 'rename' | 'new-file' | 'new-folder'; nodeId: string | null; parentId: string | null; }
@@ -36,6 +37,8 @@ export class ProjetSidebarComponent implements OnChanges {
   inlineInput = signal<InlineInput | null>(null);
   inlineValue = '';
   deleteConfirm = signal<FileNode | null>(null);
+  
+  conversationIds = signal<Set<string>>(new Set());
 
   draggedNode = signal<FileNode | null>(null);
   draggedParentId = signal<string | null>(null);
@@ -44,9 +47,15 @@ export class ProjetSidebarComponent implements OnChanges {
 
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
 
+  private convSvc = inject(ConversationService);
+
   constructor(private svc: ProjectFilesService, private elRef: ElementRef) {}
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes['files']) {
+      this.loadConversations();
+    }
+    
     if (changes['files'] && this.files.length > 0) {
       const s = new Set(this.expanded());
       s.add('root');
@@ -60,6 +69,19 @@ export class ProjetSidebarComponent implements OnChanges {
     if (changes['activeFileId'] && this.activeFileId) {
       this.expandToNode(this.activeFileId);
     }
+  }
+
+  loadConversations() {
+    this.convSvc.getConversationsList().subscribe({
+      next: (list) => {
+        this.conversationIds.set(new Set(list));
+      },
+      error: (err) => console.error('Error loading conversations list:', err)
+    });
+  }
+
+  hasConversation(id: string): boolean {
+    return this.conversationIds().has(id);
   }
 
   private expandToNode(nodeId: string) {

@@ -42,7 +42,7 @@ export class ConfigService {
   setActionsEnabled(val: boolean)       { this.actionsEnabled.set(val); }
 
   // Affichage zone IA dans le header principal
-  headerIaVisible = signal<boolean>(true);
+  headerIaVisible = signal<boolean>(false);
 
   saveHeaderIaVisible(val: boolean) {
     this.headerIaVisible.set(val);

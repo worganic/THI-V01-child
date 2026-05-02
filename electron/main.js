@@ -38,7 +38,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
-    title: 'Frankenstein Junior',
+    title: 'Frankenstein Child',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

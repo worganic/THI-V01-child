@@ -5,6 +5,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { AdminUsersComponent } from './tabs/admin-users/admin-users.component';
 import { AdminDeploymentsComponent } from './tabs/admin-deployments/admin-deployments.component';
 import { AdminHelpComponent } from './tabs/admin-help/admin-help.component';
+import { AdminThemeComponent } from './tabs/admin-theme/admin-theme.component';
 import { ConfigComponent } from '../user/config/config.component';
 import { AdminTabsRegistryService, AdminTabDef } from '../../core/services/admin-tabs-registry.service';
 
@@ -13,12 +14,13 @@ const BASE_ADMIN_TABS: AdminTabDef[] = [
   { id: 'deploiement', label: 'Déploiement',  icon: 'rocket_launch', component: AdminDeploymentsComponent, order: 2 },
   { id: 'help',        label: 'Help',         icon: 'help',          component: AdminHelpComponent,        order: 3 },
   { id: 'config',      label: 'Config',       icon: 'settings',      component: ConfigComponent,           order: 4 },
+  { id: 'theme',       label: 'Thème',        icon: 'palette',       component: AdminThemeComponent,       order: 5 },
 ];
 
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [CommonModule, NgComponentOutlet, AdminUsersComponent, AdminDeploymentsComponent, AdminHelpComponent, ConfigComponent],
+  imports: [CommonModule, NgComponentOutlet, AdminUsersComponent, AdminDeploymentsComponent, AdminHelpComponent, AdminThemeComponent, ConfigComponent],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.scss'
 })

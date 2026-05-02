@@ -16,7 +16,7 @@ interface ColorVar {
 interface StyleSettingItem {
   key: string;
   label: string;
-  type: 'range' | 'select';
+  type: 'range' | 'select' | 'color';
   unit: string;
   min?: number;
   max?: number;
@@ -28,33 +28,73 @@ interface StyleSettingItem {
 interface StyleSettingGroup {
   label: string;
   icon: string;
+  layout?: 'default' | 'headings';
+  hidden?: boolean;
   items: StyleSettingItem[];
 }
+
+const FONT_FAMILY_OPTIONS = [
+  { value: 'inherit',                                      label: 'Système (défaut)' },
+  { value: "'Space Grotesk', sans-serif",                  label: 'Space Grotesk' },
+  { value: "'Segoe UI', Tahoma, Geneva, sans-serif",       label: 'Segoe UI' },
+  { value: "Arial, Helvetica, sans-serif",                 label: 'Arial' },
+  { value: "Georgia, 'Times New Roman', serif",            label: 'Georgia' },
+  { value: "'Times New Roman', Times, serif",              label: 'Times New Roman' },
+  { value: "'Courier New', Courier, monospace",            label: 'Courier New' },
+];
+
+const WEIGHT_OPTIONS_HEADING = [
+  { value: '300', label: 'Light — 300' },
+  { value: '400', label: 'Regular — 400' },
+  { value: '500', label: 'Medium — 500' },
+  { value: '600', label: 'Semi-Bold — 600' },
+  { value: '700', label: 'Bold — 700' },
+  { value: '800', label: 'Extra-Bold — 800' },
+];
+
+const LETTER_SPACING_TEMPLATE: StyleSettingItem = {
+  key: '', label: 'Espacement', type: 'range', unit: 'em/100', min: -6, max: 6, step: 1, default: -2
+};
+
+// Per-heading items (h1-h4) — used in the hidden group for load/save/apply
+const HEADING_ITEMS: StyleSettingItem[] = ['h1', 'h2', 'h3', 'h4'].flatMap(l => [
+  { key: `${l}-color`,          label: 'Couleur',    type: 'color'  as const, unit: '', default: '' },
+  { key: `${l}-font-family`,    label: 'Police',     type: 'select' as const, unit: '', default: 'inherit', options: FONT_FAMILY_OPTIONS },
+  { key: `${l}-weight`,         label: 'Graisse',    type: 'select' as const, unit: '', default: '700', options: WEIGHT_OPTIONS_HEADING },
+  { key: `${l}-letter-spacing`, label: 'Espacement', type: 'range'  as const, unit: 'em/100', min: -6, max: 6, step: 1, default: -2 },
+]);
 
 const STYLE_SETTING_GROUPS: StyleSettingGroup[] = [
   {
     label: 'Cartes & Panneaux',
     icon: 'dashboard',
     items: [
-      { key: 'card-radius',       label: 'Arrondi',            type: 'range',  unit: 'px',     min: 0, max: 32, step: 1, default: 12 },
-      { key: 'card-border-width', label: 'Épaisseur bordure',  type: 'range',  unit: 'px',     min: 0, max: 4,  step: 1, default: 1 },
+      { key: 'card-radius',       label: 'Arrondi',           type: 'range', unit: 'px', min: 0, max: 32, step: 1, default: 12 },
+      { key: 'card-border-width', label: 'Épaisseur bordure', type: 'range', unit: 'px', min: 0, max: 4,  step: 1, default: 1 },
     ]
   },
+  // Hidden: provides load/save/apply processing for per-heading items
+  { label: '_headings', icon: 'title', hidden: true, items: HEADING_ITEMS },
+  // Sentinel: triggers the heading table rendering in template (items: [])
+  { label: 'Titres (H1 – H4)', icon: 'title', layout: 'headings', items: [] },
   {
-    label: 'Titres (h1 – h4)',
-    icon: 'title',
+    label: 'Textes (p)',
+    icon: 'article',
     items: [
-      { key: 'h-weight', label: 'Graisse', type: 'select', unit: '', default: '700',
+      { key: 'p-color',       label: 'Couleur',    type: 'color',  unit: '', default: '' },
+      { key: 'p-size',        label: 'Taille',     type: 'range',  unit: 'px', min: 0, max: 28, step: 1, default: 0 },
+      { key: 'p-font-family', label: 'Police',     type: 'select', unit: '', default: 'inherit', options: FONT_FAMILY_OPTIONS },
+      { key: 'p-weight',      label: 'Graisse',    type: 'select', unit: '', default: 'inherit',
         options: [
+          { value: 'inherit', label: 'Hérité (défaut)' },
           { value: '300', label: 'Light — 300' },
           { value: '400', label: 'Regular — 400' },
           { value: '500', label: 'Medium — 500' },
           { value: '600', label: 'Semi-Bold — 600' },
           { value: '700', label: 'Bold — 700' },
-          { value: '800', label: 'Extra-Bold — 800' },
         ]
       },
-      { key: 'h-letter-spacing', label: 'Espacement lettres', type: 'range', unit: 'em/100', min: -6, max: 6, step: 1, default: -2 },
+      { key: 'p-line-height', label: 'Interligne', type: 'range',  unit: 'x10', min: 10, max: 25, step: 1, default: 16 },
     ]
   },
   {
@@ -116,6 +156,13 @@ const PRESETS = [
   },
 ];
 
+const HEADING_LEVELS = [
+  { level: 'h1', label: 'H1' },
+  { level: 'h2', label: 'H2' },
+  { level: 'h3', label: 'H3' },
+  { level: 'h4', label: 'H4' },
+];
+
 @Component({
   selector: 'app-admin-theme',
   standalone: true,
@@ -136,9 +183,13 @@ export class AdminThemeComponent implements OnInit {
   baseCss         = signal<string>('');
   baseCssExpanded = signal(false);
 
-  readonly colorVars         = COLOR_VARS;
-  readonly presets           = PRESETS;
-  readonly styleSettingGroups = STYLE_SETTING_GROUPS;
+  readonly colorVars          = COLOR_VARS;
+  readonly presets            = PRESETS;
+  readonly headingLevels      = HEADING_LEVELS;
+  readonly fontFamilyOptions  = FONT_FAMILY_OPTIONS;
+  readonly headingWeightOpts  = WEIGHT_OPTIONS_HEADING;
+  readonly letterSpacingTpl   = LETTER_SPACING_TEMPLATE;
+  readonly styleSettingGroups = STYLE_SETTING_GROUPS.filter(g => !g.hidden);
 
   hexValues: Record<string, string> = {};
   styleValues: Record<string, any>  = {};
@@ -241,8 +292,9 @@ export class AdminThemeComponent implements OnInit {
   }
 
   onStyleChange(key: string, rawValue: string) {
-    const group = STYLE_SETTING_GROUPS.flatMap(g => g.items).find(i => i.key === key);
-    this.styleValues[key] = group?.type === 'range' ? Number(rawValue) : rawValue;
+    const allItems = STYLE_SETTING_GROUPS.flatMap(g => g.items);
+    const item = allItems.find(i => i.key === key);
+    this.styleValues[key] = item?.type === 'range' ? Number(rawValue) : rawValue;
     this.applyStyleSettingsToDocument();
   }
 
@@ -254,16 +306,15 @@ export class AdminThemeComponent implements OnInit {
   }
 
   formatDisplayValue(item: StyleSettingItem, val: any): string {
+    if (item.type === 'color') return val ? String(val).toUpperCase() : 'Hérité';
     if (item.unit === 'em/100') return (Number(val) / 100).toFixed(2) + 'em';
-    if (item.unit === 'px') return val + 'px';
+    if (item.unit === 'x10') return 'x' + (Number(val) / 10).toFixed(1);
+    if (item.unit === 'px') {
+      if (item.key === 'p-size' && Number(val) === 0) return 'Auto';
+      return val + 'px';
+    }
     if (item.type === 'select') return item.options?.find(o => o.value === String(val))?.label || String(val);
     return String(val);
-  }
-
-  stylePreviewValue(key: string): string {
-    const item = STYLE_SETTING_GROUPS.flatMap(g => g.items).find(i => i.key === key);
-    if (!item) return '';
-    return this.toCssValue(item, this.styleValues[key] ?? item.default);
   }
 
   async saveStyleSettings() {
@@ -294,8 +345,13 @@ export class AdminThemeComponent implements OnInit {
   }
 
   private toCssValue(item: StyleSettingItem, val: any): string {
+    if (item.type === 'color') return val || 'inherit';
     if (item.unit === 'em/100') return (Number(val) / 100) + 'em';
-    if (item.unit === 'px') return val + 'px';
+    if (item.unit === 'x10') return (Number(val) / 10).toFixed(1);
+    if (item.unit === 'px') {
+      if (item.key === 'p-size' && Number(val) === 0) return 'inherit';
+      return val + 'px';
+    }
     return String(val);
   }
 

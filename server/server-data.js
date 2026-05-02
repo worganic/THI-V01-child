@@ -3993,6 +3993,11 @@ app.delete('/api/frank/projects/:id/steps/:stepId', async (req, res) => {
 // ============================================================
 
 const PROJECTS_DIR = path.join(BASE_DIR, 'projets');
+const CONVERSATIONS_DIR = path.join(PROJECTS_DIR, 'conversations');
+
+if (!fs.existsSync(CONVERSATIONS_DIR)) {
+    fs.mkdirSync(CONVERSATIONS_DIR, { recursive: true });
+}
 
 function slugify(text) {
     return text.toString().toLowerCase()
@@ -4384,6 +4389,13 @@ app.post('/api/file-projects/:name/move-file', (req, res) => {
         if (targetFolderId) {
             const target = findNodeById(config.structure, targetFolderId);
             if (!target) return res.status(404).json({ error: 'Dossier cible non trouvé' });
+            if (target.type !== 'folder') return res.status(400).json({ error: 'La cible doit être un dossier' });
+
+            // Éviter les doublons de nom dans le dossier cible
+            if ((target.children || []).some(c => c.type === 'file' && c.name.toLowerCase() === item.name.toLowerCase())) {
+                return res.status(400).json({ error: `Un fichier nommé "${item.name}" existe déjà dans le dossier cible` });
+            }
+
             const newPath = `${target.path}/${item.name}`;
             const newFull = safeProjectPath(req.params.name, newPath);
             if (oldFull && newFull && fs.existsSync(oldFull)) {
@@ -4471,10 +4483,20 @@ app.post('/api/file-projects/:name/move-folder', (req, res) => {
         if (targetParentId) {
             const target = findNodeById(config.structure, targetParentId);
             if (!target || target.type !== 'folder') return res.status(400).json({ error: 'Dossier cible invalide' });
+
+            // Éviter les doublons de nom dans le dossier cible
+            if ((target.children || []).some(c => c.type === 'folder' && c.name.toLowerCase() === folder.name.toLowerCase())) {
+                return res.status(400).json({ error: `Un dossier nommé "${folder.name}" existe déjà dans le dossier cible` });
+            }
+
             newPath = target.path + '/' + folder.name;
             target.children = target.children || [];
             targetItems = target.children;
         } else {
+            // Éviter les doublons à la racine
+            if (config.structure.some(c => c.type === 'folder' && c.name.toLowerCase() === folder.name.toLowerCase())) {
+                return res.status(400).json({ error: `Un dossier nommé "${folder.name}" existe déjà à la racine` });
+            }
             newPath = folder.name;
             targetItems = config.structure;
         }
@@ -4937,6 +4959,87 @@ app.delete('/api/documents/:id', async (req, res) => {
     } catch (e) {
         console.error('[DOCS] Delete error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ============================================================
+// ROUTES: Conversations (Zone 5)
+// ============================================================
+
+// GET /api/conversations/:sectionId
+app.get('/api/conversations/:sectionId', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    
+    const sectionId = req.params.sectionId;
+    const filePath = path.join(CONVERSATIONS_DIR, `${sectionId}.json`);
+    
+    try {
+        if (!fs.existsSync(filePath)) {
+            return res.json({ sectionId, messages: [] });
+        }
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        res.json(data);
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur lors de la lecture de la conversation' });
+    }
+});
+
+// GET /api/conversations-list
+app.get('/api/conversations-list', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    
+    try {
+        if (!fs.existsSync(CONVERSATIONS_DIR)) {
+            return res.json([]);
+        }
+        const files = fs.readdirSync(CONVERSATIONS_DIR);
+        // Retourne la liste des IDs (nom du fichier sans .json)
+        const ids = files
+            .filter(f => f.endsWith('.json'))
+            .map(f => f.replace('.json', ''));
+        res.json(ids);
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur lors de la récupération de la liste des conversations' });
+    }
+});
+
+// POST /api/conversations/:sectionId
+app.post('/api/conversations/:sectionId', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    
+    const sectionId = req.params.sectionId;
+    const { text } = req.body;
+    
+    if (!text) return res.status(400).json({ error: 'Texte requis' });
+    
+    const filePath = path.join(CONVERSATIONS_DIR, `${sectionId}.json`);
+    
+    try {
+        if (!fs.existsSync(CONVERSATIONS_DIR)) {
+            fs.mkdirSync(CONVERSATIONS_DIR, { recursive: true });
+        }
+
+        let data = { sectionId, messages: [] };
+        if (fs.existsSync(filePath)) {
+            data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+        }
+        
+        const newMessage = {
+            user: user.username,
+            userId: user.id,
+            text,
+            timestamp: new Date().toISOString()
+        };
+        
+        data.messages.push(newMessage);
+        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+        
+        res.status(201).json(newMessage);
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur lors de la sauvegarde du message' });
     }
 });
 

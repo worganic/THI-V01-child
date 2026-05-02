@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx ng *)",
+      "Bash(curl -s http://localhost:3001/api/projects)",
+      "Bash(awk -F: '$1 >= 4048')",
+      "Bash(python3 *)",
+      "Bash(curl -s \"http://localhost:3001/api/file-projects\")",
+      "Bash(npx tsc *)",
+      "Bash(node -e \"const d = JSON.parse\\(require\\('fs'\\).readFileSync\\('data/histoModif.json','utf8'\\)\\); console.log\\(d.modifications[d.modifications.length-1].id\\);\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const f=require\\('./data/histoModif.json'\\); const mods=f.modifications; console.log\\(mods[mods.length-1].id\\)\")",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(node server/deploy-log.js --version \"THI-0.21\" --commit \"THI-0.21 - 20260427 - [FIX] - Zone 3 : fix surlignage fichier additionnel\" --description \"[mod-030] Correction du bug dans scrollToNodeById : endRegex manquait le flag g, lastIndex ignore, delimiter ferme trouve depuis debut du document au mauvais endroit, substring inversait les bornes.\" --ai \"Claude Code\" --model \"claude-sonnet-4-6\" --mods \"mod-030\" --files \"frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts\" --scope \"frankenstein\" --features \"frankenstein:projet-editor\")",
+      "Bash(git push *)",
+      "Bash(node server/deploy-log.js --version \"THI-0.22\" --commit \"THI-0.22 - 20260427 - [AMELIORATION] - Zone 4 : bleu menu, vert document\" --description \"[mod-031] Masquage des fichiers contenu.md dans larborescence zone 3\\\\n[mod-032] Surlignage zone 4 : bleu pour menus/dossiers, vert pour fichiers additionnels\" --ai \"Claude Code\" --model \"claude-sonnet-4-6\" --mods \"mod-031, mod-032\" --files \"frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html,frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts,frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html\" --scope \"frankenstein\" --features \"frankenstein:projet-editor\")"
+    ]
+  }
+}

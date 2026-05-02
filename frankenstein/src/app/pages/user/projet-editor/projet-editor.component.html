@@ -12,9 +12,9 @@
       [isDirty]="saveStatus() === 'saving'"
       (save)="onRefresh()" />
 
-    <div class="flex flex-1 overflow-hidden pb-8">
+    <div class="flex flex-1 overflow-hidden pb-[72px]">
 
-      <app-projet-sidebar
+      <app-projet-sidebar #sidebar
         [projectName]="project()?.id || ''"
         [projectTitle]="projectTitle"
         [files]="files()"
@@ -33,14 +33,17 @@
         (fileSave)="onFileSave($event)"
         (sectionsChange)="onSectionsChange($event)"
         (nodeActive)="onNodeActive($event)"
+        (dragDrop)="onDragDrop($event)"
         (refresh)="onRefresh()" />
 
-      <app-projet-conversation />
+      <app-projet-conversation 
+        [sectionId]="activeNodeId()" 
+        (conversationAdded)="sidebar.loadConversations()" />
 
     </div>
 
     <app-projet-statusbar
-      class="absolute bottom-0 left-0 right-0 z-20"
+      class="absolute bottom-10 left-0 right-0 z-20"
       [status]="statusLabel"
       [isDirty]="saveStatus() === 'saving'" />
 

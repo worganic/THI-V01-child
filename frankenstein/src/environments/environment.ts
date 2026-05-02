@@ -9,9 +9,9 @@ export const environment = {
 
   // ─── Copyright & Branding ──────────────────────────────
   // Modifiez ces valeurs pour personnaliser le footer
-  appName: 'Frankenstein Junior',
+  appName: 'Frankenstein Child',
   appVersion: '1.0.0',
   copyrightYear: 2026,
-  copyrightHolder: 'Frankenstein Junior',
+  copyrightHolder: 'Frankenstein Child',
   copyrightTagline: 'Propulsé par IA',
 };
