@@ -80,8 +80,19 @@ export class AdminDeploymentsComponent implements OnInit {
     } catch (e) { console.error('[PROPAGATION PATCH]', e); }
   }
 
+  private parseVersionNum(v: string): number {
+    const m = v?.match(/[A-Z](\d+)\.(\d+)/);
+    return m ? parseInt(m[1]) * 1000 + parseInt(m[2]) : 0;
+  }
+
   get pendingPropagations(): any[] {
-    return this.propagationEntries().filter(e => e.propagationRequired);
+    const vs = this.versionStatus();
+    const baseSyncedNum = this.isChildMode ? this.parseVersionNum(vs?.base?.localVersion || '') : 0;
+    return this.propagationEntries().filter(e => {
+      if (!e.propagationRequired) return false;
+      if (this.isChildMode && baseSyncedNum > 0 && this.parseVersionNum(e.baseVersion) <= baseSyncedNum) return false;
+      return true;
+    });
   }
 
   async loadVersionStatus() {
@@ -235,5 +246,19 @@ export class AdminDeploymentsComponent implements OnInit {
       case 'data':         return 'bg-orange-500/10 text-orange-400 border border-orange-500/20';
       default:             return 'bg-slate-500/10 text-slate-400 border border-slate-500/20';
     }
+  }
+
+  deployRowClass(dep: any): string {
+    const vs = this.versionStatus();
+    if (this.isChildMode) {
+      if (dep.version === vs?.child?.localVersion)
+        return 'bg-green-500/[0.06] hover:bg-green-500/10 border-l-2 border-l-green-500/50 transition-colors';
+      if (dep.version === vs?.base?.localVersion)
+        return 'bg-yellow-500/[0.06] hover:bg-yellow-500/10 border-l-2 border-l-yellow-500/50 transition-colors';
+    } else {
+      if (dep.version === vs?.localVersion)
+        return 'bg-yellow-500/[0.06] hover:bg-yellow-500/10 border-l-2 border-l-yellow-500/50 transition-colors';
+    }
+    return 'hover:bg-light-primary/5 dark:hover:bg-primary/5 transition-colors';
   }
 }

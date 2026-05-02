@@ -1747,6 +1747,32 @@
       "prompt": "dans la version child tu as dans le menu admin/deploiement la liste des deploiement du child et de base, hors la il manque des infos des mise à jour requise ou non de la version en cours (child) et de la version de base. IDem on ne peux pas voir les infos détaillé en cliquant sur les mise à jour comme c est le cas sur la version de base. Verifi le fonctionnement mais attention le système en lui même doit être corrigé sur la version de base avant d être deployé dans la version child",
       "startedAt": "2026-05-02T13:00:00.000Z",
       "completedAt": "2026-05-02T20:33:13.894Z"
+    },
+    {
+      "id": "mod-073",
+      "version": "THI-0.37",
+      "date": "2026-05-02T21:00:25.814Z",
+      "type": "fix",
+      "commitType": "MERGE",
+      "scope": [
+        "frankenstein",
+        "data"
+      ],
+      "features": "frankenstein:deployments|admin,data",
+      "title": "Sync base B0.24 : colorisation deploy + fix propagation illogique",
+      "description": "Propagation depuis worganic-base B0.24. deployRowClass() : ligne verte = déploiement child actuel, jaune = base syncée ou version base actuelle. Panneau propagations conditionné à isChildMode. Fix donnée B0.21 (propagationRequired: false). parseVersionNum() + filtrage pendingPropagations sur baseSynced : plus de propagation illogique affichée si déjà couverte.",
+      "files": [
+        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html",
+        "data/base-propagation.json",
+        "version.json",
+        "data/histoModif.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la version child j ai l indication que la version de base est à jour dans la version child : Syncée mais après cela m indique 1 propagation en attente la B0.21, c est illogique puisqu on est en B0.23 qui est sync, corrige le problème sur le projet de base et deploi le correction sur le projet child",
+      "startedAt": "2026-05-02T14:30:00.000Z",
+      "completedAt": "2026-05-02T21:00:25.814Z"
     }
   ]
 }
