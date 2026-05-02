@@ -1700,6 +1700,27 @@
       "prompt": "dans le projet child--THI-V01 je vois pleins de fichier non giter et modifié, peux tu les comparer au projet de base worganic-base. Compare les 2 projet et met à jour le projet de base pour que les fichiers du projet enfant child--THI-V01 ne soi plus en Changes not staged",
       "startedAt": "2026-05-02T11:30:00.000Z",
       "completedAt": "2026-05-02T12:30:00.000Z"
+    },
+    {
+      "id": "mod-071",
+      "version": "THI-0.35",
+      "date": "2026-05-02T19:50:59.974Z",
+      "type": "config",
+      "commitType": "FIX",
+      "scope": [
+        "system"
+      ],
+      "features": "system:workflow",
+      "title": "Retrait launch-frankenstein.bat du .gitignore",
+      "description": "launch-frankenstein.bat était exclu du suivi git via .gitignore, rendant le fichier absent de l historique du projet enfant. Retrait de l entrée dans .gitignore pour que le fichier soit tracké et committé comme fichier base.",
+      "files": [
+        ".gitignore"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je remarque que dans le git du projet enfant child--THI-V01 il n y a pas le fichier pour lancer le projet child--THI-V01 : launch-frankenstein.bat qui doit être identique au même fichier du fichier de base.",
+      "startedAt": "2026-05-02T12:30:00.000Z",
+      "completedAt": "2026-05-02T19:50:59.974Z"
     }
   ]
 }

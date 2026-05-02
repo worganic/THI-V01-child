@@ -77,7 +77,6 @@ yarn-error.log*
 data/config/sessions/json
 
 
-launch-frankenstein.bat
 launch-worganic.bat
 
 # Dossier de fichiers à supprimer (temporaire local)
