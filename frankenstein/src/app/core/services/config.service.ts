@@ -41,6 +41,9 @@ export class ConfigService {
   setTchatIaEnabled(val: boolean)       { this.tchatIaEnabled.set(val); }
   setActionsEnabled(val: boolean)       { this.actionsEnabled.set(val); }
 
+  // Visibilité du menu Historique des actions dans la nav principale
+  woActionHistoryNavEnabled = signal<boolean>(false);
+
   // Affichage zone IA dans le header principal
   headerIaVisible = signal<boolean>(false);
 
@@ -135,6 +138,11 @@ export class ConfigService {
           if (keys.recetteWidgetEnabled !== undefined) this.recetteWidgetEnabled.set(keys.recetteWidgetEnabled);
         }
 
+        // Visibilité menu Historique des actions
+        if (keys.navItems?.woActionHistory !== undefined) {
+          this.woActionHistoryNavEnabled.set(keys.navItems.woActionHistory);
+        }
+
         // Visibilité des onglets dans le volet
         if (keys.enabledTabs !== undefined) {
           if (keys.enabledTabs.tchat   !== undefined) this.tchatTabEnabled.set(keys.enabledTabs.tchat);
@@ -212,6 +220,13 @@ export class ConfigService {
         history: this.historyTabEnabled()
       }
     }).subscribe({ error: () => console.warn('[ConfigService] Failed to save enabled tabs') });
+  }
+
+  saveNavItems(items: { woActionHistory?: boolean }) {
+    if (items.woActionHistory !== undefined) this.woActionHistoryNavEnabled.set(items.woActionHistory);
+    this.http.post(`${DATA_API}/api/config/keys`, {
+      navItems: { woActionHistory: this.woActionHistoryNavEnabled() }
+    }).subscribe({ error: () => console.warn('[ConfigService] Failed to save navItems') });
   }
 
   saveHeaderSelection(provider: string, model: string) {

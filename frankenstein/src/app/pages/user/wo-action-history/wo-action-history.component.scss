@@ -1,0 +1,19 @@
+:host {
+  display: block;
+}
+
+// Native select options don't inherit Tailwind dark classes
+.dark select {
+  background-color: rgb(var(--tw-surface));
+  color: rgba(255, 255, 255, 0.8);
+
+  option {
+    background-color: rgb(var(--tw-surface));
+    color: rgba(255, 255, 255, 0.8);
+  }
+}
+
+select option {
+  background-color: rgb(var(--color-light-surface));
+  color: rgb(var(--color-light-text));
+}

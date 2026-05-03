@@ -6,6 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from '../../../core/services/config.service';
+import { WoActionHistoryService } from '../../../core/services/wo-action-history.service';
 import { environment } from '../../../../environments/environment';
 
 const API = environment.apiDataUrl;
@@ -27,6 +28,19 @@ export class ConfigComponent implements OnInit, OnDestroy {
 
   get headerIaVisible(): boolean { return this.configService.headerIaVisible(); }
   toggleHeaderIa() { this.configService.saveHeaderIaVisible(!this.headerIaVisible); }
+
+  get woActionHistoryNavEnabled(): boolean { return this.configService.woActionHistoryNavEnabled(); }
+  toggleWoActionHistoryNav() {
+    const before = this.woActionHistoryNavEnabled;
+    this.configService.saveNavItems({ woActionHistory: !before });
+    this.woHistory.track({
+      section: 'admin/config', actionType: 'toggle',
+      label: `${!before ? 'Activation' : 'Désactivation'} du lien Historique d'actions dans la nav`,
+      entityType: 'setting', entityId: 'woActionHistoryNav', entityLabel: 'Nav : Historique actions',
+      beforeState: { enabled: before }, afterState: { enabled: !before },
+      undoable: false
+    }).catch(() => {});
+  }
 
   // App settings
   appVersion = '';
@@ -68,7 +82,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   private cliConfigLoaded = false;
   private cliStatusLoaded = false;
 
-  constructor(private http: HttpClient, private configService: ConfigService) {}
+  constructor(private http: HttpClient, private configService: ConfigService, private woHistory: WoActionHistoryService) {}
 
   ngOnInit() {
     this.initTheme();

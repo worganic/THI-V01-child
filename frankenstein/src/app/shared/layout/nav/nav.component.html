@@ -7,6 +7,16 @@
     Documents
   </a>
 
+  <!-- Historique des actions (configurable via admin/outils) -->
+  @if (configService.woActionHistoryNavEnabled()) {
+    <a routerLink="/wo-action-history"
+       routerLinkActive="text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5"
+       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
+      <span class="material-symbols-outlined text-sm">manage_history</span>
+      Historique
+    </a>
+  }
+
   <!-- Items child (depuis data/child/nav.json) -->
   @for (item of appConfig.childNavItems(); track item.route) {
     <a [routerLink]="item.route"

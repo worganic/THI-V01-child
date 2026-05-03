@@ -41,6 +41,9 @@
     --tw-surface: 18 18 26;
     --tw-surface-light: 26 26 37;
 
+    /* Button text color — adaptive to primary luminance, configurable in admin/theme */
+    --btn-text-color: 255 255 255;
+
     /* Customizable style settings — admin/theme */
     --card-radius: 12px;
     --card-border-width: 1px;

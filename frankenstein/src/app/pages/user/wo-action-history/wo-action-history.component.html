@@ -1,0 +1,356 @@
+<div class="min-h-screen bg-light-background dark:bg-background">
+
+  <!-- Header -->
+  <div class="border-b border-light-border dark:border-white/8 bg-light-surface dark:bg-surface px-6 py-4">
+    <div class="max-w-5xl mx-auto flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-light-primary/10 dark:bg-primary/10 border border-light-primary/20 dark:border-primary/20 flex items-center justify-center flex-shrink-0">
+          <span class="material-symbols-outlined text-light-primary dark:text-primary text-base">manage_history</span>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-light-text dark:text-white">Historique des actions</h1>
+          <p class="text-[11px] text-light-text-muted dark:text-white/40">
+            Toutes les actions utilisateurs, par section — avec possibilité d'annulation
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button (click)="showInfo.set(!showInfo())"
+                [ngClass]="showInfo()
+                  ? 'border-light-primary/40 dark:border-primary/40 text-light-primary dark:text-primary'
+                  : 'border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50'"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border hover:text-light-primary dark:hover:text-primary hover:border-light-primary/30 dark:hover:border-primary/30 transition-all">
+          <span class="material-symbols-outlined text-sm">info</span>
+          Outils trackés
+        </button>
+        <button (click)="loadHistory()"
+                [disabled]="loading()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white hover:border-light-primary/30 dark:hover:border-primary/30 transition-all disabled:opacity-50">
+          <span class="material-symbols-outlined text-sm" [class.animate-spin]="loading()">refresh</span>
+          Actualiser
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="border-b border-light-border dark:border-white/5 px-6 py-3">
+    <div class="max-w-5xl mx-auto flex flex-wrap items-center gap-2">
+
+      <!-- Section -->
+      <select [(ngModel)]="filterSectionValue"
+              class="px-3 py-1.5 rounded-lg text-xs bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 text-light-text dark:text-white/80 focus:outline-none focus:border-light-primary/50 dark:focus:border-primary/50">
+        <option value="">Toutes les sections</option>
+        @for (s of availableSections; track s) {
+          <option [value]="s">{{ sectionLabel(s) }}</option>
+        }
+      </select>
+
+      <!-- Utilisateur -->
+      <select [(ngModel)]="filterUserIdValue"
+              class="px-3 py-1.5 rounded-lg text-xs bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 text-light-text dark:text-white/80 focus:outline-none focus:border-light-primary/50 dark:focus:border-primary/50">
+        <option value="">Tous les utilisateurs</option>
+        @for (u of availableUsers; track u.id) {
+          <option [value]="u.id">{{ u.name }}</option>
+        }
+      </select>
+
+      <!-- Type -->
+      <select [(ngModel)]="filterActionTypeValue"
+              class="px-3 py-1.5 rounded-lg text-xs bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 text-light-text dark:text-white/80 focus:outline-none focus:border-light-primary/50 dark:focus:border-primary/50">
+        <option value="">Tous les types</option>
+        <option value="create">Création</option>
+        <option value="update">Modification</option>
+        <option value="delete">Suppression</option>
+        <option value="toggle">Activation</option>
+        <option value="upload">Import</option>
+      </select>
+
+      <!-- Séparateur -->
+      <div class="h-4 w-px bg-light-border dark:bg-white/10"></div>
+
+      <!-- Période -->
+      <div class="flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-xs text-light-text-muted dark:text-white/30">calendar_month</span>
+        <div class="flex items-center gap-1">
+          @for (opt of [
+            { value: 'all',   label: 'Tout' },
+            { value: 'today', label: "Auj." },
+            { value: 'week',  label: 'Semaine' },
+            { value: 'month', label: 'Mois' }
+          ]; track opt.value) {
+            <button (click)="setDateMode(opt.value)"
+                    [ngClass]="filterDateMode === opt.value
+                      ? 'bg-light-primary dark:bg-primary border-light-primary dark:border-primary text-white dark:text-btn-text'
+                      : 'border-light-border dark:border-white/10 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white/70'"
+                    class="px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all">
+              {{ opt.label }}
+            </button>
+          }
+          <!-- Date précise -->
+          <button (click)="setDateMode('custom')"
+                  [ngClass]="filterDateMode === 'custom'
+                    ? 'border-light-primary dark:border-primary text-light-primary dark:text-primary'
+                    : 'border-light-border dark:border-white/10 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white/70'"
+                  class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-all">
+            <span class="material-symbols-outlined text-xs">event</span>
+            @if (filterDateMode === 'custom' && filterDateCustom) {
+              {{ activeDateLabel }}
+            } @else {
+              Date
+            }
+          </button>
+          @if (filterDateMode === 'custom') {
+            <input type="date" [(ngModel)]="filterDateCustom"
+                   class="px-2 py-1 rounded-lg text-[11px] bg-light-surface dark:bg-surface border border-light-primary/50 dark:border-primary/50 text-light-text dark:text-white/80 focus:outline-none focus:border-light-primary dark:focus:border-primary"
+                   style="color-scheme: dark">
+          }
+        </div>
+      </div>
+
+      <!-- Compteur -->
+      <div class="ml-auto flex items-center gap-3 text-[11px] text-light-text-muted dark:text-white/30">
+        @if (activeDateLabel) {
+          <span class="flex items-center gap-1 text-light-primary/60 dark:text-primary/60 font-medium">
+            <span class="material-symbols-outlined text-xs">filter_alt</span>
+            {{ activeDateLabel }}
+            <button (click)="resetDateFilter()" class="ml-0.5 hover:text-light-primary dark:hover:text-primary transition-colors">
+              <span class="material-symbols-outlined text-xs">close</span>
+            </button>
+          </span>
+        }
+        <span>{{ filteredEntries.length }} action{{ filteredEntries.length > 1 ? 's' : '' }}</span>
+        @if (undoableCount > 0) {
+          <span class="text-amber-400/60">{{ undoableCount }} réversible{{ undoableCount > 1 ? 's' : '' }}</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Info panel — outils trackés -->
+  @if (showInfo()) {
+    <div class="border-b border-light-border dark:border-white/5 bg-light-surface/50 dark:bg-surface-light px-6 py-5">
+      <div class="max-w-5xl mx-auto">
+
+        <div class="flex items-center gap-2 mb-4">
+          <span class="material-symbols-outlined text-sm text-light-primary dark:text-primary">info</span>
+          <h2 class="text-xs font-bold text-light-text-muted dark:text-white/50 uppercase tracking-wider">Outils instrumentés</h2>
+          <span class="text-[10px] text-light-text-muted dark:text-white/20 ml-1">— actions enregistrées et possibilité d'annulation</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          @for (tool of trackedTools; track tool.label) {
+            <div class="rounded-xl border overflow-hidden" [ngClass]="tool.colorBg">
+
+              <!-- Tool header -->
+              <div class="flex items-center gap-2 px-3 py-2.5 border-b border-current/10">
+                <span class="material-symbols-outlined text-sm" [ngClass]="tool.colorText">{{ tool.icon }}</span>
+                <span class="text-xs font-bold text-light-text dark:text-white/80">{{ tool.label }}</span>
+              </div>
+
+              <!-- Actions list -->
+              <div class="divide-y divide-black/5 dark:divide-white/5">
+                @for (action of tool.actions; track action.label) {
+                  <div class="flex items-start gap-2.5 px-3 py-2">
+                    <div class="flex-shrink-0 mt-0.5">
+                      @if (action.undoable) {
+                        <span class="material-symbols-outlined text-xs text-emerald-400" title="Réversible">undo</span>
+                      } @else {
+                        <span class="material-symbols-outlined text-xs text-red-400/60" title="Non réversible">block</span>
+                      }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <p class="text-[11px] font-semibold text-light-text dark:text-white/70">{{ action.label }}</p>
+                      <p class="text-[10px] text-light-text-muted dark:text-white/30 leading-relaxed mt-0.5">{{ action.note }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+
+            </div>
+          }
+        </div>
+
+        <!-- Légende -->
+        <div class="flex flex-wrap items-center gap-4 mt-4 pt-3 border-t border-light-border dark:border-white/5">
+          <div class="flex items-center gap-3 text-[11px] text-light-text-muted dark:text-white/30">
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs text-emerald-400">undo</span>
+              Annulable
+            </span>
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs text-red-400/60">block</span>
+              Non réversible
+            </span>
+          </div>
+          <div class="flex items-center gap-1.5 text-[10px] text-light-text-muted dark:text-white/20 ml-auto font-mono">
+            <span class="material-symbols-outlined text-xs">code</span>
+            Intégrer : <span class="text-light-primary/60 dark:text-primary/60 ml-1">woHistory.track(&#123; section, actionType, label, ... &#125;)</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Content -->
+  <div class="max-w-5xl mx-auto px-6 py-6">
+
+    <!-- Error -->
+    @if (error()) {
+      <div class="mb-4 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-400 flex items-center gap-2">
+        <span class="material-symbols-outlined text-sm">error</span>
+        {{ error() }}
+      </div>
+    }
+
+    <!-- Loading -->
+    @if (loading()) {
+      <div class="flex items-center justify-center py-16 gap-3 text-light-text-muted dark:text-white/25">
+        <span class="material-symbols-outlined animate-spin text-2xl">refresh</span>
+        <span class="text-sm">Chargement de l'historique...</span>
+      </div>
+    }
+
+    <!-- Empty state -->
+    @if (!loading() && filteredEntries.length === 0) {
+      <div class="flex flex-col items-center justify-center py-20 gap-4 text-light-text-muted dark:text-white/20">
+        <span class="material-symbols-outlined text-6xl">history_toggle_off</span>
+        <div class="text-center">
+          <p class="text-sm font-medium">Aucune action enregistrée</p>
+          <p class="text-xs mt-1 dark:text-white/15">Les actions apparaîtront ici dès qu'elles seront effectuées</p>
+        </div>
+      </div>
+    }
+
+    <!-- Timeline -->
+    @if (!loading() && filteredEntries.length > 0) {
+      @for (group of groupedEntries; track group.day) {
+
+        <!-- Day separator -->
+        <div class="flex items-center gap-3 mt-6 mb-3 first:mt-0">
+          <div class="h-px flex-1 bg-light-border dark:bg-white/5"></div>
+          <span class="text-[10px] font-bold text-light-text-muted dark:text-white/20 uppercase tracking-widest px-2 capitalize">
+            {{ group.day }}
+          </span>
+          <div class="h-px flex-1 bg-light-border dark:bg-white/5"></div>
+        </div>
+
+        <!-- Entries -->
+        <div class="space-y-1.5">
+          @for (entry of group.entries; track entry.id) {
+            <div class="flex gap-3" [class.opacity-50]="entry.undone">
+
+              <!-- Icon column -->
+              <div class="flex flex-col items-center pt-2 flex-shrink-0 w-7">
+                <div class="w-7 h-7 rounded-lg border flex items-center justify-center flex-shrink-0"
+                     [ngClass]="entry.undone ? 'bg-gray-500/5 border-gray-500/10' : actionTypeBgBorder(entry.actionType)">
+                  <span class="material-symbols-outlined text-xs"
+                        [ngClass]="entry.undone ? 'text-gray-500' : actionTypeColor(entry.actionType)">
+                    {{ entry.undone ? 'undo' : actionTypeIcon(entry.actionType) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Card -->
+              <div class="flex-1 rounded-xl border bg-light-surface dark:bg-surface border-light-border dark:border-white/6 px-4 py-3 hover:border-light-primary/20 dark:hover:border-primary/20 transition-colors">
+                <div class="flex items-start justify-between gap-3">
+
+                  <!-- Content -->
+                  <div class="flex-1 min-w-0">
+                    <div class="flex flex-wrap items-center gap-2 mb-1.5">
+                      @if (entry.undone) {
+                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-gray-500/10 border border-gray-500/15 text-gray-500">
+                          Annulé
+                        </span>
+                      }
+                      <span class="text-xs font-medium text-light-text dark:text-white/90">
+                        {{ entry.label }}
+                      </span>
+                    </div>
+
+                    <!-- Meta -->
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-light-text-muted dark:text-white/30">
+                      <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">schedule</span>
+                        {{ formatTime(entry.timestamp) }}
+                      </span>
+                      @if (entry.username) {
+                        <span class="flex items-center gap-1">
+                          <span class="material-symbols-outlined text-xs">person</span>
+                          {{ entry.username }}
+                        </span>
+                      }
+                      <span class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-xs">folder_open</span>
+                        {{ sectionLabel(entry.section) }}
+                        @if (entry.subsection) {
+                          <span class="dark:text-white/15 mx-0.5">›</span>
+                          <span>{{ entry.subsection }}</span>
+                        }
+                      </span>
+                      @if (formatContextLabel(entry.context)) {
+                        <span class="flex items-center gap-1 text-light-primary/60 dark:text-primary/60">
+                          <span class="material-symbols-outlined text-xs">label</span>
+                          {{ formatContextLabel(entry.context) }}
+                        </span>
+                      }
+                      <span class="text-[10px] font-medium px-1.5 py-0.5 rounded-full border"
+                            [ngClass]="actionTypeBgBorder(entry.actionType)">
+                        <span [ngClass]="actionTypeColor(entry.actionType)">
+                          {{ actionTypeLabel(entry.actionType) }}
+                        </span>
+                      </span>
+                    </div>
+
+                    <!-- Diff fields -->
+                    @if (getDiffFields(entry).length > 0) {
+                      <div class="mt-2 pt-2 border-t border-light-border dark:border-white/5 flex flex-wrap gap-x-5 gap-y-1">
+                        @for (diff of getDiffFields(entry); track diff.field) {
+                          <span class="flex items-center gap-1.5 text-[11px]">
+                            <span class="text-light-text-muted dark:text-white/25 font-medium min-w-0">{{ fieldLabel(diff.field) }}</span>
+                            @if (diff.before !== null && diff.before !== undefined) {
+                              <span class="line-through text-red-400/70">{{ formatFieldValue(diff.before) }}</span>
+                            }
+                            @if (diff.before !== null && diff.before !== undefined && diff.after !== null && diff.after !== undefined) {
+                              <span class="dark:text-white/15">→</span>
+                            }
+                            @if (diff.after !== null && diff.after !== undefined) {
+                              <span class="text-emerald-400/80">{{ formatFieldValue(diff.after) }}</span>
+                            }
+                          </span>
+                        }
+                      </div>
+                    }
+                  </div>
+
+                  <!-- Undo action -->
+                  <div class="flex-shrink-0 pt-0.5">
+                    @if (entry.undoable && !entry.undone) {
+                      <button (click)="undoAction(entry)"
+                              [disabled]="!!undoing()"
+                              class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border border-amber-500/20 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                        @if (undoing() === entry.id) {
+                          <span class="material-symbols-outlined text-xs animate-spin">refresh</span>
+                        } @else {
+                          <span class="material-symbols-outlined text-xs">undo</span>
+                          Annuler
+                        }
+                      </button>
+                    } @else if (!entry.undoable && !entry.undone) {
+                      <span class="text-[10px] text-light-text-muted dark:text-white/15 italic">
+                        non réversible
+                      </span>
+                    }
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+
+  </div>
+</div>

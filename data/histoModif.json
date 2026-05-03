@@ -1817,6 +1817,62 @@
       "prompt": "dans la section projet du projet child uniquement, il faut rajouté à gauche de la zone 1 un bouton revenir au menu principal (retour)",
       "startedAt": "2026-05-02T10:00:00Z",
       "completedAt": "2026-05-02T10:30:00Z"
+    },
+    {
+      "id": "mod-076",
+      "version": "THI-0.40",
+      "date": "2026-05-03T12:00:00.000Z",
+      "type": "feature",
+      "commitType": "MERGE",
+      "scope": [
+        "frankenstein",
+        "server"
+      ],
+      "features": "frankenstein:wo-action-history|config,server:wo-action-history",
+      "title": "Propagation système wo-action-history depuis base",
+      "description": "Intégration complète du système d historique des actions (wo-action-history) depuis worganic-base. Inclut : service WoActionHistoryService, page /wo-action-history avec filtres/diff/undo, routes serveur Express (GET/POST/undo/DELETE), table MySQL wo_action_history, toggle nav dans config, signal woActionHistoryNavEnabled dans ConfigService, lien conditionnel dans la nav. Documentation docs/infos-action-historique.md copiée.",
+      "files": [
+        "frankenstein/src/app/core/services/wo-action-history.service.ts",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.ts",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.html",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.scss",
+        "frankenstein/src/app/base-routes.ts",
+        "frankenstein/src/app/shared/layout/nav/nav.component.ts",
+        "frankenstein/src/app/shared/layout/nav/nav.component.html",
+        "frankenstein/src/app/core/services/config.service.ts",
+        "frankenstein/src/app/pages/user/config/config.component.ts",
+        "frankenstein/src/app/pages/user/config/config.component.html",
+        "server/server-data.js",
+        "docs/infos-action-historique.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le site child il me manque tous le système d historique action wo-action-historique qui à été créé sur base, le système étant créé sous base @worganic-base  il devrait être disponible dans child @child--THI-V01, il manque aussi la doc qui n est pas présent @worganic-basedocsinfos-action-historique.md dans le site child",
+      "startedAt": "2026-05-03T11:00:00.000Z",
+      "completedAt": "2026-05-03T12:00:00.000Z"
+    },
+    {
+      "id": "mod-077",
+      "version": "THI-0.40",
+      "date": "2026-05-03T12:30:00.000Z",
+      "type": "fix",
+      "commitType": "MERGE",
+      "scope": [
+        "frankenstein",
+        "server"
+      ],
+      "features": "frankenstein:wo-action-history|config,server:config",
+      "title": "Fix B0.29/B0.30 : persistance navItems + --btn-text-color",
+      "description": "Application des correctifs base B0.29 et B0.30 manquants dans le child. B0.30 : persistance enabledTabs et navItems dans server-data.js GET/POST /api/config/keys + fix JSON parsing user.config. B0.29 : ajout variable CSS --btn-text-color dans styles.scss.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/styles.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je ne comprend pas certain fichier ne sont pas commiter pour la version de base, comme les docs (notamment infos-action-historique.md) et tous le systeme d historisation des actions. Tous ce qui est fait sous la version de base doit etre giter pour etre repercute dans les version child (hors fichier node_modules ou fichier de ce type)",
+      "startedAt": "2026-05-03T12:00:00.000Z",
+      "completedAt": "2026-05-03T12:30:00.000Z"
     }
   ]
 }
