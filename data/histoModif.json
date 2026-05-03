@@ -1907,6 +1907,27 @@
       "prompt": "le systeme child indique que je suis synchro avec la base hors certaine partie modifie dans la base n a pas ete repercute dans le child et donc peut etre que cela n a pas ete commite comme le systeme des themes qui n est pas a jour dans le child (modification couleur texte bouton ajoute a la base) verifi pourquoi met a jour et il faut qu a chaque commit cela verifi si tout est bien passe pour le deploiement dans les childs",
       "startedAt": "2026-05-03T12:30:00.000Z",
       "completedAt": "2026-05-03T13:00:00.000Z"
+    },
+    {
+      "id": "mod-079",
+      "version": "THI-0.42",
+      "date": "2026-05-03T14:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "system"
+      ],
+      "features": "system:workflow",
+      "title": "sync-from-base.bat : git pull automatique avant lecture version base",
+      "description": "Le script ne voyait pas la derniere version pushee par la base car il lisait version.json depuis le depot local sans faire git pull. Ajout d un git pull --ff-only sur worganic-base en debut de script, avant la lecture de BASE_VERSION. En cas d echec du pull (pas de connexion), un avertissement est affiché et le script continue avec la version locale.",
+      "files": [
+        "sync-from-base.bat"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le child le systeme indique non a jour et pourtant lorsque je lance sync-from-base.bat il ne vois pas la derniere version pushee par la base",
+      "startedAt": "2026-05-03T13:45:00.000Z",
+      "completedAt": "2026-05-03T14:00:00.000Z"
     }
   ]
 }

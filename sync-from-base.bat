@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 cd /d "%~dp0"
 
-REM -- Configuration — adapter si le dossier base n'est pas a ce chemin relatif
+REM -- Configuration a adapter si le dossier base n'est pas a ce chemin relatif
 set "BASE_PATH=%~dp0..\worganic-base"
 set "CHILD_JSON=%~dp0version.json"
 set "BASE_JSON=%BASE_PATH%\version.json"
@@ -36,6 +36,22 @@ if not exist "%BASE_PATH%\" (
     pause & exit /b 1
 )
 
+REM -- Git pull sur la base pour recuperer la derniere version distante
+echo  [GIT] Mise a jour de worganic-base depuis le depot distant...
+pushd "%BASE_PATH%"
+git pull --ff-only 2>&1
+if errorlevel 1 (
+    echo.
+    echo  [AVERTISSEMENT] git pull a echoue sur worganic-base.
+    echo  La version lue sera celle du depot local ^(peut etre obsolete^).
+    echo  Verifiez votre connexion ou l'etat du depot.
+    echo.
+) else (
+    echo  [OK] worganic-base mis a jour.
+)
+popd
+echo.
+
 for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content '%BASE_JSON%' | ConvertFrom-Json).base"`) do set "BASE_VERSION=%%i"
 for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content '%CHILD_JSON%' | ConvertFrom-Json).child"`) do set "CHILD_VERSION=%%i"
 for /f "usebackq delims=" %%i in (`powershell -NoProfile -Command "(Get-Content '%CHILD_JSON%' | ConvertFrom-Json).baseSynced"`) do set "BASE_SYNCED=%%i"
@@ -56,7 +72,7 @@ echo  [!] Mise a jour disponible : %BASE_SYNCED%  ->  %BASE_VERSION%
 echo.
 echo  Modifications a integrer :
 echo  --------------------------
-powershell -NoProfile -Command "if (Test-Path '%PROPAG_JSON%') { $d = Get-Content '%PROPAG_JSON%' | ConvertFrom-Json; $p = @($d.entries | Where-Object { $_.propagationRequired -eq $true }); if ($p.Count -gt 0) { $p | ForEach-Object { Write-Host ('  [' + $_.baseVersion + '] ' + $_.title) } } else { Write-Host '  Aucune propagation en attente.' } } else { Write-Host '  Fichier base-propagation.json introuvable.' }"
+powershell -NoProfile -Command "if (Test-Path '%PROPAG_JSON%') { $d = Get-Content '%PROPAG_JSON%' | ConvertFrom-Json; $p = @($d.entries | Where-Object { $_.propagationRequired -eq $true }); if ($p.Count -gt 0) { $p | ForEach-Object { Write-Host ('  [' + $_.baseVersion + '] ' + $_.title) } } else { Write-Host '  Aucune propagation en attente (tous les fichiers core sont a jour).' } } else { Write-Host '  Fichier base-propagation.json introuvable.' }"
 echo.
 
 set /p "CONFIRM= Mettre a jour baseSynced vers %BASE_VERSION% ? (O/N) : "
