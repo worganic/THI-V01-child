@@ -70,7 +70,7 @@
     <div class="bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 rounded-xl p-6 space-y-4">
       <h3 class="text-sm font-semibold text-light-text-muted dark:text-white/50 uppercase tracking-wider">Aperçu</h3>
       <div class="flex flex-wrap gap-3 items-center">
-        <button class="px-4 py-2 rounded-lg bg-accent dark:bg-accent text-white text-sm font-semibold">Bouton accent</button>
+        <button class="px-4 py-2 rounded-lg bg-accent dark:bg-accent text-white dark:text-btn-text text-sm font-semibold">Bouton accent</button>
         <span class="text-primary dark:text-primary font-semibold text-sm">Texte primaire</span>
         <span class="text-secondary dark:text-secondary text-sm">Texte secondaire</span>
         <div class="px-3 py-1.5 rounded-lg border border-primary/30 dark:border-primary/30 bg-primary/10 dark:bg-primary/10 text-primary dark:text-primary text-xs font-semibold">Badge primary</div>
@@ -83,8 +83,7 @@
     <div class="flex items-center gap-4">
       <button (click)="save()"
               [disabled]="saving()"
-              [ngClass]="buttonTextClass"
-              class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-light-primary dark:bg-primary font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
+              class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-light-primary dark:bg-primary text-white dark:text-btn-text font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
         <span class="material-symbols-outlined text-base" [class.animate-spin]="saving()">{{ saving() ? 'progress_activity' : 'save' }}</span>
         {{ saving() ? 'Sauvegarde…' : 'Sauvegarder le thème' }}
       </button>
@@ -284,8 +283,7 @@
       <div class="flex items-center gap-4 pt-2">
         <button (click)="saveStyleSettings()"
                 [disabled]="savingStyle()"
-                [ngClass]="buttonTextClass"
-                class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-light-primary dark:bg-primary font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
+                class="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-light-primary dark:bg-primary text-white dark:text-btn-text font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
           <span class="material-symbols-outlined text-base" [class.animate-spin]="savingStyle()">{{ savingStyle() ? 'progress_activity' : 'save' }}</span>
           {{ savingStyle() ? 'Sauvegarde…' : 'Sauvegarder les styles' }}
         </button>
@@ -364,8 +362,7 @@
       <div class="flex items-center gap-3 mt-4">
         <button (click)="saveCustomCss()"
                 [disabled]="savingCss()"
-                [ngClass]="buttonTextClass"
-                class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-light-primary dark:bg-primary font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
+                class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-light-primary dark:bg-primary text-white dark:text-btn-text font-bold text-sm transition-all hover:opacity-90 disabled:opacity-50">
           <span class="material-symbols-outlined text-base" [class.animate-spin]="savingCss()">{{ savingCss() ? 'progress_activity' : 'save' }}</span>
           {{ savingCss() ? 'Sauvegarde…' : 'Appliquer le CSS' }}
         </button>

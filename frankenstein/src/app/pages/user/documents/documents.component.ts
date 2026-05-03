@@ -1,10 +1,11 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { MarkdownEditorComponent } from '../../../shared/ui/markdown-editor/markdown-editor.component';
 import { environment } from '../../../../environments/environment';
+import { WoActionHistoryService } from '../../../core/services/wo-action-history.service';
 
 const API = environment.apiDataUrl;
 
@@ -71,6 +72,8 @@ export class DocumentsComponent implements OnInit {
   docCategoryId = '';
   docText = '';
   docIsPublic = true;
+
+  private woHistory = inject(WoActionHistoryService);
 
   constructor(
     private authService: AuthService,
@@ -140,15 +143,25 @@ export class DocumentsComponent implements OnInit {
     if (!this.catName.trim()) return;
     this.savingCategory.set(true);
     this.categoriesError.set('');
+    const editing = this.editingCategory();
     try {
-      const editing = this.editingCategory();
       if (editing) {
+        const before = { name: editing.name, description: editing.description };
         const res = await fetch(`${API}/api/doc-categories/${editing.id}`, {
           method: 'PUT',
           headers: this.authHeaders,
           body: JSON.stringify({ name: this.catName, description: this.catDescription })
         });
         if (!res.ok) throw new Error((await res.json()).error || 'Erreur');
+        this.woHistory.track({
+          section: 'documents', subsection: 'categories', actionType: 'update',
+          label: `Modification de la catégorie «${this.catName}»`,
+          entityType: 'category', entityId: editing.id, entityLabel: this.catName,
+          beforeState: before,
+          afterState: { name: this.catName, description: this.catDescription },
+          undoable: true,
+          undoAction: { endpoint: `/api/doc-categories/${editing.id}`, method: 'PUT', payload: before }
+        }).catch(() => {});
       } else {
         const res = await fetch(`${API}/api/doc-categories`, {
           method: 'POST',
@@ -156,6 +169,15 @@ export class DocumentsComponent implements OnInit {
           body: JSON.stringify({ name: this.catName, description: this.catDescription })
         });
         if (!res.ok) throw new Error((await res.json()).error || 'Erreur');
+        const created = await res.json();
+        this.woHistory.track({
+          section: 'documents', subsection: 'categories', actionType: 'create',
+          label: `Création de la catégorie «${this.catName}»`,
+          entityType: 'category', entityId: created.id, entityLabel: this.catName,
+          afterState: { name: this.catName, description: this.catDescription },
+          undoable: true,
+          undoAction: { endpoint: `/api/doc-categories/${created.id}`, method: 'DELETE' }
+        }).catch(() => {});
       }
       this.closeCategory();
       await this.loadCategories();
@@ -170,12 +192,20 @@ export class DocumentsComponent implements OnInit {
   cancelDeleteCategory() { this.deletingCategoryId.set(null); }
 
   async deleteCategory(id: string) {
+    const cat = this.categories().find(c => c.id === id);
     try {
       const res = await fetch(`${API}/api/doc-categories/${id}`, {
         method: 'DELETE',
         headers: this.authHeaders
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Erreur');
+      this.woHistory.track({
+        section: 'documents', subsection: 'categories', actionType: 'delete',
+        label: `Suppression de la catégorie «${cat?.name}»`,
+        entityType: 'category', entityId: id, entityLabel: cat?.name,
+        beforeState: cat ? { name: cat.name, description: cat.description } : undefined,
+        undoable: false
+      }).catch(() => {});
       this.deletingCategoryId.set(null);
       await this.loadCategories();
     } catch (e: any) {
@@ -233,6 +263,7 @@ export class DocumentsComponent implements OnInit {
     if (!this.docTitle.trim()) return;
     this.savingDocument.set(true);
     this.documentsError.set('');
+    const editing = this.editingDocument();
     try {
       const payload = {
         title: this.docTitle,
@@ -241,14 +272,25 @@ export class DocumentsComponent implements OnInit {
         text: this.docText,
         isPublic: this.docIsPublic
       };
-      const editing = this.editingDocument();
       if (editing) {
+        const before = { title: editing.title, description: editing.description, categoryId: editing.categoryId, isPublic: editing.isPublic };
         const res = await fetch(`${API}/api/documents/${editing.id}`, {
           method: 'PUT',
           headers: this.authHeaders,
           body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error((await res.json()).error || 'Erreur');
+        const catName = this.getCategoryName(this.docCategoryId || null);
+        this.woHistory.track({
+          section: 'documents', subsection: 'documents', actionType: 'update',
+          label: `Modification du document «${this.docTitle}»`,
+          entityType: 'document', entityId: editing.id, entityLabel: this.docTitle,
+          beforeState: before,
+          afterState: { title: this.docTitle, description: this.docDescription, categoryId: this.docCategoryId, isPublic: this.docIsPublic },
+          context: this.docCategoryId ? { categoryId: this.docCategoryId, categoryName: catName } : undefined,
+          undoable: true,
+          undoAction: { endpoint: `/api/documents/${editing.id}`, method: 'PUT', payload: before }
+        }).catch(() => {});
       } else {
         const res = await fetch(`${API}/api/documents`, {
           method: 'POST',
@@ -256,6 +298,17 @@ export class DocumentsComponent implements OnInit {
           body: JSON.stringify(payload)
         });
         if (!res.ok) throw new Error((await res.json()).error || 'Erreur');
+        const created = await res.json();
+        const catName = this.getCategoryName(this.docCategoryId || null);
+        this.woHistory.track({
+          section: 'documents', subsection: 'documents', actionType: 'create',
+          label: `Création du document «${this.docTitle}»`,
+          entityType: 'document', entityId: created.id, entityLabel: this.docTitle,
+          afterState: { title: this.docTitle, description: this.docDescription, categoryId: this.docCategoryId, isPublic: this.docIsPublic },
+          context: this.docCategoryId ? { categoryId: this.docCategoryId, categoryName: catName } : undefined,
+          undoable: true,
+          undoAction: { endpoint: `/api/documents/${created.id}`, method: 'DELETE' }
+        }).catch(() => {});
       }
       this.closeDocument();
       await this.loadDocuments();
@@ -270,12 +323,22 @@ export class DocumentsComponent implements OnInit {
   cancelDeleteDocument() { this.deletingDocumentId.set(null); }
 
   async deleteDocument(id: string) {
+    const doc = this.documents().find(d => d.id === id);
     try {
       const res = await fetch(`${API}/api/documents/${id}`, {
         method: 'DELETE',
         headers: this.authHeaders
       });
       if (!res.ok) throw new Error((await res.json()).error || 'Erreur');
+      const catName = doc?.categoryId ? this.getCategoryName(doc.categoryId) : undefined;
+      this.woHistory.track({
+        section: 'documents', subsection: 'documents', actionType: 'delete',
+        label: `Suppression du document «${doc?.title}»`,
+        entityType: 'document', entityId: id, entityLabel: doc?.title,
+        beforeState: doc ? { title: doc.title, description: doc.description, categoryId: doc.categoryId, isPublic: doc.isPublic } : undefined,
+        context: doc?.categoryId ? { categoryId: doc.categoryId, categoryName: catName } : undefined,
+        undoable: false
+      }).catch(() => {});
       this.deletingDocumentId.set(null);
       await this.loadDocuments();
     } catch (e: any) {

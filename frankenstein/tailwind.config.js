@@ -15,6 +15,7 @@ module.exports = {
         "background": "rgb(var(--tw-background) / <alpha-value>)",
         "surface": "rgb(var(--tw-surface) / <alpha-value>)",
         "surface-light": "rgb(var(--tw-surface-light) / <alpha-value>)",
+        "btn-text": "rgb(var(--btn-text-color) / <alpha-value>)",
         "light-primary": "rgb(var(--color-light-primary) / <alpha-value>)",
         "light-secondary": "rgb(var(--color-light-secondary) / <alpha-value>)",
         "light-accent": "rgb(var(--color-light-accent) / <alpha-value>)",

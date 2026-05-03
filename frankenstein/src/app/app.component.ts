@@ -6,6 +6,7 @@ import { ThemeService } from './core/services/theme.service';
 import { AuthService } from './core/services/auth.service';
 import { ConfigService } from './core/services/config.service';
 import { LayoutService } from './core/services/layout.service';
+import { WoActionHistoryService } from './core/services/wo-action-history.service';
 
 import { HeaderComponent } from './shared/layout/header/header.component';
 import { FooterComponent } from './shared/layout/footer/footer.component';
@@ -41,7 +42,8 @@ export class AppComponent implements OnInit {
     private themeService: ThemeService,
     public auth: AuthService,
     public configService: ConfigService,
-    public layoutService: LayoutService
+    public layoutService: LayoutService,
+    private woActionHistory: WoActionHistoryService
   ) {}
 
   ngOnInit() {
@@ -49,6 +51,10 @@ export class AppComponent implements OnInit {
     if (this.auth.getToken()) {
       this.auth.verify().catch(() => {});
     }
+    // Exposition globale pour scripts JS non-Angular
+    (window as any).WoActionHistory = {
+      track: (ctx: any) => this.woActionHistory.track(ctx)
+    };
   }
 
   openToolsPanel() {

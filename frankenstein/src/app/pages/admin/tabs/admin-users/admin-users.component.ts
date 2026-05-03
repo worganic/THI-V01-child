@@ -1,8 +1,9 @@
-import { Component, OnInit, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService, AuthUser } from '../../../../core/services/auth.service';
 import { environment } from '../../../../../environments/environment';
+import { WoActionHistoryService } from '../../../../core/services/wo-action-history.service';
 
 @Component({
   selector: 'app-admin-users',
@@ -33,6 +34,8 @@ export class AdminUsersComponent implements OnInit {
   creatingUser = signal(false);
 
   readonly roles: readonly string[] = ['user', 'admin'];
+
+  private woHistory = inject(WoActionHistoryService);
 
   constructor(private authService: AuthService) {}
 
@@ -68,10 +71,20 @@ export class AdminUsersComponent implements OnInit {
     const user = this.editingUser();
     if (!user) return;
     this.savingUser.set(true);
+    const before = { username: user.username, email: user.email, role: user.role };
     try {
       const data: any = { username: this.editUsername, email: this.editEmail, role: this.editRole };
       if (this.editPassword) data.password = this.editPassword;
       await this.authService.updateUser(user.id, data);
+      this.woHistory.track({
+        section: 'admin/users', actionType: 'update',
+        label: `Modification de l'utilisateur «${this.editUsername}»`,
+        entityType: 'user', entityId: user.id, entityLabel: this.editUsername,
+        beforeState: before,
+        afterState: { username: this.editUsername, email: this.editEmail, role: this.editRole },
+        undoable: true,
+        undoAction: { endpoint: `/api/auth/users/${user.id}`, method: 'PUT', payload: before }
+      }).catch(() => {});
       this.closeEditUser();
       await this.loadUsers();
     } catch (e: any) {
@@ -85,8 +98,16 @@ export class AdminUsersComponent implements OnInit {
   cancelDeleteUser() { this.deletingUserId.set(null); }
 
   async deleteUser(id: string) {
+    const user = this.users().find(u => u.id === id);
     try {
       await this.authService.deleteUser(id);
+      this.woHistory.track({
+        section: 'admin/users', actionType: 'delete',
+        label: `Suppression de l'utilisateur «${user?.username}»`,
+        entityType: 'user', entityId: id, entityLabel: user?.username,
+        beforeState: user ? { username: user.username, email: user.email, role: user.role } : undefined,
+        undoable: false
+      }).catch(() => {});
       this.deletingUserId.set(null);
       await this.loadUsers();
     } catch (e: any) {
@@ -123,6 +144,14 @@ export class AdminUsersComponent implements OnInit {
       if (this.newRole === 'admin') {
         await this.authService.updateUser(data.user.id, { role: 'admin' });
       }
+      this.woHistory.track({
+        section: 'admin/users', actionType: 'create',
+        label: `Création de l'utilisateur «${this.newUsername}»`,
+        entityType: 'user', entityId: data.user.id, entityLabel: this.newUsername,
+        afterState: { username: this.newUsername, email: this.newEmail, role: this.newRole },
+        undoable: true,
+        undoAction: { endpoint: `/api/auth/users/${data.user.id}`, method: 'DELETE' }
+      }).catch(() => {});
       this.closeNewUserModal();
       await this.loadUsers();
     } catch (e: any) {

@@ -1873,6 +1873,40 @@
       "prompt": "je ne comprend pas certain fichier ne sont pas commiter pour la version de base, comme les docs (notamment infos-action-historique.md) et tous le systeme d historisation des actions. Tous ce qui est fait sous la version de base doit etre giter pour etre repercute dans les version child (hors fichier node_modules ou fichier de ce type)",
       "startedAt": "2026-05-03T12:00:00.000Z",
       "completedAt": "2026-05-03T12:30:00.000Z"
+    },
+    {
+      "id": "mod-078",
+      "version": "THI-0.41",
+      "date": "2026-05-03T13:00:00.000Z",
+      "type": "fix",
+      "commitType": "MERGE",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:admin|config|documents|wo-action-history",
+      "title": "Sync complet B0.26-B0.33 : btn-text-color + tracking wo-action-history",
+      "description": "Application des fichiers manquants de la base B0.26-B0.33. B0.29 : tailwind.config.js (btn-text Tailwind class), admin-theme.component (COLOR_VARS, buttonTextClass, isLight, luminance auto), et remplacement text-white par dark:text-btn-text sur tous les boutons primaires (admin-users, config, documents, editor, home, footer, ticket-widget). B0.26 : injection WoActionHistoryService dans app.component.ts, admin-users.component.ts, documents.component.ts avec appels track() sur toutes les opérations CRUD. wo-tools-admin.component.html mis à jour.",
+      "files": [
+        "frankenstein/tailwind.config.js",
+        "frankenstein/src/app/app.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-theme/admin-theme.component.html",
+        "frankenstein/src/app/pages/admin/tabs/admin-users/admin-users.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-users/admin-users.component.html",
+        "frankenstein/src/app/pages/user/config/config.component.html",
+        "frankenstein/src/app/pages/user/documents/documents.component.ts",
+        "frankenstein/src/app/pages/user/documents/documents.component.html",
+        "frankenstein/src/app/pages/user/editor/editor.component.html",
+        "frankenstein/src/app/pages/user/home/home.component.html",
+        "frankenstein/src/app/shared/layout/footer/footer.component.html",
+        "frankenstein/src/app/tools/ticket-widget/ticket-widget.component.html",
+        "frankenstein/src/app/tools/wo/wo-tools-admin/wo-tools-admin.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "le systeme child indique que je suis synchro avec la base hors certaine partie modifie dans la base n a pas ete repercute dans le child et donc peut etre que cela n a pas ete commite comme le systeme des themes qui n est pas a jour dans le child (modification couleur texte bouton ajoute a la base) verifi pourquoi met a jour et il faut qu a chaque commit cela verifi si tout est bien passe pour le deploiement dans les childs",
+      "startedAt": "2026-05-03T12:30:00.000Z",
+      "completedAt": "2026-05-03T13:00:00.000Z"
     }
   ]
 }

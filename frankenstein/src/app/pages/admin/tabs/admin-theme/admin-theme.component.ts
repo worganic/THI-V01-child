@@ -115,6 +115,7 @@ const COLOR_VARS: ColorVar[] = [
   { key: '--tw-background',    label: 'Fond',              description: 'Couleur de fond principale' },
   { key: '--tw-surface',       label: 'Surface',           description: 'Cartes, panneaux' },
   { key: '--tw-surface-light', label: 'Surface claire',    description: 'Hover, éléments surélevés' },
+  { key: '--btn-text-color',   label: 'Texte des boutons', description: 'Blanc sur fond foncé, noir sur fond clair — auto-calculé depuis Primaire' },
 ];
 
 const PRESETS = [
@@ -210,6 +211,13 @@ export class AdminThemeComponent implements OnInit {
         const rgbStr = cssVars[cv.key] || getComputedStyle(document.documentElement).getPropertyValue(cv.key).trim();
         this.hexValues[cv.key] = this.rgbStrToHex(rgbStr);
       });
+      // Auto-compute --btn-text-color from primary luminance if not saved
+      if (!cssVars['--btn-text-color']) {
+        const primaryRgb = cssVars['--tw-primary'] || getComputedStyle(document.documentElement).getPropertyValue('--tw-primary').trim();
+        const autoRgb = this.isLight(this.rgbStrToHex(primaryRgb)) ? '0 0 0' : '255 255 255';
+        this.hexValues['--btn-text-color'] = this.rgbStrToHex(autoRgb);
+        document.documentElement.style.setProperty('--btn-text-color', autoRgb);
+      }
       const saved = theme?.styleSettings ?? {};
       STYLE_SETTING_GROUPS.forEach(g => g.items.forEach(item => {
         this.styleValues[item.key] = saved[item.key] !== undefined ? saved[item.key] : item.default;
@@ -248,6 +256,11 @@ export class AdminThemeComponent implements OnInit {
       this.hexValues[k] = this.rgbStrToHex(v);
       document.documentElement.style.setProperty(k, v);
     });
+    // Auto-compute btn-text-color from preset's primary luminance
+    const primaryHex = this.rgbStrToHex(preset.vars['--tw-primary'] || '224 170 255');
+    const btnTextRgb = this.isLight(primaryHex) ? '0 0 0' : '255 255 255';
+    this.hexValues['--btn-text-color'] = this.rgbStrToHex(btnTextRgb);
+    document.documentElement.style.setProperty('--btn-text-color', btnTextRgb);
     this.activePreset.set(preset.name);
   }
 

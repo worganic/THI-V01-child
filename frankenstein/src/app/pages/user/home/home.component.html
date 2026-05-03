@@ -17,7 +17,7 @@
       <!-- Bouton principal (configurable via data/child/home.json) -->
       <button
         (click)="goToPrimary()"
-        class="flex items-center gap-2 px-6 py-3 rounded-xl bg-light-primary dark:bg-primary text-white font-bold transition-all hover:scale-105 shadow-lg shadow-light-primary/20 dark:shadow-primary/20 w-56">
+        class="flex items-center gap-2 px-6 py-3 rounded-xl bg-light-primary dark:bg-primary text-white dark:text-btn-text font-bold transition-all hover:scale-105 shadow-lg shadow-light-primary/20 dark:shadow-primary/20 w-56">
         <span class="material-symbols-outlined text-lg">{{ appConfig.homeConfig().primaryButtonIcon || 'folder_open' }}</span>
         {{ appConfig.homeConfig().primaryButtonLabel || 'Mes projets' }}
       </button>
