@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, ViewChild } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService, Project } from '../../../core/services/project.service';
@@ -6,6 +6,7 @@ import { ProjectFilesService, FileNode } from '../../../core/services/project-fi
 import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LayoutService } from '../../../core/services/layout.service';
+import { WoActionHistoryService } from '../../../core/services/wo-action-history.service';
 
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
 import { ProjetSidebarComponent, DragDropEvent } from './components/projet-sidebar/projet-sidebar.component';
@@ -42,6 +43,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   private pendingFolders = new Set<string>();
   private isSaving = false;
   private pendingSections: SectionInfo[] | null = null;
+
+  private woHistory = inject(WoActionHistoryService);
 
   constructor(
     private route: ActivatedRoute,
@@ -334,9 +337,22 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
         // 1. Renames
         for (const op of renameOps) {
+          const oldName = this.findFolderById(op.folderId, currentFiles)?.name;
           try {
             console.log(`[EDITOR] Renaming folder ${op.folderId} to "${op.newName}"...`);
             await this.projectFilesService.renameFolder(this.projectFolderName, op.folderId, op.newName);
+            this.woHistory.track({
+              section: 'projets/sections',
+              actionType: 'update',
+              label: `Renommage de section «${oldName || op.folderId}» → «${op.newName}»`,
+              entityType: 'section',
+              entityId: op.folderId,
+              entityLabel: op.newName,
+              beforeState: oldName ? { folderName: oldName } : undefined,
+              afterState: { folderName: op.newName },
+              context: { projectId: this.projectFolderName, projectTitle: this.projectTitle },
+              undoable: false
+            }).catch(() => {});
           } catch (e) {
             console.error('Rename failed:', e);
             hasError = true;
@@ -348,6 +364,17 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           try {
             console.log(`[EDITOR] Deleting orphan folder ${folder.id} (${folder.name})...`);
             await this.projectFilesService.deleteFolder(this.projectFolderName, folder.id);
+            this.woHistory.track({
+              section: 'projets/sections',
+              actionType: 'delete',
+              label: `Suppression de section «${folder.name}»`,
+              entityType: 'section',
+              entityId: folder.id,
+              entityLabel: folder.name,
+              beforeState: { folderName: folder.name },
+              context: { projectId: this.projectFolderName, projectTitle: this.projectTitle },
+              undoable: false
+            }).catch(() => {});
           } catch (e) {
             console.error('Deletion failed:', e);
           }
@@ -367,6 +394,17 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             section.folderId = folder.id;
             const file = (folder.children || []).find(c => c.type === 'file') || await this.projectFilesService.createFile(this.projectFolderName, { name: 'contenu', parentId: folder.id, content: section.content });
             section.fileId = file.id;
+            this.woHistory.track({
+              section: 'projets/sections',
+              actionType: 'create',
+              label: `Création de section «${section.folderName}»`,
+              entityType: 'section',
+              entityId: folder.id,
+              entityLabel: section.folderName,
+              afterState: { folderName: section.folderName, parentFolderId: parentId || null },
+              context: { projectId: this.projectFolderName, projectTitle: this.projectTitle },
+              undoable: false
+            }).catch(() => {});
           } catch (e) {
             console.error('Creation failed:', e);
             hasError = true;
@@ -622,6 +660,17 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       }
       await this.loadFiles();
       this.onNodeActive(draggedNode.id);
+      const posLabel = position === 'inside' ? 'dans' : position === 'before' ? 'avant' : 'après';
+      this.woHistory.track({
+        section: 'projets/sections',
+        actionType: 'update',
+        label: `Déplacement «${draggedNode.name}» ${posLabel} «${targetNode.name}»`,
+        entityType: draggedNode.type === 'folder' ? 'section' : 'file',
+        entityId: draggedNode.id,
+        entityLabel: draggedNode.name,
+        context: { projectId: this.projectFolderName, projectTitle: this.projectTitle, targetName: targetNode.name, position },
+        undoable: false
+      }).catch(() => {});
     } catch (e: any) {
       console.error('DragDrop failed:', e);
       const msg = e?.error?.error || e?.message || 'Erreur inconnue';

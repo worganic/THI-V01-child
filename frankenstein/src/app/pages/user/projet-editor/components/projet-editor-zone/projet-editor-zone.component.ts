@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 import { marked } from 'marked';
+import { WoActionHistoryService } from '../../../../../core/services/wo-action-history.service';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -122,6 +123,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private sanitizer = inject(DomSanitizer);
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
+  private woHistory = inject(WoActionHistoryService);
 
   // Mode (toggle Edition / Visu)
   mode: 'edit' | 'visu' = 'edit';
@@ -159,6 +161,9 @@ export class ProjetEditorZoneComponent implements OnChanges {
   renamingImageId: string | null = null;
   renameImageValue = '';
   deleteConfirmImageId: string | null = null;
+
+  // Sections modifiées depuis le dernier flush (tracking contenu)
+  private modifiedSections = new Set<string>();
 
   // Drag & drop (style Notion : une seule poignée dans la gouttière gauche,
   // visible uniquement sur la ligne survolée)
@@ -571,6 +576,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
   setMode(m: 'edit' | 'visu') {
     if (this.mode === m) return;
     if (this.mode === 'edit') {
+      this.flushContentModifications();
       if (this.focusedHandle) this.exitFocusMode(); // sortie focus avant de passer en visu
       else this.saveAll();
     }
@@ -614,6 +620,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
   }
 
   exitFocusMode() {
+    this.flushContentModifications();
     this.exitFocusModeSync();
     setTimeout(() => {
       const ta = this.textareaRef?.nativeElement;
@@ -646,6 +653,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
     this.recomputeMirrorLines();
     this.recomputeHandles();
     this.scheduleSave();
+    const sectionId = this.getCursorFolderId();
+    if (sectionId) this.modifiedSections.add(sectionId);
   }
 
   onTextareaScroll(event: Event) {
@@ -737,6 +746,37 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
   onTextareaBlur() {
     this.saveAll();
+    this.flushContentModifications();
+  }
+
+  private flushContentModifications() {
+    if (this.modifiedSections.size === 0) return;
+    for (const sectionId of this.modifiedSections) {
+      const node = this.findNode(sectionId, this.files);
+      this.woHistory.track({
+        section: 'projets/contenu',
+        actionType: 'update',
+        label: `Modification de texte — «${node?.name || sectionId}»`,
+        entityType: 'content',
+        entityId: sectionId,
+        context: { projectId: this.projectName },
+        undoable: false
+      }).catch(() => {});
+    }
+    this.modifiedSections.clear();
+  }
+
+  private getFormatLabel(before: string, after: string): string | null {
+    if (before === '**' && after === '**') return 'Mise en forme : Gras';
+    if (before === '*' && after === '*') return 'Mise en forme : Italique';
+    if (before === '~~' && after === '~~') return 'Mise en forme : Barré';
+    if (before === '`' && after === '`') return 'Insertion : Code inline';
+    if (before.includes('```')) return 'Insertion : Bloc de code';
+    if (before.trimStart().startsWith('### ')) return 'Insertion : Titre H3';
+    if (before.trimStart().startsWith('## ')) return 'Insertion : Titre H2';
+    if (before.trimStart().startsWith('# ')) return 'Insertion : Titre H1';
+    if (before === '- ') return 'Insertion : Liste';
+    return null;
   }
 
   private scheduleSave() {
@@ -850,6 +890,20 @@ export class ProjetEditorZoneComponent implements OnChanges {
     this.recomputeRanges();
     this.recomputeMirrorLines();
     this.scheduleSave();
+    const formatLabel = this.getFormatLabel(before, after);
+    if (formatLabel) {
+      const sectionId = this.getCursorFolderId();
+      const node = sectionId ? this.findNode(sectionId, this.files) : null;
+      this.woHistory.track({
+        section: 'projets/contenu',
+        actionType: 'update',
+        label: node ? `${formatLabel} — «${node.name}»` : formatLabel,
+        entityType: 'content',
+        entityId: sectionId ?? undefined,
+        context: { projectId: this.projectName },
+        undoable: false
+      }).catch(() => {});
+    }
     setTimeout(() => {
       ta.focus();
       ta.setSelectionRange(start + before.length, start + before.length + selected.length);
@@ -879,6 +933,17 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const folderId = this.getCursorFolderId() || this.getActiveFolderId();
     try {
       const node = await this.svc.uploadImage(this.projectName, file, folderId);
+      this.woHistory.track({
+        section: 'projets/fichiers',
+        actionType: 'upload',
+        label: `Import d'image «${file.name}»`,
+        entityType: 'image',
+        entityId: node.id,
+        entityLabel: file.name,
+        afterState: { fileName: file.name, size: file.size },
+        context: { projectId: this.projectName },
+        undoable: false
+      }).catch(() => {});
       this.imageUploadError = '';
       const ta = this.textareaRef?.nativeElement;
       if (ta && this.mode === 'edit') {
@@ -975,6 +1040,18 @@ export class ProjetEditorZoneComponent implements OnChanges {
     if (newName === line.imageName) { this.cancelRenameImage(); return; }
     try {
       await this.svc.renameFile(this.projectName, line.imageId, newName);
+      this.woHistory.track({
+        section: 'projets/fichiers',
+        actionType: 'update',
+        label: `Renommage d'image «${line.imageName}» → «${newName}»`,
+        entityType: 'image',
+        entityId: line.imageId,
+        entityLabel: newName,
+        beforeState: { fileName: line.imageName },
+        afterState: { fileName: newName },
+        context: { projectId: this.projectName },
+        undoable: false
+      }).catch(() => {});
       this.renamingImageId = null;
       this.renameImageValue = '';
       this.refresh.emit();
@@ -1004,6 +1081,17 @@ export class ProjetEditorZoneComponent implements OnChanges {
     ev.stopPropagation();
     try {
       await this.svc.deleteFile(this.projectName, line.imageId);
+      this.woHistory.track({
+        section: 'projets/fichiers',
+        actionType: 'delete',
+        label: `Suppression d'image «${line.imageName}»`,
+        entityType: 'image',
+        entityId: line.imageId,
+        entityLabel: line.imageName,
+        beforeState: { fileName: line.imageName },
+        context: { projectId: this.projectName },
+        undoable: false
+      }).catch(() => {});
       this.deleteConfirmImageId = null;
       // Retire la ligne du marqueur dans unifiedContent
       const lines = this.unifiedContent.split('\n');

@@ -1659,7 +1659,7 @@
     {
       "id": "mod-070",
       "version": "THI-0.34",
-      "date": "2026-05-02T12:30:00.000Z",
+      "date": "2026-05-02T12:30:00Z",
       "type": "config",
       "commitType": "MERGE",
       "scope": [
@@ -1698,8 +1698,8 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "dans le projet child--THI-V01 je vois pleins de fichier non giter et modifié, peux tu les comparer au projet de base worganic-base. Compare les 2 projet et met à jour le projet de base pour que les fichiers du projet enfant child--THI-V01 ne soi plus en Changes not staged",
-      "startedAt": "2026-05-02T11:30:00.000Z",
-      "completedAt": "2026-05-02T12:30:00.000Z"
+      "startedAt": "2026-05-02T11:30:00Z",
+      "completedAt": "2026-05-02T12:30:00Z"
     },
     {
       "id": "mod-071",
@@ -1719,7 +1719,7 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "je remarque que dans le git du projet enfant child--THI-V01 il n y a pas le fichier pour lancer le projet child--THI-V01 : launch-frankenstein.bat qui doit être identique au même fichier du fichier de base.",
-      "startedAt": "2026-05-02T12:30:00.000Z",
+      "startedAt": "2026-05-02T12:30:00Z",
       "completedAt": "2026-05-02T19:50:59.974Z"
     },
     {
@@ -1745,7 +1745,7 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "dans la version child tu as dans le menu admin/deploiement la liste des deploiement du child et de base, hors la il manque des infos des mise à jour requise ou non de la version en cours (child) et de la version de base. IDem on ne peux pas voir les infos détaillé en cliquant sur les mise à jour comme c est le cas sur la version de base. Verifi le fonctionnement mais attention le système en lui même doit être corrigé sur la version de base avant d être deployé dans la version child",
-      "startedAt": "2026-05-02T13:00:00.000Z",
+      "startedAt": "2026-05-02T13:00:00Z",
       "completedAt": "2026-05-02T20:33:13.894Z"
     },
     {
@@ -1771,13 +1771,13 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "dans la version child j ai l indication que la version de base est à jour dans la version child : Syncée mais après cela m indique 1 propagation en attente la B0.21, c est illogique puisqu on est en B0.23 qui est sync, corrige le problème sur le projet de base et deploi le correction sur le projet child",
-      "startedAt": "2026-05-02T14:30:00.000Z",
+      "startedAt": "2026-05-02T14:30:00Z",
       "completedAt": "2026-05-02T21:00:25.814Z"
     },
     {
       "id": "mod-074",
       "version": "THI-0.38",
-      "date": "2026-05-02T21:30:00.000Z",
+      "date": "2026-05-02T21:30:00Z",
       "type": "fix",
       "commitType": "FIX",
       "scope": [
@@ -1793,8 +1793,8 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "dans la version child on à une information Mise à jour requise [Image #1], alors que la version est bien à jour : [Image #2], autre problème lorsqu'on clique sur la zone [Image #3] cela amène sur http://localhost:4202/deployments alors que la menu admin/deploiement amène vers http://localhost:4202/admin?tab=deploiement, la page qui fonctionne est bien http://localhost:4202/admin?tab=deploiement, corrige bien sur cette fonction générique sur la version de base pour la deployé ensuite sur la version child",
-      "startedAt": "2026-05-02T21:10:00.000Z",
-      "completedAt": "2026-05-02T21:30:00.000Z"
+      "startedAt": "2026-05-02T21:10:00Z",
+      "completedAt": "2026-05-02T21:30:00Z"
     },
     {
       "id": "mod-075",
@@ -1821,7 +1821,7 @@
     {
       "id": "mod-076",
       "version": "THI-0.40",
-      "date": "2026-05-03T12:00:00.000Z",
+      "date": "2026-05-03T12:00:00Z",
       "type": "feature",
       "commitType": "MERGE",
       "scope": [
@@ -1848,13 +1848,13 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "dans le site child il me manque tous le système d historique action wo-action-historique qui à été créé sur base, le système étant créé sous base @worganic-base  il devrait être disponible dans child @child--THI-V01, il manque aussi la doc qui n est pas présent @worganic-basedocsinfos-action-historique.md dans le site child",
-      "startedAt": "2026-05-03T11:00:00.000Z",
-      "completedAt": "2026-05-03T12:00:00.000Z"
+      "startedAt": "2026-05-03T11:00:00Z",
+      "completedAt": "2026-05-03T12:00:00Z"
     },
     {
       "id": "mod-077",
       "version": "THI-0.40",
-      "date": "2026-05-03T12:30:00.000Z",
+      "date": "2026-05-03T12:30:00Z",
       "type": "fix",
       "commitType": "MERGE",
       "scope": [
@@ -1871,13 +1871,13 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "je ne comprend pas certain fichier ne sont pas commiter pour la version de base, comme les docs (notamment infos-action-historique.md) et tous le systeme d historisation des actions. Tous ce qui est fait sous la version de base doit etre giter pour etre repercute dans les version child (hors fichier node_modules ou fichier de ce type)",
-      "startedAt": "2026-05-03T12:00:00.000Z",
-      "completedAt": "2026-05-03T12:30:00.000Z"
+      "startedAt": "2026-05-03T12:00:00Z",
+      "completedAt": "2026-05-03T12:30:00Z"
     },
     {
       "id": "mod-078",
       "version": "THI-0.41",
-      "date": "2026-05-03T13:00:00.000Z",
+      "date": "2026-05-03T13:00:00Z",
       "type": "fix",
       "commitType": "MERGE",
       "scope": [
@@ -1905,13 +1905,13 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "le systeme child indique que je suis synchro avec la base hors certaine partie modifie dans la base n a pas ete repercute dans le child et donc peut etre que cela n a pas ete commite comme le systeme des themes qui n est pas a jour dans le child (modification couleur texte bouton ajoute a la base) verifi pourquoi met a jour et il faut qu a chaque commit cela verifi si tout est bien passe pour le deploiement dans les childs",
-      "startedAt": "2026-05-03T12:30:00.000Z",
-      "completedAt": "2026-05-03T13:00:00.000Z"
+      "startedAt": "2026-05-03T12:30:00Z",
+      "completedAt": "2026-05-03T13:00:00Z"
     },
     {
       "id": "mod-079",
       "version": "THI-0.42",
-      "date": "2026-05-03T14:00:00.000Z",
+      "date": "2026-05-03T14:00:00Z",
       "type": "fix",
       "commitType": "FIX",
       "scope": [
@@ -1926,8 +1926,58 @@
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "dans le child le systeme indique non a jour et pourtant lorsque je lance sync-from-base.bat il ne vois pas la derniere version pushee par la base",
-      "startedAt": "2026-05-03T13:45:00.000Z",
-      "completedAt": "2026-05-03T14:00:00.000Z"
+      "startedAt": "2026-05-03T13:45:00Z",
+      "completedAt": "2026-05-03T14:00:00Z"
+    },
+    {
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "id": "mod-080",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "date": "2026-05-03T16:30:00Z",
+      "description": "Ajout de WoActionHistoryService dans tous les composants de la section projets : creation/modification/suppression de projet (projets.component + admin-projets), creation/renommage/suppression de sections et menus (projet-editor processSectionsChange + projet-sidebar), drag-drop de sections et fichiers (onDragDrop), upload/renommage/suppression d images (projet-editor-zone), creation de documents additionnels via sidebar, envoi de messages conversation (projet-conversation). Sections trackes : 'projets', 'projets/sections', 'projets/fichiers', 'projets/conversation'. Mise a jour de wo-action-history.component avec les 4 nouvelles entrees trackedTools, les labels de section et les labels de champs.",
+      "startedAt": "2026-05-03T15:30:00Z",
+      "completedAt": "2026-05-03T16:30:00Z",
+      "prompt": "En prenant en compte le doc @docs/infos-action-historique.md ajoute l option historique action a toutes les fonctions de la section projets /projets, que ce soir la creation ou modification du projet mais aussi toutes les actions interne comme la creation de menu, document importation d image deplacement de section, renommage, suppression, modification de texte, conversation etc etc.",
+      "model": "claude-sonnet-4-6",
+      "version": "THI-0.43",
+      "files": [
+        "frankenstein/src/app/pages/user/projets/projets.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "frankenstein/src/app/pages/admin/tabs/admin-projets/admin-projets.component.ts",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.ts"
+      ],
+      "title": "Tracking historique actions sur toute la section projets",
+      "ai": "Claude Code"
+    },
+    {
+      "scope": [
+        "frankenstein"
+      ],
+      "title": "Tracking contenu et formatage dans l'editeur projet",
+      "description": "Ajout du tracking de modification de texte (section projets/contenu) dans projet-editor-zone : flushContentModifications() trace une entree par section modifiee lors du blur, changement de mode ou sortie du mode focus. insertAt() tracke les actions de formatage explicites depuis la toolbar : gras, italique, barre, code inline, bloc code, titres H1/H2/H3, liste. Ajout section projets/contenu dans trackedTools et sectionLabel de wo-action-history.",
+      "completedAt": "2026-05-03T17:00:00Z",
+      "date": "2026-05-03T17:00:00Z",
+      "model": "claude-sonnet-4-6",
+      "prompt": "il doit y avoir plus d action prise en compte, comme la modification des textes, l ajout de section code, texte, mise en forme etc",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.ts"
+      ],
+      "type": "feature",
+      "id": "mod-081",
+      "version": "THI-0.43",
+      "ai": "Claude Code",
+      "startedAt": "2026-05-03T16:45:00Z",
+      "commitType": "AMELIORATION",
+      "features": "frankenstein:projets"
     }
   ]
 }

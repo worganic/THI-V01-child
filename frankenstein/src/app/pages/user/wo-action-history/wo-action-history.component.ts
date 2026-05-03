@@ -67,6 +67,68 @@ export class WoActionHistoryComponent implements OnInit {
         { type: 'toggle', label: 'Toggle setting/outil/provider/modèle', undoable: false, note: 'Non réversible via undo — toggle manuel' },
         { type: 'update', label: 'Sauvegarde clés API',                  undoable: false, note: 'Valeurs des clés non enregistrées, seulement le statut actif' }
       ]
+    },
+    {
+      label: 'Projets › Liste & Admin',
+      section: 'projets',
+      icon: 'folder_special',
+      colorText: 'text-violet-400',
+      colorBg: 'bg-violet-500/5 border-violet-500/15',
+      actions: [
+        { type: 'create', label: 'Création projet',     undoable: true,  note: 'Supprime le projet créé (contenu texte non inclus)' },
+        { type: 'update', label: 'Modification projet', undoable: true,  note: 'Restaure titre, description et statut' },
+        { type: 'delete', label: 'Suppression projet',  undoable: false, note: 'Non réversible — fichiers définitivement perdus' }
+      ]
+    },
+    {
+      label: 'Projets › Sections & Menus',
+      section: 'projets/sections',
+      icon: 'segment',
+      colorText: 'text-teal-400',
+      colorBg: 'bg-teal-500/5 border-teal-500/15',
+      actions: [
+        { type: 'create', label: 'Création de section/menu',       undoable: false, note: 'Non réversible via undo' },
+        { type: 'update', label: 'Renommage de section',            undoable: false, note: 'Non réversible via undo' },
+        { type: 'delete', label: 'Suppression de section',          undoable: false, note: 'Non réversible — contenu perdu' },
+        { type: 'update', label: 'Déplacement (drag & drop)',       undoable: false, note: 'Réordonner manuellement si besoin' }
+      ]
+    },
+    {
+      label: 'Projets › Fichiers & Images',
+      section: 'projets/fichiers',
+      icon: 'attach_file',
+      colorText: 'text-cyan-400',
+      colorBg: 'bg-cyan-500/5 border-cyan-500/15',
+      actions: [
+        { type: 'create', label: 'Création document additionnel',   undoable: false, note: 'Non réversible' },
+        { type: 'upload', label: 'Import d\'image',                 undoable: false, note: 'Non réversible' },
+        { type: 'update', label: 'Renommage fichier/image',         undoable: false, note: 'Non réversible via undo' },
+        { type: 'delete', label: 'Suppression fichier/image',       undoable: false, note: 'Non réversible' }
+      ]
+    },
+    {
+      label: 'Projets › Contenu & Formatage',
+      section: 'projets/contenu',
+      icon: 'edit_note',
+      colorText: 'text-lime-400',
+      colorBg: 'bg-lime-500/5 border-lime-500/15',
+      actions: [
+        { type: 'update', label: 'Modification de texte (blur)',       undoable: false, note: 'Tracé quand l\'éditeur perd le focus — une entrée par section modifiée' },
+        { type: 'update', label: 'Mise en forme : Gras / Italique / Barré', undoable: false, note: 'Via les boutons de la toolbar' },
+        { type: 'update', label: 'Insertion : Titre H1/H2/H3',         undoable: false, note: 'Via les boutons de la toolbar' },
+        { type: 'update', label: 'Insertion : Code inline / Bloc code', undoable: false, note: 'Via les boutons de la toolbar' },
+        { type: 'update', label: 'Insertion : Liste',                   undoable: false, note: 'Via le bouton Liste' }
+      ]
+    },
+    {
+      label: 'Projets › Conversation',
+      section: 'projets/conversation',
+      icon: 'chat',
+      colorText: 'text-indigo-400',
+      colorBg: 'bg-indigo-500/5 border-indigo-500/15',
+      actions: [
+        { type: 'create', label: 'Message envoyé',  undoable: false, note: 'Non réversible' }
+      ]
     }
   ];
 
@@ -226,7 +288,10 @@ export class WoActionHistoryComponent implements OnInit {
       visible: 'Visibilité', visibility: 'Visibilité', title: 'Titre',
       active: 'Actif', enabled: 'Activé', categoryId: 'Catégorie',
       headerIaVisible: 'Header IA', appVersion: 'Version app',
-      geminiActive: 'Gemini actif', claudeActive: 'Claude actif'
+      geminiActive: 'Gemini actif', claudeActive: 'Claude actif',
+      status: 'Statut', folderName: 'Nom section', fileName: 'Nom fichier',
+      parentId: 'Section parente', parentFolderId: 'Section parente',
+      projectId: 'Projet', sectionId: 'Section', text: 'Message', size: 'Taille'
     };
     return labels[field] || field;
   }
@@ -290,10 +355,14 @@ export class WoActionHistoryComponent implements OnInit {
 
   sectionLabel(section: string): string {
     const labels: Record<string, string> = {
-      'admin/users':  'Admin › Utilisateurs',
-      'admin/config': 'Admin › Config',
-      'documents':    'Documents',
-      'projets':      'Projets'
+      'admin/users':          'Admin › Utilisateurs',
+      'admin/config':         'Admin › Config',
+      'documents':            'Documents',
+      'projets':              'Projets › Liste',
+      'projets/sections':     'Projets › Sections',
+      'projets/fichiers':     'Projets › Fichiers',
+      'projets/contenu':      'Projets › Contenu',
+      'projets/conversation': 'Projets › Conversation',
     };
     return labels[section] || section;
   }

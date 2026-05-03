@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 import { ConversationService } from '../../../../../core/services/conversation.service';
+import { WoActionHistoryService } from '../../../../../core/services/wo-action-history.service';
 
 interface ContextMenu { x: number; y: number; node: FileNode | null; }
 interface InlineInput { type: 'rename' | 'new-file' | 'new-folder'; nodeId: string | null; parentId: string | null; }
@@ -49,6 +50,7 @@ export class ProjetSidebarComponent implements OnChanges {
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
 
   private convSvc = inject(ConversationService);
+  private woHistory = inject(WoActionHistoryService);
 
   constructor(private svc: ProjectFilesService, private elRef: ElementRef, private router: Router) {}
 
@@ -166,17 +168,56 @@ export class ProjetSidebarComponent implements OnChanges {
     const val = this.inlineValue.trim();
     try {
       if (inp.type === 'new-folder') {
-        await this.svc.createFolder(this.projectName, { name: val, parentId: inp.parentId || undefined });
+        const folder = await this.svc.createFolder(this.projectName, { name: val, parentId: inp.parentId || undefined });
+        this.woHistory.track({
+          section: 'projets/sections',
+          actionType: 'create',
+          label: `Création de menu «${val}»`,
+          entityType: 'section',
+          entityId: folder.id,
+          entityLabel: val,
+          afterState: { folderName: val, parentId: inp.parentId || null },
+          context: { projectId: this.projectName, projectTitle: this.projectTitle },
+          undoable: false
+        }).catch(() => {});
         if (inp.parentId) this.expandNode(inp.parentId);
         this.folderCreated.emit({ name: val, parentId: inp.parentId || null });
       } else if (inp.type === 'new-file') {
         const created = await this.svc.createFile(this.projectName, { name: val, parentId: inp.parentId || undefined });
+        this.woHistory.track({
+          section: 'projets/fichiers',
+          actionType: 'create',
+          label: `Création de document «${val}»`,
+          entityType: 'file',
+          entityId: created.id,
+          entityLabel: val,
+          afterState: { fileName: val, parentId: inp.parentId || null },
+          context: { projectId: this.projectName, projectTitle: this.projectTitle },
+          undoable: false
+        }).catch(() => {});
         if (inp.parentId) this.expandNode(inp.parentId);
         this.fileSelect.emit(created);
       } else if (inp.type === 'rename' && inp.nodeId) {
         const node = this.findNode(inp.nodeId);
-        if (node?.type === 'file') await this.svc.renameFile(this.projectName, inp.nodeId, val);
-        else if (node?.type === 'folder') await this.svc.renameFolder(this.projectName, inp.nodeId, val);
+        const oldName = node?.type === 'file' ? node.name.replace(/\.md$/, '') : node?.name;
+        if (node?.type === 'file') {
+          await this.svc.renameFile(this.projectName, inp.nodeId, val);
+          this.woHistory.track({
+            section: 'projets/fichiers',
+            actionType: 'update',
+            label: `Renommage de document «${oldName}» → «${val}»`,
+            entityType: 'file',
+            entityId: inp.nodeId,
+            entityLabel: val,
+            beforeState: oldName ? { fileName: oldName } : undefined,
+            afterState: { fileName: val },
+            context: { projectId: this.projectName, projectTitle: this.projectTitle },
+            undoable: false
+          }).catch(() => {});
+        } else if (node?.type === 'folder') {
+          await this.svc.renameFolder(this.projectName, inp.nodeId, val);
+          // Folder renames are also tracked in processSectionsChange via the editor
+        }
       }
       this.refresh.emit();
     } catch (e) { console.error(e); }
@@ -191,8 +232,23 @@ export class ProjetSidebarComponent implements OnChanges {
     const node = this.deleteConfirm();
     if (!node) return;
     try {
-      if (node.type === 'file') await this.svc.deleteFile(this.projectName, node.id);
-      else await this.svc.deleteFolder(this.projectName, node.id);
+      if (node.type === 'file') {
+        await this.svc.deleteFile(this.projectName, node.id);
+        this.woHistory.track({
+          section: 'projets/fichiers',
+          actionType: 'delete',
+          label: `Suppression de document «${node.name.replace(/\.md$/, '')}»`,
+          entityType: 'file',
+          entityId: node.id,
+          entityLabel: node.name.replace(/\.md$/, ''),
+          beforeState: { fileName: node.name.replace(/\.md$/, '') },
+          context: { projectId: this.projectName, projectTitle: this.projectTitle },
+          undoable: false
+        }).catch(() => {});
+      } else {
+        await this.svc.deleteFolder(this.projectName, node.id);
+        // Folder deletions are also tracked in processSectionsChange via the editor
+      }
       this.refresh.emit();
     } catch (e) { console.error(e); }
     this.deleteConfirm.set(null);

@@ -36,8 +36,9 @@
         (dragDrop)="onDragDrop($event)"
         (refresh)="onRefresh()" />
 
-      <app-projet-conversation 
-        [sectionId]="activeNodeId()" 
+      <app-projet-conversation
+        [sectionId]="activeNodeId()"
+        [projectId]="project()?.id || null"
         (conversationAdded)="sidebar.loadConversations()" />
 
     </div>

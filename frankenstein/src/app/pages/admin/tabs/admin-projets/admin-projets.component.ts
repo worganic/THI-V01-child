@@ -1,9 +1,10 @@
-import { Component, OnInit, Output, EventEmitter, signal } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProjectService, Project } from '../../../../core/services/project.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { WoActionHistoryService } from '../../../../core/services/wo-action-history.service';
 
 @Component({
   selector: 'app-admin-projets',
@@ -23,6 +24,8 @@ export class AdminProjetsComponent implements OnInit {
   editTitle = '';
   editStatus: 'draft' | 'published' = 'draft';
   savingProject = signal(false);
+
+  private woHistory = inject(WoActionHistoryService);
 
   constructor(
     private projectService: ProjectService,
@@ -62,11 +65,25 @@ export class AdminProjetsComponent implements OnInit {
     const proj = this.editingProject();
     if (!proj || !this.editTitle.trim()) return;
     this.savingProject.set(true);
+    const beforeState = { title: proj.title, status: proj.status };
+    const newTitle = this.editTitle.trim();
     try {
       await this.projectService.updateProject(proj.id, {
-        title: this.editTitle,
+        title: newTitle,
         status: this.editStatus
       });
+      this.woHistory.track({
+        section: 'projets',
+        actionType: 'update',
+        label: `Modification du projet «${newTitle}» (admin)`,
+        entityType: 'project',
+        entityId: proj.id,
+        entityLabel: newTitle,
+        beforeState: beforeState,
+        afterState: { title: newTitle, status: this.editStatus },
+        undoable: true,
+        undoAction: { endpoint: `/api/frank/projects/${proj.id}`, method: 'PUT', payload: beforeState }
+      }).catch(() => {});
       this.closeEditProject();
       await this.loadProjects();
     } catch (e: any) {
@@ -84,8 +101,19 @@ export class AdminProjetsComponent implements OnInit {
   cancelDeleteProject() { this.deletingProjectId.set(null); }
 
   async deleteProject(id: string) {
+    const proj = this.projects().find(p => p.id === id);
     try {
       await this.projectService.deleteProject(id);
+      this.woHistory.track({
+        section: 'projets',
+        actionType: 'delete',
+        label: `Suppression du projet «${proj?.title || id}» (admin)`,
+        entityType: 'project',
+        entityId: id,
+        entityLabel: proj?.title,
+        beforeState: proj ? { title: proj.title, status: proj.status } : undefined,
+        undoable: false
+      }).catch(() => {});
       this.deletingProjectId.set(null);
       await this.loadProjects();
     } catch (e: any) {

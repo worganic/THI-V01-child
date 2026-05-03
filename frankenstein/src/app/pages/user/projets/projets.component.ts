@@ -1,9 +1,10 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WorgHelpTriggerComponent } from '../../../shared/help/worg-help-trigger.component';
 import { Router } from '@angular/router';
 import { ProjectService, Project } from '../../../core/services/project.service';
+import { WoActionHistoryService } from '../../../core/services/wo-action-history.service';
 
 @Component({
   selector: 'app-projets',
@@ -31,6 +32,8 @@ export class ProjetsComponent implements OnInit {
 
   // Confirmation suppression
   deletingId = signal<string | null>(null);
+
+  private woHistory = inject(WoActionHistoryService);
 
   constructor(private projectService: ProjectService, private router: Router) {}
 
@@ -64,12 +67,24 @@ export class ProjetsComponent implements OnInit {
   async createProject() {
     if (!this.newTitle.trim()) return;
     this.creating.set(true);
+    const title = this.newTitle.trim();
     try {
       const project = await this.projectService.createProject({
-        title: this.newTitle.trim(),
+        title,
         content: this.newContent,
         status: 'draft'
       });
+      this.woHistory.track({
+        section: 'projets',
+        actionType: 'create',
+        label: `Création du projet «${title}»`,
+        entityType: 'project',
+        entityId: project.id,
+        entityLabel: title,
+        afterState: { title, status: 'draft' },
+        undoable: true,
+        undoAction: { endpoint: `/api/frank/projects/${project.id}`, method: 'DELETE' }
+      }).catch(() => {});
       this.closeNewModal();
       this.router.navigate(['/projets', project.id]);
     } catch (e: any) {
@@ -100,11 +115,26 @@ export class ProjetsComponent implements OnInit {
     if (!this.editTitle.trim()) return;
     this.saving.set(true);
     this.error.set('');
+    const before = this.projects().find(p => p.id === id);
+    const beforeState = before ? { title: before.title, description: before.description || '' } : undefined;
+    const newTitle = this.editTitle.trim();
     try {
       await this.projectService.updateProject(id, {
-        title: this.editTitle.trim(),
+        title: newTitle,
         description: this.editContent
       });
+      this.woHistory.track({
+        section: 'projets',
+        actionType: 'update',
+        label: `Modification du projet «${newTitle}»`,
+        entityType: 'project',
+        entityId: id,
+        entityLabel: newTitle,
+        beforeState: beforeState,
+        afterState: { title: newTitle, description: this.editContent },
+        undoable: !!beforeState,
+        undoAction: beforeState ? { endpoint: `/api/frank/projects/${id}`, method: 'PUT', payload: beforeState } : undefined
+      }).catch(() => {});
       this.editingId.set(null);
       await this.loadProjects();
     } catch (e: any) {
@@ -124,8 +154,19 @@ export class ProjetsComponent implements OnInit {
   }
 
   async deleteProject(id: string) {
+    const proj = this.projects().find(p => p.id === id);
     try {
       await this.projectService.deleteProject(id);
+      this.woHistory.track({
+        section: 'projets',
+        actionType: 'delete',
+        label: `Suppression du projet «${proj?.title || id}»`,
+        entityType: 'project',
+        entityId: id,
+        entityLabel: proj?.title,
+        beforeState: proj ? { title: proj.title, description: proj.description, status: proj.status } : undefined,
+        undoable: false
+      }).catch(() => {});
       this.deletingId.set(null);
       await this.loadProjects();
     } catch (e: any) {
