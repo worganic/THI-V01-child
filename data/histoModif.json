@@ -2024,6 +2024,27 @@
       "prompt": "dans le menu projet lors de la modification de contenue cela doit enregistré ce qu'il y avait avant et ce qu'il y après et dans l'affichage wo-action-history cela doit afficher l'avant et l'après comme un système git comme par exemple sur cette image. Si des modification doivent être faite sur wo-action-history, cela doit être fait sur le système de base et ce sera répercuté sur les child",
       "startedAt": "2026-05-04T09:44:34Z",
       "completedAt": "2026-05-04T09:55:00Z"
+    },
+    {
+      "id": "mod-084",
+      "version": "THI-0.45",
+      "date": "2026-05-04T10:05:00Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:wo-action-history",
+      "title": "Sync wo-action-history.service depuis base (redoAction + redo)",
+      "description": "Build Angular cassé suite à mod-083 : les nouveaux composants wo-action-history (HTML + TS) référencent entry.redoAction et historyService.redo() qui n'existaient pas dans le service côté child. Le service côté base avait déjà cette API (modifications non propagées B0.38). Sync immédiat du service vers le child pour rétablir le build.",
+      "files": [
+        "frankenstein/src/app/core/services/wo-action-history.service.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "[suite mod-083] Application bundle generation failed — TS2561/NG1/TS2551/TS2339 sur redoAction + redo dans wo-action-history",
+      "startedAt": "2026-05-04T10:00:00Z",
+      "completedAt": "2026-05-04T10:05:00Z"
     }
   ]
 }
