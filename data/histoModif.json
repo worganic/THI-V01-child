@@ -2076,6 +2076,153 @@
       "prompt": "LE menu /projets/ enregistre chaque document menu ou image dans le dossier @data/projets, hors si un autre utilisateur ouvre le projet, il ne verra pas les mêmes menu document et image. Il faudrait enregistré en direct tous les éléments principaux, comme les dossiers (nom, niveau, ordre, créateur, date creat date update), les documents (idem) et les images (idem) et que toutes ces données doivent gardé en mémoire l'évolution de chaque éléments afin d'avoir une historisation complète du projet (qui à fait quoi, comment, ou etc). Je voudrais avoir dans la zone 5 (sone de droite de conversation), 2 onglets possible, avec la zone de conversation zone 5a et la zone historique 5b. Dans cette zone sera listé par date toutes les modifs du document (dossier document image) et leur modifications (date exeplication user etc). Le but est de pouvoir partagé ces infos avec tous les users du projet. Pour le contenu des dossiers document et image il faudrait aussi pouvoir les partagés mais pas en direct, exemple un user selectionne une section, celle ci est alors directement bloqué au autres user (indication et impossibilité de travaillé dessus avec indication qui le bloque et depuis quand) et lorsque la section à été modifié le user peux en cliquant sur un bouton partagé les modifications qui seront soi enregistré dans la bdd ou le fichier du document pourra être giter (préférence) (à voir, à étudier) et les autres user pourront eux avoir l'info de la section qui à été mis à jour et en cliquand sur un bouton récupéré les mise à jours des documents pour avoir la dernière version. Etudie moi toutes ces modifs et propose moi un plan précis",
       "startedAt": "2026-05-04T12:00:00Z",
       "completedAt": "2026-05-04T14:30:00Z"
+    },
+    {
+      "id": "mod-086",
+      "version": "THI-0.47",
+      "date": "2026-05-04T16:00:00Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein",
+        "server"
+      ],
+      "features": "frankenstein:projets|site,server:workflow",
+      "title": "Diff visuel historique + fix couleurs icônes",
+      "description": "Ajout du diff visuel côte-à-côte dans la zone 4 : clic sur une entrée de type contenu dans le panneau Historique ouvre un vue split avant/après avec algo LCS ligne par ligne (rouge = supprimé, vert = ajouté, numéros de ligne) et bouton retour à l'éditeur. Correction du tracking : afterState désormais capturé (plus de limite 500 chars), la comparaison est donc possible. Ajout route GET /api/wo-action-history/:id. Correction des icônes historique (taille text-sm + background coloré par type). Badge diff visible sur les entrées clickables.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/core/services/projet-collab.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-diff/projet-diff.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-diff/projet-diff.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "il y a un problème de couleur. Lorsqu'il y a une modification de texte, tous comme la section wo-action-history j'aurais besoin d'avoir la comparaison entre la version modifié et la version avant. Lorsqu'on clique sur une historique de modification dans la zone 5b, il faut changer la zone 4 avec le texte d'avant la modif (à gauche) et après (à droite) et il faudra aussi un bouton pour revenir à la zone 4 principal (Edition/visu)",
+      "startedAt": "2026-05-04T14:45:00Z",
+      "completedAt": "2026-05-04T16:00:00Z"
+    },
+    {
+      "id": "mod-087",
+      "version": "THI-0.48",
+      "date": "2026-05-04T17:51:31.328Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein",
+        "server"
+      ],
+      "features": "frankenstein:projets,server:projets",
+      "title": "Fix diff historique : JSON.parse + couleurs boutons",
+      "description": "Correction de 3 problemes : (1) Diff historique = Contenu non disponible car MySQL renvoie colonnes JSON comme strings - ajout JSON.parse serveur. (2) Bouton Retour blanc en dark (bg-light-surface=white non override) - classes bg-white/8. (3) Bouton Edition [class.dark:bg-primary] invalide Angular - correction [ngClass].",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-diff/projet-diff.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je n ai pas d affichage du texte avant apres dans la zone 4. Corrige la couleur du bouton [Image #2] et de ce bouton [Image #3]",
+      "startedAt": "2026-05-04T00:00:00Z",
+      "completedAt": "2026-05-04T17:51:31.328Z"
+    },
+    {
+      "id": "mod-088",
+      "version": "THI-0.49",
+      "date": "2026-05-04T18:03:50.271Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Historique filtre par section + fix boutons",
+      "description": "Historique 5b filtre par section active : seules les entrees liees au noeud actif sont affichees. Suppression du header HISTORIQUE redondant dans le panneau. Fix couleur bouton Edition/Visu : bg-primary/20 text-primary au lieu de bg-primary plein. Fix onEntryClick : fetch serveur si beforeState n est pas un objet parse.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la partie 5b je ne veux voir que l historique lie a la section selectionne dans la zone 4. Supprime cette partie qui ne sert a rien [header historique]. Corrige la couleur des boutons [Edition/Visu]",
+      "startedAt": "2026-05-04T18:03:50.271Z",
+      "completedAt": "2026-05-04T18:03:50.271Z"
+    },
+    {
+      "id": "mod-089",
+      "version": "THI-0.50",
+      "date": "2026-05-04T18:17:45.128Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Fix filtre historique + couleurs + contenu diff complet",
+      "description": "Fix activeHistoryId : resout fileId vers parent folderId pour que le filtre historique fonctionne meme quand activeNodeId est un fichier additionnel. Fix hover couleur entree historique (bg-light-surface=blanc supprime, remplacement par bg-white/5). Fix contenu diff : ajout en-tete de section (#heading) dans beforeState/afterState. Suppression troncature 500 chars dans insertAt.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "la couleur n est pas bonne sur la selection d un historique a droite. lorsque je selectionne cela ne m affiche plus dans la zone 4 avant/apres. dans cette zone je veux tous le texte de la zone selectionne et pas juste le texte modifie.",
+      "startedAt": "2026-05-04T18:17:45.128Z",
+      "completedAt": "2026-05-04T18:17:45.128Z"
+    },
+    {
+      "id": "mod-090",
+      "version": "THI-0.51",
+      "date": "2026-05-04T18:28:44.479Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Diff historique : texte complet de la section (heading + fichiers additionnels)",
+      "description": "flushContentModifications() utilise désormais sectionFullTextSnapshot (texte complet depuis unifiedContent via sectionRanges : heading + contenu principal + blocs fichiers additionnels comme Doc 2) pour beforeState/afterState, au lieu de parseContent().content qui excluait les fichiers additionnels. Le payload undo reste sur sectionFileSnapshot (contenu.md uniquement). Correction du bug où les modifications de Doc 2 n'apparaissaient pas dans l'historique / diff.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "tu as fait des retour en arrière, Cela n'enregistre plus les modification ou la partie historique n'affiche plus les modifications. Exemple j'ai modifié le document Doc 2 et cela ne m'indique rien dans l'historique [Image #10]. la selection d'une zone ne doit afficher que l'historique lié à cette section. Tu doit afficher tous le texte de la section modifié et pas juste le texte modifié [Image #9].",
+      "startedAt": "2026-05-04T00:00:00.000Z",
+      "completedAt": "2026-05-04T18:28:44.479Z"
+    },
+    {
+      "id": "mod-091",
+      "version": "THI-0.52",
+      "date": "2026-05-04T18:41:17.490Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Historique : tracking par entité (fichier/dossier) + filtre descendants",
+      "description": "Tracking au niveau fichier quand le curseur est dans un bloc fichier additionnel (Doc 2, etc.) au lieu de toujours tracker au niveau dossier. Le diff stocke toujours le texte complet de la section parente (heading + main + fichiers additionnels), mais l'entityId pointe sur le fichier précis. Côté filtre historique : sélection dossier → inclut tous descendants (sous-dossiers, fichiers) ; sélection fichier additionnel → uniquement ses propres entrées ; sélection contenu.md → traité comme le dossier parent. modifiedSections renommé en modifiedEntities (Map entityId→folderId). Nouveau computed activeHistoryIds (Set) dans projet-editor remplace activeHistoryId (string).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "Cela ne fonctionne toujours pas, Zone 4 Edition/visu, le textes est divisé en menu, document ou image. Lorsque je fait une modification celle ci est enregistré et la section dans lequel elle est modifié est gardé en mémoire. Ainsi si je selectionne une section comme un document, seul les modifications de cette zone est affiché dans l'onglet historique. Si c'est une zone menu cela doit affiché toutes les sous section (sous menu et document interne à cette section). Lorsqu'une modification est enregistré elle enregistre le texte de la section avant et après et affiche dans la zone 4 en mode \"Modification\" TOUS le texte de la section selectionné, ainsi si on modifi une ligne d'un document et que celui ci est selectionné, cela doit affiché tous le texte de la section et d'indiqué les modifications.",
+      "startedAt": "2026-05-04T00:00:00.000Z",
+      "completedAt": "2026-05-04T18:41:17.490Z"
     }
   ]
 }

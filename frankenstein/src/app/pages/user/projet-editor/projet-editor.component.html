@@ -25,17 +25,23 @@
         (dragDrop)="onDragDrop($event)"
         (refresh)="onRefresh()" />
 
-      <app-projet-editor-zone
-        [files]="files()"
-        [scrollToNodeId]="scrollToNodeId()"
-        [saveStatus]="saveStatus()"
-        [projectName]="project()?.id || ''"
-        [activeNodeId]="activeNodeId()"
-        (fileSave)="onFileSave($event)"
-        (sectionsChange)="onSectionsChange($event)"
-        (nodeActive)="onNodeActive($event)"
-        (dragDrop)="onDragDrop($event)"
-        (refresh)="onRefresh()" />
+      @if (!diffEntry()) {
+        <app-projet-editor-zone
+          [files]="files()"
+          [scrollToNodeId]="scrollToNodeId()"
+          [saveStatus]="saveStatus()"
+          [projectName]="project()?.id || ''"
+          [activeNodeId]="activeNodeId()"
+          (fileSave)="onFileSave($event)"
+          (sectionsChange)="onSectionsChange($event)"
+          (nodeActive)="onNodeActive($event)"
+          (dragDrop)="onDragDrop($event)"
+          (refresh)="onRefresh()" />
+      } @else {
+        <app-projet-diff
+          [entry]="diffEntry()"
+          (close)="closeDiff()" />
+      }
 
       <!-- Zone 5 : Conversation + Historique -->
       <div class="w-80 flex-shrink-0 flex flex-col overflow-hidden border-l border-light-border dark:border-white/8 bg-white dark:bg-[#0f0f17]">
@@ -73,7 +79,10 @@
               (conversationAdded)="sidebar.loadConversations()" />
           }
           @if (zone5Tab() === 'history') {
-            <app-projet-history [projetId]="project()?.id || null" />
+            <app-projet-history
+              [projetId]="project()?.id || null"
+              [activeIds]="activeHistoryIds()"
+              (entryClick)="onHistoryEntryClick($event)" />
           }
         </div>
 

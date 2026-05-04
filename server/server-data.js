@@ -5164,6 +5164,27 @@ app.get('/api/wo-action-history', async (req, res) => {
     }
 });
 
+// GET /api/wo-action-history/:id — entrée complète (avec before/after state)
+app.get('/api/wo-action-history/:id', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM wo_action_history WHERE id = ?', [req.params.id]);
+        if (rows.length === 0) return res.status(404).json({ error: 'Entrée introuvable' });
+        const r = rows[0];
+        const parseJson = v => v ? (typeof v === 'string' ? JSON.parse(v) : v) : null;
+        res.json({
+            id: r.id, timestamp: r.timestamp, section: r.section, subsection: r.subsection,
+            actionType: r.action_type, label: r.label,
+            entityType: r.entity_type, entityId: r.entity_id, entityLabel: r.entity_label,
+            beforeState: parseJson(r.before_state), afterState: parseJson(r.after_state),
+            userId: r.user_id, username: r.username, context: r.context,
+            undoable: !!r.undoable, undone: !!r.undone
+        });
+    } catch (e) {
+        console.error('[WO_ACTION_HISTORY] Get by id error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
 app.post('/api/wo-action-history', async (req, res) => {
     const { section, subsection, actionType, label, entityType, entityId, entityLabel,
             beforeState, afterState, userId, username, context, undoable, undoAction, meta } = req.body;
@@ -5314,7 +5335,7 @@ app.get('/api/collab/:projetId/history', async (req, res) => {
     try {
         const [rows] = await pool.query(
             `SELECT id, timestamp, section, action_type, label, entity_type, entity_id, entity_label,
-                    user_id, username, undone
+                    user_id, username, undone, before_state, after_state
              FROM wo_action_history
              WHERE section LIKE 'projets/%'
                AND JSON_UNQUOTE(JSON_EXTRACT(context, '$.projectId')) = ?
@@ -5325,7 +5346,9 @@ app.get('/api/collab/:projetId/history', async (req, res) => {
             id: r.id, timestamp: r.timestamp, section: r.section,
             actionType: r.action_type, label: r.label,
             entityType: r.entity_type, entityId: r.entity_id, entityLabel: r.entity_label,
-            userId: r.user_id, username: r.username, undone: !!r.undone
+            userId: r.user_id, username: r.username, undone: !!r.undone,
+            beforeState: r.before_state ? (typeof r.before_state === 'string' ? JSON.parse(r.before_state) : r.before_state) : null,
+            afterState: r.after_state ? (typeof r.after_state === 'string' ? JSON.parse(r.after_state) : r.after_state) : null
         })));
     } catch (e) {
         console.error('[COLLAB] history error:', e);

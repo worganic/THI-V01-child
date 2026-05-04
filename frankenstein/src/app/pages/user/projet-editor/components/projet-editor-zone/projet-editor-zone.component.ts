@@ -162,8 +162,14 @@ export class ProjetEditorZoneComponent implements OnChanges {
   renameImageValue = '';
   deleteConfirmImageId: string | null = null;
 
-  // Sections modifiées depuis le dernier flush (tracking contenu)
-  private modifiedSections = new Set<string>();
+  // Entités modifiées depuis le dernier flush — Map<entityId, folderId>.
+  // entityId = fileId si curseur dans un bloc fichier additionnel, sinon folderId.
+  // folderId est utilisé pour récupérer le snapshot de la section parente.
+  private modifiedEntities = new Map<string, string>();
+  // Snapshot fichier (contenu.md) par section — utilisé pour l'action undo
+  private sectionFileSnapshot = new Map<string, { fileId: string; content: string }>();
+  // Snapshot texte complet de la section dans unifiedContent — utilisé pour le diff (inclut en-tête + fichiers additionnels)
+  private sectionFullTextSnapshot = new Map<string, string>();
 
   // Drag & drop (style Notion : une seule poignée dans la gouttière gauche,
   // visible uniquement sur la ligne survolée)
@@ -244,6 +250,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
       }
       this.hasLoaded = true;
       this.recomputeAll();
+      this.updateSnapshotFromFiles();
     }
 
     if (changes['activeNodeId']) {
@@ -653,8 +660,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
     this.recomputeMirrorLines();
     this.recomputeHandles();
     this.scheduleSave();
-    const sectionId = this.getCursorFolderId();
-    if (sectionId) this.modifiedSections.add(sectionId);
+    const entity = this.getCursorEntity();
+    if (entity) this.modifiedEntities.set(entity.id, entity.folderId);
   }
 
   onTextareaScroll(event: Event) {
@@ -749,21 +756,97 @@ export class ProjetEditorZoneComponent implements OnChanges {
     this.flushContentModifications();
   }
 
+  private updateSnapshotFromFiles() {
+    // Liste des folderIds qui ont une modification en cours (par entité ou par eux-mêmes)
+    const pendingFolderIds = new Set(this.modifiedEntities.values());
+    for (const section of this.docSections) {
+      if (!section.mainFileId) continue;
+      if (pendingFolderIds.has(section.folderId)) continue;
+      const folder = this.findNode(section.folderId, this.files);
+      if (!folder) continue;
+      // Snapshot fichier pour undo
+      const mainFile = (folder.children || []).find(c => c.type === 'file' && c.name === 'contenu.md')
+                    || (folder.children || []).find(c => c.type === 'file' && !this.isImageFile(c.name));
+      if (mainFile) {
+        this.sectionFileSnapshot.set(section.folderId, {
+          fileId: section.mainFileId,
+          content: mainFile.content ?? ''
+        });
+      }
+      // Snapshot texte complet pour le diff (heading + main + fichiers additionnels)
+      const range = this.sectionRanges.find(r => r.folderId === section.folderId);
+      if (range && this.unifiedContent) {
+        const lines = this.unifiedContent.split('\n');
+        this.sectionFullTextSnapshot.set(section.folderId,
+          lines.slice(range.lineStart, range.lineEnd + 1).join('\n'));
+      }
+    }
+  }
+
   private flushContentModifications() {
-    if (this.modifiedSections.size === 0) return;
-    for (const sectionId of this.modifiedSections) {
-      const node = this.findNode(sectionId, this.files);
+    if (this.modifiedEntities.size === 0) return;
+    const currentSections = this.parseContent();
+    // Pour chaque folder modifié, on calcule fullTextAfter une seule fois
+    const updatedFolderIds = new Set<string>();
+    for (const [entityId, folderId] of this.modifiedEntities) {
+      const node = this.findNode(entityId, this.files);
+      const snapshotBefore = this.sectionFileSnapshot.get(folderId);
+      const fullTextBefore = this.sectionFullTextSnapshot.get(folderId);
+      const range = this.sectionRanges.find(r => r.folderId === folderId);
+      const fullTextAfter = range
+        ? this.unifiedContent.split('\n').slice(range.lineStart, range.lineEnd + 1).join('\n')
+        : null;
       this.woHistory.track({
         section: 'projets/contenu',
         actionType: 'update',
-        label: `Modification de texte — «${node?.name || sectionId}»`,
+        label: `Modification de texte — «${node?.name || entityId}»`,
         entityType: 'content',
-        entityId: sectionId,
+        entityId: entityId,
+        beforeState: fullTextBefore ? { content: fullTextBefore } : undefined,
+        afterState: fullTextAfter ? { content: fullTextAfter } : undefined,
         context: { projectId: this.projectName },
-        undoable: false
+        undoable: !!snapshotBefore?.fileId,
+        undoAction: snapshotBefore?.fileId ? {
+          endpoint: `/api/file-projects/${this.projectName}/files/${snapshotBefore.fileId}`,
+          method: 'PUT',
+          payload: { content: snapshotBefore.content }
+        } : undefined
       }).catch(() => {});
+      if (fullTextAfter) {
+        this.sectionFullTextSnapshot.set(folderId, fullTextAfter);
+      }
+      updatedFolderIds.add(folderId);
     }
-    this.modifiedSections.clear();
+    // Met à jour les snapshots fichier (contenu.md) pour les folders impactés
+    for (const folderId of updatedFolderIds) {
+      const after = currentSections.find(s => s.folderId === folderId);
+      if (after?.fileId) {
+        this.sectionFileSnapshot.set(folderId, { fileId: after.fileId, content: after.content });
+      }
+    }
+    this.modifiedEntities.clear();
+  }
+
+  // Retourne l'entité modifiée selon la position du curseur :
+  // - bloc fichier additionnel → fileId + folderId parent
+  // - sinon section → folderId + folderId
+  private getCursorEntity(): { id: string; folderId: string } | null {
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return null;
+    const lineIdx = ta.value.substring(0, ta.selectionStart).split('\n').length - 1;
+    for (const fr of this.fileRanges) {
+      if (lineIdx >= fr.lineStart && lineIdx <= fr.lineEnd) {
+        const parent = this.findParentFolder(fr.fileId, this.files);
+        if (parent) return { id: fr.fileId, folderId: parent.id };
+      }
+    }
+    for (let i = this.sectionRanges.length - 1; i >= 0; i--) {
+      const r = this.sectionRanges[i];
+      if (lineIdx >= r.lineStart && lineIdx <= r.lineEnd) {
+        return { id: r.folderId, folderId: r.folderId };
+      }
+    }
+    return null;
   }
 
   private getFormatLabel(before: string, after: string): string | null {
@@ -884,25 +967,46 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const selected = ta.value.substring(start, end);
+
+    // Capturer snapshot AVANT l'insertion pour le undo
+    const formatLabel = this.getFormatLabel(before, after);
+    const entity = formatLabel ? this.getCursorEntity() : null;
+    const sectionId = entity?.folderId ?? null;
+    const entityId = entity?.id ?? null;
+    const beforeSnapshot = sectionId ? this.sectionFileSnapshot.get(sectionId) : undefined;
+
     const newVal = ta.value.substring(0, start) + before + selected + after + ta.value.substring(end);
     this.unifiedContent = newVal;
     ta.value = newVal;
     this.recomputeRanges();
     this.recomputeMirrorLines();
     this.scheduleSave();
-    const formatLabel = this.getFormatLabel(before, after);
+
     if (formatLabel) {
-      const sectionId = this.getCursorFolderId();
-      const node = sectionId ? this.findNode(sectionId, this.files) : null;
+      const node = entityId ? this.findNode(entityId, this.files) : null;
       this.woHistory.track({
         section: 'projets/contenu',
         actionType: 'update',
         label: node ? `${formatLabel} — «${node.name}»` : formatLabel,
         entityType: 'content',
-        entityId: sectionId ?? undefined,
+        entityId: entityId ?? undefined,
+        beforeState: beforeSnapshot ? { content: beforeSnapshot.content } : undefined,
         context: { projectId: this.projectName },
-        undoable: false
+        undoable: !!beforeSnapshot?.fileId,
+        undoAction: beforeSnapshot?.fileId ? {
+          endpoint: `/api/file-projects/${this.projectName}/files/${beforeSnapshot.fileId}`,
+          method: 'PUT',
+          payload: { content: beforeSnapshot.content }
+        } : undefined
       }).catch(() => {});
+      // Mettre à jour le snapshot avec le contenu post-insertion
+      if (sectionId) {
+        const sections = this.parseContent();
+        const updated = sections.find(s => s.folderId === sectionId);
+        if (updated?.fileId) {
+          this.sectionFileSnapshot.set(sectionId, { fileId: updated.fileId, content: updated.content });
+        }
+      }
     }
     setTimeout(() => {
       ta.focus();
@@ -942,7 +1046,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
         entityLabel: file.name,
         afterState: { fileName: file.name, size: file.size },
         context: { projectId: this.projectName },
-        undoable: false
+        undoable: true,
+        undoAction: { endpoint: `/api/file-projects/${this.projectName}/files/${node.id}`, method: 'DELETE' }
       }).catch(() => {});
       this.imageUploadError = '';
       const ta = this.textareaRef?.nativeElement;
@@ -1050,7 +1155,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
         beforeState: { fileName: line.imageName },
         afterState: { fileName: newName },
         context: { projectId: this.projectName },
-        undoable: false
+        undoable: true,
+        undoAction: { endpoint: `/api/file-projects/${this.projectName}/files/${line.imageId}`, method: 'PATCH', payload: { name: line.imageName } }
       }).catch(() => {});
       this.renamingImageId = null;
       this.renameImageValue = '';

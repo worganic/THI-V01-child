@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService, Project } from '../../../core/services/project.service';
@@ -7,7 +7,7 @@ import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { WoActionHistoryService } from '../../../core/services/wo-action-history.service';
-import { ProjetCollabService } from '../../../core/services/projet-collab.service';
+import { ProjetCollabService, CollabHistoryEntry } from '../../../core/services/projet-collab.service';
 
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
 import { ProjetSidebarComponent, DragDropEvent } from './components/projet-sidebar/projet-sidebar.component';
@@ -15,6 +15,7 @@ import { ProjetEditorZoneComponent, FileSaveEvent, SectionInfo } from './compone
 import { ProjetConversationComponent } from './components/projet-conversation/projet-conversation.component';
 import { ProjetStatusbarComponent } from './components/projet-statusbar/projet-statusbar.component';
 import { ProjetHistoryComponent } from './components/projet-history/projet-history.component';
+import { ProjetDiffComponent } from './components/projet-diff/projet-diff.component';
 
 @Component({
   selector: 'app-projet-editor',
@@ -27,6 +28,7 @@ import { ProjetHistoryComponent } from './components/projet-history/projet-histo
     ProjetConversationComponent,
     ProjetStatusbarComponent,
     ProjetHistoryComponent,
+    ProjetDiffComponent,
   ],
   templateUrl: './projet-editor.component.html',
   styleUrl: './projet-editor.component.scss'
@@ -41,6 +43,45 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   activeNodeId = signal<string | null>(null);
   scrollToNodeId = signal<string | null>(null);
   zone5Tab = signal<'conversation' | 'history'>('conversation');
+  diffEntry = signal<CollabHistoryEntry | null>(null);
+
+  // Set d'entityIds à afficher dans l'historique selon la sélection courante.
+  // - Dossier sélectionné → folder + tous ses descendants (sous-dossiers, fichiers)
+  // - contenu.md sélectionné → traité comme le dossier parent (tout le sous-arbre)
+  // - Fichier additionnel sélectionné → uniquement lui-même
+  readonly activeHistoryIds = computed<Set<string> | null>(() => {
+    const id = this.activeNodeId();
+    if (!id) return null;
+    const folder = this.findFolderById(id, this.files());
+    if (folder) return this.collectDescendantIds(folder);
+    const fileNode = this.findFileById(id, this.files());
+    if (fileNode?.name === 'contenu.md') {
+      const parent = this.findParentFolder(id, this.files());
+      if (parent) return this.collectDescendantIds(parent);
+    }
+    return new Set<string>([id]);
+  });
+
+  private collectDescendantIds(node: FileNode): Set<string> {
+    const ids = new Set<string>();
+    const walk = (n: FileNode) => {
+      ids.add(n.id);
+      for (const c of (n.children || [])) walk(c);
+    };
+    walk(node);
+    return ids;
+  }
+
+  private findFileById(id: string, nodes: FileNode[]): FileNode | null {
+    for (const node of nodes) {
+      if (node.type === 'file' && node.id === id) return node;
+      if (node.children) {
+        const f = this.findFileById(id, node.children);
+        if (f) return f;
+      }
+    }
+    return null;
+  }
 
   private projectFolderName = '';
   private savedStatusTimer: any;
@@ -825,6 +866,14 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       }
     }
     return null;
+  }
+
+  onHistoryEntryClick(entry: CollabHistoryEntry) {
+    this.diffEntry.set(entry);
+  }
+
+  closeDiff() {
+    this.diffEntry.set(null);
   }
 
   get statusLabel(): string {

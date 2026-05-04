@@ -20,21 +20,15 @@
     <div class="inline-flex rounded border border-light-border dark:border-white/10 overflow-hidden mr-2">
       <button type="button"
               class="px-3 py-1 text-xs font-semibold transition-colors"
-              [class.bg-light-primary]="mode === 'edit'"
-              [class.dark:bg-primary]="mode === 'edit'"
-              [class.text-white]="mode === 'edit'"
-              [class.text-light-text]="mode !== 'edit'"
-              [class.dark:text-white]="mode !== 'edit'"
-              [class.opacity-60]="mode !== 'edit'"
+              [ngClass]="mode === 'edit'
+                ? 'bg-primary/20 text-primary'
+                : 'text-white/40 hover:text-white/70'"
               (click)="setMode('edit')">Édition</button>
       <button type="button"
               class="px-3 py-1 text-xs font-semibold transition-colors"
-              [class.bg-light-primary]="mode === 'visu'"
-              [class.dark:bg-primary]="mode === 'visu'"
-              [class.text-white]="mode === 'visu'"
-              [class.text-light-text]="mode !== 'visu'"
-              [class.dark:text-white]="mode !== 'visu'"
-              [class.opacity-60]="mode !== 'visu'"
+              [ngClass]="mode === 'visu'
+                ? 'bg-primary/20 text-primary'
+                : 'text-white/40 hover:text-white/70'"
               (click)="setMode('visu')">Visu</button>
     </div>
 

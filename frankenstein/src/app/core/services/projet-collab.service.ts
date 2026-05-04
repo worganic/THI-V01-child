@@ -26,6 +26,8 @@ export interface CollabHistoryEntry {
   userId: string | null;
   username: string;
   undone: boolean;
+  beforeState?: { content?: string } | null;
+  afterState?: { content?: string } | null;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -132,6 +134,12 @@ export class ProjetCollabService {
     const user = this.auth.currentUser();
     await firstValueFrom(
       this.http.delete(`${API}/api/collab/${projetId}/nodes/${nodeId}/lock?userId=${user?.id || ''}`)
+    );
+  }
+
+  async fetchEntry(entryId: string): Promise<CollabHistoryEntry> {
+    return firstValueFrom(
+      this.http.get<CollabHistoryEntry>(`${API}/api/wo-action-history/${entryId}`)
     );
   }
 
