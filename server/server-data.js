@@ -5199,6 +5199,18 @@ app.post('/api/wo-action-history', async (req, res) => {
             userId: userId || null, username: username || '',
             context, undoable: !!undoable, undone: false, undoAction, meta
         };
+
+        // Notifier les clients SSE si l'entrée est liée à un projet
+        const projectId = context?.projectId;
+        if (projectId && section && section.startsWith('projets/')) {
+            broadcastToProject(projectId, 'history', {
+                id: entry.id, timestamp: entry.timestamp, section: entry.section,
+                actionType: entry.actionType, label: entry.label,
+                entityType: entry.entityType, entityId: entry.entityId, entityLabel: entry.entityLabel,
+                userId: entry.userId, username: entry.username, undone: false
+            });
+        }
+
         res.status(201).json(entry);
     } catch (e) {
         console.error('[WO_ACTION_HISTORY] Create error:', e);
@@ -5218,16 +5230,20 @@ app.post('/api/wo-action-history/:id/undo', async (req, res) => {
         const undoAction = entry.undo_action;
         if (undoAction) {
             const { endpoint, method, payload } = typeof undoAction === 'string' ? JSON.parse(undoAction) : undoAction;
-            const axios = require('axios');
             const baseUrl = `http://localhost:${process.env.PORT || 3001}`;
-            if (method === 'DELETE') {
-                await axios.delete(`${baseUrl}${endpoint}`);
-            } else if (method === 'PUT') {
-                await axios.put(`${baseUrl}${endpoint}`, payload);
-            } else if (method === 'POST') {
-                await axios.post(`${baseUrl}${endpoint}`, payload);
-            } else if (method === 'PATCH') {
-                await axios.patch(`${baseUrl}${endpoint}`, payload);
+            const headers = {
+                'Content-Type': 'application/json',
+                ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
+                ...(req.headers.cookie ? { Cookie: req.headers.cookie } : {})
+            };
+            const fetchOptions = { method, headers };
+            if (payload && ['PUT', 'POST', 'PATCH'].includes(method)) {
+                fetchOptions.body = JSON.stringify(payload);
+            }
+            const undoRes = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
+            if (!undoRes.ok && undoRes.status !== 404) {
+                const errData = await undoRes.json().catch(() => ({}));
+                return res.status(undoRes.status).json({ error: errData.error || "Erreur lors de l'annulation" });
             }
         }
 
@@ -5253,6 +5269,135 @@ app.delete('/api/wo-action-history', async (req, res) => {
         res.json({ success: true });
     } catch (e) {
         console.error('[WO_ACTION_HISTORY] Clear error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ============================================================
+// Projet Collaboration API
+// ============================================================
+
+// SSE clients registry: projetId → Set<res>
+const sseClients = new Map();
+
+function broadcastToProject(projetId, event, data) {
+    const clients = sseClients.get(projetId);
+    if (!clients || clients.size === 0) return;
+    const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+    for (const res of clients) {
+        try { res.write(payload); } catch (_) {}
+    }
+}
+
+// GET /api/collab/:projetId/stream — SSE
+app.get('/api/collab/:projetId/stream', (req, res) => {
+    const { projetId } = req.params;
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    if (!sseClients.has(projetId)) sseClients.set(projetId, new Set());
+    sseClients.get(projetId).add(res);
+    res.write('event: connected\ndata: {"status":"ok"}\n\n');
+
+    const hb = setInterval(() => { try { res.write(':heartbeat\n\n'); } catch (_) {} }, 25000);
+    req.on('close', () => { clearInterval(hb); sseClients.get(projetId)?.delete(res); });
+});
+
+// GET /api/collab/:projetId/history
+app.get('/api/collab/:projetId/history', async (req, res) => {
+    const { projetId } = req.params;
+    const limit = Math.min(Number(req.query.limit) || 100, 500);
+    const offset = Number(req.query.offset) || 0;
+    try {
+        const [rows] = await pool.query(
+            `SELECT id, timestamp, section, action_type, label, entity_type, entity_id, entity_label,
+                    user_id, username, undone
+             FROM wo_action_history
+             WHERE section LIKE 'projets/%'
+               AND JSON_UNQUOTE(JSON_EXTRACT(context, '$.projectId')) = ?
+             ORDER BY timestamp DESC LIMIT ? OFFSET ?`,
+            [projetId, limit, offset]
+        );
+        res.json(rows.map(r => ({
+            id: r.id, timestamp: r.timestamp, section: r.section,
+            actionType: r.action_type, label: r.label,
+            entityType: r.entity_type, entityId: r.entity_id, entityLabel: r.entity_label,
+            userId: r.user_id, username: r.username, undone: !!r.undone
+        })));
+    } catch (e) {
+        console.error('[COLLAB] history error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// GET /api/collab/:projetId/locks
+app.get('/api/collab/:projetId/locks', async (req, res) => {
+    const { projetId } = req.params;
+    try {
+        const [rows] = await pool.query(
+            'SELECT * FROM projet_section_lock WHERE projet_id = ?', [projetId]
+        );
+        res.json(rows.map(r => ({
+            nodeId: r.node_id, projetId: r.projet_id,
+            lockedById: r.locked_by_id, lockedByName: r.locked_by_name,
+            lockedAt: r.locked_at
+        })));
+    } catch (e) {
+        console.error('[COLLAB] locks error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// POST /api/collab/:projetId/nodes/:nodeId/lock
+app.post('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
+    const { projetId, nodeId } = req.params;
+    const { userId, userName } = req.body;
+    if (!userId) return res.status(400).json({ error: 'userId requis' });
+    try {
+        const [existing] = await pool.query(
+            'SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]
+        );
+        if (existing.length > 0 && existing[0].locked_by_id !== userId) {
+            return res.status(409).json({
+                error: 'Section déjà verrouillée',
+                lockedBy: existing[0].locked_by_name,
+                lockedAt: existing[0].locked_at
+            });
+        }
+        await pool.query(
+            `INSERT INTO projet_section_lock (node_id, projet_id, locked_by_id, locked_by_name)
+             VALUES (?, ?, ?, ?)
+             ON DUPLICATE KEY UPDATE locked_by_id=VALUES(locked_by_id),
+             locked_by_name=VALUES(locked_by_name), locked_at=NOW()`,
+            [nodeId, projetId, userId, userName || 'Utilisateur']
+        );
+        const lock = { nodeId, projetId, lockedById: userId, lockedByName: userName || 'Utilisateur', lockedAt: new Date().toISOString() };
+        broadcastToProject(projetId, 'lock', lock);
+        res.json(lock);
+    } catch (e) {
+        console.error('[COLLAB] lock error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// DELETE /api/collab/:projetId/nodes/:nodeId/lock
+app.delete('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
+    const { projetId, nodeId } = req.params;
+    const userId = req.query.userId;
+    try {
+        const [existing] = await pool.query('SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]);
+        if (existing.length === 0) return res.json({ success: true });
+        if (userId && existing[0].locked_by_id !== userId) {
+            return res.status(403).json({ error: 'Vous ne pouvez pas déverrouiller cette section' });
+        }
+        await pool.query('DELETE FROM projet_section_lock WHERE node_id = ?', [nodeId]);
+        broadcastToProject(projetId, 'unlock', { nodeId, projetId });
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[COLLAB] unlock error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
@@ -5369,6 +5514,18 @@ app.listen(PORT, async () => {
             INDEX idx_wah_entity   (entity_type, entity_id)
         )
     `).catch(e => console.error('[DB] wo_action_history init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS projet_section_lock (
+            node_id        VARCHAR(64)   NOT NULL,
+            projet_id      VARCHAR(128)  NOT NULL,
+            locked_by_id   VARCHAR(128)  NOT NULL,
+            locked_by_name VARCHAR(128)  NOT NULL DEFAULT '',
+            locked_at      DATETIME      DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (node_id),
+            INDEX idx_psl_projet (projet_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] projet_section_lock init error:', e.message));
 
     console.log(`
 +==========================================+

@@ -2045,6 +2045,37 @@
       "prompt": "[suite mod-083] Application bundle generation failed — TS2561/NG1/TS2551/TS2339 sur redoAction + redo dans wo-action-history",
       "startedAt": "2026-05-04T10:00:00Z",
       "completedAt": "2026-05-04T10:05:00Z"
+    },
+    {
+      "id": "mod-085",
+      "version": "THI-0.46",
+      "date": "2026-05-04T14:30:00Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein",
+        "server"
+      ],
+      "features": "frankenstein:projets|site,server:workflow",
+      "title": "Collaboration multi-user : historique + verrous de sections",
+      "description": "Ajout de la collaboration temps réel sur les projets : (1) Zone 5 avec 2 onglets Conversation/Historique, le panneau Historique liste en temps réel via SSE toutes les modifications du projet par date avec icônes et auteur. (2) Verrouillage de sections : lock/unlock depuis le menu contextuel de la sidebar, indicateurs visuels verts/rouges sur les nœuds verrouillés, propagation SSE. (3) Nouvelles routes API /api/collab/:projetId/(history|stream|locks) + /api/collab/:projetId/nodes/:nodeId/lock. (4) Table MySQL projet_section_lock. (5) Service Angular ProjetCollabService singleton avec signaux réactifs. (6) Composant ProjetHistoryComponent standalone.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/core/services/projet-collab.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "LE menu /projets/ enregistre chaque document menu ou image dans le dossier @data/projets, hors si un autre utilisateur ouvre le projet, il ne verra pas les mêmes menu document et image. Il faudrait enregistré en direct tous les éléments principaux, comme les dossiers (nom, niveau, ordre, créateur, date creat date update), les documents (idem) et les images (idem) et que toutes ces données doivent gardé en mémoire l'évolution de chaque éléments afin d'avoir une historisation complète du projet (qui à fait quoi, comment, ou etc). Je voudrais avoir dans la zone 5 (sone de droite de conversation), 2 onglets possible, avec la zone de conversation zone 5a et la zone historique 5b. Dans cette zone sera listé par date toutes les modifs du document (dossier document image) et leur modifications (date exeplication user etc). Le but est de pouvoir partagé ces infos avec tous les users du projet. Pour le contenu des dossiers document et image il faudrait aussi pouvoir les partagés mais pas en direct, exemple un user selectionne une section, celle ci est alors directement bloqué au autres user (indication et impossibilité de travaillé dessus avec indication qui le bloque et depuis quand) et lorsque la section à été modifié le user peux en cliquant sur un bouton partagé les modifications qui seront soi enregistré dans la bdd ou le fichier du document pourra être giter (préférence) (à voir, à étudier) et les autres user pourront eux avoir l'info de la section qui à été mis à jour et en cliquand sur un bouton récupéré les mise à jours des documents pour avoir la dernière version. Etudie moi toutes ces modifs et propose moi un plan précis",
+      "startedAt": "2026-05-04T12:00:00Z",
+      "completedAt": "2026-05-04T14:30:00Z"
     }
   ]
 }

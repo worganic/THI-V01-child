@@ -1,12 +1,12 @@
 {
   "cssVars": {
-    "--tw-primary": "167 243 208",
-    "--tw-secondary": "110 231 183",
-    "--tw-accent": "52 211 153",
-    "--tw-accent-dark": "16 185 129",
-    "--tw-accent-darker": "5 150 105",
-    "--tw-background": "2 10 6",
-    "--tw-surface": "5 20 12",
-    "--tw-surface-light": "8 28 18"
+    "--tw-primary": "253 230 138",
+    "--tw-secondary": "252 211 77",
+    "--tw-accent": "245 158 11",
+    "--tw-accent-dark": "217 119 6",
+    "--tw-accent-darker": "180 83 9",
+    "--tw-background": "10 8 2",
+    "--tw-surface": "20 15 4",
+    "--tw-surface-light": "28 22 6"
   }
 }

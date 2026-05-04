@@ -7,12 +7,14 @@ import { ConfigService } from '../../../core/services/config.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { LayoutService } from '../../../core/services/layout.service';
 import { WoActionHistoryService } from '../../../core/services/wo-action-history.service';
+import { ProjetCollabService } from '../../../core/services/projet-collab.service';
 
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
 import { ProjetSidebarComponent, DragDropEvent } from './components/projet-sidebar/projet-sidebar.component';
 import { ProjetEditorZoneComponent, FileSaveEvent, SectionInfo } from './components/projet-editor-zone/projet-editor-zone.component';
 import { ProjetConversationComponent } from './components/projet-conversation/projet-conversation.component';
 import { ProjetStatusbarComponent } from './components/projet-statusbar/projet-statusbar.component';
+import { ProjetHistoryComponent } from './components/projet-history/projet-history.component';
 
 @Component({
   selector: 'app-projet-editor',
@@ -24,6 +26,7 @@ import { ProjetStatusbarComponent } from './components/projet-statusbar/projet-s
     ProjetEditorZoneComponent,
     ProjetConversationComponent,
     ProjetStatusbarComponent,
+    ProjetHistoryComponent,
   ],
   templateUrl: './projet-editor.component.html',
   styleUrl: './projet-editor.component.scss'
@@ -37,6 +40,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   saveStatus = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
   activeNodeId = signal<string | null>(null);
   scrollToNodeId = signal<string | null>(null);
+  zone5Tab = signal<'conversation' | 'history'>('conversation');
 
   private projectFolderName = '';
   private savedStatusTimer: any;
@@ -44,6 +48,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   private isSaving = false;
   private pendingSections: SectionInfo[] | null = null;
   private history = inject(WoActionHistoryService);
+  private collab = inject(ProjetCollabService);
 
   constructor(
     private route: ActivatedRoute,
@@ -72,12 +77,14 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     }
     await this.ensureProjectFolder(this.project()!);
     await this.loadFiles();
+    this.collab.connect(this.projectFolderName);
   }
 
   ngOnDestroy() {
     this.layoutService.editorMode.set(false);
     this.configService.setCurrentProjectId(null);
     clearTimeout(this.savedStatusTimer);
+    this.collab.disconnect();
   }
 
   private async ensureProjectFolder(proj: Project) {

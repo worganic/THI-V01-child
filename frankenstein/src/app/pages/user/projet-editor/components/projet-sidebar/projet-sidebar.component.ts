@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 import { ConversationService } from '../../../../../core/services/conversation.service';
 import { WoActionHistoryService } from '../../../../../core/services/wo-action-history.service';
+import { ProjetCollabService, LockInfo } from '../../../../../core/services/projet-collab.service';
 
 interface ContextMenu { x: number; y: number; node: FileNode | null; }
 interface InlineInput { type: 'rename' | 'new-file' | 'new-folder'; nodeId: string | null; parentId: string | null; }
@@ -30,6 +31,7 @@ export class ProjetSidebarComponent implements OnChanges {
   @Input() projectTitle = '';
   @Input() files: FileNode[] = [];
   @Input() activeFileId: string | null = null;
+  @Input() projetId = '';
   @Output() fileSelect = new EventEmitter<FileNode>();
   @Output() folderCreated = new EventEmitter<{ name: string; parentId: string | null }>();
   @Output() refresh = new EventEmitter<void>();
@@ -51,8 +53,39 @@ export class ProjetSidebarComponent implements OnChanges {
 
   private convSvc = inject(ConversationService);
   private woHistory = inject(WoActionHistoryService);
+  readonly collab = inject(ProjetCollabService);
 
   constructor(private svc: ProjectFilesService, private elRef: ElementRef, private router: Router) {}
+
+  // ── Verrous collaboration ──────────────────────────────────
+
+  isLockedByMe(nodeId: string): boolean { return this.collab.isLockedByMe(nodeId); }
+  isLockedByOther(nodeId: string): boolean { return this.collab.isLockedByOther(nodeId); }
+  getLockInfo(nodeId: string): LockInfo | undefined { return this.collab.getLock(nodeId); }
+
+  getLockTooltip(nodeId: string): string {
+    const lock = this.collab.getLock(nodeId);
+    if (!lock) return '';
+    if (this.collab.isLockedByMe(nodeId)) return 'Verrouillé par moi';
+    const dt = new Date(lock.lockedAt);
+    const hhmm = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return `Verrouillé par ${lock.lockedByName} depuis ${hhmm}`;
+  }
+
+  async toggleLock(node: FileNode) {
+    this.closeContextMenu();
+    if (!this.projetId) return;
+    try {
+      if (this.collab.isLockedByMe(node.id)) {
+        await this.collab.unlockNode(this.projetId, node.id);
+      } else if (!this.collab.isLockedByOther(node.id)) {
+        await this.collab.lockNode(this.projetId, node.id);
+      }
+    } catch (e: any) {
+      const msg = e?.error?.error || 'Erreur lors du verrouillage';
+      console.warn('[Sidebar] lock error:', msg);
+    }
+  }
 
   goBack() { this.router.navigate(['/projets']); }
 
@@ -178,7 +211,11 @@ export class ProjetSidebarComponent implements OnChanges {
           entityLabel: val,
           afterState: { folderName: val, parentId: inp.parentId || null },
           context: { projectId: this.projectName, projectTitle: this.projectTitle },
-          undoable: false
+          undoable: true,
+          undoAction: {
+            endpoint: `/api/file-projects/${this.projectName}/folders/${folder.id}`,
+            method: 'DELETE'
+          }
         }).catch(() => {});
         if (inp.parentId) this.expandNode(inp.parentId);
         this.folderCreated.emit({ name: val, parentId: inp.parentId || null });
@@ -193,7 +230,11 @@ export class ProjetSidebarComponent implements OnChanges {
           entityLabel: val,
           afterState: { fileName: val, parentId: inp.parentId || null },
           context: { projectId: this.projectName, projectTitle: this.projectTitle },
-          undoable: false
+          undoable: true,
+          undoAction: {
+            endpoint: `/api/file-projects/${this.projectName}/files/${created.id}`,
+            method: 'DELETE'
+          }
         }).catch(() => {});
         if (inp.parentId) this.expandNode(inp.parentId);
         this.fileSelect.emit(created);
@@ -212,7 +253,12 @@ export class ProjetSidebarComponent implements OnChanges {
             beforeState: oldName ? { fileName: oldName } : undefined,
             afterState: { fileName: val },
             context: { projectId: this.projectName, projectTitle: this.projectTitle },
-            undoable: false
+            undoable: !!oldName,
+            undoAction: oldName ? {
+              endpoint: `/api/file-projects/${this.projectName}/files/${inp.nodeId}`,
+              method: 'PATCH',
+              payload: { name: oldName }
+            } : undefined
           }).catch(() => {});
         } else if (node?.type === 'folder') {
           await this.svc.renameFolder(this.projectName, inp.nodeId, val);

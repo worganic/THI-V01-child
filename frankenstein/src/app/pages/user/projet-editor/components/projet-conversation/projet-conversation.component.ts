@@ -9,7 +9,7 @@ import { WoActionHistoryService } from '../../../../../core/services/wo-action-h
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './projet-conversation.component.html',
-  host: { class: 'flex flex-col min-h-0 w-80 flex-shrink-0' },
+  host: { class: 'flex flex-col min-h-0 flex-1 overflow-hidden' },
 })
 export class ProjetConversationComponent implements OnChanges, AfterViewChecked {
   @Input() sectionId: string | null = null;

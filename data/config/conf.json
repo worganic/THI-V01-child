@@ -11,7 +11,7 @@
   },
   "appVersion": "aaaaa",
   "ticketsEnabled": false,
-  "lastUpdated": "2026-04-19T10:51:26.408Z",
+  "lastUpdated": "2026-05-03T17:30:43.127Z",
   "cliConfig": {
     "activeProviders": [
       "claude",
@@ -31,5 +31,8 @@
     }
   },
   "recetteWidgetEnabled": false,
-  "headerIaVisible": false
+  "headerIaVisible": false,
+  "navItems": {
+    "woActionHistory": true
+  }
 }

@@ -1,0 +1,153 @@
+import { Injectable, signal, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
+import { AuthService } from './auth.service';
+import { environment } from '../../../environments/environment';
+
+const API = environment.apiDataUrl;
+
+export interface LockInfo {
+  nodeId: string;
+  projetId: string;
+  lockedById: string;
+  lockedByName: string;
+  lockedAt: string;
+}
+
+export interface CollabHistoryEntry {
+  id: string;
+  timestamp: string;
+  section: string;
+  actionType: string;
+  label: string;
+  entityType: string;
+  entityId: string;
+  entityLabel: string;
+  userId: string | null;
+  username: string;
+  undone: boolean;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ProjetCollabService {
+  private http = inject(HttpClient);
+  private auth = inject(AuthService);
+
+  readonly history = signal<CollabHistoryEntry[]>([]);
+  readonly locks = signal<Map<string, LockInfo>>(new Map());
+  readonly connected = signal(false);
+
+  private eventSource: EventSource | null = null;
+  private currentProjetId: string | null = null;
+
+  connect(projetId: string): void {
+    if (this.currentProjetId === projetId) return;
+    this.disconnect();
+    this.currentProjetId = projetId;
+    this.loadHistory(projetId);
+    this.loadLocks(projetId);
+    this.openSSE(projetId);
+  }
+
+  disconnect(): void {
+    this.eventSource?.close();
+    this.eventSource = null;
+    this.currentProjetId = null;
+    this.connected.set(false);
+    this.history.set([]);
+    this.locks.set(new Map());
+  }
+
+  async loadHistory(projetId: string): Promise<void> {
+    try {
+      const entries = await firstValueFrom(
+        this.http.get<CollabHistoryEntry[]>(`${API}/api/collab/${projetId}/history?limit=200`)
+      );
+      this.history.set(entries);
+    } catch (e) {
+      console.warn('[Collab] loadHistory error:', e);
+    }
+  }
+
+  async loadLocks(projetId: string): Promise<void> {
+    try {
+      const locks = await firstValueFrom(
+        this.http.get<LockInfo[]>(`${API}/api/collab/${projetId}/locks`)
+      );
+      const map = new Map<string, LockInfo>();
+      for (const lock of locks) map.set(lock.nodeId, lock);
+      this.locks.set(map);
+    } catch (e) {
+      console.warn('[Collab] loadLocks error:', e);
+    }
+  }
+
+  private openSSE(projetId: string): void {
+    try {
+      this.eventSource = new EventSource(`${API}/api/collab/${projetId}/stream`);
+
+      this.eventSource.addEventListener('connected', () => {
+        this.connected.set(true);
+      });
+
+      this.eventSource.addEventListener('history', (e: MessageEvent) => {
+        const entry: CollabHistoryEntry = JSON.parse(e.data);
+        this.history.update(list => [entry, ...list.slice(0, 199)]);
+      });
+
+      this.eventSource.addEventListener('lock', (e: MessageEvent) => {
+        const lock: LockInfo = JSON.parse(e.data);
+        this.locks.update(map => { const m = new Map(map); m.set(lock.nodeId, lock); return m; });
+      });
+
+      this.eventSource.addEventListener('unlock', (e: MessageEvent) => {
+        const { nodeId } = JSON.parse(e.data);
+        this.locks.update(map => { const m = new Map(map); m.delete(nodeId); return m; });
+      });
+
+      this.eventSource.onerror = () => {
+        this.connected.set(false);
+        this.eventSource?.close();
+        this.eventSource = null;
+        setTimeout(() => {
+          if (this.currentProjetId === projetId) this.openSSE(projetId);
+        }, 5000);
+      };
+    } catch (e) {
+      console.warn('[Collab] SSE init error:', e);
+    }
+  }
+
+  async lockNode(projetId: string, nodeId: string): Promise<LockInfo> {
+    const user = this.auth.currentUser();
+    return firstValueFrom(
+      this.http.post<LockInfo>(`${API}/api/collab/${projetId}/nodes/${nodeId}/lock`, {
+        userId: user?.id || 'anonymous',
+        userName: user?.username || 'Utilisateur'
+      })
+    );
+  }
+
+  async unlockNode(projetId: string, nodeId: string): Promise<void> {
+    const user = this.auth.currentUser();
+    await firstValueFrom(
+      this.http.delete(`${API}/api/collab/${projetId}/nodes/${nodeId}/lock?userId=${user?.id || ''}`)
+    );
+  }
+
+  isLockedByMe(nodeId: string): boolean {
+    const user = this.auth.currentUser();
+    const lock = this.locks().get(nodeId);
+    return !!lock && lock.lockedById === (user?.id || '');
+  }
+
+  isLockedByOther(nodeId: string): boolean {
+    const user = this.auth.currentUser();
+    const lock = this.locks().get(nodeId);
+    return !!lock && lock.lockedById !== (user?.id || '');
+  }
+
+  getLock(nodeId: string): LockInfo | undefined {
+    return this.locks().get(nodeId);
+  }
+}
