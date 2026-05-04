@@ -882,7 +882,9 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
   private scheduleSave() {
     clearTimeout(this.saveTimeout);
-    this.saveTimeout = setTimeout(() => this.saveAll(), 800);
+    // Save automatique après 10 s d'inactivité ; le save immédiat reste assuré par
+    // onTextareaBlur (clic en dehors), exitFocusMode et setMode.
+    this.saveTimeout = setTimeout(() => this.saveAll(), 10000);
   }
 
   private saveAll() {

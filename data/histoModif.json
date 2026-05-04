@@ -2265,6 +2265,29 @@
       "prompt": "lorsque je fait une modif et que je clique sur l'historique de la modif, celle ci s'affiche bien mais lorsque je clique sur Retour à l'editeur, c'est l'ancienne version qui s'affiche (avant enregistrement), corrige le problème. Pour info si je reactualise la page la bonne version du texte (modifié) s'affiche bien.",
       "startedAt": "2026-05-04T00:00:00.000Z",
       "completedAt": "2026-05-04T18:58:00.331Z"
+    },
+    {
+      "id": "mod-094",
+      "version": "THI-0.55",
+      "date": "2026-05-04T22:51:12.697Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Save 10s + titre noeud actif en zone 5b",
+      "description": "Debounce d'auto-save passé de 800ms à 10s : la sauvegarde n'a lieu qu'après 10s sans frappe, ou immédiatement au blur (clic en dehors), à l'entrée/sortie du mode focus, ou au switch Edition/Visu. Ajout sous les onglets Conversation/Historique de la zone 5b d'un bandeau affichant le nom + icône (folder/image/description) du noeud actuellement sélectionné, via nouveau computed activeNodeInfo dans projet-editor.component.ts.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "lorsqu'on modifi une section dossier, document ou image, l'enregistrement ne doit ce faire que lorsqu'on clique en dehors de la zone ou si on ne fait rien sur la page plus de 10 secondes. Affiche le titre du document, du dossier ou de l'image dans la zone 5b en dessous des onglets",
+      "startedAt": "2026-05-04T23:00:00.000Z",
+      "completedAt": "2026-05-04T22:51:12.697Z"
     }
   ]
 }

@@ -45,6 +45,18 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   zone5Tab = signal<'conversation' | 'history'>('conversation');
   diffEntry = signal<CollabHistoryEntry | null>(null);
 
+  // Nom + icône du noeud actuellement sélectionné, affichés sous les onglets de la zone 5b
+  readonly activeNodeInfo = computed<{ name: string; icon: string } | null>(() => {
+    const id = this.activeNodeId();
+    if (!id) return null;
+    const folder = this.findFolderById(id, this.files());
+    if (folder) return { name: folder.name, icon: 'folder' };
+    const file = this.findFileById(id, this.files());
+    if (!file) return null;
+    if (this.projectFilesService.isImageFile(file.name)) return { name: file.name, icon: 'image' };
+    return { name: file.name, icon: 'description' };
+  });
+
   // Set d'entityIds à afficher dans l'historique selon la sélection courante.
   // - Dossier sélectionné → folder + tous ses descendants (sous-dossiers, fichiers)
   // - contenu.md sélectionné → traité comme le dossier parent (tout le sous-arbre)
