@@ -170,6 +170,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private sectionFileSnapshot = new Map<string, { fileId: string; content: string }>();
   // Snapshot texte complet de la section dans unifiedContent — utilisé pour le diff (inclut en-tête + fichiers additionnels)
   private sectionFullTextSnapshot = new Map<string, string>();
+  // Snapshot du bloc de chaque fichier additionnel ('Nom\n...content...\n') depuis unifiedContent — pour diff par fichier
+  private fileBlockSnapshot = new Map<string, string>();
 
   // Drag & drop (style Notion : une seule poignée dans la gouttière gauche,
   // visible uniquement sur la ligne survolée)
@@ -757,14 +759,13 @@ export class ProjetEditorZoneComponent implements OnChanges {
   }
 
   private updateSnapshotFromFiles() {
-    // Liste des folderIds qui ont une modification en cours (par entité ou par eux-mêmes)
     const pendingFolderIds = new Set(this.modifiedEntities.values());
+    const pendingEntityIds = new Set(this.modifiedEntities.keys());
     for (const section of this.docSections) {
       if (!section.mainFileId) continue;
       if (pendingFolderIds.has(section.folderId)) continue;
       const folder = this.findNode(section.folderId, this.files);
       if (!folder) continue;
-      // Snapshot fichier pour undo
       const mainFile = (folder.children || []).find(c => c.type === 'file' && c.name === 'contenu.md')
                     || (folder.children || []).find(c => c.type === 'file' && !this.isImageFile(c.name));
       if (mainFile) {
@@ -773,7 +774,6 @@ export class ProjetEditorZoneComponent implements OnChanges {
           content: mainFile.content ?? ''
         });
       }
-      // Snapshot texte complet pour le diff (heading + main + fichiers additionnels)
       const range = this.sectionRanges.find(r => r.folderId === section.folderId);
       if (range && this.unifiedContent) {
         const lines = this.unifiedContent.split('\n');
@@ -781,29 +781,46 @@ export class ProjetEditorZoneComponent implements OnChanges {
           lines.slice(range.lineStart, range.lineEnd + 1).join('\n'));
       }
     }
+    // Snapshot des blocs fichiers additionnels (entités fileId)
+    if (this.unifiedContent) {
+      const lines = this.unifiedContent.split('\n');
+      for (const fr of this.fileRanges) {
+        if (pendingEntityIds.has(fr.fileId)) continue;
+        this.fileBlockSnapshot.set(fr.fileId, lines.slice(fr.lineStart, fr.lineEnd + 1).join('\n'));
+      }
+    }
   }
 
   private flushContentModifications() {
     if (this.modifiedEntities.size === 0) return;
     const currentSections = this.parseContent();
-    // Pour chaque folder modifié, on calcule fullTextAfter une seule fois
+    const lines = this.unifiedContent.split('\n');
     const updatedFolderIds = new Set<string>();
     for (const [entityId, folderId] of this.modifiedEntities) {
+      const isFile = entityId !== folderId;
       const node = this.findNode(entityId, this.files);
       const snapshotBefore = this.sectionFileSnapshot.get(folderId);
-      const fullTextBefore = this.sectionFullTextSnapshot.get(folderId);
-      const range = this.sectionRanges.find(r => r.folderId === folderId);
-      const fullTextAfter = range
-        ? this.unifiedContent.split('\n').slice(range.lineStart, range.lineEnd + 1).join('\n')
-        : null;
+
+      let textBefore: string | undefined;
+      let textAfter: string | null = null;
+      if (isFile) {
+        textBefore = this.fileBlockSnapshot.get(entityId);
+        const fr = this.fileRanges.find(r => r.fileId === entityId);
+        if (fr) textAfter = lines.slice(fr.lineStart, fr.lineEnd + 1).join('\n');
+      } else {
+        textBefore = this.sectionFullTextSnapshot.get(folderId);
+        const range = this.sectionRanges.find(r => r.folderId === folderId);
+        if (range) textAfter = lines.slice(range.lineStart, range.lineEnd + 1).join('\n');
+      }
+
       this.woHistory.track({
         section: 'projets/contenu',
         actionType: 'update',
         label: `Modification de texte — «${node?.name || entityId}»`,
         entityType: 'content',
         entityId: entityId,
-        beforeState: fullTextBefore ? { content: fullTextBefore } : undefined,
-        afterState: fullTextAfter ? { content: fullTextAfter } : undefined,
+        beforeState: textBefore != null ? { content: textBefore } : undefined,
+        afterState: textAfter != null ? { content: textAfter } : undefined,
         context: { projectId: this.projectName },
         undoable: !!snapshotBefore?.fileId,
         undoAction: snapshotBefore?.fileId ? {
@@ -812,12 +829,13 @@ export class ProjetEditorZoneComponent implements OnChanges {
           payload: { content: snapshotBefore.content }
         } : undefined
       }).catch(() => {});
-      if (fullTextAfter) {
-        this.sectionFullTextSnapshot.set(folderId, fullTextAfter);
+
+      if (textAfter != null) {
+        if (isFile) this.fileBlockSnapshot.set(entityId, textAfter);
+        else this.sectionFullTextSnapshot.set(folderId, textAfter);
       }
       updatedFolderIds.add(folderId);
     }
-    // Met à jour les snapshots fichier (contenu.md) pour les folders impactés
     for (const folderId of updatedFolderIds) {
       const after = currentSections.find(s => s.folderId === folderId);
       if (after?.fileId) {
@@ -868,7 +886,11 @@ export class ProjetEditorZoneComponent implements OnChanges {
   }
 
   private saveAll() {
-    if (this.unifiedContent === this.lastSavedContent) return;
+    if (this.unifiedContent === this.lastSavedContent) {
+      // Pas de changement de contenu, mais on flush pour que l'historique remonte sans attendre le blur
+      this.flushContentModifications();
+      return;
+    }
     this.lastSavedContent = this.unifiedContent;
 
     let contentToParse: string;
@@ -892,6 +914,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const sections = this.parseContent();
     this.unifiedContent = saved;
     this.sectionsChange.emit(sections);
+    // Flush historique en même temps que la sauvegarde (évite d'attendre le blur)
+    this.flushContentModifications();
   }
 
   // ── Content parsing (compat existant) ──────────────────────

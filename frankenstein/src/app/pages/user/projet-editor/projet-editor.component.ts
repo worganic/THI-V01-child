@@ -72,6 +72,32 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     return ids;
   }
 
+  // Met à jour le contenu d'un fichier dans le signal `files` sans recharger depuis le serveur.
+  // Cela garde le signal synchronisé avec ce qui est sur disque, pour que si l'éditeur est
+  // démonté/remonté (ex: ouverture du diff), il reconstruise depuis le contenu à jour.
+  private patchFileContent(fileId: string, content: string) {
+    const patch = (nodes: FileNode[]): { changed: boolean; nodes: FileNode[] } => {
+      let changed = false;
+      const out = nodes.map(n => {
+        if (n.id === fileId && n.type === 'file') {
+          changed = true;
+          return { ...n, content };
+        }
+        if (n.children) {
+          const sub = patch(n.children);
+          if (sub.changed) {
+            changed = true;
+            return { ...n, children: sub.nodes };
+          }
+        }
+        return n;
+      });
+      return { changed, nodes: out };
+    };
+    const result = patch(this.files());
+    if (result.changed) this.files.set(result.nodes);
+  }
+
   private findFileById(id: string, nodes: FileNode[]): FileNode | null {
     for (const node of nodes) {
       if (node.type === 'file' && node.id === id) return node;
@@ -583,6 +609,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           const oldContent = oldContentMap.get(s.fileId) ?? '';
           if (oldContent !== s.content) {
             await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, s.content);
+            this.patchFileContent(s.fileId, s.content);
             const fileNode = { id: s.fileId, name: 'contenu.md', type: 'file' as const, path: '', order: 0 };
             this.trackContentUpdate(fileNode, s.folderName, oldContent, s.content);
           }
@@ -595,6 +622,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
               const oldContent = oldContentMap.get(af.fileId) ?? '';
               if (oldContent !== af.content) {
                 await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content);
+                this.patchFileContent(af.fileId, af.content);
                 const fileNode = { id: af.fileId, name: af.name, type: 'file' as const, path: '', order: 0 };
                 this.trackContentUpdate(fileNode, `${s.folderName} › ${af.name}`, oldContent, af.content);
               }

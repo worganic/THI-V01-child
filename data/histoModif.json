@@ -2223,6 +2223,48 @@
       "prompt": "Cela ne fonctionne toujours pas, Zone 4 Edition/visu, le textes est divisé en menu, document ou image. Lorsque je fait une modification celle ci est enregistré et la section dans lequel elle est modifié est gardé en mémoire. Ainsi si je selectionne une section comme un document, seul les modifications de cette zone est affiché dans l'onglet historique. Si c'est une zone menu cela doit affiché toutes les sous section (sous menu et document interne à cette section). Lorsqu'une modification est enregistré elle enregistre le texte de la section avant et après et affiche dans la zone 4 en mode \"Modification\" TOUS le texte de la section selectionné, ainsi si on modifi une ligne d'un document et que celui ci est selectionné, cela doit affiché tous le texte de la section et d'indiqué les modifications.",
       "startedAt": "2026-05-04T00:00:00.000Z",
       "completedAt": "2026-05-04T18:41:17.490Z"
+    },
+    {
+      "id": "mod-092",
+      "version": "THI-0.53",
+      "date": "2026-05-04T18:51:06.722Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Historique : flush au save (latence) + diff par fichier (bloc seul)",
+      "description": "Deux corrections sur la traçabilité contenu : (1) flushContentModifications() est désormais appelé à la fin de saveAll() (debounce 800ms) au lieu d'uniquement au blur — l'entrée historique apparaît dès la pause de frappe, plus besoin d'attendre le blur du textarea. (2) Quand l'entité tracée est un fichier additionnel (Doc 2 etc.), le diff stocke et affiche uniquement le bloc du fichier (delimité par 'name ... ') et plus le texte complet de la section parente. Quand l'entité est un dossier, le diff continue à afficher le texte complet de la section. Nouveau Map fileBlockSnapshot peuplé dans updateSnapshotFromFiles à partir des fileRanges.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "lorsque je fait une modif (exemple dans un document) dés l'enregistrement, cela doit affiché la modif dans la zone historique, actuellement cela met du temps à s'afficher. Lorsque je selectionne une section exemple un document et que je clique sur la modif à droite dans la zone du centre cela ne doit affiché que le texte du document.",
+      "startedAt": "2026-05-04T00:00:00.000Z",
+      "completedAt": "2026-05-04T18:51:06.722Z"
+    },
+    {
+      "id": "mod-093",
+      "version": "THI-0.54",
+      "date": "2026-05-04T18:58:00.331Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Fix retour diff : signal files désynchronisé après save de contenu",
+      "description": "Bug : après modification + clic sur entrée historique + Retour à éditeur, l'éditeur réaffichait l'ancien texte (avant save). Cause : la modification de l'éditeur de zone est démontée à l'ouverture du diff, et reconstruit unifiedContent depuis le signal files au remontage. Mais ce signal n'était jamais mis à jour après une sauvegarde de contenu pure (sans changement structurel) — seul hasStructural déclenchait un loadFiles. Solution : nouveau patchFileContent() appelé après chaque updateFile pour patcher le content du FileNode dans le signal files (pas de reload serveur, pas de flicker, pas de changement de structure key).",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "lorsque je fait une modif et que je clique sur l'historique de la modif, celle ci s'affiche bien mais lorsque je clique sur Retour à l'editeur, c'est l'ancienne version qui s'affiche (avant enregistrement), corrige le problème. Pour info si je reactualise la page la bonne version du texte (modifié) s'affiche bien.",
+      "startedAt": "2026-05-04T00:00:00.000Z",
+      "completedAt": "2026-05-04T18:58:00.331Z"
     }
   ]
 }
