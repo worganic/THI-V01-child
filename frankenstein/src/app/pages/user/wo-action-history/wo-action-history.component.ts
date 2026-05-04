@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { WoActionHistoryService, WoActionEntry } from '../../../core/services/wo-action-history.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { ConfigService } from '../../../core/services/config.service';
 
 @Component({
   selector: 'app-wo-action-history',
@@ -14,9 +15,11 @@ import { AuthService } from '../../../core/services/auth.service';
 export class WoActionHistoryComponent implements OnInit {
   private historyService = inject(WoActionHistoryService);
   private auth = inject(AuthService);
+  private configService = inject(ConfigService);
 
   loading = signal(false);
   undoing = signal<string | null>(null);
+  redoing = signal<string | null>(null);
   error = signal('');
   showInfo = signal(false);
 
@@ -58,76 +61,27 @@ export class WoActionHistoryComponent implements OnInit {
       ]
     },
     {
+      label: 'Projets › Éditeur',
+      section: 'projets',
+      icon: 'edit_note',
+      colorText: 'text-emerald-400',
+      colorBg: 'bg-emerald-500/5 border-emerald-500/15',
+      actions: [
+        { type: 'create', label: 'Création section',     undoable: true,  note: 'Supprime la section créée' },
+        { type: 'update', label: 'Renommage section',    undoable: true,  note: 'Restaure le nom précédent' },
+        { type: 'update', label: 'Modification contenu', undoable: true,  note: 'Restaure le contenu précédent — diff ligne par ligne' },
+        { type: 'delete', label: 'Suppression section',  undoable: false, note: 'Non réversible — perte des sous-sections et fichiers' }
+      ]
+    },
+    {
       label: 'Admin › Config',
       section: 'admin/config',
       icon: 'settings',
       colorText: 'text-amber-400',
       colorBg: 'bg-amber-500/5 border-amber-500/15',
       actions: [
-        { type: 'toggle', label: 'Toggle setting/outil/provider/modèle', undoable: false, note: 'Non réversible via undo — toggle manuel' },
+        { type: 'toggle', label: 'Toggle setting/outil/provider/modèle', undoable: true,  note: 'Restaure l\'état précédent du toggle — undo/redo illimité' },
         { type: 'update', label: 'Sauvegarde clés API',                  undoable: false, note: 'Valeurs des clés non enregistrées, seulement le statut actif' }
-      ]
-    },
-    {
-      label: 'Projets › Liste & Admin',
-      section: 'projets',
-      icon: 'folder_special',
-      colorText: 'text-violet-400',
-      colorBg: 'bg-violet-500/5 border-violet-500/15',
-      actions: [
-        { type: 'create', label: 'Création projet',     undoable: true,  note: 'Supprime le projet créé (contenu texte non inclus)' },
-        { type: 'update', label: 'Modification projet', undoable: true,  note: 'Restaure titre, description et statut' },
-        { type: 'delete', label: 'Suppression projet',  undoable: false, note: 'Non réversible — fichiers définitivement perdus' }
-      ]
-    },
-    {
-      label: 'Projets › Sections & Menus',
-      section: 'projets/sections',
-      icon: 'segment',
-      colorText: 'text-teal-400',
-      colorBg: 'bg-teal-500/5 border-teal-500/15',
-      actions: [
-        { type: 'create', label: 'Création de section/menu',       undoable: false, note: 'Non réversible via undo' },
-        { type: 'update', label: 'Renommage de section',            undoable: false, note: 'Non réversible via undo' },
-        { type: 'delete', label: 'Suppression de section',          undoable: false, note: 'Non réversible — contenu perdu' },
-        { type: 'update', label: 'Déplacement (drag & drop)',       undoable: false, note: 'Réordonner manuellement si besoin' }
-      ]
-    },
-    {
-      label: 'Projets › Fichiers & Images',
-      section: 'projets/fichiers',
-      icon: 'attach_file',
-      colorText: 'text-cyan-400',
-      colorBg: 'bg-cyan-500/5 border-cyan-500/15',
-      actions: [
-        { type: 'create', label: 'Création document additionnel',   undoable: false, note: 'Non réversible' },
-        { type: 'upload', label: 'Import d\'image',                 undoable: false, note: 'Non réversible' },
-        { type: 'update', label: 'Renommage fichier/image',         undoable: false, note: 'Non réversible via undo' },
-        { type: 'delete', label: 'Suppression fichier/image',       undoable: false, note: 'Non réversible' }
-      ]
-    },
-    {
-      label: 'Projets › Contenu & Formatage',
-      section: 'projets/contenu',
-      icon: 'edit_note',
-      colorText: 'text-lime-400',
-      colorBg: 'bg-lime-500/5 border-lime-500/15',
-      actions: [
-        { type: 'update', label: 'Modification de texte (blur)',       undoable: false, note: 'Tracé quand l\'éditeur perd le focus — une entrée par section modifiée' },
-        { type: 'update', label: 'Mise en forme : Gras / Italique / Barré', undoable: false, note: 'Via les boutons de la toolbar' },
-        { type: 'update', label: 'Insertion : Titre H1/H2/H3',         undoable: false, note: 'Via les boutons de la toolbar' },
-        { type: 'update', label: 'Insertion : Code inline / Bloc code', undoable: false, note: 'Via les boutons de la toolbar' },
-        { type: 'update', label: 'Insertion : Liste',                   undoable: false, note: 'Via le bouton Liste' }
-      ]
-    },
-    {
-      label: 'Projets › Conversation',
-      section: 'projets/conversation',
-      icon: 'chat',
-      colorText: 'text-indigo-400',
-      colorBg: 'bg-indigo-500/5 border-indigo-500/15',
-      actions: [
-        { type: 'create', label: 'Message envoyé',  undoable: false, note: 'Non réversible' }
       ]
     }
   ];
@@ -217,6 +171,10 @@ export class WoActionHistoryComponent implements OnInit {
     return this.filteredEntries.filter(e => e.undoable && !e.undone).length;
   }
 
+  get redoableCount(): number {
+    return this.filteredEntries.filter(e => e.undone && !!e.redoAction).length;
+  }
+
   async ngOnInit() {
     await this.loadHistory();
   }
@@ -234,11 +192,13 @@ export class WoActionHistoryComponent implements OnInit {
   }
 
   async undoAction(entry: WoActionEntry) {
-    if (!entry.undoable || entry.undone || this.undoing()) return;
+    if (!entry.undoable || entry.undone || this.undoing() || this.redoing()) return;
     this.undoing.set(entry.id);
     this.error.set('');
     try {
       await this.historyService.undo(entry.id);
+      if (entry.section === 'admin/config') this.configService.loadCliConfig();
+      await this.loadHistory();
     } catch (e: any) {
       this.error.set(e?.error?.error || "Erreur lors de l'annulation");
     } finally {
@@ -246,7 +206,96 @@ export class WoActionHistoryComponent implements OnInit {
     }
   }
 
+  async redoAction(entry: WoActionEntry) {
+    if (!entry.undone || !entry.redoAction || this.redoing() || this.undoing()) return;
+    this.redoing.set(entry.id);
+    this.error.set('');
+    try {
+      await this.historyService.redo(entry.id);
+      if (entry.section === 'admin/config') this.configService.loadCliConfig();
+      await this.loadHistory();
+    } catch (e: any) {
+      this.error.set(e?.error?.error || "Erreur lors du rétablissement");
+    } finally {
+      this.redoing.set(null);
+    }
+  }
+
   private readonly sensitiveFields = new Set(['password', 'token', 'secret', 'hash']);
+  // Champs affichés via le diff ligne-à-ligne (git-like) au lieu du diff inline
+  private readonly longTextFields = new Set(['content']);
+
+  expandedDiffs = signal<Set<string>>(new Set());
+
+  toggleDiff(entryId: string) {
+    this.expandedDiffs.update(set => {
+      const next = new Set(set);
+      if (next.has(entryId)) next.delete(entryId); else next.add(entryId);
+      return next;
+    });
+  }
+
+  isDiffExpanded(entryId: string): boolean {
+    return this.expandedDiffs().has(entryId);
+  }
+
+  hasContentDiff(entry: WoActionEntry): boolean {
+    const before = this.parseState(entry.beforeState);
+    const after = this.parseState(entry.afterState);
+    const b = before?.['content'];
+    const a = after?.['content'];
+    if (typeof b !== 'string' && typeof a !== 'string') return false;
+    return (b ?? '') !== (a ?? '');
+  }
+
+  // Diff ligne-à-ligne (style git) basé sur LCS
+  getContentDiff(entry: WoActionEntry): { type: 'same' | 'add' | 'del'; text: string; oldNum: number; newNum: number }[] {
+    const before = this.parseState(entry.beforeState);
+    const after = this.parseState(entry.afterState);
+    const beforeText = typeof before?.['content'] === 'string' ? before!['content'] : '';
+    const afterText  = typeof after?.['content']  === 'string' ? after!['content']  : '';
+    if (beforeText === afterText) return [];
+
+    const a = beforeText.split('\n');
+    const b = afterText.split('\n');
+    const n = a.length, m = b.length;
+
+    // LCS DP — coût mémoire n*m, acceptable pour fichiers <~2000 lignes
+    const dp: number[][] = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) {
+      for (let j = m - 1; j >= 0; j--) {
+        dp[i][j] = a[i] === b[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+      }
+    }
+
+    const result: { type: 'same' | 'add' | 'del'; text: string; oldNum: number; newNum: number }[] = [];
+    let i = 0, j = 0, oldNum = 1, newNum = 1;
+    while (i < n && j < m) {
+      if (a[i] === b[j]) {
+        result.push({ type: 'same', text: a[i], oldNum: oldNum++, newNum: newNum++ });
+        i++; j++;
+      } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+        result.push({ type: 'del', text: a[i], oldNum: oldNum++, newNum: 0 });
+        i++;
+      } else {
+        result.push({ type: 'add', text: b[j], oldNum: 0, newNum: newNum++ });
+        j++;
+      }
+    }
+    while (i < n) result.push({ type: 'del', text: a[i++], oldNum: oldNum++, newNum: 0 });
+    while (j < m) result.push({ type: 'add', text: b[j++], oldNum: 0, newNum: newNum++ });
+    return result;
+  }
+
+  diffStats(entry: WoActionEntry): { adds: number; dels: number } {
+    const lines = this.getContentDiff(entry);
+    let adds = 0, dels = 0;
+    for (const l of lines) {
+      if (l.type === 'add') adds++;
+      else if (l.type === 'del') dels++;
+    }
+    return { adds, dels };
+  }
 
   private parseState(state: any): Record<string, any> | null {
     if (!state) return null;
@@ -264,18 +313,18 @@ export class WoActionHistoryComponent implements OnInit {
     if (entry.actionType === 'update' && before && after) {
       const allKeys = new Set([...Object.keys(before), ...Object.keys(after)]);
       return Array.from(allKeys)
-        .filter(k => !this.sensitiveFields.has(k))
+        .filter(k => !this.sensitiveFields.has(k) && !this.longTextFields.has(k))
         .filter(k => JSON.stringify(before[k]) !== JSON.stringify(after[k]))
         .map(k => ({ field: k, before: before[k], after: after[k] }));
     }
     if (entry.actionType === 'create' && after) {
       return Object.entries(after)
-        .filter(([k]) => !this.sensitiveFields.has(k))
+        .filter(([k]) => !this.sensitiveFields.has(k) && !this.longTextFields.has(k))
         .map(([k, v]) => ({ field: k, before: null, after: v }));
     }
     if (entry.actionType === 'delete' && before) {
       return Object.entries(before)
-        .filter(([k]) => !this.sensitiveFields.has(k))
+        .filter(([k]) => !this.sensitiveFields.has(k) && !this.longTextFields.has(k))
         .map(([k, v]) => ({ field: k, before: v, after: null }));
     }
     return [];
@@ -288,10 +337,7 @@ export class WoActionHistoryComponent implements OnInit {
       visible: 'Visibilité', visibility: 'Visibilité', title: 'Titre',
       active: 'Actif', enabled: 'Activé', categoryId: 'Catégorie',
       headerIaVisible: 'Header IA', appVersion: 'Version app',
-      geminiActive: 'Gemini actif', claudeActive: 'Claude actif',
-      status: 'Statut', folderName: 'Nom section', fileName: 'Nom fichier',
-      parentId: 'Section parente', parentFolderId: 'Section parente',
-      projectId: 'Projet', sectionId: 'Section', text: 'Message', size: 'Taille'
+      geminiActive: 'Gemini actif', claudeActive: 'Claude actif'
     };
     return labels[field] || field;
   }
@@ -305,7 +351,8 @@ export class WoActionHistoryComponent implements OnInit {
   actionTypeLabel(type: string): string {
     const labels: Record<string, string> = {
       create: 'Création', update: 'Modification', delete: 'Suppression',
-      toggle: 'Activation', upload: 'Import', navigate: 'Navigation'
+      toggle: 'Activation', upload: 'Import', navigate: 'Navigation',
+      undo: 'Annulation', redo: 'Rétablissement'
     };
     return labels[type] || type;
   }
@@ -313,7 +360,8 @@ export class WoActionHistoryComponent implements OnInit {
   actionTypeIcon(type: string): string {
     const icons: Record<string, string> = {
       create: 'add_circle', update: 'edit', delete: 'delete',
-      toggle: 'toggle_on', upload: 'upload_file', navigate: 'navigation'
+      toggle: 'toggle_on', upload: 'upload_file', navigate: 'navigation',
+      undo: 'undo', redo: 'redo'
     };
     return icons[type] || 'history';
   }
@@ -325,7 +373,9 @@ export class WoActionHistoryComponent implements OnInit {
       delete: 'text-red-400',
       toggle: 'text-violet-400',
       upload: 'text-amber-400',
-      navigate: 'text-gray-400'
+      navigate: 'text-gray-400',
+      undo: 'text-orange-400',
+      redo: 'text-cyan-400'
     };
     return colors[type] || 'text-gray-400';
   }
@@ -337,7 +387,9 @@ export class WoActionHistoryComponent implements OnInit {
       delete: 'bg-red-500/10 border-red-500/20',
       toggle: 'bg-violet-500/10 border-violet-500/20',
       upload: 'bg-amber-500/10 border-amber-500/20',
-      navigate: 'bg-gray-500/10 border-gray-500/20'
+      navigate: 'bg-gray-500/10 border-gray-500/20',
+      undo: 'bg-orange-500/10 border-orange-500/20',
+      redo: 'bg-cyan-500/10 border-cyan-500/20'
     };
     return colors[type] || 'bg-gray-500/10 border-gray-500/20';
   }
@@ -355,14 +407,10 @@ export class WoActionHistoryComponent implements OnInit {
 
   sectionLabel(section: string): string {
     const labels: Record<string, string> = {
-      'admin/users':          'Admin › Utilisateurs',
-      'admin/config':         'Admin › Config',
-      'documents':            'Documents',
-      'projets':              'Projets › Liste',
-      'projets/sections':     'Projets › Sections',
-      'projets/fichiers':     'Projets › Fichiers',
-      'projets/contenu':      'Projets › Contenu',
-      'projets/conversation': 'Projets › Conversation',
+      'admin/users':  'Admin › Utilisateurs',
+      'admin/config': 'Admin › Config',
+      'documents':    'Documents',
+      'projets':      'Projets'
     };
     return labels[section] || section;
   }

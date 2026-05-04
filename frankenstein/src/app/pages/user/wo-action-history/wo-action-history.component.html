@@ -121,7 +121,10 @@
         }
         <span>{{ filteredEntries.length }} action{{ filteredEntries.length > 1 ? 's' : '' }}</span>
         @if (undoableCount > 0) {
-          <span class="text-amber-400/60">{{ undoableCount }} réversible{{ undoableCount > 1 ? 's' : '' }}</span>
+          <span class="text-amber-400/60">{{ undoableCount }} annulable{{ undoableCount > 1 ? 's' : '' }}</span>
+        }
+        @if (redoableCount > 0) {
+          <span class="text-sky-400/60">{{ redoableCount }} rétablissable{{ redoableCount > 1 ? 's' : '' }}</span>
         }
       </div>
     </div>
@@ -177,6 +180,10 @@
             <span class="flex items-center gap-1">
               <span class="material-symbols-outlined text-xs text-emerald-400">undo</span>
               Annulable
+            </span>
+            <span class="flex items-center gap-1">
+              <span class="material-symbols-outlined text-xs text-sky-400">redo</span>
+              Rétablissable
             </span>
             <span class="flex items-center gap-1">
               <span class="material-symbols-outlined text-xs text-red-400/60">block</span>
@@ -239,7 +246,7 @@
         <!-- Entries -->
         <div class="space-y-1.5">
           @for (entry of group.entries; track entry.id) {
-            <div class="flex gap-3" [class.opacity-50]="entry.undone">
+            <div class="flex gap-3" [class.opacity-50]="entry.undone && !entry.redoAction">
 
               <!-- Icon column -->
               <div class="flex flex-col items-center pt-2 flex-shrink-0 w-7">
@@ -260,7 +267,10 @@
                   <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-2 mb-1.5">
                       @if (entry.undone) {
-                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-gray-500/10 border border-gray-500/15 text-gray-500">
+                        <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded-full border"
+                              [ngClass]="entry.redoAction
+                                ? 'bg-gray-500/10 border-gray-500/15 text-gray-500'
+                                : 'bg-gray-500/5 border-gray-500/10 text-gray-400'">
                           Annulé
                         </span>
                       }
@@ -322,13 +332,60 @@
                         }
                       </div>
                     }
+
+                    <!-- Content diff (git-like, line-by-line) -->
+                    @if (hasContentDiff(entry)) {
+                      <div class="mt-2 pt-2 border-t border-light-border dark:border-white/5">
+                        <button (click)="toggleDiff(entry.id)"
+                                class="flex items-center gap-2 text-[11px] text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-colors">
+                          <span class="material-symbols-outlined text-xs">
+                            {{ isDiffExpanded(entry.id) ? 'expand_more' : 'chevron_right' }}
+                          </span>
+                          <span>Diff contenu</span>
+                          <span class="text-emerald-400/70 font-mono">+{{ diffStats(entry).adds }}</span>
+                          <span class="text-red-400/70 font-mono">−{{ diffStats(entry).dels }}</span>
+                        </button>
+                        @if (isDiffExpanded(entry.id)) {
+                          <div class="mt-2 rounded-lg border border-light-border dark:border-white/10 overflow-hidden bg-light-background dark:bg-background font-mono text-[11px] leading-[1.5]">
+                            @for (line of getContentDiff(entry); track $index) {
+                              <div class="flex"
+                                   [ngClass]="{
+                                     'bg-emerald-500/10': line.type === 'add',
+                                     'bg-red-500/10':     line.type === 'del'
+                                   }">
+                                <span class="flex-shrink-0 w-10 px-1.5 text-right text-light-text-muted dark:text-white/25 select-none border-r border-light-border dark:border-white/5">
+                                  {{ line.oldNum > 0 ? line.oldNum : '' }}
+                                </span>
+                                <span class="flex-shrink-0 w-10 px-1.5 text-right text-light-text-muted dark:text-white/25 select-none border-r border-light-border dark:border-white/5">
+                                  {{ line.newNum > 0 ? line.newNum : '' }}
+                                </span>
+                                <span class="flex-shrink-0 w-5 text-center select-none"
+                                      [ngClass]="{
+                                        'text-emerald-400': line.type === 'add',
+                                        'text-red-400':     line.type === 'del',
+                                        'text-light-text-muted dark:text-white/20': line.type === 'same'
+                                      }">
+                                  {{ line.type === 'add' ? '+' : line.type === 'del' ? '−' : ' ' }}
+                                </span>
+                                <span class="flex-1 px-2 whitespace-pre-wrap break-all"
+                                      [ngClass]="{
+                                        'text-emerald-300/90': line.type === 'add',
+                                        'text-red-300/90':     line.type === 'del',
+                                        'text-light-text/80 dark:text-white/60': line.type === 'same'
+                                      }">{{ line.text || ' ' }}</span>
+                              </div>
+                            }
+                          </div>
+                        }
+                      </div>
+                    }
                   </div>
 
-                  <!-- Undo action -->
-                  <div class="flex-shrink-0 pt-0.5">
+                  <!-- Undo / Redo actions -->
+                  <div class="flex-shrink-0 pt-0.5 flex flex-col gap-1.5 items-end">
                     @if (entry.undoable && !entry.undone) {
                       <button (click)="undoAction(entry)"
-                              [disabled]="!!undoing()"
+                              [disabled]="!!undoing() || !!redoing()"
                               class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border border-amber-500/20 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
                         @if (undoing() === entry.id) {
                           <span class="material-symbols-outlined text-xs animate-spin">refresh</span>
@@ -337,7 +394,20 @@
                           Annuler
                         }
                       </button>
-                    } @else if (!entry.undoable && !entry.undone) {
+                    }
+                    @if (entry.undone && entry.redoAction) {
+                      <button (click)="redoAction(entry)"
+                              [disabled]="!!redoing() || !!undoing()"
+                              class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-medium border border-sky-500/20 text-sky-400/60 hover:text-sky-400 hover:border-sky-500/40 hover:bg-sky-500/5 transition-all disabled:opacity-40 disabled:cursor-not-allowed">
+                        @if (redoing() === entry.id) {
+                          <span class="material-symbols-outlined text-xs animate-spin">refresh</span>
+                        } @else {
+                          <span class="material-symbols-outlined text-xs">redo</span>
+                          Rétablir
+                        }
+                      </button>
+                    }
+                    @if (!entry.undoable && !entry.undone) {
                       <span class="text-[10px] text-light-text-muted dark:text-white/15 italic">
                         non réversible
                       </span>

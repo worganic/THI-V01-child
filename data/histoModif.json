@@ -1978,6 +1978,52 @@
       "startedAt": "2026-05-03T16:45:00Z",
       "commitType": "AMELIORATION",
       "features": "frankenstein:projets"
+    },
+    {
+      "id": "mod-082",
+      "version": "THI-0.43",
+      "date": "2026-05-03T21:41:25.756Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Annulation complète pour toutes les actions projets",
+      "description": "Activation du undo pour toutes les actions annulables dans le projet : déplacement drag-drop (undoAction PUT /structure), création de menu (undoAction DELETE /folders/id), création de fichier (undoAction DELETE /files/id), renommage de fichier (undoAction PATCH /files/id). Correction du type TypeScript sur structureBefore dans onDragDrop.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-sidebar/projet-sidebar.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "le système doit enregistré toutes les actions comme cela doit être le cas avec wo-action-history pour pouvoir annulé une action et revenir en arrière. actuellement cela enregistre l'action mais ne permet pas de revenir en arrière, améliore le système pour pouvoir avoir l'option sur tous les actions du projet",
+      "startedAt": "2026-05-03T00:00:00.000Z",
+      "completedAt": "2026-05-03T21:41:25.756Z"
+    },
+    {
+      "id": "mod-083",
+      "version": "THI-0.44",
+      "date": "2026-05-04T09:55:00Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein",
+        "data"
+      ],
+      "features": "frankenstein:projets|wo-action-history,data:base-propagation",
+      "title": "Tracking before/after + diff git-like dans wo-action-history",
+      "description": "Modification dans worganic-base (B0.40) puis propagation vers THI-V01. Le projet-editor capture désormais l'avant/après pour toutes les éditions de contenu (fichier principal contenu.md + fichiers additionnels), les renommages de sections, créations et suppressions de dossiers — chaque save écrit une entrée wo_action_history avec beforeState/afterState et un undoAction permettant de restaurer l'état précédent (sauf delete, non-réversible). Côté wo-action-history : ajout d'un rendu diff ligne-à-ligne style git (gutter old/new line numbers, +/-, vert/rouge) basé sur LCS, avec compteur +N/-N et toggle expand/collapse pour ne pas surcharger la timeline. La section 'projets' est ajoutée à la liste trackedTools. Synchronisé immédiatement vers le child : les 3 fichiers Angular sont copiés depuis base, base-propagation.json mis à jour avec entrée B0.40, version base bumpée à B0.40.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.ts",
+        "frankenstein/src/app/pages/user/wo-action-history/wo-action-history.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "dans le menu projet lors de la modification de contenue cela doit enregistré ce qu'il y avait avant et ce qu'il y après et dans l'affichage wo-action-history cela doit afficher l'avant et l'après comme un système git comme par exemple sur cette image. Si des modification doivent être faite sur wo-action-history, cela doit être fait sur le système de base et ce sera répercuté sur les child",
+      "startedAt": "2026-05-04T09:44:34Z",
+      "completedAt": "2026-05-04T09:55:00Z"
     }
   ]
 }
