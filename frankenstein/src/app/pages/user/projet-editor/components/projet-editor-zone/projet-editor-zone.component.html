@@ -32,23 +32,23 @@
               (click)="setMode('visu')">Visu</button>
     </div>
 
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Gras" (click)="applyFormat('**', '**')"><strong>B</strong></button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Italique" (click)="applyFormat('*', '*')"><em>I</em></button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Barré" (click)="applyFormat('~~', '~~')"><s>S</s></button>
+    <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 1" (click)="applyFormat('\n# ', '')">H1</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 2" (click)="applyFormat('\n## ', '')">H2</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 3" (click)="applyFormat('\n### ', '')">H3</button>
+    <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
+    <button type="button" class="px-2.5 py-1 rounded text-xs text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Liste" (click)="applyFormat('- ')">&#8226; Liste</button>
+    <button type="button" class="px-2.5 py-1 rounded text-xs font-mono text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Code" (click)="applyFormat('`', '`')">&lt;/&gt;</button>
+    <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
     @if (mode === 'edit') {
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Gras" (click)="insertAt('**', '**')"><strong>B</strong></button>
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Italique" (click)="insertAt('*', '*')"><em>I</em></button>
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Barré" (click)="insertAt('~~', '~~')"><s>S</s></button>
-      <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 1" (click)="insertAt('\n# ', '')">H1</button>
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 2" (click)="insertAt('\n## ', '')">H2</button>
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-bold text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Titre 3" (click)="insertAt('\n### ', '')">H3</button>
-      <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
-      <button type="button" class="px-2.5 py-1 rounded text-xs text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Liste" (click)="insertAt('- ')">&#8226; Liste</button>
-      <button type="button" class="px-2.5 py-1 rounded text-xs font-mono text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10" title="Code" (click)="insertAt('`', '`')">&lt;/&gt;</button>
-      <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
       <button type="button" class="px-2.5 py-1 rounded text-xs text-light-text dark:text-white/70 hover:bg-light-surface-hover dark:hover:bg-white/5 transition-all border border-transparent hover:border-light-border dark:hover:border-white/10 flex items-center gap-1" title="Insérer une image au curseur (max 1 Mo)" (click)="triggerImageUpload()">
         <span class="material-symbols-outlined text-sm leading-none">image</span>
       </button>
-      <input #imageInput type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,image/bmp" class="hidden" (change)="onImageFileSelected($event)">
     }
+    <input #imageInput type="file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp,image/svg+xml,image/bmp" class="hidden" (change)="onImageFileSelected($event)">
 
     <div class="flex-1"></div>
 
@@ -230,12 +230,24 @@
       </div>
     }
 
-    <!-- Mode Visu : markdown rendu -->
+    <!-- Mode Visu : markdown rendu + édition directe -->
     @if (mode === 'visu') {
-      <div #visu
-           class="visu-wrap flex-1 min-h-0 overflow-y-auto px-8 py-6"
-           (click)="onVisuClick($event)"
-           [innerHTML]="renderedHtml"></div>
+      <div class="visu-wrap flex-1 min-h-0 overflow-y-auto flex flex-col">
+        <div #visu
+             class="px-8 py-6 outline-none flex-1"
+             contenteditable="true"
+             spellcheck="false"
+             (input)="onVisuInput($event)"
+             (click)="onVisuClick($event)"></div>
+        <div class="px-8 py-3 flex-shrink-0 border-t border-light-border dark:border-white/10">
+          <button type="button"
+                  class="flex items-center gap-1.5 text-xs text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-colors"
+                  (click)="addVisuSection()">
+            <span class="material-symbols-outlined text-sm">add_circle</span>
+            Ajouter une section
+          </button>
+        </div>
+      </div>
     }
 
   }
