@@ -17,6 +17,7 @@ export interface AdditionalFile {
   name: string;
   content: string;
   fileId: string | null;
+  orderedChildIds?: string[];
 }
 
 export interface SectionInfo {
@@ -28,6 +29,7 @@ export interface SectionInfo {
   fileId: string | null;
   content: string;
   additionalFiles: AdditionalFile[];
+  orderedFileIds: string[];
 }
 
 interface DocSection {
@@ -193,8 +195,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private dragUpListener: ((e: MouseEvent) => void) | null = null;
   private dragAutoScrollRaf: number | null = null;
   private dragLastClientY = 0;
-  private currentDropTarget: { handle: DragHandle; position: 'before' | 'after' | 'inside' } | null = null;
-  private suppressScrollOnNextActiveChange = false;
+  private currentDropTarget: { handle?: DragHandle; targetLine?: number; position: 'before' | 'after' | 'inside' } | null = null;
+  suppressScrollOnNextActiveChange = false;
 
   constructor(private svc: ProjectFilesService) {}
 
@@ -264,10 +266,6 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
     if (changes['activeNodeId']) {
       this.recomputeHighlights();
-      if (this.activeNodeId && !this.suppressScrollOnNextActiveChange) {
-        setTimeout(() => this.scrollToActive(), 50);
-      }
-      this.suppressScrollOnNextActiveChange = false;
     }
 
     if (changes['scrollToNodeId'] && this.scrollToNodeId) {
@@ -283,19 +281,46 @@ export class ProjetEditorZoneComponent implements OnChanges {
       if (node.type !== 'folder') continue;
       const level = Math.min(depth, 4);
       const heading = '#'.repeat(level) + ' ' + node.name;
-      const nodeChildren = node.children || [];
+      const nodeChildren = [...(node.children || [])].sort((a, b) => (a.order || 0) - (b.order || 0));
+
       const mainFile = nodeChildren.find(c => c.type === 'file' && c.name === 'contenu.md')
                     || nodeChildren.find(c => c.type === 'file' && !this.isImageFile(c.name));
-      const mainContent = mainFile?.content ?? '';
-      const images = nodeChildren.filter(c => c.type === 'file' && this.isImageFile(c.name));
-      const additionalFiles = nodeChildren.filter(c => c.type === 'file' && c !== mainFile && !this.isImageFile(c.name));
+
+      // 1. Identifier toutes les images déjà référencées dans les documents additionnels (pour ne pas les remettre en doublon)
+      //    Les images qui ne sont pas dans les documents additionnels doivent être sorties en tant que "standalone" selon leur ordre.
+      const imageIdsInAdditionalDocs = new Set<string>();
+      for (const child of nodeChildren) {
+        if (child.type === 'file' && child !== mainFile && child.content) {
+          const matches = child.content.matchAll(/\{\{IMG:([a-z0-9-]+)\}\}/gi);
+          for (const m of matches) {
+            imageIdsInAdditionalDocs.add(m[1]);
+          }
+        }
+      }
 
       let textContent = heading + '\n';
-      if (mainContent.trim()) textContent += mainContent.trimEnd() + '\n';
-      if (additionalFiles.length > 0) {
-        const blocks = additionalFiles.map(c => `'${c.name.replace(/\.md$/, '')}\n${c.content || ''}\n'`).join('\n\n');
-        textContent += '\n' + blocks + '\n';
+      const images: FileNode[] = [];
+
+      // 2. Parcourir les enfants dans l'ordre de leur propriété 'order'
+      for (const child of nodeChildren) {
+        if (child.type !== 'file') continue;
+
+        if (this.isImageFile(child.name)) {
+          images.push(child);
+          // On insère l'image comme un bloc autonome UNIQUEMENT si elle n'est pas "capturée" à l'intérieur d'un document additionnel.
+          if (!imageIdsInAdditionalDocs.has(child.id)) {
+            textContent += `\n{{IMG:${child.id}}}\n`;
+          }
+        } else if (child === mainFile) {
+          if (child.content?.trim()) {
+            textContent += child.content.trimEnd() + '\n';
+          }
+        } else {
+          // Document additionnel
+          textContent += `\n'${child.name.replace(/\.md$/, '')}\n${child.content || ''}\n'\n`;
+        }
       }
+
       textContent = textContent.trimEnd();
 
       result.push({
@@ -976,12 +1001,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
       const current = matches[i];
       const contentEnd = i + 1 < matches.length ? matches[i + 1].index : text.length;
       let rawContent = text.substring(current.contentStart, contentEnd).trimEnd();
-      const additionalFiles: AdditionalFile[] = [];
-      const blockRegex = /^(['`^])([^\n]+)(?:\n([\s\S]*?))?\n?\1/gm;
-      const mainContent = rawContent.replace(blockRegex, (_match, _delimiter, title, content) => {
-        additionalFiles.push({ name: (title as string).trim(), content: ((content as string) || '').trimEnd(), fileId: null });
-        return '';
-      }).trim();
+      
       const parentPath: string[] = [];
       let targetLevel = current.level - 1;
       for (let k = i - 1; k >= 0 && targetLevel > 0; k--) {
@@ -992,14 +1012,73 @@ export class ProjetEditorZoneComponent implements OnChanges {
       const info = folderMap.get(fullPath);
       const parentInfo = parentKey ? folderMap.get(parentKey) : null;
       const mainFile = info?.files.find(f => f.name === 'contenu.md') || info?.files.find(f => !this.isImageFile(f.name));
-      additionalFiles.forEach(af => {
+
+      const additionalFiles: AdditionalFile[] = [];
+      const elements: { id: string; index: number }[] = [];
+      const nestedImageIds = new Set<string>();
+      
+      const blockRegex = /^(['`^])([^\n]+)(?:\n([\s\S]*?))?\n?\1/gm;
+      
+      // On remplace les blocs par des espaces pour conserver les offsets des images autonomes
+      let spacedContent = rawContent.replace(blockRegex, (match, _delimiter, title, content, offset) => {
+        const afName = (title as string).trim();
+        const afContent = (content as string) || '';
+        const af: AdditionalFile = { name: afName, content: afContent.trimEnd(), fileId: null, orderedChildIds: [] };
+        
+        const imgRegex = /\{\{IMG:([a-zA-Z0-9._-]+)\}\}/gi;
+        let imM;
+        while ((imM = imgRegex.exec(afContent)) !== null) {
+           af.orderedChildIds!.push(imM[1]);
+           nestedImageIds.add(imM[1]);
+        }
+
         const found = info?.files.find(f => this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(af.name));
-        if (found) af.fileId = found.id;
+        if (found) {
+          af.fileId = found.id;
+          elements.push({ id: found.id, index: offset });
+        }
+        additionalFiles.push(af);
+        return ' '.repeat(match.length);
       });
+
+      // Extraire les images autonomes
+      const imageRegex = /\{\{IMG:([a-zA-Z0-9._-]+)\}\}/gi;
+      let imgM: RegExpExecArray | null;
+      while ((imgM = imageRegex.exec(spacedContent)) !== null) {
+        if (!nestedImageIds.has(imgM[1])) {
+          elements.push({ id: imgM[1], index: imgM.index });
+        }
+      }
+
+      // Le contenu principal est le rawContent sans les blocs ni les images autonomes
+      // On utilise deux regex séparées car remplace avec string nécessite une passe après l'autre
+      let mainContent = rawContent.replace(blockRegex, '');
+      mainContent = mainContent.replace(imageRegex, (match, id) => nestedImageIds.has(id) ? match : '').trim();
+
+      // Déterminer la position du mainFile (contenu.md)
+      if (mainFile) {
+        let mainFileIndex = -1;
+        if (mainContent) {
+          const firstNonSpace = /\S/.exec(mainContent);
+          if (firstNonSpace) {
+            mainFileIndex = rawContent.indexOf(mainContent.substring(firstNonSpace.index, firstNonSpace.index + 10));
+          }
+        }
+        elements.push({ id: mainFile.id, index: mainFileIndex });
+      }
+
+      elements.sort((a, b) => a.index - b.index);
+      
+      const orderedFileIds: string[] = [];
+      elements.forEach(e => {
+        if (!orderedFileIds.includes(e.id)) orderedFileIds.push(e.id);
+      });
+
       sections.push({
         level: current.level, folderName: current.name, parentPath,
         folderId: info?.folder.id ?? null, parentFolderId: parentInfo?.folder.id ?? null,
-        fileId: mainFile?.id ?? null, content: mainContent, additionalFiles
+        fileId: mainFile?.id ?? null, content: mainContent, additionalFiles,
+        orderedFileIds
       });
     }
     return sections;
@@ -1413,6 +1492,16 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const rect = mirrorEl.getBoundingClientRect();
     const contentY = clientY - rect.top + mirrorEl.scrollTop;
 
+    if (this.draggingHandle.kind === 'image') {
+      const lines = this.unifiedContent.split('\n');
+      let targetLine = Math.floor((contentY - this.PADDING_TOP_PX) / this.LINE_HEIGHT_PX);
+      targetLine = Math.max(0, Math.min(targetLine, lines.length));
+      
+      this.currentDropTarget = { targetLine, position: 'before' };
+      this.dropIndicator = { top: this.PADDING_TOP_PX + targetLine * this.LINE_HEIGHT_PX - 1, height: 2, position: 'before' };
+      return;
+    }
+
     const draggedNode = this.findNode(this.draggingHandle.id, this.files);
     const isDragFolder = this.draggingHandle.kind === 'folder';
 
@@ -1507,13 +1596,16 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const target = this.currentDropTarget;
     this.cleanupDrag();
     if (!dragged || !target) return;
-    if (dragged.id === target.handle.id) return;
 
     // Images: déplacer le marqueur {{IMG:id}} dans le contenu (pas le fichier physique)
     if (dragged.kind === 'image') {
-      this.moveImageMarker(dragged.lineStart, target.handle.lineStart, target.position);
+      if (target.targetLine !== undefined) {
+        this.moveImageMarkerToLine(dragged.lineStart, target.targetLine);
+      }
       return;
     }
+
+    if (!target.handle || dragged.id === target.handle.id) return;
 
     const draggedNode = this.findNode(dragged.id, this.files);
     const targetNode = this.findNode(target.handle.id, this.files);
@@ -1534,15 +1626,18 @@ export class ProjetEditorZoneComponent implements OnChanges {
     });
   }
 
-  private moveImageMarker(srcLine: number, targetLine: number, position: 'before' | 'after' | 'inside') {
+  private moveImageMarkerToLine(srcLine: number, targetLine: number) {
     const lines = this.unifiedContent.split('\n');
     if (srcLine < 0 || srcLine >= lines.length) return;
     const marker = lines[srcLine];
-    if (!/^\{\{IMG:[a-z0-9-]+\}\}/i.test(marker.trim())) return;
+    if (!/^\{\{IMG:[a-zA-Z0-9._-]+\}\}/i.test(marker.trim())) return;
 
     lines.splice(srcLine, 1);
-    const adjusted = targetLine > srcLine ? targetLine - 1 : targetLine;
-    const insertAt = Math.max(0, Math.min(position === 'before' ? adjusted : adjusted + 1, lines.length));
+    
+    let insertAt = targetLine;
+    if (targetLine > srcLine) insertAt = targetLine - 1;
+    
+    insertAt = Math.max(0, Math.min(insertAt, lines.length));
     lines.splice(insertAt, 0, marker);
 
     this.unifiedContent = lines.join('\n');

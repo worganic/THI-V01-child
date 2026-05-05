@@ -2465,6 +2465,64 @@
       "prompt": "Dans la zone 4 sur certaine section comme par exemple le document \"Doc 1aaa\" lorsque je clique sur le bouton \"Non sauvegardé\" l'action dans historique qui était grisé, disparait. L'action de modification ne s'affiche pas (elle n'a pas l'air de s'enregistré) zone 5b. wo-action-history.service.ts:64 POST http://localhost:3001/api/wo-action-history 500 (Internal Server Error)",
       "startedAt": "2026-05-05T09:40:00.000Z",
       "completedAt": "2026-05-05T09:45:00.000Z"
+    },
+    {
+      "id": "mod-103",
+      "version": "THI-0.61",
+      "date": "2026-05-05T10:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Projet editor : suppression du scroll au clic sidebar",
+      "description": "Cliquer sur une section dans la sidebar ne doit pas déplacer le scroll de la zone d'édition. Suppression du scrollToNodeId dans onNodeSelect et ajout de suppressScrollOnNextActiveChange avant la mise à jour de activeNodeId.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le menu projets/ dans la zone Edition, si je clique sur une section, il ne doit pas y avoir de scroll qui deplace le contenue du document dans la zone",
+      "startedAt": "2026-05-05T09:55:00.000Z",
+      "completedAt": "2026-05-05T10:00:00.000Z"
+    },
+    {
+      "id": "mod-104",
+      "version": "THI-0.61",
+      "date": "2026-05-05T10:10:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Projet editor : restauration scroll zone 3, conservation no-scroll zone 4",
+      "description": "Le fix précédent avait supprimé le scroll pour les deux zones (3 et 4). Revert de onNodeSelect pour restaurer le scroll au clic dans la sidebar (zone 3). Le no-scroll zone 4 (textarea) était déjà garanti via suppressScrollOnNextActiveChange dans onTextareaCursor.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "le scroll est desactivé lorsque je clique dans la zone d'edition mais elle à aussi été désactivé lorsqu'on clique sur le menu fichier zone 3 et il faut quelle soi activé, lorsqu'on clique sur un menu ou un document dans le menu fichier il faut scroller vers cette section",
+      "startedAt": "2026-05-05T10:05:00.000Z",
+      "completedAt": "2026-05-05T10:10:00.000Z"
+    },
+    {
+      "id": "mod-105",
+      "version": "THI-0.61",
+      "date": "2026-05-05T10:20:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Projet editor : scroll uniquement depuis zone 3, jamais depuis zone 4",
+      "description": "Suppression du scrollToActive() déclenché par le changement de activeNodeId. Le scroll n'est plus jamais déclenché par des actions dans la zone d'édition (zone 4). Seul scrollToNodeId (set par onNodeSelect depuis le menu fichier zone 3) provoque le scroll de l'éditeur. activeNodeId gère uniquement le highlight.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "si je clique dans une section dans la zone selection 4a et que je clique sur une image dans une autre section, la zone d'edition scroll vers la section selectionné avant l'image, il ne faut pas de scroll lorsque je clique dans une section de la partie edition, le scroll ne fonctionne que lorsqu'on clique dans le menu de fichier*",
+      "startedAt": "2026-05-05T10:15:00.000Z",
+      "completedAt": "2026-05-05T10:20:00.000Z"
     }
   ]
 }
