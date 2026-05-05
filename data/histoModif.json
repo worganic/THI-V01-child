@@ -2523,6 +2523,26 @@
       "prompt": "si je clique dans une section dans la zone selection 4a et que je clique sur une image dans une autre section, la zone d'edition scroll vers la section selectionné avant l'image, il ne faut pas de scroll lorsque je clique dans une section de la partie edition, le scroll ne fonctionne que lorsqu'on clique dans le menu de fichier*",
       "startedAt": "2026-05-05T10:15:00.000Z",
       "completedAt": "2026-05-05T10:20:00.000Z"
+    },
+    {
+      "id": "mod-108",
+      "version": "THI-0.63",
+      "date": "2026-05-05T12:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Fix critique : bloc réordonnancement onSectionsChange corrupteur",
+      "description": "Le bloc ajouté en THI-0.61 dans onSectionsChange reconstruisait folder.children uniquement depuis orderedFileIds (fichiers texte seulement), excluant images standalone et sous-dossiers non listés. Sur chaque save, des noeuds disparaissaient du serveur (corruption). Suppression du bloc entier + ChangeDetectorRef inutile. Restauration du comportement stable de THI-0.60.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "version.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "la nouvelle version ne fonctionne pas reviens à la version précédente / le mode edition ne fonctionne plus corectement verifi avec les anciennes version pour voir ce qui à causé le soucis.",
+      "startedAt": "2026-05-05T11:45:00.000Z",
+      "completedAt": "2026-05-05T12:00:00.000Z"
     }
   ]
 }

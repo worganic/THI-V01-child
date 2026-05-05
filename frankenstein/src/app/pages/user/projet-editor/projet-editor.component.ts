@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProjectService, Project } from '../../../core/services/project.service';
@@ -136,8 +136,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     private projectFilesService: ProjectFilesService,
     private configService: ConfigService,
     private layoutService: LayoutService,
-    public auth: AuthService,
-    private cdr: ChangeDetectorRef
+    public auth: AuthService
   ) {}
 
   async ngOnInit() {
@@ -712,93 +711,18 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
         await this.loadFiles().catch(() => {});
       }
 
-      // 7. Mettre à jour l'ordre et la hiérarchie des fichiers basés sur la structure du texte
-      let orderUpdated = false;
-      const finalStructure: FileNode[] = JSON.parse(JSON.stringify(this.files()));
-      
-      // On regroupe d'abord tous les FileNode dans un dictionnaire pour faciliter leur déplacement
-      const nodeDict = new Map<string, FileNode>();
-      const flattenNodes = (nodes: FileNode[]) => {
-        for (const n of nodes) {
-          nodeDict.set(n.id, n);
-          if (n.children) flattenNodes(n.children);
-        }
-      };
-      flattenNodes(finalStructure);
-
-      for (const s of resolved) {
-        if (s.folderId) {
-          const folder = this.findFolderById(s.folderId, finalStructure);
-          if (folder) {
-            folder.children = folder.children || [];
-            
-            // 1. Déplacer les images nested dans leurs fichiers parents respectifs
-            for (const af of s.additionalFiles) {
-              if (af.fileId && af.orderedChildIds) {
-                const afNode = nodeDict.get(af.fileId);
-                if (afNode) {
-                  afNode.children = afNode.children || [];
-                  const childIds = [...afNode.children].map(c => c.id);
-                  const newChildIds = [...af.orderedChildIds];
-                  
-                  if (JSON.stringify(childIds) !== JSON.stringify(newChildIds)) {
-                    afNode.children = newChildIds.map(id => nodeDict.get(id)!).filter(n => !!n);
-                    orderUpdated = true;
-                  }
-                }
-              }
-            }
-
-            // 2. Réordonner les enfants du dossier (fichiers autonomes et sous-dossiers)
-            const newAutonomeIds = s.orderedFileIds || [];
-            const subfolderIdsInOrder = resolved
-              .filter(rs => rs.parentFolderId === s.folderId && rs.folderId)
-              .map(rs => rs.folderId!);
-            
-            const currentChildrenIds = folder.children.map(c => c.id);
-            const targetChildrenIds = [...newAutonomeIds, ...subfolderIdsInOrder];
-            
-            if (JSON.stringify(currentChildrenIds) !== JSON.stringify(targetChildrenIds)) {
-              folder.children = targetChildrenIds
-                .map(id => nodeDict.get(id)!)
-                .filter(n => !!n);
-              orderUpdated = true;
-            }
-          }
-        }
-      }
-      
-      if (orderUpdated) {
-        // Enlève les noeuds de leur ancien parent pour éviter les doublons dans l'arbre (cleanStructure du backend s'en occupe en partie mais c'est mieux de le faire ici)
-        // En fait la construction d'arbre que nous avons faite via réassignation n'élimine pas les originaux s'ils étaient ailleurs,
-        // MAIS comme ces noeuds n'étaient que des images dans le MEME dossier, ils sont juste retirés par la ligne `folder.children = ...` ci-dessus.
-        await this.projectFilesService.updateStructure(this.projectFolderName, finalStructure);
-        await this.loadFiles();
-      }
-
       if (!hasError) {
         this.saveStatus.set('saved');
         this.collab.clearAllPending();
-        this.savedStatusTimer = setTimeout(() => {
-          this.saveStatus.set('idle');
-          this.cdr.detectChanges();
-        }, 2000);
+        this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 2000);
       } else {
         this.saveStatus.set('error');
-        this.savedStatusTimer = setTimeout(() => {
-          this.saveStatus.set('idle');
-          this.cdr.detectChanges();
-        }, 3000);
+        this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 3000);
       }
-      this.cdr.detectChanges();
     } catch (e) {
       console.error('onSectionsChange error:', e);
       this.saveStatus.set('error');
-      this.savedStatusTimer = setTimeout(() => {
-        this.saveStatus.set('idle');
-        this.cdr.detectChanges();
-      }, 3000);
-      this.cdr.detectChanges();
+      this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 3000);
     }
   }
 
