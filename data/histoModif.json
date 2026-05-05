@@ -2448,6 +2448,23 @@
       "prompt": "Cela ne fonctionne pas\nDans la zone 4, lorsque je lance une modification de texte, le bouton Sauvegarde deviens \"Non sauvegardé\" et dans l'historique on à l'information de l'action en cours (grisé) mais lorsque je désélectionne la section, le bouton reste un certain temps en \"Non sauvegardé\", il faudrait qu'il passe \"En cours de sauvegarde\" avant de passé ensuite à \"Sauvegardé\". Cela doit faire un peu la même chose pour la zone historique, en grisé lorsque la modification est en cours (section selectionné), cela doit clignoté lorsqu'on désélectionne la zone tans que cela n'est pas sauvegardé et s'affiché normalement lorsque l'action de modification est bien sauvegardé.\n- Actuellement la zone modifié ne s'affiche pas en version final dans l'historique zone 5b. \n- Ajoute l'option de pouvoir appuyé sur le bouton \"Non sauvegardé\", pour lancer l'enregistrement de la modification",
       "startedAt": "2026-05-05T09:15:00.000Z",
       "completedAt": "2026-05-05T09:30:00.000Z"
+    },
+    {
+      "id": "mod-102",
+      "version": "THI-0.60",
+      "date": "2026-05-05T09:45:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["server"],
+      "features": "system:workflow",
+      "title": "wo_action_history : fix génération d'ID dupliqué",
+      "description": "Le calcul de l'ID utilisait COUNT(*)+1 ce qui génère un doublon dès qu'un enregistrement est supprimé (count=69, maxId=wah-070 → conflit). Remplacé par MAX(CAST(SUBSTRING(id,5) AS UNSIGNED))+1 qui extrait le numéro max réel de la table, garantissant un ID unique même après suppressions.",
+      "files": ["server/server-data.js"],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Dans la zone 4 sur certaine section comme par exemple le document \"Doc 1aaa\" lorsque je clique sur le bouton \"Non sauvegardé\" l'action dans historique qui était grisé, disparait. L'action de modification ne s'affiche pas (elle n'a pas l'air de s'enregistré) zone 5b. wo-action-history.service.ts:64 POST http://localhost:3001/api/wo-action-history 500 (Internal Server Error)",
+      "startedAt": "2026-05-05T09:40:00.000Z",
+      "completedAt": "2026-05-05T09:45:00.000Z"
     }
   ]
 }

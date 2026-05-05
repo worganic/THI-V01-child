@@ -5192,8 +5192,8 @@ app.post('/api/wo-action-history', async (req, res) => {
         return res.status(400).json({ error: 'section, actionType et label sont requis' });
     }
     try {
-        const [countRows] = await pool.query('SELECT COUNT(*) AS cnt FROM wo_action_history');
-        const nextNum = (Number(countRows[0].cnt) + 1).toString().padStart(3, '0');
+        const [maxRows] = await pool.query('SELECT MAX(CAST(SUBSTRING(id, 5) AS UNSIGNED)) AS maxNum FROM wo_action_history');
+        const nextNum = ((maxRows[0].maxNum || 0) + 1).toString().padStart(3, '0');
         const id = `wah-${nextNum}`;
         const now = new Date();
 
@@ -5352,6 +5352,39 @@ app.get('/api/collab/:projetId/history', async (req, res) => {
         })));
     } catch (e) {
         console.error('[COLLAB] history error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// DELETE /api/collab/:projetId/history — efface l'historique scopé à un projet/entités
+//   query: entityIds (CSV, optionnel) — restreint aux entités sélectionnées
+//          scope = 'mine' | 'all' — 'all' réservé aux admins, sinon forcé à 'mine'
+app.delete('/api/collab/:projetId/history', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { projetId } = req.params;
+    const requestedScope = (req.query.scope || 'mine').toString();
+    const scope = (requestedScope === 'all' && user.role === 'admin') ? 'all' : 'mine';
+    const entityIdsRaw = (req.query.entityIds || '').toString().trim();
+    const entityIds = entityIdsRaw ? entityIdsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+    try {
+        const params = [projetId];
+        let sql = `DELETE FROM wo_action_history
+                   WHERE section LIKE 'projets/%'
+                     AND JSON_UNQUOTE(JSON_EXTRACT(context, '$.projectId')) = ?`;
+        if (entityIds.length > 0) {
+            sql += ` AND entity_id IN (${entityIds.map(() => '?').join(',')})`;
+            params.push(...entityIds);
+        }
+        if (scope === 'mine') {
+            sql += ' AND user_id = ?';
+            params.push(user.id);
+        }
+        const [result] = await pool.query(sql, params);
+        console.log(`[COLLAB] history cleared: projet=${projetId} scope=${scope} user=${user.username} affected=${result.affectedRows}`);
+        res.json({ success: true, deleted: result.affectedRows });
+    } catch (e) {
+        console.error('[COLLAB] clear history error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
