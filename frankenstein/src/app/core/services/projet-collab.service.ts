@@ -30,12 +30,20 @@ export interface CollabHistoryEntry {
   afterState?: { content?: string } | null;
 }
 
+export interface PendingHistoryEntry {
+  entityId: string;
+  label: string;
+  username: string;
+  timestamp: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProjetCollabService {
   private http = inject(HttpClient);
   private auth = inject(AuthService);
 
   readonly history = signal<CollabHistoryEntry[]>([]);
+  readonly pending = signal<PendingHistoryEntry[]>([]);
   readonly locks = signal<Map<string, LockInfo>>(new Map());
   readonly connected = signal(false);
 
@@ -57,7 +65,24 @@ export class ProjetCollabService {
     this.currentProjetId = null;
     this.connected.set(false);
     this.history.set([]);
+    this.pending.set([]);
     this.locks.set(new Map());
+  }
+
+  upsertPending(entry: PendingHistoryEntry): void {
+    this.pending.update(list => {
+      const idx = list.findIndex(e => e.entityId === entry.entityId);
+      if (idx >= 0) {
+        const next = list.slice();
+        next[idx] = { ...next[idx], timestamp: entry.timestamp, label: entry.label };
+        return next;
+      }
+      return [entry, ...list];
+    });
+  }
+
+  clearPending(entityId: string): void {
+    this.pending.update(list => list.filter(e => e.entityId !== entityId));
   }
 
   async loadHistory(projetId: string): Promise<void> {
@@ -95,6 +120,7 @@ export class ProjetCollabService {
       this.eventSource.addEventListener('history', (e: MessageEvent) => {
         const entry: CollabHistoryEntry = JSON.parse(e.data);
         this.history.update(list => [entry, ...list.slice(0, 199)]);
+        if (entry.entityId) this.clearPending(entry.entityId);
       });
 
       this.eventSource.addEventListener('lock', (e: MessageEvent) => {

@@ -5,6 +5,8 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '../../../../../core/services/wo-action-history.service';
+import { ProjetCollabService } from '../../../../../core/services/projet-collab.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -104,7 +106,7 @@ interface DropIndicator {
 export class ProjetEditorZoneComponent implements OnChanges {
   @Input() files: FileNode[] = [];
   @Input() scrollToNodeId: string | null = null;
-  @Input() saveStatus: 'idle' | 'saving' | 'saved' | 'error' = 'idle';
+  @Input() saveStatus: 'idle' | 'dirty' | 'saving' | 'saved' | 'error' = 'idle';
   @Input() projectName = '';
   @Input() activeNodeId: string | null = null;
 
@@ -113,6 +115,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
+  @Output() dirtyChange = new EventEmitter<boolean>();
+  private localDirty = false;
 
   @ViewChild('imageInput') imageInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('textarea') textareaRef?: ElementRef<HTMLTextAreaElement>;
@@ -124,6 +128,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
   private woHistory = inject(WoActionHistoryService);
+  private collab = inject(ProjetCollabService);
+  private authSvc = inject(AuthService);
 
   // Mode (toggle Edition / Visu)
   mode: 'edit' | 'visu' = 'edit';
@@ -662,8 +668,22 @@ export class ProjetEditorZoneComponent implements OnChanges {
     this.recomputeMirrorLines();
     this.recomputeHandles();
     this.scheduleSave();
+    if (!this.localDirty) {
+      this.localDirty = true;
+      this.dirtyChange.emit(true);
+    }
     const entity = this.getCursorEntity();
-    if (entity) this.modifiedEntities.set(entity.id, entity.folderId);
+    if (entity) {
+      this.modifiedEntities.set(entity.id, entity.folderId);
+      // Affichage live grisé dans le panneau historique tant que le save n'est pas fait
+      const node = this.findNode(entity.id, this.files);
+      this.collab.upsertPending({
+        entityId: entity.id,
+        label: `Modification de texte — «${node?.name || entity.id}»`,
+        username: this.authSvc.currentUser()?.username || 'Vous',
+        timestamp: new Date().toISOString()
+      });
+    }
   }
 
   onTextareaScroll(event: Event) {
@@ -891,9 +911,17 @@ export class ProjetEditorZoneComponent implements OnChanges {
     if (this.unifiedContent === this.lastSavedContent) {
       // Pas de changement de contenu, mais on flush pour que l'historique remonte sans attendre le blur
       this.flushContentModifications();
+      if (this.localDirty) {
+        this.localDirty = false;
+        this.dirtyChange.emit(false);
+      }
       return;
     }
     this.lastSavedContent = this.unifiedContent;
+    if (this.localDirty) {
+      this.localDirty = false;
+      this.dirtyChange.emit(false);
+    }
 
     let contentToParse: string;
     if (this.focusedHandle) {

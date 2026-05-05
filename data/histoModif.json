@@ -2288,6 +2288,55 @@
       "prompt": "lorsqu'on modifi une section dossier, document ou image, l'enregistrement ne doit ce faire que lorsqu'on clique en dehors de la zone ou si on ne fait rien sur la page plus de 10 secondes. Affiche le titre du document, du dossier ou de l'image dans la zone 5b en dessous des onglets",
       "startedAt": "2026-05-04T23:00:00.000Z",
       "completedAt": "2026-05-04T22:51:12.697Z"
+    },
+    {
+      "id": "mod-095",
+      "version": "THI-0.56",
+      "date": "2026-05-04T23:01:16.082Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Historique : entrée pending grisée live pendant la frappe",
+      "description": "Affichage immédiat dans la zone 5b historique d'une entrée \"en cours\" (opacité 40%, icône progress_activity animée, badge \"en cours\" gris) dès qu'une modification est tapée dans une section/document/image, sans attendre l'auto-save 10s. Nouveau signal pending dans ProjetCollabService avec upsertPending/clearPending. L'editor zone appelle upsertPending dans onTextareaInput. Quand le save fire et que le serveur diffuse l'entrée réelle via SSE, le handler history clearPending automatiquement (matching par entityId). L'entrée pending devient non-cliquable (pas de diff). DisplayHistoryEntry étend CollabHistoryEntry avec un flag isPending.",
+      "files": [
+        "frankenstein/src/app/core/services/projet-collab.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "si une modification à lieu dans une section, cela doit être indiqué directement dans la zone 5b historique et ce mettre à jour petit à petit en live mais grisé tans que celle ci n'a pas encore été enregistré automatiquement.",
+      "startedAt": "2026-05-04T23:30:00.000Z",
+      "completedAt": "2026-05-04T23:01:16.082Z"
+    },
+    {
+      "id": "mod-096",
+      "version": "THI-0.57",
+      "date": "2026-05-04T23:06:44.867Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Bouton Sauvegardé : 4 états visuels (gris/jaune/vert/rouge)",
+      "description": "Le bouton de la toolbar reflète désormais l'état de save en temps réel : gris/edit \"Non sauvegardé\" pendant la frappe, jaune/progress_activity animé \"Sauvegarde…\" pendant le save serveur, vert/check_circle \"Sauvegardé\" après save réussi, rouge/error en cas d'erreur. Nouveau type ToolbarSaveStatus avec 5 valeurs (idle/dirty/saving/saved/error). Editor zone émet un dirtyChange(true) au premier input et dirtyChange(false) dans saveAll. Le parent met saveStatus à dirty si idle/saved.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-toolbar/projet-toolbar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-toolbar/projet-toolbar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "idem le bouton Sauvegardé doit être affiché en gris des que l'utilisateur commence à modifié une section et en vert lors de l'enregistrement",
+      "startedAt": "2026-05-04T23:50:00.000Z",
+      "completedAt": "2026-05-04T23:06:44.867Z"
     }
   ]
 }

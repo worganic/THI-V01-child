@@ -9,7 +9,7 @@
 
     <app-projet-toolbar
       [projectTitle]="projectTitle"
-      [isDirty]="saveStatus() === 'saving'"
+      [saveStatus]="saveStatus()"
       (save)="onRefresh()" />
 
     <div class="flex flex-1 overflow-hidden pb-[72px]">
@@ -36,6 +36,7 @@
           (sectionsChange)="onSectionsChange($event)"
           (nodeActive)="onNodeActive($event)"
           (dragDrop)="onDragDrop($event)"
+          (dirtyChange)="onDirtyChange($event)"
           (refresh)="onRefresh()" />
       } @else {
         <app-projet-diff

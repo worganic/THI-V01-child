@@ -2,9 +2,13 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, injec
 import { CommonModule } from '@angular/common';
 import { ProjetCollabService, CollabHistoryEntry } from '../../../../../core/services/projet-collab.service';
 
+export interface DisplayHistoryEntry extends CollabHistoryEntry {
+  isPending?: boolean;
+}
+
 interface HistoryGroup {
   date: string;
-  entries: CollabHistoryEntry[];
+  entries: DisplayHistoryEntry[];
 }
 
 @Component({
@@ -26,9 +30,26 @@ export class ProjetHistoryComponent implements OnChanges {
 
   readonly groups = computed<HistoryGroup[]>(() => {
     const ids = this._activeIds();
-    let entries = this.collab.history();
+    const saved = this.collab.history();
+    const pending = this.collab.pending();
+    // Convertit les entrées pending en DisplayHistoryEntry (mêmes champs visibles)
+    const pendingDisplay: DisplayHistoryEntry[] = pending.map(p => ({
+      id: `pending-${p.entityId}`,
+      timestamp: p.timestamp,
+      section: 'projets/contenu',
+      actionType: 'update',
+      label: p.label,
+      entityType: 'content',
+      entityId: p.entityId,
+      entityLabel: '',
+      userId: null,
+      username: p.username,
+      undone: false,
+      isPending: true,
+    }));
+    let entries: DisplayHistoryEntry[] = [...pendingDisplay, ...saved];
     if (ids && ids.size > 0) entries = entries.filter(e => !!e.entityId && ids.has(e.entityId));
-    const map = new Map<string, CollabHistoryEntry[]>();
+    const map = new Map<string, DisplayHistoryEntry[]>();
     for (const e of entries) {
       const day = new Date(e.timestamp).toLocaleDateString('fr-FR', {
         day: 'numeric', month: 'long', year: 'numeric'
@@ -52,11 +73,12 @@ export class ProjetHistoryComponent implements OnChanges {
     if (this.projetId) this.collab.loadHistory(this.projetId);
   }
 
-  isClickable(entry: CollabHistoryEntry): boolean {
+  isClickable(entry: DisplayHistoryEntry): boolean {
+    if (entry.isPending) return false;
     return entry.section === 'projets/contenu' && entry.actionType === 'update';
   }
 
-  async onEntryClick(entry: CollabHistoryEntry) {
+  async onEntryClick(entry: DisplayHistoryEntry) {
     if (!this.isClickable(entry)) return;
     // Vérifier si beforeState/afterState sont déjà des objets parsés avec contenu
     const hasLoaded = (

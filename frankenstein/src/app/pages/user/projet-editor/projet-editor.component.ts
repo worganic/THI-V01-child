@@ -39,7 +39,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   project = signal<Project | null>(null);
   files = signal<FileNode[]>([]);
   loading = signal(true);
-  saveStatus = signal<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  saveStatus = signal<'idle' | 'dirty' | 'saving' | 'saved' | 'error'>('idle');
   activeNodeId = signal<string | null>(null);
   scrollToNodeId = signal<string | null>(null);
   zone5Tab = signal<'conversation' | 'history'>('conversation');
@@ -203,6 +203,18 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   onNodeActive(nodeId: string) {
     if (this.activeNodeId() !== nodeId) {
       this.activeNodeId.set(nodeId);
+    }
+  }
+
+  onDirtyChange(dirty: boolean) {
+    if (dirty) {
+      // ne pas écraser un état actif (saving/error)
+      const s = this.saveStatus();
+      if (s === 'idle' || s === 'saved') this.saveStatus.set('dirty');
+    } else {
+      // Reset vers idle/saved sera géré par processSectionsChange après save serveur
+      // Mais si pas de changement réel, on revient à idle.
+      if (this.saveStatus() === 'dirty') this.saveStatus.set('idle');
     }
   }
 

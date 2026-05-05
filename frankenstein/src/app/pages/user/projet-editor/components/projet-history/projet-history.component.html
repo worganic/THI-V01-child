@@ -26,6 +26,7 @@
       <!-- Entrées -->
       @for (entry of group.entries; track entry.id) {
         <div class="flex items-start gap-2 py-1.5 px-1.5 rounded-lg transition-colors"
+             [class.opacity-40]="entry.isPending"
              [ngClass]="isClickable(entry)
                ? 'cursor-pointer hover:bg-white/5 active:bg-white/8'
                : 'hover:bg-white/3'"
@@ -34,7 +35,7 @@
           <!-- Icône action -->
           <div class="w-6 h-6 flex-shrink-0 rounded-full flex items-center justify-center mt-0.5"
                [ngClass]="getIconBgColor(entry)">
-            @if (loadingEntryId === entry.id) {
+            @if (loadingEntryId === entry.id || entry.isPending) {
               <span class="material-symbols-outlined text-sm text-white/40 animate-spin">progress_activity</span>
             } @else {
               <span class="material-symbols-outlined text-sm" [ngClass]="getIconColor(entry)">
@@ -61,7 +62,9 @@
               @if (entry.undone) {
                 <span class="text-[8px] px-1 rounded bg-purple-400/10 text-purple-400">annulé</span>
               }
-              @if (isClickable(entry)) {
+              @if (entry.isPending) {
+                <span class="text-[8px] px-1 rounded bg-white/8 text-white/40 ml-auto">en cours</span>
+              } @else if (isClickable(entry)) {
                 <span class="text-[8px] px-1 rounded bg-yellow-400/10 text-yellow-400/70 ml-auto">diff</span>
               }
             </div>
