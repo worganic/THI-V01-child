@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ViewChild, ElementRef, inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FileNode, ProjectFilesService } from '../../../../../core/services/project-files.service';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '../../../../../core/services/wo-action-history.service';
@@ -126,6 +127,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
   @ViewChild('overlay') overlayRef?: ElementRef<HTMLDivElement>;
   @ViewChild('visu') visuRef?: ElementRef<HTMLDivElement>;
 
+  private sanitizer = inject(DomSanitizer);
   private zone = inject(NgZone);
   private cdr = inject(ChangeDetectorRef);
   private woHistory = inject(WoActionHistoryService);
@@ -161,9 +163,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
   private highlightedFolderIds = new Set<string>();
   private highlightedFileIds = new Set<string>();
   mirrorLines: MirrorLine[] = [];
-  private renderedHtmlStr = '';
-  private visuEditingActive = false;
-  private visuInputTimeout: any;
+  renderedHtml: SafeHtml = '';
 
   // Image card interactions (edit mode)
   hoverPreview: HoverPreview | null = null;
@@ -559,7 +559,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
 
   private recomputeRenderedHtml() {
     if (this.mode !== 'visu') {
-      this.renderedHtmlStr = '';
+      this.renderedHtml = '';
       return;
     }
     let md = this.unifiedContent.replace(/\{\{IMG:([a-z0-9-]+)\}\}/gi, (_, id) => {
@@ -567,10 +567,10 @@ export class ProjetEditorZoneComponent implements OnChanges {
       if (!img) return `\n\n*[image manquante]*\n\n`;
       const encodedPath = img.path.split('/').map(s => encodeURIComponent(s)).join('/');
       const url = this.svc.getImageUrl(this.projectName, encodedPath);
-      // HTML brut avec data-img-id pour la conversion inverse HTML→markdown
-      return `\n\n<img src="${url}" alt="${this.escapeAlt(img.name)}" data-img-id="${id}" class="visu-img" contenteditable="false">\n\n`;
+      return `\n\n![${this.escapeAlt(img.name)}](${url})\n\n`;
     });
 
+    // Extraire les blocs de fichiers, les rendre séparément, remplacer par un placeholder
     const placeholders: { token: string; html: string }[] = [];
     md = md.replace(/^(['`^])([^\n]+)\n([\s\S]*?)\n\1\s*$/gm, (_match, _delim, name, content) => {
       const trimmed = (name as string).trim();
@@ -582,7 +582,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
       const attr = fileId ? ` data-file-id="${fileId}"` : '';
       placeholders.push({
         token,
-        html: `<div class="visu-file${hlClass}"${attr}><div class="visu-file__title" contenteditable="false">${this.escapeHtml(trimmed)}</div>${inner}</div>`,
+        html: `<div class="visu-file${hlClass}"${attr}><div class="visu-file__title">${this.escapeHtml(trimmed)}</div>${inner}</div>`,
       });
       return `\n\n${token}\n\n`;
     });
@@ -592,6 +592,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
       const wrapped = new RegExp(`<p>\\s*${ph.token}\\s*</p>`, 'g');
       html = html.replace(wrapped, ph.html).replace(ph.token, ph.html);
     }
+    // Marquer chaque heading avec data-section-id pour scroll/highlight
     for (const sec of this.docSections) {
       const tag = `h${sec.level}`;
       const escaped = sec.folderName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -601,105 +602,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
         return `<${tag}${attrs} data-section-id="${sec.folderId}" class="${hl.trim()}">${this.escapeHtml(sec.folderName)}</${tag}>`;
       });
     }
-    this.renderedHtmlStr = html;
-    this.applyVisuDom();
-  }
-
-  private applyVisuDom() {
-    if (this.visuEditingActive) return;
-    setTimeout(() => {
-      const el = this.visuRef?.nativeElement;
-      if (!el || this.mode !== 'visu') return;
-      el.innerHTML = this.renderedHtmlStr;
-    });
-  }
-
-  // ── Visu : édition directe ──────────────────────────────────
-  onVisuInput(_event: Event) {
-    this.visuEditingActive = true;
-    clearTimeout(this.visuInputTimeout);
-    this.visuInputTimeout = setTimeout(() => {
-      const el = this.visuRef?.nativeElement;
-      if (!el) return;
-      const markdown = this.htmlToMarkdown(el);
-      this.unifiedContent = markdown;
-      this.recomputeRanges();
-      this.visuEditingActive = false;
-      this.recomputeRenderedHtml();
-      this.scheduleSave();
-      if (!this.localDirty) {
-        this.localDirty = true;
-        this.dirtyChange.emit(true);
-      }
-      this.collab.upsertPending({
-        entityId: 'visu-input',
-        label: 'Modification depuis la vue formatée',
-        username: this.authSvc.currentUser()?.username || 'Vous',
-        timestamp: new Date().toISOString(),
-        state: 'editing'
-      });
-    }, 800);
-  }
-
-  addVisuSection() {
-    const topLevel = this.docSections.length > 0 ? this.docSections[0].level : 1;
-    const prefix = '#'.repeat(Math.min(topLevel, 2));
-    this.unifiedContent = this.unifiedContent.trimEnd() + `\n\n${prefix} Nouvelle section\n\nContenu de la section.\n`;
-    this.recomputeRanges();
-    this.recomputeRenderedHtml();
-    this.scheduleSave();
-    if (!this.localDirty) {
-      this.localDirty = true;
-      this.dirtyChange.emit(true);
-    }
-  }
-
-  private htmlToMarkdown(el: HTMLElement): string {
-    return this.convertNodeToMarkdown(el).replace(/\n{3,}/g, '\n\n').trim() + '\n';
-  }
-
-  private convertNodeToMarkdown(node: Node): string {
-    if (node.nodeType === Node.TEXT_NODE) return node.textContent || '';
-    if (node.nodeType !== Node.ELEMENT_NODE) return '';
-
-    const el = node as HTMLElement;
-    const tag = el.tagName.toLowerCase();
-
-    if (tag === 'img') {
-      const imgId = el.getAttribute('data-img-id');
-      return imgId ? `\n{{IMG:${imgId}}}\n` : '';
-    }
-    if (tag === 'div' && el.classList.contains('visu-file')) {
-      const titleEl = el.querySelector('.visu-file__title');
-      const title = titleEl?.textContent?.trim() || '';
-      const contentNodes = Array.from(el.childNodes).filter(c => c !== titleEl);
-      const content = contentNodes.map(c => this.convertNodeToMarkdown(c)).join('').trim();
-      return `\n'${title}\n${content}\n'\n`;
-    }
-
-    const children = Array.from(el.childNodes).map(c => this.convertNodeToMarkdown(c)).join('');
-
-    switch (tag) {
-      case 'h1': return `\n# ${children.trim()}\n\n`;
-      case 'h2': return `\n## ${children.trim()}\n\n`;
-      case 'h3': return `\n### ${children.trim()}\n\n`;
-      case 'h4': return `\n#### ${children.trim()}\n\n`;
-      case 'p': return `${children.trim()}\n\n`;
-      case 'strong': case 'b': return `**${children}**`;
-      case 'em': case 'i': return `*${children}*`;
-      case 'del': case 's': return `~~${children}~~`;
-      case 'code':
-        return el.parentElement?.tagName.toLowerCase() === 'pre' ? children : `\`${children}\``;
-      case 'pre': return `\`\`\`\n${children.trim()}\n\`\`\`\n\n`;
-      case 'ul': return children + '\n';
-      case 'ol': return children + '\n';
-      case 'li': return `- ${children.trim()}\n`;
-      case 'br': return '\n';
-      case 'hr': return '\n---\n\n';
-      case 'blockquote': return children.split('\n').map((l: string) => `> ${l}`).join('\n') + '\n\n';
-      case 'a': return children;
-      default: return children;
-    }
+    this.renderedHtml = this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   private escapeAlt(s: string): string {
@@ -715,13 +618,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
     if (this.mode === m) return;
     if (this.mode === 'edit') {
       this.flushContentModifications();
-      if (this.focusedHandle) this.exitFocusMode();
+      if (this.focusedHandle) this.exitFocusMode(); // sortie focus avant de passer en visu
       else this.saveAll();
-    }
-    if (m === 'edit') {
-      // Annule tout input visu en cours
-      clearTimeout(this.visuInputTimeout);
-      this.visuEditingActive = false;
     }
     this.mode = m;
     this.recomputeAll();
@@ -1260,118 +1158,6 @@ export class ProjetEditorZoneComponent implements OnChanges {
       ta.focus();
       ta.setSelectionRange(start + before.length, start + before.length + selected.length);
     });
-  }
-
-  applyFormat(before: string, after = '') {
-    if (this.mode === 'edit') {
-      this.insertAt(before, after);
-    } else {
-      this.insertAtVisu(before, after);
-    }
-  }
-
-  insertAtVisu(before: string, after = '') {
-    const visuEl = this.visuRef?.nativeElement;
-    if (!visuEl) return;
-
-    const selection = window.getSelection();
-    const selectedText = selection?.toString() || '';
-    if (!selectedText) return;
-
-    // Vérifie que la sélection est dans la zone visu
-    if (selection && selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      if (!visuEl.contains(range.commonAncestorContainer)) return;
-    }
-
-    const isLineLevelFormat = before.startsWith('\n') || before === '- ';
-    const prefix = before.replace(/^\n/, '');
-
-    // Cherche le texte sélectionné dans le contenu markdown
-    const idx = this.unifiedContent.indexOf(selectedText);
-    if (idx === -1) return;
-
-    const entity = this.getEntityAtPosition(idx);
-    const sectionId = entity?.folderId ?? null;
-    const beforeSnapshot = sectionId ? this.sectionFileSnapshot.get(sectionId) : undefined;
-    const formatLabel = this.getFormatLabel(before, after);
-
-    let newContent: string;
-
-    if (isLineLevelFormat) {
-      // Trouve le début de la ligne contenant la sélection
-      const lineStart = this.unifiedContent.lastIndexOf('\n', idx - 1) + 1;
-      const existingPrefix = this.unifiedContent.substring(lineStart, idx);
-      // Retire l'éventuel préfixe heading/liste existant
-      const cleanPrefix = existingPrefix.replace(/^#{1,4}\s+|^-\s+/, '');
-      newContent = this.unifiedContent.substring(0, lineStart) + prefix + cleanPrefix + selectedText + this.unifiedContent.substring(idx + selectedText.length);
-    } else {
-      newContent = this.unifiedContent.substring(0, idx) + before + selectedText + after + this.unifiedContent.substring(idx + selectedText.length);
-    }
-
-    this.unifiedContent = newContent;
-    this.recomputeRanges();
-    this.visuEditingActive = false;
-    this.recomputeRenderedHtml(); // met à jour renderedHtmlStr + applyVisuDom()
-    this.scheduleSave();
-
-    if (!this.localDirty) {
-      this.localDirty = true;
-      this.dirtyChange.emit(true);
-    }
-
-    // Suivi collab
-    if (entity) {
-      this.modifiedEntities.set(entity.id, entity.folderId);
-      const node = this.findNode(entity.id, this.files);
-      this.collab.upsertPending({
-        entityId: entity.id,
-        label: `Modification de texte — «${node?.name || entity.id}»`,
-        username: this.authSvc.currentUser()?.username || 'Vous',
-        timestamp: new Date().toISOString(),
-        state: 'editing'
-      });
-    }
-
-    // Historique
-    if (formatLabel) {
-      const node = entity ? this.findNode(entity.id, this.files) : null;
-      this.woHistory.track({
-        section: 'projets/contenu',
-        actionType: 'update',
-        label: node ? `${formatLabel} — «${node.name}»` : formatLabel,
-        entityType: 'content',
-        entityId: entity?.id ?? undefined,
-        beforeState: beforeSnapshot ? { content: beforeSnapshot.content } : undefined,
-        context: { projectId: this.projectName },
-        undoable: !!beforeSnapshot?.fileId,
-        undoAction: beforeSnapshot?.fileId ? {
-          endpoint: `/api/file-projects/${this.projectName}/files/${beforeSnapshot.fileId}`,
-          method: 'PUT',
-          payload: { content: beforeSnapshot.content }
-        } : undefined
-      }).catch(() => {});
-    }
-
-    // Clear selection visuelle
-    selection?.removeAllRanges();
-  }
-
-  private getEntityAtPosition(pos: number): { id: string; folderId: string } | null {
-    const lineIdx = this.unifiedContent.substring(0, pos).split('\n').length - 1;
-    for (const fr of this.fileRanges) {
-      if (lineIdx >= fr.lineStart && lineIdx <= fr.lineEnd) {
-        const parent = this.findParentFolder(fr.fileId, this.files);
-        if (parent) return { id: fr.fileId, folderId: parent.id };
-      }
-    }
-    for (let i = this.sectionRanges.length - 1; i >= 0; i--) {
-      const r = this.sectionRanges[i];
-      if (lineIdx >= r.lineStart && lineIdx <= r.lineEnd) {
-        return { id: r.folderId, folderId: r.folderId };
-      }
-    }
-    return null;
   }
 
   // ── Image upload ───────────────────────────────────────────

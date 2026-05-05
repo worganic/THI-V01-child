@@ -2523,46 +2523,6 @@
       "prompt": "si je clique dans une section dans la zone selection 4a et que je clique sur une image dans une autre section, la zone d'edition scroll vers la section selectionné avant l'image, il ne faut pas de scroll lorsque je clique dans une section de la partie edition, le scroll ne fonctionne que lorsqu'on clique dans le menu de fichier*",
       "startedAt": "2026-05-05T10:15:00.000Z",
       "completedAt": "2026-05-05T10:20:00.000Z"
-    },
-    {
-      "id": "mod-106",
-      "version": "THI-0.62",
-      "date": "2026-05-05T10:35:00.000Z",
-      "type": "feature",
-      "commitType": "AMELIORATION",
-      "scope": ["frankenstein"],
-      "features": "frankenstein:projet-editor",
-      "title": "Mode visu : barre de mise en forme activée + historique",
-      "description": "Les boutons de mise en forme (B, I, S, H1, H2, H3, liste, code) sont désormais disponibles en mode Visu. insertAtVisu() détecte la sélection dans la zone visu, trouve le texte dans le markdown source, applique la mise en forme et enregistre l'action dans l'historique et le panneau collab. applyFormat() dispatche selon le mode actif. L'upload image reste réservé au mode Édition.",
-      "files": [
-        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
-        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
-      ],
-      "ai": "Claude Code",
-      "model": "claude-sonnet-4-6",
-      "prompt": "Dans le menu projet dans la zone 4 il y a un format edition (format markdown) et un format visu (affichage mise en forme), actuellement seul le format edition permet de mettre en forme le document, je voudrais que tu rajoute les options de mise en forme dans la partie \"visu\" afin de pouvoir mettre à jour le document. Attention chaque modification du document doit être enregistré dans l'historique.",
-      "startedAt": "2026-05-05T10:25:00.000Z",
-      "completedAt": "2026-05-05T10:35:00.000Z"
-    },
-    {
-      "id": "mod-107",
-      "version": "THI-0.62",
-      "date": "2026-05-05T11:00:00.000Z",
-      "type": "feature",
-      "commitType": "AMELIORATION",
-      "scope": ["frankenstein"],
-      "features": "frankenstein:projet-editor",
-      "title": "Visu : édition directe contenteditable + section + toolbar fix",
-      "description": "Refactorisation du mode visu : suppression du binding [innerHTML]/SafeHtml remplacé par applyVisuDom() (injection directe innerHTML via ViewChild). Le div visu devient contenteditable=true : l'utilisateur peut éditer le texte directement, le contenu est converti HTML→markdown via convertNodeToMarkdown() avec debounce 800ms. Ajout d'un bouton 'Ajouter une section' en bas. Fix du toolbar : insertAtVisu() appelle recomputeRenderedHtml() qui met à jour le DOM via applyVisuDom(). Images préservées via data-img-id. Titres visu-file non éditables. Chaque modification enregistrée dans collab + historique.",
-      "files": [
-        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
-        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
-      ],
-      "ai": "Claude Code",
-      "model": "claude-sonnet-4-6",
-      "prompt": "lorsque je veux mettre en forme du texte, cela met les balises mais cela ne met pas en forme le texte (cela devrait être le texte en forme dans la zone visu). Il faudrait aussi pouvoir modifié le texte directement dans cette zone ou créé des sections.",
-      "startedAt": "2026-05-05T10:40:00.000Z",
-      "completedAt": "2026-05-05T11:00:00.000Z"
     }
   ]
 }
