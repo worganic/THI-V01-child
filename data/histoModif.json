@@ -2543,6 +2543,25 @@
       "prompt": "la nouvelle version ne fonctionne pas reviens à la version précédente / le mode edition ne fonctionne plus corectement verifi avec les anciennes version pour voir ce qui à causé le soucis.",
       "startedAt": "2026-05-05T11:45:00.000Z",
       "completedAt": "2026-05-05T12:00:00.000Z"
+    },
+    {
+      "id": "mod-109",
+      "version": "THI-0.64",
+      "date": "2026-05-05T14:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projet-editor",
+      "title": "Drag ligne par ligne pour blocs fichier (document/code)",
+      "description": "Extension du drag ligne-par-ligne (existant pour les images) aux blocs de type 'file' (document/code). Dans updateDropTarget, la branche image inclut désormais aussi kind='file'. Dans onDragUp, un nouveau cas 'file' appelle moveFileBlockToLine qui extrait le bloc multi-lignes, le retire puis le réinsère à la position cible en ajustant l'index si le drop est après la source.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "c'est exact cela fonctionne pour les images mais je voudrais la même option pour déplacer une section (document/code)",
+      "startedAt": "2026-05-05T14:00:00.000Z",
+      "completedAt": "2026-05-05T14:30:00.000Z"
     }
   ]
 }

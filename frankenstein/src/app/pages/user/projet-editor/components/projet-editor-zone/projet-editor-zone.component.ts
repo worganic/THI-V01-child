@@ -1492,11 +1492,11 @@ export class ProjetEditorZoneComponent implements OnChanges {
     const rect = mirrorEl.getBoundingClientRect();
     const contentY = clientY - rect.top + mirrorEl.scrollTop;
 
-    if (this.draggingHandle.kind === 'image') {
+    if (this.draggingHandle.kind === 'image' || this.draggingHandle.kind === 'file') {
       const lines = this.unifiedContent.split('\n');
       let targetLine = Math.floor((contentY - this.PADDING_TOP_PX) / this.LINE_HEIGHT_PX);
       targetLine = Math.max(0, Math.min(targetLine, lines.length));
-      
+
       this.currentDropTarget = { targetLine, position: 'before' };
       this.dropIndicator = { top: this.PADDING_TOP_PX + targetLine * this.LINE_HEIGHT_PX - 1, height: 2, position: 'before' };
       return;
@@ -1605,6 +1605,14 @@ export class ProjetEditorZoneComponent implements OnChanges {
       return;
     }
 
+    // Fichiers (blocs document/code) : déplacement ligne par ligne
+    if (dragged.kind === 'file') {
+      if (target.targetLine !== undefined) {
+        this.moveFileBlockToLine(dragged.lineStart, dragged.lineEnd, target.targetLine);
+      }
+      return;
+    }
+
     if (!target.handle || dragged.id === target.handle.id) return;
 
     const draggedNode = this.findNode(dragged.id, this.files);
@@ -1639,6 +1647,25 @@ export class ProjetEditorZoneComponent implements OnChanges {
     
     insertAt = Math.max(0, Math.min(insertAt, lines.length));
     lines.splice(insertAt, 0, marker);
+
+    this.unifiedContent = lines.join('\n');
+    const ta = this.textareaRef?.nativeElement;
+    if (ta) ta.value = this.unifiedContent;
+    this.recomputeAll();
+    this.scheduleSave();
+  }
+
+  private moveFileBlockToLine(srcStart: number, srcEnd: number, targetLine: number) {
+    const lines = this.unifiedContent.split('\n');
+    if (srcStart < 0 || srcEnd >= lines.length || srcStart > srcEnd) return;
+
+    const blockLines = lines.splice(srcStart, srcEnd - srcStart + 1);
+
+    let insertAt = targetLine;
+    if (targetLine > srcEnd) insertAt = targetLine - blockLines.length;
+    insertAt = Math.max(0, Math.min(insertAt, lines.length));
+
+    lines.splice(insertAt, 0, ...blockLines);
 
     this.unifiedContent = lines.join('\n');
     const ta = this.textareaRef?.nativeElement;
