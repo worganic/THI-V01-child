@@ -54,10 +54,12 @@
 
     @if (saveStatus === 'saving') {
       <span class="text-xs text-yellow-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm animate-spin">progress_activity</span> Sauvegarde…</span>
-    } @else if (saveStatus === 'saved') {
-      <span class="text-xs text-green-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Sauvegardé</span>
+    } @else if (saveStatus === 'dirty') {
+      <span class="text-xs text-light-text-muted dark:text-white/40 flex items-center gap-1"><span class="material-symbols-outlined text-sm">edit</span> Non sauvegardé</span>
     } @else if (saveStatus === 'error') {
       <span class="text-xs text-red-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">error</span> Erreur</span>
+    } @else {
+      <span class="text-xs text-green-500 flex items-center gap-1"><span class="material-symbols-outlined text-sm">check_circle</span> Sauvegardé</span>
     }
   </div>
 

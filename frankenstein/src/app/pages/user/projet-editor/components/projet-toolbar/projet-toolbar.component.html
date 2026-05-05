@@ -23,16 +23,6 @@
   <!-- Séparateur -->
   <div class="flex-1"></div>
 
-  <!-- Sauvegarder -->
-  <button (click)="save.emit()"
-          [class]="saveClass"
-          class="flex items-center gap-1 px-3 py-1 rounded-lg border text-xs font-medium transition-all">
-    <span class="material-symbols-outlined text-sm" [class.animate-spin]="saveIconSpin">{{ saveIcon }}</span>
-    <span class="hidden sm:inline">{{ saveLabel }}</span>
-  </button>
-
-  <div class="w-px h-5 bg-light-border dark:bg-white/10 mx-1"></div>
-
   <!-- Déconnexion -->
   <button (click)="logout()"
           title="Déconnexion"

@@ -2337,6 +2337,30 @@
       "prompt": "idem le bouton Sauvegardé doit être affiché en gris des que l'utilisateur commence à modifié une section et en vert lors de l'enregistrement",
       "startedAt": "2026-05-04T23:50:00.000Z",
       "completedAt": "2026-05-04T23:06:44.867Z"
+    },
+    {
+      "id": "mod-097",
+      "version": "THI-0.58",
+      "date": "2026-05-05T07:40:54.788Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "frankenstein"
+      ],
+      "features": "frankenstein:projets",
+      "title": "Fusion indicateur Sauvegardé : un seul dans la barre Edition/Visu",
+      "description": "Suppression du bouton Sauvegardé en haut à droite (toolbar du header) qui doublonnait avec celui de la barre d'outils Edition/Visu/B/I/H1... L'indicateur unique conservé est celui de la barre éditeur, étendu pour gérer les 5 états (idle/saved → vert check_circle, dirty → gris edit Non sauvegardé, saving → jaune spinner, error → rouge). Suppression de saveStatus, save event, et getters saveLabel/saveIcon/saveClass/saveIconSpin du ProjetToolbarComponent.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-toolbar/projet-toolbar.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-toolbar/projet-toolbar.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "il y a actuellement 2 infos/bouton Sauvegardé merge les 2 en 1 seul garde celui entouré en vert, attention met les fonctionnalité de celui de droite dans celui que tu garde",
+      "startedAt": "2026-05-05T00:00:00.000Z",
+      "completedAt": "2026-05-05T07:40:54.788Z"
     }
   ]
 }
