@@ -35,6 +35,7 @@
           (nodeActive)="onNodeActive($event)"
           (dragDrop)="onDragDrop($event)"
           (dirtyChange)="onDirtyChange($event)"
+          (saveStarting)="onSaveStarting()"
           (refresh)="onRefresh()" />
       } @else {
         <app-projet-diff

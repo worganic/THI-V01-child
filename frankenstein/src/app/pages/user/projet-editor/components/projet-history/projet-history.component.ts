@@ -1,14 +1,16 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjetCollabService, CollabHistoryEntry } from '../../../../../core/services/projet-collab.service';
+import { AuthService } from '../../../../../core/services/auth.service';
 
 export interface DisplayHistoryEntry extends CollabHistoryEntry {
-  isPending?: boolean;
+  pendingState?: 'editing' | 'saving';
 }
 
 interface HistoryGroup {
   date: string;
   entries: DisplayHistoryEntry[];
+  isToday: boolean;
 }
 
 @Component({
@@ -24,15 +26,30 @@ export class ProjetHistoryComponent implements OnChanges {
   @Output() entryClick = new EventEmitter<CollabHistoryEntry>();
 
   readonly collab = inject(ProjetCollabService);
+  readonly auth = inject(AuthService);
   loadingEntryId: string | null = null;
 
   private readonly _activeIds = signal<Set<string> | null>(null);
 
-  readonly groups = computed<HistoryGroup[]>(() => {
+  // Jours dépliés explicitement par l'utilisateur (les autres restent repliés sauf le jour courant)
+  readonly expandedDays = signal<Set<string>>(new Set());
+  // Jours explicitement repliés (pour pouvoir replier le jour courant qui est déplié par défaut)
+  readonly collapsedDays = signal<Set<string>>(new Set());
+
+  // Modale de confirmation d'effacement
+  readonly clearOpen = signal(false);
+  readonly clearScope = signal<'mine' | 'all'>('mine');
+  readonly clearLoading = signal(false);
+
+  readonly currentUserId = computed(() => this.auth.currentUser()?.id || '');
+  readonly isAdmin = computed(() => this.auth.currentUser()?.role === 'admin');
+
+  // Toutes les entrées (pending + sauvegardées) après filtre par entité active
+  readonly filteredEntries = computed<DisplayHistoryEntry[]>(() => {
     const ids = this._activeIds();
     const saved = this.collab.history();
     const pending = this.collab.pending();
-    // Convertit les entrées pending en DisplayHistoryEntry (mêmes champs visibles)
+    const me = this.auth.currentUser();
     const pendingDisplay: DisplayHistoryEntry[] = pending.map(p => ({
       id: `pending-${p.entityId}`,
       timestamp: p.timestamp,
@@ -42,22 +59,53 @@ export class ProjetHistoryComponent implements OnChanges {
       entityType: 'content',
       entityId: p.entityId,
       entityLabel: '',
-      userId: null,
+      userId: me?.id || null,
       username: p.username,
       undone: false,
-      isPending: true,
+      pendingState: p.state,
     }));
     let entries: DisplayHistoryEntry[] = [...pendingDisplay, ...saved];
     if (ids && ids.size > 0) entries = entries.filter(e => !!e.entityId && ids.has(e.entityId));
+    return entries;
+  });
+
+  readonly groups = computed<HistoryGroup[]>(() => {
+    const todayKey = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     const map = new Map<string, DisplayHistoryEntry[]>();
-    for (const e of entries) {
+    for (const e of this.filteredEntries()) {
       const day = new Date(e.timestamp).toLocaleDateString('fr-FR', {
         day: 'numeric', month: 'long', year: 'numeric'
       });
       if (!map.has(day)) map.set(day, []);
       map.get(day)!.push(e);
     }
-    return Array.from(map.entries()).map(([date, ents]) => ({ date, entries: ents }));
+    return Array.from(map.entries()).map(([date, ents]) => ({ date, entries: ents, isToday: date === todayKey }));
+  });
+
+  isDayExpanded(date: string, isToday: boolean): boolean {
+    if (this.expandedDays().has(date)) return true;
+    if (this.collapsedDays().has(date)) return false;
+    return isToday;
+  }
+
+  toggleDay(date: string, isToday: boolean) {
+    const expanded = this.isDayExpanded(date, isToday);
+    if (expanded) {
+      // replier
+      this.expandedDays.update(s => { const n = new Set(s); n.delete(date); return n; });
+      this.collapsedDays.update(s => { const n = new Set(s); n.add(date); return n; });
+    } else {
+      // déplier
+      this.collapsedDays.update(s => { const n = new Set(s); n.delete(date); return n; });
+      this.expandedDays.update(s => { const n = new Set(s); n.add(date); return n; });
+    }
+  }
+
+  // Compteur d'entrées concernées par l'effacement (selon scope choisi)
+  readonly clearTargetCount = computed(() => {
+    const scope = this.clearScope();
+    const meId = this.currentUserId();
+    return this.filteredEntries().filter(e => !e.pendingState && (scope === 'all' || e.userId === meId)).length;
   });
 
   ngOnChanges(changes: SimpleChanges) {
@@ -73,14 +121,47 @@ export class ProjetHistoryComponent implements OnChanges {
     if (this.projetId) this.collab.loadHistory(this.projetId);
   }
 
+  isMine(entry: DisplayHistoryEntry): boolean {
+    return !!entry.userId && entry.userId === this.currentUserId();
+  }
+
   isClickable(entry: DisplayHistoryEntry): boolean {
-    if (entry.isPending) return false;
+    if (entry.pendingState) return false;
     return entry.section === 'projets/contenu' && entry.actionType === 'update';
+  }
+
+  openClear() {
+    this.clearScope.set(this.isAdmin() ? 'all' : 'mine');
+    this.clearOpen.set(true);
+  }
+
+  cancelClear() {
+    if (this.clearLoading()) return;
+    this.clearOpen.set(false);
+  }
+
+  setScope(scope: 'mine' | 'all') {
+    if (scope === 'all' && !this.isAdmin()) return;
+    this.clearScope.set(scope);
+  }
+
+  async confirmClear() {
+    if (!this.projetId || this.clearLoading()) return;
+    this.clearLoading.set(true);
+    try {
+      const ids = this._activeIds();
+      const entityIds = ids && ids.size > 0 ? Array.from(ids) : undefined;
+      await this.collab.clearHistory(this.projetId, { entityIds, scope: this.clearScope() });
+      this.clearOpen.set(false);
+    } catch (e) {
+      console.warn('[History] clear error:', e);
+    } finally {
+      this.clearLoading.set(false);
+    }
   }
 
   async onEntryClick(entry: DisplayHistoryEntry) {
     if (!this.isClickable(entry)) return;
-    // Vérifier si beforeState/afterState sont déjà des objets parsés avec contenu
     const hasLoaded = (
       (entry.beforeState != null && typeof entry.beforeState === 'object' && 'content' in entry.beforeState) ||
       (entry.afterState  != null && typeof entry.afterState  === 'object' && 'content' in entry.afterState)
@@ -89,7 +170,6 @@ export class ProjetHistoryComponent implements OnChanges {
       this.entryClick.emit(entry);
       return;
     }
-    // Fetch depuis le serveur (gère le cas string JSON non parsé et les entrées sans état)
     this.loadingEntryId = entry.id;
     try {
       const full = await this.collab.fetchEntry(entry.id);

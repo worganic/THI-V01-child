@@ -116,6 +116,7 @@ export class ProjetEditorZoneComponent implements OnChanges {
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
   @Output() dirtyChange = new EventEmitter<boolean>();
+  @Output() saveStarting = new EventEmitter<void>();
   private localDirty = false;
 
   @ViewChild('imageInput') imageInputRef!: ElementRef<HTMLInputElement>;
@@ -681,7 +682,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
         entityId: entity.id,
         label: `Modification de texte — «${node?.name || entity.id}»`,
         username: this.authSvc.currentUser()?.username || 'Vous',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        state: 'editing'
       });
     }
   }
@@ -774,6 +776,13 @@ export class ProjetEditorZoneComponent implements OnChanges {
   }
 
   onTextareaBlur() {
+    this.saveAll();
+    this.flushContentModifications();
+  }
+
+  // Force une sauvegarde immédiate (bouton "Non sauvegardé" cliqué)
+  forceSave() {
+    clearTimeout(this.saveTimeout);
     this.saveAll();
     this.flushContentModifications();
   }
@@ -908,6 +917,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
   }
 
   private saveAll() {
+    // Bascule toutes les entrées 'editing' du panneau historique en 'saving' (clignote)
+    this.collab.markAllPendingSaving();
     if (this.unifiedContent === this.lastSavedContent) {
       // Pas de changement de contenu, mais on flush pour que l'historique remonte sans attendre le blur
       this.flushContentModifications();
@@ -918,6 +929,8 @@ export class ProjetEditorZoneComponent implements OnChanges {
       return;
     }
     this.lastSavedContent = this.unifiedContent;
+    // Signale au parent qu'une sauvegarde démarre (pour afficher 'Sauvegarde…' immédiatement)
+    this.saveStarting.emit();
     if (this.localDirty) {
       this.localDirty = false;
       this.dirtyChange.emit(false);

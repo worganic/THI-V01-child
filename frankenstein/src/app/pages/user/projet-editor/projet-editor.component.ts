@@ -218,6 +218,13 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  // Affiche immédiatement 'Sauvegarde…' dès que la zone éditeur déclenche un save
+  // (avant l'analyse asynchrone de processSectionsChange).
+  onSaveStarting() {
+    clearTimeout(this.savedStatusTimer);
+    this.saveStatus.set('saving');
+  }
+
   async onFolderCreated(info: { name: string; parentId: string | null }) {
     await this.loadFiles();
     if (!info.parentId) {
@@ -531,7 +538,16 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     const hasStructural = renameOps.length > 0 || toDelete.length > 0 || toCreate.length > 0 || needsFile.length > 0 || additionalFileDeleted || filesToMove.length > 0;
     const sectionsWithFile = resolved.filter(s => s.fileId || s.folderId); // Tous ceux qui ont potentiellement du contenu à sauver
 
-    if (!hasStructural && sectionsWithFile.length === 0 && !resolved.some(s => s.additionalFiles?.some(af => !af.fileId))) return;
+    if (!hasStructural && sectionsWithFile.length === 0 && !resolved.some(s => s.additionalFiles?.some(af => !af.fileId))) {
+      // Aucun changement à propager. Sortir de l'état 'saving' éventuellement
+      // déclenché par onSaveStarting et marquer comme sauvegardé pour purger les pending.
+      if (this.saveStatus() === 'saving') {
+        this.saveStatus.set('saved');
+        this.collab.clearAllPending();
+        this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 2000);
+      }
+      return;
+    }
 
     this.saveStatus.set('saving');
     clearTimeout(this.savedStatusTimer);
@@ -698,6 +714,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
       if (!hasError) {
         this.saveStatus.set('saved');
+        this.collab.clearAllPending();
         this.savedStatusTimer = setTimeout(() => this.saveStatus.set('idle'), 2000);
       } else {
         this.saveStatus.set('error');

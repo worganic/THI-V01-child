@@ -1,4 +1,4 @@
-<div class="h-full flex flex-col bg-white dark:bg-[#0f0f17]">
+<div class="h-full flex flex-col bg-white dark:bg-[#0f0f17] relative">
 
   <!-- Timeline -->
   <div class="flex-1 overflow-y-auto min-h-0 px-3 py-2">
@@ -14,28 +14,40 @@
 
     @for (group of groups(); track group.date) {
 
-      <!-- Séparateur date -->
-      <div class="flex items-center gap-2 my-2">
+      <!-- Séparateur date cliquable (toggle des entrées du jour) -->
+      <button type="button"
+              (click)="toggleDay(group.date, group.isToday)"
+              class="w-full flex items-center gap-2 my-2 group cursor-pointer">
         <div class="flex-1 h-px bg-light-border dark:bg-white/8"></div>
-        <span class="text-[9px] font-bold text-light-text-muted dark:text-white/25 uppercase tracking-wider shrink-0 px-1">
+        <span class="material-symbols-outlined text-[11px] text-light-text-muted dark:text-white/30 group-hover:text-white/60 transition-colors">
+          {{ isDayExpanded(group.date, group.isToday) ? 'expand_more' : 'chevron_right' }}
+        </span>
+        <span class="text-[9px] font-bold uppercase tracking-wider shrink-0 px-1 transition-colors"
+              [ngClass]="isDayExpanded(group.date, group.isToday)
+                ? 'text-light-text-muted dark:text-white/40'
+                : 'text-light-text-muted dark:text-white/25 group-hover:text-white/50'">
           {{ group.date }}
+          <span class="ml-1 opacity-50 normal-case">({{ group.entries.length }})</span>
         </span>
         <div class="flex-1 h-px bg-light-border dark:bg-white/8"></div>
-      </div>
+      </button>
 
-      <!-- Entrées -->
+      <!-- Entrées (visibles uniquement si jour déplié) -->
+      @if (isDayExpanded(group.date, group.isToday)) {
       @for (entry of group.entries; track entry.id) {
         <div class="flex items-start gap-2 py-1.5 px-1.5 rounded-lg transition-colors"
-             [class.opacity-40]="entry.isPending"
-             [ngClass]="isClickable(entry)
-               ? 'cursor-pointer hover:bg-white/5 active:bg-white/8'
-               : 'hover:bg-white/3'"
+             [class.opacity-40]="entry.pendingState === 'editing'"
+             [class.animate-pulse]="entry.pendingState === 'saving'"
+             [ngClass]="[
+               isMine(entry) ? 'bg-yellow-400/5 hover:bg-yellow-400/10' : 'bg-blue-400/5 hover:bg-blue-400/10',
+               isClickable(entry) ? 'cursor-pointer' : ''
+             ]"
              (click)="onEntryClick(entry)">
 
           <!-- Icône action -->
           <div class="w-6 h-6 flex-shrink-0 rounded-full flex items-center justify-center mt-0.5"
                [ngClass]="getIconBgColor(entry)">
-            @if (loadingEntryId === entry.id || entry.isPending) {
+            @if (loadingEntryId === entry.id || entry.pendingState) {
               <span class="material-symbols-outlined text-sm text-white/40 animate-spin">progress_activity</span>
             } @else {
               <span class="material-symbols-outlined text-sm" [ngClass]="getIconColor(entry)">
@@ -52,8 +64,9 @@
             </p>
             <div class="flex items-center gap-1.5 mt-0.5">
               @if (entry.username) {
-                <span class="text-[9px] font-semibold text-light-text-muted dark:text-white/30 truncate max-w-[80px]">
-                  {{ entry.username }}
+                <span class="text-[9px] font-semibold truncate max-w-[80px]"
+                      [ngClass]="isMine(entry) ? 'text-yellow-400/80' : 'text-blue-400/70'">
+                  {{ entry.username }}{{ isMine(entry) ? ' (moi)' : '' }}
                 </span>
               }
               <span class="text-[9px] text-light-text-muted dark:text-white/20 shrink-0">
@@ -62,8 +75,10 @@
               @if (entry.undone) {
                 <span class="text-[8px] px-1 rounded bg-purple-400/10 text-purple-400">annulé</span>
               }
-              @if (entry.isPending) {
+              @if (entry.pendingState === 'editing') {
                 <span class="text-[8px] px-1 rounded bg-white/8 text-white/40 ml-auto">en cours</span>
+              } @else if (entry.pendingState === 'saving') {
+                <span class="text-[8px] px-1 rounded bg-yellow-400/15 text-yellow-300 ml-auto">sauvegarde…</span>
               } @else if (isClickable(entry)) {
                 <span class="text-[8px] px-1 rounded bg-yellow-400/10 text-yellow-400/70 ml-auto">diff</span>
               }
@@ -72,9 +87,87 @@
 
         </div>
       }
+      }
 
     }
 
   </div>
+
+  <!-- Bouton Effacer l'historique (bas) -->
+  @if (filteredEntries().length > 0 && projetId) {
+    <div class="flex-shrink-0 border-t border-light-border dark:border-white/8 px-3 py-2">
+      <button type="button"
+              (click)="openClear()"
+              class="w-full text-[10px] py-1.5 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 transition-colors flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined text-[12px]">delete_sweep</span>
+        Effacer l'historique
+      </button>
+    </div>
+  }
+
+  <!-- Modale de confirmation -->
+  @if (clearOpen()) {
+    <div class="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-sm p-3"
+         (click)="cancelClear()">
+      <div class="bg-[#1a1a25] border border-white/10 rounded-lg p-4 w-full max-w-[280px] flex flex-col gap-3"
+           (click)="$event.stopPropagation()">
+
+        <h3 class="text-[12px] font-semibold text-white/90 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[14px] text-red-400">warning</span>
+          Effacer l'historique
+        </h3>
+
+        @if (isAdmin()) {
+          <div class="flex flex-col gap-1">
+            <label class="text-[10px] text-white/50 uppercase tracking-wider mb-0.5">Portée</label>
+            <button type="button"
+                    (click)="setScope('mine')"
+                    [ngClass]="clearScope() === 'mine' ? 'bg-yellow-400/15 border-yellow-400/40 text-yellow-300' : 'bg-white/3 border-white/10 text-white/60 hover:bg-white/5'"
+                    class="text-[10px] py-1.5 px-2 rounded border text-left transition-colors">
+              Mes actions seulement
+            </button>
+            <button type="button"
+                    (click)="setScope('all')"
+                    [ngClass]="clearScope() === 'all' ? 'bg-red-400/15 border-red-400/40 text-red-300' : 'bg-white/3 border-white/10 text-white/60 hover:bg-white/5'"
+                    class="text-[10px] py-1.5 px-2 rounded border text-left transition-colors">
+              Tous les utilisateurs (admin)
+            </button>
+          </div>
+        }
+
+        <p class="text-[11px] text-white/70 leading-snug">
+          @if (clearTargetCount() === 0) {
+            Aucune entrée à effacer pour cette portée.
+          } @else {
+            <strong class="text-red-300">{{ clearTargetCount() }}</strong>
+            entrée{{ clearTargetCount() > 1 ? 's' : '' }} {{ clearTargetCount() > 1 ? 'seront effacées' : 'sera effacée' }}
+            @if (activeIds && activeIds.size > 0) { de la section sélectionnée } @else { du projet }.
+            Cette action est irréversible.
+          }
+        </p>
+
+        <div class="flex gap-2 justify-end mt-1">
+          <button type="button"
+                  [disabled]="clearLoading()"
+                  (click)="cancelClear()"
+                  class="text-[10px] px-3 py-1.5 rounded bg-white/5 hover:bg-white/10 text-white/70 disabled:opacity-50">
+            Annuler
+          </button>
+          <button type="button"
+                  [disabled]="clearLoading() || clearTargetCount() === 0"
+                  (click)="confirmClear()"
+                  class="text-[10px] px-3 py-1.5 rounded bg-red-500/20 hover:bg-red-500/30 text-red-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
+            @if (clearLoading()) {
+              <span class="material-symbols-outlined text-[12px] animate-spin">progress_activity</span>
+            } @else {
+              <span class="material-symbols-outlined text-[12px]">delete_sweep</span>
+            }
+            Effacer
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
 
 </div>

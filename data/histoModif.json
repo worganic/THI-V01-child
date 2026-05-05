@@ -2361,6 +2361,93 @@
       "prompt": "il y a actuellement 2 infos/bouton Sauvegardé merge les 2 en 1 seul garde celui entouré en vert, attention met les fonctionnalité de celui de droite dans celui que tu garde",
       "startedAt": "2026-05-05T00:00:00.000Z",
       "completedAt": "2026-05-05T07:40:54.788Z"
+    },
+    {
+      "id": "mod-098",
+      "version": "THI-0.58",
+      "date": "2026-05-05T08:35:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein", "server"],
+      "features": "frankenstein:projets,server:projets",
+      "title": "Historique zone 5b : effacer + couleur user + masquage jours",
+      "description": "Zone 5b Historique : (1) Bouton 'Effacer l'historique' en bas avec modale de confirmation affichant le nombre d'entrées concernées, scopée à la section sélectionnée. Non-admin : seul son propre historique. Admin : choix 'mes actions' ou 'tous les utilisateurs'. (2) Couleur de fond différente pour les actions du user connecté (jaune) vs autres users (bleu) + suffixe '(moi)'. (3) Toggle pour masquer les actions des jours précédents, masqué par défaut sauf jour courant, avec compteur d'entrées masquées. Nouveau endpoint DELETE /api/collab/:projetId/history avec query params entityIds + scope (mine|all), scope all réservé aux admins.",
+      "files": [
+        "server/server-data.js",
+        "frankenstein/src/app/core/services/projet-collab.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "Dans le menu projet : Zone 5b : Ajoute un bouton en bas de la liste de l'historique qui permet d'effacer l'historique (scopé à la section sélectionnée, confirmation avec nombre, user efface seulement le sien, admin a le choix tous/mes actions). Couleur background différente pour les actions du user connecté vs autres users. Option pour cacher les actions d'un jour, cachées par défaut sauf jour courant.",
+      "startedAt": "2026-05-05T08:24:30.000Z",
+      "completedAt": "2026-05-05T08:35:00.000Z"
+    },
+    {
+      "id": "mod-099",
+      "version": "THI-0.58",
+      "date": "2026-05-05T08:45:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projets",
+      "title": "Historique zone 5b : jours toujours visibles, contenu repliable",
+      "description": "Remplacement du toggle global 'masquer les jours précédents' : chaque ligne de jour est désormais cliquable pour déplier/replier ses entrées. Toutes les lignes de date restent toujours affichées avec un compteur d'entrées et un chevron (chevron_right replié / expand_more déplié). Par défaut, seul le jour courant est déplié, les jours précédents sont repliés. État géré par deux Sets (expandedDays / collapsedDays) pour permettre aussi de replier le jour courant.",
+      "files": [
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "l'affichage ou non des jours de la zone historique ne me conviens pas, je veux que la ligne des jours apparaisse toujours, ce sont les données pour chaque jour qui doivent être caché, en cliquant sur un jour, les données s'affiche, on reclique dessus les données ce ache. Mais la liste des jours doivent resté affiché",
+      "startedAt": "2026-05-05T08:40:00.000Z",
+      "completedAt": "2026-05-05T08:45:00.000Z"
+    },
+    {
+      "id": "mod-100",
+      "version": "THI-0.59",
+      "date": "2026-05-05T09:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projets",
+      "title": "Zone 5b : pending devient définitif dès le save",
+      "description": "Les entrées 'en cours' dans l'historique (zone 5b) restaient en attente même après que le bouton Sauvegardé soit vert. Fix : ajout de clearAllPending() dans ProjetCollabService, appelé dans processSectionsChange au moment où saveStatus passe à 'saved'. Les pending sont ainsi vidés en même temps que le bouton devient vert, sans attendre l'événement SSE.",
+      "files": [
+        "frankenstein/src/app/core/services/projet-collab.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la zone 5b l'action ne prend pas le style \"action enregistré\" terminé, elle reste en attente [Image #13], il faut que la zone devienne définitive des que le bouton \"Sauvegardé\" deviens vert [Image #14]",
+      "startedAt": "2026-05-05T08:50:00.000Z",
+      "completedAt": "2026-05-05T09:00:00.000Z"
+    },
+    {
+      "id": "mod-101",
+      "version": "THI-0.59",
+      "date": "2026-05-05T09:30:00.000Z",
+      "type": "feature",
+      "commitType": "FIX",
+      "scope": ["frankenstein"],
+      "features": "frankenstein:projets",
+      "title": "Save : 3 états visuels + bouton 'Non sauvegardé' cliquable",
+      "description": "Refonte du flux save/historique zone 5b pour distinguer 3 états des entrées en attente : 'editing' (section sélectionnée, grisé) → 'saving' (déselectionné, animate-pulse + badge 'sauvegarde…') → 'saved' (entrée définitive via SSE). Ajout de l'état 'state' sur PendingHistoryEntry et de la méthode markAllPendingSaving() dans ProjetCollabService. Nouvel output saveStarting depuis projet-editor-zone, gérée par onSaveStarting() côté parent : passe saveStatus à 'saving' immédiatement (avant l'analyse async de processSectionsChange) pour rendre le 'Sauvegarde…' visible entre 'Non sauvegardé' et 'Sauvegardé'. Le bouton 'Non sauvegardé' devient un button cliquable (forceSave) avec icône save et bordure orange. La sortie tôt de processSectionsChange réinitialise correctement saveStatus à 'saved' et purge les pending.",
+      "files": [
+        "frankenstein/src/app/core/services/projet-collab.service.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/components/projet-history/projet-history.component.html",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.ts",
+        "frankenstein/src/app/pages/user/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-7",
+      "prompt": "Cela ne fonctionne pas\nDans la zone 4, lorsque je lance une modification de texte, le bouton Sauvegarde deviens \"Non sauvegardé\" et dans l'historique on à l'information de l'action en cours (grisé) mais lorsque je désélectionne la section, le bouton reste un certain temps en \"Non sauvegardé\", il faudrait qu'il passe \"En cours de sauvegarde\" avant de passé ensuite à \"Sauvegardé\". Cela doit faire un peu la même chose pour la zone historique, en grisé lorsque la modification est en cours (section selectionné), cela doit clignoté lorsqu'on désélectionne la zone tans que cela n'est pas sauvegardé et s'affiché normalement lorsque l'action de modification est bien sauvegardé.\n- Actuellement la zone modifié ne s'affiche pas en version final dans l'historique zone 5b. \n- Ajoute l'option de pouvoir appuyé sur le bouton \"Non sauvegardé\", pour lancer l'enregistrement de la modification",
+      "startedAt": "2026-05-05T09:15:00.000Z",
+      "completedAt": "2026-05-05T09:30:00.000Z"
     }
   ]
 }

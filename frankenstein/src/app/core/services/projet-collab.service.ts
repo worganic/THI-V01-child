@@ -35,6 +35,7 @@ export interface PendingHistoryEntry {
   label: string;
   username: string;
   timestamp: string;
+  state: 'editing' | 'saving';
 }
 
 @Injectable({ providedIn: 'root' })
@@ -74,7 +75,7 @@ export class ProjetCollabService {
       const idx = list.findIndex(e => e.entityId === entry.entityId);
       if (idx >= 0) {
         const next = list.slice();
-        next[idx] = { ...next[idx], timestamp: entry.timestamp, label: entry.label };
+        next[idx] = { ...next[idx], timestamp: entry.timestamp, label: entry.label, state: entry.state };
         return next;
       }
       return [entry, ...list];
@@ -83,6 +84,17 @@ export class ProjetCollabService {
 
   clearPending(entityId: string): void {
     this.pending.update(list => list.filter(e => e.entityId !== entityId));
+  }
+
+  clearAllPending(): void {
+    this.pending.set([]);
+  }
+
+  // Bascule toutes les entrées en cours d'édition vers l'état "en cours de sauvegarde"
+  markAllPendingSaving(): void {
+    this.pending.update(list => list.map(e =>
+      e.state === 'editing' ? { ...e, state: 'saving' as const } : e
+    ));
   }
 
   async loadHistory(projetId: string): Promise<void> {
@@ -167,6 +179,31 @@ export class ProjetCollabService {
     return firstValueFrom(
       this.http.get<CollabHistoryEntry>(`${API}/api/wo-action-history/${entryId}`)
     );
+  }
+
+  async clearHistory(projetId: string, opts: { entityIds?: string[]; scope?: 'mine' | 'all' } = {}): Promise<number> {
+    const params: string[] = [];
+    if (opts.scope) params.push(`scope=${encodeURIComponent(opts.scope)}`);
+    if (opts.entityIds && opts.entityIds.length > 0) {
+      params.push(`entityIds=${encodeURIComponent(opts.entityIds.join(','))}`);
+    }
+    const qs = params.length ? `?${params.join('&')}` : '';
+    const res = await firstValueFrom(
+      this.http.delete<{ success: boolean; deleted: number }>(
+        `${API}/api/collab/${projetId}/history${qs}`,
+        { headers: this.auth.getAuthHeaders() }
+      )
+    );
+    // Retire localement les entrées concernées (le SSE n'émet pas pour les deletes)
+    const ids = opts.entityIds && opts.entityIds.length > 0 ? new Set(opts.entityIds) : null;
+    const me = this.auth.currentUser();
+    this.history.update(list => list.filter(e => {
+      const matchEntity = !ids || (e.entityId && ids.has(e.entityId));
+      const matchScope = opts.scope === 'all' || (e.userId === (me?.id || ''));
+      // garder l'entrée si elle ne tombe PAS dans la suppression
+      return !(matchEntity && matchScope);
+    }));
+    return res.deleted;
   }
 
   isLockedByMe(nodeId: string): boolean {
