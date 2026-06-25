@@ -11567,6 +11567,25 @@
       "prompt": "jr n'arrive pas à selectionner plusieurs sections afin de pouvoir les alignés",
       "startedAt": "2026-06-23T21:10:00+02:00",
       "completedAt": "2026-06-23T21:30:00+02:00"
+    },
+    {
+      "id": "mod-473",
+      "version": "B-0.306",
+      "date": "2026-06-25T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["server"],
+      "features": "system:admin-tests,system:bdd",
+      "title": "Admin/Tests : migration complète vers MySQL (runs, résultats, sitemap, favoris, historique, réglages)",
+      "description": "Toutes les données admin/tests (runs de tests, résultats individuels, historique des fonctions IA, favoris, réglages de validation, sitemap courant et versions de sitemap) étaient stockées en fichiers JSON locaux (data/tests-admin/). Migration vers 7 nouvelles tables MySQL (admin_test_runs, admin_test_results, admin_test_fn_history, admin_test_favorites, admin_test_settings, admin_test_sitemap, admin_test_sitemap_versions). Toutes les routes Express admin/tests converties en async/await avec pool.query. Migration one-shot automatique au démarrage du serveur (si les tables sont vides et les fichiers JSON existent, les données sont importées). Les données sont désormais partagées entre tous les utilisateurs via la BDD Hostinger. Les fonctions.md restent dans git (source de vérité versionnée). Les répertoires temporaires AI (ai-runs, gen-runs, sitemap-runs) restent sur le système de fichiers local.",
+      "files": [
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "verifi le fonctionnement de admin/tests, tous les enregistrement et datas doivent être enregistré et partagé avec tous les users via les bases de données. les cahiers de recettes, les tests, les résultats, les sitemap, les versions des sitemap, tous doit être enregistré et partagé via la bdd",
+      "startedAt": "2026-06-25T00:00:00.000Z",
+      "completedAt": "2026-06-25T01:00:00.000Z"
     }
   ]
 }

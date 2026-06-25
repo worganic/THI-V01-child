@@ -7638,16 +7638,228 @@ app.delete('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
 // Admin Tests — Sessions de tests manuels sur fonctions.md
 // ============================================================
 
-const ADMIN_TESTS_RUNS_DIR  = path.join(BASE_DIR, 'tests-admin');
-const ADMIN_TESTS_RUNS_FILE = path.join(ADMIN_TESTS_RUNS_DIR, 'runs.json');
-const ADMIN_TESTS_FNHIST_FILE = path.join(ADMIN_TESTS_RUNS_DIR, 'functions-history.json');
-const ADMIN_TESTS_FAV_FILE    = path.join(ADMIN_TESTS_RUNS_DIR, 'favorites.json');
-const ADMIN_TESTS_SETTINGS_FILE = path.join(ADMIN_TESTS_RUNS_DIR, 'settings.json');
-const ADMIN_TESTS_SITEMAP_FILE  = path.join(ADMIN_TESTS_RUNS_DIR, 'sitemap-layout.json');
-const ADMIN_TESTS_SITEMAP_VERSIONS_FILE = path.join(ADMIN_TESTS_RUNS_DIR, 'sitemap-versions.json');
+const ADMIN_TESTS_RUNS_DIR  = path.join(BASE_DIR, 'tests-admin');   // dossier pour les fichiers AI temporaires
 const FONCTIONS_DIR         = path.join(__dirname, '..', 'tests', 'fonctions');
 const FONCTIONS_REGISTRY    = path.join(FONCTIONS_DIR, '_registry.json');
 const USER_CREATED_FILE     = path.join(FONCTIONS_DIR, '_user-created.json');
+
+// ── DB helpers — Admin Tests ───────────────────────────────────────────────
+
+async function dbRunsLoad() {
+    const [runsRows] = await pool.query('SELECT * FROM admin_test_runs ORDER BY started_at ASC');
+    const [resRows]  = await pool.query('SELECT * FROM admin_test_results ORDER BY id ASC');
+    const byRun = {};
+    for (const r of resRows) {
+        if (!byRun[r.run_id]) byRun[r.run_id] = [];
+        byRun[r.run_id].push({
+            itemId:   r.item_id,
+            folderId: r.folder_id || undefined,
+            status:   r.status,
+            note:     r.note || '',
+            testedAt: r.tested_at ? new Date(r.tested_at).toISOString() : undefined,
+        });
+    }
+    const runs = runsRows.map(r => ({
+        id:          r.id,
+        name:        r.name || null,
+        tester:      r.tester,
+        startedAt:   new Date(r.started_at).toISOString(),
+        completedAt: r.completed_at ? new Date(r.completed_at).toISOString() : undefined,
+        status:      r.status,
+        mode:        r.mode || 'manual',
+        isCampaign:  r.is_campaign ? true : undefined,
+        aiProvider:  r.ai_provider || undefined,
+        aiModel:     r.ai_model || undefined,
+        aiState:     r.ai_state || undefined,
+        prompt:      r.prompt || null,
+        results:     byRun[r.id] || [],
+    }));
+    return { runs };
+}
+
+async function dbRunCreate(run) {
+    await pool.query(
+        `INSERT INTO admin_test_runs
+         (id, name, tester, started_at, completed_at, status, mode, is_campaign, ai_provider, ai_model, ai_state, prompt)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+        [run.id, run.name || null, run.tester, new Date(run.startedAt), run.completedAt ? new Date(run.completedAt) : null,
+         run.status, run.mode || 'manual', run.isCampaign ? 1 : 0,
+         run.aiProvider || null, run.aiModel || null, run.aiState || null, run.prompt || null]
+    );
+    if (run.results && run.results.length > 0) {
+        const vals = run.results.map(r => [run.id, r.itemId, r.folderId || null, r.status || 'pending', r.note || null, r.testedAt ? new Date(r.testedAt) : null]);
+        await pool.query(
+            'INSERT INTO admin_test_results (run_id, item_id, folder_id, status, note, tested_at) VALUES ?',
+            [vals]
+        );
+    }
+}
+
+async function dbRunPatch(runId, fields) {
+    const allowed = ['name', 'status', 'completed_at', 'ai_state', 'prompt'];
+    const sets = [], vals = [];
+    for (const [k, v] of Object.entries(fields)) {
+        if (!allowed.includes(k)) continue;
+        sets.push(`${k}=?`); vals.push(v);
+    }
+    if (sets.length === 0) return;
+    vals.push(runId);
+    await pool.query(`UPDATE admin_test_runs SET ${sets.join(',')} WHERE id=?`, vals);
+}
+
+async function dbResultsUpsert(runId, results) {
+    for (const r of results) {
+        await pool.query(
+            `INSERT INTO admin_test_results (run_id, item_id, folder_id, status, note, tested_at)
+             VALUES (?,?,?,?,?,?)
+             ON DUPLICATE KEY UPDATE status=VALUES(status), note=VALUES(note), tested_at=VALUES(tested_at)`,
+            [runId, r.itemId, r.folderId || null, r.status, r.note || null, r.testedAt ? new Date(r.testedAt) : null]
+        );
+    }
+}
+
+async function dbResultPersist(runId, itemId, status, note) {
+    const now = new Date();
+    await pool.query(
+        'UPDATE admin_test_results SET status=?, note=?, tested_at=? WHERE run_id=? AND item_id=?',
+        [status, note || '', now, runId, itemId]
+    );
+}
+
+async function dbResultsAddNew(runId, newItems) {
+    if (!newItems.length) return;
+    const vals = newItems.map(r => [runId, r.itemId, r.folderId || null, 'pending', null, null]);
+    await pool.query(
+        'INSERT IGNORE INTO admin_test_results (run_id, item_id, folder_id, status, note, tested_at) VALUES ?',
+        [vals]
+    );
+}
+
+async function dbRunDelete(runId) {
+    await pool.query('DELETE FROM admin_test_results WHERE run_id=?', [runId]);
+    await pool.query('DELETE FROM admin_test_runs WHERE id=?', [runId]);
+}
+
+async function dbFnHistoryLoad() {
+    const [rows] = await pool.query('SELECT * FROM admin_test_fn_history ORDER BY date DESC');
+    return rows.map(r => ({
+        id:          r.id,
+        date:        new Date(r.date).toISOString(),
+        folderId:    r.folder_id,
+        path:        r.path,
+        pageTitle:   r.page_title || '',
+        updatedBy:   r.updated_by || '',
+        added:       r.added    ? JSON.parse(r.added)    : [],
+        modified:    r.modified ? JSON.parse(r.modified) : [],
+        deleted:     r.deleted  ? JSON.parse(r.deleted)  : [],
+        counts:      r.counts   ? JSON.parse(r.counts)   : { added: 0, modified: 0, deleted: 0 },
+        total:       r.total || 0,
+        aiPrompt:    r.ai_prompt || undefined,
+        aiResponse:  r.ai_response || undefined,
+    }));
+}
+
+async function dbFnHistoryInsert(entry) {
+    await pool.query(
+        `INSERT INTO admin_test_fn_history
+         (id, date, folder_id, path, page_title, updated_by, added, modified, deleted, counts, total, ai_prompt, ai_response)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        [entry.id, new Date(entry.date), entry.folderId, entry.path, entry.pageTitle || '',
+         entry.updatedBy || '', JSON.stringify(entry.added || []), JSON.stringify(entry.modified || []),
+         JSON.stringify(entry.deleted || []), JSON.stringify(entry.counts || {}), entry.total || 0,
+         (entry.aiPrompt || '').slice(0, 40000) || null, (entry.aiResponse || '').slice(0, 40000) || null]
+    );
+}
+
+async function dbFavLoad() {
+    const [rows] = await pool.query('SELECT folder_ids FROM admin_test_favorites LIMIT 1');
+    if (!rows.length) return [];
+    try { return JSON.parse(rows[0].folder_ids) || []; } catch { return []; }
+}
+
+async function dbFavSave(folderIds) {
+    const [rows] = await pool.query('SELECT id FROM admin_test_favorites LIMIT 1');
+    if (rows.length) {
+        await pool.query('UPDATE admin_test_favorites SET folder_ids=? WHERE id=?', [JSON.stringify(folderIds), rows[0].id]);
+    } else {
+        await pool.query('INSERT INTO admin_test_favorites (folder_ids) VALUES (?)', [JSON.stringify(folderIds)]);
+    }
+}
+
+async function dbSettingsLoad() {
+    const def = { critiqueThreshold: 15, mineurThreshold: 40 };
+    const [rows] = await pool.query('SELECT critique_threshold, mineur_threshold FROM admin_test_settings LIMIT 1');
+    if (!rows.length) return def;
+    return { critiqueThreshold: rows[0].critique_threshold ?? 15, mineurThreshold: rows[0].mineur_threshold ?? 40 };
+}
+
+async function dbSettingsSave(s) {
+    const [rows] = await pool.query('SELECT id FROM admin_test_settings LIMIT 1');
+    if (rows.length) {
+        await pool.query('UPDATE admin_test_settings SET critique_threshold=?, mineur_threshold=? WHERE id=?',
+            [s.critiqueThreshold, s.mineurThreshold, rows[0].id]);
+    } else {
+        await pool.query('INSERT INTO admin_test_settings (critique_threshold, mineur_threshold) VALUES (?,?)',
+            [s.critiqueThreshold, s.mineurThreshold]);
+    }
+}
+
+async function dbSitemapLayoutLoad() {
+    const [rows] = await pool.query('SELECT layout, updated_at, updated_by FROM admin_test_sitemap LIMIT 1');
+    if (!rows.length) return {};
+    try {
+        const obj = JSON.parse(rows[0].layout) || {};
+        if (rows[0].updated_at) obj.updatedAt = new Date(rows[0].updated_at).toISOString();
+        if (rows[0].updated_by) obj.updatedBy = rows[0].updated_by;
+        return obj;
+    } catch { return {}; }
+}
+
+async function dbSitemapLayoutSave(layout, updatedBy) {
+    const [rows] = await pool.query('SELECT id FROM admin_test_sitemap LIMIT 1');
+    const json = JSON.stringify(layout);
+    if (rows.length) {
+        await pool.query('UPDATE admin_test_sitemap SET layout=?, updated_by=?, updated_at=NOW() WHERE id=?',
+            [json, updatedBy || null, rows[0].id]);
+    } else {
+        await pool.query('INSERT INTO admin_test_sitemap (layout, updated_by, updated_at) VALUES (?,?,NOW())',
+            [json, updatedBy || null]);
+    }
+}
+
+async function dbSitemapVersionsLoad() {
+    const [rows] = await pool.query('SELECT * FROM admin_test_sitemap_versions ORDER BY created_at DESC');
+    return rows.map(r => ({
+        id:        r.id,
+        name:      r.name,
+        createdAt: new Date(r.created_at).toISOString(),
+        createdBy: r.created_by,
+        updatedAt: r.updated_at ? new Date(r.updated_at).toISOString() : undefined,
+        updatedBy: r.updated_by || undefined,
+        layout:    (() => { try { return JSON.parse(r.layout); } catch { return {}; } })(),
+    }));
+}
+
+async function dbSitemapVersionInsert(v) {
+    await pool.query(
+        'INSERT INTO admin_test_sitemap_versions (id, name, created_at, created_by, layout) VALUES (?,?,?,?,?)',
+        [v.id, v.name, new Date(v.createdAt), v.createdBy, JSON.stringify(v.layout)]
+    );
+}
+
+async function dbSitemapVersionUpdate(id, fields) {
+    const sets = [], vals = [];
+    if (fields.layout !== undefined) { sets.push('layout=?'); vals.push(JSON.stringify(fields.layout)); }
+    if (fields.updatedAt !== undefined) { sets.push('updated_at=?'); vals.push(new Date(fields.updatedAt)); }
+    if (fields.updatedBy !== undefined) { sets.push('updated_by=?'); vals.push(fields.updatedBy); }
+    if (!sets.length) return;
+    vals.push(id);
+    await pool.query(`UPDATE admin_test_sitemap_versions SET ${sets.join(',')} WHERE id=?`, vals);
+}
+
+async function dbSitemapVersionDelete(id) {
+    await pool.query('DELETE FROM admin_test_sitemap_versions WHERE id=?', [id]);
+}
 
 function loadFonctionsRegistry() {
     try {
@@ -7662,39 +7874,8 @@ function buildPathToId(registry) {
     return inv;
 }
 
-function testsAdminLoad() {
-    try {
-        if (fs.existsSync(ADMIN_TESTS_RUNS_FILE)) return JSON.parse(fs.readFileSync(ADMIN_TESTS_RUNS_FILE, 'utf8'));
-    } catch (e) { console.error('[ADMIN-TESTS] load error:', e); }
-    return { runs: [] };
-}
-
-function testsAdminSave(data) {
-    try {
-        fs.mkdirSync(ADMIN_TESTS_RUNS_DIR, { recursive: true });
-        fs.writeFileSync(ADMIN_TESTS_RUNS_FILE, JSON.stringify(data, null, 2), 'utf8');
-        return true;
-    } catch (e) { console.error('[ADMIN-TESTS] save error:', e); return false; }
-}
-
 function testsAdminId() {
     return `trun-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-}
-
-// Historique des mises à jour du référentiel de fonctions (générations IA appliquées).
-function fnHistoryLoad() {
-    try {
-        if (fs.existsSync(ADMIN_TESTS_FNHIST_FILE)) return JSON.parse(fs.readFileSync(ADMIN_TESTS_FNHIST_FILE, 'utf8'));
-    } catch (e) { console.error('[ADMIN-TESTS] fn-history load error:', e); }
-    return { entries: [] };
-}
-
-function fnHistorySave(data) {
-    try {
-        fs.mkdirSync(ADMIN_TESTS_RUNS_DIR, { recursive: true });
-        fs.writeFileSync(ADMIN_TESTS_FNHIST_FILE, JSON.stringify(data, null, 2), 'utf8');
-        return true;
-    } catch (e) { console.error('[ADMIN-TESTS] fn-history save error:', e); return false; }
 }
 
 function computeRunStats(run) {
@@ -7906,164 +8087,191 @@ app.post('/api/admin/tests/open-folder', (req, res) => {
 });
 
 // GET /api/admin/tests/runs — liste tous les runs avec stats et topKo
-app.get('/api/admin/tests/runs', (req, res) => {
+app.get('/api/admin/tests/runs', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const data = testsAdminLoad();
-    const runs = [...data.runs].reverse().map(run => ({
-        id:          run.id,
-        name:        run.name,
-        tester:      run.tester,
-        startedAt:   run.startedAt,
-        completedAt: run.completedAt,
-        status:      run.status,
-        mode:        run.mode || 'manual',
-        isCampaign:  !!run.isCampaign,
-        aiProvider:  run.aiProvider || null,
-        aiModel:     run.aiModel || null,
-        aiState:     run.aiState || null,
-        stats:       computeRunStats(run)
-    }));
-    res.json({ runs, topKo: computeTopKo(data.runs) });
+    try {
+        const data = await dbRunsLoad();
+        const runs = [...data.runs].reverse().map(run => ({
+            id:          run.id,
+            name:        run.name,
+            tester:      run.tester,
+            startedAt:   run.startedAt,
+            completedAt: run.completedAt,
+            status:      run.status,
+            mode:        run.mode || 'manual',
+            isCampaign:  !!run.isCampaign,
+            aiProvider:  run.aiProvider || null,
+            aiModel:     run.aiModel || null,
+            aiState:     run.aiState || null,
+            stats:       computeRunStats(run)
+        }));
+        res.json({ runs, topKo: computeTopKo(data.runs) });
+    } catch (e) {
+        console.error('[ADMIN-TESTS] GET /runs error:', e.message);
+        res.status(500).json({ error: 'Erreur chargement des runs' });
+    }
 });
 
 // GET /api/admin/tests/matrix — tous les runs AVEC leurs résultats (pour la vue matrice "Résultats")
-app.get('/api/admin/tests/matrix', (req, res) => {
+app.get('/api/admin/tests/matrix', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const data = testsAdminLoad();
-    // Ordre chronologique (du plus ancien au plus récent) pour l'affichage en colonnes.
-    const runs = [...data.runs].map(run => ({
-        id:          run.id,
-        name:        run.name || null,
-        tester:      run.tester,
-        startedAt:   run.startedAt,
-        completedAt: run.completedAt || null,
-        status:      run.status,
-        mode:        run.mode || 'manual',
-        isCampaign:  !!run.isCampaign,
-        stats:       computeRunStats(run),
-        results:     run.results.map(r => ({ itemId: r.itemId, status: r.status, note: r.note || null, testedAt: r.testedAt || null }))
-    }));
-    res.json({ runs });
+    try {
+        const data = await dbRunsLoad();
+        const runs = [...data.runs].map(run => ({
+            id:          run.id,
+            name:        run.name || null,
+            tester:      run.tester,
+            startedAt:   run.startedAt,
+            completedAt: run.completedAt || null,
+            status:      run.status,
+            mode:        run.mode || 'manual',
+            isCampaign:  !!run.isCampaign,
+            stats:       computeRunStats(run),
+            results:     run.results.map(r => ({ itemId: r.itemId, status: r.status, note: r.note || null, testedAt: r.testedAt || null }))
+        }));
+        res.json({ runs });
+    } catch (e) {
+        console.error('[ADMIN-TESTS] GET /matrix error:', e.message);
+        res.status(500).json({ error: 'Erreur chargement de la matrice' });
+    }
 });
 
 // POST /api/admin/tests/runs — crée un nouveau run
-app.post('/api/admin/tests/runs', (req, res) => {
+app.post('/api/admin/tests/runs', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    if (!_functionItemsCache) _functionItemsCache = scanAllFunctions();
-    const { name, tester, folderIds, mode, aiProvider, aiModel, prompt, isCampaign } = req.body;
-    // Filtrage optionnel par sections (folderIds) : un run peut ne couvrir qu'une partie
-    // du référentiel. Liste vide ou absente = toutes les fonctions.
-    let items = _functionItemsCache;
-    if (Array.isArray(folderIds) && folderIds.length > 0) {
-        const set = new Set(folderIds);
-        items = items.filter(item => set.has(item.folderId));
+    try {
+        if (!_functionItemsCache) _functionItemsCache = scanAllFunctions();
+        const { name, tester, folderIds, mode, aiProvider, aiModel, prompt, isCampaign } = req.body;
+        let items = _functionItemsCache;
+        if (Array.isArray(folderIds) && folderIds.length > 0) {
+            const set = new Set(folderIds);
+            items = items.filter(item => set.has(item.folderId));
+        }
+        const newRun = {
+            id:        testsAdminId(),
+            name:      name || null,
+            tester:    tester || user.username || 'admin',
+            startedAt: new Date().toISOString(),
+            status:    'in_progress',
+            isCampaign: isCampaign ? true : undefined,
+            mode:      mode === 'ai' ? 'ai' : 'manual',
+            aiProvider: mode === 'ai' ? (aiProvider || null) : undefined,
+            aiModel:    mode === 'ai' ? (aiModel || null)    : undefined,
+            aiState:    mode === 'ai' ? 'idle'               : undefined,
+            prompt:     mode === 'ai' ? (prompt || null)     : undefined,
+            results:   items.map(item => ({ itemId: item.id, status: 'pending', folderId: item.folderId }))
+        };
+        await dbRunCreate(newRun);
+        res.json({ ...newRun, stats: computeRunStats(newRun) });
+    } catch (e) {
+        console.error('[ADMIN-TESTS] POST /runs error:', e.message);
+        res.status(500).json({ error: 'Erreur création du run' });
     }
-    const newRun = {
-        id:        testsAdminId(),
-        name:      name || null,
-        tester:    tester || user.username || 'admin',
-        startedAt: new Date().toISOString(),
-        status:    'in_progress',
-        // Campagne : run au long cours, on y ajoute des sections au fil du temps (1 seule colonne en résultats).
-        ...(isCampaign ? { isCampaign: true } : {}),
-        // Mode 'ai' : run testé automatiquement par Claude Code / Antigravity via Browser MCP.
-        mode:      mode === 'ai' ? 'ai' : 'manual',
-        ...(mode === 'ai' ? { aiProvider: aiProvider || null, aiModel: aiModel || null, aiState: 'idle', prompt: prompt || null } : {}),
-        results:   items.map(item => ({ itemId: item.id, status: 'pending', folderId: item.folderId }))
-    };
-    const data = testsAdminLoad();
-    data.runs.push(newRun);
-    testsAdminSave(data);
-    res.json({ ...newRun, stats: computeRunStats(newRun) });
 });
 
 // POST /api/admin/tests/runs/:id/add-sections { folderIds } — ajoute des sections à une campagne.
-// Les fonctions déjà présentes ne sont pas réinitialisées ; seules les nouvelles sont ajoutées en 'pending'.
-app.post('/api/admin/tests/runs/:id/add-sections', (req, res) => {
+app.post('/api/admin/tests/runs/:id/add-sections', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    if (!_functionItemsCache) _functionItemsCache = scanAllFunctions();
-    const data = testsAdminLoad();
-    const run  = data.runs.find(r => r.id === req.params.id);
-    if (!run) return res.status(404).json({ error: 'Run introuvable' });
+    try {
+        if (!_functionItemsCache) _functionItemsCache = scanAllFunctions();
+        const data = await dbRunsLoad();
+        const run  = data.runs.find(r => r.id === req.params.id);
+        if (!run) return res.status(404).json({ error: 'Run introuvable' });
 
-    const { folderIds } = req.body || {};
-    let items = _functionItemsCache;
-    if (Array.isArray(folderIds) && folderIds.length > 0) {
-        const set = new Set(folderIds);
-        items = items.filter(item => set.has(item.folderId));
+        const { folderIds } = req.body || {};
+        let items = _functionItemsCache;
+        if (Array.isArray(folderIds) && folderIds.length > 0) {
+            const set = new Set(folderIds);
+            items = items.filter(item => set.has(item.folderId));
+        }
+        const existing = new Set(run.results.map(r => r.itemId));
+        const newItems = items.filter(item => !existing.has(item.id)).map(item => ({ itemId: item.id, folderId: item.folderId }));
+        await dbResultsAddNew(run.id, newItems);
+        await dbRunPatch(run.id, { status: 'in_progress', completed_at: null });
+        // Recharge pour retourner les stats à jour
+        const updated = await dbRunsLoad();
+        const updatedRun = updated.runs.find(r => r.id === run.id) || run;
+        res.json({ ...updatedRun, stats: computeRunStats(updatedRun), added: newItems.length });
+    } catch (e) {
+        console.error('[ADMIN-TESTS] POST /runs/:id/add-sections error:', e.message);
+        res.status(500).json({ error: 'Erreur ajout de sections' });
     }
-    const existing = new Set(run.results.map(r => r.itemId));
-    let added = 0;
-    for (const item of items) {
-        if (!existing.has(item.id)) { run.results.push({ itemId: item.id, status: 'pending', folderId: item.folderId }); added++; }
-    }
-    run.status = 'in_progress';
-    if (run.completedAt) run.completedAt = null;
-    testsAdminSave(data);
-    res.json({ ...run, stats: computeRunStats(run), added });
 });
 
 // GET /api/admin/tests/runs/:id — détail complet d'un run
-app.get('/api/admin/tests/runs/:id', (req, res) => {
+app.get('/api/admin/tests/runs/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const data = testsAdminLoad();
-    const run  = data.runs.find(r => r.id === req.params.id);
-    if (!run) return res.status(404).json({ error: 'Run introuvable' });
-    res.json({ ...run, stats: computeRunStats(run) });
+    try {
+        const data = await dbRunsLoad();
+        const run  = data.runs.find(r => r.id === req.params.id);
+        if (!run) return res.status(404).json({ error: 'Run introuvable' });
+        res.json({ ...run, stats: computeRunStats(run) });
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur chargement du run' });
+    }
 });
 
 // PUT /api/admin/tests/runs/:id — patch résultats / finalisation
-app.put('/api/admin/tests/runs/:id', (req, res) => {
+app.put('/api/admin/tests/runs/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const data = testsAdminLoad();
-    const idx  = data.runs.findIndex(r => r.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Run introuvable' });
+    try {
+        const data = await dbRunsLoad();
+        const run  = data.runs.find(r => r.id === req.params.id);
+        if (!run) return res.status(404).json({ error: 'Run introuvable' });
 
-    const { results, name, status } = req.body;
+        const { results, name, status } = req.body;
+        const patches = {};
+        if (name !== undefined) patches.name = name;
 
-    if (name !== undefined) data.runs[idx].name = name;
-
-    const testedItemIds = [];
-    if (results && Array.isArray(results)) {
+        const testedItemIds = [];
         const now = new Date().toISOString();
-        for (const incoming of results) {
-            const existing = data.runs[idx].results.find(r => r.itemId === incoming.itemId);
-            if (existing) {
-                existing.status   = incoming.status;
-                existing.note     = incoming.note;
-                existing.testedAt = now;
+        if (results && Array.isArray(results)) {
+            for (const incoming of results) {
+                const existing = run.results.find(r => r.itemId === incoming.itemId);
+                if (existing) {
+                    existing.status   = incoming.status;
+                    existing.note     = incoming.note;
+                    existing.testedAt = now;
+                }
+                if (incoming.status === 'ok' || incoming.status === 'ko') testedItemIds.push(incoming.itemId);
             }
-            // Un résultat décidé (OK/KO) lève le tag [modification] : la section a été retestée.
-            if (incoming.status === 'ok' || incoming.status === 'ko') testedItemIds.push(incoming.itemId);
+            await dbResultsUpsert(run.id, run.results.map(r => ({ ...r, testedAt: r.testedAt || undefined })));
         }
-    }
 
-    if (status === 'completed' && data.runs[idx].status !== 'completed') {
-        data.runs[idx].status      = 'completed';
-        data.runs[idx].completedAt = new Date().toISOString();
-    }
+        if (status === 'completed' && run.status !== 'completed') {
+            patches.status       = 'completed';
+            patches.completed_at = new Date();
+            run.status           = 'completed';
+            run.completedAt      = now;
+        }
+        if (Object.keys(patches).length) await dbRunPatch(run.id, patches);
 
-    testsAdminSave(data);
-    try { clearModificationTagForItems(testedItemIds); } catch (e) { console.warn('[ADMIN-TESTS] clear modif tag:', e.message); }
-    res.json({ ...data.runs[idx], stats: computeRunStats(data.runs[idx]) });
+        try { clearModificationTagForItems(testedItemIds); } catch (e) { console.warn('[ADMIN-TESTS] clear modif tag:', e.message); }
+        res.json({ ...run, stats: computeRunStats(run) });
+    } catch (e) {
+        console.error('[ADMIN-TESTS] PUT /runs/:id error:', e.message);
+        res.status(500).json({ error: 'Erreur mise à jour du run' });
+    }
 });
 
 // DELETE /api/admin/tests/runs/:id — supprime un run
-app.delete('/api/admin/tests/runs/:id', (req, res) => {
+app.delete('/api/admin/tests/runs/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const data   = testsAdminLoad();
-    const before = data.runs.length;
-    data.runs    = data.runs.filter(r => r.id !== req.params.id);
-    if (data.runs.length === before) return res.status(404).json({ error: 'Run introuvable' });
-    testsAdminSave(data);
-    res.json({ ok: true });
+    try {
+        const [rows] = await pool.query('SELECT id FROM admin_test_runs WHERE id=?', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Run introuvable' });
+        await dbRunDelete(req.params.id);
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur suppression du run' });
+    }
 });
 
 // Compose le prompt de test automatique : consignes (éditables) + format imposé + liste des fonctions.
@@ -8137,11 +8345,11 @@ COMMENCE MAINTENANT et assure-toi d'écrire les ${count} ligne(s) dans le fichie
 
 // GET /api/admin/tests/runs/:id/ai-stream — lance le test automatique via Claude Code / Antigravity
 // (executor local + Browser MCP) et streame les résultats au fur et à mesure (SSE). Auth via ?token=.
-app.get('/api/admin/tests/runs/:id/ai-stream', (req, res) => {
+app.get('/api/admin/tests/runs/:id/ai-stream', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
 
-    const data = testsAdminLoad();
+    const data = await dbRunsLoad();
     const run  = data.runs.find(r => r.id === req.params.id);
     if (!run) return res.status(404).json({ error: 'Run introuvable' });
 
@@ -8160,19 +8368,20 @@ app.get('/api/admin/tests/runs/:id/ai-stream', (req, res) => {
     res.flushHeaders();
     const sse = (event, payload) => { if (!res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`); };
 
-    // Persiste un résultat IA dans runs.json (merge comme le PUT) et renvoie les stats à jour.
+    // Persiste un résultat IA en mémoire locale (pour stats synchrones) + en BDD (fire-and-forget).
+    const localResults = run.results.map(r => ({ ...r }));
     const persistResult = (itemId, status, note) => {
-        const d = testsAdminLoad();
-        const r = d.runs.find(x => x.id === run.id);
-        if (!r) return null;
-        const existing = r.results.find(x => x.itemId === itemId);
-        if (!existing) return null;
-        existing.status   = status;
-        existing.note     = note || '';
-        existing.testedAt = new Date().toISOString();
-        if (r.aiState !== 'running') r.aiState = 'running';
-        testsAdminSave(d);
-        return computeRunStats(r);
+        const local = localResults.find(x => x.itemId === itemId);
+        if (!local) return null;
+        local.status   = status;
+        local.note     = note || '';
+        local.testedAt = new Date().toISOString();
+        // DB async — ne bloque pas le SSE
+        dbResultPersist(run.id, itemId, status, note)
+            .catch(e => console.warn('[ADMIN-TESTS] persistResult DB error:', e.message));
+        pool.query('UPDATE admin_test_runs SET ai_state=? WHERE id=?', ['running', run.id])
+            .catch(() => {});
+        return computeRunStats({ results: localResults });
     };
 
     const provider = run.aiProvider || 'claude';
@@ -8206,7 +8415,7 @@ app.get('/api/admin/tests/runs/:id/ai-stream', (req, res) => {
 
     sse('start', { total: items.length, provider, model });
     // Marque le run "running"
-    { const d = testsAdminLoad(); const r = d.runs.find(x => x.id === run.id); if (r) { r.aiState = 'running'; testsAdminSave(d); } }
+    pool.query('UPDATE admin_test_runs SET ai_state=? WHERE id=?', ['running', run.id]).catch(() => {});
 
     // Lit une ligne @@TEST_RESULT@@ (depuis stdout Claude OU le fichier agy), persiste et émet le SSE.
     const ingestResultLine = (line) => {
@@ -8249,8 +8458,7 @@ app.get('/api/admin/tests/runs/:id/ai-stream', (req, res) => {
             apiRes.on('data', c => { errBody += c.toString(); });
             apiRes.on('end', () => {
                 stopPoller();
-                const d = testsAdminLoad(); const r = d.runs.find(x => x.id === run.id);
-                if (r) { r.aiState = 'error'; testsAdminSave(d); }
+                pool.query('UPDATE admin_test_runs SET ai_state=? WHERE id=?', ['error', run.id]).catch(() => {});
                 sse('run-failed', { message: `Executor a répondu HTTP ${apiRes.statusCode} : ${errBody.slice(0, 500) || '(corps vide)'}` });
                 res.end();
             });
@@ -8300,8 +8508,7 @@ app.get('/api/admin/tests/runs/:id/ai-stream', (req, res) => {
             if (lineBuf) handleStdoutLine(lineBuf);
             if (isAgy) pollAgyFile();   // lecture finale du fichier de résultats agy
             stopPoller();
-            const d = testsAdminLoad(); const r = d.runs.find(x => x.id === run.id);
-            if (r) { r.aiState = 'done'; testsAdminSave(d); }
+            pool.query('UPDATE admin_test_runs SET ai_state=? WHERE id=?', ['done', run.id]).catch(() => {});
             // Diagnostic : l'IA n'a renvoyé aucun résultat.
             if (seen.size === 0) {
                 let msg;
@@ -8314,14 +8521,13 @@ app.get('/api/admin/tests/runs/:id/ai-stream', (req, res) => {
                 }
                 sse('ai-log', { stream: 'error', text: msg });
             }
-            sse('complete', { done: seen.size, total: items.length, logLines, stats: r ? computeRunStats(r) : null });
+            sse('complete', { done: seen.size, total: items.length, logLines, stats: computeRunStats({ results: localResults }) });
             res.end();
         });
     });
     apiReq.on('error', (e) => {
         stopPoller();
-        const d = testsAdminLoad(); const r = d.runs.find(x => x.id === run.id);
-        if (r) { r.aiState = 'error'; testsAdminSave(d); }
+        pool.query('UPDATE admin_test_runs SET ai_state=? WHERE id=?', ['error', run.id]).catch(() => {});
         sse('run-failed', { message: `Executor injoignable (port 3002) : ${e.message}. Lance l'executor et configure Browser MCP.` });
         res.end();
     });
@@ -8802,7 +9008,7 @@ app.get('/api/admin/tests/generate-functions-stream', (req, res) => {
 });
 
 // POST /api/admin/tests/apply-functions — applique la liste validée par l'utilisateur (réécrit le fonctions.md).
-app.post('/api/admin/tests/apply-functions', (req, res) => {
+app.post('/api/admin/tests/apply-functions', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
     const { folderId, functions, updatedBy, changes, aiPrompt, aiResponse } = req.body || {};
@@ -8847,8 +9053,7 @@ app.post('/api/admin/tests/apply-functions', (req, res) => {
         })) : [];
         const added = norm(c.added), modified = norm(c.modified), deleted = norm(c.deleted);
         if (added.length || modified.length || deleted.length) {
-            const hist = fnHistoryLoad();
-            hist.entries.push({
+            await dbFnHistoryInsert({
                 id: `fnh-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
                 date: now,
                 folderId, path: relPath, pageTitle,
@@ -8856,10 +9061,9 @@ app.post('/api/admin/tests/apply-functions', (req, res) => {
                 added, modified, deleted,
                 counts: { added: added.length, modified: modified.length, deleted: deleted.length },
                 total: items.length,
-                aiPrompt: (aiPrompt || '').toString().slice(0, 40000),
-                aiResponse: (aiResponse || '').toString().slice(0, 40000),
+                aiPrompt:    (aiPrompt    || '').toString(),
+                aiResponse:  (aiResponse  || '').toString(),
             });
-            fnHistorySave(hist);
         }
 
         res.json({ ok: true, total: items.length, items });
@@ -8935,103 +9139,41 @@ app.post('/api/admin/tests/create-section', (req, res) => {
 });
 
 // GET /api/admin/tests/functions-history — historique des mises à jour du référentiel (récent → ancien).
-app.get('/api/admin/tests/functions-history', (req, res) => {
+app.get('/api/admin/tests/functions-history', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const hist = fnHistoryLoad();
-    res.json({ entries: [...(hist.entries || [])].reverse() });
+    try {
+        const entries = await dbFnHistoryLoad();   // déjà trié DESC
+        res.json({ entries });
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur chargement de l\'historique' });
+    }
 });
 
-// Favoris de sections (étoiles) — stockage simple par folderId.
-function favLoad() {
-    try {
-        if (fs.existsSync(ADMIN_TESTS_FAV_FILE)) {
-            const d = JSON.parse(fs.readFileSync(ADMIN_TESTS_FAV_FILE, 'utf8'));
-            return Array.isArray(d.folderIds) ? d.folderIds : [];
-        }
-    } catch (e) { console.error('[ADMIN-TESTS] favorites load error:', e); }
-    return [];
-}
-function favSave(folderIds) {
-    try {
-        fs.mkdirSync(ADMIN_TESTS_RUNS_DIR, { recursive: true });
-        fs.writeFileSync(ADMIN_TESTS_FAV_FILE, JSON.stringify({ folderIds }, null, 2), 'utf8');
-        return true;
-    } catch (e) { console.error('[ADMIN-TESTS] favorites save error:', e); return false; }
-}
-
-// ── Réglages de validation (seuils de priorité) ──
-function testsSettingsLoad() {
-    const def = { critiqueThreshold: 15, mineurThreshold: 40 };
-    try {
-        if (fs.existsSync(ADMIN_TESTS_SETTINGS_FILE)) {
-            return { ...def, ...JSON.parse(fs.readFileSync(ADMIN_TESTS_SETTINGS_FILE, 'utf8')) };
-        }
-    } catch (e) { console.error('[ADMIN-TESTS] settings load error:', e); }
-    return def;
-}
-function testsSettingsSave(s) {
-    try {
-        fs.mkdirSync(ADMIN_TESTS_RUNS_DIR, { recursive: true });
-        fs.writeFileSync(ADMIN_TESTS_SETTINGS_FILE, JSON.stringify(s, null, 2), 'utf8');
-        return true;
-    } catch (e) { console.error('[ADMIN-TESTS] settings save error:', e); return false; }
-}
-
-// ── Disposition de la Site Map (partagée entre utilisateurs) ──
-function sitemapLayoutLoad() {
-    try {
-        if (fs.existsSync(ADMIN_TESTS_SITEMAP_FILE)) {
-            return JSON.parse(fs.readFileSync(ADMIN_TESTS_SITEMAP_FILE, 'utf8')) || {};
-        }
-    } catch (e) { console.error('[ADMIN-TESTS] sitemap layout load error:', e); }
-    return {};
-}
-function sitemapLayoutSave(layout) {
-    try {
-        fs.mkdirSync(ADMIN_TESTS_RUNS_DIR, { recursive: true });
-        fs.writeFileSync(ADMIN_TESTS_SITEMAP_FILE, JSON.stringify(layout, null, 2), 'utf8');
-        return true;
-    } catch (e) { console.error('[ADMIN-TESTS] sitemap layout save error:', e); return false; }
-}
-
-// ── Versions (snapshots) de la Site Map ──
-function sitemapVersionsLoad() {
-    try {
-        if (fs.existsSync(ADMIN_TESTS_SITEMAP_VERSIONS_FILE)) {
-            const d = JSON.parse(fs.readFileSync(ADMIN_TESTS_SITEMAP_VERSIONS_FILE, 'utf8'));
-            return Array.isArray(d.versions) ? d.versions : [];
-        }
-    } catch (e) { console.error('[ADMIN-TESTS] sitemap versions load error:', e); }
-    return [];
-}
-function sitemapVersionsSave(versions) {
-    try {
-        fs.mkdirSync(ADMIN_TESTS_RUNS_DIR, { recursive: true });
-        fs.writeFileSync(ADMIN_TESTS_SITEMAP_VERSIONS_FILE, JSON.stringify({ versions }, null, 2), 'utf8');
-        return true;
-    } catch (e) { console.error('[ADMIN-TESTS] sitemap versions save error:', e); return false; }
-}
+// (favLoad, favSave, testsSettingsLoad/Save, sitemapLayoutLoad/Save → remplacés par fonctions DB async ci-dessus)
 
 // GET /api/admin/tests/settings — seuils de validation.
-app.get('/api/admin/tests/settings', (req, res) => {
+app.get('/api/admin/tests/settings', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    res.json(testsSettingsLoad());
+    try { res.json(await dbSettingsLoad()); }
+    catch (e) { res.status(500).json({ error: 'Erreur chargement des réglages' }); }
 });
 
 // POST /api/admin/tests/settings { critiqueThreshold, mineurThreshold } — modifie les seuils.
-app.post('/api/admin/tests/settings', (req, res) => {
+app.post('/api/admin/tests/settings', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const cur = testsSettingsLoad();
-    const clamp = (v, d) => { const n = Number(v); return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : d; };
-    const next = {
-        critiqueThreshold: clamp(req.body?.critiqueThreshold, cur.critiqueThreshold),
-        mineurThreshold:   clamp(req.body?.mineurThreshold, cur.mineurThreshold),
-    };
-    testsSettingsSave(next);
-    res.json(next);
+    try {
+        const cur = await dbSettingsLoad();
+        const clamp = (v, d) => { const n = Number(v); return Number.isFinite(n) ? Math.max(0, Math.min(100, n)) : d; };
+        const next = {
+            critiqueThreshold: clamp(req.body?.critiqueThreshold, cur.critiqueThreshold),
+            mineurThreshold:   clamp(req.body?.mineurThreshold, cur.mineurThreshold),
+        };
+        await dbSettingsSave(next);
+        res.json(next);
+    } catch (e) { res.status(500).json({ error: 'Erreur sauvegarde des réglages' }); }
 });
 
 // POST /api/admin/tests/function-priority { itemId, priority } — modifie la priorité d'une fonction.
@@ -9050,7 +9192,7 @@ app.post('/api/admin/tests/function-priority', (req, res) => {
     const functions = groupItems.map(it => ({
         id: it.id, section: it.section, content: it.content, components: it.components || [],
         priority: it.id === itemId ? normalizePriority(priority) : (it.priority || 'mineur'),
-        needsRetest: !!it.needsRetest,   // préserve le tag [modification] lors de l'édition de priorité
+        needsRetest: !!it.needsRetest,
     }));
     try {
         writeFonctionsMd(relPath, folderId, pageTitle, functions, meta);
@@ -9063,115 +9205,128 @@ app.post('/api/admin/tests/function-priority', (req, res) => {
 });
 
 // GET /api/admin/tests/favorites — liste des folderId favoris.
-app.get('/api/admin/tests/favorites', (req, res) => {
+app.get('/api/admin/tests/favorites', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    res.json({ folderIds: favLoad() });
+    try { res.json({ folderIds: await dbFavLoad() }); }
+    catch (e) { res.status(500).json({ error: 'Erreur chargement des favoris' }); }
 });
 
 // POST /api/admin/tests/favorites { folderId, favorite } — (dé)marque une section en favori.
-app.post('/api/admin/tests/favorites', (req, res) => {
+app.post('/api/admin/tests/favorites', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
     const { folderId, favorite } = req.body || {};
     if (!folderId) return res.status(400).json({ error: 'folderId requis' });
-    const set = new Set(favLoad());
-    if (favorite) set.add(folderId); else set.delete(folderId);
-    const folderIds = [...set];
-    favSave(folderIds);
-    res.json({ folderIds });
+    try {
+        const set = new Set(await dbFavLoad());
+        if (favorite) set.add(folderId); else set.delete(folderId);
+        const folderIds = [...set];
+        await dbFavSave(folderIds);
+        res.json({ folderIds });
+    } catch (e) { res.status(500).json({ error: 'Erreur sauvegarde des favoris' }); }
 });
 
 // GET /api/admin/tests/sitemap-layout — disposition partagée de la Site Map.
-app.get('/api/admin/tests/sitemap-layout', (req, res) => {
+app.get('/api/admin/tests/sitemap-layout', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    res.json(sitemapLayoutLoad());
+    try { res.json(await dbSitemapLayoutLoad()); }
+    catch (e) { res.status(500).json({ error: 'Erreur chargement du sitemap' }); }
 });
 
 // PUT /api/admin/tests/sitemap-layout { nodes, groups, edges, customGroups, customEdges } — enregistre la disposition.
-app.put('/api/admin/tests/sitemap-layout', (req, res) => {
+app.put('/api/admin/tests/sitemap-layout', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const b = req.body || {};
-    const layout = {
-        nodes:        (b.nodes && typeof b.nodes === 'object') ? b.nodes : {},
-        groups:       (b.groups && typeof b.groups === 'object') ? b.groups : {},
-        edges:        (b.edges && typeof b.edges === 'object') ? b.edges : {},
-        customGroups: Array.isArray(b.customGroups) ? b.customGroups : [],
-        customEdges:  Array.isArray(b.customEdges) ? b.customEdges : [],
-        updatedAt:    new Date().toISOString(),
-        updatedBy:    user.username || user.email || 'admin',
-    };
-    if (!sitemapLayoutSave(layout)) return res.status(500).json({ error: 'Échec écriture' });
-    res.json({ ok: true, updatedAt: layout.updatedAt, updatedBy: layout.updatedBy });
+    try {
+        const b = req.body || {};
+        const updatedBy = user.username || user.email || 'admin';
+        const layout = {
+            schema:       b.schema || 'v3',
+            nodes:        (b.nodes && typeof b.nodes === 'object') ? b.nodes : {},
+            groups:       (b.groups && typeof b.groups === 'object') ? b.groups : {},
+            edges:        (b.edges && typeof b.edges === 'object') ? b.edges : {},
+            customGroups: Array.isArray(b.customGroups) ? b.customGroups : [],
+            customEdges:  Array.isArray(b.customEdges) ? b.customEdges : [],
+        };
+        const updatedAt = new Date().toISOString();
+        await dbSitemapLayoutSave({ ...layout, updatedAt, updatedBy }, updatedBy);
+        res.json({ ok: true, updatedAt, updatedBy });
+    } catch (e) { res.status(500).json({ error: 'Échec sauvegarde du sitemap' }); }
 });
 
 // GET /api/admin/tests/sitemap-versions — liste des versions (métadonnées, sans le layout).
-app.get('/api/admin/tests/sitemap-versions', (req, res) => {
+app.get('/api/admin/tests/sitemap-versions', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const versions = sitemapVersionsLoad().map(({ layout, ...meta }) => meta);
-    res.json({ versions });
+    try {
+        const versions = (await dbSitemapVersionsLoad()).map(({ layout, ...meta }) => meta);
+        res.json({ versions });
+    } catch (e) { res.status(500).json({ error: 'Erreur chargement des versions' }); }
 });
 
 // POST /api/admin/tests/sitemap-versions { name, layout } — enregistre une version (snapshot).
-app.post('/api/admin/tests/sitemap-versions', (req, res) => {
+app.post('/api/admin/tests/sitemap-versions', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
     const name = (req.body?.name || '').toString().trim();
     if (!name) return res.status(400).json({ error: 'Nom requis' });
-    const layout = (req.body?.layout && typeof req.body.layout === 'object') ? req.body.layout : sitemapLayoutLoad();
-    const versions = sitemapVersionsLoad();
-    const v = {
-        id: 'smv-' + Date.now().toString(36),
-        name,
-        createdAt: new Date().toISOString(),
-        createdBy: user.username || user.email || 'admin',
-        layout,
-    };
-    versions.unshift(v);
-    if (!sitemapVersionsSave(versions)) return res.status(500).json({ error: 'Échec écriture' });
-    const { layout: _omit, ...meta } = v;
-    res.json(meta);
+    try {
+        const layout = (req.body?.layout && typeof req.body.layout === 'object') ? req.body.layout : await dbSitemapLayoutLoad();
+        const v = {
+            id: 'smv-' + Date.now().toString(36),
+            name,
+            createdAt: new Date().toISOString(),
+            createdBy: user.username || user.email || 'admin',
+            layout,
+        };
+        await dbSitemapVersionInsert(v);
+        const { layout: _omit, ...meta } = v;
+        res.json(meta);
+    } catch (e) { res.status(500).json({ error: 'Erreur création de la version' }); }
 });
 
 // GET /api/admin/tests/sitemap-versions/:id — une version complète (avec layout).
-app.get('/api/admin/tests/sitemap-versions/:id', (req, res) => {
+app.get('/api/admin/tests/sitemap-versions/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const v = sitemapVersionsLoad().find(x => x.id === req.params.id);
-    if (!v) return res.status(404).json({ error: 'Version introuvable' });
-    res.json(v);
+    try {
+        const versions = await dbSitemapVersionsLoad();
+        const v = versions.find(x => x.id === req.params.id);
+        if (!v) return res.status(404).json({ error: 'Version introuvable' });
+        res.json(v);
+    } catch (e) { res.status(500).json({ error: 'Erreur chargement de la version' }); }
 });
 
 // PUT /api/admin/tests/sitemap-versions/:id { layout } — écrase le contenu d'une version existante.
-app.put('/api/admin/tests/sitemap-versions/:id', (req, res) => {
+app.put('/api/admin/tests/sitemap-versions/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const versions = sitemapVersionsLoad();
-    const idx = versions.findIndex(x => x.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Version introuvable' });
-    const layout = (req.body?.layout && typeof req.body.layout === 'object') ? req.body.layout : sitemapLayoutLoad();
-    versions[idx] = {
-        ...versions[idx], layout,
-        updatedAt: new Date().toISOString(),
-        updatedBy: user.username || user.email || 'admin',
-    };
-    if (!sitemapVersionsSave(versions)) return res.status(500).json({ error: 'Échec écriture' });
-    const { layout: _omit, ...meta } = versions[idx];
-    res.json(meta);
+    try {
+        const [rows] = await pool.query('SELECT id FROM admin_test_sitemap_versions WHERE id=?', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Version introuvable' });
+        const layout = (req.body?.layout && typeof req.body.layout === 'object') ? req.body.layout : await dbSitemapLayoutLoad();
+        const updatedAt = new Date().toISOString();
+        const updatedBy = user.username || user.email || 'admin';
+        await dbSitemapVersionUpdate(req.params.id, { layout, updatedAt, updatedBy });
+        const versions = await dbSitemapVersionsLoad();
+        const updated = versions.find(x => x.id === req.params.id);
+        const { layout: _omit, ...meta } = updated || {};
+        res.json(meta);
+    } catch (e) { res.status(500).json({ error: 'Erreur mise à jour de la version' }); }
 });
 
 // DELETE /api/admin/tests/sitemap-versions/:id — supprime une version.
-app.delete('/api/admin/tests/sitemap-versions/:id', (req, res) => {
+app.delete('/api/admin/tests/sitemap-versions/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
-    const versions = sitemapVersionsLoad();
-    const next = versions.filter(x => x.id !== req.params.id);
-    if (next.length === versions.length) return res.status(404).json({ error: 'Version introuvable' });
-    if (!sitemapVersionsSave(next)) return res.status(500).json({ error: 'Échec écriture' });
-    res.json({ ok: true });
+    try {
+        const [rows] = await pool.query('SELECT id FROM admin_test_sitemap_versions WHERE id=?', [req.params.id]);
+        if (!rows.length) return res.status(404).json({ error: 'Version introuvable' });
+        await dbSitemapVersionDelete(req.params.id);
+        res.json({ ok: true });
+    } catch (e) { res.status(500).json({ error: 'Erreur suppression de la version' }); }
 });
 
 // POST /api/admin/tests/sitemap-update/prepare { sitemap, instructions } — prépare un run IA.
@@ -10751,6 +10906,192 @@ app.listen(PORT, async () => {
             INDEX idx_fpm_owner (owner_user_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] file_project_meta init error:', e.message));
+
+    // ── Admin Tests — création des tables MySQL ────────────────────────────────
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_runs (
+            id              VARCHAR(64)  PRIMARY KEY,
+            name            VARCHAR(255) DEFAULT NULL,
+            tester          VARCHAR(128) NOT NULL DEFAULT 'admin',
+            started_at      DATETIME     NOT NULL,
+            completed_at    DATETIME     DEFAULT NULL,
+            status          VARCHAR(32)  NOT NULL DEFAULT 'in_progress',
+            mode            VARCHAR(16)  NOT NULL DEFAULT 'manual',
+            is_campaign     TINYINT(1)   NOT NULL DEFAULT 0,
+            ai_provider     VARCHAR(64)  DEFAULT NULL,
+            ai_model        VARCHAR(128) DEFAULT NULL,
+            ai_state        VARCHAR(32)  DEFAULT NULL,
+            prompt          TEXT         DEFAULT NULL,
+            INDEX idx_atr_status (status),
+            INDEX idx_atr_started (started_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_runs init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_results (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            run_id      VARCHAR(64)  NOT NULL,
+            item_id     VARCHAR(64)  NOT NULL,
+            folder_id   VARCHAR(64)  DEFAULT NULL,
+            status      VARCHAR(16)  NOT NULL DEFAULT 'pending',
+            note        TEXT         DEFAULT NULL,
+            tested_at   DATETIME     DEFAULT NULL,
+            UNIQUE KEY  uq_run_item (run_id, item_id),
+            INDEX idx_atrr_run  (run_id),
+            INDEX idx_atrr_item (item_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_results init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_fn_history (
+            id          VARCHAR(64)   PRIMARY KEY,
+            date        DATETIME      NOT NULL,
+            folder_id   VARCHAR(64)   NOT NULL,
+            path        VARCHAR(255)  NOT NULL,
+            page_title  VARCHAR(255)  DEFAULT NULL,
+            updated_by  VARCHAR(255)  DEFAULT NULL,
+            added       JSON          DEFAULT NULL,
+            modified    JSON          DEFAULT NULL,
+            deleted     JSON          DEFAULT NULL,
+            counts      JSON          DEFAULT NULL,
+            total       INT           NOT NULL DEFAULT 0,
+            ai_prompt   TEXT          DEFAULT NULL,
+            ai_response MEDIUMTEXT    DEFAULT NULL,
+            INDEX idx_atfh_date   (date),
+            INDEX idx_atfh_folder (folder_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_fn_history init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_favorites (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            folder_ids  JSON NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_favorites init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_settings (
+            id                  INT AUTO_INCREMENT PRIMARY KEY,
+            critique_threshold  INT NOT NULL DEFAULT 15,
+            mineur_threshold    INT NOT NULL DEFAULT 40
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_settings init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_sitemap (
+            id          INT AUTO_INCREMENT PRIMARY KEY,
+            layout      LONGTEXT      NOT NULL,
+            updated_at  DATETIME      DEFAULT NULL,
+            updated_by  VARCHAR(128)  DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_sitemap init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_test_sitemap_versions (
+            id          VARCHAR(64)   PRIMARY KEY,
+            name        VARCHAR(255)  NOT NULL,
+            created_at  DATETIME      NOT NULL,
+            created_by  VARCHAR(128)  NOT NULL,
+            updated_at  DATETIME      DEFAULT NULL,
+            updated_by  VARCHAR(128)  DEFAULT NULL,
+            layout      LONGTEXT      NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] admin_test_sitemap_versions init error:', e.message));
+
+    // ── Migration one-shot : JSON → BDD ──────────────────────────────────────
+    // Si les tables sont vides et que les fichiers JSON locaux existent, migrer les données.
+    await (async () => {
+        try {
+            const [runCount] = await pool.query('SELECT COUNT(*) AS n FROM admin_test_runs');
+            if (runCount[0].n === 0) {
+                // Runs
+                const runsFile = path.join(BASE_DIR, 'tests-admin', 'runs.json');
+                if (fs.existsSync(runsFile)) {
+                    const { runs } = JSON.parse(fs.readFileSync(runsFile, 'utf8'));
+                    let migrated = 0;
+                    for (const run of (runs || [])) {
+                        try {
+                            await pool.query(
+                                `INSERT IGNORE INTO admin_test_runs
+                                 (id, name, tester, started_at, completed_at, status, mode, is_campaign, ai_provider, ai_model, ai_state, prompt)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`,
+                                [run.id, run.name || null, run.tester || 'admin',
+                                 new Date(run.startedAt), run.completedAt ? new Date(run.completedAt) : null,
+                                 run.status || 'completed', run.mode || 'manual', run.isCampaign ? 1 : 0,
+                                 run.aiProvider || null, run.aiModel || null, run.aiState || null, run.prompt || null]
+                            );
+                            if (run.results && run.results.length > 0) {
+                                const vals = run.results.map(r => [run.id, r.itemId, r.folderId || null, r.status || 'pending', r.note || null, r.testedAt ? new Date(r.testedAt) : null]);
+                                await pool.query(
+                                    'INSERT IGNORE INTO admin_test_results (run_id, item_id, folder_id, status, note, tested_at) VALUES ?',
+                                    [vals]
+                                );
+                            }
+                            migrated++;
+                        } catch (e) { console.warn('[MIGRATION] run', run.id, e.message); }
+                    }
+                    if (migrated) console.log(`[MIGRATION] ${migrated} run(s) migrés → admin_test_runs`);
+                }
+            }
+            // Fn-history
+            const [histCount] = await pool.query('SELECT COUNT(*) AS n FROM admin_test_fn_history');
+            if (histCount[0].n === 0) {
+                const histFile = path.join(BASE_DIR, 'tests-admin', 'functions-history.json');
+                if (fs.existsSync(histFile)) {
+                    const { entries } = JSON.parse(fs.readFileSync(histFile, 'utf8'));
+                    let migrated = 0;
+                    for (const e of (entries || [])) {
+                        try {
+                            await pool.query(
+                                `INSERT IGNORE INTO admin_test_fn_history
+                                 (id, date, folder_id, path, page_title, updated_by, added, modified, deleted, counts, total, ai_prompt, ai_response)
+                                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                                [e.id, new Date(e.date), e.folderId, e.path, e.pageTitle || '', e.updatedBy || '',
+                                 JSON.stringify(e.added || []), JSON.stringify(e.modified || []), JSON.stringify(e.deleted || []),
+                                 JSON.stringify(e.counts || {}), e.total || 0,
+                                 (e.aiPrompt || '').slice(0, 40000) || null, (e.aiResponse || '').slice(0, 40000) || null]
+                            );
+                            migrated++;
+                        } catch (err) { console.warn('[MIGRATION] fn-history', e.id, err.message); }
+                    }
+                    if (migrated) console.log(`[MIGRATION] ${migrated} entrées historique migrées → admin_test_fn_history`);
+                }
+            }
+            // Sitemap layout
+            const [smCount] = await pool.query('SELECT COUNT(*) AS n FROM admin_test_sitemap');
+            if (smCount[0].n === 0) {
+                const smFile = path.join(BASE_DIR, 'tests-admin', 'sitemap-layout.json');
+                if (fs.existsSync(smFile)) {
+                    const layout = JSON.parse(fs.readFileSync(smFile, 'utf8'));
+                    await pool.query(
+                        'INSERT INTO admin_test_sitemap (layout, updated_at, updated_by) VALUES (?,?,?)',
+                        [JSON.stringify(layout), layout.updatedAt ? new Date(layout.updatedAt) : null, layout.updatedBy || null]
+                    ).catch(e => console.warn('[MIGRATION] sitemap-layout', e.message));
+                    console.log('[MIGRATION] sitemap-layout migré → admin_test_sitemap');
+                }
+            }
+            // Sitemap versions
+            const [svCount] = await pool.query('SELECT COUNT(*) AS n FROM admin_test_sitemap_versions');
+            if (svCount[0].n === 0) {
+                const svFile = path.join(BASE_DIR, 'tests-admin', 'sitemap-versions.json');
+                if (fs.existsSync(svFile)) {
+                    const raw = JSON.parse(fs.readFileSync(svFile, 'utf8'));
+                    const versions = Array.isArray(raw.versions) ? raw.versions : (Array.isArray(raw) ? raw : []);
+                    let migrated = 0;
+                    for (const v of versions) {
+                        try {
+                            await pool.query(
+                                'INSERT IGNORE INTO admin_test_sitemap_versions (id, name, created_at, created_by, layout) VALUES (?,?,?,?,?)',
+                                [v.id, v.name, new Date(v.createdAt), v.createdBy, JSON.stringify(v.layout || {})]
+                            );
+                            migrated++;
+                        } catch (e) { console.warn('[MIGRATION] sitemap-versions', v.id, e.message); }
+                    }
+                    if (migrated) console.log(`[MIGRATION] ${migrated} version(s) sitemap migrées → admin_test_sitemap_versions`);
+                }
+            }
+        } catch (e) { console.error('[MIGRATION] admin-tests:', e.message); }
+    })();
 
     console.log(`
 +==========================================+
