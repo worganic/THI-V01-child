@@ -11569,6 +11569,23 @@
       "completedAt": "2026-06-23T21:30:00+02:00"
     },
     {
+      "id": "mod-474",
+      "version": "B-0.308",
+      "date": "2026-06-25T00:00:00.000Z",
+      "type": "config",
+      "commitType": "AMELIORATION",
+      "scope": ["system"],
+      "features": "system:workflow",
+      "title": "CLAUDE.md : règle persistance données partagées en BDD",
+      "description": "Ajout d'une règle explicite dans CLAUDE.md : tout menu hors éditeur de projet doit persister ses données en MySQL (BDD partagée), jamais en fichiers JSON locaux.",
+      "files": ["CLAUDE.md"],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "rajoute dans claude.md comme informations que tous les menus en dehors du menu projet doivent être partagé avec tous les users et donc dans des bdd partagé",
+      "startedAt": "2026-06-25T00:00:00.000Z",
+      "completedAt": "2026-06-25T00:00:00.000Z"
+    },
+    {
       "id": "mod-473",
       "version": "B-0.306",
       "date": "2026-06-25T00:00:00.000Z",

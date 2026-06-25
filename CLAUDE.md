@@ -56,6 +56,15 @@ npx nx run-many --target=build --projects=portail,projets --no-progress
 - Libs utilisent des tokens d'injection (`API_DATA_URL`, `API_EXECUTOR_URL`, `APP_BRANDING`) — jamais `environment` directement
 - Cross-origin localStorage (ports 4202/4203) : token + thème passés via URL params
 
+### Règle de persistance des données — partage multi-users
+
+**Tout ce qui n'est pas spécifique à un projet individuel doit être stocké en MySQL** (base partagée Hostinger) et non en fichiers JSON locaux.
+
+- **En BDD MySQL (partagé tous users)** : menus transverses (Admin, Outils, Config, Déploiements…), données d'administration (tests, résultats, sitemap, favoris, paramètres, historiques), tout ce qui doit être visible et synchronisé entre utilisateurs.
+- **En fichiers locaux** : données propres à un projet spécifique (`data/projets/<id>/`), fichiers versionnés git (`tests/fonctions/**/fonctions.md`, `version.json`), configuration locale (`data/config/`).
+
+Concrètement : **tout menu en dehors de l'éditeur de projet** → données en BDD. Si tu ajoutes ou modifies une fonctionnalité dans un onglet Admin, Outils, Config ou Déploiements, vérifier que la persistence passe par `server/db.js` (pool MySQL) et non par `fs.readFileSync`/`fs.writeFileSync`.
+
 ---
 
 ## Règle obligatoire : Vérification de compilation Angular
