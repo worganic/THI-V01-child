@@ -4,7 +4,7 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService } from '@worganic/portail-core/data-access';
 import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
@@ -14,7 +14,7 @@ import { ProjetCollabService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { ImagePropsPanelComponent, ImageProps } from '../image-props-panel/image-props-panel.component';
 import { SlashCommandMenuComponent, SlashCommand } from '../slash-command-menu/slash-command-menu.component';
-import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, FormBoardComponent } from '@worganic/shared/ui';
+import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, FormBoardComponent, ChartBoardComponent } from '@worganic/shared/ui';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -183,7 +183,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, ChartBoardComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -369,7 +369,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   // Workflow guidé (cadrage → formulaire → génération → MO)
   showWorkflowPopup = signal(false);
-  activeWorkflowForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null } | null = null;
+  activeWorkflowForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; currentState: string } | null = null;
   workflowClarifyPrompt = '';
   workflowGeneratePrompt = '';
 
@@ -415,6 +415,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private authSvc = inject(AuthService);
   currentUserName = () => this.authSvc.currentUser()?.username || '';
   private megaOutilsSvc = inject(MegaOutilsService);
+  private agendaSvc = inject(AgendaOutilService);
 
   // Mode (toggle Edition / Structure / Visu)
   mode: 'edit' | 'visu' | 'structure' = 'edit';
@@ -1909,8 +1910,35 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     return this.megaOutilInstances.filter(i => i.type === 'prompt');
   }
 
+  /** Prompts dont la fence existe réellement dans le texte (pour la liste et l'Edition). */
+  get promptInstancesInContent(): MegaOutilInstance[] {
+    return this.promptInstances.filter(i => this.unifiedContent.includes('```PROMPT: ' + i.name));
+  }
+
   promptInstanceName(id: string): string {
     return this.megaOutilInstances.find(i => i.id === id)?.name || 'Mon Prompt';
+  }
+
+  confirmDeletePromptId: string | null = null;
+
+  async deletePromptInstance(id: string) {
+    const inst = this.promptInstances.find(i => i.id === id);
+    if (!inst) return;
+    try {
+      await this.megaOutilsSvc.deleteInstance(id);
+      // Retirer la fence du contenu
+      const fenceRe = new RegExp('```PROMPT: ' + inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\n[\\s\\S]*?\\n```', 'g');
+      this.unifiedContent = this.unifiedContent.replace(fenceRe, '').replace(/\n{3,}/g, '\n\n');
+      this.megaOutilInstances = this.megaOutilInstances.filter(i => i.id !== id);
+      this.recomputeRanges();
+      this.syncDocSectionsTextFromContent();
+      this.scheduleSave();
+      this.recomputeAll();
+    } catch (e) {
+      console.error('[EditorZone] deletePromptInstance échoué :', e);
+    } finally {
+      this.confirmDeletePromptId = null;
+    }
   }
 
   get formInstances(): MegaOutilInstance[] {
@@ -2090,6 +2118,103 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.insertFormResponseByName(this.activeFormForExecution.formName, entry);
     this.showFormExecutePopup.set(false);
     this.activeFormForExecution = null;
+  }
+
+  // ── CHART MO ───────────────────────────────────────────────────────────────
+
+  /** Retourne les points de données pour un graphique CHART identifié par son nom.
+   *  Si le corps commence par `source: NomArray | col: NomColonne`, résout les
+   *  valeurs live depuis la grille du tableau ARRAY correspondant dans le même dossier.
+   *  Sinon parse des lignes inline `Label: valeur`. */
+  getChartPointsForName(chartName: string, folderId: string): ChartPoint[] {
+    const fenceBody = this.locateChartFenceBody(chartName);
+    if (!fenceBody) return [];
+
+    const sourceMatch = fenceBody.match(/^source:\s*([^|]+)\|\s*col:\s*(.+)$/im);
+    if (sourceMatch) {
+      const arrayName = sourceMatch[1].trim();
+      const colName = sourceMatch[2].trim();
+      const inst = this.arrayInstances.find(i => i.folderId === folderId && i.name.toLowerCase() === arrayName.toLowerCase())
+                ?? this.arrayInstances.find(i => i.name.toLowerCase() === arrayName.toLowerCase());
+      if (!inst) return [];
+      const grid = this.visuArrayGrids.get(inst.id);
+      if (!grid || !grid.cells.length) return [];
+      const headerRow = grid.cells[0];
+      const colIdx = headerRow.findIndex(c => c.value.trim().toLowerCase() === colName.toLowerCase());
+      if (colIdx < 0) return [];
+      const points: ChartPoint[] = [];
+      for (let r = 1; r < grid.cells.length; r++) {
+        const row = grid.cells[r];
+        const rawVal = (row[colIdx]?.computed ?? row[colIdx]?.value ?? '').replace(',', '.').trim();
+        const num = parseFloat(rawVal);
+        if (isNaN(num)) continue;
+        const labelCell = row[0]?.value?.trim() || `Ligne ${r}`;
+        points.push({ label: labelCell, value: num });
+      }
+      return points;
+    }
+
+    // Fallback : lignes inline `Label: valeur`
+    return fenceBody.split('\n')
+      .map(l => l.match(/^(.+?):\s*(-?\d+(?:\.\d+)?)\s*$/))
+      .filter((m): m is RegExpMatchArray => m !== null)
+      .map(m => ({ label: m[1].trim(), value: parseFloat(m[2]) }));
+  }
+
+  private locateChartFenceBody(name: string): string | null {
+    const lines = this.unifiedContent.split('\n');
+    const openIdx = lines.findIndex(l => l.trim() === '```CHART: ' + name);
+    if (openIdx < 0) return null;
+    let closeIdx = openIdx + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    return lines.slice(openIdx + 1, closeIdx).join('\n');
+  }
+
+  // ── Contexte adaptatif ─────────────────────────────────────────────────────
+
+  /** Assemble l'état courant du dossier (formulaires remplis + tableaux) pour
+   *  l'injecter comme `[État actuel du projet]` dans le workflow guidé adaptatif. */
+  private buildTrainingStateContext(folderId: string | undefined): string {
+    if (!folderId) return '';
+    const parts: string[] = [];
+
+    // Réponses aux formulaires du dossier
+    const sec = this.docSections.find(s => s.folderId === folderId);
+    const text = sec?.textContent ?? '';
+    const seenForms = new Set<string>();
+    for (const line of text.split('\n')) {
+      const m = line.match(/^```FORM:\s*(.+?)\s*$/);
+      if (!m) continue;
+      const name = m[1].trim();
+      if (seenForms.has(name)) continue;
+      seenForms.add(name);
+      const entries = this.getFormResponsesForName(name);
+      if (!entries.length) continue;
+      parts.push(`### Formulaire : ${name}`);
+      for (const e of entries) {
+        const answers = Object.entries(e.answers)
+          .map(([k, v]) => `- ${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`).join('\n');
+        parts.push(`**${e.date} — ${e.user}**\n${answers}`);
+      }
+    }
+
+    // Tableaux du dossier (données de suivi)
+    for (const inst of this.arrayInstances.filter(i => i.folderId === folderId)) {
+      const grid = this.visuArrayGrids.get(inst.id);
+      if (!grid || !grid.cells.length) continue;
+      // Ne garder que les colonnes qui ont au moins une valeur non vide
+      const headers = grid.cells[0].map(c => c.value.trim());
+      const dataRows = grid.cells.slice(1).filter(row => row.some(c => (c.computed ?? c.value).trim() !== ''));
+      if (!dataRows.length) continue;
+      parts.push(`### Tableau : ${inst.name}`);
+      parts.push('| ' + headers.join(' | ') + ' |');
+      parts.push('|' + headers.map(() => '---').join('|') + '|');
+      for (const row of dataRows) {
+        parts.push('| ' + row.map(c => (c.computed ?? c.value).trim() || '').join(' | ') + ' |');
+      }
+    }
+
+    return parts.join('\n\n');
   }
 
   /** Prochain numéro libre pour nommer un formulaire auto-converti ("Formulaire N"). */
@@ -3414,11 +3539,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
    * bloc dans textContent — qui suit l'ordre `order` des fichiers, donc l'ordre du menu.
    * Évite que le template affiche systématiquement tous les Trello avant tous les Array.
    */
-  orderedBoardsForVisuSection(folderId: string): { type: 'trello' | 'array' | 'prompt' | 'form'; inst?: MegaOutilInstance; formName?: string }[] {
+  orderedBoardsForVisuSection(folderId: string): { type: 'trello' | 'array' | 'prompt' | 'form' | 'chart'; inst?: MegaOutilInstance; formName?: string; chartName?: string }[] {
     const sec = this.docSections.find(s => s.folderId === folderId);
     const text = sec?.textContent ?? '';
     const posOf = (marker: string) => { const i = text.indexOf(marker); return i < 0 ? Number.MAX_SAFE_INTEGER : i; };
-    const items: { type: 'trello' | 'array' | 'prompt' | 'form'; inst?: MegaOutilInstance; formName?: string; pos: number }[] = [];
+    const items: { type: 'trello' | 'array' | 'prompt' | 'form' | 'chart'; inst?: MegaOutilInstance; formName?: string; chartName?: string; pos: number }[] = [];
     for (const inst of this.trelloInstancesForVisuSection(folderId)) {
       items.push({ type: 'trello', inst, pos: posOf('```TRELLO: ' + inst.name) });
     }
@@ -3426,22 +3551,29 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       items.push({ type: 'array', inst, pos: posOf('```ARRAY: ' + inst.name) });
     }
     for (const inst of this.promptInstances.filter(i => i.folderId === folderId)) {
-      items.push({ type: 'prompt', inst, pos: posOf('```PROMPT: ' + inst.name) });
+      const pos = posOf('```PROMPT: ' + inst.name);
+      if (pos === Number.MAX_SAFE_INTEGER) continue; // pas de fence dans le contenu
+      items.push({ type: 'prompt', inst, pos });
     }
-    // Formulaires : détectés par la balise ```FORM: NOM directement dans le texte de la
-    // section (pas via une instance DB). Permet de rendre aussi les formulaires
-    // auto-convertis depuis du markdown brut (cf. autoConvertRawForms).
+    // Formulaires et Graphiques : détectés par la balise fence directement dans le texte
+    // (pas via une instance DB).
     const seenForms = new Set<string>();
+    const seenCharts = new Set<string>();
     for (const line of text.split('\n')) {
-      const m = line.match(/^```FORM:\s*(.+?)\s*$/);
-      if (!m) continue;
-      const name = m[1].trim();
-      if (seenForms.has(name)) continue;
-      seenForms.add(name);
-      items.push({ type: 'form', formName: name, pos: posOf('```FORM: ' + name) });
+      const mForm = line.match(/^```FORM:\s*(.+?)\s*$/);
+      if (mForm) {
+        const name = mForm[1].trim();
+        if (!seenForms.has(name)) { seenForms.add(name); items.push({ type: 'form', formName: name, pos: posOf('```FORM: ' + name) }); }
+        continue;
+      }
+      const mChart = line.match(/^```CHART:\s*(.+?)\s*$/);
+      if (mChart) {
+        const name = mChart[1].trim();
+        if (!seenCharts.has(name)) { seenCharts.add(name); items.push({ type: 'chart', chartName: name, pos: posOf('```CHART: ' + name) }); }
+      }
     }
     items.sort((a, b) => a.pos - b.pos);
-    return items.map(({ type, inst, formName }) => ({ type, inst, formName }));
+    return items.map(({ type, inst, formName, chartName }) => ({ type, inst, formName, chartName }));
   }
 
   /** En Preview, si le nœud actif est un fichier Array, retourne l'id d'instance à afficher en board. */
@@ -4849,7 +4981,10 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   private openWorkflowPopup(instanceId: string, instanceName: string, userPrompt: string, systemPrompt: string | null) {
-    this.activeWorkflowForExecution = { instanceId, instanceName, userPrompt, systemPrompt };
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    const folderId = inst?.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
+    const currentState = this.buildTrainingStateContext(folderId);
+    this.activeWorkflowForExecution = { instanceId, instanceName, userPrompt, systemPrompt, currentState };
     // Charger les 3 prompts globaux (base + cadrage + génération)
     this.megaOutilsSvc.getPromptGlobalConfig()
       .then(cfg => {
@@ -4878,16 +5013,24 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   /**
    * Place le livrable IA dans la section "Résultat du prompt" (un niveau sous le prompt) et
    * crée les instances des MegaOutils retenus (Trello → cartes BDD, Array → grille BDD ;
-   * Form = rendu par balise). Le cadrage est archivé en tête de la section.
+   * Form/Chart = rendu par balise, AGENDA → vrais événements puis remplacé par liste).
    */
   private async materializeMegaOutilsFromContent(deliverable: string, selectedMos: MaterializedMoPreview[], folderId: string | undefined, promptInstanceId: string, transcript?: string) {
     if (!this.projectName) return;
     // Ne garder que les fences MO retenus : retirer du livrable les fences MO non cochés
     const keptFences = new Set(selectedMos.map(m => m.fence));
     let content = deliverable;
-    const moRe = /```(TRELLO|ARRAY|FORM):[ \t]*[^\n]+\n[\s\S]*?\n```/g;
+    const moRe = /```(TRELLO|ARRAY|FORM|CHART|AGENDA):[ \t]*[^\n]+\n[\s\S]*?\n```/g;
     content = content.replace(moRe, (block) => keptFences.has(block) ? block : '');
     content = content.replace(/\n{3,}/g, '\n\n').trim();
+
+    // Matérialiser AGENDA : créer les vrais événements et remplacer la fence par une liste lisible
+    const agendaMos = selectedMos.filter(m => m.type === 'agenda');
+    for (const mo of agendaMos) {
+      const readableList = await this.materializeAgendaFence(mo.fence, folderId);
+      content = content.replace(mo.fence, readableList);
+    }
+
     if (transcript && transcript.trim()) {
       content = `**Cadrage**\n\n${transcript.trim()}\n\n---\n\n${content}`;
     }
@@ -4895,9 +5038,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     // 1. Placer le livrable dans la section "Résultat du prompt" (titres décalés dessous)
     this.upsertPromptResultSection(promptInstanceId, content);
 
-    // 2. Créer les instances pour Trello / Array (Form = rendu par balise, pas d'instance)
+    // 2. Créer les instances pour Trello / Array (Form/Chart/Agenda = rendu par balise ou liste)
     for (const mo of selectedMos) {
-      if (mo.type === 'form') continue;
+      if (mo.type === 'form' || mo.type === 'chart' || mo.type === 'agenda') continue;
       try {
         const inst = await this.megaOutilsSvc.createInstance({
           type: mo.type, name: mo.name, projectId: this.projectName,
@@ -4924,6 +5067,37 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       }
     }
     this.recomputeAll();
+  }
+
+  /** Crée des événements agenda depuis les lignes d'un fence AGENDA et retourne
+   *  une liste Markdown lisible en remplacement de la fence. */
+  private async materializeAgendaFence(fence: string, folderId: string | undefined): Promise<string> {
+    if (!this.projectName) return fence;
+    const lines = fence.split('\n').slice(1, -1); // enlever ```AGENDA: NOM et ```
+    const events: string[] = [];
+    const existingEvents = await this.agendaSvc.getEvents(this.projectName).catch(() => [] as any[]);
+    const existingKeys = new Set(existingEvents.map((e: any) => `${e.title}|${e.startDate}`));
+
+    for (const line of lines) {
+      // Format : YYYY-MM-DD | HH:MM-HH:MM | Titre | Description
+      const m = line.match(/^\s*(\d{4}-\d{2}-\d{2})\s*\|\s*(\d{2}:\d{2})-(\d{2}:\d{2})\s*\|\s*([^|]+?)(?:\|\s*(.+))?\s*$/);
+      if (!m) continue;
+      const [, date, startTime, endTime, title, desc] = m;
+      const startDate = `${date}T${startTime}:00`;
+      const endDate = `${date}T${endTime}:00`;
+      const key = `${title.trim()}|${startDate}`;
+      if (!existingKeys.has(key)) {
+        await this.agendaSvc.createEvent(this.projectName, {
+          title: title.trim(),
+          ...(desc?.trim() ? { description: desc.trim() } : {}),
+          startDate,
+          endDate,
+          allDay: false,
+        }).catch(() => {});
+      }
+      events.push(`- **${date} ${startTime}–${endTime}** — ${title.trim()}${desc ? ` : ${desc.trim()}` : ''}`);
+    }
+    return events.length ? events.join('\n') : '';
   }
 
   /** Corps d'un fence (entre la 1re et la dernière ligne ```). */
@@ -6170,11 +6344,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       return `\n\n${token}\n\n`;
     });
 
-    // Blocs Trello / Array / Prompt (fence) → retirés du HTML (rendus par les composants board dans le template)
+    // Blocs Trello / Array / Prompt / Form / Chart / Agenda (fence) → retirés du HTML (rendus par les composants board dans le template)
     contentMd = contentMd.replace(/^```(?:## Trello:|TRELLO:) (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
     contentMd = contentMd.replace(/^```ARRAY: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
     contentMd = contentMd.replace(/^```PROMPT: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
     contentMd = contentMd.replace(/^```FORM: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
+    contentMd = contentMd.replace(/^```CHART: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
+    contentMd = contentMd.replace(/^```AGENDA: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
 
     // Remplacer les images (placeholders) — supporte {{IMG:id|caption|align|width}}
     const imgTokens: { token: string; html: string }[] = [];

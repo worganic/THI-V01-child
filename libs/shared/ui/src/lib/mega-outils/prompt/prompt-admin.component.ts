@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MegaOutilsService, MegaOutilInstance, PromptExecution } from '@worganic/portail-core/data-access';
@@ -137,6 +137,19 @@ interface AdminPrompt {
                   <span class="material-symbols-outlined text-[13px]">history</span>
                   {{ item.historyExpanded ? 'Fermer' : 'Historique' }}
                 </button>
+                <!-- Bouton supprimer -->
+                @if (confirmDeleteId() === item.instance.id) {
+                  <button class="text-[11px] px-2 py-1 rounded-md bg-red-500/15 border border-red-500/30 text-red-400 font-semibold hover:bg-red-500/25 transition-colors"
+                          (click)="deleteInstance(item.instance.id)">Confirmer</button>
+                  <button class="text-[11px] px-2 py-1 rounded-md border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white transition-colors"
+                          (click)="confirmDeleteId.set(null)">Annuler</button>
+                } @else {
+                  <button class="w-7 h-7 flex items-center justify-center rounded-md text-light-text-muted dark:text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                          title="Supprimer ce Prompt"
+                          (click)="confirmDeleteId.set(item.instance.id)">
+                    <span class="material-symbols-outlined text-base">delete</span>
+                  </button>
+                }
               </div>
 
               <!-- Historique des exécutions -->
@@ -175,6 +188,7 @@ export class PromptAdminComponent implements OnInit {
 
   items = signal<AdminPrompt[]>([]);
   loading = signal(false);
+  confirmDeleteId = signal<string | null>(null);
   basePromptDraft = '';
   basePromptSaving = signal(false);
   basePromptSaved = signal(false);
@@ -232,6 +246,15 @@ export class PromptAdminComponent implements OnInit {
       this.items.set(rows.map(r => ({ ...r, historyExpanded: false, historyLoading: false, history: undefined })));
     } catch { /* silencieux */ } finally {
       this.loading.set(false);
+    }
+  }
+
+  async deleteInstance(id: string) {
+    try {
+      await this.megaSvc.deleteInstance(id);
+      this.items.update(arr => arr.filter(i => i.instance.id !== id));
+    } catch { /* silencieux */ } finally {
+      this.confirmDeleteId.set(null);
     }
   }
 

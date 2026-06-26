@@ -242,10 +242,38 @@
 - Lancement : bouton « Exécuter » d'un prompt guidé ouvre `PromptWorkflowPopupComponent` (au lieu de la popup d'exécution simple) ; charge les 3 prompts globaux (base + cadrage + génération) via `getPromptGlobalConfig`
 - Phase cadrage : l'IA reçoit le méta-prompt de cadrage (system) + la demande (user) et répond par un formulaire Markdown ; parsé en questions, affiché via `app-form-execution-popup` réutilisé (bouton secondaire « Générer le livrable maintenant »)
 - Plusieurs vagues : après chaque envoi de réponses, une nouvelle vague de cadrage est lancée ; l'IA peut répondre `===PRÊT===` pour passer à la génération, ou l'utilisateur force la génération ; limite `maxWaves` (défaut 5)
-- Phase génération : méta-prompt de génération (system) + demande + transcript des réponses (user) → livrable Markdown contenant des fences MegaOutils (TRELLO/ARRAY/FORM)
-- Aperçu + validation : détection des fences MO du livrable (`detectMos`) avec résumé (cartes / lignes×colonnes / questions) et cases à cocher ; bouton « Insérer dans la section »
-- Matérialisation : `materializeMegaOutilsFromContent` place le livrable (fences non cochés retirés) dans une section « Résultat du prompt » via `upsertPromptResultSection` (titres décalés sous le titre), crée les instances Trello (cartes BDD via `parseTrelloBodyCards` + `createTrelloCard`) et Array (grille BDD via `deserializeArrayGrid` + `updateArrayGrid`) ; les Form sont rendus par balise (pas d'instance)
+- Phase génération : méta-prompt de génération (system) + demande + transcript des réponses (user) → livrable Markdown contenant des fences MegaOutils (TRELLO/ARRAY/FORM/CHART/AGENDA)
+- Aperçu + validation : détection des fences MO du livrable (`detectMos`) avec résumé (cartes / lignes×colonnes / questions / événements) et cases à cocher ; icônes distinctes par type (kanban / tableau / formulaire / graphique / calendrier) ; bouton « Insérer dans la section »
+- Matérialisation : `materializeMegaOutilsFromContent` place le livrable dans une section « Résultat du prompt » via `upsertPromptResultSection`, crée Trello (cartes BDD) et Array (grille BDD) ; Form/Chart = rendu par balise ; AGENDA = vrais événements créés via `AgendaOutilService.createEvent` puis fence remplacé par liste Markdown lisible
+- Ré-exécution adaptative : à la relance d'un prompt guidé, `buildTrainingStateContext(folderId)` assemble l'état courant du dossier (réponses des formulaires + tableaux de suivi avec données) et l'injecte comme `[État actuel du projet]` dans `buildGenerateUser()` ; l'IA adapte le plan au lieu de repartir de zéro
+- Projets dans le temps : le méta-prompt de cadrage demande durée/fréquence/évaluation/priorités ; le méta-prompt de génération produit un dispositif complet : planning (Array), agenda (AGENDA), exercices (Form par thème), suivi des notes (Array avec formules =AVG/SUM), progression (CHART live)
 - Persistance : le cadrage (transcript des réponses) est archivé en tête de la section « Résultat du prompt » sous un bloc **Cadrage** ; le brut reste visible en mode Code
 - Config : méta-prompts cadrage + génération stockés en BDD (`mega_outil_prompt_config` clés `workflow_clarify_prompt` / `workflow_generate_prompt`), éditables dans Admin › Mega-outils › Prompt ; valeurs par défaut servies par le serveur si absentes
 - **Priorité:** important
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.service.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `server/server-data.js`
+
+---
+
+## `2-5-2-3-20` — [modification] Mega-outil Chart : graphique de progression
+
+- Fence ` ```CHART: Titre du graphique ` dans le markdown
+- Mode source live : `source: Nom du tableau | col: Nom de la colonne` → résout les valeurs depuis la grille d'un tableau ARRAY du même dossier ; se met à jour automatiquement quand l'utilisateur saisit des données
+- Mode inline : lignes `Label: valeur` pour des données statiques
+- Affichage mode Code : bloc brut avec les paramètres
+- Affichage mode Edition : `app-chart-board` avec SVG line chart (courbe + points + aire remplie + grille), axe Y auto-calibré (5 graduations), labels axe X, stats min/max/dernière valeur en header
+- Strip HTML : le fence est retiré du rendu HTML brut (`buildVisuSectionHtml`) comme les autres MO ; rendu par composant Angular
+- Matérialisation depuis workflow guidé : CHART n'a pas d'instance DB, laissé en fence ; les données vives sont lues depuis `visuArrayGrids`
+- **Priorité:** important
+- **Composants:** `libs/shared/ui/src/lib/mega-outils/chart/chart-board.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `libs/shared/ui/src/index.ts`
+
+---
+
+## `2-5-2-3-21` — [modification] Mega-outil Agenda : événements calendrier depuis le workflow guidé
+
+- Fence ` ```AGENDA: Nom ` dans le livrable généré par le workflow guidé ; format des lignes : `YYYY-MM-DD | HH:MM-HH:MM | Titre | Description optionnelle`
+- Matérialisation : `materializeAgendaFence` parse les lignes, crée de vrais événements via `AgendaOutilService.createEvent(projectName, {...})` ; déduplication par titre+startDate (ne recrée pas un événement existant) ; erreurs silencieuses par événement (les autres sont créés)
+- Remplacement de la fence : après création, le bloc ` ```AGENDA``` ` est remplacé dans le livrable inséré par une liste Markdown lisible : `- **YYYY-MM-DD HH:MM–HH:MM** — Titre : Description`
+- Pas de rendu dédié : le bloc AGENDA n'est pas affiché comme un composant Angular (contrairement à CHART/FORM) ; le texte de liste suffit
+- Les événements créés apparaissent dans l'onglet Agenda du projet
+- **Priorité:** important
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`

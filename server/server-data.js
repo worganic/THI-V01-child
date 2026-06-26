@@ -10435,7 +10435,15 @@ RÈGLES DE SORTIE (strictes, aucune autre forme acceptée) :
 - Pose 3 à 8 questions max, regroupées logiquement, chacune avec au moins 2 options.
 - Ne propose AUCUN texte hors du formulaire (pas d'intro, pas de conclusion).
 - Concentre-toi sur les PARAMÈTRES (niveau, durée, objectifs, format, contraintes, public…), jamais sur le contenu final.
-- Si — et seulement si — tu disposes déjà de tout le nécessaire pour produire un livrable précis, réponds par la ligne unique : ===PRÊT===`;
+- Si — et seulement si — tu disposes déjà de tout le nécessaire pour produire un livrable précis, réponds par la ligne unique : ===PRÊT===
+
+DÉTECTION PROJET DANS LE TEMPS :
+Si la demande implique une formation, un cours, un programme ou un plan sur plusieurs jours/semaines/mois, ajoute impérativement ces questions de cadrage temporel :
+- Durée totale du projet et date de début souhaitée
+- Fréquence des séances (ex : 3 séances/semaine, 1h/séance)
+- Niveau de départ et objectif mesurable à atteindre
+- Modalités d'évaluation souhaitées (notes /20, QCM, exercices pratiques, auto-évaluation…)
+- Points prioritaires ou difficultés connues à travailler en priorité`;
 
 const DEFAULT_WORKFLOW_GENERATE_PROMPT = `Tu produis maintenant le livrable final à partir du besoin et des réponses fournies.
 
@@ -10453,21 +10461,70 @@ RÈGLES DE SORTIE :
     \`\`\`
     statuts : « À faire » | « En cours » | « Terminé » | « Bloqué » ; priorités (entre backticks) : low | medium | high | critical
 
-  • Tableau de données (grille, comparatif, horaires) :
+  • Tableau de données (grille, comparatif, suivi, planning) :
     \`\`\`ARRAY: Nom du tableau
     | Colonne 1 | Colonne 2 |
     |-----------|-----------|
     | valeur    | valeur    |
     \`\`\`
+    Formules supportées dans les cellules : =SUM(A2:A10), =AVG(A2:A10), =COUNT(A2:A10), =MAX(A2:A10), =MIN(A2:A10), =A1/B1*100, etc.
 
-  • Formulaire (quiz, évaluation, sondage) :
+  • Formulaire (quiz, évaluation, sondage, exercices) :
     \`\`\`FORM: Nom du formulaire
     * **Question :**
-      * [ ] Option
+      * [ ] Option (choix multiple)
+      * ( ) Option (choix unique)
     \`\`\`
 
-- N'utilise AUCUN autre bloc de code que ces trois MegaOutils.
-- Donne des noms courts et uniques à chaque MegaOutil.`;
+  • Agenda (événements datés, séances, échéances) :
+    \`\`\`AGENDA: Nom de l'agenda
+    YYYY-MM-DD | HH:MM-HH:MM | Titre de l'événement | Description optionnelle
+    \`\`\`
+    Crée un événement par séance/cours/étape avec la date et l'heure exactes.
+
+  • Graphique de progression (courbe d'évolution) :
+    \`\`\`CHART: Titre du graphique
+    source: Nom du tableau de suivi | col: Nom de la colonne
+    \`\`\`
+    Référence une colonne numérique d'un tableau ARRAY existant pour un graphique live.
+    Ou avec des valeurs inline (une par ligne) :
+    \`\`\`CHART: Titre
+    Séance 1: 14
+    Séance 2: 16
+    \`\`\`
+
+- N'utilise AUCUN autre bloc de code que ces cinq MegaOutils.
+- Donne des noms courts et uniques à chaque MegaOutil.
+
+PROJET DANS LE TEMPS (formation, cours, programme sur plusieurs jours/semaines) :
+Si la demande concerne un projet qui se déroule dans le temps, produis OBLIGATOIREMENT ce dispositif complet :
+
+1. **Planning des séances** → \`\`\`ARRAY: Planning
+   Colonnes : Date | Thème | Objectif | Exercice | Statut
+   Une ligne par séance, dates calculées depuis le début et la fréquence indiqués.
+
+2. **Agenda** → \`\`\`AGENDA: Séances
+   Une entrée par séance avec date, heure et thème.
+
+3. **Exercices par thème** → un \`\`\`FORM: Exercices [Thème]\`\`\` par grand thème ou séance-clé.
+   Questions de type QCM ou réponse libre selon le sujet.
+
+4. **Suivi des notes** → \`\`\`ARRAY: Suivi des notes
+   Colonnes : Séance | Date | Note | Max | % | Moyenne
+   Utilise =Note/Max*100 pour %, et =AVG(C2:C20) pour la moyenne en bas.
+   Laisse les colonnes Note et Max vides (à remplir après chaque séance).
+
+5. **Progression** → \`\`\`CHART: Progression des notes
+   source: Suivi des notes | col: Note
+
+6. (optionnel) \`\`\`TRELLO: Avancement\`\`\` pour suivre les séances et tâches.
+
+ADAPTATION (si un [État actuel du projet] est fourni) :
+- ANALYSE les notes et réponses déjà saisies.
+- IDENTIFIE les points faibles (thèmes avec notes basses) et les maîtrisés (notes hautes).
+- ADAPTE le plan restant : séances de remédiation sur les faiblesses, accélération si maîtrise.
+- Ne recrée PAS les MegaOutils existants (Planning, Suivi…) — propose UNIQUEMENT les ajustements et nouvelles séances de remédiation.
+- Mets à jour le planning uniquement pour les séances futures non encore faites.`;
 
 // GET /api/mega-outils/prompt/config — Prompts globaux (base + cadrage + génération du workflow guidé)
 app.get('/api/mega-outils/prompt/config', async (req, res) => {

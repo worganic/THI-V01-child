@@ -196,9 +196,15 @@ export interface PromptGlobalConfig {
   workflowGeneratePrompt: string;
 }
 
+/** Point de données pour un graphique CHART. */
+export interface ChartPoint {
+  label: string;
+  value: number;
+}
+
 /** MegaOutil détecté dans un livrable IA, pour l'aperçu de matérialisation. */
 export interface MaterializedMoPreview {
-  type: 'trello' | 'array' | 'form';
+  type: 'trello' | 'array' | 'form' | 'chart' | 'agenda';
   name: string;
   summary: string;   // ex: "8 cartes", "4×3", "5 questions"
   fence: string;     // le bloc fence complet (```TYPE: NOM ... ```)

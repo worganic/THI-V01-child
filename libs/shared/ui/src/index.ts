@@ -30,3 +30,4 @@ export * from './lib/mega-outils/array/array-board.component';
 export * from './lib/mega-outils/prompt/prompt-board.component';
 export * from './lib/mega-outils/prompt/prompt-admin.component';
 export * from './lib/mega-outils/form/form-board.component';
+export * from './lib/mega-outils/chart/chart-board.component';

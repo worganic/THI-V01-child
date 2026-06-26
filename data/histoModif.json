@@ -1,6 +1,72 @@
 {
   "modifications": [
     {
+      "id": "mod-476",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor",
+      "title": "Fix : liste des prompts filtrée sur le texte + bouton supprimer",
+      "description": "La liste des prompts (vue Liste) affichait tous les prompts DB de l'outil, même ceux sans fence dans le texte. Remplacement par promptInstancesInContent (getter filtrant sur la présence de la fence dans unifiedContent). Ajout d'un bouton supprimer avec confirmation sur chaque carte : deletePromptInstance supprime l'instance DB ET retire la fence du contenu puis sauvegarde.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "il manque les boutons pour supprimé les prompts dans la liste des prompts, si le prompt n'éxite pas dans le texte Edition (mode Code), il ne doit pas existé dans la liste, la liste représente les prompts présent dans le texte.",
+      "startedAt": "2026-06-26T10:45:00.000Z",
+      "completedAt": "2026-06-26T11:00:00.000Z"
+    },
+    {
+      "id": "mod-475",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets", "libs"],
+      "features": "projets:editor,libs:prompt-admin",
+      "title": "Fix : doublons prompts en Edition + bouton supprimer dans Admin Prompts",
+      "description": "Correction d'un bug où orderedBoardsForVisuSection incluait des instances Prompt DB sans fence correspondante dans le contenu, provoquant des boards fantômes en mode Edition. Fix : on ignore les instances dont posOf retourne MAX_SAFE_INTEGER (fence absente). Ajout d'un bouton supprimer (avec confirmation) sur chaque carte de la liste Admin › Mega-outils › Prompt, appelant deleteInstance via MegaOutilsService.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "il y a affiché 2 prompt affiché dans le mode Edition et un seul dans le mode Code et trois dans le MO prompt corrige le pb et ajoute un bouton pour supprimé un prompt dans la page MO prompt",
+      "startedAt": "2026-06-26T10:30:00.000Z",
+      "completedAt": "2026-06-26T10:45:00.000Z"
+    },
+    {
+      "id": "mod-474",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "server", "libs"],
+      "features": "projets:editor,projets:workflow-guidé,projets:chart-mo,projets:agenda-mo",
+      "title": "Workflow guidé : formation évolutive, CHART, AGENDA, contexte adaptatif",
+      "description": "Amélioration du workflow guidé MO Prompt pour gérer les projets se déroulant dans le temps (formations, cours). Réécriture des méta-prompts (cadrage : détecte projets temporels, demande durée/fréquence/éval/priorités ; génération : produit planning Array, agenda AGENDA, exercices Form, suivi des notes Array+formules =AVG/SUM, graphique CHART). Nouveau MO CHART : composant SVG line chart avec source live depuis un tableau ARRAY ou données inline. Nouveau MO AGENDA : matérialisation depuis fence → vrais événements AgendaOutilService + replacement par liste Markdown. Ré-exécution adaptative : buildTrainingStateContext collecte formulaires remplis et tableaux du dossier, injecté comme [État actuel du projet] dans le workflow pour adaptation de remédiation. Popup workflow étendu (currentState Input, detectMos/summarize pour CHART/AGENDA).",
+      "files": [
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "libs/shared/ui/src/lib/mega-outils/chart/chart-board.component.ts",
+        "libs/shared/ui/src/index.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Améliore le prompt de base pour qu'il prennent en compte l'évolution des projet lié au prompt, exemple si on demande un cours de maths pour une durée de 1 mois, il faut prévoir l'évolution, l'agenda, les exercices pour chaque jours. Mettre en place un outils pour suivre l'évolution du projet avec les résultats suivant les exercices. Il faut que tous cela soi évolutif et adapté. Propose des améliorations et des outils comme le form ou le tableau pour amélioré le système comme un système d'exercice et de suivi d'une formation.",
+      "startedAt": "2026-06-26T09:00:00.000Z",
+      "completedAt": "2026-06-26T10:30:00.000Z"
+    },
+    {
       "id": "mod-445",
       "version": "vB-0.309",
       "date": "2026-06-26T00:00:00.000Z",

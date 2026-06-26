@@ -121,8 +121,8 @@ interface TranscriptEntry { rawForm: string; answers: FormEntry; }
                         <input type="checkbox" class="w-4 h-4 accent-blue-500 cursor-pointer"
                                [checked]="mo.selected" (change)="toggleMo($index, $any($event.target).checked)" />
                         <span class="material-symbols-outlined text-[15px]"
-                              [ngClass]="mo.type === 'trello' ? 'text-emerald-400' : (mo.type === 'array' ? 'text-sky-400' : 'text-blue-400')">
-                          {{ mo.type === 'trello' ? 'view_kanban' : (mo.type === 'array' ? 'table' : 'assignment') }}
+                              [ngClass]="mo.type === 'trello' ? 'text-emerald-400' : (mo.type === 'array' ? 'text-sky-400' : (mo.type === 'chart' ? 'text-indigo-400' : (mo.type === 'agenda' ? 'text-amber-400' : 'text-blue-400')))">
+                          {{ mo.type === 'trello' ? 'view_kanban' : (mo.type === 'array' ? 'table' : (mo.type === 'chart' ? 'show_chart' : (mo.type === 'agenda' ? 'calendar_month' : 'assignment'))) }}
                         </span>
                         <span class="text-[13px] text-light-text dark:text-white/80 flex-1 truncate">{{ mo.name }}</span>
                         <span class="text-[11px] text-light-text-muted dark:text-white/40">{{ mo.summary }}</span>
@@ -195,6 +195,7 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
   @Input() generatePrompt = '';
   @Input() userName = '';
   @Input() maxWaves = 5;
+  @Input() currentState = '';
 
   @Output() materialize = new EventEmitter<{ deliverable: string; selectedMos: MaterializedMoPreview[]; transcript: string }>();
   @Output() cancel = new EventEmitter<void>();
@@ -353,7 +354,9 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
 
   private buildGenerateUser(): string {
     const t = this.buildTranscriptText();
-    return t ? `${this.userPrompt}\n\n[Réponses de cadrage]\n${t}` : this.userPrompt;
+    let base = t ? `${this.userPrompt}\n\n[Réponses de cadrage]\n${t}` : this.userPrompt;
+    if (this.currentState.trim()) base += `\n\n[État actuel du projet]\n${this.currentState.trim()}`;
+    return base;
   }
 
   private buildTranscriptText(): string {
@@ -389,13 +392,13 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     return questions.filter(q => q.options.length > 0);
   }
 
-  /** Détecte les fences TRELLO/ARRAY/FORM du livrable pour l'aperçu. */
+  /** Détecte les fences TRELLO/ARRAY/FORM/CHART/AGENDA du livrable pour l'aperçu. */
   private detectMos(deliverable: string): MaterializedMoPreview[] {
     const out: MaterializedMoPreview[] = [];
-    const re = /```(TRELLO|ARRAY|FORM):[ \t]*([^\n]+)\n([\s\S]*?)\n```/g;
+    const re = /```(TRELLO|ARRAY|FORM|CHART|AGENDA):[ \t]*([^\n]+)\n([\s\S]*?)\n```/g;
     let m: RegExpExecArray | null;
     while ((m = re.exec(deliverable)) !== null) {
-      const type = m[1].toLowerCase() as 'trello' | 'array' | 'form';
+      const type = m[1].toLowerCase() as 'trello' | 'array' | 'form' | 'chart' | 'agenda';
       const name = m[2].trim();
       const body = m[3];
       out.push({ type, name, summary: this.summarize(type, body), fence: m[0], selected: true });
@@ -403,7 +406,7 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     return out;
   }
 
-  private summarize(type: 'trello' | 'array' | 'form', body: string): string {
+  private summarize(type: 'trello' | 'array' | 'form' | 'chart' | 'agenda', body: string): string {
     if (type === 'trello') {
       const n = (body.match(/^\s*-\s*\[[ x~!]?\]/gm) || []).length;
       return `${n} carte${n > 1 ? 's' : ''}`;
@@ -412,6 +415,14 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
       const rows = (body.match(/^\s*\|.*\|\s*$/gm) || []).filter(l => !/^\s*\|[\s|:-]+\|\s*$/.test(l));
       const cols = rows[0] ? rows[0].split('|').filter(c => c.trim() !== '').length : 0;
       return `${Math.max(0, rows.length - 1)}×${cols}`;
+    }
+    if (type === 'chart') {
+      const pts = body.split('\n').filter(l => /^source:/i.test(l.trim()) ? false : /\S/.test(l)).length;
+      return pts > 0 ? `${pts} point${pts > 1 ? 's' : ''}` : 'live';
+    }
+    if (type === 'agenda') {
+      const n = body.split('\n').filter(l => /\d{4}-\d{2}-\d{2}/.test(l)).length;
+      return `${n} événement${n > 1 ? 's' : ''}`;
     }
     const q = (body.match(/^\s*[\*\-]\s+\*\*(.+?)\*\*\s*:?\s*$/gm) || []).length;
     return `${q} question${q > 1 ? 's' : ''}`;
