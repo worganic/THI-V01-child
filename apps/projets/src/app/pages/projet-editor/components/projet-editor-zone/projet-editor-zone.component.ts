@@ -5,13 +5,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCellStyle } from '@worganic/portail-core/data-access';
+import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { ProjetCollabService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { ImagePropsPanelComponent, ImageProps } from '../image-props-panel/image-props-panel.component';
 import { SlashCommandMenuComponent, SlashCommand } from '../slash-command-menu/slash-command-menu.component';
-import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent } from '@worganic/shared/ui';
+import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent } from '@worganic/shared/ui';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -180,7 +181,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -267,6 +268,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Navigation vers la section d'origine d'un trello (sélection réelle, contrairement à nodeActive)
   @Output() trelloNavigate = new EventEmitter<string>();
 
+  // Vue "Liste des prompts" (zone centrale)
+  @Input()  showPromptListView = false;
+  @Output() closePromptListView = new EventEmitter<void>();
+  @Output() openPromptList = new EventEmitter<void>();
+
   // Vue "Liste des mockups" (zone centrale) déclenchée depuis la sidebar
   @Input()  showMockupList = false;
   @Output() closeMockupList = new EventEmitter<void>();
@@ -343,8 +349,23 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private visuGridsLoading = false;
   private lastArrayCodeFromGrid = new Map<string, string>();
 
-  // Barre MO — type actif déplié (trello / mockup / array / null)
-  moActiveType = signal<'trello' | 'mockup' | 'array' | null>(null);
+  // ── Prompt MO ──────────────────────────────────────────────────────────────
+  showPromptPopup = signal(false);
+  showPromptHelpPopup = signal(false);
+  readonly promptHelpExampleSystem = '```PROMPT: Résumé SEO\nSYSTEM: Tu es un expert SEO. Rédige en français.\n\n---\n\nRédige un méta-description de 160 caractères\npour un article sur le sujet suivant :\n{{sujet}}\n```';
+  readonly promptHelpExampleVars = '```PROMPT: Email client\nRédige un email professionnel pour {{client}}\nà propos de {{sujet}}.\nTon : {{ton}}\n```';
+  promptName = '';
+  promptCreating = signal(false);
+  contentPromptIds: string[] = [];
+  promptPanelCollapsed = signal(false);
+  // Popup d'exécution d'un prompt (mode Edition)
+  showPromptExecutePopup = signal(false);
+  activePromptForExecution: { instanceId: string; instanceName: string; systemPrompt: string | null; userPrompt: string; variables: string[] } | null = null;
+  promptBaseSystemPrompt: string | null = null;
+  private seenPromptMarkers = new Set<string>();
+
+  // Barre MO — type actif déplié (trello / mockup / array / prompt / null)
+  moActiveType = signal<'trello' | 'mockup' | 'array' | 'prompt' | null>(null);
   // Popup de liaison : choisir quel mockup insérer dans la section courante
   showMockupLiaisonPopup = signal(false);
   private liaisonCursorPos = -1;
@@ -569,11 +590,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     // Partager / Annuler une section déclenchés depuis le menu contextuel de la sidebar
     this.collab.publishSectionRequest$.pipe(takeUntilDestroyed()).subscribe(id => this.publishSection(id));
     this.collab.cancelSectionRequest$.pipe(takeUntilDestroyed()).subscribe(id => this.cancelSection(id));
-    // Ajout d'un méga-outil (Trello / Tableau) dans une section depuis le menu contextuel
+    // Ajout d'un méga-outil (Trello / Tableau / Prompt) dans une section depuis le menu contextuel
     this.collab.createMegaOutilRequest$.pipe(takeUntilDestroyed()).subscribe(({ type, folderId }) => {
       this.pendingMoFolderId = folderId;
       if (type === 'trello') this.openTrelloPopup();
-      else this.openArrayPopup();
+      else if (type === 'array') this.openArrayPopup();
+      else if (type === 'prompt') this.openPromptPopup();
     });
   }
 
@@ -748,6 +770,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         this.recomputeContentTrelloIds();
         this.recomputeContentMockupIds();
         this.recomputeContentArrayIds();
+        this.recomputeContentPromptIds();
       }
       // En mode visu, la liste filteredVisuSections change → réinjecter le innerHTML
       // dans les nouveaux éléments (sinon ils restent vides après navigation menu)
@@ -765,6 +788,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.recomputeContentTrelloIds();
       this.recomputeContentMockupIds();
       this.recomputeContentArrayIds();
+      this.recomputeContentPromptIds();
       if (this.hasLoaded) this.repairMissingMockupMarkers();
       if (this.showTrelloList) { this.loadTrelloListCounts(); this.recomputeTrelloSections(); }
       if (this.showMockupList) { this.recomputeMockupSections(); }
@@ -1208,6 +1232,15 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
                 ? `\n\`\`\`ARRAY: ${name}\n${body}\n\`\`\`\n`
                 : `\n\`\`\`ARRAY: ${name}\n\`\`\`\n`;
             }
+          } else if (this.isPromptFileBase(childBase)) {
+            // Fichier Prompt (prompt-NOM) → injecter le bloc tel quel (contenu = bloc complet)
+            const raw = child.content || '';
+            if (/^\s*```PROMPT:/i.test(raw)) {
+              textContent += '\n' + raw.trim() + '\n';
+            } else {
+              const name = this.promptNameFromBase(childBase) || this.promptInstances.find(p => p.folderId === node.id)?.name || 'Prompt';
+              textContent += `\n\`\`\`PROMPT: ${name}\n${raw.trim()}\n\`\`\`\n`;
+            }
           } else {
             // Document additionnel classique
             textContent += `\n'${childBase}\n${child.content || ''}\n'\n`;
@@ -1263,6 +1296,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.recomputeContentTrelloIds();
     this.recomputeContentMockupIds();
     this.recomputeContentArrayIds();
+    this.recomputeContentPromptIds();
   }
 
   private recomputeHandles() {
@@ -1747,6 +1781,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.recomputeContentTrelloIds();
     this.recomputeContentMockupIds();
     this.recomputeContentArrayIds();
+    this.recomputeContentPromptIds();
   }
 
   /** Résout le folderId de la section active (l'id actif peut être un dossier ou un fichier). */
@@ -1815,6 +1850,79 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   arrayInstanceName(id: string): string {
     return this.megaOutilInstances.find(i => i.id === id)?.name || 'Mon Tableau';
+  }
+
+  /** Ids Prompt dont le marqueur ```PROMPT: NOM est présent dans la section active. */
+  private recomputeContentPromptIds() {
+    const activeFolderId = this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null);
+    let sectionText = '';
+    if (this.focusedHandle && this.mode === 'edit') {
+      sectionText = this.unifiedContent;
+    } else if (activeFolderId) {
+      const sr = this.sectionRanges.find(r => r.folderId === activeFolderId);
+      if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
+    }
+    const markerLines = sectionText.split('\n').map(l => l.trim());
+    const hasMarker = (name: string) => markerLines.some(l => l === '```PROMPT: ' + name);
+    this.contentPromptIds = this.promptInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+  }
+
+  get promptInstances(): MegaOutilInstance[] {
+    return this.megaOutilInstances.filter(i => i.type === 'prompt');
+  }
+
+  promptInstanceName(id: string): string {
+    return this.megaOutilInstances.find(i => i.id === id)?.name || 'Mon Prompt';
+  }
+
+  private getPromptBodyById(id: string): string {
+    const inst = this.promptInstances.find(i => i.id === id);
+    if (!inst) return '';
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return '';
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const body = lines.slice(openLine + 1, closeIdx).join('\n');
+    // Exclure la section résultat si présente
+    const markerIdx = body.split('\n').findIndex(l => l.trim() === '===RÉSULTAT===');
+    return (markerIdx === -1 ? body : body.split('\n').slice(0, markerIdx).join('\n')).trim();
+  }
+
+  private getPromptParsedById(id: string): { systemPrompt: string | null; userPrompt: string; variables: string[] } {
+    const body = this.getPromptBodyById(id);
+    if (!body) return { systemPrompt: null, userPrompt: '', variables: [] };
+    return this.parsePromptFence(body);
+  }
+
+  getPromptResultForId(id: string): { text: string; meta: string } | null {
+    const inst = this.promptInstances.find(i => i.id === id);
+    if (!inst) return null;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return null;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    let markerIdx = -1;
+    for (let i = openLine + 1; i < closeIdx; i++) {
+      if (lines[i].trim() === '===RÉSULTAT===') { markerIdx = i; break; }
+    }
+    if (markerIdx === -1) return null;
+    const meta = lines[markerIdx + 1] || '';
+    const text = lines.slice(markerIdx + 2, closeIdx).join('\n').trim();
+    return text ? { text, meta } : null;
+  }
+
+  promptSystemPromptForId(id: string): string | null {
+    return this.getPromptParsedById(id).systemPrompt;
+  }
+
+  promptUserPromptForId(id: string): string {
+    return this.getPromptParsedById(id).userPrompt;
+  }
+
+  promptVariablesForId(id: string): string[] {
+    return this.getPromptParsedById(id).variables;
   }
 
   private async loadArrayGrid() {
@@ -3021,20 +3129,23 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   /**
-   * Boards MO (Trello + Array) d'une section, ordonnés selon la position réelle de leur
+   * Boards MO (Trello + Array + Prompt) d'une section, ordonnés selon la position réelle de leur
    * bloc dans textContent — qui suit l'ordre `order` des fichiers, donc l'ordre du menu.
    * Évite que le template affiche systématiquement tous les Trello avant tous les Array.
    */
-  orderedBoardsForVisuSection(folderId: string): { type: 'trello' | 'array'; inst: MegaOutilInstance }[] {
+  orderedBoardsForVisuSection(folderId: string): { type: 'trello' | 'array' | 'prompt'; inst: MegaOutilInstance }[] {
     const sec = this.docSections.find(s => s.folderId === folderId);
     const text = sec?.textContent ?? '';
     const posOf = (marker: string) => { const i = text.indexOf(marker); return i < 0 ? Number.MAX_SAFE_INTEGER : i; };
-    const items: { type: 'trello' | 'array'; inst: MegaOutilInstance; pos: number }[] = [];
+    const items: { type: 'trello' | 'array' | 'prompt'; inst: MegaOutilInstance; pos: number }[] = [];
     for (const inst of this.trelloInstancesForVisuSection(folderId)) {
       items.push({ type: 'trello', inst, pos: posOf('```TRELLO: ' + inst.name) });
     }
     for (const inst of this.arrayInstancesForVisuSection(folderId)) {
       items.push({ type: 'array', inst, pos: posOf('```ARRAY: ' + inst.name) });
+    }
+    for (const inst of this.promptInstances.filter(i => i.folderId === folderId)) {
+      items.push({ type: 'prompt', inst, pos: posOf('```PROMPT: ' + inst.name) });
     }
     items.sort((a, b) => a.pos - b.pos);
     return items.map(({ type, inst }) => ({ type, inst }));
@@ -4321,6 +4432,119 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   /** True si un nom de fichier (sans .md) désigne un fichier Trello : "trello", "trello-NOM" ou legacy "TL: NOM". */
+  isPromptFileBase(base: string): boolean {
+    return /^prompt(-|$)/i.test(base);
+  }
+
+  promptNameFromBase(base: string): string {
+    if (/^prompt-/i.test(base)) return base.replace(/^prompt-/i, '').trim();
+    return '';
+  }
+
+  /** Extrait systemPrompt, userPrompt et variables d'un bloc PROMPT. */
+  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[] } {
+    const sepMatch = body.match(/^\s*---\s*$/m);
+    let systemPrompt: string | null = null;
+    let userPrompt = body;
+    if (sepMatch && sepMatch.index !== undefined) {
+      const before = body.slice(0, sepMatch.index).trim();
+      userPrompt = body.slice(sepMatch.index + sepMatch[0].length).trim();
+      const sysMatch = before.match(/^SYSTEM:\s*([\s\S]*)$/im);
+      if (sysMatch) systemPrompt = sysMatch[1].trim() || null;
+    }
+    const varNames = [...new Set([...userPrompt.matchAll(/\{\{([A-Za-z0-9_]+)\}\}/g)]
+      .map(m => m[1])
+      .filter(n => !/^(SID|IMG|MOCKUP):/i.test(n)))];
+    return { systemPrompt, userPrompt, variables: varNames };
+  }
+
+  openPromptPopup() {
+    if (!this.pendingMoFolderId) {
+      this.pendingMoFolderId = this.getCursorEntity()?.folderId || this.activeNodeId || null;
+    }
+    this.promptName = 'Mon Prompt';
+    this.showPromptPopup.set(true);
+  }
+
+  cancelPromptPopup() { this.showPromptPopup.set(false); this.pendingMoFolderId = null; }
+
+  async confirmPromptPopup() {
+    const name = (this.promptName || '').trim() || 'Mon Prompt';
+    if (!this.projectName) return;
+    const folderId = this.pendingMoFolderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
+    this.promptCreating.set(true);
+    try {
+      const inst = await this.megaOutilsSvc.createInstance({
+        type: 'prompt',
+        name,
+        projectId: this.projectName,
+        outilId: this.activeOutilId || undefined,
+        folderId,
+      });
+      this.insertAt(`\n\n\`\`\`PROMPT: ${name}\nSYSTEM: \n\n---\n\nVotre prompt ici.\n\`\`\`\n\n`, '');
+      this.showPromptPopup.set(false);
+      this.megaOutilCreated.emit(inst);
+    } catch (e) {
+      console.error('[EditorZone] confirmPromptPopup échoué :', e);
+    } finally {
+      this.promptCreating.set(false);
+      this.pendingMoFolderId = null;
+    }
+  }
+
+  openPromptExecutePopup(instanceId: string) {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst) return;
+    const body = this.getPromptBodyById(instanceId);
+    const parsed = this.parsePromptFence(body);
+    this.activePromptForExecution = {
+      instanceId,
+      instanceName: inst.name,
+      systemPrompt: parsed.systemPrompt,
+      userPrompt: parsed.userPrompt,
+      variables: parsed.variables,
+    };
+    // Charger le prompt de base (une seule fois)
+    if (this.promptBaseSystemPrompt === null) {
+      this.megaOutilsSvc.getPromptGlobalConfig()
+        .then(cfg => { this.promptBaseSystemPrompt = cfg.baseSystemPrompt || ''; })
+        .catch(() => { this.promptBaseSystemPrompt = ''; });
+    }
+    this.showPromptExecutePopup.set(true);
+  }
+
+  onPromptInsert(instanceId: string, result: string) {
+    this.showPromptExecutePopup.set(false);
+    this.insertPromptResult(instanceId, result);
+  }
+
+  insertPromptResult(instanceId: string, result: string) {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst || !result.trim()) return;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+
+    // Supprimer l'éventuel résultat précédent
+    let markerIdx = -1;
+    for (let i = openLine + 1; i < closeIdx; i++) {
+      if (lines[i].trim() === '===RÉSULTAT===') { markerIdx = i; break; }
+    }
+    if (markerIdx !== -1) {
+      lines.splice(markerIdx, closeIdx - markerIdx);
+      closeIdx = markerIdx;
+    }
+
+    const now = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const cleanResult = result.split('\n').map(l => l.replace(/^>+\s?/, '')).join('\n').trim();
+    // Insérer à l'intérieur du fence, juste avant le ``` fermant
+    lines.splice(closeIdx, 0, '', '===RÉSULTAT===', now, '', cleanResult);
+    this.unifiedContent = lines.join('\n');
+    this.scheduleSave();
+  }
+
   isTrelloFileBase(base: string): boolean {
     return /^trello(-|$)/i.test(base) || /^TL:\s*/i.test(base);
   }
@@ -5424,9 +5648,10 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       return `\n\n${token}\n\n`;
     });
 
-    // Blocs Trello / Array (fence) → retirés du HTML (rendus par les composants board dans le template)
+    // Blocs Trello / Array / Prompt (fence) → retirés du HTML (rendus par les composants board dans le template)
     contentMd = contentMd.replace(/^```(?:## Trello:|TRELLO:) (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
     contentMd = contentMd.replace(/^```ARRAY: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
+    contentMd = contentMd.replace(/^```PROMPT: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
 
     // Remplacer les images (placeholders) — supporte {{IMG:id|caption|align|width}}
     const imgTokens: { token: string; html: string }[] = [];
@@ -8079,13 +8304,16 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   // ── Barre MO ─────────────────────────────────────────────────────────────────
 
-  toggleMoType(type: 'trello' | 'mockup' | 'array') {
+  toggleMoType(type: 'trello' | 'mockup' | 'array' | 'prompt') {
     const next = this.moActiveType() === type ? null : type;
     this.moActiveType.set(next);
-    // Le bouton Trello ouvre/ferme aussi la vue "Liste des trellos".
     if (type === 'trello') {
       if (next === 'trello') this.openTrelloList.emit();
       else this.closeTrelloList.emit();
+    }
+    if (type === 'prompt') {
+      if (next === 'prompt') this.openPromptList.emit();
+      else this.closePromptListView.emit();
     }
   }
 
