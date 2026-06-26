@@ -191,4 +191,8 @@ export class MegaOutilsService {
   savePromptGlobalConfig(config: Partial<PromptGlobalConfig>): Promise<void> {
     return firstValueFrom(this.http.put<void>(`${this.apiUrl}/api/mega-outils/prompt/config`, config, { headers: this.h() }));
   }
+
+  resetWorkflowPrompts(): Promise<PromptGlobalConfig> {
+    return firstValueFrom(this.http.delete<PromptGlobalConfig>(`${this.apiUrl}/api/mega-outils/prompt/config/workflow`, { headers: this.h() }));
+  }
 }

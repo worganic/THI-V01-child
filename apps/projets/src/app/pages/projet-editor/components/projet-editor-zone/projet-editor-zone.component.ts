@@ -5025,9 +5025,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     content = content.replace(/\n{3,}/g, '\n\n').trim();
 
     // Matérialiser AGENDA : créer les vrais événements et remplacer la fence par une liste lisible
+    const promptInst = this.promptInstances.find(i => i.id === promptInstanceId);
+    const promptGroupName = promptInst?.name ?? 'Prompt';
     const agendaMos = selectedMos.filter(m => m.type === 'agenda');
     for (const mo of agendaMos) {
-      const readableList = await this.materializeAgendaFence(mo.fence, folderId);
+      const groupId = self.crypto.randomUUID();
+      const readableList = await this.materializeAgendaFence(mo.fence, folderId, groupId, promptGroupName);
       content = content.replace(mo.fence, readableList);
     }
 
@@ -5070,13 +5073,19 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   /** Crée des événements agenda depuis les lignes d'un fence AGENDA et retourne
-   *  une liste Markdown lisible en remplacement de la fence. */
-  private async materializeAgendaFence(fence: string, folderId: string | undefined): Promise<string> {
+   *  une liste Markdown lisible en remplacement de la fence.
+   *  groupId/groupName permettent de lier les événements créés entre eux. */
+  private async materializeAgendaFence(
+    fence: string,
+    folderId: string | undefined,
+    groupId: string,
+    groupName: string,
+  ): Promise<string> {
     if (!this.projectName) return fence;
     const lines = fence.split('\n').slice(1, -1); // enlever ```AGENDA: NOM et ```
     const events: string[] = [];
     const existingEvents = await this.agendaSvc.getEvents(this.projectName).catch(() => [] as any[]);
-    const existingKeys = new Set(existingEvents.map((e: any) => `${e.title}|${e.startDate}`));
+    const existingKeys = new Set(existingEvents.map((e: any) => `${e.title}|${new Date(e.startDate).toISOString().slice(0, 16)}`));
 
     for (const line of lines) {
       // Format : YYYY-MM-DD | HH:MM-HH:MM | Titre | Description
@@ -5085,7 +5094,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const [, date, startTime, endTime, title, desc] = m;
       const startDate = `${date}T${startTime}:00`;
       const endDate = `${date}T${endTime}:00`;
-      const key = `${title.trim()}|${startDate}`;
+      const key = `${title.trim()}|${startDate.slice(0, 16)}`;
       if (!existingKeys.has(key)) {
         await this.agendaSvc.createEvent(this.projectName, {
           title: title.trim(),
@@ -5093,11 +5102,15 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
           startDate,
           endDate,
           allDay: false,
+          groupId,
+          groupName,
         }).catch(() => {});
       }
       events.push(`- **${date} ${startTime}–${endTime}** — ${title.trim()}${desc ? ` : ${desc.trim()}` : ''}`);
     }
-    return events.length ? events.join('\n') : '';
+    if (!events.length) return '';
+    // Le commentaire HTML permet à deletePromptResult de retrouver le groupe par son ID
+    return `<!-- agenda-group:${groupId} agenda-name:${groupName.replace(/>/g, '')} -->\n${events.join('\n')}`;
   }
 
   /** Corps d'un fence (entre la 1re et la dernière ligne ```). */
@@ -5149,10 +5162,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const sectionLevel = range?.level ?? 1;
     const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
     const headingLevel = Math.min(sectionLevel + 1, 4);
-    const heading = '#'.repeat(headingLevel) + ' Résultat du prompt';
-    const headingRe = /^#{1,4}\s+Résultat du prompt\s*$/;
+    const heading = '#'.repeat(headingLevel) + ' Pr - ' + inst.name;
+    const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
 
-    // 1. Retirer une section "Résultat du prompt" existante dans le folder (après le fence)
+    // 1. Retirer une section "Pr - NomPrompt" existante dans le folder (après le fence)
     let exIdx = -1;
     for (let i = closeIdx + 1; i <= folderEnd; i++) {
       if (headingRe.test((lines[i] || '').trim())) { exIdx = i; break; }
@@ -5171,8 +5185,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     }
 
     // 2. Démoter les titres du résultat et insérer juste après le fence du prompt
+    const now = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     const demoted = this.demoteHeadings(markdown.trim(), headingLevel);
-    lines.splice(closeIdx + 1, 0, '', heading, '', ...demoted.split('\n'), '');
+    lines.splice(closeIdx + 1, 0, '', heading, `_Exécuté le ${now}_`, '', ...demoted.split('\n'), '');
 
     this.unifiedContent = lines.join('\n');
     this.recomputeRanges();
@@ -5215,7 +5230,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   confirmDeleteResultId: string | null = null;
 
-  /** Vérifie si une section "Résultat du prompt" existe pour ce prompt et en retourne le texte. */
+  /** Vérifie si une section "Pr - NomPrompt" existe pour ce prompt et en retourne le texte. */
   getPromptResultSectionText(instanceId: string): string | null {
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return null;
@@ -5224,7 +5239,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     if (openLine === -1) return null;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
-    const headingRe = /^#{1,6}\s+Résultat du prompt\s*$/;
+    const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
     let hIdx = -1;
     for (let i = closeIdx + 1; i < lines.length; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
@@ -5239,6 +5255,32 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       end++;
     }
     return lines.slice(hIdx, end).join('\n');
+  }
+
+  /** Retourne les infos du résultat "Pr - NomPrompt" d'un prompt si la section existe. */
+  getPromptResultLink(instanceId: string): { name: string; folderId: string | null; date: string } | null {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst) return null;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return null;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
+    let hIdx = -1;
+    for (let i = closeIdx + 1; i < lines.length; i++) {
+      if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
+      if (/^#{1,6} /.test(lines[i])) break;
+    }
+    if (hIdx === -1) return null;
+    let date = '';
+    for (let i = hIdx + 1; i < Math.min(hIdx + 5, lines.length); i++) {
+      const m = (lines[i] || '').match(/_Exécuté le ([^_]+)_/);
+      if (m) { date = m[1].trim(); break; }
+    }
+    const range = this.sectionRanges.find(r => r.lineStart === hIdx);
+    return { name: 'Pr - ' + inst.name, folderId: range?.folderId ?? null, date };
   }
 
   /**
@@ -5269,31 +5311,39 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.megaOutilInstances = this.megaOutilInstances.filter(i => i.id !== di.id);
     }
 
-    // 2. Événements agenda à supprimer (lignes `- **YYYY-MM-DD HH:MM–HH:MM** — Titre`)
+    // 2. Événements agenda à supprimer
     if (this.projectName) {
-      const agendaLineRe = /-\s+\*\*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})[–-](\d{2}:\d{2})\*\*\s+[—-]\s+(.+)/g;
-      const toDelete: { title: string; startDate: string }[] = [];
-      while ((m = agendaLineRe.exec(sectionText)) !== null) {
-        toDelete.push({ title: m[4].split(':')[0].trim(), startDate: `${m[1]}T${m[2]}:00` });
-      }
-      if (toDelete.length > 0) {
-        const allEvents = await this.agendaSvc.getEvents(this.projectName).catch(() => [] as any[]);
-        for (const target of toDelete) {
-          const ev = allEvents.find((e: any) =>
-            e.title.trim() === target.title && e.startDate.startsWith(target.startDate.slice(0, 16))
-          );
-          if (ev) await this.agendaSvc.deleteEvent(this.projectName!, ev.id).catch(() => {});
+      // Priorité : supprimer par groupId (événements créés par un prompt)
+      const groupMatch = sectionText?.match(/<!--\s*agenda-group:([^\s>]+)\s/);
+      if (groupMatch) {
+        await this.agendaSvc.deleteEventGroup(this.projectName, groupMatch[1]).catch(() => {});
+      } else {
+        // Fallback pour anciens événements sans groupId : correspondance titre+date
+        const agendaLineRe = /-\s+\*\*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})[–-](\d{2}:\d{2})\*\*\s+[—-]\s+(.+)/g;
+        const toDelete: { title: string; startDate: string }[] = [];
+        while ((m = agendaLineRe.exec(sectionText)) !== null) {
+          toDelete.push({ title: m[4].split(':')[0].trim(), startDate: `${m[1]}T${m[2]}:00` });
+        }
+        if (toDelete.length > 0) {
+          const allEvents = await this.agendaSvc.getEvents(this.projectName).catch(() => [] as any[]);
+          for (const target of toDelete) {
+            const ev = allEvents.find((e: any) =>
+              e.title.trim() === target.title && e.startDate.startsWith(target.startDate.slice(0, 16))
+            );
+            if (ev) await this.agendaSvc.deleteEvent(this.projectName!, ev.id).catch(() => {});
+          }
         }
       }
     }
 
-    // 3. Retirer la section "Résultat du prompt" du contenu markdown
+    // 3. Retirer la section "Pr - NomPrompt" du contenu markdown
     const lines = this.unifiedContent.split('\n');
     const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
     if (openLine === -1) { this.confirmDeleteResultId = null; return; }
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
-    const headingRe = /^#{1,6}\s+Résultat du prompt\s*$/;
+    const escapedNameDel = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedNameDel + '|Résultat du prompt)\\s*$');
     let hIdx = -1;
     for (let i = closeIdx + 1; i < lines.length; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }

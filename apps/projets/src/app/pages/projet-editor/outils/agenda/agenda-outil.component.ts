@@ -120,7 +120,12 @@ const JOURS_LONGS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dim
                        (dragstart)="onDragStart(col.event, $event)"
                        (dragend)="onDragEnd()"
                        (click)="onEventClick(col.event, $event)">
-                    <span class="truncate block">{{ col.event.title }}</span>
+                    <span class="flex items-center gap-0.5">
+                      @if (col.event.groupId) {
+                        <span class="material-symbols-outlined text-[8px] opacity-70 flex-shrink-0">link</span>
+                      }
+                      <span class="truncate">{{ col.event.title }}</span>
+                    </span>
                     @if (!col.event.allDay) {
                       <span class="opacity-75 block truncate">{{ formatTime(col.event.startDate) }}</span>
                     }
@@ -306,6 +311,51 @@ const JOURS_LONGS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dim
           </div>
         </div>
 
+        <!-- Famille (événements liés) -->
+        @if (editingEvent()?.groupId) {
+          <div class="mb-4 rounded-lg border border-indigo-500/20 bg-indigo-500/5 p-3">
+            <div class="flex items-center gap-1.5 mb-2">
+              <span class="material-symbols-outlined text-indigo-400 text-[14px]">link</span>
+              <span class="text-[11px] font-semibold text-indigo-400">Famille</span>
+              <span class="text-[10px] text-light-text-muted dark:text-white/40 truncate ml-1">{{ editingEvent()!.groupName }}</span>
+              <span class="ml-auto text-[10px] text-light-text-muted dark:text-white/30">{{ getGroupEvents(editingEvent()!.groupId!).length }} événement{{ getGroupEvents(editingEvent()!.groupId!).length > 1 ? 's' : '' }}</span>
+            </div>
+            <!-- Navigation dans le groupe -->
+            <div class="flex items-center gap-2">
+              <button class="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[10px] rounded border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/40 hover:text-indigo-400 hover:border-indigo-500/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      [disabled]="!hasPrevGroupEvent()"
+                      (click)="navigateGroupEvent('prev')">
+                <span class="material-symbols-outlined text-[12px]">chevron_left</span>
+                Précédent
+              </button>
+              <button class="flex-1 flex items-center justify-center gap-1 px-2 py-1 text-[10px] rounded border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/40 hover:text-indigo-400 hover:border-indigo-500/30 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      [disabled]="!hasNextGroupEvent()"
+                      (click)="navigateGroupEvent('next')">
+                Suivant
+                <span class="material-symbols-outlined text-[12px]">chevron_right</span>
+              </button>
+            </div>
+            <!-- Supprimer le groupe -->
+            <div class="mt-2">
+              @if (confirmDeleteGroup()) {
+                <div class="flex items-center gap-2">
+                  <span class="text-[10px] text-rose-400 flex-1">Supprimer les {{ getGroupEvents(editingEvent()!.groupId!).length }} événements liés ?</span>
+                  <button class="px-2 py-0.5 text-[10px] rounded bg-rose-500/15 border border-rose-500/30 text-rose-400 font-semibold hover:bg-rose-500/25 transition-colors"
+                          (click)="deleteEventGroup()">Confirmer</button>
+                  <button class="px-2 py-0.5 text-[10px] rounded border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white transition-colors"
+                          (click)="confirmDeleteGroup.set(false)">Annuler</button>
+                </div>
+              } @else {
+                <button class="w-full flex items-center justify-center gap-1.5 px-2 py-1 text-[10px] rounded border border-rose-500/20 text-rose-400/70 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-400 transition-colors"
+                        (click)="confirmDeleteGroup.set(true)">
+                  <span class="material-symbols-outlined text-[12px]">delete_sweep</span>
+                  Supprimer tous les événements liés
+                </button>
+              }
+            </div>
+          </div>
+        }
+
         <!-- Actions -->
         <div class="flex items-center justify-between">
           @if (editingEvent()) {
@@ -363,6 +413,7 @@ export class AgendaOutilComponent implements OnChanges {
   showPopup = signal(false);
   editingEvent = signal<AgendaEvent | null>(null);
   saving = signal(false);
+  confirmDeleteGroup = signal(false);
 
   draggingEventId = signal<string | null>(null);
   dragOffsetMinutes = signal<number>(0);
@@ -704,6 +755,51 @@ export class AgendaOutilComponent implements OnChanges {
   closePopup() {
     this.showPopup.set(false);
     this.editingEvent.set(null);
+    this.confirmDeleteGroup.set(false);
+  }
+
+  // ── Groupe d'événements liés ──
+
+  getGroupEvents(groupId: string): AgendaEvent[] {
+    return this.events()
+      .filter(e => e.groupId === groupId)
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+  }
+
+  hasPrevGroupEvent(): boolean {
+    const ev = this.editingEvent();
+    if (!ev?.groupId) return false;
+    const group = this.getGroupEvents(ev.groupId);
+    return group.findIndex(e => e.id === ev.id) > 0;
+  }
+
+  hasNextGroupEvent(): boolean {
+    const ev = this.editingEvent();
+    if (!ev?.groupId) return false;
+    const group = this.getGroupEvents(ev.groupId);
+    const idx = group.findIndex(e => e.id === ev.id);
+    return idx >= 0 && idx < group.length - 1;
+  }
+
+  navigateGroupEvent(direction: 'prev' | 'next') {
+    const ev = this.editingEvent();
+    if (!ev?.groupId) return;
+    const group = this.getGroupEvents(ev.groupId);
+    const idx = group.findIndex(e => e.id === ev.id);
+    const target = direction === 'prev' ? group[idx - 1] : group[idx + 1];
+    if (!target) return;
+    this.onEventClick(target, new MouseEvent('click'));
+    // Naviguer la vue vers la date de l'événement cible
+    this.currentDate.set(new Date(target.startDate));
+  }
+
+  async deleteEventGroup() {
+    const ev = this.editingEvent();
+    if (!ev?.groupId || !this.projectId) return;
+    const groupId = ev.groupId;
+    await this.agendaService.deleteEventGroup(this.projectId, groupId).catch(() => {});
+    this.events.update(list => list.filter(e => e.groupId !== groupId));
+    this.closePopup();
   }
 
   async saveEvent() {

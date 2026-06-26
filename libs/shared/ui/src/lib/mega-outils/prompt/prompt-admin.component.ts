@@ -74,6 +74,13 @@ interface AdminPrompt {
             </span>
           }
           <span class="flex-1"></span>
+          <button class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-orange-400 hover:border-orange-500/30 transition-colors flex items-center gap-1.5"
+                  [disabled]="workflowPromptSaving()"
+                  title="Supprimer les surcharges en BDD et revenir aux méta-prompts par défaut"
+                  (click)="resetWorkflowPrompts()">
+            <span class="material-symbols-outlined text-sm">restart_alt</span>
+            Réinitialiser
+          </button>
           <button class="text-xs px-3 py-1.5 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 font-semibold hover:bg-blue-500/25 transition-colors flex items-center gap-1.5"
                   [disabled]="workflowPromptSaving()"
                   (click)="saveWorkflowPrompts()">
@@ -232,6 +239,19 @@ export class PromptAdminComponent implements OnInit {
         workflowClarifyPrompt: this.clarifyPromptDraft,
         workflowGeneratePrompt: this.generatePromptDraft,
       });
+      this.workflowPromptSaved.set(true);
+      setTimeout(() => this.workflowPromptSaved.set(false), 2000);
+    } catch { /* silencieux */ } finally {
+      this.workflowPromptSaving.set(false);
+    }
+  }
+
+  async resetWorkflowPrompts() {
+    this.workflowPromptSaving.set(true);
+    try {
+      const res = await this.megaSvc.resetWorkflowPrompts();
+      this.clarifyPromptDraft = res.workflowClarifyPrompt || '';
+      this.generatePromptDraft = res.workflowGeneratePrompt || '';
       this.workflowPromptSaved.set(true);
       setTimeout(() => this.workflowPromptSaved.set(false), 2000);
     } catch { /* silencieux */ } finally {

@@ -6,4 +6,6 @@ export interface AgendaEvent {
   endDate: string;
   allDay: boolean;
   color?: string;
+  groupId?: string;
+  groupName?: string;
 }

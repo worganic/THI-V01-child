@@ -5940,6 +5940,26 @@ app.patch('/api/file-projects/:name/agenda/:id', async (req, res) => {
     res.json(event);
 });
 
+// DELETE /api/file-projects/:name/agenda/group/:groupId — Supprime tous les événements d'un même groupe
+app.delete('/api/file-projects/:name/agenda/group/:groupId', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const dir = agendaDir(req.params.name);
+    if (!fs.existsSync(dir)) return res.json({ deleted: 0 });
+    const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
+    let deleted = 0;
+    for (const f of files) {
+        try {
+            const event = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+            if (event.groupId === req.params.groupId) {
+                fs.unlinkSync(path.join(dir, f));
+                deleted++;
+            }
+        } catch { /* fichier corrompu, on skip */ }
+    }
+    res.json({ deleted });
+});
+
 // DELETE /api/file-projects/:name/agenda/:id
 app.delete('/api/file-projects/:name/agenda/:id', async (req, res) => {
     const user = getSessionUser(req);
@@ -10437,13 +10457,16 @@ RÈGLES DE SORTIE (strictes, aucune autre forme acceptée) :
 - Concentre-toi sur les PARAMÈTRES (niveau, durée, objectifs, format, contraintes, public…), jamais sur le contenu final.
 - Si — et seulement si — tu disposes déjà de tout le nécessaire pour produire un livrable précis, réponds par la ligne unique : ===PRÊT===
 
-DÉTECTION PROJET DANS LE TEMPS :
-Si la demande implique une formation, un cours, un programme ou un plan sur plusieurs jours/semaines/mois, ajoute impérativement ces questions de cadrage temporel :
-- Durée totale du projet et date de début souhaitée
-- Fréquence des séances (ex : 3 séances/semaine, 1h/séance)
-- Niveau de départ et objectif mesurable à atteindre
-- Modalités d'évaluation souhaitées (notes /20, QCM, exercices pratiques, auto-évaluation…)
-- Points prioritaires ou difficultés connues à travailler en priorité`;
+DÉTECTION DU TYPE DE PROJET :
+Avant de poser des questions, qualifie mentalement le projet dans l'une de ces deux catégories :
+
+TYPE A — FORMATION / APPRENTISSAGE : cours, programme pédagogique, coaching, préparation à un examen, plan d'entraînement… Le but est d'APPRENDRE ou d'ENSEIGNER quelque chose.
+→ Questions spécifiques à ajouter : durée et date de début, fréquence des séances, niveau de départ + objectif mesurable, modalités d'évaluation (notes /20, QCM, auto-évaluation), points prioritaires à travailler.
+
+TYPE B — PROJET OPÉRATIONNEL : création d'entreprise, business plan, projet immobilier, lancement d'un produit, chantier, campagne, événement, gestion de projet… Le but est de RÉALISER quelque chose.
+→ Questions spécifiques à ajouter : horizon temporel et date de démarrage, étapes ou jalons clés, contraintes principales (budget, réglementation, ressources), critères de succès mesurables, risques ou blocages anticipés.
+
+NE MÉLANGE PAS les deux types : un projet maison d'hôte, une création d'entreprise ou un business plan est TOUJOURS un projet opérationnel (Type B), même s'il s'étale sur plusieurs mois. Ne demande JAMAIS de modalités d'évaluation académiques pour un projet opérationnel.`;
 
 const DEFAULT_WORKFLOW_GENERATE_PROMPT = `Tu produis maintenant le livrable final à partir du besoin et des réponses fournies.
 
@@ -10451,7 +10474,7 @@ RÈGLES DE SORTIE :
 - Produis directement le livrable structuré en Markdown (titres ##, ###, listes…).
 - Matérialise les éléments pertinents dans des « MegaOutils » avec EXACTEMENT ces syntaxes, délimités par des fences \`\`\` :
 
-  • Tableau Kanban (tâches, étapes, planning) :
+  • Tableau Kanban (tâches, actions, avancement) :
     \`\`\`TRELLO: Nom du tableau
     ### À faire
     - [ ] Titre de la carte \`[medium]\`
@@ -10461,7 +10484,7 @@ RÈGLES DE SORTIE :
     \`\`\`
     statuts : « À faire » | « En cours » | « Terminé » | « Bloqué » ; priorités (entre backticks) : low | medium | high | critical
 
-  • Tableau de données (grille, comparatif, suivi, planning) :
+  • Tableau de données (planning, suivi, comparatif, grille) :
     \`\`\`ARRAY: Nom du tableau
     | Colonne 1 | Colonne 2 |
     |-----------|-----------|
@@ -10469,62 +10492,102 @@ RÈGLES DE SORTIE :
     \`\`\`
     Formules supportées dans les cellules : =SUM(A2:A10), =AVG(A2:A10), =COUNT(A2:A10), =MAX(A2:A10), =MIN(A2:A10), =A1/B1*100, etc.
 
-  • Formulaire (quiz, évaluation, sondage, exercices) :
+  • Formulaire (questionnaire, validation, décision, quiz) :
     \`\`\`FORM: Nom du formulaire
     * **Question :**
       * [ ] Option (choix multiple)
       * ( ) Option (choix unique)
     \`\`\`
 
-  • Agenda (événements datés, séances, échéances) :
+  • Agenda (événements datés, jalons, réunions, séances) :
     \`\`\`AGENDA: Nom de l'agenda
     YYYY-MM-DD | HH:MM-HH:MM | Titre de l'événement | Description optionnelle
     \`\`\`
-    Crée un événement par séance/cours/étape avec la date et l'heure exactes.
 
-  • Graphique de progression (courbe d'évolution) :
+  • Graphique de progression (courbe d'évolution numérique) :
     \`\`\`CHART: Titre du graphique
-    source: Nom du tableau de suivi | col: Nom de la colonne
+    source: Nom du tableau | col: Nom de la colonne
     \`\`\`
-    Référence une colonne numérique d'un tableau ARRAY existant pour un graphique live.
-    Ou avec des valeurs inline (une par ligne) :
+    Référence une colonne numérique d'un tableau ARRAY existant. Ou valeurs inline :
     \`\`\`CHART: Titre
-    Séance 1: 14
-    Séance 2: 16
+    Étape 1: 40
+    Étape 2: 65
     \`\`\`
 
 - N'utilise AUCUN autre bloc de code que ces cinq MegaOutils.
 - Donne des noms courts et uniques à chaque MegaOutil.
+- RÈGLE ABSOLUE : n'inclus un MegaOutil que s'il apporte une valeur réelle pour le projet décrit. Un tableau de suivi des notes ou un graphique de progression de notes n'a de sens que dans un contexte pédagogique.
 
-PROJET DANS LE TEMPS (formation, cours, programme sur plusieurs jours/semaines) :
-Si la demande concerne un projet qui se déroule dans le temps, produis OBLIGATOIREMENT ce dispositif complet :
+────────────────────────────────────────────────────────────────
+DÉTERMINE D'ABORD LE TYPE DE PROJET :
+
+TYPE A — FORMATION / APPRENTISSAGE : cours, programme pédagogique, coaching, entraînement sportif, préparation à un examen, plan d'apprentissage d'une langue…
+→ Le but est d'apprendre ou d'enseigner. Les notes, exercices et progression ont du sens.
+
+TYPE B — PROJET OPÉRATIONNEL : création d'entreprise, business plan, projet immobilier, maison d'hôte, lancement de produit, chantier, campagne marketing, événementiel, démarche administrative…
+→ Le but est de réaliser quelque chose de concret. Les exercices académiques et les notes /20 n'ont AUCUN sens.
+
+NE MÉLANGE JAMAIS les deux types. Si le projet concerne une maison d'hôte, une création d'activité, un business plan ou tout projet professionnel/immobilier : c'est TOUJOURS le Type B, même s'il s'étale sur plusieurs mois.
+────────────────────────────────────────────────────────────────
+
+DISPOSITIF TYPE A — FORMATION / APPRENTISSAGE :
+(Utilise ce dispositif UNIQUEMENT pour les formations, cours, programmes pédagogiques)
 
 1. **Planning des séances** → \`\`\`ARRAY: Planning
    Colonnes : Date | Thème | Objectif | Exercice | Statut
-   Une ligne par séance, dates calculées depuis le début et la fréquence indiqués.
+   Une ligne par séance, dates calculées depuis début + fréquence.
 
 2. **Agenda** → \`\`\`AGENDA: Séances
-   Une entrée par séance avec date, heure et thème.
+   Une entrée par séance avec date, heure, thème.
 
-3. **Exercices par thème** → un \`\`\`FORM: Exercices [Thème]\`\`\` par grand thème ou séance-clé.
-   Questions de type QCM ou réponse libre selon le sujet.
+3. **Exercices par thème** → \`\`\`FORM: Exercices [Thème]\`\`\` par grand thème ou séance-clé.
+   Questions QCM ou réponse libre.
 
 4. **Suivi des notes** → \`\`\`ARRAY: Suivi des notes
    Colonnes : Séance | Date | Note | Max | % | Moyenne
-   Utilise =Note/Max*100 pour %, et =AVG(C2:C20) pour la moyenne en bas.
-   Laisse les colonnes Note et Max vides (à remplir après chaque séance).
+   Formules : =C2/D2*100 pour %, =AVG(C2:C20) pour la moyenne.
 
 5. **Progression** → \`\`\`CHART: Progression des notes
    source: Suivi des notes | col: Note
 
-6. (optionnel) \`\`\`TRELLO: Avancement\`\`\` pour suivre les séances et tâches.
+6. (optionnel) \`\`\`TRELLO: Avancement\`\`\` pour les tâches/séances.
+
+────────────────────────────────────────────────────────────────
+
+DISPOSITIF TYPE B — PROJET OPÉRATIONNEL :
+(Utilise ce dispositif pour TOUT projet de création, réalisation, déploiement, gestion…)
+
+1. **Planning** → \`\`\`ARRAY: Planning
+   Colonnes adaptées au contexte, exemples :
+   - Projet création : N° | Date | Étape | Objectif | Livrable | Statut
+   - Projet immobilier/maison d'hôte : N° | Date | Phase | Actions | Intervenants | Statut
+   - Business plan : N° | Date | Thème | Livrables | Responsable | Statut
+   Remplis les lignes avec les vraies étapes du projet aux bonnes dates.
+
+2. **Agenda** → \`\`\`AGENDA: Jalons
+   Jalons clés, réunions importantes, échéances réglementaires ou financières.
+
+3. **Suivi (adapté)** → \`\`\`ARRAY: Suivi [contexte]\`\`\`
+   Tableau de suivi pertinent pour le projet, exemples :
+   - Maison d'hôte : Indicateur | Cible | Valeur actuelle | Écart (taux d'occupation, CA prévisionnel…)
+   - Création d'entreprise : Démarche | Organisme | Statut | Date limite
+   - Chantier : Poste | Budget prévu | Dépensé | Restant
+   N'inclus ce tableau QUE s'il apporte une vraie valeur de suivi. Adapte TOUJOURS les colonnes au projet réel.
+
+4. (optionnel) \`\`\`TRELLO: Avancement\`\`\` avec les actions concrètes à mener.
+
+5. (optionnel) \`\`\`FORM: Validation [Étape]\`\`\` pour les points de décision ou checks critiques.
+   NE NOMME PAS ces formulaires "Exercices". Ce sont des validations ou questionnaires de décision.
+
+6. (optionnel) \`\`\`CHART: Évolution [indicateur]\`\`\` UNIQUEMENT si un indicateur numérique mérite d'être suivi graphiquement (CA, budget consommé, taux d'occupation…). Si aucun indicateur n'est pertinent, n'en crée pas.
+
+────────────────────────────────────────────────────────────────
 
 ADAPTATION (si un [État actuel du projet] est fourni) :
-- ANALYSE les notes et réponses déjà saisies.
-- IDENTIFIE les points faibles (thèmes avec notes basses) et les maîtrisés (notes hautes).
-- ADAPTE le plan restant : séances de remédiation sur les faiblesses, accélération si maîtrise.
-- Ne recrée PAS les MegaOutils existants (Planning, Suivi…) — propose UNIQUEMENT les ajustements et nouvelles séances de remédiation.
-- Mets à jour le planning uniquement pour les séances futures non encore faites.`;
+- ANALYSE l'état réel : réponses aux formulaires, données des tableaux, avancement Trello.
+- TYPE A : identifie les thèmes avec notes basses → propose des séances de remédiation.
+- TYPE B : identifie les étapes en retard ou bloquées → propose des ajustements du planning.
+- Ne recrée PAS les MegaOutils existants — propose UNIQUEMENT les ajustements nécessaires sur les éléments futurs non encore réalisés.`;
 
 // GET /api/mega-outils/prompt/config — Prompts globaux (base + cadrage + génération du workflow guidé)
 app.get('/api/mega-outils/prompt/config', async (req, res) => {
@@ -10562,6 +10625,18 @@ app.put('/api/mega-outils/prompt/config', async (req, res) => {
             );
         }
         res.json({ ok: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/mega-outils/prompt/config/workflow — Remet les méta-prompts cadrage+génération aux valeurs par défaut
+app.delete('/api/mega-outils/prompt/config/workflow', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        await pool.query(
+            "DELETE FROM mega_outil_prompt_config WHERE key_name IN ('workflow_clarify_prompt', 'workflow_generate_prompt')"
+        );
+        res.json({ ok: true, workflowClarifyPrompt: DEFAULT_WORKFLOW_CLARIFY_PROMPT, workflowGeneratePrompt: DEFAULT_WORKFLOW_GENERATE_PROMPT });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

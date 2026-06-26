@@ -139,10 +139,10 @@
               (click)="toggleMoType('prompt')">
         <span class="material-symbols-outlined text-[12px]">smart_toy</span>
         Prompt
-        @if (promptInstances.length > 0) {
+        @if (promptInstancesInContent.length > 0) {
           <span class="ml-0.5 min-w-[14px] h-[14px] flex items-center justify-center rounded-full text-[9px] font-bold"
                 [ngClass]="moActiveType() === 'prompt' ? 'bg-amber-500/30 text-amber-300' : 'bg-light-border dark:bg-white/10 text-light-text-muted dark:text-white/40'">
-            {{ promptInstances.length }}
+            {{ promptInstancesInContent.length }}
           </span>
         }
       </button>
@@ -172,7 +172,7 @@
         <!-- Liste instances scrollable -->
         <div #moInstanceList
              class="flex-1 flex items-center gap-0.5 overflow-x-hidden py-0.5">
-          @for (inst of (moActiveType() === 'trello' ? trelloInstances : moActiveType() === 'array' ? arrayInstances : moActiveType() === 'prompt' ? promptInstances : mockupInstances); track inst.id) {
+          @for (inst of (moActiveType() === 'trello' ? trelloInstances : moActiveType() === 'array' ? arrayInstances : moActiveType() === 'prompt' ? promptInstancesInContent : mockupInstances); track inst.id) {
             <button type="button"
                     class="flex-shrink-0 flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium transition-colors whitespace-nowrap"
                     [ngClass]="activeMegaOutilId === inst.id
@@ -183,7 +183,7 @@
               {{ inst.type === 'trello' ? '[trello:' + inst.name + ']' : inst.name }}
             </button>
           }
-          @if ((moActiveType() === 'trello' ? trelloInstances : moActiveType() === 'array' ? arrayInstances : moActiveType() === 'prompt' ? promptInstances : mockupInstances).length === 0) {
+          @if ((moActiveType() === 'trello' ? trelloInstances : moActiveType() === 'array' ? arrayInstances : moActiveType() === 'prompt' ? promptInstancesInContent : mockupInstances).length === 0) {
             <span class="text-[11px] text-light-text-muted dark:text-white/25 italic px-2">Aucun</span>
           }
         </div>
@@ -942,6 +942,22 @@ Votre texte de prompt ici.
                   <span class="material-symbols-outlined text-[14px] ml-auto">arrow_forward</span>
                 }
               </button>
+              @if (getPromptResultLink(inst.id); as res) {
+                <button type="button"
+                        class="trello-list-card__section border-t border-light-border/40 dark:border-white/5"
+                        [disabled]="!res.folderId"
+                        [title]="res.folderId ? 'Aller au résultat' : 'Résultat sans section'"
+                        (click)="res.folderId && trelloNavigate.emit(res.folderId); closePromptListView.emit()">
+                  <span class="material-symbols-outlined text-[13px] text-green-400">check_circle</span>
+                  <span class="trello-list-card__section-name text-green-400/80">{{ res.name }}</span>
+                  @if (res.date) {
+                    <span class="ml-auto text-[10px] text-light-text-muted dark:text-white/30 flex-shrink-0">{{ res.date }}</span>
+                  }
+                  @if (res.folderId) {
+                    <span class="material-symbols-outlined text-[14px] ml-1 flex-shrink-0">arrow_forward</span>
+                  }
+                </button>
+              }
             </div>
           }
         </div>

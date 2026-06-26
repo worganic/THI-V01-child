@@ -37,4 +37,10 @@ export class AgendaOutilService {
       this.http.delete<void>(`${this.base(projectName)}/${eventId}`, { headers: this.h() })
     );
   }
+
+  deleteEventGroup(projectName: string, groupId: string): Promise<{ deleted: number }> {
+    return firstValueFrom(
+      this.http.delete<{ deleted: number }>(`${this.base(projectName)}/group/${groupId}`, { headers: this.h() })
+    );
+  }
 }

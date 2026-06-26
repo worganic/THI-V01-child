@@ -109,8 +109,8 @@
 ## `2-5-2-3-8` — [modification] Barre Mega-outils
 
 - Onglets de types de Mega-outils : affichage de quatre boutons interactifs pour Trello (bleu), Mockup (violet), Tableau (lime, qui correspond à Array) et Prompt (amber)
-- Compteur d'instances : affiche le nombre d'instances actives pour chaque type de Mega-outil à côté de leur nom
-- Liste d'instances : cliquer sur un type de Mega-outil affiche horizontalement la liste scrollable des instances de ce type
+- Compteur d'instances : affiche le nombre d'instances **dans le texte** (promptInstancesInContent, fencées) pour le type Prompt ; pour les autres types, toutes les instances du folder
+- Liste d'instances : cliquer sur un type de Mega-outil affiche horizontalement la liste scrollable des instances de ce type ; pour Prompt, liste filtrée aux fences présentes dans le texte
 - Sélection d'instance : clic sur une instance de Mega-outil émet megaOutilSelect et navigue vers la section ou fichier où elle est intégrée (trelloNavigate)
 - Clic "Nouveau" : ouvre la popup de création pour le type d'outil sélectionné (Trello, Tableau, Mockup ou Prompt)
 - Clic "Liaison" (Mockup uniquement) : ouvre la popup permettant d'associer un Mockup existant à la section courante
@@ -209,9 +209,9 @@
 - Popup d'exécution : sélecteur IA à gauche (Claude / AGY (Gemini)) + modèles filtrés à droite ; affichage du prompt de base global (collapsable, badge "global") + system prompt de la section
 - Variables `{{x}}` : si le prompt contient des variables, l'état variable-fill affiche un formulaire de substitution avant l'envoi
 - Streaming : exécution via `GET /api/mega-outils/prompt/execute-stream` (EventSource SSE) ; tous les providers passent par l'executor local port 3002 ; AGY utilise un fichier de sortie pollé toutes les 1500ms (agy ne streame pas sur stdout Windows) ; événements nommés : ai-log {stream, text}, ai-error, complete, run-failed ; journal de log coloré par type (stderr rouge, info amber, stdout gris)
-- Insertion : état validating propose "Insérer" (place le résultat dans une section markdown « Résultat du prompt » via `upsertPromptResultSection`), "Copier" et "Re-exécuter" ; les `>` en début de ligne sont retirés
-- Section « Résultat du prompt » : titre créé un niveau SOUS la section qui contient le prompt (`headingLevel = sectionLevel + 1`, cap ####), inséré juste après le fence PROMPT ; les titres du résultat sont décalés (`demoteHeadings`) pour rester sous ce titre (titres dans des fences ``` ignorés) ; une nouvelle exécution remplace la section résultat précédente (idempotent)
-- Suppression : bouton corbeille dans l'en-tête de l'ancien bloc « Résultat IA » (résultats stockés en fence `===RÉSULTAT===`) → `clearPromptResult` ; les nouveaux résultats sont en section et se suppriment via l'édition normale
+- Insertion : état validating propose "Insérer" (place le résultat dans une section markdown « Pr - NomPrompt » via `upsertPromptResultSection`), "Copier" et "Re-exécuter" ; les `>` en début de ligne sont retirés
+- Section résultat : nommée `Pr - NomPrompt` (heading un niveau sous la section du prompt, cap ####) ; date d'exécution en italique `_Exécuté le JJ/MM/AAAA à HH:MM_` insérée juste après le heading ; les titres du livrable sont décalés (`demoteHeadings`) ; une nouvelle exécution remplace la section précédente (idempotent, regex rétro-compatible « Résultat du prompt »)
+- Suppression : bouton corbeille dans l'en-tête de l'ancien bloc « Résultat IA » (résultats stockés en fence `===RÉSULTAT===`) → `clearPromptResult` ; les nouveaux résultats sont en section et se suppriment via `deletePromptResult` (cascade MO+agenda)
 - Historique : chaque exécution est enregistrée en base (table mega_outil_prompt_history) et visible dans PromptAdminComponent
 - Prompt de base global : configurable dans Admin › Mega-outils › Prompt ; stocké en BDD (table mega_outil_prompt_config) ; combiné avec le system prompt de section à l'exécution
 - **Priorité:** critique
@@ -235,7 +235,7 @@
 
 ---
 
-## `2-5-2-3-19` — [modification] Mega-outil Prompt : Mode guidé (workflow IA cadrage → formulaire → MegaOutils)
+## `2-5-2-3-19` — [modification] Mega-outil Prompt : Mode guidé (workflow IA cadrage → formulaire → MegaOutils adaptatifs)
 
 - Activation : case « Mode guidé » à la création d'un Prompt → insère `MODE: guided` dans le fence ; détecté par `parsePromptFence` (champ `mode`)
 - Bascule sur card : chip « Mode guidé » / badge « Guidé » cliquable sur la card prompt-board (output `toggleGuided`) → `setPromptGuided` ajoute/retire la ligne `MODE: guided` dans le fence ; permet de convertir un prompt existant sans le recréer
@@ -246,7 +246,9 @@
 - Aperçu + validation : détection des fences MO du livrable (`detectMos`) avec résumé (cartes / lignes×colonnes / questions / événements) et cases à cocher ; icônes distinctes par type (kanban / tableau / formulaire / graphique / calendrier) ; bouton « Insérer dans la section »
 - Matérialisation : `materializeMegaOutilsFromContent` place le livrable dans une section « Résultat du prompt » via `upsertPromptResultSection`, crée Trello (cartes BDD) et Array (grille BDD) ; Form/Chart = rendu par balise ; AGENDA = vrais événements créés via `AgendaOutilService.createEvent` puis fence remplacé par liste Markdown lisible
 - Ré-exécution adaptative : à la relance d'un prompt guidé, `buildTrainingStateContext(folderId)` assemble l'état courant du dossier (réponses des formulaires + tableaux de suivi avec données) et l'injecte comme `[État actuel du projet]` dans `buildGenerateUser()` ; l'IA adapte le plan au lieu de repartir de zéro
-- Projets dans le temps : le méta-prompt de cadrage demande durée/fréquence/évaluation/priorités ; le méta-prompt de génération produit un dispositif complet : planning (Array), agenda (AGENDA), exercices (Form par thème), suivi des notes (Array avec formules =AVG/SUM), progression (CHART live)
+- Projets dans le temps — TYPE A (formation/apprentissage) : cadrage demande durée/fréquence/évaluation/priorités ; génération produit planning (Array), agenda (AGENDA), exercices par thème (Form), suivi des notes (Array + formules =AVG), progression (CHART live)
+- Projets dans le temps — TYPE B (opérationnel : business plan, immobilier, création…) : cadrage demande jalons/contraintes/KPIs ; génération produit planning adapté (Array colonnes contextuelles), jalons agenda (AGENDA), suivi de KPIs ou budget (Array), Trello d'avancement, formulaires de validation ; NE génère PAS d'exercices ni de suivi des notes
+- Réinitialisation des méta-prompts : bouton « Réinitialiser » dans Admin › Mega-outils › Prompt → appel `DELETE /api/mega-outils/prompt/config/workflow` supprime la surcharge BDD et recharge les defaults serveur dans les textareas
 - Persistance : le cadrage (transcript des réponses) est archivé en tête de la section « Résultat du prompt » sous un bloc **Cadrage** ; le brut reste visible en mode Code
 - Config : méta-prompts cadrage + génération stockés en BDD (`mega_outil_prompt_config` clés `workflow_clarify_prompt` / `workflow_generate_prompt`), éditables dans Admin › Mega-outils › Prompt ; valeurs par défaut servies par le serveur si absentes
 - Suppression cascade du résultat : bouton « Supprimer le résultat » (icône `delete_sweep`) affiché sous la carte prompt en mode Edition quand une section « Résultat du prompt » existe (`getPromptResultSectionText`) ; confirmation requise ; `deletePromptResult` supprime en cascade : instances Trello/Array dont le nom est dans la section, événements agenda matchant les lignes `- **date** — Titre`, puis retire la section du markdown
@@ -272,9 +274,10 @@
 ## `2-5-2-3-21` — [modification] Mega-outil Agenda : événements calendrier depuis le workflow guidé
 
 - Fence ` ```AGENDA: Nom ` dans le livrable généré par le workflow guidé ; format des lignes : `YYYY-MM-DD | HH:MM-HH:MM | Titre | Description optionnelle`
-- Matérialisation : `materializeAgendaFence` parse les lignes, crée de vrais événements via `AgendaOutilService.createEvent(projectName, {...})` ; déduplication par titre+startDate (ne recrée pas un événement existant) ; erreurs silencieuses par événement (les autres sont créés)
-- Remplacement de la fence : après création, le bloc ` ```AGENDA``` ` est remplacé dans le livrable inséré par une liste Markdown lisible : `- **YYYY-MM-DD HH:MM–HH:MM** — Titre : Description`
-- Pas de rendu dédié : le bloc AGENDA n'est pas affiché comme un composant Angular (contrairement à CHART/FORM) ; le texte de liste suffit
-- Les événements créés apparaissent dans l'onglet Agenda du projet
+- Matérialisation : `materializeAgendaFence` parse les lignes, crée de vrais événements via `AgendaOutilService.createEvent` avec `groupId` (UUID unique par fence) et `groupName` (nom du prompt) ; déduplication par titre+startDate ; erreurs silencieuses par événement
+- Remplacement de la fence : après création, remplacé par un commentaire HTML `<!-- agenda-group:UUID agenda-name:NomPrompt -->` suivi d'une liste lisible `- **YYYY-MM-DD HH:MM–HH:MM** — Titre`
+- Groupes dans l'agenda : les événements d'une même fence partagent le même `groupId` ; la popup affiche la section « Famille » (nom du prompt, compteur, navigation précédent/suivant, suppression de tous les événements liés via `DELETE /agenda/group/:groupId`)
+- Indicateur visuel : icône 🔗 `link` en vue semaine sur les événements appartenant à un groupe
+- Suppression cascade améliorée : `deletePromptResult` extrait le `groupId` du commentaire HTML et appelle `deleteEventGroup` ; fallback titre+date pour anciens événements sans groupId
 - **Priorité:** important
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.models.ts`, `server/server-data.js`

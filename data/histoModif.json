@@ -1,6 +1,70 @@
 {
   "modifications": [
     {
+      "id": "mod-480",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "libs", "server"],
+      "features": "projets:agenda,projets:prompt",
+      "title": "Agenda : groupes d'événements liés (prompt → famille navigable)",
+      "description": "Ajout du système de groupes dans l'agenda. Les événements créés par la matérialisation d'un MO AGENDA reçoivent un groupId (UUID) et un groupName (nom du prompt). 1) Modèle AgendaEvent étendu (groupId, groupName). 2) Route DELETE /agenda/group/:groupId pour suppression collective. 3) Service : méthode deleteEventGroup. 4) materializeAgendaFence : génère un groupId par fence, passe groupId+groupName à createEvent, insère un commentaire HTML <!-- agenda-group:xxx --> dans la liste lisible. 5) deletePromptResult : utilise le commentaire pour supprimer par groupId (fallback titre+date pour anciens événements). 6) UI agenda : section 'Famille' dans la popup (nom du prompt, compteur, navigation précédent/suivant, suppression de tous les événements liés). Indicateur 🔗 sur les événements groupés en vue semaine.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/agenda-outil.models.ts",
+        "libs/portail-core/data-access/src/lib/agenda-outil.service.ts",
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Dans le MO agenda il faut rajouté une option pour joindre plusieurs evenement, ainsi lorsque un prompt est lancer et met en place des évènements lié, il faut les lié. Ainsi dans l'agenda on doit pouvoir effacé tous les évènements liés ou passé de l'un à l'autre (avant - après) et avoir une infos pour les reconnaitres (même nom de famille avec le nom du prompt, donnée supplémentaire)",
+      "startedAt": "2026-06-27T09:00:00.000Z",
+      "completedAt": "2026-06-27T10:00:00.000Z"
+    },
+    {
+      "id": "mod-479",
+      "version": "vB-0.310",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["server", "libs"],
+      "features": "projets:editor,projets:prompt",
+      "title": "Prompt workflow : méta-prompts adaptatifs Type A (formation) vs Type B (projet opérationnel)",
+      "description": "Réécriture des méta-prompts de cadrage et de génération pour distinguer clairement deux types de projets. Type A (formation/apprentissage) : génère exercices, suivi des notes et graphique de progression. Type B (projet opérationnel : business plan, immobilier, maison d'hôte, chantier…) : génère planning, jalons, suivi de KPIs adaptés et Trello, sans exercices ni suivi des notes. Le prompt de cadrage pose des questions adaptées au type détecté. Ajout endpoint DELETE /api/mega-outils/prompt/config/workflow pour remettre les surcharges BDD aux defaults, et bouton 'Réinitialiser' dans Admin › Mega-outils › Prompt.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Lorsque un prompt est lancé l'IA doit adapté les besoins suivant le projet, si il s'agit de créer des documents pour un projet de maison d'hote il ne s'agit pas de mettre en place des exercices, le tableau de suivi des notes n'a aussi aucun intérèt pour ce projet. Adapte le prompt initial pour les prompts en conséquence",
+      "startedAt": "2026-06-26T13:00:00.000Z",
+      "completedAt": "2026-06-26T13:30:00.000Z"
+    },
+    {
+      "id": "mod-478",
+      "version": "vB-0.310",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor,projets:prompt",
+      "title": "Prompt : renommage heading résultat, liste résultats, fix tab bar",
+      "description": "1) Le heading de la section résultat est renommé de 'Résultat du prompt' en 'Pr - NomPrompt' avec la date d'exécution en italique. La regex de détection/suppression gère les deux formats (rétro-compatibilité). 2) Dans la liste des prompts, chaque carte affiche un lien vert vers la section 'Pr - NomPrompt' si elle existe, avec la date/heure. 3) Correction du tab bar : utilisait promptInstances (toutes les instances DB) au lieu de promptInstancesInContent (uniquement celles avec fence dans le texte) — le compteur et la liste sont maintenant filtrés.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsqu'un prompt est executé cela crait un dossier 'Résultat du prompt' il faut que le nom soi 'Pr - ' + nom du prompt, dans la liste des prompts il faut qu'il y ai en dessous de chaque prompt la liste des résultats (date/heure) et lien vers le dossier. Il y a aussi un soucis dans le menu de la liste des prompts ou on en vois 4 au lieu de seulement 2",
+      "startedAt": "2026-06-26T12:00:00.000Z",
+      "completedAt": "2026-06-26T12:30:00.000Z"
+    },
+    {
       "id": "mod-477",
       "version": "vB-0.309",
       "date": "2026-06-26T00:00:00.000Z",
