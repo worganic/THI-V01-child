@@ -1,6 +1,26 @@
 {
   "modifications": [
     {
+      "id": "mod-445",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:prompt-result",
+      "title": "Résultat de prompt placé dans une section « Résultat du prompt »",
+      "description": "Le résultat d'un prompt (simple ET livrable du mode guidé) est désormais placé dans une section markdown « Résultat du prompt » créée un niveau sous la section du prompt (upsertPromptResultSection). Les titres du résultat sont décalés vers le bas (demoteHeadings) pour rester sous ce titre, en ignorant les titres internes aux fences MO. Remplacement idempotent à chaque ré-exécution. En mode guidé, le transcript de cadrage est archivé en tête de section sous un bloc Cadrage (plus de stockage dans ===RÉSULTAT=== du fence).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque tu enregistre le résultat d'un prompt il faut le mettre obligatoirement dans un dossier 'résultat du prompt' au niveau 1 et si il existe des niveaux dans le doc de résultat, il faut les descendre d'un niveau",
+      "startedAt": "2026-06-26T13:00:00.000Z",
+      "completedAt": "2026-06-26T13:25:00.000Z"
+    },
+    {
       "id": "mod-444",
       "version": "vB-0.309",
       "date": "2026-06-26T00:00:00.000Z",

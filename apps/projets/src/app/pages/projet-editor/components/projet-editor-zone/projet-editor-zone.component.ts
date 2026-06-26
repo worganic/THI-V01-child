@@ -4871,20 +4871,16 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     if (!wf) return;
     const inst = this.promptInstances.find(i => i.id === wf.instanceId);
     const folderId = inst?.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
-    await this.materializeMegaOutilsFromContent(payload.deliverable, payload.selectedMos, folderId);
-    // Persister un résumé du cadrage dans le fence (===RÉSULTAT===)
-    if (wf.instanceName) {
-      const summary = `Cadrage :\n${payload.transcript || '(aucune réponse)'}\n\nLivrable généré (${payload.selectedMos.length} MegaOutil${payload.selectedMos.length > 1 ? 's' : ''}) inséré dans la section.`;
-      this.insertPromptResult(wf.instanceId, summary);
-    }
+    await this.materializeMegaOutilsFromContent(payload.deliverable, payload.selectedMos, folderId, wf.instanceId, payload.transcript);
     this.activeWorkflowForExecution = null;
   }
 
   /**
-   * Insère le livrable IA dans la section (après le bloc PROMPT) et crée les instances
-   * pour les MegaOutils retenus (Trello → cartes BDD, Array → grille BDD ; Form = fence seul).
+   * Place le livrable IA dans la section "Résultat du prompt" (un niveau sous le prompt) et
+   * crée les instances des MegaOutils retenus (Trello → cartes BDD, Array → grille BDD ;
+   * Form = rendu par balise). Le cadrage est archivé en tête de la section.
    */
-  private async materializeMegaOutilsFromContent(deliverable: string, selectedMos: MaterializedMoPreview[], folderId?: string) {
+  private async materializeMegaOutilsFromContent(deliverable: string, selectedMos: MaterializedMoPreview[], folderId: string | undefined, promptInstanceId: string, transcript?: string) {
     if (!this.projectName) return;
     // Ne garder que les fences MO retenus : retirer du livrable les fences MO non cochés
     const keptFences = new Set(selectedMos.map(m => m.fence));
@@ -4892,12 +4888,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const moRe = /```(TRELLO|ARRAY|FORM):[ \t]*[^\n]+\n[\s\S]*?\n```/g;
     content = content.replace(moRe, (block) => keptFences.has(block) ? block : '');
     content = content.replace(/\n{3,}/g, '\n\n').trim();
+    if (transcript && transcript.trim()) {
+      content = `**Cadrage**\n\n${transcript.trim()}\n\n---\n\n${content}`;
+    }
 
-    // 1. Insérer le markdown du livrable dans la section cible
-    const prevPending = this.pendingMoFolderId;
-    this.pendingMoFolderId = folderId || null;
-    this.insertAt(`\n\n${content}\n\n`, '');
-    this.pendingMoFolderId = prevPending;
+    // 1. Placer le livrable dans la section "Résultat du prompt" (titres décalés dessous)
+    this.upsertPromptResultSection(promptInstanceId, content);
 
     // 2. Créer les instances pour Trello / Array (Form = rendu par balise, pas d'instance)
     for (const mo of selectedMos) {
@@ -4936,9 +4932,84 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     return lines.slice(1, lines.length - 1).join('\n');
   }
 
+  /** Décale les titres markdown d'un contenu pour que le plus haut niveau passe juste sous
+   *  `parentLevel` (les titres à l'intérieur des fences ``` sont ignorés). Cap à 4 (####). */
+  private demoteHeadings(md: string, parentLevel: number): string {
+    const src = md.split('\n');
+    let inFence = false, minLevel = 99;
+    for (const l of src) {
+      if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      const m = /^(#{1,6}) /.exec(l);
+      if (m) minLevel = Math.min(minLevel, m[1].length);
+    }
+    if (minLevel === 99) return md;            // aucun titre
+    const delta = (parentLevel + 1) - minLevel; // plus petit titre → parentLevel+1
+    if (delta <= 0) return md;
+    inFence = false;
+    // Cap à 6 (h5/h6) : au-delà du niveau 4, les titres ne sont plus des sections de la
+    // sidebar mais restent du contenu À L'INTÉRIEUR de « Résultat du prompt » (évite que les
+    // titres du livrable deviennent frères de « Résultat du prompt » quand le prompt est profond).
+    return src.map(l => {
+      if (/^```/.test(l.trim())) { inFence = !inFence; return l; }
+      if (inFence) return l;
+      const m = /^(#{1,6})( .*)$/.exec(l);
+      if (!m) return l;
+      return '#'.repeat(Math.min(m[1].length + delta, 6)) + m[2];
+    }).join('\n');
+  }
+
+  /** Place le résultat d'un prompt dans une section "Résultat du prompt" située un niveau
+   *  sous la section du prompt, titres du résultat décalés pour rester dessous. Remplace
+   *  une éventuelle section résultat précédente (idempotent sur ré-exécution). */
+  private upsertPromptResultSection(promptInstanceId: string, markdown: string) {
+    const inst = this.promptInstances.find(i => i.id === promptInstanceId);
+    if (!inst || !markdown.trim()) return;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+
+    const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
+    const sectionLevel = range?.level ?? 1;
+    const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
+    const headingLevel = Math.min(sectionLevel + 1, 4);
+    const heading = '#'.repeat(headingLevel) + ' Résultat du prompt';
+    const headingRe = /^#{1,4}\s+Résultat du prompt\s*$/;
+
+    // 1. Retirer une section "Résultat du prompt" existante dans le folder (après le fence)
+    let exIdx = -1;
+    for (let i = closeIdx + 1; i <= folderEnd; i++) {
+      if (headingRe.test((lines[i] || '').trim())) { exIdx = i; break; }
+    }
+    if (exIdx !== -1) {
+      const exLevel = (lines[exIdx].match(/^(#+)/)?.[1].length) ?? headingLevel;
+      let end = exIdx + 1;
+      while (end < lines.length) {
+        const hm = /^(#{1,4}) /.exec(lines[end]);
+        if (hm && hm[1].length <= exLevel) break;
+        end++;
+      }
+      let start = exIdx;
+      while (start > closeIdx + 1 && lines[start - 1].trim() === '') start--;
+      lines.splice(start, end - start);
+    }
+
+    // 2. Démoter les titres du résultat et insérer juste après le fence du prompt
+    const demoted = this.demoteHeadings(markdown.trim(), headingLevel);
+    lines.splice(closeIdx + 1, 0, '', heading, '', ...demoted.split('\n'), '');
+
+    this.unifiedContent = lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    this.recomputeAll();
+  }
+
   onPromptInsert(instanceId: string, result: string) {
     this.showPromptExecutePopup.set(false);
-    this.insertPromptResult(instanceId, result);
+    this.upsertPromptResultSection(instanceId, result);
   }
 
   insertPromptResult(instanceId: string, result: string) {
