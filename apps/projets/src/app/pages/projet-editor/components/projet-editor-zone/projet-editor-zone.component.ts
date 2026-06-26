@@ -5213,6 +5213,113 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.scheduleSave();
   }
 
+  confirmDeleteResultId: string | null = null;
+
+  /** Vérifie si une section "Résultat du prompt" existe pour ce prompt et en retourne le texte. */
+  getPromptResultSectionText(instanceId: string): string | null {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst) return null;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return null;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const headingRe = /^#{1,6}\s+Résultat du prompt\s*$/;
+    let hIdx = -1;
+    for (let i = closeIdx + 1; i < lines.length; i++) {
+      if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
+      if (/^#{1,6} /.test(lines[i])) break; // heading frère → pas de résultat
+    }
+    if (hIdx === -1) return null;
+    const hLevel = (lines[hIdx].match(/^(#+)/)?.[1].length) ?? 2;
+    let end = hIdx + 1;
+    while (end < lines.length) {
+      const m = /^(#{1,6}) /.exec(lines[end]);
+      if (m && m[1].length <= hLevel) break;
+      end++;
+    }
+    return lines.slice(hIdx, end).join('\n');
+  }
+
+  /**
+   * Supprime la section "Résultat du prompt" du prompt avec cascade :
+   * - Supprime les instances Trello/Array dont le nom apparaît dans la section
+   * - Supprime les événements agenda matchant les lignes de liste `- **date** — Titre`
+   * - Retire la section du markdown
+   */
+  async deletePromptResult(instanceId: string) {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst) return;
+    const sectionText = this.getPromptResultSectionText(instanceId);
+    if (!sectionText) { this.confirmDeleteResultId = null; return; }
+
+    // 1. Instances Trello/Array à supprimer (celles dont le nom est dans la section)
+    const moRe = /```(TRELLO|ARRAY):[ \t]*([^\n]+)/g;
+    let m: RegExpExecArray | null;
+    const toDeleteInstances: MegaOutilInstance[] = [];
+    while ((m = moRe.exec(sectionText)) !== null) {
+      const name = m[2].trim();
+      const found = this.megaOutilInstances.find(i =>
+        (i.type === m![1].toLowerCase()) && i.name === name && i.folderId === inst.folderId
+      );
+      if (found) toDeleteInstances.push(found);
+    }
+    for (const di of toDeleteInstances) {
+      await this.megaOutilsSvc.deleteInstance(di.id).catch(() => {});
+      this.megaOutilInstances = this.megaOutilInstances.filter(i => i.id !== di.id);
+    }
+
+    // 2. Événements agenda à supprimer (lignes `- **YYYY-MM-DD HH:MM–HH:MM** — Titre`)
+    if (this.projectName) {
+      const agendaLineRe = /-\s+\*\*(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})[–-](\d{2}:\d{2})\*\*\s+[—-]\s+(.+)/g;
+      const toDelete: { title: string; startDate: string }[] = [];
+      while ((m = agendaLineRe.exec(sectionText)) !== null) {
+        toDelete.push({ title: m[4].split(':')[0].trim(), startDate: `${m[1]}T${m[2]}:00` });
+      }
+      if (toDelete.length > 0) {
+        const allEvents = await this.agendaSvc.getEvents(this.projectName).catch(() => [] as any[]);
+        for (const target of toDelete) {
+          const ev = allEvents.find((e: any) =>
+            e.title.trim() === target.title && e.startDate.startsWith(target.startDate.slice(0, 16))
+          );
+          if (ev) await this.agendaSvc.deleteEvent(this.projectName!, ev.id).catch(() => {});
+        }
+      }
+    }
+
+    // 3. Retirer la section "Résultat du prompt" du contenu markdown
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) { this.confirmDeleteResultId = null; return; }
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const headingRe = /^#{1,6}\s+Résultat du prompt\s*$/;
+    let hIdx = -1;
+    for (let i = closeIdx + 1; i < lines.length; i++) {
+      if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
+      if (/^#{1,6} /.test(lines[i])) break;
+    }
+    if (hIdx !== -1) {
+      const hLevel = (lines[hIdx].match(/^(#+)/)?.[1].length) ?? 2;
+      let end = hIdx + 1;
+      while (end < lines.length) {
+        const hm = /^(#{1,6}) /.exec(lines[end]);
+        if (hm && hm[1].length <= hLevel) break;
+        end++;
+      }
+      let start = hIdx;
+      while (start > closeIdx + 1 && lines[start - 1].trim() === '') start--;
+      lines.splice(start, end - start);
+    }
+
+    this.unifiedContent = lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    this.recomputeAll();
+    this.confirmDeleteResultId = null;
+  }
+
   /** Supprime la section ===RÉSULTAT=== du fence d'un prompt. */
   clearPromptResult(instanceId: string) {
     const inst = this.promptInstances.find(i => i.id === instanceId);
