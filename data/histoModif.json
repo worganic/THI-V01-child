@@ -1,6 +1,91 @@
 {
   "modifications": [
     {
+      "id": "mod-441",
+      "version": "vB-0.308",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:prompt-insert",
+      "title": "MO prompt — insertion résultat dans le fence, après la card prompt",
+      "description": "Le résultat IA est désormais stocké à l'intérieur du bloc PROMPT fence (avec marqueur ===RÉSULTAT===) et affiché sous la card prompt-board en vue Edition. Suppression des > en début de lignes (incluant les > multiples). Remplacement du résultat précédent à chaque nouvelle exécution. Factorisation de getPromptBodyById pour exclure la section résultat lors du parsing du prompt.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "j'ai encore le caractère > qui est affiché en début de ligne. Idem le code est inséré avant le prompt, je le veux après",
+      "startedAt": "2026-06-26T08:00:00.000Z",
+      "completedAt": "2026-06-26T08:30:00.000Z"
+    },
+    {
+      "id": "mod-440",
+      "version": "vB-0.308",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:prompt-insert",
+      "title": "MO prompt — nettoyage des > en début de ligne avant insertion",
+      "description": "Suppression des > en début de ligne dans le résultat renvoyé par l'IA avant de l'insérer en blockquote dans l'éditeur. Évite le double-quote des lignes déjà préfixées par agy.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque tu insert le résultat renvoyé par le MO prompt, il faut que tu le rajoute dans l'edition après le prompt. Dans le texte retourné il ne faut pas de > en debut de ligne, supprime les avant l'insert.",
+      "startedAt": "2026-06-26T10:35:00.000Z",
+      "completedAt": "2026-06-26T10:40:00.000Z"
+    },
+    {
+      "id": "mod-439",
+      "version": "vB-0.308",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets", "server", "libs"],
+      "features": "server:ai-executor,libs:ai-execute-service,projets:prompt-popup",
+      "title": "Factorisation exécution IA — agy via executor pour tous les points d'entrée",
+      "description": "Correction du bug agy dans MO prompts : suppression de l'appel direct à l'API Gemini, remplacement par l'executor local (port 3002). Agy ne streamant pas sur stdout Windows (buffering pipe), ajout du mécanisme fichier de sortie + poll 1500ms identique à admin/tests. Création de callExecutorSse() côté serveur (helper partagé). Création de AiExecuteService dans libs/portail-core/data-access (service partagé portail+projets). PromptExecutionPopupComponent migré vers AiExecuteService.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/ai-execute.service.ts",
+        "libs/portail-core/data-access/src/index.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/services/projet-prompt-execute.service.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsque je veux lancer un MO prompt avec l'ia Agy antigravity gemini j'ai un msg d'erreur, agy fonctionne pourtant très bien, si je regarde l'outil admin/tests/execution cela fonctionne sans problème, je veux que utilise le même système (voir le même component de base pour intérogé l'IA) afin que l'utilisation de l'IA en local fonctionne corectement et de la même façon de partout dans le site",
+      "startedAt": "2026-06-26T10:00:00.000Z",
+      "completedAt": "2026-06-26T10:30:00.000Z"
+    },
+    {
+      "id": "mod-438",
+      "version": "B-0.306",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets", "server"],
+      "features": "projets:prompt-execution,server:mega-outils",
+      "title": "MO Prompt : passage au système EventSource (même pattern admin/tests)",
+      "description": "Remplacement du système d'exécution du prompt MO par EventSource SSE GET (même architecture qu'admin/tests). Nouvelle route GET /api/mega-outils/prompt/execute-stream : proxy executor port 3002 pour Claude, appel direct Gemini API pour AGY (contourne le buffering CLI Windows). ProjetPromptExecuteService réécrit avec EventSource et PromptLogItem. Journal de log par stream (stderr/info/stdout) avec couleurs dédiées.",
+      "files": [
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/services/projet-prompt-execute.service.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je veux que tu prenne le même système pour intérroger l'IA que le système utilisé dans admin/test/cahier de recette et admin/test/tests. avec le même type de popup et le même fonctionnement en prenant les 2 prompts du système prompt, le prompt de la config et le prompt de l'édition",
+      "startedAt": "2026-06-25T23:00:00.000Z",
+      "completedAt": "2026-06-26T00:00:00.000Z"
+    },
+    {
       "id": "mod-437",
       "version": "B-0.298",
       "date": "2026-06-23T18:50:00.000Z",
@@ -11567,6 +11652,101 @@
       "prompt": "jr n'arrive pas à selectionner plusieurs sections afin de pouvoir les alignés",
       "startedAt": "2026-06-23T21:10:00+02:00",
       "completedAt": "2026-06-23T21:30:00+02:00"
+    },
+    {
+      "id": "mod-478",
+      "version": "B-0.308",
+      "date": "2026-06-25T14:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "libs", "server"],
+      "features": "projets:editor|mega-outils,portail:admin",
+      "title": "MO Prompt : streaming fix AGY + prompt de base admin",
+      "description": "Fix streaming : le fallback execute-simple-prompt mappait 'antigravity' vers Claude au lieu de Gemini API. Corrigé en renommant 'antigravity' en 'gemini' côté serveur avant la sélection du provider. Nouveau : prompt de base global (table mega_outil_prompt_config en BDD), éditable dans Admin › Mega-outils › Prompt (textarea + bouton Sauvegarder). Chargé dans le popup d'exécution et affiché en section collapsable distincte (badge 'global'). Combiné avec le system prompt de la section à l'exécution (base + '---' + section). Sélecteur IA revu : 2 colonnes IA (Claude / AGY) + Modèle filtré.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lors de l'éxecution il faut le retour en direct de l'IA et l'évolution des retours, la je n'ai aucun retour ni infos. Dans l'admin/Mega outils/prompt il faut pouvoir enregistré un prompt de base pour le MO prompt, ce prompt de base sera utilisé avec le prompt créé dans l'Edition (il faudra aussi l'affiché dans le popup de lancement du prompt). Dans l'admin on aura un prompt de base et on doit pouvoir l'éditer.",
+      "startedAt": "2026-06-25T14:00:00.000Z",
+      "completedAt": "2026-06-25T14:30:00.000Z"
+    },
+    {
+      "id": "mod-477",
+      "version": "B-0.308",
+      "date": "2026-06-25T13:00:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor|mega-outils",
+      "title": "Popup Prompt : sélecteur IA + Modèle en 2 colonnes",
+      "description": "Le sélecteur dans le popup d'exécution de prompt était un seul <select> combinant provider et modèle. Remplacé par un grid 2 colonnes : colonne gauche = IA (Claude / Gemini), colonne droite = modèles disponibles filtrés par provider sélectionné. Ajout des computed providers(), modelsForProvider(), signal selectedProvider, méthode onProviderChange(). Initialisation depuis headerSelection.model au ngOnInit.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le popup Execution du prompt je veux un form avec à gauche le nom de l'IA et à droite les models dispo pour cette IA",
+      "startedAt": "2026-06-25T13:00:00.000Z",
+      "completedAt": "2026-06-25T13:05:00.000Z"
+    },
+    {
+      "id": "mod-476",
+      "version": "B-0.308",
+      "date": "2026-06-25T12:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor|mega-outils",
+      "title": "MO Prompt : suppression du texte brut en mode Edition",
+      "description": "En mode Edition (visu), le contenu brut du bloc ```PROMPT: NOM``` (lignes SYSTEM:, ---, texte du prompt) était rendu par marked.parse() en plus du PromptBoardComponent. Ajout du strip regex pour les blocs PROMPT dans buildVisuSectionHtml(), sur le même modèle que TRELLO et ARRAY (lignes 5616-5618). Désormais seul le composant PromptBoard s'affiche inline en mode Edition.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Dans le mode Edition du ne doit indiqué que le MO",
+      "startedAt": "2026-06-25T12:30:00.000Z",
+      "completedAt": "2026-06-25T12:35:00.000Z"
+    },
+    {
+      "id": "mod-475",
+      "version": "B-0.308",
+      "date": "2026-06-25T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "portail", "libs", "server", "data"],
+      "features": "projets:editor|mega-outils,portail:admin",
+      "title": "Mega-outil Prompt : bloc IA exécutable avec streaming et historique",
+      "description": "Implémentation complète du méga-outil PROMPT. Côté backend : table MySQL mega_outil_prompt_history, route SSE /api/ai/execute-simple-prompt (Claude + Gemini), routes CRUD historique. Côté Angular : modèles (MegaOutilType + PromptExecution), service MegaOutilsService étendu, ProjetPromptExecuteService (double-fallback executor→server), PromptBoardComponent (inline Edition), PromptAdminComponent (vue admin), PromptExecutionPopupComponent (machine d'états idle→validating, streaming, variables {{x}}). Intégration éditeur-zone : barre MO amber, popup création, panneau bas Structure, boards inline Edition ordonnés, méthodes parsePromptFence/insertPromptResult. Admin portail : onglet Prompt dans AdminMegaOutilsComponent.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "apps/projets/src/app/pages/projet-editor/services/projet-prompt-execute.service.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts",
+        "libs/shared/ui/src/index.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-mega-outils/admin-mega-outils.component.ts",
+        "docs/mega-outils.md",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je veux que tu crait un mega outils 'prompt', ce mega outils est composé de texte qui pourra être executé via un bouton. L'execution lancera un popup avec un prompt de base et le prompt créé par le user dans le texte, le choix d'une ia et de son model comme pour les autres fonction intégrant une IA. Cela executera le prompt et renverra en dessous du prompt (dans l'édition) le résultat renvoyé par l'IA. les prompts seront aussi répertorié et affiché dans le MO prompt comme pour les trello ou les tableaux. Le prompt ne pourra être créé que dans le mode Code et lancer dans le mode Edition. Avant l'affichage dans le texte Edition il faudra l'affiché pour validation.",
+      "startedAt": "2026-06-25T00:00:00.000Z",
+      "completedAt": "2026-06-25T12:00:00.000Z"
     },
     {
       "id": "mod-474",

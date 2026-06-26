@@ -55,7 +55,7 @@
 
 ---
 
-## `2-5-2-3-5` — [modification] Barre de formatage (mode Code, vue stylisée)
+## `2-5-2-3-5` — Barre de formatage (mode Code, vue stylisée)
 
 - Affichage conditionnel : la barre de formatage est visible uniquement en mode Code lorsque showCssInCode() est activé
 - Style de base : boutons Gras (**texte**), Italique (*texte*), Souligné (<u>texte</u>), Barré (~~texte~~) insèrent les marqueurs correspondants au curseur
@@ -106,13 +106,13 @@
 
 ---
 
-## `2-5-2-3-8` — Barre Mega-outils
+## `2-5-2-3-8` — [modification] Barre Mega-outils
 
-- Onglets de types de Mega-outils : affichage de trois boutons interactifs pour Trello (bleu), Mockup (violet) et Tableau (lime, qui correspond à Array)
+- Onglets de types de Mega-outils : affichage de quatre boutons interactifs pour Trello (bleu), Mockup (violet), Tableau (lime, qui correspond à Array) et Prompt (amber)
 - Compteur d'instances : affiche le nombre d'instances actives pour chaque type de Mega-outil à côté de leur nom
 - Liste d'instances : cliquer sur un type de Mega-outil affiche horizontalement la liste scrollable des instances de ce type
 - Sélection d'instance : clic sur une instance de Mega-outil émet megaOutilSelect et navigue vers la section ou fichier où elle est intégrée (trelloNavigate)
-- Clic "Nouveau" : ouvre la popup de création pour le type d'outil sélectionné (Trello, Tableau ou Mockup)
+- Clic "Nouveau" : ouvre la popup de création pour le type d'outil sélectionné (Trello, Tableau, Mockup ou Prompt)
 - Clic "Liaison" (Mockup uniquement) : ouvre la popup permettant d'associer un Mockup existant à la section courante
 - Interrupteur "Sync auto" (Trello uniquement) : active/désactive la synchronisation automatique des cartes de colonne Trello dans le code markdown
 - **Priorité:** critique
@@ -120,7 +120,7 @@
 
 ---
 
-## `2-5-2-3-9` — [modification] Menus déroulants de la barre de formatage (mode Preview)
+## `2-5-2-3-9` — Menus déroulants de la barre de formatage (mode Preview)
 
 - Style de bloc : menu déroulant (icône title) propose Paragraphe (applyVisuFormat avec formatBlock et P) et les titres H1 à H4
 - Couleur de texte : menu déroulant Swatch (lettre A soulignée) propose la palette de couleurs pastilles (foreColor)
@@ -143,11 +143,12 @@
 
 ---
 
-## `2-5-2-3-12` — Création de Mega-outil via popup
+## `2-5-2-3-12` — [modification] Création de Mega-outil via popup
 
 - Nouveau Trello : clic sur "Nouveau" en mode Trello ouvre showTrelloPopup, saisie du nom, création et insertion du marqueur [trello:nom]
 - Nouveau Tableau (Array) : clic sur "Nouveau" en mode Tableau ouvre showArrayPopup, saisie du nom, création et insertion du marqueur de tableau
 - Nouveau Mockup : clic sur "Nouveau" en mode Mockup ouvre showMockupPopup, validation du nom unique, création et insertion du marqueur {{MOCKUP:id}}
+- Nouveau Prompt : clic sur "Nouveau" en mode Prompt (uniquement en mode Code) ouvre showPromptPopup, saisie du nom, création du fichier prompt-NOM.md et insertion du bloc ```PROMPT: NOM```
 - Liaison Mockup : clic sur "Liaison" ouvre la popup de sélection des mockups du projet, clic sur un mockup existant insère sa liaison
 - Validation des formulaires : vérification de la non-vacuité du nom et gestion d'erreurs d'unicité (ex: mockupNameError)
 - **Priorité:** critique
@@ -197,3 +198,19 @@
 - Insertion et nettoyage : la validation supprime automatiquement le "/" saisi et insère le bloc ou le formatage correspondant (ex: note info, tableau 2x2, mockup, trello, citation)
 - **Priorité:** mineur
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/slash-command-menu/slash-command-menu.component.ts`
+
+---
+
+## `2-5-2-3-17` — [modification] Mega-outil Prompt : affichage et exécution
+
+- Affichage mode Code : le bloc ` ```PROMPT: NOM ` est affiché en texte brut ; la ligne d'ouverture est colorée en amber
+- Affichage mode Edition : `app-prompt-board` est rendu inline avec header amber, system prompt collapsable, user prompt avec variables `{{x}}` colorées et bouton ▶ Exécuter ; le texte brut du bloc est supprimé du rendu HTML (strip regex PROMPT dans buildVisuSectionHtml)
+- Affichage mode Structure : panneau bas amber listant les instances de prompt de la section en lecture seule
+- Popup d'exécution : sélecteur IA à gauche (Claude / AGY (Gemini)) + modèles filtrés à droite ; affichage du prompt de base global (collapsable, badge "global") + system prompt de la section
+- Variables `{{x}}` : si le prompt contient des variables, l'état variable-fill affiche un formulaire de substitution avant l'envoi
+- Streaming : exécution via `GET /api/mega-outils/prompt/execute-stream` (EventSource SSE) ; tous les providers passent par l'executor local port 3002 ; AGY utilise un fichier de sortie pollé toutes les 1500ms (agy ne streame pas sur stdout Windows) ; événements nommés : ai-log {stream, text}, ai-error, complete, run-failed ; journal de log coloré par type (stderr rouge, info amber, stdout gris)
+- Insertion : état validating propose "Insérer" (stocke le résultat à l'intérieur du fence PROMPT avec marqueur `===RÉSULTAT===` et l'affiche dans la vue Edition juste après la card prompt-board), "Copier" et "Re-exécuter" ; les `>` en début de ligne du résultat sont supprimés avant l'insertion ; une nouvelle exécution remplace le résultat précédent dans le fence
+- Historique : chaque exécution est enregistrée en base (table mega_outil_prompt_history) et visible dans PromptAdminComponent
+- Prompt de base global : configurable dans Admin › Mega-outils › Prompt ; stocké en BDD (table mega_outil_prompt_config) ; combiné avec le system prompt de section à l'exécution
+- **Priorité:** critique
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `apps/projets/src/app/pages/projet-editor/services/projet-prompt-execute.service.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `server/server-data.js`
