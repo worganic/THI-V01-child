@@ -27,3 +27,6 @@ export * from './lib/mega-outils/trello/trello-board.component';
 export * from './lib/mega-outils/trello/trello-admin.component';
 export * from './lib/mega-outils/mockup/mockup-board.component';
 export * from './lib/mega-outils/array/array-board.component';
+export * from './lib/mega-outils/prompt/prompt-board.component';
+export * from './lib/mega-outils/prompt/prompt-admin.component';
+export * from './lib/mega-outils/form/form-board.component';

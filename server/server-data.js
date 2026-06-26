@@ -8904,6 +8904,67 @@ function writeFonctionsMd(relPath, folderId, pageTitle, functions, meta) {
     return mdFull;
 }
 
+/**
+ * Proxy vers l'executor local (port 3002) — forward les événements SSE (ai-log, ai-error)
+ * et appelle `onEnd(fullText, logLines)` en fin. Sans `onEnd`, émet `complete { text }` et ferme.
+ * Utilisé par : generate-functions-stream, sitemap-update-stream, mega-outils/execute-stream.
+ */
+function callExecutorSse(sse, res, req, { stepId, content, provider, model, cwd }, { onEnd } = {}) {
+    const http = require('http');
+    const isAgy = provider === 'antigravity' || provider === 'agy';
+    const effectiveModel = model || (isAgy ? 'default' : 'claude-sonnet-4-6');
+    const body = JSON.stringify({ stepId, content, provider, model: effectiveModel, cwd });
+    let sseBuf = '', fullText = '', logLines = 0;
+    const apiReq = http.request({
+        hostname: 'localhost', port: 3002, path: '/execute-prompt', method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
+    }, (apiRes) => {
+        if (apiRes.statusCode !== 200) {
+            let errBody = '';
+            apiRes.on('data', c => { errBody += c.toString(); });
+            apiRes.on('end', () => {
+                sse('run-failed', { message: `Executor a répondu HTTP ${apiRes.statusCode} : ${errBody.slice(0, 500) || '(corps vide)'}` });
+                res.end();
+            });
+            return;
+        }
+        apiRes.on('data', (chunk) => {
+            sseBuf += chunk.toString();
+            const parts = sseBuf.split('\n');
+            sseBuf = parts.pop() ?? '';
+            for (const line of parts) {
+                if (!line.startsWith('data:')) continue;
+                let evt; try { evt = JSON.parse(line.slice(5).trim()); } catch { continue; }
+                if (evt.type === 'stdout' && evt.message) {
+                    fullText += evt.message;
+                    const t = evt.message.replace(/\r?\n$/, '');
+                    if (t) { logLines++; sse('ai-log', { stream: 'stdout', text: t }); }
+                } else if (evt.type === 'stderr' && evt.message) {
+                    const t = evt.message.replace(/\r?\n$/, '');
+                    if (t.trim()) { logLines++; sse('ai-log', { stream: 'stderr', text: t }); }
+                } else if (['info', 'start', 'end'].includes(evt.type) && evt.message) {
+                    const t = evt.message.replace(/\r?\n$/, '');
+                    if (t.trim()) sse('ai-log', { stream: 'info', text: t });
+                } else if (evt.type === 'error') {
+                    sse('ai-error', { message: evt.message || 'Erreur IA' });
+                }
+            }
+        });
+        apiRes.on('end', () => {
+            if (onEnd) onEnd(fullText, logLines);
+            else { sse('complete', { text: fullText }); res.end(); }
+        });
+    });
+    apiReq.on('error', (e) => {
+        sse('run-failed', { message: `Executor injoignable (port 3002) : ${e.message}` });
+        res.end();
+    });
+    apiReq.write(body);
+    apiReq.end();
+    if (req) req.on('close', () => { try { apiReq.destroy(); } catch {} });
+    return apiReq;
+}
+
 // GET /api/admin/tests/generate-functions-stream — l'IA analyse le code et PROPOSE la liste cible (fichier JSON).
 // Le serveur calcule le diff (ajout/modif/suppression) et renvoie les propositions ; aucune écriture du fonctions.md ici.
 app.get('/api/admin/tests/generate-functions-stream', (req, res) => {
@@ -8948,40 +9009,9 @@ app.get('/api/admin/tests/generate-functions-stream', (req, res) => {
 
     sse('start', { folderId, relPath, provider, model });
 
-    const http = require('http');
-    const body = JSON.stringify({ stepId: `genfn-${folderId}-${Date.now()}`, content: prompt, provider, model, cwd: PROJECT_ROOT });
-    const apiReq = http.request({
-        hostname: 'localhost', port: 3002, path: '/execute-prompt', method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-    }, (apiRes) => {
-        let sseBuf = '';
-        let logLines = 0;
-
-        if (apiRes.statusCode !== 200) {
-            let errBody = '';
-            apiRes.on('data', c => { errBody += c.toString(); });
-            apiRes.on('end', () => {
-                sse('run-failed', { message: `Executor a répondu HTTP ${apiRes.statusCode} : ${errBody.slice(0, 500) || '(corps vide)'}` });
-                res.end();
-            });
-            return;
-        }
-
-        apiRes.on('data', (chunk) => {
-            sseBuf += chunk.toString();
-            const parts = sseBuf.split('\n');
-            sseBuf = parts.pop() ?? '';
-            for (const line of parts) {
-                if (!line.startsWith('data:')) continue;
-                let evt; try { evt = JSON.parse(line.slice(5).trim()); } catch { continue; }
-                if (evt.type === 'stdout' && evt.message) { logLines++; const t = evt.message.replace(/\r?\n$/, ''); if (t.trim()) sse('ai-log', { stream: 'stdout', text: t }); }
-                else if (evt.type === 'stderr' && evt.message) { const t = evt.message.replace(/\r?\n$/, ''); if (t.trim()) { logLines++; sse('ai-log', { stream: 'stderr', text: t }); } }
-                else if ((evt.type === 'info' || evt.type === 'start' || evt.type === 'end') && evt.message) { const t = evt.message.replace(/\r?\n$/, ''); if (t.trim()) sse('ai-log', { stream: 'info', text: t }); }
-                else if (evt.type === 'error') sse('ai-error', { message: evt.message || 'Erreur IA' });
-            }
-        });
-        apiRes.on('end', () => {
-            // Lit les propositions écrites par l'IA et calcule le diff (sans toucher au fonctions.md).
+    callExecutorSse(sse, res, req,
+        { stepId: `genfn-${folderId}-${Date.now()}`, content: prompt, provider, model, cwd: PROJECT_ROOT },
+        { onEnd: (_fullText, logLines) => {
             if (!_functionItemsCache) { try { _functionItemsCache = scanAllFunctions(); } catch { _functionItemsCache = []; } }
             const currentItems = _functionItemsCache.filter(it => it.folderId === folderId);
             let rawResponse = '';
@@ -8992,19 +9022,10 @@ app.get('/api/admin/tests/generate-functions-stream', (req, res) => {
                 return res.end();
             }
             const proposals = computeFunctionProposals(folderId, currentItems, proposed);
-            // Renvoie l'échange IA complet (prompt + réponse brute) pour analyse / historique.
             sse('complete', { folderId, proposals, logLines, prompt, rawResponse: rawResponse.slice(0, 30000) });
             res.end();
-        });
-    });
-    apiReq.on('error', (e) => {
-        sse('run-failed', { message: `Executor injoignable (port 3002) : ${e.message}. Lance l'executor.` });
-        res.end();
-    });
-    apiReq.write(body);
-    apiReq.end();
-
-    req.on('close', () => { try { apiReq.destroy(); } catch {} });
+        }}
+    );
 });
 
 // POST /api/admin/tests/apply-functions — applique la liste validée par l'utilisateur (réécrit le fonctions.md).
@@ -9379,37 +9400,9 @@ app.get('/api/admin/tests/sitemap-update-stream', (req, res) => {
     const prompt = buildSitemapUpdatePrompt(runDir, instructions, scope);
     sse('start', { runId, provider, model });
 
-    const http = require('http');
-    const body = JSON.stringify({ stepId: `smupd-${runId}`, content: prompt, provider, model, cwd: PROJECT_ROOT });
-    const apiReq = http.request({
-        hostname: 'localhost', port: 3002, path: '/execute-prompt', method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-    }, (apiRes) => {
-        let sseBuf = '';
-        let logLines = 0;
-        if (apiRes.statusCode !== 200) {
-            let errBody = '';
-            apiRes.on('data', c => { errBody += c.toString(); });
-            apiRes.on('end', () => {
-                sse('run-failed', { message: `Executor a répondu HTTP ${apiRes.statusCode} : ${errBody.slice(0, 500) || '(corps vide)'}` });
-                res.end();
-            });
-            return;
-        }
-        apiRes.on('data', (chunk) => {
-            sseBuf += chunk.toString();
-            const parts = sseBuf.split('\n');
-            sseBuf = parts.pop() ?? '';
-            for (const line of parts) {
-                if (!line.startsWith('data:')) continue;
-                let evt; try { evt = JSON.parse(line.slice(5).trim()); } catch { continue; }
-                if (evt.type === 'stdout' && evt.message) { logLines++; const t = evt.message.replace(/\r?\n$/, ''); if (t.trim()) sse('ai-log', { stream: 'stdout', text: t }); }
-                else if (evt.type === 'stderr' && evt.message) { const t = evt.message.replace(/\r?\n$/, ''); if (t.trim()) { logLines++; sse('ai-log', { stream: 'stderr', text: t }); } }
-                else if ((evt.type === 'info' || evt.type === 'start' || evt.type === 'end') && evt.message) { const t = evt.message.replace(/\r?\n$/, ''); if (t.trim()) sse('ai-log', { stream: 'info', text: t }); }
-                else if (evt.type === 'error') sse('ai-error', { message: evt.message || 'Erreur IA' });
-            }
-        });
-        apiRes.on('end', () => {
+    callExecutorSse(sse, res, req,
+        { stepId: `smupd-${runId}`, content: prompt, provider, model, cwd: PROJECT_ROOT },
+        { onEnd: (_fullText, logLines) => {
             let current = {};
             try { current = JSON.parse(fs.readFileSync(curFile, 'utf8')); } catch { /* ignore */ }
             let rawResponse = '';
@@ -9422,14 +9415,8 @@ app.get('/api/admin/tests/sitemap-update-stream', (req, res) => {
             const proposals = computeSitemapProposals(current, proposed, scope);
             sse('complete', { runId, proposals, logLines, prompt, rawResponse: rawResponse.slice(0, 30000) });
             res.end();
-        });
-    });
-    apiReq.on('error', (e) => {
-        sse('run-failed', { message: `Executor injoignable (port 3002) : ${e.message}. Lance l'executor.` });
-        res.end();
-    });
-    apiReq.write(body);
-    apiReq.end();
+        }}
+    );
 });
 
 // ============================================================
@@ -9530,6 +9517,109 @@ app.post('/api/ai/execute-file-prompt', async (req, res) => {
                 max_tokens: 8096,
                 system: systemBlock,
                 messages: [{ role: 'user', content: userContent }]
+            });
+
+            for await (const event of stream) {
+                if (event.type === 'content_block_delta' && event.delta?.type === 'text_delta') {
+                    sseWrite('stdout', event.delta.text);
+                }
+            }
+
+            const finalMsg = await stream.finalMessage();
+            const usage = finalMsg.usage;
+            if (usage) {
+                sseWrite('tokens', '', {
+                    used: usage.input_tokens + usage.output_tokens,
+                    total: 200000,
+                    remaining: 200000 - usage.input_tokens - usage.output_tokens
+                });
+            }
+            sseWrite('end', '\nTerminé', { code: 0 });
+            res.end();
+        }
+    } catch (err) {
+        sseWrite('error', err.message || 'Erreur API IA');
+        res.end();
+    }
+});
+
+// POST /api/ai/execute-simple-prompt — Prompt simple sans fichier (fallback executor)
+app.post('/api/ai/execute-simple-prompt', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+
+    const { systemPrompt, userPrompt, provider: bodyProvider, model: bodyModel } = req.body;
+    if (!userPrompt) return res.status(400).json({ error: 'userPrompt requis' });
+
+    const rawCfg = user.config || {};
+    const userConfig = typeof rawCfg === 'string' ? (() => { try { return JSON.parse(rawCfg); } catch { return {}; } })() : rawCfg;
+    const apiKeys = userConfig.apiKeys || {};
+
+    const rawProvider = (bodyProvider || 'claude').split('-')[0];
+    // 'antigravity' est le CLI AGY (Gemini) — utiliser l'API Gemini en fallback
+    const provider = rawProvider === 'antigravity' ? 'gemini' : rawProvider;
+    let model = bodyModel || 'claude-sonnet-4-6';
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const sseWrite = (type, message, extra = {}) => {
+        res.write(`data: ${JSON.stringify({ type, message, ...extra })}\n\n`);
+    };
+
+    sseWrite('start', `> Calling ${provider}/${model}...\n`);
+
+    try {
+        if (provider === 'gemini') {
+            const geminiKey = apiKeys.gemini?.key || '';
+            if (!geminiKey) { sseWrite('error', 'Clé API Gemini non configurée'); res.end(); return; }
+            if (!model.startsWith('gemini-')) model = 'gemini-2.5-flash';
+
+            const fullPrompt = systemPrompt ? `${systemPrompt}\n\n---\n\n${userPrompt}` : userPrompt;
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse&key=${geminiKey}`;
+            const https = require('https');
+            const body = JSON.stringify({ contents: [{ role: 'user', parts: [{ text: fullPrompt }] }] });
+            const urlObj = new URL(url);
+            const options = { hostname: urlObj.hostname, path: urlObj.pathname + urlObj.search, method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } };
+
+            const apiReq = https.request(options, (apiRes) => {
+                let buffer = '';
+                apiRes.on('data', (chunk) => {
+                    buffer += chunk.toString();
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() ?? '';
+                    for (const line of lines) {
+                        if (!line.startsWith('data:')) continue;
+                        try {
+                            const data = JSON.parse(line.slice(5).trim());
+                            const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                            if (text) sseWrite('stdout', text);
+                        } catch {}
+                    }
+                });
+                apiRes.on('end', () => { sseWrite('end', '\nTerminé', { code: 0 }); res.end(); });
+            });
+            apiReq.on('error', (e) => { sseWrite('error', e.message); res.end(); });
+            apiReq.write(body);
+            apiReq.end();
+
+        } else {
+            const claudeKey = apiKeys.claude?.key || '';
+            if (!claudeKey) { sseWrite('error', 'Clé API Claude non configurée. Configures ta clé dans Admin > Config > Intelligence Artificielle.'); res.end(); return; }
+            if (!model.startsWith('claude-')) model = 'claude-sonnet-4-6';
+
+            const Anthropic = require('@anthropic-ai/sdk');
+            const client = new Anthropic.default({ apiKey: claudeKey });
+
+            const systemBlock = systemPrompt || 'You are a helpful assistant.';
+
+            const stream = await client.messages.stream({
+                model,
+                max_tokens: 8096,
+                system: systemBlock,
+                messages: [{ role: 'user', content: userPrompt }]
             });
 
             for await (const event of stream) {
@@ -10274,6 +10364,237 @@ app.delete('/api/mega-outils/array/:instanceId/grid/col/:col', async (req, res) 
 });
 
 // ============================================================
+// Mega-Outils — PROMPT
+// ============================================================
+
+async function broadcastPromptUpdate(instanceId, action, projectId) {
+    try {
+        let pid = projectId;
+        if (!pid && instanceId) {
+            const [r] = await pool.query('SELECT project_id FROM mega_outil_instances WHERE id = ?', [instanceId]);
+            pid = r[0]?.project_id;
+        }
+        if (pid) broadcastToProject(pid, 'prompt_update', { instanceId: instanceId || null, projectId: pid, action });
+    } catch (e) { console.warn('[mega-outils] broadcastPromptUpdate failed:', e.message); }
+}
+
+// GET /api/mega-outils/prompt/all
+app.get('/api/mega-outils/prompt/all', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(`
+            SELECT i.*, p.name AS project_name, f.name AS folder_name
+            FROM mega_outil_instances i
+            LEFT JOIN frank_projects p ON p.id = i.project_id
+            LEFT JOIN frank_project_nodes f ON f.id = i.folder_id
+            WHERE i.type = 'prompt'
+            ORDER BY i.created_at DESC
+        `);
+        const result = rows.map(r => ({
+            instance: {
+                id: r.id, type: r.type, name: r.name, projectId: r.project_id,
+                outilId: r.outil_id, folderId: r.folder_id,
+                createdAt: r.created_at, updatedAt: r.updated_at,
+            },
+            projectName: r.project_name,
+            folderName: r.folder_name,
+        }));
+        res.json(result);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/mega-outils/prompt/:instanceId/history
+app.get('/api/mega-outils/prompt/:instanceId/history', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            'SELECT * FROM mega_outil_prompt_history WHERE instance_id = ? ORDER BY executed_at DESC LIMIT 20',
+            [req.params.instanceId]
+        );
+        res.json(rows.map(r => ({
+            id: r.id, instanceId: r.instance_id,
+            userPrompt: r.user_prompt, systemPrompt: r.system_prompt,
+            result: r.result, provider: r.provider, model: r.model,
+            executedBy: r.executed_by, executedAt: r.executed_at,
+        })));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// Méta-prompts par défaut du workflow guidé (cadrage + génération). Servis si la clé
+// BDD est absente. Modifiables dans Admin › Mega-outils › Prompt.
+const DEFAULT_WORKFLOW_CLARIFY_PROMPT = `Tu es un assistant de cadrage. Ton rôle : avant de produire quoi que ce soit, poser UNIQUEMENT les questions nécessaires pour cerner précisément le besoin de l'utilisateur.
+
+RÈGLES DE SORTIE (strictes, aucune autre forme acceptée) :
+- Si tu as besoin d'informations, réponds EXCLUSIVEMENT par un formulaire Markdown au format :
+    * **Intitulé de la question :**
+      * [ ] Option (choix multiple : plusieurs cases possibles)
+      * ( ) Option (choix unique : une seule possible)
+  Pour une réponse libre, insère « ______ » dans l'option (ex : « Autre : ______ »).
+- Pose 3 à 8 questions max, regroupées logiquement, chacune avec au moins 2 options.
+- Ne propose AUCUN texte hors du formulaire (pas d'intro, pas de conclusion).
+- Concentre-toi sur les PARAMÈTRES (niveau, durée, objectifs, format, contraintes, public…), jamais sur le contenu final.
+- Si — et seulement si — tu disposes déjà de tout le nécessaire pour produire un livrable précis, réponds par la ligne unique : ===PRÊT===`;
+
+const DEFAULT_WORKFLOW_GENERATE_PROMPT = `Tu produis maintenant le livrable final à partir du besoin et des réponses fournies.
+
+RÈGLES DE SORTIE :
+- Produis directement le livrable structuré en Markdown (titres ##, ###, listes…).
+- Matérialise les éléments pertinents dans des « MegaOutils » avec EXACTEMENT ces syntaxes, délimités par des fences \`\`\` :
+
+  • Tableau Kanban (tâches, étapes, planning) :
+    \`\`\`TRELLO: Nom du tableau
+    ### À faire
+    - [ ] Titre de la carte \`[medium]\`
+      Description optionnelle
+    ### En cours
+    ### Terminé
+    \`\`\`
+    statuts : « À faire » | « En cours » | « Terminé » | « Bloqué » ; priorités (entre backticks) : low | medium | high | critical
+
+  • Tableau de données (grille, comparatif, horaires) :
+    \`\`\`ARRAY: Nom du tableau
+    | Colonne 1 | Colonne 2 |
+    |-----------|-----------|
+    | valeur    | valeur    |
+    \`\`\`
+
+  • Formulaire (quiz, évaluation, sondage) :
+    \`\`\`FORM: Nom du formulaire
+    * **Question :**
+      * [ ] Option
+    \`\`\`
+
+- N'utilise AUCUN autre bloc de code que ces trois MegaOutils.
+- Donne des noms courts et uniques à chaque MegaOutil.`;
+
+// GET /api/mega-outils/prompt/config — Prompts globaux (base + cadrage + génération du workflow guidé)
+app.get('/api/mega-outils/prompt/config', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            "SELECT key_name, value FROM mega_outil_prompt_config WHERE key_name IN ('base_system_prompt', 'workflow_clarify_prompt', 'workflow_generate_prompt')"
+        );
+        const map = {};
+        for (const r of rows) map[r.key_name] = r.value;
+        res.json({
+            baseSystemPrompt: map['base_system_prompt'] || '',
+            workflowClarifyPrompt: map['workflow_clarify_prompt'] || DEFAULT_WORKFLOW_CLARIFY_PROMPT,
+            workflowGeneratePrompt: map['workflow_generate_prompt'] || DEFAULT_WORKFLOW_GENERATE_PROMPT,
+        });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// PUT /api/mega-outils/prompt/config — Sauvegarder les prompts globaux (upsert par clé fournie)
+app.put('/api/mega-outils/prompt/config', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { baseSystemPrompt, workflowClarifyPrompt, workflowGeneratePrompt } = req.body;
+    const upserts = [
+        ['base_system_prompt', baseSystemPrompt],
+        ['workflow_clarify_prompt', workflowClarifyPrompt],
+        ['workflow_generate_prompt', workflowGeneratePrompt],
+    ].filter(([, v]) => v !== undefined);
+    try {
+        for (const [key, value] of upserts) {
+            await pool.query(
+                "INSERT INTO mega_outil_prompt_config (key_name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = CURRENT_TIMESTAMP",
+                [key, value || '']
+            );
+        }
+        res.json({ ok: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/mega-outils/prompt/execute-stream — Exécution SSE d'un prompt MO via l'executor local (port 3002).
+// Claude → stdout streamé. Agy → fichier de sortie pollé (agy bufferise stdout sur Windows pipe).
+// Événements nommés : start, ai-log {stream, text}, ai-error {message}, complete {text}, run-failed {message}
+app.get('/api/mega-outils/prompt/execute-stream', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+
+    const systemPrompt = (req.query.systemPrompt || '').toString();
+    const userPrompt   = (req.query.userPrompt   || '').toString();
+    const provider     = (req.query.provider     || 'claude').toString();
+    const model        = (req.query.model        || '').toString();
+    const isAgy        = provider === 'antigravity' || provider === 'agy';
+
+    if (!userPrompt) return res.status(400).json({ error: 'userPrompt requis' });
+
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+    const sse = (event, payload) => { if (!res.writableEnded) res.write(`event: ${event}\ndata: ${JSON.stringify(payload)}\n\n`); };
+
+    sse('start', { provider, model });
+
+    const stepId  = `prompt-mo-${Date.now()}`;
+    let content   = systemPrompt ? `[System]\n${systemPrompt}\n\n[User]\n${userPrompt}` : userPrompt;
+
+    if (isAgy) {
+        // Agy ne streame pas sur stdout (buffering pipe Windows) : on lui demande d'écrire sa réponse dans un fichier.
+        let agyOutFile;
+        try {
+            const runDir = path.join(BASE_DIR, 'tests-admin', 'mo-runs', stepId);
+            fs.mkdirSync(runDir, { recursive: true });
+            agyOutFile = path.join(runDir, 'response.txt');
+            fs.writeFileSync(agyOutFile, '', 'utf8');
+        } catch (e) {
+            sse('run-failed', { message: `Préparation fichier agy impossible : ${e.message}` });
+            return res.end();
+        }
+        const of = agyOutFile.replace(/\\/g, '/');
+        content += `\n\n---\nIMPORTANT : Écris ta réponse complète dans le fichier \`${of}\` en utilisant ton outil d'écriture de fichier. N'écris rien dans ta réponse texte.`;
+
+        let lastSize = 0, fullText = '';
+        const pollAgy = () => {
+            try {
+                const txt = fs.readFileSync(agyOutFile, 'utf8');
+                if (txt.length > lastSize) {
+                    const chunk = txt.slice(lastSize);
+                    lastSize = txt.length;
+                    fullText += chunk;
+                    sse('ai-log', { stream: 'stdout', text: chunk });
+                }
+            } catch { /* ignore */ }
+        };
+        const agyPoller = setInterval(pollAgy, 1500);
+
+        callExecutorSse(sse, res, req,
+            { stepId, content, provider, model, cwd: PROJECT_ROOT },
+            { onEnd: () => {
+                clearInterval(agyPoller);
+                pollAgy();
+                sse('complete', { text: fullText });
+                res.end();
+            }}
+        );
+    } else {
+        callExecutorSse(sse, res, req, { stepId, content, provider, model });
+    }
+});
+
+// POST /api/mega-outils/prompt/:instanceId/history
+app.post('/api/mega-outils/prompt/:instanceId/history', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { userPrompt, systemPrompt, result, provider, model } = req.body;
+    if (!userPrompt || !result) return res.status(400).json({ error: 'userPrompt et result requis' });
+    const id = require('crypto').randomUUID();
+    try {
+        await pool.query(
+            'INSERT INTO mega_outil_prompt_history (id, instance_id, user_prompt, system_prompt, result, provider, model, executed_by) VALUES (?,?,?,?,?,?,?,?)',
+            [id, req.params.instanceId, userPrompt, systemPrompt || null, result, provider || 'claude', model || null, user.id]
+        );
+        await broadcastPromptUpdate(req.params.instanceId, 'history_add', null);
+        res.json({ id, instanceId: req.params.instanceId, userPrompt, systemPrompt, result, provider, model, executedBy: user.id, executedAt: new Date().toISOString() });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ============================================================
 // PROJETS-TESTS — Outil Tests (Cahier de recette + Exécution + Résultats)
 // ============================================================
 
@@ -10818,6 +11139,29 @@ app.listen(PORT, async () => {
             updated_at    DATETIME      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] mega_outil_array_grids init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS mega_outil_prompt_history (
+            id           VARCHAR(64)   PRIMARY KEY,
+            instance_id  VARCHAR(64)   NOT NULL,
+            user_prompt  TEXT          NOT NULL,
+            system_prompt TEXT         DEFAULT NULL,
+            result       LONGTEXT      NOT NULL,
+            provider     VARCHAR(64)   DEFAULT 'claude',
+            model        VARCHAR(128)  DEFAULT NULL,
+            executed_by  VARCHAR(64)   DEFAULT NULL,
+            executed_at  DATETIME      DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_mph_instance (instance_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] mega_outil_prompt_history init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS mega_outil_prompt_config (
+            key_name   VARCHAR(64)  PRIMARY KEY,
+            value      LONGTEXT     DEFAULT NULL,
+            updated_at DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] mega_outil_prompt_config init error:', e.message));
 
     await pool.query(`
         CREATE TABLE IF NOT EXISTS frank_project_steps (

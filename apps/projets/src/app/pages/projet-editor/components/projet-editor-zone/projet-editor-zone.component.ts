@@ -4,15 +4,17 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCellStyle } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview } from '@worganic/portail-core/data-access';
 import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
+import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
+import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { ProjetCollabService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { ImagePropsPanelComponent, ImageProps } from '../image-props-panel/image-props-panel.component';
 import { SlashCommandMenuComponent, SlashCommand } from '../slash-command-menu/slash-command-menu.component';
-import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent } from '@worganic/shared/ui';
+import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, FormBoardComponent } from '@worganic/shared/ui';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -181,7 +183,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -356,6 +358,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   readonly promptHelpExampleVars = '```PROMPT: Email client\nRédige un email professionnel pour {{client}}\nà propos de {{sujet}}.\nTon : {{ton}}\n```';
   promptName = '';
   promptCreating = signal(false);
+  promptGuidedMode = signal(false);
   contentPromptIds: string[] = [];
   promptPanelCollapsed = signal(false);
   // Popup d'exécution d'un prompt (mode Edition)
@@ -364,8 +367,22 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   promptBaseSystemPrompt: string | null = null;
   private seenPromptMarkers = new Set<string>();
 
-  // Barre MO — type actif déplié (trello / mockup / array / prompt / null)
-  moActiveType = signal<'trello' | 'mockup' | 'array' | 'prompt' | null>(null);
+  // Workflow guidé (cadrage → formulaire → génération → MO)
+  showWorkflowPopup = signal(false);
+  activeWorkflowForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null } | null = null;
+  workflowClarifyPrompt = '';
+  workflowGeneratePrompt = '';
+
+  // ── Form MO ────────────────────────────────────────────────────────────────
+  contentFormIds: string[] = [];
+  showFormPopup = signal(false);
+  showFormExecutePopup = signal(false);
+  formName = 'Mon Formulaire';
+  formCreating = signal(false);
+  activeFormForExecution: { formName: string; questions: FormQuestion[] } | null = null;
+
+  // Barre MO — type actif déplié (trello / mockup / array / prompt / form / null)
+  moActiveType = signal<'trello' | 'mockup' | 'array' | 'prompt' | 'form' | null>(null);
   // Popup de liaison : choisir quel mockup insérer dans la section courante
   showMockupLiaisonPopup = signal(false);
   private liaisonCursorPos = -1;
@@ -396,6 +413,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private woHistory = inject(WoActionHistoryService);
   collab = inject(ProjetCollabService);
   private authSvc = inject(AuthService);
+  currentUserName = () => this.authSvc.currentUser()?.username || '';
   private megaOutilsSvc = inject(MegaOutilsService);
 
   // Mode (toggle Edition / Structure / Visu)
@@ -740,10 +758,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const trelloStripped = !this.focusedHandle && this.stripTrelloMarkersFromUnifiedContent();
       // Supprimer les marqueurs {{MOCKUP:id}} dupliqués
       const mockupDeduped = !this.focusedHandle && this.deduplicateMockupMarkers();
+      // En mode Edition : encadrer les formulaires en markdown brut en blocs ```FORM
+      const formsConverted = this.mode === 'visu' && !this.focusedHandle && this.autoConvertRawForms();
       this.recomputeAll();
       this.updateSnapshotFromFiles();
 
-      if ((markersFixed || trelloStripped || mockupDeduped) && !this.focusedHandle) {
+      if ((markersFixed || trelloStripped || mockupDeduped || formsConverted) && !this.focusedHandle) {
         setTimeout(() => this.saveAll(), 0);
       }
     }
@@ -771,6 +791,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         this.recomputeContentMockupIds();
         this.recomputeContentArrayIds();
         this.recomputeContentPromptIds();
+        this.recomputeContentFormIds();
       }
       // En mode visu, la liste filteredVisuSections change → réinjecter le innerHTML
       // dans les nouveaux éléments (sinon ils restent vides après navigation menu)
@@ -789,6 +810,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.recomputeContentMockupIds();
       this.recomputeContentArrayIds();
       this.recomputeContentPromptIds();
+      this.recomputeContentFormIds();
       if (this.hasLoaded) this.repairMissingMockupMarkers();
       if (this.showTrelloList) { this.loadTrelloListCounts(); this.recomputeTrelloSections(); }
       if (this.showMockupList) { this.recomputeMockupSections(); }
@@ -1297,6 +1319,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.recomputeContentMockupIds();
     this.recomputeContentArrayIds();
     this.recomputeContentPromptIds();
+    this.recomputeContentFormIds();
   }
 
   private recomputeHandles() {
@@ -1782,6 +1805,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.recomputeContentMockupIds();
     this.recomputeContentArrayIds();
     this.recomputeContentPromptIds();
+    this.recomputeContentFormIds();
   }
 
   /** Résout le folderId de la section active (l'id actif peut être un dossier ou un fichier). */
@@ -1867,12 +1891,34 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     this.contentPromptIds = this.promptInstances.filter(i => hasMarker(i.name)).map(i => i.id);
   }
 
+  private recomputeContentFormIds() {
+    const activeFolderId = this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null);
+    let sectionText = '';
+    if (this.focusedHandle && this.mode === 'edit') {
+      sectionText = this.unifiedContent;
+    } else if (activeFolderId) {
+      const sr = this.sectionRanges.find(r => r.folderId === activeFolderId);
+      if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
+    }
+    const markerLines = sectionText.split('\n').map(l => l.trim());
+    const hasMarker = (name: string) => markerLines.some(l => l === '```FORM: ' + name);
+    this.contentFormIds = this.formInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+  }
+
   get promptInstances(): MegaOutilInstance[] {
     return this.megaOutilInstances.filter(i => i.type === 'prompt');
   }
 
   promptInstanceName(id: string): string {
     return this.megaOutilInstances.find(i => i.id === id)?.name || 'Mon Prompt';
+  }
+
+  get formInstances(): MegaOutilInstance[] {
+    return this.megaOutilInstances.filter(i => i.type === 'form');
+  }
+
+  formInstanceName(id: string): string {
+    return this.megaOutilInstances.find(i => i.id === id)?.name || 'Formulaire';
   }
 
   private getPromptBodyById(id: string): string {
@@ -1884,8 +1930,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
     const body = lines.slice(openLine + 1, closeIdx).join('\n');
-    // Exclure la section résultat si présente
-    const markerIdx = body.split('\n').findIndex(l => l.trim() === '===RÉSULTAT===');
+    // Exclure le transcript (===CADRAGE===, ===RÉPONSES===, ===RÉSULTAT===) : on ne garde
+    // que l'en-tête (MODE/SYSTEM/--- /userPrompt) avant le premier marqueur ===.
+    const markerIdx = body.split('\n').findIndex(l => /^===/.test(l.trim()));
     return (markerIdx === -1 ? body : body.split('\n').slice(0, markerIdx).join('\n')).trim();
   }
 
@@ -1923,6 +1970,238 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   promptVariablesForId(id: string): string[] {
     return this.getPromptParsedById(id).variables;
+  }
+
+  // ── Form methods ────────────────────────────────────────────────────────────
+
+  parseFormContent(body: string): FormQuestion[] {
+    const questions: FormQuestion[] = [];
+    const lines = body.split('\n');
+    let current: FormQuestion | null = null;
+    for (const line of lines) {
+      const qMatch = line.match(/^\s*[\*\-]\s+\*\*(.+?)\*\*\s*:?\s*$/);
+      if (qMatch) {
+        if (current) questions.push(current);
+        current = { label: qMatch[1].trim(), type: 'checkbox', options: [] };
+        continue;
+      }
+      const checkMatch = line.match(/^\s*[\*\-]\s+\[\s*\]\s+(.+)$/);
+      if (checkMatch && current) {
+        const text = checkMatch[1].trim();
+        current.type = 'checkbox';
+        current.options.push({ text, hasDetail: /_{5,}/.test(text) });
+        continue;
+      }
+      const radioMatch = line.match(/^\s*[\*\-]\s+\(\s*\)\s+(.+)$/);
+      if (radioMatch && current) {
+        const text = radioMatch[1].trim();
+        current.type = 'radio';
+        current.options.push({ text, hasDetail: /_{5,}/.test(text) });
+      }
+    }
+    if (current) questions.push(current);
+    return questions;
+  }
+
+  /** Localise les bornes d'une balise ```FORM: NOM dans le contenu unifié. */
+  private locateFormFence(name: string): { openLine: number; closeIdx: number; markerIdx: number; lines: string[] } | null {
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```FORM: ' + name);
+    if (openLine === -1) return null;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    let markerIdx = -1;
+    for (let i = openLine + 1; i < closeIdx; i++) {
+      if (lines[i].trim() === '===RÉPONSES===') { markerIdx = i; break; }
+    }
+    return { openLine, closeIdx, markerIdx, lines };
+  }
+
+  getFormQuestionsForName(name: string): FormQuestion[] {
+    const loc = this.locateFormFence(name);
+    if (!loc) return [];
+    const end = loc.markerIdx === -1 ? loc.closeIdx : loc.markerIdx;
+    const body = loc.lines.slice(loc.openLine + 1, end).join('\n').trim();
+    return this.parseFormContent(body);
+  }
+
+  getFormResponsesForName(name: string): FormEntry[] {
+    const loc = this.locateFormFence(name);
+    if (!loc || loc.markerIdx === -1) return [];
+    const responseSection = loc.lines.slice(loc.markerIdx + 1, loc.closeIdx).join('\n');
+    return this.parseFormResponses(responseSection);
+  }
+
+  private parseFormResponses(raw: string): FormEntry[] {
+    const entries: FormEntry[] = [];
+    const blocks = raw.split(/^---$/m).map(b => b.trim()).filter(Boolean);
+    for (const block of blocks) {
+      const blockLines = block.split('\n');
+      const header = blockLines[0] || '';
+      const sepIdx = header.indexOf(' | ');
+      if (sepIdx === -1) continue;
+      const date = header.slice(0, sepIdx).trim();
+      const user = header.slice(sepIdx + 3).trim();
+      const answers: Record<string, string | string[]> = {};
+      for (let i = 1; i < blockLines.length; i++) {
+        const colonIdx = blockLines[i].indexOf(' : ');
+        if (colonIdx === -1) continue;
+        const key = blockLines[i].slice(0, colonIdx).trim();
+        const val = blockLines[i].slice(colonIdx + 3).trim();
+        answers[key] = val.includes(' ; ') ? val.split(' ; ').map(v => v.trim()) : val;
+      }
+      entries.push({ date, user, answers });
+    }
+    return entries;
+  }
+
+  insertFormResponseByName(name: string, entry: FormEntry) {
+    const loc = this.locateFormFence(name);
+    if (!loc) return;
+    const lines = loc.lines;
+    let closeIdx = loc.closeIdx;
+    if (loc.markerIdx === -1) {
+      // Pas encore de section réponses → la créer juste avant le ``` fermant
+      lines.splice(closeIdx, 0, '===RÉPONSES===');
+      closeIdx += 1;
+    }
+    const answerLines = Object.entries(entry.answers).map(([key, val]) => {
+      const valStr = Array.isArray(val) ? val.join(' ; ') : val;
+      return `${key} : ${valStr}`;
+    });
+    const block = ['---', `${entry.date} | ${entry.user}`, ...answerLines, '---'];
+    lines.splice(closeIdx, 0, ...block);
+    this.unifiedContent = lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    this.recomputeAll();
+  }
+
+  openFormExecutePopup(name: string) {
+    const questions = this.getFormQuestionsForName(name);
+    if (!questions.length) return;
+    this.activeFormForExecution = { formName: name, questions };
+    this.showFormExecutePopup.set(true);
+  }
+
+  onFormSubmit(entry: FormEntry) {
+    if (!this.activeFormForExecution) return;
+    this.insertFormResponseByName(this.activeFormForExecution.formName, entry);
+    this.showFormExecutePopup.set(false);
+    this.activeFormForExecution = null;
+  }
+
+  /** Prochain numéro libre pour nommer un formulaire auto-converti ("Formulaire N"). */
+  private nextFormCounter(): number {
+    let max = 0;
+    for (const l of this.unifiedContent.split('\n')) {
+      const m = l.trim().match(/^```FORM:\s*Formulaire\s+(\d+)\s*$/);
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    }
+    return max + 1;
+  }
+
+  /**
+   * Détecte les blocs de formulaire en markdown brut (une question `* **…:**` suivie
+   * d'options `[ ]` ou `( )`) qui ne sont pas déjà dans une balise, et les encadre
+   * automatiquement dans ```FORM: NOM pour les rendre interactifs en mode Edition.
+   * Idempotent : un bloc déjà encadré n'est pas re-détecté. Retourne true si conversion.
+   */
+  private autoConvertRawForms(): boolean {
+    const lines = this.unifiedContent.split('\n');
+    const isQuestion = (l: string) => /^\s*[\*\-]\s+\*\*(.+?)\*\*\s*:?\s*$/.test(l);
+    const isOption   = (l: string) => /^\s*[\*\-]\s+(\[\s*\]|\(\s*\))\s+\S/.test(l);
+    const isBlank    = (l: string) => l.trim() === '';
+    const isFence    = (l: string) => /^\s*```/.test(l);
+
+    const blocks: { start: number; end: number }[] = [];
+    let inFence = false;
+    for (let i = 0; i < lines.length; i++) {
+      if (isFence(lines[i])) { inFence = !inFence; continue; }
+      if (inFence || !isQuestion(lines[i])) continue;
+      // La 1re ligne non vide après la question doit être une option
+      let j = i + 1;
+      while (j < lines.length && isBlank(lines[j])) j++;
+      if (j >= lines.length || !isOption(lines[j])) continue;
+
+      // Étendre le bloc : questions/options + lignes vides suivies de form
+      let end = j, k = j + 1;
+      while (k < lines.length) {
+        if (isFence(lines[k])) break;
+        if (isQuestion(lines[k]) || isOption(lines[k])) { end = k; k++; continue; }
+        if (isBlank(lines[k])) {
+          let m = k;
+          while (m < lines.length && isBlank(lines[m])) m++;
+          if (m < lines.length && !isFence(lines[m]) && (isQuestion(lines[m]) || isOption(lines[m]))) { k = m; continue; }
+          break;
+        }
+        break;
+      }
+      blocks.push({ start: i, end });
+      i = end;
+    }
+
+    if (blocks.length === 0) return false;
+
+    const base = this.nextFormCounter();
+    // Encadrer de bas en haut pour préserver les indices ; numéros croissants top→bottom
+    for (let b = blocks.length - 1; b >= 0; b--) {
+      const { start, end } = blocks[b];
+      lines.splice(end + 1, 0, '```');
+      lines.splice(start, 0, '```FORM: Formulaire ' + (base + b));
+    }
+    this.unifiedContent = lines.join('\n');
+    // docSections n'est dérivé que de `files` (rebuild au prochain save round-trip) ;
+    // on synchronise tout de suite textContent depuis le contenu converti pour que le
+    // rendu (boards + strip HTML) voie les balises ```FORM sans attendre la sauvegarde.
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    return true;
+  }
+
+  /** Réaligne docSections[].textContent sur le contenu unifié courant (via sectionRanges). */
+  private syncDocSectionsTextFromContent() {
+    const lines = this.unifiedContent.split('\n');
+    for (const sec of this.docSections) {
+      const range = this.sectionRanges.find(r => r.folderId === sec.folderId);
+      if (range) sec.textContent = lines.slice(range.lineStart, range.lineEnd + 1).join('\n');
+    }
+  }
+
+  openFormPopup() {
+    this.formName = 'Mon Formulaire';
+    if (!this.pendingMoFolderId) {
+      this.pendingMoFolderId = this.getCursorEntity()?.folderId || this.activeNodeId || null;
+    }
+    this.showFormPopup.set(true);
+  }
+
+  cancelFormPopup() { this.showFormPopup.set(false); this.pendingMoFolderId = null; }
+
+  async confirmFormPopup() {
+    const name = (this.formName || '').trim() || 'Mon Formulaire';
+    if (!this.projectName) return;
+    const folderId = this.pendingMoFolderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
+    this.formCreating.set(true);
+    try {
+      const inst = await this.megaOutilsSvc.createInstance({
+        type: 'form',
+        name,
+        projectId: this.projectName,
+        outilId: this.activeOutilId || undefined,
+        folderId,
+      });
+      this.insertAt(`\n\n\`\`\`FORM: ${name}\n* **Question 1 :**\n  * [ ] Option A\n  * [ ] Option B\n\`\`\`\n\n`, '');
+      this.showFormPopup.set(false);
+      this.megaOutilCreated.emit(inst);
+    } catch (e) {
+      console.error('[EditorZone] confirmFormPopup échoué :', e);
+    } finally {
+      this.formCreating.set(false);
+      this.pendingMoFolderId = null;
+    }
   }
 
   private async loadArrayGrid() {
@@ -2772,6 +3051,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.structContextMenu = { visible: false, node: null, x: 0, y: 0 };
     }
     this.mode = m;
+    // Entrée en mode Edition : convertir les formulaires en markdown brut en blocs ```FORM
+    if (m === 'visu' && !this.focusedHandle) this.autoConvertRawForms();
     this.recomputeAll();
     if (m === 'visu') {
       this.setupVisuSelectionListener();
@@ -3133,11 +3414,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
    * bloc dans textContent — qui suit l'ordre `order` des fichiers, donc l'ordre du menu.
    * Évite que le template affiche systématiquement tous les Trello avant tous les Array.
    */
-  orderedBoardsForVisuSection(folderId: string): { type: 'trello' | 'array' | 'prompt'; inst: MegaOutilInstance }[] {
+  orderedBoardsForVisuSection(folderId: string): { type: 'trello' | 'array' | 'prompt' | 'form'; inst?: MegaOutilInstance; formName?: string }[] {
     const sec = this.docSections.find(s => s.folderId === folderId);
     const text = sec?.textContent ?? '';
     const posOf = (marker: string) => { const i = text.indexOf(marker); return i < 0 ? Number.MAX_SAFE_INTEGER : i; };
-    const items: { type: 'trello' | 'array' | 'prompt'; inst: MegaOutilInstance; pos: number }[] = [];
+    const items: { type: 'trello' | 'array' | 'prompt' | 'form'; inst?: MegaOutilInstance; formName?: string; pos: number }[] = [];
     for (const inst of this.trelloInstancesForVisuSection(folderId)) {
       items.push({ type: 'trello', inst, pos: posOf('```TRELLO: ' + inst.name) });
     }
@@ -3147,8 +3428,20 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     for (const inst of this.promptInstances.filter(i => i.folderId === folderId)) {
       items.push({ type: 'prompt', inst, pos: posOf('```PROMPT: ' + inst.name) });
     }
+    // Formulaires : détectés par la balise ```FORM: NOM directement dans le texte de la
+    // section (pas via une instance DB). Permet de rendre aussi les formulaires
+    // auto-convertis depuis du markdown brut (cf. autoConvertRawForms).
+    const seenForms = new Set<string>();
+    for (const line of text.split('\n')) {
+      const m = line.match(/^```FORM:\s*(.+?)\s*$/);
+      if (!m) continue;
+      const name = m[1].trim();
+      if (seenForms.has(name)) continue;
+      seenForms.add(name);
+      items.push({ type: 'form', formName: name, pos: posOf('```FORM: ' + name) });
+    }
     items.sort((a, b) => a.pos - b.pos);
-    return items.map(({ type, inst }) => ({ type, inst }));
+    return items.map(({ type, inst, formName }) => ({ type, inst, formName }));
   }
 
   /** En Preview, si le nœud actif est un fichier Array, retourne l'id d'instance à afficher en board. */
@@ -4442,20 +4735,29 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   }
 
   /** Extrait systemPrompt, userPrompt et variables d'un bloc PROMPT. */
-  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[] } {
+  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[]; mode: 'guided' | 'simple' } {
+    const modeMatch = body.match(/^\s*MODE:\s*(guided|simple)\s*$/im);
+    const mode: 'guided' | 'simple' = modeMatch && /guided/i.test(modeMatch[1]) ? 'guided' : 'simple';
     const sepMatch = body.match(/^\s*---\s*$/m);
     let systemPrompt: string | null = null;
     let userPrompt = body;
     if (sepMatch && sepMatch.index !== undefined) {
-      const before = body.slice(0, sepMatch.index).trim();
+      const before = body.slice(0, sepMatch.index).replace(/^\s*MODE:\s*\w+\s*$/im, '').trim();
       userPrompt = body.slice(sepMatch.index + sepMatch[0].length).trim();
       const sysMatch = before.match(/^SYSTEM:\s*([\s\S]*)$/im);
       if (sysMatch) systemPrompt = sysMatch[1].trim() || null;
+    } else {
+      userPrompt = body.replace(/^\s*MODE:\s*\w+\s*$/im, '').trim();
     }
     const varNames = [...new Set([...userPrompt.matchAll(/\{\{([A-Za-z0-9_]+)\}\}/g)]
       .map(m => m[1])
       .filter(n => !/^(SID|IMG|MOCKUP):/i.test(n)))];
-    return { systemPrompt, userPrompt, variables: varNames };
+    return { systemPrompt, userPrompt, variables: varNames, mode };
+  }
+
+  /** Mode d'exécution d'un prompt ('guided' = workflow cadrage→formulaire→génération). */
+  promptModeForId(id: string): 'guided' | 'simple' {
+    return this.parsePromptFence(this.getPromptBodyById(id)).mode;
   }
 
   openPromptPopup() {
@@ -4463,6 +4765,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.pendingMoFolderId = this.getCursorEntity()?.folderId || this.activeNodeId || null;
     }
     this.promptName = 'Mon Prompt';
+    this.promptGuidedMode.set(false);
     this.showPromptPopup.set(true);
   }
 
@@ -4481,7 +4784,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         outilId: this.activeOutilId || undefined,
         folderId,
       });
-      this.insertAt(`\n\n\`\`\`PROMPT: ${name}\nSYSTEM: \n\n---\n\nVotre prompt ici.\n\`\`\`\n\n`, '');
+      const modeLine = this.promptGuidedMode() ? 'MODE: guided\n' : '';
+      this.insertAt(`\n\n\`\`\`PROMPT: ${name}\n${modeLine}SYSTEM: \n\n---\n\nVotre prompt ici.\n\`\`\`\n\n`, '');
       this.showPromptPopup.set(false);
       this.megaOutilCreated.emit(inst);
     } catch (e) {
@@ -4497,6 +4801,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     if (!inst) return;
     const body = this.getPromptBodyById(instanceId);
     const parsed = this.parsePromptFence(body);
+
+    // Mode guidé → workflow multi-phases au lieu de l'exécution simple
+    if (parsed.mode === 'guided') {
+      this.openWorkflowPopup(instanceId, inst.name, parsed.userPrompt, parsed.systemPrompt);
+      return;
+    }
+
     this.activePromptForExecution = {
       instanceId,
       instanceName: inst.name,
@@ -4511,6 +4822,118 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         .catch(() => { this.promptBaseSystemPrompt = ''; });
     }
     this.showPromptExecutePopup.set(true);
+  }
+
+  /** Active/désactive le mode guidé d'un prompt en ajoutant/retirant la ligne MODE: guided. */
+  setPromptGuided(instanceId: string, guided: boolean) {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst) return;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return;
+    // Chercher une ligne MODE dans l'en-tête (avant --- / === / ``` fermant)
+    let modeIdx = -1;
+    for (let i = openLine + 1; i < lines.length; i++) {
+      const t = lines[i].trim();
+      if (t === '```' || t === '---' || /^===/.test(t)) break;
+      if (/^MODE:\s*/i.test(t)) { modeIdx = i; break; }
+    }
+    if (guided && modeIdx === -1) lines.splice(openLine + 1, 0, 'MODE: guided');
+    else if (!guided && modeIdx !== -1) lines.splice(modeIdx, 1);
+    else return;
+    this.unifiedContent = lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    this.recomputeAll();
+  }
+
+  private openWorkflowPopup(instanceId: string, instanceName: string, userPrompt: string, systemPrompt: string | null) {
+    this.activeWorkflowForExecution = { instanceId, instanceName, userPrompt, systemPrompt };
+    // Charger les 3 prompts globaux (base + cadrage + génération)
+    this.megaOutilsSvc.getPromptGlobalConfig()
+      .then(cfg => {
+        this.promptBaseSystemPrompt = cfg.baseSystemPrompt || '';
+        this.workflowClarifyPrompt = cfg.workflowClarifyPrompt || '';
+        this.workflowGeneratePrompt = cfg.workflowGeneratePrompt || '';
+        this.showWorkflowPopup.set(true);
+      })
+      .catch(() => {
+        this.promptBaseSystemPrompt = this.promptBaseSystemPrompt || '';
+        this.showWorkflowPopup.set(true);
+      });
+  }
+
+  /** Reçoit le livrable validé du workflow : insère le texte + crée les MO retenus. */
+  async onWorkflowMaterialize(payload: { deliverable: string; selectedMos: MaterializedMoPreview[]; transcript: string }) {
+    const wf = this.activeWorkflowForExecution;
+    this.showWorkflowPopup.set(false);
+    if (!wf) return;
+    const inst = this.promptInstances.find(i => i.id === wf.instanceId);
+    const folderId = inst?.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
+    await this.materializeMegaOutilsFromContent(payload.deliverable, payload.selectedMos, folderId);
+    // Persister un résumé du cadrage dans le fence (===RÉSULTAT===)
+    if (wf.instanceName) {
+      const summary = `Cadrage :\n${payload.transcript || '(aucune réponse)'}\n\nLivrable généré (${payload.selectedMos.length} MegaOutil${payload.selectedMos.length > 1 ? 's' : ''}) inséré dans la section.`;
+      this.insertPromptResult(wf.instanceId, summary);
+    }
+    this.activeWorkflowForExecution = null;
+  }
+
+  /**
+   * Insère le livrable IA dans la section (après le bloc PROMPT) et crée les instances
+   * pour les MegaOutils retenus (Trello → cartes BDD, Array → grille BDD ; Form = fence seul).
+   */
+  private async materializeMegaOutilsFromContent(deliverable: string, selectedMos: MaterializedMoPreview[], folderId?: string) {
+    if (!this.projectName) return;
+    // Ne garder que les fences MO retenus : retirer du livrable les fences MO non cochés
+    const keptFences = new Set(selectedMos.map(m => m.fence));
+    let content = deliverable;
+    const moRe = /```(TRELLO|ARRAY|FORM):[ \t]*[^\n]+\n[\s\S]*?\n```/g;
+    content = content.replace(moRe, (block) => keptFences.has(block) ? block : '');
+    content = content.replace(/\n{3,}/g, '\n\n').trim();
+
+    // 1. Insérer le markdown du livrable dans la section cible
+    const prevPending = this.pendingMoFolderId;
+    this.pendingMoFolderId = folderId || null;
+    this.insertAt(`\n\n${content}\n\n`, '');
+    this.pendingMoFolderId = prevPending;
+
+    // 2. Créer les instances pour Trello / Array (Form = rendu par balise, pas d'instance)
+    for (const mo of selectedMos) {
+      if (mo.type === 'form') continue;
+      try {
+        const inst = await this.megaOutilsSvc.createInstance({
+          type: mo.type, name: mo.name, projectId: this.projectName,
+          outilId: this.activeOutilId || undefined, folderId,
+        });
+        const body = this.fenceBody(mo.fence);
+        if (mo.type === 'trello') {
+          const cards = this.parseTrelloBodyCards(body);
+          for (let i = 0; i < cards.length; i++) {
+            const c = cards[i];
+            await this.megaOutilsSvc.createTrelloCard(inst.id, {
+              title: c.title, status: c.status, priority: c.priority, description: c.description, orderIndex: i,
+            }).catch(() => {});
+          }
+        } else if (mo.type === 'array') {
+          // La grille par défaut créée côté serveur sert de fallback au parsing
+          const base = await this.megaOutilsSvc.getArrayGrid(inst.id).catch(() => null);
+          const grid = base ? this.deserializeArrayGrid(body, base) : null;
+          if (grid) await this.megaOutilsSvc.updateArrayGrid(inst.id, grid).catch(() => {});
+        }
+        this.megaOutilCreated.emit(inst);
+      } catch (e) {
+        console.error('[EditorZone] matérialisation MO échouée :', mo.name, e);
+      }
+    }
+    this.recomputeAll();
+  }
+
+  /** Corps d'un fence (entre la 1re et la dernière ligne ```). */
+  private fenceBody(fence: string): string {
+    const lines = fence.split('\n');
+    return lines.slice(1, lines.length - 1).join('\n');
   }
 
   onPromptInsert(instanceId: string, result: string) {
@@ -4543,6 +4966,31 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     lines.splice(closeIdx, 0, '', '===RÉSULTAT===', now, '', cleanResult);
     this.unifiedContent = lines.join('\n');
     this.scheduleSave();
+  }
+
+  /** Supprime la section ===RÉSULTAT=== du fence d'un prompt. */
+  clearPromptResult(instanceId: string) {
+    const inst = this.promptInstances.find(i => i.id === instanceId);
+    if (!inst) return;
+    const lines = this.unifiedContent.split('\n');
+    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    if (openLine === -1) return;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    let markerIdx = -1;
+    for (let i = openLine + 1; i < closeIdx; i++) {
+      if (lines[i].trim() === '===RÉSULTAT===') { markerIdx = i; break; }
+    }
+    if (markerIdx === -1) return;
+    // Retirer du marqueur jusqu'au ``` fermant (en enlevant aussi les lignes vides juste avant)
+    let start = markerIdx;
+    while (start > openLine + 1 && lines[start - 1].trim() === '') start--;
+    lines.splice(start, closeIdx - start);
+    this.unifiedContent = lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    this.recomputeAll();
   }
 
   isTrelloFileBase(base: string): boolean {
@@ -4821,6 +5269,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       if (ta) ta.value = this.unifiedContent;
       this.recomputeRanges();
       this.recomputeMirrorLines();
+      // Synchroniser docSections.textContent pour que les boards détectés par balise
+      // (ex: ```FORM) apparaissent immédiatement sans attendre le save round-trip.
+      this.syncDocSectionsTextFromContent();
       if (this.mode === 'visu') this.buildVisuSections();
       this.scheduleSave();
       return;
@@ -5652,6 +6103,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     contentMd = contentMd.replace(/^```(?:## Trello:|TRELLO:) (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
     contentMd = contentMd.replace(/^```ARRAY: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
     contentMd = contentMd.replace(/^```PROMPT: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
+    contentMd = contentMd.replace(/^```FORM: (.+)\n([\s\S]*?)```(?=\n|$)/gm, () => '');
 
     // Remplacer les images (placeholders) — supporte {{IMG:id|caption|align|width}}
     const imgTokens: { token: string; html: string }[] = [];

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { API_DATA_URL } from './tokens';
 import { AuthService } from './auth.service';
-import { MegaOutilInstance, MegaOutilType, MockupConnection, MockupElement, MockupElementType, MockupComment, TrelloCard, ArrayCell, ArrayGrid } from './mega-outils.models';
+import { MegaOutilInstance, MegaOutilType, MockupConnection, MockupElement, MockupElementType, MockupComment, TrelloCard, ArrayCell, ArrayGrid, PromptExecution, PromptGlobalConfig } from './mega-outils.models';
 
 @Injectable({ providedIn: 'root' })
 export class MegaOutilsService {
@@ -168,5 +168,27 @@ export class MegaOutilsService {
 
   getAllArrayBoards(): Promise<{ instance: MegaOutilInstance; grid: ArrayGrid; projectName: string; folderName: string | null }[]> {
     return firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/api/mega-outils/array/all`, { headers: this.h() }));
+  }
+
+  // ── Prompt ─────────────────────────────────────────────────────────────────
+
+  getAllPromptInstances(): Promise<{ instance: MegaOutilInstance; projectName: string; folderName: string | null }[]> {
+    return firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/api/mega-outils/prompt/all`, { headers: this.h() }));
+  }
+
+  getPromptHistory(instanceId: string): Promise<PromptExecution[]> {
+    return firstValueFrom(this.http.get<PromptExecution[]>(`${this.apiUrl}/api/mega-outils/prompt/${instanceId}/history`, { headers: this.h() }));
+  }
+
+  savePromptExecution(instanceId: string, data: { userPrompt: string; systemPrompt?: string | null; result: string; provider: string; model?: string | null }): Promise<PromptExecution> {
+    return firstValueFrom(this.http.post<PromptExecution>(`${this.apiUrl}/api/mega-outils/prompt/${instanceId}/history`, data, { headers: this.h() }));
+  }
+
+  getPromptGlobalConfig(): Promise<PromptGlobalConfig> {
+    return firstValueFrom(this.http.get<PromptGlobalConfig>(`${this.apiUrl}/api/mega-outils/prompt/config`, { headers: this.h() }));
+  }
+
+  savePromptGlobalConfig(config: Partial<PromptGlobalConfig>): Promise<void> {
+    return firstValueFrom(this.http.put<void>(`${this.apiUrl}/api/mega-outils/prompt/config`, config, { headers: this.h() }));
   }
 }

@@ -210,7 +210,41 @@
 - Variables `{{x}}` : si le prompt contient des variables, l'état variable-fill affiche un formulaire de substitution avant l'envoi
 - Streaming : exécution via `GET /api/mega-outils/prompt/execute-stream` (EventSource SSE) ; tous les providers passent par l'executor local port 3002 ; AGY utilise un fichier de sortie pollé toutes les 1500ms (agy ne streame pas sur stdout Windows) ; événements nommés : ai-log {stream, text}, ai-error, complete, run-failed ; journal de log coloré par type (stderr rouge, info amber, stdout gris)
 - Insertion : état validating propose "Insérer" (stocke le résultat à l'intérieur du fence PROMPT avec marqueur `===RÉSULTAT===` et l'affiche dans la vue Edition juste après la card prompt-board), "Copier" et "Re-exécuter" ; les `>` en début de ligne du résultat sont supprimés avant l'insertion ; une nouvelle exécution remplace le résultat précédent dans le fence
+- Suppression du résultat : bouton corbeille dans l'en-tête du bloc « Résultat IA » (vue Edition) → `clearPromptResult` retire la section `===RÉSULTAT===` du fence
 - Historique : chaque exécution est enregistrée en base (table mega_outil_prompt_history) et visible dans PromptAdminComponent
 - Prompt de base global : configurable dans Admin › Mega-outils › Prompt ; stocké en BDD (table mega_outil_prompt_config) ; combiné avec le system prompt de section à l'exécution
 - **Priorité:** critique
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `apps/projets/src/app/pages/projet-editor/services/projet-prompt-execute.service.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `server/server-data.js`
+
+---
+
+## `2-5-2-3-18` — [modification] Mega-outil Form : formulaires interactifs
+
+- Fence ` ```FORM: Nom du formulaire ` dans le markdown ; syntaxe : `* **Question :**` pour les groupes, `  * [ ] Option` pour les cases à cocher (checkbox), `  * ( ) Option` pour les boutons radio, `______` dans le texte d'une option pour un champ texte conditionnel
+- Affichage mode Code : bloc brut ; les réponses sont visibles en dessous avec le marqueur `===RÉPONSES===`
+- Affichage mode Edition : `app-form-board` avec header bleu, preview des questions en lecture seule (icônes checkbox/radio), bouton "Remplir", compteur de réponses et section stats (barre de progression par option) si au moins une réponse
+- Popup d'exécution : `app-form-execution-popup` avec les vraies cases à cocher / boutons radio ; champ texte conditionnel affiché sous l'option cochée si `hasDetail` ; bouton "Envoyer" désactivé tant qu'aucune réponse
+- Stockage : réponses enregistrées à l'intérieur du fence avec marqueur `===RÉPONSES===`, chaque entrée délimitée par `---` au format `date | utilisateur` + lignes `Question : réponse(s)` (multi-sélection séparée par ` ; `)
+- Création : popup "Nouveau Formulaire" via le bouton "Nouveau" de la barre MO (type actif = form) ; insère un fence FORM avec deux options placeholder
+- Auto-détection : tout bloc de formulaire en markdown brut (question `* **…:**` suivie d'options `[ ]`/`( )`, hors fence) est automatiquement encadré dans une balise ` ```FORM: Formulaire N ` à l'entrée du mode Edition (`autoConvertRawForms`), le rendant interactif sans action ; idempotent (un bloc déjà encadré n'est pas re-détecté)
+- Rendu basé sur la balise : les forms sont détectés via le marqueur ` ```FORM: NOM ` dans le texte de la section (pas via une instance DB), ce qui permet de rendre aussi les formulaires auto-convertis ; `docSections.textContent` est synchronisé depuis `unifiedContent` (`syncDocSectionsTextFromContent`) pour un affichage immédiat sans attendre la sauvegarde
+- Stats : pour chaque option, comptage du nombre de sélections parmi toutes les réponses avec barre de progression proportionnelle ; les options à champ libre (`______`) sont matchées sur le préfixe avant le champ
+- **Priorité:** important
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/form/form-board.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`
+
+---
+
+## `2-5-2-3-19` — [modification] Mega-outil Prompt : Mode guidé (workflow IA cadrage → formulaire → MegaOutils)
+
+- Activation : case « Mode guidé » à la création d'un Prompt → insère `MODE: guided` dans le fence ; détecté par `parsePromptFence` (champ `mode`)
+- Bascule sur card : chip « Mode guidé » / badge « Guidé » cliquable sur la card prompt-board (output `toggleGuided`) → `setPromptGuided` ajoute/retire la ligne `MODE: guided` dans le fence ; permet de convertir un prompt existant sans le recréer
+- Lancement : bouton « Exécuter » d'un prompt guidé ouvre `PromptWorkflowPopupComponent` (au lieu de la popup d'exécution simple) ; charge les 3 prompts globaux (base + cadrage + génération) via `getPromptGlobalConfig`
+- Phase cadrage : l'IA reçoit le méta-prompt de cadrage (system) + la demande (user) et répond par un formulaire Markdown ; parsé en questions, affiché via `app-form-execution-popup` réutilisé (bouton secondaire « Générer le livrable maintenant »)
+- Plusieurs vagues : après chaque envoi de réponses, une nouvelle vague de cadrage est lancée ; l'IA peut répondre `===PRÊT===` pour passer à la génération, ou l'utilisateur force la génération ; limite `maxWaves` (défaut 5)
+- Phase génération : méta-prompt de génération (system) + demande + transcript des réponses (user) → livrable Markdown contenant des fences MegaOutils (TRELLO/ARRAY/FORM)
+- Aperçu + validation : détection des fences MO du livrable (`detectMos`) avec résumé (cartes / lignes×colonnes / questions) et cases à cocher ; bouton « Insérer dans la section »
+- Matérialisation : `materializeMegaOutilsFromContent` insère le livrable (fences non cochés retirés) dans la section via `insertAt`, crée les instances Trello (cartes BDD via `parseTrelloBodyCards` + `createTrelloCard`) et Array (grille BDD via `deserializeArrayGrid` + `updateArrayGrid`) ; les Form sont rendus par balise (pas d'instance)
+- Persistance : un résumé du cadrage est écrit dans le fence (`===RÉSULTAT===`) ; le brut reste visible en mode Code
+- Config : méta-prompts cadrage + génération stockés en BDD (`mega_outil_prompt_config` clés `workflow_clarify_prompt` / `workflow_generate_prompt`), éditables dans Admin › Mega-outils › Prompt ; valeurs par défaut servies par le serveur si absentes
+- **Priorité:** important
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.service.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `server/server-data.js`

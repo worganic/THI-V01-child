@@ -1,4 +1,4 @@
-export type MegaOutilType = 'trello' | 'mockup' | 'array';
+export type MegaOutilType = 'trello' | 'mockup' | 'array' | 'prompt' | 'form';
 
 export interface MegaOutilInstance {
   id: string;
@@ -135,6 +135,20 @@ export const MOCKUP_ELEMENT_LABELS: Record<MockupElementType, string> = {
   note:      'Note',
 };
 
+// ── Prompt ─────────────────────────────────────────────────────────────────────
+
+export interface PromptExecution {
+  id: string;
+  instanceId: string;
+  userPrompt: string;
+  systemPrompt?: string | null;
+  result: string;
+  provider: string;
+  model?: string | null;
+  executedBy?: string;
+  executedAt: string;
+}
+
 export const MOCKUP_ELEMENT_DEFAULTS: Record<MockupElementType, { w: number; h: number; label: string }> = {
   button:    { w: 120, h: 36,  label: 'Bouton' },
   input:     { w: 200, h: 36,  label: 'Placeholder...' },
@@ -153,3 +167,40 @@ export const MOCKUP_ELEMENT_DEFAULTS: Record<MockupElementType, { w: number; h: 
   divider:   { w: 300, h: 12,  label: '' },
   note:      { w: 160, h: 60,  label: 'Note' },
 };
+
+// ── Form ───────────────────────────────────────────────────────────────────────
+
+export interface FormOption {
+  text: string;
+  hasDetail: boolean;
+}
+
+export interface FormQuestion {
+  label: string;
+  type: 'checkbox' | 'radio';
+  options: FormOption[];
+}
+
+export interface FormEntry {
+  date: string;
+  user: string;
+  answers: Record<string, string | string[]>;
+}
+
+// ── Prompt workflow guidé ────────────────────────────────────────────────────────
+
+/** Config globale des prompts (base + méta-prompts du workflow guidé). */
+export interface PromptGlobalConfig {
+  baseSystemPrompt: string;
+  workflowClarifyPrompt: string;
+  workflowGeneratePrompt: string;
+}
+
+/** MegaOutil détecté dans un livrable IA, pour l'aperçu de matérialisation. */
+export interface MaterializedMoPreview {
+  type: 'trello' | 'array' | 'form';
+  name: string;
+  summary: string;   // ex: "8 cartes", "4×3", "5 questions"
+  fence: string;     // le bloc fence complet (```TYPE: NOM ... ```)
+  selected: boolean; // coché par défaut
+}

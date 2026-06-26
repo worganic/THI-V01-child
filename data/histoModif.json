@@ -1,6 +1,81 @@
 {
   "modifications": [
     {
+      "id": "mod-444",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "libs", "server"],
+      "features": "projets:prompt-workflow,libs:prompt-config,server:prompt-config",
+      "title": "Prompt Mode guidé : workflow IA cadrage → formulaire → MegaOutils",
+      "description": "Nouveau Mode guidé du MO Prompt (flag MODE: guided). À l'exécution, ouvre PromptWorkflowPopupComponent : l'IA pose d'abord des questions de cadrage (méta-prompt configurable) traduites en formulaire (réutilise FormExecutionPopupComponent), l'utilisateur répond, plusieurs vagues possibles (===PRÊT=== ou forçage), puis l'IA génère le livrable en MegaOutils. Aperçu + validation des MO détectés (Trello/Array/Form) puis matérialisation : insertion du livrable + création des instances Trello (cartes BDD) et Array (grille BDD) via materializeMegaOutilsFromContent. Les 2 méta-prompts (cadrage + génération) sont stockés en BDD (mega_outil_prompt_config) et éditables dans Admin › Mega-outils › Prompt. Badge Guidé sur la card prompt.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "je voudrais améliorer le système prompt : l'IA pose d'abord les questions nécessaires, le système les transforme en formulaire, les réponses repartent à l'IA, qui met en place les documents (MO trello, array...). Crée le prompt initial et le système, fais un plan précis.",
+      "startedAt": "2026-06-26T11:00:00.000Z",
+      "completedAt": "2026-06-26T12:30:00.000Z"
+    },
+    {
+      "id": "mod-443",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "libs"],
+      "features": "projets:form-board,libs:form-board",
+      "title": "FORM : auto-détection du markdown brut en formulaire interactif",
+      "description": "Tout bloc de formulaire en markdown brut (question '* **…:**' suivie d'options [ ] ou ( )) est automatiquement encadré dans une balise ```FORM à l'entrée du mode Edition (autoConvertRawForms), le rendant interactif sans action. Rendu des forms désormais basé sur la balise (nom) au lieu d'une instance DB : decouple les forms auto-détectés des instances MegaOutil. Synchronisation docSections.textContent depuis unifiedContent (syncDocSectionsTextFromContent) pour affichage immédiat. Stats robustes pour les options à champ libre (matching sur préfixe avant ______). Réponses stockées dans le fence (===RÉPONSES===) ; brut visible en mode Code, stats en mode Edition.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "libs/shared/ui/src/lib/mega-outils/form/form-board.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "je vois bien un formulaire dans une section mais celui ne peux pas être lancer/fonctionner, je veux que tous code de form puisse être transformé en vrai formulaire.",
+      "startedAt": "2026-06-26T10:00:00.000Z",
+      "completedAt": "2026-06-26T10:40:00.000Z"
+    },
+    {
+      "id": "mod-442",
+      "version": "vB-0.309",
+      "date": "2026-06-26T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "libs"],
+      "features": "projets:form-board,libs:form-board",
+      "title": "Feature FORM : blocs formulaires interactifs dans l'éditeur",
+      "description": "Nouveau type MegaOutil 'form' : fence ```FORM: Nom``` dans le markdown, rendu en vue Edition comme une card bleue avec questions (lecture seule), stats des réponses et bouton Remplir. Popup d'exécution avec checkboxes/radios et champs texte conditionnels. Réponses stockées dans le fence avec marqueur ===RÉPONSES=== (date | utilisateur + réponses). Factorisation complète via FormBoardComponent (libs/shared/ui) et FormExecutionPopupComponent.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "libs/shared/ui/src/lib/mega-outils/form/form-board.component.ts",
+        "libs/shared/ui/src/index.ts",
+        "apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je voudrais que tu mette une fonction spécial, lorsque tu rencontre du code au format formulaire, il faut pouvoir l'afficher dans le mode Edition comme un vrai formulaire ou l'on peux répondre et enregistré le form",
+      "startedAt": "2026-06-26T09:00:00.000Z",
+      "completedAt": "2026-06-26T10:00:00.000Z"
+    },
+    {
       "id": "mod-441",
       "version": "vB-0.308",
       "date": "2026-06-26T00:00:00.000Z",
