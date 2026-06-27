@@ -109,8 +109,8 @@
 ## `2-5-2-3-8` — [modification] Barre Mega-outils
 
 - Onglets de types de Mega-outils : affichage de quatre boutons interactifs pour Trello (bleu), Mockup (violet), Tableau (lime, qui correspond à Array) et Prompt (amber)
-- Compteur d'instances : affiche le nombre d'instances **dans le texte** (promptInstancesInContent, fencées) pour le type Prompt ; pour les autres types, toutes les instances du folder
-- Liste d'instances : cliquer sur un type de Mega-outil affiche horizontalement la liste scrollable des instances de ce type ; pour Prompt, liste filtrée aux fences présentes dans le texte
+- Compteur d'instances : affiche le nombre **total** d'instances du projet pour chaque type (Trello, Array, Mockup et Prompt) — même comportement pour tous, le compteur Prompt utilise `promptInstances` (toutes), cohérent avec la sidebar
+- Liste d'instances : cliquer sur un type de Mega-outil affiche horizontalement la liste scrollable de **toutes** les instances de ce type (y compris Prompt)
 - Sélection d'instance : clic sur une instance de Mega-outil émet megaOutilSelect et navigue vers la section ou fichier où elle est intégrée (trelloNavigate)
 - Clic "Nouveau" : ouvre la popup de création pour le type d'outil sélectionné (Trello, Tableau, Mockup ou Prompt)
 - Clic "Liaison" (Mockup uniquement) : ouvre la popup permettant d'associer un Mockup existant à la section courante
@@ -149,8 +149,9 @@
 - Nouveau Tableau (Array) : clic sur "Nouveau" en mode Tableau ouvre showArrayPopup, saisie du nom, création et insertion du marqueur de tableau
 - Nouveau Mockup : clic sur "Nouveau" en mode Mockup ouvre showMockupPopup, validation du nom unique, création et insertion du marqueur {{MOCKUP:id}}
 - Nouveau Prompt : clic sur "Nouveau" en mode Prompt (uniquement en mode Code) ouvre showPromptPopup, saisie du nom, création du fichier prompt-NOM.md et insertion du bloc ```PROMPT: NOM```
+- Unicité du nom Prompt : un nom déjà utilisé par un autre Prompt du projet (comparaison slugifiée, `promptNameExists`) est refusé → message « Ce nom de Prompt existe déjà » (promptNameError) sous le champ, pas de création ; l'erreur se réinitialise à la saisie
 - Liaison Mockup : clic sur "Liaison" ouvre la popup de sélection des mockups du projet, clic sur un mockup existant insère sa liaison
-- Validation des formulaires : vérification de la non-vacuité du nom et gestion d'erreurs d'unicité (ex: mockupNameError)
+- Validation des formulaires : vérification de la non-vacuité du nom et gestion d'erreurs d'unicité (ex: mockupNameError, promptNameError)
 - **Priorité:** critique
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
@@ -279,5 +280,47 @@
 - Groupes dans l'agenda : les événements d'une même fence partagent le même `groupId` ; la popup affiche la section « Famille » (nom du prompt, compteur, navigation précédent/suivant, suppression de tous les événements liés via `DELETE /agenda/group/:groupId`)
 - Indicateur visuel : icône 🔗 `link` en vue semaine sur les événements appartenant à un groupe
 - Suppression cascade améliorée : `deletePromptResult` extrait le `groupId` du commentaire HTML et appelle `deleteEventGroup` ; fallback titre+date pour anciens événements sans groupId
+- Lien séance (cours vivant) : un événement dont le titre commence par « Séance » (`isSeanceEvent`) affiche un bouton « Ouvrir la séance » dans sa popup ; émet `navigateToSection` ; le parent `onAgendaNavigateToSection` retrouve le dossier par titre (`findFolderByTitleLike`, match exact/préfixe puis par numéro de séance), bascule sur l'outil propriétaire et scrolle vers la section
 - **Priorité:** important
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.models.ts`, `server/server-data.js`
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.models.ts`, `server/server-data.js`
+
+---
+
+## `2-5-2-3-22` — [modification] Cours vivant : structure Bilan général + séances datées
+
+- Déclenchement : workflow guidé d'un prompt Type A (formation/apprentissage) ; piloté par le méta-prompt de génération serveur (`DEFAULT_WORKFLOW_GENERATE_PROMPT`)
+- Section pilotage : le livrable contient en premier un titre `## 📊 Bilan général et suivi du cours` regroupant Planning (ARRAY), Agenda (AGENDA), Suivi des notes (ARRAY colonnes Séance|Date|Note|Max|%|Moyenne, Note/% laissées vides), Progression (CHART source: Suivi des notes)
+- Sections séances : un titre `## Séance N — YYYY-MM-DD : Thème` par séance (devient un dossier navigable), contenant le cours et un `FORM: QCM Séance N`
+- Règle de liaison : le titre de chaque séance est identique au titre de son événement agenda (permet le lien agenda → séance)
+- Séparation stricte : les MO de pilotage vont uniquement dans le Bilan, le QCM uniquement dans sa séance
+- **Priorité:** important
+- **Composants:** `server/server-data.js`
+
+---
+
+## `2-5-2-3-23` — [modification] Correction automatique des QCM par l'IA (cours vivant)
+
+- Déclenchement : à la soumission d'un formulaire dont le nom contient « QCM » (`onFormSubmit` → `maybeAutoCorrectQcm`), si un tableau « Suivi des notes » existe dans le projet (signale un cours vivant)
+- Exécution IA one-shot : `AiExecuteService.executeOnce` ouvre une EventSource indépendante du flux streamé partagé et résout le texte complet (n'interfère pas avec les popups) ; provider/modèle pris dans `cliConfig().headerSelection`
+- Prompt de correction : système demande un format strict `===NOTE=== n/m` + `===CORRECTION===` (markdown sans fence) ; user = questions + options + réponses de l'élève
+- Insertion correction : `insertQcmCorrectionIntoSeance` place un bloc « 📝 Correction IA » (note + détail) sous le QCM dans le dossier de la séance, encadré par des marqueurs HTML `<!-- qcm-correction:NOM -->` (idempotent : remplace une correction précédente)
+- Mise à jour des notes : `updateNotesRowForQcm` remplit la ligne du tableau « Suivi des notes » correspondant à la séance (match par numéro de séance, sinon 1re ligne sans note) ; colonnes Note/Max remplies ; `updateArrayGrid` + sync inline + `recomputeAll` → le CHART de progression se met à jour automatiquement
+- Indicateur visuel : badge « Correction IA en cours… » sous le formulaire pendant le traitement (`qcmCorrecting`)
+- **Priorité:** important
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `server/server-data.js`
+
+---
+
+## `2-5-2-3-24` — [modification] Mega-outil Prompt : stabilité d'identité et déplacement (parité Trello/Array)
+
+- Identité par nom : un Prompt est identifié par le nom de sa fence ` ```PROMPT: NOM ` (→ fichier physique `prompt-NOM`), comme Trello (` ```TRELLO: NOM `) et Array (` ```ARRAY: NOM `)
+- Résolution de section : `resolvePromptFolderId` déduit la section réelle d'un Prompt depuis la position de son bloc dans `docSections` (fallback `inst.folderId`)
+- Déplacement = déplacement (pas copie) : `recomputePromptSections` (appelé depuis `recomputeContentPromptIds`) met à jour `folderId` de l'instance et persiste via `updateInstance` quand le bloc change de section → le board ne reste pas dupliqué dans la section d'origine
+- Le fichier lié suit le bloc : `healPromptSectionOnOpen` détecte un bloc ` ```PROMPT: NOM ` présent sans fichier `prompt-NOM` dans le dossier ouvert et force une ré-extraction (save) pour recréer le fichier à la bonne place
+- Anti-doublon : `cleanupOrphanPromptInstances` supprime au chargement toute instance Prompt sans bloc ni fichier correspondant (scan `files` + contenu) → plus d'instances fantômes qui gonflent le compteur
+- Backfill : `ensurePromptInstancesFromContent` crée au chargement une instance DB pour tout bloc ` ```PROMPT: NOM ` (ou fichier `prompt-NOM` hérité) sans instance → garantit instances ↔ fichiers 1:1
+- Compteur cohérent : toutes les vues (badge barre MO, liste d'instances scrollable, vue « Liste des prompts ») s'appuient sur `promptInstances` (toutes les instances du projet, comme Trello/Array) → même nombre de PR partout, identique à la sidebar, stable après navigation/rechargement
+- Nom de section dans la liste : `recomputePromptSections` alimente la map `promptSections()` (folderId + nom du dossier) ; la carte de la « Liste des prompts » affiche le vrai nom de section et navigue via `goToPromptSection`
+- Navigation depuis la barre MO : `selectMegaOutil` gère le type prompt (focus du fichier `prompt-NOM` en mode Code via `findPromptFileNode`, sinon la section)
+- **Priorité:** critique
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`

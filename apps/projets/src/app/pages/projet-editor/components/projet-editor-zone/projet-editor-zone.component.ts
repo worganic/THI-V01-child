@@ -4,7 +4,7 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService } from '@worganic/portail-core/data-access';
 import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
@@ -357,10 +357,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   readonly promptHelpExampleSystem = '```PROMPT: Résumé SEO\nSYSTEM: Tu es un expert SEO. Rédige en français.\n\n---\n\nRédige un méta-description de 160 caractères\npour un article sur le sujet suivant :\n{{sujet}}\n```';
   readonly promptHelpExampleVars = '```PROMPT: Email client\nRédige un email professionnel pour {{client}}\nà propos de {{sujet}}.\nTon : {{ton}}\n```';
   promptName = '';
+  promptNameError = signal<string | null>(null);
   promptCreating = signal(false);
   promptGuidedMode = signal(false);
   contentPromptIds: string[] = [];
   promptPanelCollapsed = signal(false);
+  // Section résolue par instance prompt (clé = instanceId) — pour l'affichage du nom de section dans la liste
+  promptSections = signal<Record<string, { folderId: string | null; name: string }>>({});
   // Popup d'exécution d'un prompt (mode Edition)
   showPromptExecutePopup = signal(false);
   activePromptForExecution: { instanceId: string; instanceName: string; systemPrompt: string | null; userPrompt: string; variables: string[] } | null = null;
@@ -380,6 +383,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   formName = 'Mon Formulaire';
   formCreating = signal(false);
   activeFormForExecution: { formName: string; questions: FormQuestion[] } | null = null;
+  /** Nom du QCM en cours de correction IA (cours vivant) — null si aucune correction en cours. */
+  qcmCorrecting = signal<string | null>(null);
 
   // Barre MO — type actif déplié (trello / mockup / array / prompt / form / null)
   moActiveType = signal<'trello' | 'mockup' | 'array' | 'prompt' | 'form' | null>(null);
@@ -416,6 +421,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   currentUserName = () => this.authSvc.currentUser()?.username || '';
   private megaOutilsSvc = inject(MegaOutilsService);
   private agendaSvc = inject(AgendaOutilService);
+  private aiExec = inject(AiExecuteService);
+  private configSvc = inject(ConfigService);
 
   // Mode (toggle Edition / Structure / Visu)
   mode: 'edit' | 'visu' | 'structure' = 'edit';
@@ -754,7 +761,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       // ensuite une suppression/corruption même sans sauvegarde intermédiaire).
       this.seedSeenTrelloMarkers(this.focusedHandle ? this.fullContentBackup : this.unifiedContent);
       // Nettoyage des instances Trello/Array orphelines (sans bloc/fichier correspondant)
-      if (!this.focusedHandle) { this.cleanupOrphanTrelloInstances(); this.cleanupOrphanArrayInstances(); }
+      if (!this.focusedHandle) {
+        this.cleanupOrphanTrelloInstances(); this.cleanupOrphanArrayInstances(); this.cleanupOrphanPromptInstances();
+        // Backfill : tout bloc ```PROMPT: NOM sans instance DB (ex. fichier prompt-NOM hérité) → crée l'instance
+        // pour que les vues (barre, liste) comptent exactement les mêmes prompts que la sidebar.
+        this.ensurePromptInstancesFromContent(this.unifiedContent);
+      }
       // Nettoyer les marqueurs {{TRELLO:...}} du contenu (approche DB-only)
       const trelloStripped = !this.focusedHandle && this.stripTrelloMarkersFromUnifiedContent();
       // Supprimer les marqueurs {{MOCKUP:id}} dupliqués
@@ -784,7 +796,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.recomputeHighlights();
       this.applyFocusByActiveNode();
       // Ouverture de section : synchroniser bloc Trello/Array ↔ fichier.
-      setTimeout(() => { this.healTrelloSectionOnOpen(); this.healArraySectionOnOpen(); }, 60);
+      setTimeout(() => { this.healTrelloSectionOnOpen(); this.healArraySectionOnOpen(); this.healPromptSectionOnOpen(); }, 60);
       // Hors mode Code, le board suit la section active (applyFocusByActiveNode ne fait rien) :
       // recalculer les ids selon la nouvelle sélection.
       if (this.mode !== 'edit') {
@@ -1069,6 +1081,42 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     }
   }
 
+  /**
+   * Résout le folderId de la section d'un prompt : prioritairement via la position du
+   * bloc ```PROMPT: NAME dans docSections, fallback sur inst.folderId. Symétrique de
+   * resolveArrayFolderId — garantit qu'un Prompt déplacé suit réellement sa section
+   * (pas de board dupliqué dans la section d'origine).
+   */
+  private resolvePromptFolderId(instId: string): string | null {
+    const name = this.promptInstanceName(instId);
+    const blockOpen = `\`\`\`PROMPT: ${name}`;
+    const sec = this.docSections.find(s => s.textContent.includes(blockOpen));
+    if (sec) return sec.folderId;
+    // Fallback : chercher dans le contenu unifié (mode focus)
+    if (this.unifiedContent.includes(blockOpen)) {
+      const lineIdx = this.unifiedContent.substring(0, this.unifiedContent.indexOf(blockOpen)).split('\n').length - 1;
+      const sr = this.sectionRanges.find(r => r.lineStart <= lineIdx && lineIdx <= r.lineEnd);
+      if (sr) return sr.folderId;
+    }
+    return this.megaOutilInstances.find(i => i.id === instId)?.folderId ?? null;
+  }
+
+  /** Resynchronise le folder_id des instances prompt selon la position réelle du bloc + map le nom de section. */
+  private recomputePromptSections() {
+    const map: Record<string, { folderId: string | null; name: string }> = {};
+    for (const inst of this.promptInstances) {
+      const folderId = this.resolvePromptFolderId(inst.id);
+      const node = folderId ? this.findNode(folderId, this.files) : null;
+      const name = node?.name ?? (folderId ? 'Section introuvable' : 'Sans section');
+      map[inst.id] = { folderId, name };
+      if (folderId && folderId !== inst.folderId) {
+        inst.folderId = folderId;
+        this.megaOutilsSvc.updateInstance(inst.id, { folderId }).catch(() => {});
+      }
+    }
+    this.promptSections.set(map);
+  }
+
   /** Nom de la section où le trello est implanté (pour l'en-tête du board). */
   trelloSectionName(id: string): string {
     return this.trelloSections()[id]?.name ?? '';
@@ -1107,6 +1155,16 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const folderId = inst.folderId ?? null;
       if (this.mode === 'edit') {
         const fileId = this.findArrayFileNode(folderId, inst.name)?.id;
+        if (fileId) { this.trelloNavigate.emit(fileId); return; }
+      }
+      if (folderId) this.trelloNavigate.emit(folderId);
+      return;
+    }
+    if (inst.type === 'prompt') {
+      // En édition, focuser sur le fichier Prompt (prompt-NOM) ; sinon la section où est le bloc.
+      const folderId = this.resolvePromptFolderId(inst.id);
+      if (this.mode === 'edit') {
+        const fileId = this.findPromptFileNode(folderId, inst.name)?.id;
         if (fileId) { this.trelloNavigate.emit(fileId); return; }
       }
       if (folderId) this.trelloNavigate.emit(folderId);
@@ -1156,6 +1214,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const folderId = this.trelloSections()[inst.id]?.folderId;
     if (!folderId) return;
     this.trelloNavigate.emit(folderId);
+  }
+
+  /** Navigue vers la section d'origine d'un prompt et ferme la liste. */
+  goToPromptSection(inst: MegaOutilInstance) {
+    const folderId = this.promptSections()[inst.id]?.folderId;
+    if (folderId) this.trelloNavigate.emit(folderId);
+    this.closePromptListView.emit();
   }
 
   // ── Section building ───────────────────────────────────────
@@ -1221,7 +1286,18 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
           }
         } else if (child === mainFile) {
           if (mainStyledContent?.trim()) {
-            textContent += mainStyledContent.trimEnd() + '\n';
+            let mc = mainStyledContent;
+            // Dé-duplication : retirer du contenu.md les fences PROMPT inline qui existent
+            // DÉJÀ comme fichiers prompt-NOM (sinon double injection). On garde les fences
+            // sans fichier correspondant (prompt fraîchement créé, pas encore extrait).
+            const promptFileSlugs = nodeChildren
+              .filter(c => c.type === 'file' && this.isPromptFileBase(c.name.replace(/\.md$/, '')))
+              .map(c => this.slugify(this.promptNameFromBase(c.name.replace(/\.md$/, '')) || ''));
+            if (promptFileSlugs.length) {
+              mc = mc.replace(/```PROMPT: ([^\n]+)\n[\s\S]*?\n```/g, (m: string, nm: string) =>
+                promptFileSlugs.includes(this.slugify(nm.trim())) ? '' : m);
+            }
+            textContent += mc.trimEnd() + '\n';
           }
         } else {
           // Fichier Trello (trello-NOM / trello / legacy "TL: NOM") → injecter le bloc ```TRELLO: NOM
@@ -1256,13 +1332,16 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
                 : `\n\`\`\`ARRAY: ${name}\n\`\`\`\n`;
             }
           } else if (this.isPromptFileBase(childBase)) {
-            // Fichier Prompt (prompt-NOM) → injecter le bloc tel quel (contenu = bloc complet)
-            const raw = child.content || '';
-            if (/^\s*```PROMPT:/i.test(raw)) {
-              textContent += '\n' + raw.trim() + '\n';
+            // Fichier Prompt (prompt-NOM) → injecter le bloc tel quel (contenu = bloc complet).
+            const raw = (child.content || '').trim();
+            // Fichier vidé (fence supprimée) → NE PAS régénérer depuis l'instance : sinon le
+            // prompt « ressuscite » à chaque rechargement. Il sera nettoyé comme orphelin au save.
+            if (!raw) continue;
+            if (/^```PROMPT:/i.test(raw)) {
+              textContent += '\n' + raw + '\n';
             } else {
-              const name = this.promptNameFromBase(childBase) || this.promptInstances.find(p => p.folderId === node.id)?.name || 'Prompt';
-              textContent += `\n\`\`\`PROMPT: ${name}\n${raw.trim()}\n\`\`\`\n`;
+              const name = this.promptNameFromBase(childBase) || 'Prompt';
+              textContent += `\n\`\`\`PROMPT: ${name}\n${raw}\n\`\`\`\n`;
             }
           } else {
             // Document additionnel classique
@@ -1528,6 +1607,27 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
               const b = f.name.replace(/\.md$/, '');
               return this.isArrayFileBase(b) &&
                 (this.slugify(this.arrayNameFromBase(b)) === this.slugify(aname) || this.slugify(b) === 'array');
+            });
+            if (fileNode) {
+              this.fileRanges.push({ fileId: fileNode.id, lineStart: i, lineEnd: endLine });
+            }
+            i = endLine + 1;
+            continue;
+          }
+        }
+        // Bloc Prompt : ```PROMPT: NOM ... ``` → plage du fichier "prompt-NOM"
+        const pm = /^```PROMPT: (.+)$/.exec(lines[i].trim());
+        if (pm) {
+          const pname = pm[1].trim();
+          let endLine = -1;
+          for (let j = i + 1; j <= r.lineEnd; j++) {
+            if (lines[j].trim() === '```') { endLine = j; break; }
+          }
+          if (endLine !== -1) {
+            const fileNode = additionalFiles.find(f => {
+              const b = f.name.replace(/\.md$/, '');
+              return this.isPromptFileBase(b) &&
+                (this.slugify(this.promptNameFromBase(b)) === this.slugify(pname) || this.slugify(b) === 'prompt');
             });
             if (fileNode) {
               this.fileRanges.push({ fileId: fileNode.id, lineStart: i, lineEnd: endLine });
@@ -1890,6 +1990,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const markerLines = sectionText.split('\n').map(l => l.trim());
     const hasMarker = (name: string) => markerLines.some(l => l === '```PROMPT: ' + name);
     this.contentPromptIds = this.promptInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+    this.recomputePromptSections();
   }
 
   private recomputeContentFormIds() {
@@ -1908,11 +2009,6 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   get promptInstances(): MegaOutilInstance[] {
     return this.megaOutilInstances.filter(i => i.type === 'prompt');
-  }
-
-  /** Prompts dont la fence existe réellement dans le texte (pour la liste et l'Edition). */
-  get promptInstancesInContent(): MegaOutilInstance[] {
-    return this.promptInstances.filter(i => this.unifiedContent.includes('```PROMPT: ' + i.name));
   }
 
   promptInstanceName(id: string): string {
@@ -2007,20 +2103,21 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const lines = body.split('\n');
     let current: FormQuestion | null = null;
     for (const line of lines) {
-      const qMatch = line.match(/^\s*[\*\-]\s+\*\*(.+?)\*\*\s*:?\s*$/);
+      // Puce optionnelle : l'IA génère parfois les options sans `*`/`-` (juste indentées).
+      const qMatch = line.match(/^\s*(?:[\*\-]\s+)?\*\*(.+?)\*\*\s*:?\s*$/);
       if (qMatch) {
         if (current) questions.push(current);
         current = { label: qMatch[1].trim(), type: 'checkbox', options: [] };
         continue;
       }
-      const checkMatch = line.match(/^\s*[\*\-]\s+\[\s*\]\s+(.+)$/);
+      const checkMatch = line.match(/^\s*(?:[\*\-]\s+)?\[\s*\]\s+(.+)$/);
       if (checkMatch && current) {
         const text = checkMatch[1].trim();
         current.type = 'checkbox';
         current.options.push({ text, hasDetail: /_{5,}/.test(text) });
         continue;
       }
-      const radioMatch = line.match(/^\s*[\*\-]\s+\(\s*\)\s+(.+)$/);
+      const radioMatch = line.match(/^\s*(?:[\*\-]\s+)?\(\s*\)\s+(.+)$/);
       if (radioMatch && current) {
         const text = radioMatch[1].trim();
         current.type = 'radio';
@@ -2115,9 +2212,174 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   onFormSubmit(entry: FormEntry) {
     if (!this.activeFormForExecution) return;
-    this.insertFormResponseByName(this.activeFormForExecution.formName, entry);
+    const { formName, questions } = this.activeFormForExecution;
+    this.insertFormResponseByName(formName, entry);
     this.showFormExecutePopup.set(false);
     this.activeFormForExecution = null;
+    // Cours vivant : un QCM soumis est corrigé automatiquement par l'IA.
+    this.maybeAutoCorrectQcm(formName, questions, entry);
+  }
+
+  // ── Correction automatique des QCM (cours vivant) ──────────────────────────
+  /** Tableau de suivi des notes du Bilan général, s'il existe (signale un cours vivant). */
+  private notesArrayInstance(): MegaOutilInstance | null {
+    return this.arrayInstances.find(i => /suivi\s+des\s+notes/i.test(i.name)) ?? null;
+  }
+
+  /** Déclenche la correction IA d'un QCM si le contexte est un cours vivant. */
+  private async maybeAutoCorrectQcm(formName: string, questions: FormQuestion[], entry: FormEntry) {
+    if (!this.projectName) return;
+    if (!/qcm/i.test(formName)) return;            // seuls les QCM sont corrigés
+    const notesInst = this.notesArrayInstance();
+    if (!notesInst) return;                         // pas un cours vivant → on ne fait rien
+    if (!questions.length) return;
+
+    const sel = this.configSvc.cliConfig().headerSelection;
+    const provider = sel?.provider || 'claude';
+    const model = sel?.model || '';
+    if (!model) return;
+
+    const seanceFolderId = this.findFolderIdContainingForm(formName);
+    this.qcmCorrecting.set(formName);
+    try {
+      const system = this.buildQcmCorrectionSystem();
+      const user = this.buildQcmCorrectionUser(formName, questions, entry);
+      const raw = await this.aiExec.executeOnce(system, user, provider, model);
+      const parsed = this.parseQcmCorrection(raw);
+      // 1. Correction détaillée → dossier de la séance (sous le QCM)
+      this.insertQcmCorrectionIntoSeance(formName, seanceFolderId, parsed, entry);
+      // 2. Note + progression → ligne du tableau « Suivi des notes » du Bilan
+      await this.updateNotesRowForQcm(notesInst, formName, parsed);
+    } catch (e) {
+      console.error('[EditorZone] correction QCM échouée :', formName, e);
+    } finally {
+      this.qcmCorrecting.set(null);
+    }
+  }
+
+  private buildQcmCorrectionSystem(): string {
+    return `Tu es un correcteur pédagogique. On te donne un QCM, les bonnes réponses attendues et les réponses d'un élève.
+Corrige le QCM et renvoie EXACTEMENT ce format, sans rien d'autre :
+
+===NOTE=== n/m
+(où n = points obtenus, m = total des points, un point par question)
+===CORRECTION===
+Pour chaque question : indique si la réponse de l'élève est correcte (✅) ou fausse (❌), donne la bonne réponse, et explique brièvement l'erreur ou le raisonnement attendu. Termine par 1-2 phrases de conseil global.
+
+Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du Markdown simple (gras, listes uniquement). N'emploie AUCUN titre (#), AUCUN bloc de code ni fence \`\`\`.`;
+  }
+
+  private buildQcmCorrectionUser(formName: string, questions: FormQuestion[], entry: FormEntry): string {
+    const lines: string[] = [`QCM : ${formName}`, ''];
+    for (const q of questions) {
+      lines.push(`Q : ${q.label}`);
+      lines.push(`Options : ${q.options.map(o => o.text).join(' | ')}`);
+      const ans = entry.answers[q.label];
+      const ansStr = Array.isArray(ans) ? ans.join(' ; ') : (ans ?? '(aucune réponse)');
+      lines.push(`Réponse de l'élève : ${ansStr}`);
+      lines.push('');
+    }
+    return lines.join('\n');
+  }
+
+  /** Parse la sortie IA : note, max et corps Markdown de la correction. */
+  private parseQcmCorrection(raw: string): { note: number | null; max: number | null; body: string } {
+    const noteMatch = raw.match(/===\s*NOTE\s*===\s*([\d.,]+)\s*\/\s*([\d.,]+)/i);
+    const note = noteMatch ? parseFloat(noteMatch[1].replace(',', '.')) : null;
+    const max = noteMatch ? parseFloat(noteMatch[2].replace(',', '.')) : null;
+    const corrIdx = raw.search(/===\s*CORRECTION\s*===/i);
+    let body = corrIdx >= 0 ? raw.slice(raw.indexOf('\n', corrIdx) + 1) : raw;
+    body = body.replace(/```/g, '');
+    // Neutraliser les titres markdown → gras, pour éviter de créer des sections fantômes
+    // (qui casseraient la redistribution du contenu lors de la sauvegarde).
+    body = body.replace(/^\s*#{1,6}\s+(.+?)\s*$/gm, '**$1**').trim();
+    return { note, max, body };
+  }
+
+  /** Localise le dossier (séance) dont le contenu porte la balise ```FORM: NOM. */
+  private findFolderIdContainingForm(formName: string): string | undefined {
+    const marker = '```FORM: ' + formName;
+    return this.docSections.find(s => s.textContent.includes(marker))?.folderId;
+  }
+
+  /** Insère/replace un bloc « Correction » sous le QCM, dans le contenu unifié. */
+  private insertQcmCorrectionIntoSeance(
+    formName: string,
+    _folderId: string | undefined,
+    parsed: { note: number | null; max: number | null; body: string },
+    entry: FormEntry,
+  ) {
+    const loc = this.locateFormFence(formName);
+    if (!loc) return;
+    const lines = loc.lines;
+    const noteStr = parsed.note != null && parsed.max != null ? `${parsed.note}/${parsed.max}` : '—';
+    const header = `**📝 Correction IA — ${formName}** _(${entry.date}, note : ${noteStr})_`;
+    const markerStart = `<!-- qcm-correction:${formName} -->`;
+    const markerEnd = `<!-- /qcm-correction:${formName} -->`;
+    const block = ['', markerStart, header, '', parsed.body, markerEnd, ''];
+
+    // Retirer une correction précédente pour ce QCM
+    const startIdx = lines.findIndex(l => l.trim() === markerStart);
+    if (startIdx !== -1) {
+      const endIdx = lines.findIndex((l, i) => i > startIdx && l.trim() === markerEnd);
+      if (endIdx !== -1) lines.splice(startIdx, endIdx - startIdx + 1);
+    }
+    // Insérer juste après le ``` fermant du QCM (recalcul après splice éventuel)
+    const reloc = this.locateFormFence(formName);
+    if (!reloc) return;
+    reloc.lines.splice(reloc.closeIdx + 1, 0, ...block);
+    this.unifiedContent = reloc.lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.scheduleSave();
+    this.recomputeAll();
+  }
+
+  /** Remplit la ligne « Suivi des notes » correspondant à la séance du QCM. */
+  private async updateNotesRowForQcm(
+    notesInst: MegaOutilInstance,
+    formName: string,
+    parsed: { note: number | null; max: number | null; body: string },
+  ) {
+    if (parsed.note == null) return;
+    let grid = this.visuArrayGrids.get(notesInst.id) ?? await this.megaOutilsSvc.getArrayGrid(notesInst.id).catch(() => null);
+    if (!grid || !grid.cells.length) return;
+
+    // Numéro de séance depuis le nom du QCM (« QCM Séance 3 » → 3)
+    const numMatch = formName.match(/s[ée]ance\s*(\d+)/i);
+    const header = grid.cells[0].map(c => (c.value || '').toLowerCase());
+    const colSeance = header.findIndex(h => /s[ée]ance/.test(h));
+    const colNote = header.findIndex(h => /^note/.test(h));
+    const colMax = header.findIndex(h => /^max/.test(h));
+    if (colNote < 0) return;
+
+    // Trouver la ligne de la séance : par numéro dans la colonne Séance, sinon 1re ligne sans note
+    let rowIdx = -1;
+    if (numMatch && colSeance >= 0) {
+      rowIdx = grid.cells.findIndex((row, r) => r > 0 && new RegExp(`\\b${numMatch[1]}\\b`).test(row[colSeance]?.value || ''));
+    }
+    if (rowIdx < 0) {
+      rowIdx = grid.cells.findIndex((row, r) => r > 0 && !(row[colNote]?.value || '').trim());
+    }
+    if (rowIdx < 1) return;
+
+    const setCell = (col: number, value: string) => {
+      if (col < 0) return;
+      const row = grid!.cells[rowIdx];
+      row[col] = { ...(row[col] || { value: '' }) as ArrayCell, value };
+    };
+    setCell(colNote, String(parsed.note));
+    if (parsed.max != null) setCell(colMax, String(parsed.max));
+
+    try {
+      const updated = await this.megaOutilsSvc.updateArrayGrid(notesInst.id, grid);
+      this.visuArrayGrids.set(notesInst.id, updated);
+      this.syncArrayInlineBlock(notesInst.id, updated);
+      this.scheduleSave();
+      this.recomputeAll();   // rafraîchit le CHART de progression (lit visuArrayGrids)
+    } catch (e) {
+      console.error('[EditorZone] MAJ tableau notes échouée :', e);
+    }
   }
 
   // ── CHART MO ───────────────────────────────────────────────────────────────
@@ -4274,6 +4536,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     for (const inst of this.arrayInstances) {
       if (content.split('\n').some(l => l.trim() === '```ARRAY: ' + inst.name)) this.seenArrayMarkers.add(inst.id);
     }
+    for (const inst of this.promptInstances) {
+      if (content.split('\n').some(l => l.trim() === '```PROMPT: ' + inst.name)) this.seenPromptMarkers.add(inst.id);
+    }
   }
 
   /** Supprime les instances Array orphelines (sans bloc ```ARRAY: ni fichier array-NOM). */
@@ -4302,6 +4567,59 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         this.megaOutilsSvc.deleteInstance(inst.id).catch(() => {});
         this.megaOutilDeleted.emit(inst.id);
       }
+    }
+  }
+
+  /** Supprime les instances Prompt orphelines (sans bloc ```PROMPT: ni fichier prompt-NOM). */
+  private cleanupOrphanPromptInstances() {
+    if (!this.hasLoaded || !this.promptInstances.length) return;
+    const represented = new Set<string>();
+    const re = /^```PROMPT: (.+)$/gim;
+    const scanContent = (content: string) => {
+      let m; re.lastIndex = 0;
+      while ((m = re.exec(content)) !== null) represented.add(this.slugify(m[1].trim()));
+    };
+    const walk = (nodes: FileNode[]) => {
+      for (const n of nodes) {
+        if (n.type === 'file') {
+          const base = n.name.replace(/\.md$/, '');
+          if (this.isPromptFileBase(base)) represented.add(this.slugify(this.promptNameFromBase(base)));
+          if (n.content) scanContent(n.content);
+        }
+        if (n.children) walk(n.children);
+      }
+    };
+    walk(this.files);
+    scanContent(this.focusedHandle ? this.fullContentBackup : this.unifiedContent);
+    for (const inst of this.promptInstances) {
+      if (!represented.has(this.slugify(inst.name))) {
+        this.megaOutilsSvc.deleteInstance(inst.id).catch(() => {});
+        this.megaOutilDeleted.emit(inst.id);
+      }
+    }
+  }
+
+  /** À l'ouverture d'une section : si un bloc ```PROMPT: NOM est présent sans fichier prompt-NOM, force la ré-extraction (le fichier suit le bloc déplacé). */
+  private healPromptSectionOnOpen() {
+    if (this.mode !== 'edit' || !this.hasLoaded) return;
+    const folderId = this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null);
+    if (!folderId) return;
+    let sectionText = '';
+    if (this.focusedHandle) sectionText = this.unifiedContent;
+    else {
+      const sr = this.sectionRanges.find(r => r.folderId === folderId);
+      if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
+    }
+    const blockNames = [...sectionText.matchAll(/^```PROMPT: (.+)$/gm)].map(m => m[1].trim());
+    if (!blockNames.length) return;
+    const folder = this.findNode(folderId, this.files);
+    const hasFile = (name: string) => (folder?.children || []).some(c =>
+      c.type === 'file' && this.isPromptFileBase(c.name.replace(/\.md$/, '')) &&
+      this.slugify(this.promptNameFromBase(c.name.replace(/\.md$/, ''))) === this.slugify(name));
+    if (blockNames.some(n => !hasFile(n))) {
+      // Le bloc a été déplacé sans son fichier → forcer un save pour que parseContent recrée prompt-NOM.
+      this.lastSavedContent = '';
+      this.saveAll();
     }
   }
 
@@ -4393,6 +4711,31 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
               .catch(() => {});
           }
         }
+      }).catch(() => {});
+    }
+  }
+
+  /** Crée une instance Prompt pour chaque bloc ```PROMPT: NOM du contenu sans instance existante (parité Trello/Array). */
+  private ensurePromptInstancesFromContent(content: string) {
+    if (!this.projectName) return;
+    const lines = content.split('\n');
+    const seen = new Set<string>();
+    for (let i = 0; i < lines.length; i++) {
+      const m = /^```PROMPT: (.+)$/.exec(lines[i].trim());
+      if (!m) continue;
+      const name = m[1].trim();
+      const slug = this.slugify(name);
+      if (seen.has(slug)) continue;
+      seen.add(slug);
+      if (this.promptInstances.some(p => this.slugify(p.name) === slug)) continue;
+      const sr = this.sectionRanges.find(r => i >= r.lineStart && i <= r.lineEnd);
+      const folderId = sr?.folderId ?? this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null) ?? undefined;
+      this.megaOutilsSvc.createInstance({
+        type: 'prompt', name, projectId: this.projectName,
+        outilId: this.activeOutilId || undefined, folderId: folderId ?? undefined,
+      }).then(inst => {
+        this.seenPromptMarkers.add(inst.id);
+        this.megaOutilCreated.emit(inst);
       }).catch(() => {});
     }
   }
@@ -4688,6 +5031,24 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         return ' '.repeat(match.length);
       });
 
+      // Extraire les fences Prompt (```PROMPT: NOM ... ```) comme fichiers physiques "prompt-NOM"
+      // (même mécanisme que Trello/Array → affichés "PR: NOM" dans la sidebar).
+      const promptFenceRe = /^```PROMPT: (.+)\n([\s\S]*?)```(?=\n|$)/gm;
+      spacedContent = spacedContent.replace(promptFenceRe, (match: string, title: string, content: string, offset: number) => {
+        const name = title.trim();
+        const body = (content || '').replace(/\n+$/, '');
+        const fullBlock = '```PROMPT: ' + name + '\n' + body + '\n```';
+        const afName = 'prompt-' + name;
+        const af: AdditionalFile = { name: afName, content: fullBlock, fileId: null, orderedChildIds: [] };
+        const found = info?.files.find(f => this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(af.name));
+        if (found) {
+          af.fileId = found.id;
+          elements.push({ id: found.id, index: offset });
+        }
+        additionalFiles.push(af);
+        return ' '.repeat(match.length);
+      });
+
       // Extraire les images autonomes
       const imageRegex = /\{\{IMG:([a-zA-Z0-9._-]+)(?:\|[^}]*)?\}\}/gi;
       let imgM: RegExpExecArray | null;
@@ -4892,20 +5253,32 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     return this.parsePromptFence(this.getPromptBodyById(id)).mode;
   }
 
+  /** Vrai si un autre Prompt du projet porte déjà ce nom (identité = nom, comme Trello/Array). */
+  private promptNameExists(name: string, exceptId?: string): boolean {
+    const slug = this.slugify(name);
+    return this.promptInstances.some(i => i.id !== exceptId && this.slugify(i.name) === slug);
+  }
+
   openPromptPopup() {
     if (!this.pendingMoFolderId) {
       this.pendingMoFolderId = this.getCursorEntity()?.folderId || this.activeNodeId || null;
     }
     this.promptName = 'Mon Prompt';
+    this.promptNameError.set(null);
     this.promptGuidedMode.set(false);
     this.showPromptPopup.set(true);
   }
 
-  cancelPromptPopup() { this.showPromptPopup.set(false); this.pendingMoFolderId = null; }
+  cancelPromptPopup() { this.showPromptPopup.set(false); this.promptNameError.set(null); this.pendingMoFolderId = null; }
 
   async confirmPromptPopup() {
     const name = (this.promptName || '').trim() || 'Mon Prompt';
     if (!this.projectName) return;
+    // Unicité du nom : un nom déjà utilisé est refusé (identité stable, pas de doublon).
+    if (this.promptNameExists(name)) {
+      this.promptNameError.set('Ce nom de Prompt existe déjà.');
+      return;
+    }
     const folderId = this.pendingMoFolderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
     this.promptCreating.set(true);
     try {
@@ -5017,6 +5390,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
    */
   private async materializeMegaOutilsFromContent(deliverable: string, selectedMos: MaterializedMoPreview[], folderId: string | undefined, promptInstanceId: string, transcript?: string) {
     if (!this.projectName) return;
+    // Cours vivant : si le livrable est structuré en séances (titres ## Séance N),
+    // on crée de VRAIS dossiers (non limités au niveau 4) au lieu de démoter sous « Pr - Nom ».
+    if (folderId && this.isLivingCourseDeliverable(deliverable)) {
+      await this.materializeLivingCourse(deliverable, folderId, promptInstanceId, transcript);
+      return;
+    }
     // Ne garder que les fences MO retenus : retirer du livrable les fences MO non cochés
     const keptFences = new Set(selectedMos.map(m => m.fence));
     let content = deliverable;
@@ -5070,6 +5449,120 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       }
     }
     this.recomputeAll();
+  }
+
+  // ── Cours vivant : matérialisation en vrais dossiers ───────────────────────
+  /** Détecte un livrable de cours structuré : au moins un titre `## ` de séance. */
+  private isLivingCourseDeliverable(deliverable: string): boolean {
+    const lines = deliverable.split('\n');
+    let inFence = false;
+    let seances = 0, hasBilan = false;
+    for (const l of lines) {
+      if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      const m = l.match(/^##\s+(.+)$/);
+      if (!m) continue;
+      if (/s[ée]ance\s*\d+/i.test(m[1])) seances++;
+      if (/bilan/i.test(m[1])) hasBilan = true;
+    }
+    return seances >= 1 && (hasBilan || seances >= 2);
+  }
+
+  /** Découpe un livrable Markdown en sections de niveau 2 (`## Titre`). */
+  private splitTopLevelSections(md: string): { title: string; body: string }[] {
+    const blocks: { title: string; body: string }[] = [];
+    let cur: { title: string; body: string[] } | null = null;
+    let inFence = false;
+    for (const line of md.split('\n')) {
+      if (/^```/.test(line.trim())) inFence = !inFence;
+      const m = !inFence ? line.match(/^##\s+(.+)$/) : null;
+      if (m) {
+        if (cur) blocks.push({ title: cur.title, body: cur.body.join('\n').trim() });
+        cur = { title: m[1].trim(), body: [] };
+      } else if (cur) {
+        cur.body.push(line);
+      }
+    }
+    if (cur) blocks.push({ title: cur.title, body: cur.body.join('\n').trim() });
+    return blocks;
+  }
+
+  /** Nettoie un titre pour en faire un nom de dossier (retire emojis/markdown superflus). */
+  private courseFolderName(title: string): string {
+    return title.replace(/[`*_]/g, '').replace(/\s{2,}/g, ' ').trim().slice(0, 120);
+  }
+
+  /**
+   * Matérialise un cours vivant : crée un VRAI dossier par section de niveau 2
+   * (Bilan général + une séance par titre) sous le dossier du prompt, avec leur
+   * contenu (cours + QCM) et leurs MegaOutils (Trello/Array → instances, Agenda → événements).
+   */
+  private async materializeLivingCourse(deliverable: string, promptFolderId: string, promptInstanceId: string, transcript?: string) {
+    const blocks = this.splitTopLevelSections(deliverable);
+    if (!blocks.length) return;
+    const promptInst = this.promptInstances.find(i => i.id === promptInstanceId);
+    const groupName = promptInst?.name ?? 'Cours';
+    const agendaGroupId = self.crypto.randomUUID();
+    const moRe = /```(TRELLO|ARRAY|FORM|CHART|AGENDA):[ \t]*([^\n]+)\n([\s\S]*?)\n```/g;
+
+    for (let bi = 0; bi < blocks.length; bi++) {
+      const block = blocks[bi];
+      // 1. Créer le dossier réel sous le prompt
+      let folder;
+      try {
+        folder = await this.svc.createFolder(this.projectName, { name: this.courseFolderName(block.title), parentId: promptFolderId });
+      } catch (e) { console.error('[EditorZone] création dossier séance échouée :', block.title, e); continue; }
+      const contenuFile = (folder.children || []).find(c => c.type === 'file')
+        ?? await this.svc.createFile(this.projectName, { name: 'contenu.md', parentId: folder.id, content: '' }).catch(() => null);
+      if (!contenuFile) continue;
+
+      // 2. Préparer le corps : démoter les titres internes (≥#####) pour qu'ils restent
+      //    du contenu inline et ne créent pas de sous-dossiers parasites.
+      let body = this.demoteHeadings(block.body, 4);
+
+      // 3. Matérialiser les AGENDA du bloc (vrais événements) → liste lisible
+      const agendaFences = [...body.matchAll(moRe)].filter(m => m[1].toUpperCase() === 'AGENDA').map(m => m[0]);
+      for (const fence of agendaFences) {
+        const readable = await this.materializeAgendaFence(fence, folder.id, agendaGroupId, groupName);
+        body = body.replace(fence, readable);
+      }
+
+      // 4. Cadrage en tête du 1er bloc (Bilan)
+      if (bi === 0 && transcript && transcript.trim()) {
+        body = `**Cadrage**\n\n${transcript.trim()}\n\n---\n\n${body}`;
+      }
+
+      // 5. Écrire le contenu du dossier (SANS titre `#` : le nom du dossier sert de titre ;
+      //    un titre niveau 1 ici créerait une section fantôme et casserait la redistribution).
+      await this.svc.updateFile(this.projectName, contenuFile.id, body.trim()).catch(() => {});
+
+      // 6. Créer les instances Trello / Array du bloc (Form/Chart/Agenda = balise/liste)
+      for (const mm of [...body.matchAll(moRe)]) {
+        const type = mm[1].toLowerCase();
+        if (type !== 'trello' && type !== 'array') continue;
+        try {
+          const inst = await this.megaOutilsSvc.createInstance({
+            type: type as MegaOutilType, name: mm[2].trim(), projectId: this.projectName,
+            outilId: this.activeOutilId || undefined, folderId: folder.id,
+          });
+          const fenceBody = mm[3];
+          if (type === 'trello') {
+            const cards = this.parseTrelloBodyCards(fenceBody);
+            for (let i = 0; i < cards.length; i++) {
+              const c = cards[i];
+              await this.megaOutilsSvc.createTrelloCard(inst.id, { title: c.title, status: c.status, priority: c.priority, description: c.description, orderIndex: i }).catch(() => {});
+            }
+          } else {
+            const base = await this.megaOutilsSvc.getArrayGrid(inst.id).catch(() => null);
+            const grid = base ? this.deserializeArrayGrid(fenceBody, base) : null;
+            if (grid) await this.megaOutilsSvc.updateArrayGrid(inst.id, grid).catch(() => {});
+          }
+        } catch (e) { console.error('[EditorZone] MO cours échoué :', mm[2], e); }
+      }
+    }
+
+    // 7. Recharger l'arborescence pour afficher les nouveaux dossiers
+    this.refresh.emit();
   }
 
   /** Crée des événements agenda depuis les lignes d'un fence AGENDA et retourne
@@ -5429,6 +5922,20 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     });
     if (byName) return byName;
     return folder.children.find(c => c.type === 'file' && this.slugify(c.name.replace(/\.md$/, '')) === 'array');
+  }
+
+  /** Nœud fichier Prompt (prompt-NOM) d'une instance dans un dossier. */
+  private findPromptFileNode(folderId: string | null, instName: string): FileNode | undefined {
+    if (!folderId) return undefined;
+    const folder = this.findNode(folderId, this.files);
+    if (!folder?.children) return undefined;
+    const byName = folder.children.find(c => {
+      if (c.type !== 'file') return false;
+      const b = c.name.replace(/\.md$/, '');
+      return this.isPromptFileBase(b) && this.slugify(this.promptNameFromBase(b)) === this.slugify(instName);
+    });
+    if (byName) return byName;
+    return folder.children.find(c => c.type === 'file' && this.slugify(c.name.replace(/\.md$/, '')) === 'prompt');
   }
 
   mockupInstanceName(id: string): string {

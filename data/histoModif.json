@@ -1,6 +1,147 @@
 {
   "modifications": [
     {
+      "id": "mod-488",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["data"],
+      "features": "projets:mega-outils",
+      "title": "Suppression des instances prompt orphelines (sans fichier lié)",
+      "description": "Nettoyage BDD du projet test : suppression de 5 instances prompt qui n'avaient aucun fichier prompt-NOM correspondant (anciens essais), ainsi que leur historique d'exécution. État final : 2 instances prompt, chacune avec son fichier (Cours de maths → Prompt cours, Création projet maison d'hôte → Prompt maison).",
+      "files": [],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "oui supprime automatiquement si il n'y a pas de fichier lié",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
+      "id": "mod-487",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets", "data"],
+      "features": "projets:editor|mega-outils",
+      "title": "Prompt PR: corrections : double injection, résurrection, doublon",
+      "description": "Corrections de la fonctionnalité 'prompt = fichier PR:'. (1) Double injection : la fence PROMPT existait à la fois inline dans contenu.md ET dans le fichier prompt-NOM → buildDocSections retire désormais du contenu.md les fences PROMPT inline qui ont déjà un fichier (garde celles sans fichier = prompt fraîchement créé). (2) Résurrection : un fichier prompt vidé n'est plus régénéré depuis l'instance (sera nettoyé en orphelin). (3) Nettoyage data du projet test : retrait des fences inline en double des contenu.md, suppression du fichier doublon 'Cours de maths' de 'Prompt maison', repointage de l'instance vers 'Prompt cours'.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "data/projets/0475514d-ed29-407d-8cbf-f837232cac46/config.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "j'ai beau supprimé le prompt PROMPT: Cours de maths dans la section Prompt maison, à chaque réactualisation le prompt revient. Chaque prompt doit avoir son identifiant unique. Le menu affiche 3 prompts (1 supprimé devrait disparaître) et la liste n'en montre qu'un au lieu de 2.",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
+      "id": "mod-486",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor|mega-outils",
+      "title": "Clic sur fichier prompt : focus sur le seul prompt (comme Trello)",
+      "description": "Cliquer un fichier 'PR: NOM' affichait tout le document au lieu du seul prompt (contrairement à 'TL:'/'AR:'). Cause : recomputeRanges calculait les plages (fileRanges) pour les fences TRELLO et ARRAY mais pas PROMPT → pas de handle → pas de focus. Ajout du bloc de détection ```PROMPT: NOM dans recomputeRanges, mappant la fence vers son fichier prompt-NOM ; le focus mode (mode Code) restreint désormais l'affichage au seul prompt.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "Lorsque je clique sur la section du prompt je ne devrais voir que le prompt dans la zone d'édition, et là je vois tout le texte ; cela devrait fonctionner comme Trello.",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
+      "id": "mod-485",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor|sidebar|mega-outils",
+      "title": "MO Prompt extrait en fichier 'PR: NOM' comme Trello/Array",
+      "description": "Les MO Prompt étaient inline dans le contenu, contrairement à Trello/Array qui sont extraits en fichiers physiques (trello-NOM/array-NOM, affichés 'TL:/AR:'). Ajout de l'extraction des fences ```PROMPT: NOM en fichiers 'prompt-NOM' dans parseContent (calqué sur Trello/Array ; buildDocSections relisait déjà ces fichiers), et du mapping d'affichage 'PR: NOM' dans la sidebar (nodeDisplayName).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "de la même façon que pour les MO trello et array les MO prompt doivent être dans des sections spécifiques où le nom commence par PR: Mon prompt.",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
+      "id": "mod-484",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor|mega-outils",
+      "title": "Cours vivant : correction QCM ne doit plus vider le texte des séances",
+      "description": "Répondre à un QCM vidait le texte des séances (dossiers en double + contenu perdu). Cause : materializeLivingCourse écrivait un titre `# Titre` en tête du contenu.md de chaque dossier ; ce titre niveau 1 était interprété comme une section fantôme, et la sauvegarde déclenchée par la correction redistribuait mal le contenu. Fix : écrire uniquement le corps (le nom du dossier sert de titre) ; neutraliser aussi les titres markdown dans le corps de la correction IA (→ gras) et les interdire dans le prompt système de correction. La redistribution est protégée par les marqueurs {{SID}} (niveau capé à 4 dans buildDocSections).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque j'ai répondu au QCM l'IA a vérifié les réponses et supprimé tous les textes des séances. Les textes ne doivent pas changer, cela doit juste rajouter des informations de l'IA.",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
+      "id": "mod-483",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["server", "projets"],
+      "features": "system:workflow,projets:editor|mega-outils",
+      "title": "Cours vivant : QCM répondable + vrais dossiers par séance",
+      "description": "Corrections suite aux tests. (1) QCM n'affichait que les questions : le parser de formulaire exigeait une puce avant les options ; l'IA génère `  ( ) Option` sans puce → puce rendue optionnelle dans parseFormContent (zone + workflow popup). (2) Format QCM renforcé dans le prompt de génération (exemple explicite, options obligatoires). (3) Les séances n'étaient pas des dossiers (titres démotés au-delà du niveau 4 quand le prompt est imbriqué) : nouvelle matérialisation `materializeLivingCourse` qui crée de VRAIS dossiers via l'API (Bilan + un par séance) avec contenu et MegaOutils, non limités en profondeur.",
+      "files": [
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "les formulaires comme les QCM ne fonctionnent pas (affichent seulement les questions). Les cours doivent être séparés en phases/dossiers (4 séances = 4 dossiers avec cours, exercices, résultats) + un dossier global d'évolution.",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
+      "id": "mod-482",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["server", "libs", "projets"],
+      "features": "system:workflow,projets:editor|agenda|mega-outils",
+      "title": "Cours vivant : structure par séances datées + correction QCM IA + lien agenda",
+      "description": "Document de formation vivant et évolutif. (1) Le prompt de génération Type A impose une section « Bilan général et suivi du cours » (Planning, Agenda, Suivi des notes, Progression) + un dossier daté par séance contenant le cours et un QCM. (2) Soumission d'un QCM → correction IA automatique : correction détaillée insérée dans la séance + note injectée dans le tableau Suivi des notes du Bilan (CHART de progression auto-MAJ). Ajout d'une exécution IA one-shot (AiExecuteService.executeOnce). (3) Lien agenda → séance : bouton « Ouvrir la séance » sur un événement, navigation vers le dossier correspondant (bascule d'outil + scroll).",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/ai-execute.service.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "l'execution d'un prompt doit mené à l'élaboration d'un projet vivant : cours de maths sur plusieurs semaines, dossiers par date, agenda de suivi, exercices QCM renvoyés à l'IA pour correction et notation, section bilan général et suivi du cours.",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
       "id": "mod-481",
       "version": "vB-0.310",
       "date": "2026-06-27T00:00:00.000Z",
@@ -12047,6 +12188,29 @@
       "prompt": "verifi le fonctionnement de admin/tests, tous les enregistrement et datas doivent être enregistré et partagé avec tous les users via les bases de données. les cahiers de recettes, les tests, les résultats, les sitemap, les versions des sitemap, tous doit être enregistré et partagé via la bdd",
       "startedAt": "2026-06-25T00:00:00.000Z",
       "completedAt": "2026-06-25T01:00:00.000Z"
+    },
+    {
+      "id": "mod-489",
+      "version": "B-0.311",
+      "date": "2026-06-27T19:37:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-mega-outils,system:mo-prompt",
+      "title": "MO Prompt : stabilité (déplacement = déplacement, anti-doublon, noms uniques)",
+      "description": "Le MO Prompt ne se comportait pas comme Trello/Array : un Prompt déplacé était copié (idem son fichier lié), le compteur de Prompts variait selon les vues (2 dans la sidebar, 1 dans la liste/badge) et le menu/texte changeait sans arrêt. Cause : identité par nom dans la fence ```PROMPT: NOM mais machinerie de stabilisation absente, et les vues filtraient sur la section active (promptInstancesInContent) au lieu de toutes les instances. Ajout en miroir d'Array : resolvePromptFolderId + recomputePromptSections (déplacement réel + map nom de section promptSections), healPromptSectionOnOpen (le fichier prompt-NOM suit le bloc déplacé), cleanupOrphanPromptInstances (anti-doublon), ensurePromptInstancesFromContent (backfill instance manquante depuis fence/fichier → instances↔fichiers 1:1), amorçage seenPromptMarkers, branche prompt dans selectMegaOutil + findPromptFileNode. Vues (badge, liste scrollable, vue Liste des prompts) basculées sur promptInstances (toutes), comme trelloInstances/arrayInstances → même nombre partout, identique à la sidebar. Unicité de nom : création refusée si nom déjà utilisé (« Ce nom de Prompt existe déjà »).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "cela ne fonctionne pas, les MO prompts doivent fonctionné de la mêmes façon que trello et array, chaque MO doit avoir son identifiant unique et on ne peux avoir 2 fois le même prompt, un MO prompt à sa propre section PR: nom du prompt, si on déplace un PR on ne copie pas un PR on le déplace, idem pour le fichier lié. On ne peux dans la liste n'avoir que le même nombre de PR affiché dans tous le fichier. Il faut un système stable qui ne change pas sans arrêt le menu et le texte.",
+      "startedAt": "2026-06-27T19:20:00.000Z",
+      "completedAt": "2026-06-27T19:38:00.000Z"
     }
   ]
 }
