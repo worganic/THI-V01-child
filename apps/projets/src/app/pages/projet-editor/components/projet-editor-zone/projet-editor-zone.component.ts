@@ -760,12 +760,31 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       // Amorcer le suivi des marqueurs Trello présents au chargement (pour détecter
       // ensuite une suppression/corruption même sans sauvegarde intermédiaire).
       this.seedSeenTrelloMarkers(this.focusedHandle ? this.fullContentBackup : this.unifiedContent);
+      // Suppression d'un MO via la sidebar (fichier disparu) → retirer fence + instance, pas de recréation.
+      // Doit tourner AUSSI en mode focus (sinon heal recrée le fichier) : opère sur unifiedContent
+      // (section focalisée) et saveAll() fusionne dans le document complet.
+      const moDeletionReconciled = this.reconcileDeletedMoFiles();
+      if (moDeletionReconciled) {
+        const ta = this.textareaRef?.nativeElement;
+        if (ta) ta.value = this.unifiedContent;
+      }
+      // Backfill : toute fence MO (Trello/Array/Prompt) sans instance DB de même nom → recréer l'instance.
+      // Tourne AUSSI en focus (sur le document complet) pour que les compteurs/listes reflètent la sidebar.
+      const moContent = this.focusedHandle ? this.fullContentBackup : this.unifiedContent;
+      this.ensureTrelloInstancesFromContent(moContent);
+      this.ensureArrayInstancesFromContent(moContent);
+      this.ensurePromptInstancesFromContent(moContent);
+      // Re-tag les fences au MOID périmé vers les instances existantes (cohérence fence↔instance).
+      const moidsFixed = this.fixStaleFenceMoids();
+      if (moidsFixed) { const ta0 = this.textareaRef?.nativeElement; if (ta0) ta0.value = this.unifiedContent; }
       // Nettoyage des instances Trello/Array orphelines (sans bloc/fichier correspondant)
+      let moidInjected = false;
       if (!this.focusedHandle) {
         this.cleanupOrphanTrelloInstances(); this.cleanupOrphanArrayInstances(); this.cleanupOrphanPromptInstances();
-        // Backfill : tout bloc ```PROMPT: NOM sans instance DB (ex. fichier prompt-NOM hérité) → crée l'instance
-        // pour que les vues (barre, liste) comptent exactement les mêmes prompts que la sidebar.
-        this.ensurePromptInstancesFromContent(this.unifiedContent);
+        // Identité unique : injecter {{MOID:id}} dans les fences legacy, puis supprimer les instances
+        // dupliquées (même nom, non liées à une fence par MOID) → collapse des doublons (ex. 3× « Mon Tableau »).
+        moidInjected = this.injectMoidIntoLegacyFences();
+        this.dedupeMoInstancesByMoid();
       }
       // Nettoyer les marqueurs {{TRELLO:...}} du contenu (approche DB-only)
       const trelloStripped = !this.focusedHandle && this.stripTrelloMarkersFromUnifiedContent();
@@ -776,7 +795,10 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       this.recomputeAll();
       this.updateSnapshotFromFiles();
 
-      if ((markersFixed || trelloStripped || mockupDeduped || formsConverted) && !this.focusedHandle) {
+      // moDeletionReconciled / moidsFixed : sauvegarde même en focus (saveAll fusionne la section focalisée).
+      if (moDeletionReconciled || moidsFixed) {
+        setTimeout(() => this.saveAll(), 0);
+      } else if ((markersFixed || trelloStripped || mockupDeduped || formsConverted || moidInjected) && !this.focusedHandle) {
         setTimeout(() => this.saveAll(), 0);
       }
     }
@@ -819,6 +841,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
     // Les instances mega-outils peuvent arriver après le contenu → recalculer la zone basse
     if (changes['megaOutilInstances']) {
+      // Les instances recréées (ensure*) arrivent ici avec un nouvel id → re-tag les fences au MOID périmé.
+      if (this.hasLoaded && this.fixStaleFenceMoids()) {
+        const ta = this.textareaRef?.nativeElement;
+        if (ta) ta.value = this.unifiedContent;
+        setTimeout(() => this.saveAll(), 0);
+      }
       this.recomputeContentTrelloIds();
       this.recomputeContentMockupIds();
       this.recomputeContentArrayIds();
@@ -937,15 +965,14 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         innerLines.push('');
       }
       const inner = innerLines.join('\n').replace(/\n+$/, '');
-      const newBlock = inner
-        ? `\`\`\`TRELLO: ${name}\n${inner}\n\`\`\``
-        : `\`\`\`TRELLO: ${name}\n\`\`\``;
+      const header = this.composeFenceHeader('TRELLO', name, id);
+      const newBlock = inner ? `${header}\n${inner}\n\`\`\`` : `${header}\n\`\`\``;
 
       const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      // Supporte l'ancienne syntaxe (## Trello:) et la nouvelle (TRELLO:).
+      // Supporte l'ancienne syntaxe (## Trello:) et la nouvelle (TRELLO:), avec MOID optionnel.
       // (?:[\s\S]*?\n)? rend le corps optionnel → matche aussi un bloc vide ```TRELLO: NOM\n```.
       // (?=\n|$) ancre la fermeture en fin de ligne pour ne pas matcher ```language.
-      const blockRe = new RegExp('```(?:## Trello:|TRELLO:) ' + esc + '\n(?:[\\s\\S]*?\n)?```(?=\\n|$)', 'g');
+      const blockRe = new RegExp('```(?:## Trello:|TRELLO:) ' + esc + '(?: \\{\\{MOID:[^}]+\\}\\})?\n(?:[\\s\\S]*?\n)?```(?=\\n|$)', 'g');
 
       if (blockRe.test(newContent)) {
         // Réinitialise lastIndex
@@ -1295,7 +1322,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
               .map(c => this.slugify(this.promptNameFromBase(c.name.replace(/\.md$/, '')) || ''));
             if (promptFileSlugs.length) {
               mc = mc.replace(/```PROMPT: ([^\n]+)\n[\s\S]*?\n```/g, (m: string, nm: string) =>
-                promptFileSlugs.includes(this.slugify(nm.trim())) ? '' : m);
+                promptFileSlugs.includes(this.slugify(this.splitFenceHeader(nm.trim()).name)) ? '' : m);
             }
             textContent += mc.trimEnd() + '\n';
           }
@@ -1576,7 +1603,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         // Bloc Trello : ```TRELLO: NOM ... ``` → plage du fichier "TL: NOM"
         const tm = /^```(?:## Trello:|TRELLO:) (.+)$/.exec(lines[i].trim());
         if (tm) {
-          const tname = tm[1].trim();
+          const tname = this.splitFenceHeader(tm[1].trim()).name;
           let endLine = -1;
           for (let j = i + 1; j <= r.lineEnd; j++) {
             if (lines[j].trim() === '```') { endLine = j; break; }
@@ -1597,7 +1624,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         // Bloc Array : ```ARRAY: NOM ... ``` → plage du fichier "array-NOM"
         const am = /^```ARRAY: (.+)$/.exec(lines[i].trim());
         if (am) {
-          const aname = am[1].trim();
+          const aname = this.splitFenceHeader(am[1].trim()).name;
           let endLine = -1;
           for (let j = i + 1; j <= r.lineEnd; j++) {
             if (lines[j].trim() === '```') { endLine = j; break; }
@@ -1618,7 +1645,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         // Bloc Prompt : ```PROMPT: NOM ... ``` → plage du fichier "prompt-NOM"
         const pm = /^```PROMPT: (.+)$/.exec(lines[i].trim());
         if (pm) {
-          const pname = pm[1].trim();
+          const pname = this.splitFenceHeader(pm[1].trim()).name;
           let endLine = -1;
           for (let j = i + 1; j <= r.lineEnd; j++) {
             if (lines[j].trim() === '```') { endLine = j; break; }
@@ -1929,12 +1956,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const sr = this.sectionRanges.find(r => r.folderId === activeFolderId);
       if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
     }
-    const markerLines = sectionText.split('\n').map(l => l.trim());
-    const hasMarker = (name: string) =>
-      markerLines.some(l => l === '```TRELLO: ' + name || l === '```## Trello: ' + name);
-
-    // Source de vérité = présence du marqueur dans la section active
-    this.contentTrelloIds = this.trelloInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+    // Source de vérité = présence de la fence de l'instance (par MOID, fallback nom) dans la section active
+    const sectionLines = sectionText.split('\n');
+    this.contentTrelloIds = this.trelloInstances.filter(i => this.fenceHasInstance(sectionLines, 'TRELLO', i)).map(i => i.id);
 
     this.recomputeTrelloSections();
     this.loadTrelloCodeCards();
@@ -1962,9 +1986,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const sr = this.sectionRanges.find(r => r.folderId === activeFolderId);
       if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
     }
-    const markerLines = sectionText.split('\n').map(l => l.trim());
-    const hasMarker = (name: string) => markerLines.some(l => l === '```ARRAY: ' + name);
-    this.contentArrayIds = this.arrayInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+    const sectionLines = sectionText.split('\n');
+    this.contentArrayIds = this.arrayInstances.filter(i => this.fenceHasInstance(sectionLines, 'ARRAY', i)).map(i => i.id);
     this.recomputeArraySections();
     this.loadArrayGrid();
   }
@@ -1987,9 +2010,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const sr = this.sectionRanges.find(r => r.folderId === activeFolderId);
       if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
     }
-    const markerLines = sectionText.split('\n').map(l => l.trim());
-    const hasMarker = (name: string) => markerLines.some(l => l === '```PROMPT: ' + name);
-    this.contentPromptIds = this.promptInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+    const sectionLines = sectionText.split('\n');
+    this.contentPromptIds = this.promptInstances.filter(i => this.fenceHasInstance(sectionLines, 'PROMPT', i)).map(i => i.id);
     this.recomputePromptSections();
   }
 
@@ -2002,9 +2024,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const sr = this.sectionRanges.find(r => r.folderId === activeFolderId);
       if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
     }
-    const markerLines = sectionText.split('\n').map(l => l.trim());
-    const hasMarker = (name: string) => markerLines.some(l => l === '```FORM: ' + name);
-    this.contentFormIds = this.formInstances.filter(i => hasMarker(i.name)).map(i => i.id);
+    const sectionLines = sectionText.split('\n');
+    this.contentFormIds = this.formInstances.filter(i => this.fenceHasInstance(sectionLines, 'FORM', i)).map(i => i.id);
   }
 
   get promptInstances(): MegaOutilInstance[] {
@@ -2022,9 +2043,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     if (!inst) return;
     try {
       await this.megaOutilsSvc.deleteInstance(id);
-      // Retirer la fence du contenu
-      const fenceRe = new RegExp('```PROMPT: ' + inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\n[\\s\\S]*?\\n```', 'g');
-      this.unifiedContent = this.unifiedContent.replace(fenceRe, '').replace(/\n{3,}/g, '\n\n');
+      // Retirer la fence du contenu (localisée par MOID, fallback nom)
+      this.removeFenceForInstance('PROMPT', inst);
       this.megaOutilInstances = this.megaOutilInstances.filter(i => i.id !== id);
       this.recomputeRanges();
       this.syncDocSectionsTextFromContent();
@@ -2049,7 +2069,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const inst = this.promptInstances.find(i => i.id === id);
     if (!inst) return '';
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return '';
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -2070,7 +2090,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const inst = this.promptInstances.find(i => i.id === id);
     if (!inst) return null;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return null;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -2642,7 +2662,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const haystacks = [sec?.textContent ?? '', this.unifiedContent, this.fullContentBackup];
     let body = '';
     const esc = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const fenceRe = new RegExp('```ARRAY: ' + esc + '\n([\\s\\S]*?)```(?=\\n|$)');
+    const fenceRe = new RegExp('```ARRAY: ' + esc + '(?: \\{\\{MOID:[^}]+\\}\\})?\n([\\s\\S]*?)```(?=\\n|$)');
     for (const h of haystacks) {
       const fm = fenceRe.exec(h);
       if (fm && fm[1].trim()) { body = fm[1]; break; }
@@ -2818,11 +2838,12 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const folderNode = this.findNode(activeFolderId, this.files);
     if (!folderNode) return;
 
-    // Contenu du fichier = bloc complet ```ARRAY: NOM\n<grille>\n``` (jamais vide)
+    // Contenu du fichier = bloc complet ```ARRAY: NOM {{MOID:id}}\n<grille>\n``` (jamais vide)
     const gridCode = this.serializeArrayGrid(grid);
+    const header = this.composeFenceHeader('ARRAY', name, inst?.id ?? null);
     const fullBlock = gridCode.trim()
-      ? '```ARRAY: ' + name + '\n' + gridCode + '\n```'
-      : '```ARRAY: ' + name + '\n```';
+      ? header + '\n' + gridCode + '\n```'
+      : header + '\n```';
 
     this.lastArrayCodeFromGrid.set(instanceId, fullBlock);
 
@@ -2906,11 +2927,12 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!inst) return;
     const name = inst.name;
     const gridCode = this.serializeArrayGrid(grid);
+    const header = this.composeFenceHeader('ARRAY', name, inst.id);
     const newBlock = gridCode.trim()
-      ? '```ARRAY: ' + name + '\n' + gridCode + '\n```'
-      : '```ARRAY: ' + name + '\n```';
+      ? header + '\n' + gridCode + '\n```'
+      : header + '\n```';
     const esc = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const blockRe = new RegExp('```ARRAY: ' + esc + '\n(?:[\\s\\S]*?\n)?```(?=\\n|$)', 'g');
+    const blockRe = new RegExp('```ARRAY: ' + esc + '(?: \\{\\{MOID:[^}]+\\}\\})?\n(?:[\\s\\S]*?\n)?```(?=\\n|$)', 'g');
     if (!blockRe.test(this.unifiedContent)) return;
     blockRe.lastIndex = 0;
     const updated = this.unifiedContent.replace(blockRe, newBlock);
@@ -2957,7 +2979,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         folderId,
       });
       // insertAt gère le placement via pendingMoFolderId (avant les sous-sections enfants)
-      this.insertAt(`\n\n\`\`\`ARRAY: ${name}\n\`\`\`\n\n`, '');
+      this.insertAt(`\n\n\`\`\`ARRAY: ${name} {{MOID:${inst.id}}}\n\`\`\`\n\n`, '');
       this.showArrayPopup.set(false);
       this.megaOutilCreated.emit(inst);
     } catch (e) {
@@ -4504,7 +4526,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const re = /(?:```(?:## Trello:|TRELLO:)|^#{2,4}\s*Trello:)\s*(.+)$/gim;
     const scanContent = (content: string) => {
       let m; re.lastIndex = 0;
-      while ((m = re.exec(content)) !== null) represented.add(this.slugify(m[1].trim()));
+      while ((m = re.exec(content)) !== null) represented.add(this.slugify(this.splitFenceHeader(m[1].trim()).name));
     };
     const walk = (nodes: FileNode[]) => {
       for (const n of nodes) {
@@ -4533,11 +4555,12 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     for (const inst of this.trelloInstances) {
       if (this.contentHasTrelloMarker(content, inst.name)) this.seenTrelloMarkers.add(inst.id);
     }
+    const lines = content.split('\n');
     for (const inst of this.arrayInstances) {
-      if (content.split('\n').some(l => l.trim() === '```ARRAY: ' + inst.name)) this.seenArrayMarkers.add(inst.id);
+      if (this.fenceHasInstance(lines, 'ARRAY', inst)) this.seenArrayMarkers.add(inst.id);
     }
     for (const inst of this.promptInstances) {
-      if (content.split('\n').some(l => l.trim() === '```PROMPT: ' + inst.name)) this.seenPromptMarkers.add(inst.id);
+      if (this.fenceHasInstance(lines, 'PROMPT', inst)) this.seenPromptMarkers.add(inst.id);
     }
   }
 
@@ -4548,7 +4571,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const re = /^```ARRAY: (.+)$/gim;
     const scanContent = (content: string) => {
       let m; re.lastIndex = 0;
-      while ((m = re.exec(content)) !== null) represented.add(this.slugify(m[1].trim()));
+      while ((m = re.exec(content)) !== null) represented.add(this.slugify(this.splitFenceHeader(m[1].trim()).name));
     };
     const walk = (nodes: FileNode[]) => {
       for (const n of nodes) {
@@ -4577,7 +4600,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const re = /^```PROMPT: (.+)$/gim;
     const scanContent = (content: string) => {
       let m; re.lastIndex = 0;
-      while ((m = re.exec(content)) !== null) represented.add(this.slugify(m[1].trim()));
+      while ((m = re.exec(content)) !== null) represented.add(this.slugify(this.splitFenceHeader(m[1].trim()).name));
     };
     const walk = (nodes: FileNode[]) => {
       for (const n of nodes) {
@@ -4610,7 +4633,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const sr = this.sectionRanges.find(r => r.folderId === folderId);
       if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
     }
-    const blockNames = [...sectionText.matchAll(/^```PROMPT: (.+)$/gm)].map(m => m[1].trim());
+    const blockNames = [...sectionText.matchAll(/^```PROMPT: (.+)$/gm)].map(m => this.splitFenceHeader(m[1].trim()).name);
     if (!blockNames.length) return;
     const folder = this.findNode(folderId, this.files);
     const hasFile = (name: string) => (folder?.children || []).some(c =>
@@ -4634,7 +4657,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const sr = this.sectionRanges.find(r => r.folderId === folderId);
       if (sr) sectionText = this.unifiedContent.split('\n').slice(sr.lineStart, sr.lineEnd + 1).join('\n');
     }
-    const blockNames = [...sectionText.matchAll(/^```ARRAY: (.+)$/gm)].map(m => m[1].trim());
+    const blockNames = [...sectionText.matchAll(/^```ARRAY: (.+)$/gm)].map(m => this.splitFenceHeader(m[1].trim()).name);
     if (!blockNames.length) return;
     const folder = this.findNode(folderId, this.files);
     const hasFile = (name: string) => (folder?.children || []).some(c =>
@@ -4655,11 +4678,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     for (let i = 0; i < lines.length; i++) {
       const m = /^```(?:## Trello:|TRELLO:) (.+)$/.exec(lines[i].trim());
       if (!m) continue;
-      const name = m[1].trim();
+      const { name } = this.splitFenceHeader(m[1].trim());
       const slug = this.slugify(name);
       if (seen.has(slug)) continue;
       seen.add(slug);
+      // Instance de même nom déjà présente → ne pas recréer (résolution par nom via findFenceOpenLine).
       if (this.trelloInstances.some(t => this.slugify(t.name) === slug)) continue;
+      const ckey = 'trello|' + slug;
+      if (this.creatingMoNames.has(ckey)) continue;
+      this.creatingMoNames.add(ckey);
       // Section du marqueur (folderId)
       const sr = this.sectionRanges.find(r => i >= r.lineStart && i <= r.lineEnd);
       const folderId = sr?.folderId ?? this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null) ?? undefined;
@@ -4669,7 +4696,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       }).then(inst => {
         this.seenTrelloMarkers.add(inst.id);
         this.megaOutilCreated.emit(inst);
-      }).catch(() => {});
+      }).catch(() => {}).finally(() => this.creatingMoNames.delete(ckey));
     }
   }
 
@@ -4681,11 +4708,14 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     for (let i = 0; i < lines.length; i++) {
       const m = /^```ARRAY: (.+)$/.exec(lines[i].trim());
       if (!m) continue;
-      const name = m[1].trim();
+      const { name } = this.splitFenceHeader(m[1].trim());
       const slug = this.slugify(name);
       if (seen.has(slug)) continue;
       seen.add(slug);
       if (this.arrayInstances.some(a => this.slugify(a.name) === slug)) continue;
+      const ckey = 'array|' + slug;
+      if (this.creatingMoNames.has(ckey)) continue;
+      this.creatingMoNames.add(ckey);
       const sr = this.sectionRanges.find(r => i >= r.lineStart && i <= r.lineEnd);
       const folderId = sr?.folderId ?? this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null) ?? undefined;
       // Extraire le corps (table markdown) du bloc collé pour initialiser la grille en BDD
@@ -4707,11 +4737,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
           const partial = this.deserializeArrayGrid(body, fallback);
           if (partial) {
             this.megaOutilsSvc.updateArrayGrid(inst.id, { ...fallback, ...partial } as ArrayGrid)
-              .then(g => { this.visuArrayGrids.set(inst.id, g); this.lastArrayCodeFromGrid.set(inst.id, '```ARRAY: ' + name + '\n' + body.trim() + '\n```'); })
+              .then(g => { this.visuArrayGrids.set(inst.id, g); this.lastArrayCodeFromGrid.set(inst.id, this.composeFenceHeader('ARRAY', name, inst.id) + '\n' + body.trim() + '\n```'); })
               .catch(() => {});
           }
         }
-      }).catch(() => {});
+      }).catch(() => {}).finally(() => this.creatingMoNames.delete(ckey));
     }
   }
 
@@ -4723,11 +4753,14 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     for (let i = 0; i < lines.length; i++) {
       const m = /^```PROMPT: (.+)$/.exec(lines[i].trim());
       if (!m) continue;
-      const name = m[1].trim();
+      const { name } = this.splitFenceHeader(m[1].trim());
       const slug = this.slugify(name);
       if (seen.has(slug)) continue;
       seen.add(slug);
       if (this.promptInstances.some(p => this.slugify(p.name) === slug)) continue;
+      const ckey = 'prompt|' + slug;
+      if (this.creatingMoNames.has(ckey)) continue;
+      this.creatingMoNames.add(ckey);
       const sr = this.sectionRanges.find(r => i >= r.lineStart && i <= r.lineEnd);
       const folderId = sr?.folderId ?? this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null) ?? undefined;
       this.megaOutilsSvc.createInstance({
@@ -4736,15 +4769,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       }).then(inst => {
         this.seenPromptMarkers.add(inst.id);
         this.megaOutilCreated.emit(inst);
-      }).catch(() => {});
+      }).catch(() => {}).finally(() => this.creatingMoNames.delete(ckey));
     }
   }
 
   /** Supprime les instances Array dont le marqueur, vu auparavant, a disparu/été corrompu. */
   private reconcileArrayLifecycle(content: string) {
-    const has = (name: string) => content.split('\n').some(l => l.trim() === '```ARRAY: ' + name);
+    const lines = content.split('\n');
     for (const inst of this.arrayInstances) {
-      if (has(inst.name)) {
+      if (this.fenceHasInstance(lines, 'ARRAY', inst)) {
         this.seenArrayMarkers.add(inst.id);
       } else if (this.seenArrayMarkers.has(inst.id)) {
         this.seenArrayMarkers.delete(inst.id);
@@ -4758,9 +4791,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   /** Vérifie la présence du marqueur d'ouverture Trello (ligne exacte) dans un contenu. */
   private contentHasTrelloMarker(content: string, name: string): boolean {
+    const want = this.slugify(name);
     return content.split('\n').some(l => {
       const t = l.trim();
-      return t === '```TRELLO: ' + name || t === '```## Trello: ' + name;
+      for (const p of ['```TRELLO: ', '```## Trello: ']) {
+        if (t.startsWith(p)) return this.slugify(this.splitFenceHeader(t.slice(p.length)).name) === want;
+      }
+      return false;
     });
   }
 
@@ -5000,9 +5037,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       // dont le CONTENU est le bloc complet (jamais vide).
       const trelloFenceRe = /^```(?:## Trello:|TRELLO:) (.+)\n([\s\S]*?)```(?=\n|$)/gm;
       spacedContent = spacedContent.replace(trelloFenceRe, (match: string, title: string, content: string, offset: number) => {
-        const name = title.trim();
+        const { name, moid } = this.splitFenceHeader(title.trim());
         const body = (content || '').replace(/\n+$/, '');
-        const fullBlock = body.trim() ? '```TRELLO: ' + name + '\n' + body + '\n```' : '```TRELLO: ' + name + '\n```';
+        const header = this.composeFenceHeader('TRELLO', name, moid);
+        const fullBlock = body.trim() ? header + '\n' + body + '\n```' : header + '\n```';
         const afName = 'trello-' + name;
         const af: AdditionalFile = { name: afName, content: fullBlock, fileId: null, orderedChildIds: [] };
         const found = info?.files.find(f => this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(af.name));
@@ -5017,9 +5055,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       // Extraire les fences Array (```ARRAY: NOM ... ```) comme fichiers physiques "array-NOM"
       const arrayFenceRe = /^```ARRAY: (.+)\n([\s\S]*?)```(?=\n|$)/gm;
       spacedContent = spacedContent.replace(arrayFenceRe, (match: string, title: string, content: string, offset: number) => {
-        const name = title.trim();
+        const { name, moid } = this.splitFenceHeader(title.trim());
         const body = (content || '').replace(/\n+$/, '');
-        const fullBlock = body.trim() ? '```ARRAY: ' + name + '\n' + body + '\n```' : '```ARRAY: ' + name + '\n```';
+        const header = this.composeFenceHeader('ARRAY', name, moid);
+        const fullBlock = body.trim() ? header + '\n' + body + '\n```' : header + '\n```';
         const afName = 'array-' + name;
         const af: AdditionalFile = { name: afName, content: fullBlock, fileId: null, orderedChildIds: [] };
         const found = info?.files.find(f => this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(af.name));
@@ -5035,9 +5074,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       // (même mécanisme que Trello/Array → affichés "PR: NOM" dans la sidebar).
       const promptFenceRe = /^```PROMPT: (.+)\n([\s\S]*?)```(?=\n|$)/gm;
       spacedContent = spacedContent.replace(promptFenceRe, (match: string, title: string, content: string, offset: number) => {
-        const name = title.trim();
+        const { name, moid } = this.splitFenceHeader(title.trim());
         const body = (content || '').replace(/\n+$/, '');
-        const fullBlock = '```PROMPT: ' + name + '\n' + body + '\n```';
+        const fullBlock = this.composeFenceHeader('PROMPT', name, moid) + '\n' + body + '\n```';
         const afName = 'prompt-' + name;
         const af: AdditionalFile = { name: afName, content: fullBlock, fileId: null, orderedChildIds: [] };
         const found = info?.files.find(f => this.slugify(f.name.replace(/\.md$/, '')) === this.slugify(af.name));
@@ -5061,7 +5100,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       // Le contenu principal est le rawContent sans les blocs
       // Les marqueurs {{IMG:id}} autonomes (hors blocs doc) sont conservés inline dans mainContent
       // pour préserver leur position exacte dans le texte (ex: entre deux paragraphes)
-      let mainContent = rawContent.replace(blockRegex, '').replace(trelloFenceRe, '').replace(arrayFenceRe, '').trim();
+      let mainContent = rawContent.replace(blockRegex, '').replace(trelloFenceRe, '').replace(arrayFenceRe, '').replace(promptFenceRe, '').trim();
 
       // Déterminer la position du mainFile (contenu.md)
       if (mainFile) {
@@ -5163,7 +5202,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       }).catch(() => {});
       const body = this.buildDefaultTrelloBody();
       // insertAt gère le placement via pendingMoFolderId (avant les sous-sections enfants)
-      this.insertAt(`\n\n\`\`\`TRELLO: ${name}\n${body}\n\`\`\`\n\n`, '');
+      this.insertAt(`\n\n\`\`\`TRELLO: ${name} {{MOID:${inst.id}}}\n${body}\n\`\`\`\n\n`, '');
       this.showTrelloPopup.set(false);
       this.megaOutilCreated.emit(inst);
     } catch (e) {
@@ -5210,6 +5249,253 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   private composeHeading(level: number, title: string, sid: string | null): string {
     const base = '#'.repeat(level) + ' ' + (title || 'Sans titre').trim();
     return sid ? `${base} {{SID:${sid}}}` : base;
+  }
+
+  // ── Identité unique des Méga-Outils : {{MOID:<instanceId>}} en fin d'en-tête de fence ───────
+  // Modèle calqué sur {{SID:id}} des sections. Visible en Code brut, masqué en Structure/Édition
+  // (le bloc y est rendu en board). Garantit un lien instance↔fence par ID, plus par nom → zéro doublon.
+  private static readonly MOID_MARKER_SRC = '\\{\\{MOID:([a-zA-Z0-9-]+)\\}\\}';
+
+  /** Sépare l'intérieur d'un en-tête de fence "Mon Tableau {{MOID:id}}" en { name, moid }. */
+  private splitFenceHeader(headerInner: string): { name: string; moid: string | null } {
+    const re = new RegExp(ProjetEditorZoneComponent.MOID_MARKER_SRC);
+    const m = re.exec(headerInner);
+    if (!m) return { name: headerInner.trim(), moid: null };
+    const name = headerInner.replace(re, '').replace(/\s{2,}/g, ' ').trim();
+    return { name, moid: m[1] };
+  }
+
+  /** Compose une ligne d'ouverture de fence : "```TYPE: Nom {{MOID:id}}". */
+  private composeFenceHeader(type: string, name: string, moid: string | null): string {
+    const base = '```' + type + ': ' + (name || '').trim();
+    return moid ? `${base} {{MOID:${moid}}}` : base;
+  }
+
+  /** Retire les marqueurs {{MOID:..}} d'un texte (pour affichage/rendu). */
+  private stripMoidMarkers(text: string): string {
+    return text.replace(new RegExp(ProjetEditorZoneComponent.MOID_MARKER_SRC, 'g'), '')
+      .replace(/[ \t]{2,}/g, ' ').replace(/[ \t]+$/gm, '');
+  }
+
+  /**
+   * Index de la ligne d'ouverture d'une fence pour une instance donnée.
+   * Priorité au lien stable {{MOID:inst.id}} ; fallback legacy : en-tête de même nom SANS aucun MOID
+   * (une fence portant un autre MOID appartient à une autre instance). Pour Trello, accepte aussi
+   * l'ancienne syntaxe "## Trello:".
+   */
+  private findFenceOpenLine(lines: string[], type: string, inst: { id: string; name: string }): number {
+    const moidTag = `{{MOID:${inst.id}}}`;
+    const prefixes = type === 'TRELLO' ? ['```TRELLO: ', '```## Trello: '] : ['```' + type + ': '];
+    const matchPrefix = (t: string) => prefixes.find(p => t.startsWith(p));
+    // 1. Priorité : ligne portant le bon MOID
+    let idx = lines.findIndex(l => { const t = l.trim(); return !!matchPrefix(t) && t.includes(moidTag); });
+    if (idx !== -1) return idx;
+    // 2. Fallback par nom (le MOID n'est qu'un indice ; le nom est unique par type). Couvre les
+    //    fences dont le MOID ne correspond à aucune instance (instance recréée avec un nouvel id).
+    idx = lines.findIndex(l => {
+      const t = l.trim();
+      const p = matchPrefix(t);
+      if (!p) return false;
+      return this.slugify(this.splitFenceHeader(t.slice(p.length)).name) === this.slugify(inst.name);
+    });
+    return idx;
+  }
+
+  /** Vrai si une fence de l'instance (par MOID, fallback nom) est présente dans les lignes. */
+  private fenceHasInstance(lines: string[], type: string, inst: { id: string; name: string }): boolean {
+    return this.findFenceOpenLine(lines, type, inst) !== -1;
+  }
+
+  /** Retire de unifiedContent le bloc fence d'une instance (localisé par MOID, fallback nom). */
+  private removeFenceForInstance(type: string, inst: { id: string; name: string }): boolean {
+    const lines = this.unifiedContent.split('\n');
+    const open = this.findFenceOpenLine(lines, type, inst);
+    if (open === -1) return false;
+    let close = open + 1;
+    while (close < lines.length && lines[close].trim() !== '```') close++;
+    lines.splice(open, close - open + 1);
+    this.unifiedContent = lines.join('\n').replace(/\n{3,}/g, '\n\n');
+    return true;
+  }
+
+  // Types MO à identité par MOID (instances DB sujettes aux doublons). Form/Chart restent en nom.
+  private readonly MO_FENCE_TYPES: { tok: string; type: MegaOutilType }[] = [
+    { tok: 'TRELLO', type: 'trello' }, { tok: 'ARRAY', type: 'array' }, { tok: 'PROMPT', type: 'prompt' },
+  ];
+
+  // Fichiers MO connus au cycle précédent : id de nœud fichier → MOID porté (ou '').
+  // Clé = id de nœud (stable au renommage) → un renommage ne déclenche pas de fausse suppression.
+  private knownMoFiles = new Map<string, string>();
+
+  // Anti-course : noms (type|slug) en cours de création par ensure*, pour éviter les doublons
+  // quand plusieurs cycles de chargement se déclenchent avant la résolution du createInstance.
+  private creatingMoNames = new Set<string>();
+
+  /** Map id-de-nœud → MOID pour chaque fichier MO physique (prompt-/array-/trello-) de l'arborescence. */
+  private computeMoFiles(): Map<string, string> {
+    const map = new Map<string, string>();
+    const re = new RegExp(ProjetEditorZoneComponent.MOID_MARKER_SRC);
+    const walk = (nodes: FileNode[]) => {
+      for (const n of nodes) {
+        if (n.type === 'file') {
+          const b = n.name.replace(/\.md$/, '');
+          if (this.isPromptFileBase(b) || this.isArrayFileBase(b) || this.isTrelloFileBase(b)) {
+            const m = n.content ? re.exec(n.content) : null;
+            map.set(n.id, m ? m[1] : '');
+          }
+        }
+        if (n.children) walk(n.children);
+      }
+    };
+    walk(this.files);
+    return map;
+  }
+
+  /** Retire de unifiedContent la fence portant ce {{MOID:id}} (quel que soit le type). */
+  private removeFenceByMoid(moid: string): boolean {
+    if (!moid) return false;
+    const lines = this.unifiedContent.split('\n');
+    const tag = `{{MOID:${moid}}}`;
+    const open = lines.findIndex(l => {
+      const t = l.trim();
+      return /^```(?:TRELLO|ARRAY|PROMPT|## Trello):/.test(t) && t.includes(tag);
+    });
+    if (open === -1) return false;
+    let close = open + 1;
+    while (close < lines.length && lines[close].trim() !== '```') close++;
+    lines.splice(open, close - open + 1);
+    this.unifiedContent = lines.join('\n').replace(/\n{3,}/g, '\n\n');
+    return true;
+  }
+
+  /**
+   * Réconcilie les suppressions de fichiers MO faites via la sidebar : un nœud fichier MO présent au
+   * cycle précédent et absent maintenant → le fichier a été supprimé → retire SA fence du document
+   * (par son MOID), et supprime l'instance DB seulement si plus aucun fichier ne référence ce MOID
+   * (sinon une copie du même MO subsiste ailleurs). Insensible au renommage (suivi par id de nœud).
+   */
+  private reconcileDeletedMoFiles(): boolean {
+    if (!this.hasLoaded) return false;
+    const current = this.computeMoFiles();
+    let changed = false;
+    if (this.knownMoFiles.size) {
+      const stillReferenced = new Set([...current.values()].filter(Boolean));
+      for (const [fileId, moid] of this.knownMoFiles) {
+        if (current.has(fileId)) continue; // fichier toujours présent (ou renommé : même id)
+        // Fichier MO supprimé → retirer sa fence du document.
+        if (this.removeFenceByMoid(moid)) changed = true;
+        // Supprimer l'instance seulement si aucune autre copie (fichier) ne porte ce MOID.
+        if (moid && !stillReferenced.has(moid)) {
+          const inst = this.megaOutilInstances.find(i => i.id === moid);
+          if (inst) {
+            this.megaOutilsSvc.deleteInstance(inst.id).catch(() => {});
+            this.megaOutilInstances = this.megaOutilInstances.filter(x => x.id !== moid);
+            this.megaOutilDeleted.emit(moid);
+          }
+        }
+      }
+    }
+    this.knownMoFiles = current;
+    return changed;
+  }
+
+  /**
+   * Injecte {{MOID:id}} dans chaque en-tête de fence legacy (sans MOID), en liant la fence à
+   * l'instance la plus ancienne du même type+nom non encore liée. Idempotent (no-op si déjà taggé).
+   * Retourne true si le contenu a changé.
+   */
+  private injectMoidIntoLegacyFences(): boolean {
+    const lines = this.unifiedContent.split('\n');
+    const used = new Set<string>();
+    // Pré-passe : MOID déjà présents → instances déjà liées
+    for (const l of lines) {
+      const t = l.trim();
+      if (!/^```(?:TRELLO|ARRAY|PROMPT|## Trello):/.test(t)) continue;
+      const mm = new RegExp(ProjetEditorZoneComponent.MOID_MARKER_SRC).exec(t);
+      if (mm) used.add(mm[1]);
+    }
+    let changed = false;
+    for (let i = 0; i < lines.length; i++) {
+      const t = lines[i].trim();
+      for (const { tok, type } of this.MO_FENCE_TYPES) {
+        const prefixes = tok === 'TRELLO' ? ['```TRELLO: ', '```## Trello: '] : ['```' + tok + ': '];
+        const p = prefixes.find(pp => t.startsWith(pp));
+        if (!p) continue;
+        const { name, moid } = this.splitFenceHeader(t.slice(p.length));
+        if (moid) break; // déjà taggé
+        const inst = this.megaOutilInstances
+          .filter(x => x.type === type && this.slugify(x.name) === this.slugify(name) && !used.has(x.id))
+          .sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || ''))[0];
+        if (!inst) break; // pas d'instance → ensure*FromContent en créera une
+        used.add(inst.id);
+        lines[i] = lines[i].replace(/[ \t]*$/, '') + ` {{MOID:${inst.id}}}`;
+        changed = true;
+        break;
+      }
+    }
+    if (changed) this.unifiedContent = lines.join('\n');
+    return changed;
+  }
+
+  /**
+   * Re-tag les fences dont le {{MOID:id}} ne correspond à aucune instance vers l'instance de même
+   * type+nom (cas d'une instance recréée avec un nouvel id). Rétablit la cohérence fence↔instance.
+   * Retourne true si le contenu a changé.
+   */
+  private fixStaleFenceMoids(): boolean {
+    const lines = this.unifiedContent.split('\n');
+    let changed = false;
+    for (let i = 0; i < lines.length; i++) {
+      const t = lines[i].trim();
+      for (const { tok, type } of this.MO_FENCE_TYPES) {
+        const prefixes = tok === 'TRELLO' ? ['```TRELLO: ', '```## Trello: '] : ['```' + tok + ': '];
+        const p = prefixes.find(pp => t.startsWith(pp));
+        if (!p) continue;
+        const { name, moid } = this.splitFenceHeader(t.slice(p.length));
+        if (moid && !this.megaOutilInstances.some(x => x.id === moid)) {
+          const inst = this.megaOutilInstances.find(x => x.type === type && this.slugify(x.name) === this.slugify(name));
+          if (inst && inst.id !== moid) {
+            lines[i] = lines[i].replace(`{{MOID:${moid}}}`, `{{MOID:${inst.id}}}`);
+            changed = true;
+          }
+        }
+        break;
+      }
+    }
+    if (changed) this.unifiedContent = lines.join('\n');
+    return changed;
+  }
+
+  /**
+   * Supprime les instances MO dupliquées : pour chaque groupe (type+nom), s'il existe ≥1 instance
+   * référencée par un {{MOID:id}} (dans le contenu ou un fichier), supprime les instances NON référencées.
+   * Collapse les doublons hérités (ex. 3 instances « Mon Tableau » pour 1 fence → 1).
+   */
+  private dedupeMoInstancesByMoid() {
+    if (!this.hasLoaded) return;
+    const referenced = new Set<string>();
+    const scan = (txt: string) => {
+      const re = new RegExp(ProjetEditorZoneComponent.MOID_MARKER_SRC, 'g');
+      let m; while ((m = re.exec(txt)) !== null) referenced.add(m[1]);
+    };
+    scan(this.focusedHandle ? this.fullContentBackup : this.unifiedContent);
+    const walk = (nodes: FileNode[]) => { for (const n of nodes) { if (n.type === 'file' && n.content) scan(n.content); if (n.children) walk(n.children); } };
+    walk(this.files);
+    const groups = new Map<string, MegaOutilInstance[]>();
+    for (const inst of this.megaOutilInstances) {
+      if (!this.MO_FENCE_TYPES.some(t => t.type === inst.type)) continue;
+      const k = inst.type + '|' + this.slugify(inst.name);
+      const arr = groups.get(k); if (arr) arr.push(inst); else groups.set(k, [inst]);
+    }
+    for (const insts of groups.values()) {
+      if (insts.length < 2 || !insts.some(i => referenced.has(i.id))) continue;
+      for (const inst of insts) {
+        if (referenced.has(inst.id)) continue;
+        this.megaOutilsSvc.deleteInstance(inst.id).catch(() => {});
+        this.megaOutilInstances = this.megaOutilInstances.filter(x => x.id !== inst.id);
+        this.megaOutilDeleted.emit(inst.id);
+      }
+    }
   }
 
   /** Nom d'une instance à partir de son id. */
@@ -5290,7 +5576,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         folderId,
       });
       const modeLine = this.promptGuidedMode() ? 'MODE: guided\n' : '';
-      this.insertAt(`\n\n\`\`\`PROMPT: ${name}\n${modeLine}SYSTEM: \n\n---\n\nVotre prompt ici.\n\`\`\`\n\n`, '');
+      this.insertAt(`\n\n\`\`\`PROMPT: ${name} {{MOID:${inst.id}}}\n${modeLine}SYSTEM: \n\n---\n\nVotre prompt ici.\n\`\`\`\n\n`, '');
       this.showPromptPopup.set(false);
       this.megaOutilCreated.emit(inst);
     } catch (e) {
@@ -5334,7 +5620,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return;
     // Chercher une ligne MODE dans l'en-tête (avant --- / === / ``` fermant)
     let modeIdx = -1;
@@ -5646,7 +5932,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const inst = this.promptInstances.find(i => i.id === promptInstanceId);
     if (!inst || !markdown.trim()) return;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -5698,7 +5984,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst || !result.trim()) return;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -5728,7 +6014,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return null;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return null;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -5755,7 +6041,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return null;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return null;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -5831,7 +6117,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
     // 3. Retirer la section "Pr - NomPrompt" du contenu markdown
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) { this.confirmDeleteResultId = null; return; }
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -5868,7 +6154,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return;
     const lines = this.unifiedContent.split('\n');
-    const openLine = lines.findIndex(l => l.trim() === '```PROMPT: ' + inst.name);
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) return;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
@@ -7947,9 +8233,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         await this.megaOutilsSvc.createTrelloCard(inst.id, {
           title: 'Task test 1', status: 'todo', priority: 'medium', description: 'Description Task test 1'
         }).catch(() => {});
-        snippet = `\n\n\`\`\`TRELLO: ${name}\n${this.buildDefaultTrelloBody()}\n\`\`\`\n\n`;
+        snippet = `\n\n\`\`\`TRELLO: ${name} {{MOID:${inst.id}}}\n${this.buildDefaultTrelloBody()}\n\`\`\`\n\n`;
       } else {
-        snippet = `\n\n\`\`\`ARRAY: ${name}\n\`\`\`\n\n`;
+        snippet = `\n\n\`\`\`ARRAY: ${name} {{MOID:${inst.id}}}\n\`\`\`\n\n`;
       }
       this.insertVisuMarkdownBlock(sectionId, snippet);
       this.megaOutilCreated.emit(inst);
@@ -9286,7 +9572,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         let end = i;
         for (let j = i + 1; j < lines.length; j++) { if (lines[j].trim() === '```') { end = j; break; } }
         flushText();
-        result.push({ type: 'trello', value: lines.slice(i, end + 1).join('\n'), mockupId: '', imageId: '', imageName: '', trelloName: trelloM[1].trim(), arrayName: '' });
+        result.push({ type: 'trello', value: lines.slice(i, end + 1).join('\n'), mockupId: '', imageId: '', imageName: '', trelloName: this.splitFenceHeader(trelloM[1].trim()).name, arrayName: '' });
         i = end;
         continue;
       }
@@ -9296,7 +9582,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         let end = i;
         for (let j = i + 1; j < lines.length; j++) { if (lines[j].trim() === '```') { end = j; break; } }
         flushText();
-        result.push({ type: 'array', value: lines.slice(i, end + 1).join('\n'), mockupId: '', imageId: '', imageName: '', trelloName: '', arrayName: arrayM[1].trim() });
+        result.push({ type: 'array', value: lines.slice(i, end + 1).join('\n'), mockupId: '', imageId: '', imageName: '', trelloName: '', arrayName: this.splitFenceHeader(arrayM[1].trim()).name });
         i = end;
         continue;
       }

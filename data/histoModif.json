@@ -12211,6 +12211,28 @@
       "prompt": "cela ne fonctionne pas, les MO prompts doivent fonctionné de la mêmes façon que trello et array, chaque MO doit avoir son identifiant unique et on ne peux avoir 2 fois le même prompt, un MO prompt à sa propre section PR: nom du prompt, si on déplace un PR on ne copie pas un PR on le déplace, idem pour le fichier lié. On ne peux dans la liste n'avoir que le même nombre de PR affiché dans tous le fichier. Il faut un système stable qui ne change pas sans arrêt le menu et le texte.",
       "startedAt": "2026-06-27T19:20:00.000Z",
       "completedAt": "2026-06-27T19:38:00.000Z"
+    },
+    {
+      "id": "mod-490",
+      "version": "B-0.311",
+      "date": "2026-06-27T20:30:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-mega-outils,system:mo-identite",
+      "title": "MO : identité unique par marqueur {{MOID:id}} (comme {{SID}}) + déduplication",
+      "description": "Les MO étaient identifiés par le nom de leur fence → 3 instances DB « Mon Tableau » pour 1 seul bloc (liste « Tableau 3 », Édition rendant 3 boards identiques). Introduction d'un marqueur d'identité {{MOID:<instanceId>}} en fin d'en-tête de fence (```ARRAY: Nom {{MOID:uuid}}), calqué sur {{SID:id}} des sections : visible en Code brut, masqué en Structure/Édition (le bloc y est rendu en board). Helpers centralisés : splitFenceHeader, composeFenceHeader, stripMoidMarkers, findFenceOpenLine, fenceHasInstance, removeFenceForInstance. Migration au chargement : injectMoidIntoLegacyFences (lie chaque fence legacy à l'instance la plus ancienne de même type+nom) + dedupeMoInstancesByMoid (supprime les instances non liées par MOID → collapse 3→1). Tous les sites de matching par nom (résolution de section, sync inline Trello/Array, extraction fichier, cleanup, ensure, heal, recomputeContentIds, création) rendus MOID-aware. Périmètre : Trello, Array, Prompt (Form/Chart restent en nom). Pas de perte de données Array : la grille est récupérée depuis le corps de la fence (regex MOID-tolérante). Correction associée : suppression d'un MO depuis la sidebar — reconcileDeletedMoFiles suit les fichiers MO par id de nœud→MOID (computeMoFiles, insensible au renommage), et sur disparition d'un fichier retire sa fence du document par MOID (removeFenceByMoid) + supprime l'instance DB seulement si plus aucun fichier ne porte ce MOID. S'exécute aussi en mode focus (saveAll fusionne la section focalisée). Cause racine du double stockage corrigée : l'extraction retire maintenant les fences PROMPT de contenu.md (comme TRELLO/ARRAY) → fichier prompt-NOM source unique, plus de fence inline résiduelle qui ressuscitait le MO supprimé via heal. Robustesse identité : findFenceOpenLine résout par nom en fallback (le MOID est un indice, le nom reste unique par type) → les fences au MOID périmé restent résolues et les réconciliateurs de cycle de vie ne suppriment plus à tort. ensure* recréent les instances manquantes (Trello/Array/Prompt) même en mode focus (sur le document complet, garde anti-course creatingMoNames) → compteurs/listes MO cohérents avec la sidebar. fixStaleFenceMoids re-tag les fences vers les instances recréées pour rétablir la cohérence fence↔instance.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "En mode code il n'y a qu'un seul array dans le texte, hors la liste indique 3 array et dans le mode Edition on voit 3 fois le même array. Il faudrait pouvoir identifier chaque MO créé avec un identifiant unique, comme on le fait pour les sections (SID), il faut en faire de même pour tous les MO.",
+      "startedAt": "2026-06-27T19:45:00.000Z",
+      "completedAt": "2026-06-27T20:30:00.000Z"
     }
   ]
 }

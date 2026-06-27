@@ -324,3 +324,19 @@
 - Navigation depuis la barre MO : `selectMegaOutil` gère le type prompt (focus du fichier `prompt-NOM` en mode Code via `findPromptFileNode`, sinon la section)
 - **Priorité:** critique
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+
+---
+
+## `2-5-2-3-25` — [modification] Identité unique des MO par marqueur `{{MOID:id}}`
+
+- Marqueur d'identité : chaque fence MO porte l'ID unique de son instance en fin d'en-tête (` ```ARRAY: Nom {{MOID:uuid}} `), calqué sur `{{SID:folderId}}` des sections. Visible en Code brut, masqué en Structure/Édition (le bloc y est rendu en board, pas en texte). Périmètre : Trello, Array, Prompt
+- Helpers centralisés : `splitFenceHeader` (nom/MOID), `composeFenceHeader`, `stripMoidMarkers`, `findFenceOpenLine` (résolution MOID-first, fallback nom legacy), `fenceHasInstance`, `removeFenceForInstance`
+- Injection à la création : `confirmTrelloPopup`/`confirmArrayPopup`/`confirmPromptPopup` et `createMoInVisuSection` insèrent ` {{MOID:inst.id}} ` dans l'en-tête
+- Migration au chargement : `injectMoidIntoLegacyFences` ajoute le MOID aux fences héritées (liaison à l'instance la plus ancienne de même type+nom), un seul `saveAll` ; idempotent au rechargement
+- Déduplication : `dedupeMoInstancesByMoid` supprime les instances d'un même (type+nom) non référencées par un `{{MOID:id}}` dans le contenu ou un fichier → collapse les doublons hérités (ex. 3 instances « Mon Tableau » pour 1 fence → 1)
+- 1 board par fence : `recomputeContent{Trello,Array,Prompt}Ids` filtrent via `fenceHasInstance` (MOID) → l'Édition ne rend plus le board en double
+- Robustesse : sync inline (Trello/Array), extraction fichier `type-NOM`, `cleanupOrphan*`, `ensure*`, `heal*`, `reconcile*` rendus MOID-aware (strip du MOID pour le nom de fichier, regex tolérant ` {{MOID:..}} ` avant le `\n`). Pas de perte de données Array (grille récupérée depuis le corps de la fence)
+- Suppression depuis le menu = suppression totale : `reconcileDeletedMoFiles` (suivi des fichiers MO par **id de nœud** → MOID via `computeMoFiles`, insensible au renommage) détecte qu'un fichier MO a disparu → retire sa fence du document par MOID (`removeFenceByMoid`) et supprime l'instance DB **seulement si plus aucun fichier ne porte ce MOID** (sinon une copie subsiste ailleurs). S'exécute **aussi en mode focus** (opère sur la section focalisée, `saveAll` fusionne dans le document complet) → la synchro (heal/ensure/reconstruct) ne recrée plus l'entrée
+- Pas de double stockage : l'extraction retire désormais les fences `PROMPT` de `contenu.md` (comme `TRELLO`/`ARRAY`) → le fichier `prompt-NOM` est la source unique, plus de fence résiduelle inline qui ressuscitait le MO supprimé
+- **Priorité:** critique
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
