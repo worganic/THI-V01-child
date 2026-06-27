@@ -145,6 +145,11 @@ interface TranscriptEntry { rawForm: string; answers: FormEntry; }
           <!-- Footer -->
           <div class="flex items-center gap-2 px-5 py-4 border-t border-light-border dark:border-white/8 flex-shrink-0">
             @if (state() === 'idle') {
+              <button class="text-sm px-3 py-2 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white transition-colors flex items-center gap-1.5"
+                      (click)="copyFullPrompt()" title="Copier le prompt complet (système + demande)">
+                <span class="material-symbols-outlined text-base">{{ promptCopied() ? 'check' : 'content_copy' }}</span>
+                <span class="text-[12px]">{{ promptCopied() ? 'Copié !' : 'Copier le prompt' }}</span>
+              </button>
               <span class="flex-1"></span>
               <button class="text-sm px-4 py-2 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors"
                       (click)="cancel.emit()">Annuler</button>
@@ -213,6 +218,7 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
 
   selectedProvider = signal('');
   selectedModel = signal('');
+  promptCopied = signal(false);
 
   private phase: 'clarify' | 'generate' = 'clarify';
   private timerSub: Subscription | null = null;
@@ -341,6 +347,16 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
   }
 
   stop() { this.stopTimer(); this.execSvc.cancel(); this.state.set(this.phase === 'generate' ? 'preview' : 'error'); }
+
+  copyFullPrompt() {
+    const system = this.combineSystem(this.clarifyPrompt);
+    const user = this.userPrompt;
+    const full = system ? `[SYSTEM]\n${system}\n\n[USER]\n${user}` : user;
+    navigator.clipboard.writeText(full).then(() => {
+      this.promptCopied.set(true);
+      setTimeout(() => this.promptCopied.set(false), 2000);
+    });
+  }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   private combineSystem(meta: string): string {

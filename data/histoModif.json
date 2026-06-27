@@ -1,6 +1,25 @@
 {
   "modifications": [
     {
+      "id": "mod-481",
+      "version": "vB-0.310",
+      "date": "2026-06-27T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor|mega-outils",
+      "title": "Bouton copier prompt complet dans popup workflow guidé",
+      "description": "Ajout d'un bouton 'Copier le prompt' dans le footer du popup PromptWorkflowPopup (état idle) qui copie dans le clipboard le prompt complet : system (baseSystemPrompt + extraSystemPrompt + clarifyPrompt) + demande utilisateur.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le menu projet/edition le MO est lancer grace au bouton executer. Dans le popup de workflow guidé, ajout un bouton pour coupé le prompt en entier (prompt initial, système demandé etc)",
+      "startedAt": "2026-06-27T00:00:00.000Z",
+      "completedAt": "2026-06-27T00:00:00.000Z"
+    },
+    {
       "id": "mod-480",
       "version": "vB-0.310",
       "date": "2026-06-27T00:00:00.000Z",
