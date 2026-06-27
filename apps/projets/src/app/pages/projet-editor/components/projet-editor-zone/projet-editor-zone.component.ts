@@ -3874,6 +3874,20 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
          ?? this.arrayInstances.find(i => this.slugify(i.name) === this.slugify(arrayName)))?.id ?? null;
   }
 
+  /** Instance Prompt à afficher en board quand on focus le fichier prompt-NOM (mode Édition). */
+  get previewPromptInstanceId(): string | null {
+    if (this.mode !== 'visu' || !this.activeNodeId) return null;
+    const node = this.findNode(this.activeNodeId, this.files);
+    if (!node || node.type !== 'file') return null;
+    const base = node.name.replace(/\.md$/, '');
+    if (!this.isPromptFileBase(base)) return null;
+    const promptName = this.promptNameFromBase(base);
+    const parentId = this.findParentFolder(this.activeNodeId, this.files)?.id;
+    if (!promptName) return this.promptInstances.find(i => i.folderId === parentId)?.id ?? null;
+    return (this.promptInstances.find(i => i.folderId === parentId && this.slugify(i.name) === this.slugify(promptName))
+         ?? this.promptInstances.find(i => this.slugify(i.name) === this.slugify(promptName)))?.id ?? null;
+  }
+
   // Preview standalone d'un document texte (lecture seule)
   get singleFileVisuPreview(): { name: string; html: string } | null {
     if (!this.activeNodeId) return null;
@@ -3886,6 +3900,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
     // Fichier Trello → rendu par app-trello-board (voir previewTrelloInstanceId), pas en markdown
     if (this.isTrelloFileBase(node.name.replace(/\.md$/, ''))) return null;
+
+    // Fichier Prompt → rendu par app-prompt-board (voir previewPromptInstanceId), pas en markdown
+    if (this.isPromptFileBase(node.name.replace(/\.md$/, ''))) return null;
 
     const content = node.content || '';
 

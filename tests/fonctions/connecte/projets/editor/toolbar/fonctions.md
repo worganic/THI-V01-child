@@ -206,6 +206,7 @@
 
 - Affichage mode Code : le bloc ` ```PROMPT: NOM ` est affiché en texte brut ; la ligne d'ouverture est colorée en amber
 - Affichage mode Edition : `app-prompt-board` est rendu inline avec header amber, system prompt collapsable, user prompt avec variables `{{x}}` colorées et bouton ▶ Exécuter ; le texte brut du bloc est supprimé du rendu HTML (strip regex PROMPT dans buildVisuSectionHtml)
+- Affichage au focus du fichier prompt-NOM (Édition) : cliquer le fichier « PR: NOM » dans le menu affiche le board via `previewPromptInstanceId` (comme Array/Trello avec `previewArrayInstanceId`/`previewTrelloInstanceId`) ; le fichier prompt-NOM est exclu de `singleFileVisuPreview` pour ne pas être rendu en markdown brut
 - Affichage mode Structure : panneau bas amber listant les instances de prompt de la section en lecture seule
 - Popup d'exécution : sélecteur IA à gauche (Claude / AGY (Gemini)) + modèles filtrés à droite ; affichage du prompt de base global (collapsable, badge "global") + system prompt de la section
 - Variables `{{x}}` : si le prompt contient des variables, l'état variable-fill affiche un formulaire de substitution avant l'envoi

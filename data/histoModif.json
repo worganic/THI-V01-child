@@ -12233,6 +12233,29 @@
       "prompt": "En mode code il n'y a qu'un seul array dans le texte, hors la liste indique 3 array et dans le mode Edition on voit 3 fois le même array. Il faudrait pouvoir identifier chaque MO créé avec un identifiant unique, comme on le fait pour les sections (SID), il faut en faire de même pour tous les MO.",
       "startedAt": "2026-06-27T19:45:00.000Z",
       "completedAt": "2026-06-27T20:30:00.000Z"
+    },
+    {
+      "id": "mod-491",
+      "version": "B-0.311",
+      "date": "2026-06-28T09:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-mega-outils,system:mo-prompt",
+      "title": "MO Prompt : board affiché en Édition au focus du fichier prompt-NOM",
+      "description": "En mode Édition, cliquer le fichier PR (prompt-NOM) dans le menu affichait le markdown brut de la fence (titre prompt-NOM + corps MODE/SYSTEM/...) au lieu du board, alors que cliquer la section parente affichait bien le board. Cause : Array et Trello avaient un aperçu standalone de board (previewArrayInstanceId / previewTrelloInstanceId) mais pas Prompt, qui retombait dans singleFileVisuPreview (rendu markdown). Ajout de previewPromptInstanceId + bloc app-prompt-board dans le template, et exclusion des fichiers prompt-NOM de singleFileVisuPreview (comme array/trello).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "l'affichage d'un prompt s'affiche bien dans le mode Edition si on selectionne dans le menu la section dans lequel se trouve le prompt, mais l'affichage n'est pas bon lorsqu'on clique sur le prompt dans le menu.",
+      "startedAt": "2026-06-28T08:50:00.000Z",
+      "completedAt": "2026-06-28T09:00:00.000Z"
     }
   ]
 }

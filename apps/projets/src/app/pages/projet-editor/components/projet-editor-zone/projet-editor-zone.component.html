@@ -1615,6 +1615,37 @@ Votre texte de prompt ici.
             </div>
           }
 
+          @if (previewPromptInstanceId; as pid) {
+            <div class="visu-section-wrap visu-trello-board-wrap">
+              <app-prompt-board
+                [instanceId]="pid"
+                [instanceName]="promptInstanceName(pid)"
+                [systemPrompt]="promptSystemPromptForId(pid)"
+                [userPrompt]="promptUserPromptForId(pid)"
+                [variables]="promptVariablesForId(pid)"
+                [guided]="promptModeForId(pid) === 'guided'"
+                [readonly]="false"
+                [deletable]="false"
+                (execute)="openPromptExecutePopup(pid)"
+                (toggleGuided)="setPromptGuided(pid, $event)" />
+              @if (getPromptResultForId(pid); as res) {
+                <div class="mt-2 p-3 rounded-lg border border-primary/30 bg-surface/60 text-sm">
+                  <div class="flex items-center gap-1.5 mb-2 text-muted text-xs">
+                    <span class="material-symbols-outlined text-[13px] text-primary">smart_toy</span>
+                    <span>Résultat IA — {{ res.meta }}</span>
+                    <span class="flex-1"></span>
+                    <button class="w-6 h-6 flex items-center justify-center rounded-md text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                            title="Supprimer le résultat"
+                            (click)="clearPromptResult(pid)">
+                      <span class="material-symbols-outlined text-[15px]">delete</span>
+                    </button>
+                  </div>
+                  <div class="whitespace-pre-wrap text-light-text dark:text-white/80">{{ res.text }}</div>
+                </div>
+              }
+            </div>
+          }
+
           @if (singleFileVisuPreview; as preview) {
             <div class="visu-section-wrap">
               <h2 class="visu-sec-heading">{{ preview.name }}</h2>
