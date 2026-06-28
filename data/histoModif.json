@@ -1,6 +1,26 @@
 {
   "modifications": [
     {
+      "id": "mod-492",
+      "version": "B-0.311",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor-zone",
+      "title": "Focus section : inclure les sous-sections au-delà de 4 niveaux",
+      "description": "En mode Code (et autres modes focus), cliquer sur une section profonde n'affichait que son titre, sans ses sous-sections. Cause : buildDocSections plafonne le niveau de titre markdown à 4 (#### max) ; au-delà de 4 niveaux de profondeur d'arbre, parent et enfants partagent le même niveau markdown et deviennent frères au sens des titres, ce qui tronquait la plage (lineEnd) à la seule ligne de titre. Correction : le calcul de lineEnd se base désormais sur la hiérarchie réelle de l'arbre (getDescendantFolderIds) — la plage va jusqu'à la prochaine section non-descendante — comme le fait déjà le filtre de la preview.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "dans le mode Code et les autres mode lorsque je clique sur une section, je dois voir cette section et toutes les sections enfants, c'était bien le cas avant mais ce n'est plus la cas actuellement, exemple : pourtant cela fonctionne bien pour d'autre section.",
+      "startedAt": "2026-06-28T09:30:00.000Z",
+      "completedAt": "2026-06-28T09:45:00.000Z"
+    },
+    {
       "id": "mod-488",
       "version": "vB-0.310",
       "date": "2026-06-27T00:00:00.000Z",

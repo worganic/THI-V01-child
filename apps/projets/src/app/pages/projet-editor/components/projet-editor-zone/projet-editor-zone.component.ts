@@ -1575,12 +1575,18 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         lineEnd: lines.length - 1, // patched below
       });
     }
-    // lineEnd = juste avant la prochaine section de même niveau ou inférieur (=parent)
+    // lineEnd = juste avant la prochaine section qui N'EST PAS un descendant (arbre) de r.
+    // On se base sur la hiérarchie réelle de l'arbre — et non sur le niveau de titre markdown —
+    // car celui-ci est plafonné à 4 (#### max) par buildDocSections : au-delà de 4 niveaux de
+    // profondeur, parent et enfants partagent le même niveau markdown et deviennent « frères »
+    // au sens des titres, ce qui tronquait la plage de focus à son seul titre. Les descendants
+    // étant assemblés de façon contiguë après leur parent, le 1er non-descendant borne la plage.
     for (let i = 0; i < this.sectionRanges.length; i++) {
       const r = this.sectionRanges[i];
+      const descendants = this.getDescendantFolderIds(r.folderId, this.files);
       let end = lines.length - 1;
       for (let j = i + 1; j < this.sectionRanges.length; j++) {
-        if (this.sectionRanges[j].level <= r.level) {
+        if (!descendants.has(this.sectionRanges[j].folderId)) {
           end = this.sectionRanges[j].lineStart - 1;
           break;
         }
