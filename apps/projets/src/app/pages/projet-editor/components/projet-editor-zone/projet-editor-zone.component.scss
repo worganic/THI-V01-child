@@ -2363,6 +2363,8 @@ $struct-colors: (
   &--l2 { border-left: 3px solid rgb(16, 185, 129); }
   &--l3 { border-left: 3px solid rgb(245, 158, 11); }
   &--l4 { border-left: 3px solid rgb(239, 68, 68); }
+  &--l5 { border-left: 3px solid rgb(139, 92, 246); }
+  &--l6 { border-left: 3px solid rgb(20, 184, 166); }
 }
 
 .struct-card__head {
@@ -2378,6 +2380,8 @@ $struct-colors: (
   .struct-card--l2 & { background: rgba(16,185,129,0.07); :host-context(.dark) & { background: rgba(16,185,129,0.12); } }
   .struct-card--l3 & { background: rgba(245,158,11,0.07); :host-context(.dark) & { background: rgba(245,158,11,0.12); } }
   .struct-card--l4 & { background: rgba(239,68,68,0.07);  :host-context(.dark) & { background: rgba(239,68,68,0.12); } }
+  .struct-card--l5 & { background: rgba(139,92,246,0.07); :host-context(.dark) & { background: rgba(139,92,246,0.12); } }
+  .struct-card--l6 & { background: rgba(20,184,166,0.07); :host-context(.dark) & { background: rgba(20,184,166,0.12); } }
 }
 
 .struct-card__badge {
@@ -2390,10 +2394,12 @@ $struct-colors: (
   line-height: 1.4;
   font-family: 'Fira Code', monospace;
 
-  .struct-card--l1 & { background: rgb(99, 102, 241); color: #fff; }
-  .struct-card--l2 & { background: rgb(16, 185, 129); color: #fff; }
-  .struct-card--l3 & { background: rgb(245, 158, 11); color: #fff; }
-  .struct-card--l4 & { background: rgb(239, 68, 68);  color: #fff; }
+  .struct-card--l1 & { background: rgb(99, 102, 241);  color: #fff; }
+  .struct-card--l2 & { background: rgb(16, 185, 129);  color: #fff; }
+  .struct-card--l3 & { background: rgb(245, 158, 11);  color: #fff; }
+  .struct-card--l4 & { background: rgb(239, 68, 68);   color: #fff; }
+  .struct-card--l5 & { background: rgb(139, 92, 246);  color: #fff; }
+  .struct-card--l6 & { background: rgb(20, 184, 166);  color: #fff; }
 }
 
 .struct-card__title {

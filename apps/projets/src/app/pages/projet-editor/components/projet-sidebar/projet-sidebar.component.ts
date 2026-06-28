@@ -318,7 +318,7 @@ export class ProjetSidebarComponent implements OnChanges {
     if (node.type !== 'folder') return false;
     const ctx = this.getNodeContext(node.id);
     if (!ctx) return false;
-    if (this.subtreeMaxDepth(node, ctx.depth) >= 4) return false;
+    if (this.subtreeMaxDepth(node, ctx.depth) >= 6) return false;
     const folderSiblings = ctx.siblings.filter(n => n.type === 'folder');
     const idx = folderSiblings.findIndex(n => n.id === node.id);
     return idx > 0;

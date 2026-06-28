@@ -8690,7 +8690,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   /** Ouvre le popup pour un sous-titre d'un nœud Structure. */
   openTitleDialogStructChild(node: StructureNode) {
     this.closeStructContextMenu();
-    const level = Math.min(node.level + 1, 4);
+    const level = Math.min(node.level + 1, 6);
     const { insertLine, parentFolderId, parentLabel } = this.computeTitleInsertion(node.folderId, level);
     this.titleDialog = { level, prefilled: '', parentFolderId, parentLabel, insertLine };
   }
@@ -9413,7 +9413,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   parseStructureNodes(): StructureNode[] {
     const lines = this.unifiedContent.split('\n');
     const nodes: StructureNode[] = [];
-    const headingRe = /^(#{1,4}) (.+)$/;
+    const headingRe = /^(#{1,6}) (.+)$/;
 
     // Pré-calcul des plages à l'intérieur des blocs fichiers ('...' `...` ^...^)
     // pour ne pas traiter les headings internes comme de vrais headings de section
@@ -9740,7 +9740,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!node.folderId) return false;
     const sub = this.getStructSubtree(node);
     const maxLevel = Math.max(...sub.map(n => n.level));
-    if (maxLevel >= 4) return false;
+    if (maxLevel >= 6) return false;
     // Frère précédent = nœud précédent de même niveau sans nœud de niveau inférieur entre les deux
     const nodes = this.structureNodes;
     const idx = nodes.findIndex(n => n.id === node.id);
@@ -9772,10 +9772,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const range = this.sectionRanges.find(r => r.folderId === folderId);
     if (!range) return;
     const lines = this.unifiedContent.split('\n');
-    const m = /^(#{1,4})(\s.*)$/.exec(lines[range.lineStart] ?? '');
+    const m = /^(#{1,6})(\s.*)$/.exec(lines[range.lineStart] ?? '');
     if (!m) return;
     const newLevel = m[1].length + delta;
-    if (newLevel < 1 || newLevel > 4) return;
+    if (newLevel < 1 || newLevel > 6) return;
     lines[range.lineStart] = '#'.repeat(newLevel) + m[2];
     this.unifiedContent = lines.join('\n');
     const ta = this.textareaRef?.nativeElement;

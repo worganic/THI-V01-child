@@ -1,6 +1,29 @@
 {
   "modifications": [
     {
+      "id": "mod-497",
+      "version": "B-0.313",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor-zone,projets:sidebar",
+      "title": "Éditeur : extension à 6 niveaux de titres (H5 / H6)",
+      "description": "L'éditeur de projet supporte désormais 6 niveaux de titres (H1→H6) au lieu de 4. La limite de profondeur est passée de 4 à 6 dans la logique TypeScript (parseStructureNodes, changeHeadingLevel, canDemoteStructNode, openTitleDialogStructChild) et dans la sidebar (canDemoteNode). Le template HTML affiche les classes --l5/--l6, le bouton 'Ajouter un sous-titre' est disponible jusqu'au niveau 5, et le rendu visu inclut les balises <h5>/<h6>. Les couleurs L5 (Violet) et L6 (Teal) sont ajoutées au SCSS. Les données existantes (H1-H4) ne sont pas impactées.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "docs/REGLES_GESTION_PROJET.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "actuellement dans l'outils edition on à que 4 niveau fait une étude pour voir si on pourrait rajouté 2 niveaux",
+      "startedAt": "2026-06-28T12:00:00.000Z",
+      "completedAt": "2026-06-28T12:30:00.000Z"
+    },
+    {
       "id": "mod-496",
       "version": "B-0.313",
       "date": "2026-06-28T00:00:00.000Z",

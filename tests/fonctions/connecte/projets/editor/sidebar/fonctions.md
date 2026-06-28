@@ -175,13 +175,13 @@
 
 ---
 
-## `2-5-2-2-15` — Changer le niveau d'une section (menu contextuel sidebar)
+## `2-5-2-2-15` — [modification] Changer le niveau d'une section (menu contextuel sidebar)
 
 - Action "Monter d'un niveau" / "Descendre d'un niveau" sur un dossier depuis le menu contextuel
 - Monter : remonte le niveau et récupère les sections suivantes en tant qu'enfants
 - Descendre : place le nœud sous sa sœur précédente en tant qu'enfant
 - Modification des caractères heading (#) dans le Markdown de la section
-- Conditions de disponibilité canPromoteNode et canDemoteNode (profondeur max de sous-arbre <= 4)
+- Conditions de disponibilité canPromoteNode et canDemoteNode (profondeur max de sous-arbre <= 6)
 - Émission de nodeLevelChange vers la zone d'édition pour appliquer le traitement
 - **Priorité:** critique
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`

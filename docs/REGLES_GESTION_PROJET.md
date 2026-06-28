@@ -61,7 +61,9 @@ Les titres sont visuellement décalés dans l'éditeur selon la profondeur réel
 - **Niveau 1 (Racine) :** `# Titre`
 - **Niveau 2 :** `## Titre`
 - **Niveau 3 :** `### Titre`
-- **Niveau 4+ :** `#### Titre` (limité à 4 niveaux pour la lisibilité).
+- **Niveau 4 :** `#### Titre`
+- **Niveau 5 :** `##### Titre`
+- **Niveau 6+ :** `###### Titre` (limité à 6 niveaux pour la lisibilité).
 
 ### 3. Gestion des Fichiers Additionnels (Syntaxe Bloc)
 Les fichiers `.md` autres que `contenu.md` présents dans un dossier sont affichés sous forme de blocs délimités à la fin de la section correspondante :
