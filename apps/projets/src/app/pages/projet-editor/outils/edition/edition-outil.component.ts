@@ -20,6 +20,7 @@ import {
       [projectName]="projectName"
       [activeNodeId]="activeNodeId"
       [highlightNodeId]="highlightNodeId"
+      [modeRequest]="modeRequest"
       [commentCounts]="commentCounts"
       [backupType]="backupType"
       [ftpSyncGlobalStatus]="ftpSyncGlobalStatus"
@@ -31,6 +32,7 @@ import {
       [activeOutilId]="activeOutilId"
       [showTrelloList]="showTrelloList"
       [showMockupList]="showMockupList"
+      [showPromptListView]="showPromptListView"
       (megaOutilSelect)="megaOutilSelect.emit($event)"
       (megaOutilCreated)="megaOutilCreated.emit($event)"
       (megaOutilDeleted)="megaOutilDeleted.emit($event)"
@@ -40,6 +42,8 @@ import {
       (closeMockupList)="closeMockupList.emit()"
       (mockupNavigate)="mockupNavigate.emit($event)"
       (openMockupDiagram)="openMockupDiagram.emit()"
+      (openPromptList)="openPromptList.emit()"
+      (closePromptListView)="closePromptListView.emit()"
       (fileSave)="fileSave.emit($event)"
       (sectionsChange)="sectionsChange.emit($event)"
       (nodeActive)="nodeActive.emit($event)"
@@ -61,6 +65,7 @@ export class EditionOutilComponent {
   @Input() projectName = '';
   @Input() activeNodeId: string | null = null;
   @Input() highlightNodeId: string | null = null;
+  @Input() modeRequest: { mode: 'edit' | 'visu' | 'structure'; token: number } | null = null;
   @Input() backupType: string | null = null;
   @Input() ftpSyncGlobalStatus: 'idle' | 'syncing' | 'done' | 'error' = 'idle';
   @Input() ftpSyncProgress: { checked: number; total: number } = { checked: 0, total: 0 };
@@ -72,6 +77,7 @@ export class EditionOutilComponent {
   @Input() activeOutilId: string | null = null;
   @Input() showTrelloList = false;
   @Input() showMockupList = false;
+  @Input() showPromptListView = false;
 
   @Output() megaOutilSelect = new EventEmitter<MegaOutilInstance>();
   @Output() megaOutilCreated = new EventEmitter<MegaOutilInstance>();
@@ -82,6 +88,8 @@ export class EditionOutilComponent {
   @Output() closeMockupList = new EventEmitter<void>();
   @Output() mockupNavigate = new EventEmitter<string>();
   @Output() openMockupDiagram = new EventEmitter<void>();
+  @Output() openPromptList = new EventEmitter<void>();
+  @Output() closePromptListView = new EventEmitter<void>();
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
   @Output() nodeActive = new EventEmitter<string>();

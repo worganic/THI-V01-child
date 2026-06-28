@@ -196,6 +196,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   @Input() projectName = '';
   @Input() activeNodeId: string | null = null;
   @Input() highlightNodeId: string | null = null;
+  // Demande externe de bascule de mode (ex: « Ouvrir la séance » depuis l'agenda → mode Edition).
+  // Le token force le re-déclenchement même si le mode demandé est identique d'une fois sur l'autre.
+  @Input() modeRequest: { mode: 'edit' | 'visu' | 'structure'; token: number } | null = null;
   @Input() backupType: string | null = null;
   @Input() ftpSyncGlobalStatus: 'idle' | 'syncing' | 'done' | 'error' = 'idle';
   @Input() ftpSyncProgress: { checked: number; total: number } = { checked: 0, total: 0 };
@@ -801,6 +804,14 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       } else if ((markersFixed || trelloStripped || mockupDeduped || formsConverted || moidInjected) && !this.focusedHandle) {
         setTimeout(() => this.saveAll(), 0);
       }
+    }
+
+    // Bascule de mode demandée depuis l'extérieur (ex: agenda « Ouvrir la séance » → Edition).
+    // Traité après le bloc `files` (contenu chargé) et avant `activeNodeId`, pour que setMode
+    // s'applique sur la bonne sélection sans entrer/sortir inutilement du focus mode Code.
+    if (changes['modeRequest'] && this.modeRequest) {
+      const m = this.modeRequest.mode;
+      if (this.mode !== m) this.setMode(m);
     }
 
     // Fin du cycle de save parent → libérer la garde du buffer Code. Le save passe

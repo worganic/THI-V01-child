@@ -1,6 +1,75 @@
 {
   "modifications": [
     {
+      "id": "mod-495",
+      "version": "B-0.311",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:agenda",
+      "title": "Agenda : clic sur l'outil n'ouvre plus un popup d'événement périmé",
+      "description": "Cliquer sur l'en-tête de l'outil Agenda dans la sidebar rouvrait le popup de modification du dernier événement ouvert. Cause : le signal agendaEventToOpen conservait sa valeur ; au (re)montage de l'agenda, son ngOnChanges firstChange lisait cet openEventRequest non-null et rouvrait le popup. Correction : onOutilSelect réinitialise agendaEventToOpen à null lors d'une sélection d'outil par l'en-tête.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/agenda-outil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque je clique dans le menu sur l'outils agenda cela doit ouvrir l'outil agenda mais ne pas ouvrir sur modification d'un evenement",
+      "startedAt": "2026-06-28T11:10:00.000Z",
+      "completedAt": "2026-06-28T11:20:00.000Z"
+    },
+    {
+      "id": "mod-494",
+      "version": "B-0.311",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:agenda,projets:sidebar",
+      "title": "Agenda : sidebar liste les événements + ouverture au clic",
+      "description": "L'outil Agenda n'affiche plus les dossiers de l'outil Edition dans la sidebar mais la liste de ses événements (triés par date, pastille couleur + titre + date, état vide « Aucun événement »). La sidebar charge les événements via AgendaOutilService (chargement indépendant car l'outil agenda n'est monté que s'il est actif), et les recharge sur changement d'outils/projet et après une modif dans l'agenda (Output eventsChanged → reloadAgendaEvents). Au clic sur un événement, le parent active l'outil agenda et l'agenda passe en vue Mois, se positionne sur la date de l'événement et ouvre le popup (Input openEventRequest { event, token }).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/agenda-outil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "Dans l'outils Agenda il ne doit pas s'affiché les dossiers de l'outils Edition : il faudrait affiché la liste des évènements dans le menu et lorsqu'on clique dessus qu'on affiche l'agenda à la date de l'évènement avec le popup de l'évènement ouvert",
+      "startedAt": "2026-06-28T10:30:00.000Z",
+      "completedAt": "2026-06-28T11:00:00.000Z"
+    },
+    {
+      "id": "mod-493",
+      "version": "B-0.311",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:agenda,projets:editor-zone",
+      "title": "Agenda « Ouvrir la séance » : ouverture en mode Edition",
+      "description": "Le bouton « Ouvrir la séance » du popup agenda envoyait vers la bonne section mais en mode Code. Il ouvre désormais l'outil Edition en mode Edition (visu). Ajout d'un Input modeRequest ({ mode, token }) sur la zone d'édition (propagé via edition-outil), consommé dans ngOnChanges pour appeler setMode. Le parent positionne editorModeRequest={ mode: 'visu', token } dans onAgendaNavigateToSection. Le token force le re-déclenchement même si le mode demandé est identique.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/agenda-outil/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "Dans l'agenda le bouton Ouvrir la séance doit envoyé vers la section corespondante à la séance dans l'outil Edition en \"mode Edition\" actuellement cela envoi en mode Code",
+      "startedAt": "2026-06-28T10:00:00.000Z",
+      "completedAt": "2026-06-28T10:20:00.000Z"
+    },
+    {
       "id": "mod-492",
       "version": "B-0.311",
       "date": "2026-06-28T00:00:00.000Z",

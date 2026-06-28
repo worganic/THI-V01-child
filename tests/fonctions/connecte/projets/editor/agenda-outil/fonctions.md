@@ -44,3 +44,22 @@ Accès : utilisateur connecté, projet ouvert
 - **Suppression** : bouton "Supprimer" (rouge) visible en mode édition ; supprime le fichier JSON
 - **Fermeture** : clic en dehors du popup ou bouton ✕
 - **Feedback chargement** : bouton affiche "Enregistrement..." pendant la requête
+
+---
+
+## `2-5-2-10-5` — [modification] Bouton « Ouvrir la séance »
+
+- **Visibilité** : affiché dans le popup uniquement pour un événement de type séance (`isSeanceEvent`)
+- **Action** : émet `navigateToSection(event)` puis ferme le popup → `onAgendaNavigateToSection` (parent)
+- **Cible** : bascule sur l'outil propriétaire du dossier, sélectionne et scrolle vers la section correspondant au titre de la séance (`findFolderByTitleLike` : correspondance exacte/préfixe puis par numéro de séance)
+- **Mode d'ouverture** : toujours en mode **Edition** (`mode === 'visu'`), jamais en mode Code — via `editorModeRequest` ({ mode: 'visu', token }) propagé jusqu'à la zone qui appelle `setMode('visu')`
+
+---
+
+## `2-5-2-10-6` — [modification] Ouverture d'un événement depuis la sidebar
+
+- **Déclenchement** : clic sur un événement listé dans la sidebar de l'outil agenda (voir sidebar `2-5-2-2-19`)
+- **Entrée** : Input `openEventRequest` ({ event, token }) ; le token force le re-déclenchement même pour le même événement
+- **Comportement** : passe en vue **Mois**, positionne `currentDate` sur la date de l'événement, puis ouvre le popup de l'événement (`onEventClick`) — utilise la version fraîche en mémoire si déjà chargée, sinon la copie reçue
+- **Synchronisation** : tout changement de la liste d'événements (chargement, création, édition, suppression, drag) émet `eventsChanged` → le parent rafraîchit la liste de la sidebar
+- **Pas de réouverture parasite** : sélectionner l'outil agenda par son en-tête (`outilSelect`) réinitialise `agendaEventToOpen` à null → le (re)montage de l'agenda n'ouvre PAS un popup d'événement périmé

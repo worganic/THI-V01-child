@@ -6,6 +6,7 @@ import { FileNode, ProjectFilesService, FtpNodeSyncStatus, Outil } from '@worgan
 import { ConversationService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { ProjetCollabService, LockInfo } from '@worganic/portail-core/data-access';
+import { AgendaOutilService, AgendaEvent } from '@worganic/portail-core/data-access';
 
 interface ContextMenu { x: number; y: number; node: FileNode | null; }
 interface InlineInput { type: 'rename' | 'new-file' | 'new-folder'; nodeId: string | null; parentId: string | null; }
@@ -49,6 +50,12 @@ export class ProjetSidebarComponent implements OnChanges {
   @Output() projectSelect = new EventEmitter<void>();
   @Output() outilSelect = new EventEmitter<string>();
   @Output() outilCreate = new EventEmitter<{ type: string; name: string }>();
+  /** Clic sur un événement de l'agenda dans la sidebar → ouvrir l'agenda à sa date + popup. */
+  @Output() agendaEventSelect = new EventEmitter<{ outilId: string; event: AgendaEvent }>();
+
+  // Événements de l'agenda (chargés indépendamment : l'outil agenda n'est monté que s'il est actif).
+  agendaEvents = signal<AgendaEvent[]>([]);
+  private agendaSvc = inject(AgendaOutilService);
 
   expanded = signal<Set<string>>(new Set(['root']));
   outilExpanded = signal<Set<string>>(new Set());
@@ -79,7 +86,7 @@ export class ProjetSidebarComponent implements OnChanges {
     this.projectSelect.emit();
   }
 
-  /** Libellé d'affichage d'un nœud : fichier Trello (trello-NOM / trello / TL: NOM) → "TL: NOM". */
+  /** Libellé d'affichage d'un nœud : fichier MO (trello/array/prompt) → "TL:/AR:/PR: NOM". */
   nodeDisplayName(node: FileNode): string {
     if (node.type !== 'file') return node.name;
     const base = node.name.replace(/\.md$/, '');
@@ -88,6 +95,9 @@ export class ProjetSidebarComponent implements OnChanges {
     if (/^TL:\s*/i.test(base)) return base;
     if (/^array-/i.test(base)) return 'AR: ' + base.replace(/^array-/i, '');
     if (/^array$/i.test(base)) return 'AR: Tableau';
+    if (/^prompt-/i.test(base)) return 'PR: ' + base.replace(/^prompt-/i, '');
+    if (/^prompt$/i.test(base)) return 'PR: Prompt';
+    if (/^PR:\s*/i.test(base)) return base;
     return base;
   }
 
@@ -111,7 +121,7 @@ export class ProjetSidebarComponent implements OnChanges {
 
   // Ajout d'un méga-outil (Trello / Tableau) dans une section depuis le menu contextuel.
   // Navigue vers la section (focus) puis demande à la zone d'ouvrir le popup de création.
-  addMegaOutil(node: FileNode, type: 'trello' | 'array') {
+  addMegaOutil(node: FileNode, type: 'trello' | 'array' | 'prompt') {
     this.closeContextMenu();
     this.fileSelect.emit(node);
     this.collab.requestCreateMegaOutil(type, node.id);
@@ -171,6 +181,42 @@ export class ProjetSidebarComponent implements OnChanges {
       s.add(this.activeOutilId);
       this.outilExpanded.set(s);
     }
+    // Charger les événements de l'agenda dès qu'un outil agenda existe (pour les lister dans le menu).
+    if (changes['outils'] || changes['projectName']) {
+      this.reloadAgendaEvents();
+    }
+  }
+
+  // ── Agenda (liste d'événements dans la sidebar) ────────────────
+  isAgendaOutil(outil: Outil): boolean { return outil.type === 'agenda'; }
+
+  /** Recharge la liste d'événements (appelé par le parent après une modif dans l'agenda). */
+  reloadAgendaEvents(): void {
+    if (!this.projectName) return;
+    if (!this.outils.some(o => o.type === 'agenda')) return;
+    this.agendaSvc.getEvents(this.projectName)
+      .then(list => this.agendaEvents.set(list))
+      .catch(() => {});
+  }
+
+  /** Événements triés par date de début croissante. */
+  sortedAgendaEvents(): AgendaEvent[] {
+    return [...this.agendaEvents()].sort(
+      (a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()
+    );
+  }
+
+  /** Libellé date court d'un événement : « 29 juin 2026 · 10:00 » (ou sans heure si allDay). */
+  formatAgendaEventDate(ev: AgendaEvent): string {
+    const d = new Date(ev.startDate);
+    const date = d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (ev.allDay) return date;
+    const time = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    return `${date} · ${time}`;
+  }
+
+  onAgendaEventClick(outil: Outil, ev: AgendaEvent): void {
+    this.agendaEventSelect.emit({ outilId: outil.id, event: ev });
   }
 
   loadConversations() {

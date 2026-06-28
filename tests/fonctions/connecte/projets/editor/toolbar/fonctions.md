@@ -43,13 +43,14 @@
 
 ---
 
-## `2-5-2-3-4` — Onglets de mode d'édition
+## `2-5-2-3-4` — [modification] Onglets de mode d'édition
 
 - Mode Code : clic sur l'onglet "Code" (<> Code) passe au mode 'edit' affichant la zone textarea Markdown
 - Mode Structure : clic sur l'onglet "Structure" (arborescence) passe au mode 'structure' affichant la structure hiérarchique
 - Mode Edition : clic sur l'onglet "Edition" (mode WYSIWYG) passe au mode 'visu' affichant le contenu HTML éditable en ligne
 - Onglet actif : l'onglet correspondant au mode courant est mis en surbrillance avec la classe ed-mode-tab--active
 - Toggle de vue (Mode Code) : bouton "Markdown propre / Avec style" à droite de la barre d'onglets permet de basculer la vue et d'activer showCssInCode()
+- Bascule externe : l'Input `modeRequest` ({ mode, token }) déclenche `setMode` sans clic (ex: agenda « Ouvrir la séance » → mode Edition). Le token force le re-déclenchement même mode identique.
 - **Priorité:** bloquant
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 

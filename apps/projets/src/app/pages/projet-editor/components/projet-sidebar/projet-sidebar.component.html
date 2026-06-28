@@ -78,8 +78,30 @@
           </span>
         </div>
 
+        <!-- Sous-items : agenda → liste des événements -->
+        @if (isOutilExpanded(outil.id) && isAgendaOutil(outil)) {
+          @if (sortedAgendaEvents().length === 0) {
+            <div class="px-2 py-1 text-[10px] text-light-text-muted dark:text-white/30" [style.padding-left.px]="18">
+              Aucun événement
+            </div>
+          } @else {
+            @for (ev of sortedAgendaEvents(); track ev.id) {
+              <div class="flex items-start gap-1.5 px-2 py-0.5 rounded mx-1 cursor-pointer group transition-colors hover:bg-light-surface dark:hover:bg-white/5"
+                   [style.padding-left.px]="18"
+                   (click)="onAgendaEventClick(outil, ev)">
+                <span class="material-symbols-outlined text-[13px] flex-shrink-0 mt-0.5"
+                      [style.color]="ev.color || '#6366f1'">event</span>
+                <span class="flex-1 min-w-0">
+                  <span class="block text-[11px] truncate leading-4 text-light-text dark:text-white/70">{{ ev.title }}</span>
+                  <span class="block text-[9px] truncate leading-3 text-light-text-muted dark:text-white/30">{{ formatAgendaEventDate(ev) }}</span>
+                </span>
+              </div>
+            }
+          }
+        }
+
         <!-- Sous-items : root folders de l'outil -->
-        @if (isOutilExpanded(outil.id)) {
+        @if (isOutilExpanded(outil.id) && !isAgendaOutil(outil)) {
           @for (folderId of outil.rootFolderIds; track folderId) {
             @if (getFolderById(folderId); as folder) {
               <ng-container *ngTemplateOutlet="treeNodes; context: { nodes: [folder], depth: 1, parentId: null }"></ng-container>
@@ -353,6 +375,10 @@
         <button class="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-lime-50 dark:hover:bg-lime-500/10 text-lime-600 dark:text-lime-400 transition-colors text-left"
                 (click)="addMegaOutil(contextMenu()!.node!, 'array')">
           <span class="material-symbols-outlined text-sm">table</span> Ajout MO Tableau
+        </button>
+        <button class="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-amber-50 dark:hover:bg-amber-500/10 text-amber-600 dark:text-amber-400 transition-colors text-left"
+                (click)="addMegaOutil(contextMenu()!.node!, 'prompt')">
+          <span class="material-symbols-outlined text-sm">smart_toy</span> Ajout MO Prompt
         </button>
       }
 
