@@ -1,6 +1,26 @@
 {
   "modifications": [
     {
+      "id": "mod-496",
+      "version": "B-0.313",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor-zone",
+      "title": "Workflow guidé : pas de formulaire en retour → génération directe",
+      "description": "Lors de l'exécution d'un prompt en mode guidé, si la réponse de cadrage ne contenait pas de formulaire exploitable (et pas de ===PRÊT===), le popup affichait une erreur « La réponse de l'IA n'est pas un formulaire exploitable. » et bloquait. Désormais, l'absence de formulaire n'est plus une erreur : le workflow enchaîne directement sur la génération du livrable (startGenerate). Le mode guidé fonctionne donc avec ET sans formulaire. Le message d'erreur générique est réservé aux vrais échecs d'exécution/connexion.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lors de l'execution d'un prompt si l'IA ne renvois pas un form, cela crait une erreur si il n'y a pas de form en retour cela doit passé à l'étape suivante, cela doit fonctionné avec form (c'est le cas actuellement) et sans form.",
+      "startedAt": "2026-06-28T11:40:00.000Z",
+      "completedAt": "2026-06-28T11:55:00.000Z"
+    },
+    {
       "id": "mod-495",
       "version": "B-0.311",
       "date": "2026-06-28T00:00:00.000Z",

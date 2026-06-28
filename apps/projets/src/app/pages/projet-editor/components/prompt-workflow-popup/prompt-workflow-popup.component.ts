@@ -100,10 +100,10 @@ interface TranscriptEntry { rawForm: string; answers: FormEntry; }
               </div>
             }
 
-            <!-- Erreur de format cadrage -->
+            <!-- Erreur d'exécution (connexion/exécuteur) — le cas « pas de formulaire » n'est plus une erreur -->
             @if (state() === 'error') {
               <div class="rounded-lg border border-red-500/25 bg-red-500/5 p-3">
-                <p class="text-[12px] text-red-400 mb-2">La réponse de l'IA n'est pas un formulaire exploitable.</p>
+                <p class="text-[12px] text-red-400 mb-2">Une erreur est survenue pendant l'exécution.</p>
                 <pre class="text-[11px] text-light-text-muted dark:text-white/50 whitespace-pre-wrap font-mono max-h-40 overflow-y-auto">{{ accumulated() }}</pre>
               </div>
             }
@@ -298,7 +298,9 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
       this.lastRawForm = full;
       this.state.set('form-fill');
     } else {
-      this.state.set('error');
+      // Pas de formulaire exploitable en retour → ce n'est pas une erreur : on enchaîne
+      // directement sur la génération du livrable (le workflow doit marcher avec ET sans form).
+      this.startGenerate();
     }
   }
 
@@ -397,11 +399,11 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     const questions: FormQuestion[] = [];
     let current: FormQuestion | null = null;
     for (const line of body.split('\n')) {
-      const q = line.match(/^\s*[\*\-]\s+\*\*(.+?)\*\*\s*:?\s*$/);
+      const q = line.match(/^\s*(?:[\*\-]\s+)?\*\*(.+?)\*\*\s*:?\s*$/);
       if (q) { if (current) questions.push(current); current = { label: q[1].trim(), type: 'checkbox', options: [] }; continue; }
-      const c = line.match(/^\s*[\*\-]\s+\[\s*\]\s+(.+)$/);
+      const c = line.match(/^\s*(?:[\*\-]\s+)?\[\s*\]\s+(.+)$/);
       if (c && current) { current.type = 'checkbox'; current.options.push({ text: c[1].trim(), hasDetail: /_{5,}/.test(c[1]) }); continue; }
-      const r = line.match(/^\s*[\*\-]\s+\(\s*\)\s+(.+)$/);
+      const r = line.match(/^\s*(?:[\*\-]\s+)?\(\s*\)\s+(.+)$/);
       if (r && current) { current.type = 'radio'; current.options.push({ text: r[1].trim(), hasDetail: /_{5,}/.test(r[1]) }); }
     }
     if (current) questions.push(current);
