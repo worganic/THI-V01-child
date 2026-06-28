@@ -124,7 +124,8 @@ export class PromptBoardComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.instanceId) this.loadHistory();
-    this.sub = this.collabSvc.promptUpdate$?.subscribe(evt => {
+    const svc = this.collabSvc as any;
+    this.sub = svc.promptUpdate$?.subscribe((evt: { instanceId: string | null }) => {
       if (evt?.instanceId === this.instanceId) this.loadHistory();
     });
   }

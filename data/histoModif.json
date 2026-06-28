@@ -1,6 +1,23 @@
 {
   "modifications": [
     {
+      "id": "mod-500",
+      "version": "B-0.313",
+      "date": "2026-06-28T09:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["libs"],
+      "features": "libs:mega-outils|prompt:collab",
+      "title": "MO Prompt : rétrocompatibilité promptUpdate$ manquant",
+      "description": "Rend l'abonnement à promptUpdate$ rétrocompatible via cast `as any` pour éviter TS2339 sur les repos ayant une version antérieure de ProjetCollabService.",
+      "files": ["libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts"],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "j'ai un soucis avec un user qui à la même version et qui à un soucis : [ERROR] TS2339: Property 'promptUpdate$' does not exist on type 'ProjetCollabService'",
+      "startedAt": "2026-06-28T09:00:00.000Z",
+      "completedAt": "2026-06-28T09:05:00.000Z"
+    },
+    {
       "id": "mod-499",
       "version": "B-0.313",
       "date": "2026-06-28T00:00:00.000Z",
