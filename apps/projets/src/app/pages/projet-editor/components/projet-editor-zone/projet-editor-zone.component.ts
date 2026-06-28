@@ -708,8 +708,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       // (plusieurs émissions de `files` via loadFiles()). La restructuration en dossiers a déjà
       // été appliquée côté parent ; seul le texte affiché est préservé. recomputeAll() remappe
       // les ranges. Les changements hors cycle (sidebar, collab) reconstruisent normalement.
+      // markersFixed volontairement exclu : si l'utilisateur est en train de taper (localCodeSavePending),
+      // son buffer est prioritaire. Le fix de marker sera reporté au prochain cycle post-save
+      // (loadFiles → ngOnChanges sans localCodeSavePending → reconstruct avec marker corrigé).
       const preserveCodeBuffer = this.mode === 'edit' && !this.focusedHandle
-        && this.hasLoaded && hasStructuralChange && !markersFixed
+        && this.hasLoaded && hasStructuralChange
         && this.localCodeSavePending;
 
       if ((!this.hasLoaded || hasStructuralChange || markersFixed) && !preserveCodeBuffer) {
@@ -761,6 +764,38 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         }
         // Si focusedHandle && !hasStructuralChange : on garde le contenu focusé intact
       }
+
+      // BUG-FIX : SSE content_update reçu pendant le mode focus.
+      // Le bloc principal ne reconstruit pas le doc complet dans ce cas (contenu focusé préservé),
+      // mais fullContentBackup reste sur l'ancienne version du document → en sortant du focus,
+      // le document reconstruit écraserait les modifs reçues d'un collaborateur.
+      // Solution : reconstruire depuis docSections (serveur à jour), puis réinjecter le contenu
+      // local de la section focusée à sa nouvelle position calculée.
+      if (this.hasLoaded && !hasStructuralChange && !markersFixed && this.focusedHandle) {
+        const newServerFull  = this.reconstructFromSections();
+        const focusedId      = this.focusedHandle.id;
+        const focusedKind    = this.focusedHandle.kind;
+        const savedUnified   = this.unifiedContent;
+        this.unifiedContent  = newServerFull;
+        this.recomputeRanges();
+        this.unifiedContent  = savedUnified;
+        let newRange: { lineStart: number; lineEnd: number } | null = null;
+        if (focusedKind === 'folder') {
+          const sr = this.sectionRanges.find(r => r.folderId === focusedId);
+          if (sr) newRange = { lineStart: sr.lineStart, lineEnd: sr.lineEnd };
+        } else if (focusedKind === 'file') {
+          const fr = this.fileRanges.find(r => r.fileId === focusedId);
+          if (fr) newRange = { lineStart: fr.lineStart, lineEnd: fr.lineEnd };
+        }
+        if (newRange) {
+          const fullLines = newServerFull.split('\n');
+          fullLines.splice(newRange.lineStart, newRange.lineEnd - newRange.lineStart + 1, ...savedUnified.split('\n'));
+          this.fullContentBackup        = fullLines.join('\n');
+          this.focusedLineStart         = newRange.lineStart;
+          this.focusedOriginalLineCount = newRange.lineEnd - newRange.lineStart + 1;
+        }
+      }
+
       this.hasLoaded = true;
       // Amorcer le suivi des marqueurs Trello présents au chargement (pour détecter
       // ensuite une suppression/corruption même sans sauvegarde intermédiaire).
@@ -1884,7 +1919,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         orphanIndexes.add(i);
       }
     });
-    if (orphanIndexes.size > 0) {
+    // Guard : ne pas purger pendant un save en cours (allImages peut être temporairement
+    // désynchronisé entre un upload et le loadFiles() suivant → faux orphelins).
+    if (orphanIndexes.size > 0 && !this.localCodeSavePending) {
       this.unifiedContent = lines.filter((_, i) => !orphanIndexes.has(i)).join('\n');
       const ta = this.textareaRef?.nativeElement;
       if (ta) ta.value = this.unifiedContent;

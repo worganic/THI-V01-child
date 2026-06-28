@@ -35,6 +35,30 @@ const PROJECT_ROOT = path.dirname(BASE_DIR);
 const CONFIG_DIR = path.join(BASE_DIR, 'config');
 const LOG_EDITION_FILE = path.join(BASE_DIR, 'log-edition.txt');
 
+// ── Versions de fichiers (ETag léger pour détection de conflit multi-user) ──
+// Map<"projectName/fileId", { hash: string, updatedAt: number }>
+const fileVersions = new Map();
+
+/** Calcule un hash rapide d'un contenu texte (FNV-1a 32 bits → hex string). */
+function contentHash(str) {
+    let h = 0x811c9dc5;
+    for (let i = 0; i < str.length; i++) {
+        h ^= str.charCodeAt(i);
+        h = (h * 0x01000193) >>> 0;
+    }
+    return h.toString(16).padStart(8, '0');
+}
+
+function getFileVersion(project, fileId) {
+    return fileVersions.get(`${project}/${fileId}`) || null;
+}
+
+function setFileVersion(project, fileId, content) {
+    const hash = contentHash(content || '');
+    fileVersions.set(`${project}/${fileId}`, { hash, updatedAt: Date.now() });
+    return hash;
+}
+
 // ── Logging édition ─────────────────────────────────────────────────────────
 
 /** Calcule un diff lisible entre deux contenus texte (par lignes). */
@@ -4919,6 +4943,8 @@ function attachContent(projectName, items) {
                 const full = path.join(PROJECTS_DIR, projectName, item.path);
                 result.content = fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : '';
                 result.fileType = 'text';
+                // Initialiser/mettre à jour la version en mémoire et la retourner au client
+                result.fileVersion = setFileVersion(projectName, item.id, result.content);
             }
             if (item.children) result.children = attachContent(projectName, item.children);
             return result;
@@ -5390,7 +5416,8 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
         }
     } catch (e) {
         console.error('[LOCK] check error on file update:', e.message);
-        // Fail open : on laisse passer en cas d'erreur DB
+        // Fail-safe : si la DB est inaccessible, bloquer l'écriture pour éviter les conflits silencieux
+        return res.status(503).json({ error: 'Verrou non vérifiable — réessayez dans quelques secondes' });
     }
 
     try {
@@ -5406,7 +5433,25 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
         let oldContent = '';
         try { oldContent = fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : ''; } catch (_) {}
 
+        // Détection de conflit ETag (x-file-version header envoyé par le client)
+        const clientVersion = req.headers['x-file-version'];
+        if (clientVersion) {
+            const serverVersion = getFileVersion(req.params.name, req.params.id);
+            if (serverVersion && serverVersion.hash !== clientVersion) {
+                // Un autre utilisateur a modifié ce fichier depuis le dernier chargement
+                return res.status(409).json({
+                    error: 'conflict',
+                    message: 'Ce fichier a été modifié par un autre utilisateur',
+                    serverContent: oldContent,
+                    serverVersion: serverVersion.hash,
+                    serverUpdatedAt: serverVersion.updatedAt
+                });
+            }
+        }
+
         fs.writeFileSync(full, content, 'utf8');
+        // Mettre à jour la version après écriture
+        setFileVersion(req.params.name, req.params.id, content);
 
         // Logger la modification (seulement si le contenu a changé)
         if (oldContent !== content) {
@@ -5923,7 +5968,17 @@ app.post('/api/file-projects/:name/move-folder', async (req, res) => {
         if (targetParentId && isDesc(folder, targetParentId)) return res.status(400).json({ error: 'Le dossier cible est un descendant' });
 
         const oldPath = folder.path;
+        const originalName = folder.name;
         const oldFull = safeProjectPath(req.params.name, oldPath);
+
+        // No-op: folder is already in the target parent → return success immediately
+        // Comparer le chemin parent actuel (tout sauf le dernier segment) avec le chemin cible
+        const oldParentPath = oldPath.includes('/') ? oldPath.substring(0, oldPath.lastIndexOf('/')) : null;
+        const potentialTarget = targetParentId ? findNodeById(config.structure, targetParentId) : null;
+        const potentialTargetPath = potentialTarget ? potentialTarget.path : null;
+        if (potentialTargetPath === oldParentPath || (!targetParentId && oldParentPath === null)) {
+            return res.json({ success: true });
+        }
 
         // Remove from current position in JSON
         removeNodeById(config.structure, folderId);
@@ -5931,32 +5986,61 @@ app.post('/api/file-projects/:name/move-folder', async (req, res) => {
         // Determine new path and insertion point
         let newPath;
         let targetItems;
+        // Génère un nom unique en suffixant (2), (3)… si un homonyme existe déjà dans le niveau cible.
+        function uniqueFolderName(siblings, baseName) {
+            const taken = new Set((siblings || []).filter(c => c.type === 'folder').map(c => c.name.toLowerCase()));
+            if (!taken.has(baseName.toLowerCase())) return baseName;
+            let n = 2;
+            while (taken.has(`${baseName} (${n})`.toLowerCase())) n++;
+            return `${baseName} (${n})`;
+        }
+
+        let finalName = folder.name;
         if (targetParentId) {
             const target = findNodeById(config.structure, targetParentId);
             if (!target || target.type !== 'folder') return res.status(400).json({ error: 'Dossier cible invalide' });
 
-            // Éviter les doublons de nom dans le dossier cible
-            if ((target.children || []).some(c => c.type === 'folder' && c.name.toLowerCase() === folder.name.toLowerCase())) {
-                return res.status(400).json({ error: `Un dossier nommé "${folder.name}" existe déjà dans le dossier cible` });
-            }
-
-            newPath = target.path + '/' + folder.name;
+            finalName = uniqueFolderName(target.children, folder.name);
+            newPath = target.path + '/' + finalName;
             target.children = target.children || [];
             targetItems = target.children;
         } else {
-            // Éviter les doublons à la racine
-            if (config.structure.some(c => c.type === 'folder' && c.name.toLowerCase() === folder.name.toLowerCase())) {
-                return res.status(400).json({ error: `Un dossier nommé "${folder.name}" existe déjà à la racine` });
-            }
-            newPath = folder.name;
+            finalName = uniqueFolderName(config.structure, folder.name);
+            newPath = finalName;
             targetItems = config.structure;
         }
 
-        // Move on filesystem
-        const newFull = safeProjectPath(req.params.name, newPath);
-        if (oldFull && newFull && fs.existsSync(oldFull)) {
-            fs.mkdirSync(path.dirname(newFull), { recursive: true });
-            fs.renameSync(oldFull, newFull);
+        // Renommer le nœud si le nom a été suffixé pour éviter un conflit
+        if (finalName !== folder.name) folder.name = finalName;
+
+        // Move on filesystem — robuste : ne jamais faire échouer le déplacement à cause du FS.
+        // Si rename échoue (collision disque, EXDEV, EPERM, EBUSY…), on bascule sur copie+suppression.
+        // En dernier recours, on conserve quand même la mise à jour de la structure JSON.
+        let newFull = safeProjectPath(req.params.name, newPath);
+        let fsMoveWarning = null;
+        if (oldFull && newFull && oldFull !== newFull && fs.existsSync(oldFull)) {
+            try {
+                fs.mkdirSync(path.dirname(newFull), { recursive: true });
+                // Si la cible disque existe déjà (orphelin non listé dans le JSON), suffixer le chemin disque
+                if (fs.existsSync(newFull)) {
+                    let suffix = 2;
+                    let candidate;
+                    do { candidate = `${newFull}-${suffix++}`; } while (fs.existsSync(candidate));
+                    newFull = candidate;
+                    newPath = `${newPath}-${suffix - 1}`;
+                }
+                try {
+                    fs.renameSync(oldFull, newFull);
+                } catch (renameErr) {
+                    // Fallback : copie récursive puis suppression de la source
+                    fs.cpSync(oldFull, newFull, { recursive: true });
+                    fs.rmSync(oldFull, { recursive: true, force: true });
+                }
+            } catch (fsErr) {
+                // Échec total du FS : on garde la mise à jour JSON et on signale l'avertissement
+                fsMoveWarning = fsErr.message;
+                console.warn('[move-folder] FS move failed, JSON-only update:', fsErr.message);
+            }
         }
 
         // Update paths recursively inside the moved folder node
@@ -5976,7 +6060,23 @@ app.post('/api/file-projects/:name/move-folder', async (req, res) => {
         try {
             projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `move_folder ${folder.name}`);
         } catch (gitErr) { console.warn('[ProjetGit] commit move_folder:', gitErr.message); }
-        res.json({ success: true });
+
+        // Notifier les autres collaborateurs du changement de structure
+        const sessionUser = getSessionUser(req);
+        broadcastToProject(req.params.name, 'structure_update', {
+            type: 'move',
+            folderId,
+            targetParentId: targetParentId || null,
+            renamedTo: finalName !== originalName ? finalName : undefined,
+            updatedBy: sessionUser?.id,
+            updatedByName: sessionUser?.username
+        });
+
+        res.json({
+            success: true,
+            renamedTo: finalName !== originalName ? finalName : undefined,
+            fsWarning: fsMoveWarning || undefined
+        });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

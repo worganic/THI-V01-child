@@ -12,6 +12,7 @@ Vue : textarea Markdown à gauche, rendu HTML miroir à droite
 - **Sauvegarde forcée** : clic badge "Non sauvegardé" → `forceSave()`
 - **Dirty state** : `localDirty = true` dès la première frappe → emit `dirtyChange(true)`
 - **Contenu unifié** : toutes les sections (`## Nom dossier`) concaténées en un seul document
+- **Vue assemblée lecture seule** : quand aucune section n'est sélectionnée dans la sidebar (`activeNodeId = null`, `focusedHandle = null`), la textarea est en `readonly` — un overlay invite à sélectionner une section
 - **Retour à la ligne automatique** : `white-space: pre-wrap` + `overflow-wrap: break-word` — le texte long passe à la ligne sans ascenseur horizontal; `overflow-x: hidden` sur mirror et textarea
 - **Redimensionnement** : la zone s'étend dynamiquement selon la fenêtre via `:host { flex: 1; min-width: 0 }`
 
@@ -304,7 +305,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-25` — [SYNC] Réception SSE content_update pendant frappe — buffer local préservé
+## `2-5-2-4-25` — [modification] [SYNC] Réception SSE content_update pendant frappe — buffer local préservé
 
 - **Précondition** : deux users ouvrent le même projet. User A est en train de taper (texte non sauvegardé).
 - **Action** : user B sauvegarde une modification sur une section différente → user A reçoit un SSE `content_update` pour ce fichier.
@@ -337,7 +338,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-28` — [SYNC] Mode Focus + SSE autre section — fullContentBackup non mis à jour (risque)
+## `2-5-2-4-28` — [modification] [SYNC] Mode Focus + SSE autre section — fullContentBackup non mis à jour (risque)
 
 - **Précondition** : user A en mode focus sur section "Intro". User B modifie la section "Conclusion" et sauvegarde.
 - **Action** : user A reçoit SSE `content_update` pour le fichier de "Conclusion".
@@ -410,7 +411,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-35` — [SYNC] Nettoyage système (markersFixed, moidsFixed, moidInjected) — pas d'effacement utilisateur
+## `2-5-2-4-35` — [modification] [SYNC] Nettoyage système (markersFixed, moidsFixed, moidInjected) — pas d'effacement utilisateur
 
 - **Précondition** : projet ouvert, présence de marqueurs IMG ou fences MO sans MOID.
 - **Action** : chargement du projet → `ngOnChanges` → `fixImageMarkersInSections()`, `fixStaleFenceMoids()`, `injectMoidIntoLegacyFences()` s'exécutent.
@@ -433,7 +434,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-37` — [SYNC] Multi-users : sauvegarde simultanée même section — dernier save gagne proprement
+## `2-5-2-4-37` — [modification] [SYNC] Multi-users : sauvegarde simultanée même section — détection de conflit ETag
 
 - **Précondition** : user A et user B ont le même projet ouvert, même section active, textes différents localement.
 - **Action** : user A et user B sauvegardent en même temps (délai < 1 s entre les deux saves).
@@ -444,7 +445,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-38` — [SYNC] Purge orpheline d'image dans recomputeMirrorLines — garde recentlyAddedImageIds
+## `2-5-2-4-38` — [modification] [SYNC] Purge orpheline d'image dans recomputeMirrorLines — garde recentlyAddedImageIds
 
 - **Précondition** : user upload une image dans une section. Le fichier image est créé en BDD mais pas encore dans `this.files` (loadFiles en cours).
 - **Action** : `recomputeMirrorLines()` s'exécute (suite à une frappe ou un ngOnChanges) avant que `loadFiles()` n'ait propagé le nouveau nœud.
@@ -452,3 +453,47 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Résultat à redouter** : si `recentlyAddedImageIds` n'est pas correctement renseigné, le marqueur est traité comme orphelin → supprimé de `unifiedContent` → `saveAll()` immédiat → image perdue dans le document.
 - **À vérifier** : après que `loadFiles()` se termine et que `files` contient le nœud image, `allImages` est mis à jour et le marqueur reste intact. L'image s'affiche correctement dans le miroir.
 - **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-39` — Vue assemblée lecture seule (sans section sélectionnée)
+
+- **Précondition** : mode Code, aucune section sélectionnée dans la sidebar (`activeNodeId = null`).
+- **Action** : user tente de cliquer dans la textarea ou de taper du texte.
+- **Résultat attendu** : textarea en `readonly` → aucune modification possible. Un overlay "Sélectionnez une section dans la barre latérale pour l'éditer" est visible. Les handles de section restent cliquables pour entrer en focus.
+- **Résultat à redouter** : l'overlay s'affiche même quand une section est sélectionnée, bloquant l'édition.
+- **À vérifier** : cliquer sur une section dans la sidebar → overlay disparaît, textarea devient éditable (focus mode actif). Cliquer sur "Racine" (désélection) → overlay réapparaît.
+- **Composants:** `projet-editor-zone.component.html`
+
+---
+
+## `2-5-2-4-40` — [SYNC] Détection de conflit ETag (HTTP 409) + panneau de résolution
+
+- **Précondition** : user A et user B ouvrent le même projet. User B modifie et sauvegarde la section "Intro". User A avait chargé le fichier avant la modification de B.
+- **Action** : user A tape du texte et laisse le debounce sauvegarder → `PUT /files/:id` avec `x-file-version: <hashChargement>`. Le hash diverge de celui du serveur (car B a sauvegardé entre-temps).
+- **Résultat attendu** : serveur répond HTTP 409 avec `{ serverContent, serverUpdatedAt }`. Côté client : un panneau ambre "Conflit" apparaît avec deux colonnes (Ma version / Version du serveur). Boutons "Garder ma version" et "Utiliser la version du serveur".
+- **Résultat à redouter** : la réponse 409 est ignorée → last-write-wins → perte silencieuse.
+- **À vérifier** : choisir "Utiliser la version du serveur" → le contenu serveur est sauvegardé sans conflit, panel disparaît. Choisir "Garder ma version" → le contenu local est envoyé (sans ETag cette fois).
+- **Composants:** `projet-editor.component.ts`, `projet-editor.component.html`, `server/server-data.js`, `project-files.service.ts`
+
+---
+
+## `2-5-2-4-41` — [SYNC] Queue SSE contentUpdate pendant cycle de sauvegarde
+
+- **Précondition** : user A sauvegarde (`isSaving = true`). Simultanément, user B modifie un autre fichier → SSE `content_update` arrive côté user A.
+- **Action** : `contentUpdate$` reçoit l'événement SSE pendant que `processSectionsChange` est en cours.
+- **Résultat attendu** : le patch SSE est mis en queue dans `pendingSSEPatches[]` (pas appliqué immédiatement). Dès que `processSectionsChange` se termine, la queue est drainée → `patchNodeContent` appliqué pour chaque entrée en attente. Le buffer de frappe de user A n'est jamais touché.
+- **Résultat à redouter** : le patch SSE est appliqué pendant `processSectionsChange` → `oldContentMap` est stale → `trackContentUpdate` logue un faux diff.
+- **À vérifier** : en mode 2 onglets, user A sauvegarde une longue section (>500ms), user B modifie une autre section → les modifications de B sont bien visibles chez A après sa sauvegarde, sans perte de texte.
+- **Composants:** `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-42` — [SYNC] SSE structure_update sur move-folder → rechargement automatique
+
+- **Précondition** : user A et user B ont le même projet ouvert. User A déplace un dossier dans la sidebar.
+- **Action** : `POST /api/file-projects/:name/move-folder` réussit → serveur envoie SSE `structure_update { type: 'move', folderId, targetParentId }` à tous les clients sauf user A.
+- **Résultat attendu** : user B reçoit `structureUpdate$` → `autoPullAndRefresh()` → sidebar de user B se met à jour automatiquement, le dossier est visible à sa nouvelle position.
+- **Résultat à redouter** : user B ne voit pas le changement avant de recharger manuellement la page.
+- **À vérifier** : tester avec 2 onglets : déplacer un dossier dans l'onglet 1, observer que l'onglet 2 met à jour sa sidebar en moins de 2 secondes sans rechargement manuel.
+- **Composants:** `server/server-data.js` (route move-folder), `projet-editor.component.ts` (subscribeToCollabEvents)

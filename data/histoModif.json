@@ -1,6 +1,70 @@
 {
   "modifications": [
     {
+      "id": "mod-504",
+      "version": "B-0.314",
+      "date": "2026-06-28T19:00:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "server", "libs"],
+      "features": "projets:editor-zone|projets:editor|server:move-folder|server:files|libs:project-files-service",
+      "title": "Stabilisation multi-user : SSE structure, ETag conflits, queue SSE, vue assemblée lecture seule",
+      "description": "Phase 1 + Phase 2 de la stabilisation système Edition. Phase 1 : (a) SSE broadcast sur move-folder → les collaborateurs voient immédiatement les déplacements de dossiers ; (b) Détection de conflit ETag — le serveur calcule un hash de chaque fichier à chaque lecture/écriture, le client envoie x-file-version, si divergence → HTTP 409 avec le contenu serveur et affichage d'un panneau de résolution côté à côté ; (c) SSE contentUpdate mis en queue pendant isSaving → plus d'écrasement du buffer utilisateur pendant un cycle de sauvegarde ; (d) Lock fail-safe → 503 si DB inaccessible (plus de fail-open silencieux). Phase 2 : vue assemblée (aucune section sélectionnée) en lecture seule — textarea readonly + overlay invite, édition uniquement en mode focus (section sélectionnée dans la sidebar).",
+      "files": [
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Le système actuel n'est pas assez stable [...] je veux un système plus fiable et plus stable. Le système doit pouvoir être multi-utilisateur...",
+      "startedAt": "2026-06-28T17:00:00.000Z",
+      "completedAt": "2026-06-28T19:00:00.000Z"
+    },
+    {
+      "id": "mod-503",
+      "version": "B-0.314",
+      "date": "2026-06-28T16:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets", "server"],
+      "features": "projets:editor-sidebar|server:move-folder",
+      "title": "Drag & drop sidebar : renommage auto si conflit + toast erreur",
+      "description": "Le déplacement d'un dossier vers une cible contenant un dossier du même nom retournait HTTP 400 silencieux. Fix côté serveur : auto-renommage avec suffixe numérique (ex: 'Section (2)'). Fix côté client : toast d'erreur générique en cas d'échec, toast de notification si renommage appliqué. Les deux toast disparaissent après 5 secondes.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans le projet 'Interview utilisateur' je ne peux pas déplacer un menu dans un autre [screenshot]",
+      "startedAt": "2026-06-28T15:30:00.000Z",
+      "completedAt": "2026-06-28T16:30:00.000Z"
+    },
+    {
+      "id": "mod-502",
+      "version": "B-0.314",
+      "date": "2026-06-28T14:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor-zone|system:sync-focus",
+      "title": "Éditeur : 3 fixes sync — focus+SSE, markersFixed guard, purge image",
+      "description": "Fix 1 (critique) : en mode focus, fullContentBackup n'était pas mis à jour lors de la réception d'un SSE content_update pour une section externe. À la sortie du focus, les modifs du collaborateur étaient écrasées. Fix : reconstruction depuis docSections + réinjection du contenu local à sa nouvelle position. Fix 2 : la garde preserveCodeBuffer était désactivée par markersFixed même si l'utilisateur tapait activement (localCodeSavePending). Le buffer utilisateur pouvait être écrasé par reconstructFromSections(). Fix : la règle markersFixed est désormais prioritaire sur preserveCodeBuffer (délai au cycle suivant). Fix 3 : recomputeMirrorLines déclenchait un saveAll() immédiat si localCodeSavePending, créant une double-save race condition. Guard ajouté.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "Lance une verification complète du système d'Edition, il y a des choses etrange lors des synchro avec des textextes qui diparaisse et des synchro qui efface des prompts ou des zone de texte",
+      "startedAt": "2026-06-28T13:00:00.000Z",
+      "completedAt": "2026-06-28T14:00:00.000Z"
+    },
+    {
       "id": "mod-501",
       "version": "B-0.314",
       "date": "2026-06-28T12:00:00.000Z",
