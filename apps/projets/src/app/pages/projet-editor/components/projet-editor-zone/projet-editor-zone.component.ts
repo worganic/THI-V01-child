@@ -5974,7 +5974,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
     const sectionLevel = range?.level ?? 1;
     const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
-    const headingLevel = Math.min(sectionLevel + 1, 4);
+    const headingLevel = Math.min(sectionLevel + 1, 6);
     const heading = '#'.repeat(headingLevel) + ' Pr - ' + inst.name;
     const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
@@ -5988,7 +5988,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const exLevel = (lines[exIdx].match(/^(#+)/)?.[1].length) ?? headingLevel;
       let end = exIdx + 1;
       while (end < lines.length) {
-        const hm = /^(#{1,4}) /.exec(lines[end]);
+        const hm = /^(#{1,6}) /.exec(lines[end]);
         if (hm && hm[1].length <= exLevel) break;
         end++;
       }

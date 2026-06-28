@@ -1,6 +1,26 @@
 {
   "modifications": [
     {
+      "id": "mod-498",
+      "version": "B-0.313",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:editor-zone",
+      "title": "Résultat prompt : placement dans la bonne section (cap H6)",
+      "description": "Quand un prompt était exécuté depuis une section en H4 (ou plus), le résultat 'Pr - NomPrompt' était inséré au même niveau que la section du prompt (sibling) au lieu d'être un niveau en dessous (child). Cause : Math.min(sectionLevel + 1, 4) plafonnait à H4 au lieu de laisser monter jusqu'à H6. Correction : le cap passe de 4 à 6 dans upsertPromptResultSection. Aussi corrigé : le regex de scan de la section existante passe de #{1,4} à #{1,6}.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsqu'on lance un prompt les datas retournées doivent s'afficher dans la même section que le prompt et pas un niveau au dessus",
+      "startedAt": "2026-06-28T12:35:00.000Z",
+      "completedAt": "2026-06-28T12:50:00.000Z"
+    },
+    {
       "id": "mod-497",
       "version": "B-0.313",
       "date": "2026-06-28T00:00:00.000Z",
