@@ -111,6 +111,11 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   });
 
   restoreToken = signal(0);
+  pendingEditSource = 'user-editing';
+  onEditSource(source: string) { this.pendingEditSource = source; }
+  dragDropError = signal<string | null>(null);
+  private dragDropErrorTimer: ReturnType<typeof setTimeout> | null = null;
+  conflictState = signal<{ fileId: string; folderId?: string; myContent: string; serverContent: string; updatedAt?: number } | null>(null);
   aiEditService = inject(ProjetAiEditService);
   private megaOutilsService = inject(MegaOutilsService);
   hasPendingEdit = computed(() => !!this.aiEditService.pendingEdit());
@@ -281,6 +286,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   private pendingFolderNames = new Set<string>(); // noms de dossiers en cours de création (protection anti-suppression)
   private isSaving = false;
   private pendingSections: SectionInfo[] | null = null;
+  private pendingSSEPatches: Array<{ nodeId: string; content: string }> = [];
   private history = inject(WoActionHistoryService);
   private collab = inject(ProjetCollabService);
   private commentsService = inject(ProjectCommentsService);
@@ -444,7 +450,22 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   private subscribeToCollabEvents(): void {
     this.collabSubs.push(
       this.collab.contentUpdate$.subscribe(event => {
-        this.files.update(nodes => this.patchNodeContent(nodes, event.nodeId, event.content));
+        if (this.isSaving) {
+          // Mettre en queue : ne pas écraser le buffer utilisateur pendant un cycle de sauvegarde
+          const existing = this.pendingSSEPatches.findIndex(p => p.nodeId === event.nodeId);
+          if (existing >= 0) this.pendingSSEPatches[existing].content = event.content;
+          else this.pendingSSEPatches.push({ nodeId: event.nodeId, content: event.content });
+        } else {
+          this.files.update(nodes => this.patchNodeContent(nodes, event.nodeId, event.content));
+        }
+        this.projectFilesService.logEditionEvent({
+          event: 'SYNC-RECEIVE',
+          project: this.projectFolderName,
+          source: 'sse-content-update',
+          fileId: event.nodeId,
+          newSize: event.content?.length ?? 0,
+          note: this.isSaving ? 'SSE content_update reçu (mis en queue — save en cours)' : 'SSE content_update reçu'
+        });
       }),
       this.collab.fileRestored$.subscribe(event => {
         this.files.update(nodes => this.patchNodeContent(nodes, event.nodeId, event.content));
@@ -837,10 +858,20 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.pendingSections = null;
 
+    const editSource = this.pendingEditSource;
+    this.pendingEditSource = 'user-editing';
+
     try {
-      await this.processSectionsChange(sections);
+      await this.processSectionsChange(sections, editSource);
     } finally {
       this.isSaving = false;
+      // Appliquer les patches SSE reçus pendant le cycle de sauvegarde
+      if (this.pendingSSEPatches.length > 0) {
+        const patches = this.pendingSSEPatches.splice(0);
+        for (const p of patches) {
+          this.files.update(nodes => this.patchNodeContent(nodes, p.nodeId, p.content));
+        }
+      }
       if (this.pendingSections) {
         const next = this.pendingSections;
         this.pendingSections = null;
@@ -973,7 +1004,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     } catch (e) { console.warn('[Editor] track delete failed:', e); }
   }
 
-  private async processSectionsChange(sections: SectionInfo[]) {
+  private async processSectionsChange(sections: SectionInfo[], editSource = 'user-editing') {
     let currentFiles = this.files();
     // Snapshot of file contents BEFORE this save batch — used to compute diffs for tracking
     const oldContentMap = this.buildOldContentMap(currentFiles);
@@ -1334,10 +1365,26 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           const clean = stripStyleMarkdown(styled, this.cleanImgResolver);
           const oldContent = oldContentMap.get(s.fileId) ?? '';
           if (oldContent !== clean) {
-            await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined);
-            this.patchFileContent(s.fileId, clean);
-            const fileNode = { id: s.fileId, name: 'contenu.md', type: 'file' as const, path: '', order: 0 };
-            this.trackContentUpdate(fileNode, s.folderName, oldContent, clean);
+            const fileNode2 = this.findFileById(s.fileId, this.files());
+            const fileVersion = fileNode2?.fileVersion;
+            try {
+              await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined, false, editSource, fileVersion);
+              this.patchFileContent(s.fileId, clean);
+              const fileNode = { id: s.fileId, name: 'contenu.md', type: 'file' as const, path: '', order: 0 };
+              this.trackContentUpdate(fileNode, s.folderName, oldContent, clean);
+            } catch (err: any) {
+              if (err?.status === 409 && err?.error?.serverContent !== undefined) {
+                this.conflictState.set({
+                  fileId: s.fileId,
+                  folderId: s.folderId ?? undefined,
+                  myContent: clean,
+                  serverContent: err.error.serverContent,
+                  updatedAt: err.error.serverUpdatedAt
+                });
+                return; // Arrêter le cycle de sauvegarde
+              }
+              throw err;
+            }
           }
           // Jumeau stylisé
           await this.saveCssTwin(s.folderId ?? null, s.fileId, styled);
@@ -1349,7 +1396,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             if (af.fileId) {
               const oldContent = oldContentMap.get(af.fileId) ?? '';
               if (oldContent !== af.content) {
-                await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content);
+                await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content, undefined, false, editSource);
                 this.patchFileContent(af.fileId, af.content);
                 const fileNode = { id: af.fileId, name: af.name, type: 'file' as const, path: '', order: 0 };
                 this.trackContentUpdate(fileNode, `${s.folderName} › ${af.name}`, oldContent, af.content);
@@ -1569,10 +1616,19 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
     const { draggedNode, draggedParentId, targetNode, targetParentId, position, targetSiblings } = event;
     try {
+      const showRenameNotice = (result: any) => {
+        if (result?.renamedTo) {
+          if (this.dragDropErrorTimer) clearTimeout(this.dragDropErrorTimer);
+          this.dragDropError.set(`Renommé en "${result.renamedTo}" (conflit de nom dans la cible)`);
+          this.dragDropErrorTimer = setTimeout(() => this.dragDropError.set(null), 5000);
+        }
+      };
+
       if (draggedNode.type === 'folder') {
         if (position === 'inside' && targetNode.type === 'folder') {
           // Déplacer le dossier dans un autre dossier (changement de parent)
-          await this.projectFilesService.moveFolder(this.projectFolderName, draggedNode.id, targetNode.id);
+          const r = await this.projectFilesService.moveFolder(this.projectFolderName, draggedNode.id, targetNode.id);
+          showRenameNotice(r);
         } else if (position !== 'inside') {
           if (draggedParentId === targetParentId) {
             // Même parent : réordonner
@@ -1591,7 +1647,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             }
           } else {
             // Parent différent : déplacer dans le même parent que la cible
-            await this.projectFilesService.moveFolder(this.projectFolderName, draggedNode.id, targetParentId);
+            const r = await this.projectFilesService.moveFolder(this.projectFolderName, draggedNode.id, targetParentId);
+            showRenameNotice(r);
           }
         }
       } else {
@@ -1661,6 +1718,10 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       this.onNodeActive(draggedNode.id);
     } catch (e: any) {
       console.error('DragDrop failed:', e);
+      const msg = e?.error?.error || e?.message || 'Déplacement impossible';
+      if (this.dragDropErrorTimer) clearTimeout(this.dragDropErrorTimer);
+      this.dragDropError.set(msg);
+      this.dragDropErrorTimer = setTimeout(() => this.dragDropError.set(null), 5000);
     }
   }
 
@@ -1871,6 +1932,21 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
   onCancelAiEdit() {
     this.aiEditService.cancelEdit();
+  }
+
+  async resolveConflict(choice: 'mine' | 'server'): Promise<void> {
+    const conflict = this.conflictState();
+    if (!conflict) return;
+    const content = choice === 'mine' ? conflict.myContent : conflict.serverContent;
+    try {
+      await this.projectFilesService.updateFile(this.projectFolderName, conflict.fileId, content, conflict.folderId, false, 'conflict-resolution');
+      this.patchFileContent(conflict.fileId, content);
+      await this.loadFiles();
+    } catch (e) {
+      console.error('[Conflict] Résolution échouée:', e);
+    } finally {
+      this.conflictState.set(null);
+    }
   }
 
   get statusLabel(): string {

@@ -1196,7 +1196,7 @@ Votre texte de prompt ici.
                   class="ed-textarea"
                   spellcheck="false"
                   [value]="unifiedContent"
-                  [readonly]="isActiveSectionUnsynced || isActiveSectionLockedByOther"
+                  [readonly]="isActiveSectionUnsynced || isActiveSectionLockedByOther || (!focusedHandle && !activeNodeId)"
                   (beforeinput)="onTextareaBeforeInput($event)"
                   (input)="onTextareaInput($event)"
                   (keydown)="onTextareaKeydown($event)"
@@ -1204,6 +1204,16 @@ Votre texte de prompt ici.
                   (keyup)="onTextareaCursor($event)"
                   (mouseup)="onTextareaCursor($event)"
                   (blur)="onTextareaBlur()"></textarea>
+
+        <!-- Overlay vue assemblée : invitation à sélectionner une section -->
+        @if (!focusedHandle && !activeNodeId) {
+          <div class="absolute inset-0 pointer-events-none flex items-start justify-center pt-12 z-10">
+            <div class="pointer-events-auto flex flex-col items-center gap-2 px-5 py-3.5 rounded-xl bg-white/8 backdrop-blur-sm border border-white/10 text-center max-w-xs">
+              <span class="material-symbols-outlined text-2xl text-white/30">touch_app</span>
+              <p class="text-xs text-white/40 leading-relaxed">Sélectionnez une section dans la barre latérale pour l'éditer</p>
+            </div>
+          </div>
+        }
 
         <!-- F1 — Menu des slash commands (mode Code) -->
         <app-slash-command-menu

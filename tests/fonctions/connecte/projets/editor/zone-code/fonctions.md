@@ -5,13 +5,14 @@ Vue : textarea Markdown à gauche, rendu HTML miroir à droite
 
 ---
 
-## `2-5-2-4-1` — Saisie et édition
+## `2-5-2-4-1` — [modification] Saisie et édition
 
 - **Textarea principale** : saisie libre du contenu Markdown unifié (toutes sections du projet)
 - **Auto-save** : délai 2s après dernière frappe → `scheduleSave()` → `saveAll()`
 - **Sauvegarde forcée** : clic badge "Non sauvegardé" → `forceSave()`
 - **Dirty state** : `localDirty = true` dès la première frappe → emit `dirtyChange(true)`
 - **Contenu unifié** : toutes les sections (`## Nom dossier`) concaténées en un seul document
+- **Vue assemblée lecture seule** : quand aucune section n'est sélectionnée dans la sidebar (`activeNodeId = null`, `focusedHandle = null`), la textarea est en `readonly` — un overlay invite à sélectionner une section
 - **Retour à la ligne automatique** : `white-space: pre-wrap` + `overflow-wrap: break-word` — le texte long passe à la ligne sans ascenseur horizontal; `overflow-x: hidden` sur mirror et textarea
 - **Redimensionnement** : la zone s'étend dynamiquement selon la fenêtre via `:host { flex: 1; min-width: 0 }`
 
@@ -181,7 +182,7 @@ Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :
 
 ---
 
-## `2-5-2-4-16` — Préservation du texte exact en mode Code (vB-0.279)
+## `2-5-2-4-16` — [modification] Préservation du texte exact en mode Code (vB-0.279)
 
 - **Principe** : en mode Code, la saisie de l'utilisateur n'est plus réécrite/normalisée par la reconstruction. Le texte exact (lignes vides multiples, espaces de fin, `#` seul, indentation) est conservé tel que tapé.
 - **Mécanisme** : un drapeau `localCodeSavePending` est armé dans `saveAll()` (vue document, hors focus) à l'émission du save, et **libéré uniquement à la fin du cycle** quand le `@Input saveStatus` repasse à `'idle'`/`'error'`. Quand le `@Input files` revient avec la nouvelle structure, `ngOnChanges` calcule `preserveCodeBuffer` (mode `edit`, hors focus, `hasStructuralChange`, sans `markersFixed`, drapeau actif) et **n'écrase pas** `unifiedContent`/textarea avec `reconstructFromSections()`.
@@ -194,7 +195,7 @@ Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :
 
 ---
 
-## `2-5-2-4-17` — Système double fichier : Markdown propre + jumeau stylisé (vB-0.283)
+## `2-5-2-4-17` — [modification] Système double fichier : Markdown propre + jumeau stylisé (vB-0.283)
 
 Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour l'IA, et déporter les styles non-markdown (couleur, surlignage, taille, soulignage, alignement) dans un **jumeau `contenu-css.md`**.
 
@@ -270,3 +271,229 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
   - **Frappe au clavier** : snapshot debounce 800 ms (`scheduleCodeSnapshot` dans `onTextareaInput`).
   - Toute action annulée alimente `codeRedoStack` et vice-versa ; le Redo est effacé dès une nouvelle action.
 - **Restauration** : `applyCodeSnapshot` → `unifiedContent = snap.content`, `ta.value = snap.content`, repositionnement du curseur, `recomputeAll()`, `scheduleSave()`.
+
+---
+
+## `2-5-2-4-22` — [SYNC] Save auto 2 s — cohérence BDD après frappe
+
+- **Précondition** : projet ouvert en mode Code, section existante avec contenu connu.
+- **Action** : taper du texte dans la textarea, attendre 2 s sans autre interaction.
+- **Résultat attendu** : `scheduleSave()` déclenche `saveAll()` → `sectionsChange` → `processSectionsChange` → PUT `/api/file-projects/:name/files/:id` → contenu identique côté serveur. Badge "Non sauvegardé" disparaît. Log `log-edition.txt` contient une entrée `SAVE | source:user-editing`.
+- **À vérifier** : la valeur de `contenu.md` en BDD correspond exactement à ce qui a été tapé (après normalisation CSS twin). Aucun caractère perdu.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `project-files.service.ts`
+
+---
+
+## `2-5-2-4-23` — [SYNC] Save forcé Ctrl+S
+
+- **Précondition** : texte tapé, timer 2 s non encore écoulé (zone dirty).
+- **Action** : appuyer Ctrl+S.
+- **Résultat attendu** : `forceSave()` → `unfoldAll()` → `saveAll()` immédiat, sans attendre les 2 s. Badge disparaît. Contenu en BDD correspond à l'état au moment de Ctrl+S.
+- **À vérifier** : le timer scheduleSave existant est annulé (`clearTimeout`) pour éviter un double save. Log `SAVE | source:user-editing`.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-24` — [SYNC] Race condition : frappe pendant un save en cours
+
+- **Précondition** : user tape, le timer 2 s déclenche `saveAll()` → `processSectionsChange` est en cours (HTTP PUT lent).
+- **Action** : user continue de taper pendant que `isSaving = true`.
+- **Résultat attendu** : `onSectionsChange` met le nouveau batch dans `pendingSections` (overwrite). À la fin du save en cours, `pendingSections` est consommé → un second save démarre avec le dernier état. Aucun caractère tapé entre les deux saves n'est perdu.
+- **Résultat à redouter** : si l'utilisateur tape beaucoup entre deux saves, une seule émission `pendingSections` est gardée (la dernière). C'est le comportement attendu car `unifiedContent` reflète toujours l'état courant.
+- **À vérifier** : après les deux saves successifs, la BDD correspond à l'état final affiché dans la textarea.
+- **Composants:** `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-25` — [modification] [SYNC] Réception SSE content_update pendant frappe — buffer local préservé
+
+- **Précondition** : deux users ouvrent le même projet. User A est en train de taper (texte non sauvegardé).
+- **Action** : user B sauvegarde une modification sur une section différente → user A reçoit un SSE `content_update` pour ce fichier.
+- **Résultat attendu** : `patchNodeContent` met à jour `files` avec le nouveau contenu du fichier de user B. `getFileStructureKey` ne change pas (même IDs) → `hasStructuralChange = false` → `reconstructFromSections()` ne s'exécute PAS → le buffer de user A (`unifiedContent`) est préservé intégralement.
+- **Résultat à redouter** : `recomputeMirrorLines` tourne (appelé depuis `recomputeAll` dans ngOnChanges) et pourrait trouver des marqueurs IMG orphelins si `allImages` est désynchronisé → `saveAll()` appelé immédiatement avec le buffer courant → risque d'overwrite du contenu de user B. Vérifier que `recentlyAddedImageIds` protège correctement.
+- **À vérifier** : après réception SSE, le texte que user A était en train de taper est toujours visible dans la textarea sans aucune perte.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-26` — [SYNC] Réception SSE structurel pendant frappe — reconstruction et localCodeSavePending
+
+- **Précondition** : user A est en mode Code, en train de taper. User B crée/supprime une section (changement structurel).
+- **Action** : user A reçoit le SSE → `files` change → `hasStructuralChange = true`.
+- **Résultat attendu** : si `localCodeSavePending = true` (save de user A en cours) → `preserveCodeBuffer = true` → reconstruction bloquée → buffer de user A intact. Si `localCodeSavePending = false` → reconstruction depuis `docSections` → texte de user A visible dans la zone remplacé par la version serveur.
+- **Règle absolue** : quand `localCodeSavePending = true`, aucun SSE structurel ne peut écraser le buffer.
+- **À vérifier** : seul un reload explicite (Ctrl+R ou bouton Rafraîchir) doit reconstruire depuis le serveur quand `localCodeSavePending = true`.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-27` — [SYNC] Mode Focus + save — fusion correcte dans le document complet
+
+- **Précondition** : user clique sur section "Introduction" → mode focus activé. `fullContentBackup` = document complet. `unifiedContent` = seul le contenu de "Introduction".
+- **Action** : user modifie le texte dans la textarea focusée, puis blur ou Ctrl+S.
+- **Résultat attendu** : `saveAll()` fusionne `unifiedContent` (section modifiée) dans `fullContentBackup` aux bonnes lignes (`focusedLineStart`, `focusedOriginalLineCount`). `contentToParse = fullContentBackup` → parseContent → sections correctes → processSectionsChange écrit uniquement le fichier de la section "Introduction". Le reste du document n'est pas modifié.
+- **Résultat à redouter** : si `focusedOriginalLineCount` est incorrect (désynchronisé par une insertion de lignes via MO ou cleanup), la splice peut décaler et corrompre le document.
+- **À vérifier** : après sortie du focus (clic sur une autre section), le document complet est cohérent — la section "Introduction" a le nouveau texte, les autres sections sont intactes.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-28` — [modification] [SYNC] Mode Focus + SSE autre section — fullContentBackup non mis à jour (risque)
+
+- **Précondition** : user A en mode focus sur section "Intro". User B modifie la section "Conclusion" et sauvegarde.
+- **Action** : user A reçoit SSE `content_update` pour le fichier de "Conclusion".
+- **Résultat attendu actuel** : `patchNodeContent` met à jour `files["Conclusion"]`. `hasStructuralChange = false` → pas de reconstruction. `fullContentBackup` contient ENCORE l'ancienne version de "Conclusion". Quand user A sort du focus et sauvegarde, il écrase "Conclusion" avec l'ancienne version (perdu les changements de user B).
+- **Règle absolue (à implémenter)** : en mode focus, le `fullContentBackup` DOIT être mis à jour section par section quand un SSE content_update arrive pour une section hors focus.
+- **À vérifier** : ce scénario est reproductible et constitue un bug avéré. Tester avec projets backup (multi-user).
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-29` — [SYNC] Insertion d'un MO Prompt — fence créée, instance DB, MOID injecté
+
+- **Précondition** : section existante en mode Code.
+- **Action** : ouvrir la liste des Prompts → créer un nouveau Prompt → confirmer.
+- **Résultat attendu** : fence `` ```PROMPT: NomPrompt {{MOID:uuid}} `` insérée dans le document à la position du curseur. Instance DB créée via `megaOutilsSvc.createInstance()`. `ensurePromptInstancesFromContent()` ne recrée pas de doublon. Sidebar affiche le nœud `PR: NomPrompt`.
+- **À vérifier** : après save (2s), le fichier `prompt-NomPrompt.md` existe dans le dossier de la section. La fence est parsée comme `additionalFile` dans `parseContent()`. Rechargement → fence toujours présente, MOID intact.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-30` — [SYNC] Exécution Prompt → résultat inséré sans effacer le bloc PROMPT
+
+- **Précondition** : section avec un bloc `` ```PROMPT: Mon Prompt ``` `` en mode Code.
+- **Action** : exécuter le prompt → résultat reçu → `onPromptInsert()` → `upsertPromptResultSection()`.
+- **Résultat attendu** : une section sœur `# Pr - Mon Prompt` est insérée APRÈS la section parente du prompt (même niveau hiérarchique). Le bloc `` ```PROMPT: ... ``` `` original reste intact dans le document. L'ancienne section résultat (si elle existait) est retirée et remplacée. `currentEditSource = 'ia-prompt-result'` → log indique la source IA.
+- **Règle absolue** : un bloc `` ```PROMPT: ... ``` `` ne peut jamais être effacé par `upsertPromptResultSection()` ni par `reconcileTrelloLifecycle()` ni par `reconcileDeletedMoFiles()`.
+- **À vérifier** : après le save, les deux sections sont présentes en BDD : la section prompt ET la section résultat. Ré-exécuter le prompt → l'ancienne section résultat est remplacée, le prompt est intact.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-31` — [SYNC] Exécution Workflow → livrable + MOs créés — cohérence document
+
+- **Précondition** : section avec un bloc WORKFLOW configuré.
+- **Action** : exécuter le workflow → valider le livrable et sélectionner des MOs → `onWorkflowMaterialize()`.
+- **Résultat attendu** : `upsertPromptResultSection()` insère le livrable. Les MOs sélectionnés (Trello, Array) sont créés avec leur fence dans le document. `currentEditSource = 'ia-workflow-result'` (ou 'ia-prompt-result' car `upsertPromptResultSection` le pose). Sections structurellement cohérentes.
+- **À vérifier** : document après save contient : le bloc WORKFLOW intact, la section résultat, les fences MO. Sidebar reflète les nouveaux nœuds. Pas de duplication au rechargement.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-32` — [SYNC] Suppression MO via sidebar → fence retirée, aucun texte utilisateur perdu
+
+- **Précondition** : section avec un bloc `` ```TRELLO: Mon Board ``` `` et du texte utilisateur avant et après.
+- **Action** : supprimer le fichier `TL: Mon Board` depuis la sidebar (bouton supprimer).
+- **Résultat attendu** : `reconcileDeletedMoFiles()` détecte la disparition du nœud → `removeFenceByMoid(moid)` retire uniquement la fence du document → le texte utilisateur avant/après la fence est intégralement préservé. Un save système est déclenché (`currentEditSource = 'system-cleanup'`). Instance DB supprimée si aucune autre copie.
+- **Résultat à redouter** : `removeFenceByMoid` prend trop de lignes (fermeture fence mal détectée) et supprime du texte hors fence.
+- **À vérifier** : après suppression, le document ne contient plus la fence TRELLO mais tout le reste est intact. Sidebar ne montre plus le nœud Trello. Log `system-cleanup` présent.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-33` — [SYNC] Undo/Redo — contenu restauré, save déclenché
+
+- **Précondition** : user a tapé du texte et effectué des actions toolbar (insertion titre, gras, etc.).
+- **Action** : Ctrl+Z plusieurs fois → Ctrl+Y pour refaire.
+- **Résultat attendu** : `applyCodeSnapshot()` restaure `unifiedContent` à l'état du snapshot (pile max 200). `scheduleSave()` est appelé → save 2s. La textarea affiche le contenu restauré. Le miroir se met à jour. Les ranges sont recalculés.
+- **À vérifier** : après plusieurs undo/redo alternés, le contenu en BDD correspond bien au snapshot appliqué (aucune accumulation d'états intermédiaires). La pile redo est vidée dès qu'une nouvelle frappe intervient.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-34` — [SYNC] Passage de mode Edit→Visu→Structure — contenu préservé à chaque transition
+
+- **Précondition** : document avec plusieurs sections et un MO Trello.
+- **Action** : taper du texte en mode Code → passer en mode Visu → passer en mode Structure → revenir en mode Code.
+- **Résultat attendu** : à chaque changement de mode, `saveAll()` est appelé si `unifiedContent !== lastSavedContent`. Retour en mode Code : le contenu affiché correspond à ce qui était en mode Code avant le basculement. Aucun texte perdu dans aucune direction.
+- **À vérifier** : les fences MO (TRELLO, ARRAY, PROMPT) survivent aux aller-retours entre modes. La structure de dossiers en BDD est cohérente avec ce qui était affiché en Code.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-35` — [modification] [SYNC] Nettoyage système (markersFixed, moidsFixed, moidInjected) — pas d'effacement utilisateur
+
+- **Précondition** : projet ouvert, présence de marqueurs IMG ou fences MO sans MOID.
+- **Action** : chargement du projet → `ngOnChanges` → `fixImageMarkersInSections()`, `fixStaleFenceMoids()`, `injectMoidIntoLegacyFences()` s'exécutent.
+- **Résultat attendu** : les corrections système (ajout MOID, déplacement IMG) ne modifient que les lignes concernées. Tout le texte utilisateur autour est intact. `currentEditSource = 'system-cleanup'` → log identifie la source.
+- **Risque connu — markersFixed** : si `markersFixed = true`, `preserveCodeBuffer = false` même si `localCodeSavePending = true`. Cela force une reconstruction qui peut écraser le buffer utilisateur. Ce cas doit être testé avec un upload d'image pendant une frappe active.
+- **Règle absolue** : aucune opération système automatique ne peut supprimer ou modifier du texte utilisateur en dehors des lignes de fence MO ou des marqueurs `{{IMG:id}}`.
+- **À vérifier** : comparer le document avant/après le nettoyage ligne par ligne — seules les lignes attendues changent.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-36` — [SYNC] Déplacement de section (sidebar drag & drop) — contenu préservé, re-parentage correct
+
+- **Précondition** : projet avec au moins 3 sections dont une avec du texte riche (MO Trello inclus).
+- **Action** : drag & drop d'une section dans la sidebar pour la déplacer sous une autre section.
+- **Résultat attendu** : `processSectionsChange` détecte le `needsReparent` → `moveFolder()` appelle l'API. `applySectionFolderOrder()` met à jour les `order` des dossiers. La zone préserve le buffer (`localCodeSavePending`) si un save était en cours. Le contenu de la section déplacée est intégral après rechargement.
+- **Résultat à redouter** : la reconstruction depuis `reconstructFromSections()` après le `loadFiles()` pourrait réordonner les sections différemment si `buildDocSections` lit un ordre de fichiers différent de ce que l'utilisateur a défini visuellement.
+- **À vérifier** : après rechargement, l'ordre affiché en Code et dans la sidebar correspond à ce qui a été défini par le drag. Le texte de toutes les sections est intact.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-37` — [modification] [SYNC] Multi-users : sauvegarde simultanée même section — détection de conflit ETag
+
+- **Précondition** : user A et user B ont le même projet ouvert, même section active, textes différents localement.
+- **Action** : user A et user B sauvegardent en même temps (délai < 1 s entre les deux saves).
+- **Résultat attendu** : le serveur traite les deux PUT séquentiellement. Le deuxième PUT écrase le premier (last-write-wins). Le perdant (user A ou B) reçoit un SSE `content_update` avec le contenu du gagnant. Sa zone reçoit `hasStructuralChange = false` → pas de reconstruction → son buffer local reste intact jusqu'à son prochain save qui réécrira le contenu du gagnant.
+- **Règle absolue** : pas de corruption silencieuse — le log `log-edition.txt` doit montrer les deux SAVE avec leurs sources et les deux contenus distincts.
+- **À vérifier** : après convergence (30 s), les deux users voient le même contenu. Vérifier dans `log-edition.txt` l'ordre exact des événements SAVE + SYNC-RECEIVE + SYNC-BROADCAST.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `server-data.js`
+
+---
+
+## `2-5-2-4-38` — [modification] [SYNC] Purge orpheline d'image dans recomputeMirrorLines — garde recentlyAddedImageIds
+
+- **Précondition** : user upload une image dans une section. Le fichier image est créé en BDD mais pas encore dans `this.files` (loadFiles en cours).
+- **Action** : `recomputeMirrorLines()` s'exécute (suite à une frappe ou un ngOnChanges) avant que `loadFiles()` n'ait propagé le nouveau nœud.
+- **Résultat attendu** : le marqueur `{{IMG:newId}}` est dans `recentlyAddedImageIds` → `orphanIndexes` ne l'inclut pas → le marqueur n'est PAS supprimé du document → `saveAll()` n'est pas déclenché intempestivement.
+- **Résultat à redouter** : si `recentlyAddedImageIds` n'est pas correctement renseigné, le marqueur est traité comme orphelin → supprimé de `unifiedContent` → `saveAll()` immédiat → image perdue dans le document.
+- **À vérifier** : après que `loadFiles()` se termine et que `files` contient le nœud image, `allImages` est mis à jour et le marqueur reste intact. L'image s'affiche correctement dans le miroir.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-39` — Vue assemblée lecture seule (sans section sélectionnée)
+
+- **Précondition** : mode Code, aucune section sélectionnée dans la sidebar (`activeNodeId = null`).
+- **Action** : user tente de cliquer dans la textarea ou de taper du texte.
+- **Résultat attendu** : textarea en `readonly` → aucune modification possible. Un overlay "Sélectionnez une section dans la barre latérale pour l'éditer" est visible. Les handles de section restent cliquables pour entrer en focus.
+- **Résultat à redouter** : l'overlay s'affiche même quand une section est sélectionnée, bloquant l'édition.
+- **À vérifier** : cliquer sur une section dans la sidebar → overlay disparaît, textarea devient éditable (focus mode actif). Cliquer sur "Racine" (désélection) → overlay réapparaît.
+- **Composants:** `projet-editor-zone.component.html`
+
+---
+
+## `2-5-2-4-40` — [SYNC] Détection de conflit ETag (HTTP 409) + panneau de résolution
+
+- **Précondition** : user A et user B ouvrent le même projet. User B modifie et sauvegarde la section "Intro". User A avait chargé le fichier avant la modification de B.
+- **Action** : user A tape du texte et laisse le debounce sauvegarder → `PUT /files/:id` avec `x-file-version: <hashChargement>`. Le hash diverge de celui du serveur (car B a sauvegardé entre-temps).
+- **Résultat attendu** : serveur répond HTTP 409 avec `{ serverContent, serverUpdatedAt }`. Côté client : un panneau ambre "Conflit" apparaît avec deux colonnes (Ma version / Version du serveur). Boutons "Garder ma version" et "Utiliser la version du serveur".
+- **Résultat à redouter** : la réponse 409 est ignorée → last-write-wins → perte silencieuse.
+- **À vérifier** : choisir "Utiliser la version du serveur" → le contenu serveur est sauvegardé sans conflit, panel disparaît. Choisir "Garder ma version" → le contenu local est envoyé (sans ETag cette fois).
+- **Composants:** `projet-editor.component.ts`, `projet-editor.component.html`, `server/server-data.js`, `project-files.service.ts`
+
+---
+
+## `2-5-2-4-41` — [SYNC] Queue SSE contentUpdate pendant cycle de sauvegarde
+
+- **Précondition** : user A sauvegarde (`isSaving = true`). Simultanément, user B modifie un autre fichier → SSE `content_update` arrive côté user A.
+- **Action** : `contentUpdate$` reçoit l'événement SSE pendant que `processSectionsChange` est en cours.
+- **Résultat attendu** : le patch SSE est mis en queue dans `pendingSSEPatches[]` (pas appliqué immédiatement). Dès que `processSectionsChange` se termine, la queue est drainée → `patchNodeContent` appliqué pour chaque entrée en attente. Le buffer de frappe de user A n'est jamais touché.
+- **Résultat à redouter** : le patch SSE est appliqué pendant `processSectionsChange` → `oldContentMap` est stale → `trackContentUpdate` logue un faux diff.
+- **À vérifier** : en mode 2 onglets, user A sauvegarde une longue section (>500ms), user B modifie une autre section → les modifications de B sont bien visibles chez A après sa sauvegarde, sans perte de texte.
+- **Composants:** `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-42` — [SYNC] SSE structure_update sur move-folder → rechargement automatique
+
+- **Précondition** : user A et user B ont le même projet ouvert. User A déplace un dossier dans la sidebar.
+- **Action** : `POST /api/file-projects/:name/move-folder` réussit → serveur envoie SSE `structure_update { type: 'move', folderId, targetParentId }` à tous les clients sauf user A.
+- **Résultat attendu** : user B reçoit `structureUpdate$` → `autoPullAndRefresh()` → sidebar de user B se met à jour automatiquement, le dossier est visible à sa nouvelle position.
+- **Résultat à redouter** : user B ne voit pas le changement avant de recharger manuellement la page.
+- **À vérifier** : tester avec 2 onglets : déplacer un dossier dans l'onglet 1, observer que l'onglet 2 met à jour sa sidebar en moins de 2 secondes sans rechargement manuel.
+- **Composants:** `server/server-data.js` (route move-folder), `projet-editor.component.ts` (subscribeToCollabEvents)

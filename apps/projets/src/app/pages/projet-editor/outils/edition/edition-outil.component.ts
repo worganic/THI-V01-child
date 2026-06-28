@@ -45,6 +45,7 @@ import {
       (openPromptList)="openPromptList.emit()"
       (closePromptListView)="closePromptListView.emit()"
       (fileSave)="fileSave.emit($event)"
+      (editSource)="editSource.emit($event)"
       (sectionsChange)="sectionsChange.emit($event)"
       (nodeActive)="nodeActive.emit($event)"
       (dragDrop)="dragDrop.emit($event)"
@@ -91,6 +92,7 @@ export class EditionOutilComponent {
   @Output() openPromptList = new EventEmitter<void>();
   @Output() closePromptListView = new EventEmitter<void>();
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
+  @Output() editSource = new EventEmitter<string>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
