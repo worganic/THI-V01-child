@@ -95,8 +95,15 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.post<FileNode>(`${this.apiUrl}/api/file-projects/${projectName}/files`, data, { headers: this.h() }));
   }
 
-  updateFile(projectName: string, fileId: string, content: string, folderId?: string, publish = false): Promise<any> {
-    return firstValueFrom(this.http.put(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { content, folderId: folderId ?? null, publish }, { headers: this.h() }));
+  updateFile(projectName: string, fileId: string, content: string, folderId?: string, publish = false, source?: string): Promise<any> {
+    const headers: Record<string, string> = { ...this.h() };
+    if (source) headers['x-edition-source'] = source;
+    return firstValueFrom(this.http.put(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { content, folderId: folderId ?? null, publish }, { headers }));
+  }
+
+  /** Enregistre un événement d'édition explicite côté client (sync reçu, undo, etc.). */
+  logEditionEvent(event: { event: string; project: string; source: string; file?: string; fileId?: string; note?: string; size?: number; newSize?: number; oldLines?: number; newLines?: number }): void {
+    this.http.post(`${this.apiUrl}/api/logs/edition`, event, { headers: this.h() }).subscribe({ error: () => {} });
   }
 
   renameFile(projectName: string, fileId: string, name: string): Promise<FileNode> {

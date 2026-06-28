@@ -111,6 +111,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   });
 
   restoreToken = signal(0);
+  pendingEditSource = 'user-editing';
+  onEditSource(source: string) { this.pendingEditSource = source; }
   aiEditService = inject(ProjetAiEditService);
   private megaOutilsService = inject(MegaOutilsService);
   hasPendingEdit = computed(() => !!this.aiEditService.pendingEdit());
@@ -445,6 +447,14 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.collabSubs.push(
       this.collab.contentUpdate$.subscribe(event => {
         this.files.update(nodes => this.patchNodeContent(nodes, event.nodeId, event.content));
+        this.projectFilesService.logEditionEvent({
+          event: 'SYNC-RECEIVE',
+          project: this.projectFolderName,
+          source: 'sse-content-update',
+          fileId: event.nodeId,
+          newSize: event.content?.length ?? 0,
+          note: `SSE content_update reçu`
+        });
       }),
       this.collab.fileRestored$.subscribe(event => {
         this.files.update(nodes => this.patchNodeContent(nodes, event.nodeId, event.content));
@@ -837,8 +847,11 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.pendingSections = null;
 
+    const editSource = this.pendingEditSource;
+    this.pendingEditSource = 'user-editing';
+
     try {
-      await this.processSectionsChange(sections);
+      await this.processSectionsChange(sections, editSource);
     } finally {
       this.isSaving = false;
       if (this.pendingSections) {
@@ -973,7 +986,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     } catch (e) { console.warn('[Editor] track delete failed:', e); }
   }
 
-  private async processSectionsChange(sections: SectionInfo[]) {
+  private async processSectionsChange(sections: SectionInfo[], editSource = 'user-editing') {
     let currentFiles = this.files();
     // Snapshot of file contents BEFORE this save batch — used to compute diffs for tracking
     const oldContentMap = this.buildOldContentMap(currentFiles);
@@ -1334,7 +1347,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           const clean = stripStyleMarkdown(styled, this.cleanImgResolver);
           const oldContent = oldContentMap.get(s.fileId) ?? '';
           if (oldContent !== clean) {
-            await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined);
+            await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined, false, editSource);
             this.patchFileContent(s.fileId, clean);
             const fileNode = { id: s.fileId, name: 'contenu.md', type: 'file' as const, path: '', order: 0 };
             this.trackContentUpdate(fileNode, s.folderName, oldContent, clean);
@@ -1349,7 +1362,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             if (af.fileId) {
               const oldContent = oldContentMap.get(af.fileId) ?? '';
               if (oldContent !== af.content) {
-                await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content);
+                await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content, undefined, false, editSource);
                 this.patchFileContent(af.fileId, af.content);
                 const fileNode = { id: af.fileId, name: af.name, type: 'file' as const, path: '', order: 0 };
                 this.trackContentUpdate(fileNode, `${s.folderName} › ${af.name}`, oldContent, af.content);

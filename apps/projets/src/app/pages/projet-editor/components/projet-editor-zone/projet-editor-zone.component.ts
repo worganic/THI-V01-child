@@ -248,11 +248,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
+  @Output() editSource = new EventEmitter<string>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
   @Output() dirtyChange = new EventEmitter<boolean>();
   @Output() saveStarting = new EventEmitter<void>();
+  currentEditSource = 'user-editing';
   // F6 — Commentaires : demande d'ouverture du drawer pour une section
   @Output() commentRequest = new EventEmitter<{ folderId: string; folderName: string }>();
   // F6 — Compteurs de commentaires par folderId (alimentés par le parent)
@@ -800,9 +802,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
       // moDeletionReconciled / moidsFixed : sauvegarde même en focus (saveAll fusionne la section focalisée).
       if (moDeletionReconciled || moidsFixed) {
-        setTimeout(() => this.saveAll(), 0);
+        setTimeout(() => { this.currentEditSource = 'system-cleanup'; this.saveAll(); }, 0);
       } else if ((markersFixed || trelloStripped || mockupDeduped || formsConverted || moidInjected) && !this.focusedHandle) {
-        setTimeout(() => this.saveAll(), 0);
+        setTimeout(() => { this.currentEditSource = 'system-cleanup'; this.saveAll(); }, 0);
       }
     }
 
@@ -4549,6 +4551,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (this.mode === 'edit' && !this.focusedHandle) {
       this.localCodeSavePending = true;
     }
+    this.editSource.emit(this.currentEditSource);
+    this.currentEditSource = 'user-editing';
     this.sectionsChange.emit(sections);
   }
 
@@ -6022,6 +6026,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.unifiedContent = lines.join('\n');
     this.recomputeRanges();
     this.syncDocSectionsTextFromContent();
+    this.currentEditSource = 'ia-prompt-result';
     this.scheduleSave();
     this.recomputeAll();
   }
@@ -6055,6 +6060,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     // Insérer à l'intérieur du fence, juste avant le ``` fermant
     lines.splice(closeIdx, 0, '', '===RÉSULTAT===', now, '', cleanResult);
     this.unifiedContent = lines.join('\n');
+    this.currentEditSource = 'ia-prompt-result';
     this.scheduleSave();
   }
 

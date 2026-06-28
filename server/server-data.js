@@ -33,6 +33,65 @@ const PORT = process.env.PORT || 3001;
 const BASE_DIR = path.join(__dirname, '..', 'data');
 const PROJECT_ROOT = path.dirname(BASE_DIR);
 const CONFIG_DIR = path.join(BASE_DIR, 'config');
+const LOG_EDITION_FILE = path.join(BASE_DIR, 'log-edition.txt');
+
+// ── Logging édition ─────────────────────────────────────────────────────────
+
+/** Calcule un diff lisible entre deux contenus texte (par lignes). */
+function computeEditionDiff(oldContent, newContent) {
+    const oldLines = (oldContent || '').split('\n');
+    const newLines = (newContent || '').split('\n');
+    let firstDiff = -1;
+    const minLen = Math.min(oldLines.length, newLines.length);
+    for (let i = 0; i < minLen; i++) {
+        if (oldLines[i] !== newLines[i]) { firstDiff = i; break; }
+    }
+    if (firstDiff === -1 && oldLines.length !== newLines.length) firstDiff = minLen;
+    if (firstDiff === -1) return null; // identical
+    let lastOld = oldLines.length - 1, lastNew = newLines.length - 1;
+    while (lastOld > firstDiff && lastNew > firstDiff && oldLines[lastOld] === newLines[lastNew]) {
+        lastOld--; lastNew--;
+    }
+    const removed = oldLines.slice(firstDiff, lastOld + 1).slice(0, 8);
+    const added   = newLines.slice(firstDiff, lastNew + 1).slice(0, 8);
+    return { firstLine: firstDiff + 1, removed, added };
+}
+
+/** Ajoute une entrée dans /data/log-edition.txt. Silencieux en cas d'erreur disque. */
+function logEdition(entry) {
+    try {
+        const ts = new Date().toISOString();
+        const sep = '='.repeat(80);
+        const div = '-'.repeat(80);
+        const lines = [
+            sep,
+            `[${ts}] ${entry.event || 'SAVE'} | project:${entry.project || '?'} | user:${entry.user || '?'} | source:${entry.source || 'unknown'}`,
+        ];
+        if (entry.file)    lines.push(`  File    : ${entry.file}${entry.fileId ? ' (id:' + entry.fileId + ')' : ''}`);
+        if (entry.nodeId && !entry.file) lines.push(`  Node    : ${entry.nodeId}`);
+        if (entry.size != null) {
+            const delta = (entry.newSize || 0) - (entry.size || 0);
+            const dStr = delta >= 0 ? `+${delta}` : `${delta}`;
+            lines.push(`  Chars   : ${entry.size}→${entry.newSize} (Δ${dStr}) | Lines: ${entry.oldLines}→${entry.newLines} (Δ${(entry.newLines - entry.oldLines) >= 0 ? '+' : ''}${entry.newLines - entry.oldLines})`);
+        }
+        if (entry.diff) {
+            const d = entry.diff;
+            lines.push(`  Change  : from line ${d.firstLine} (${d.removed.length} removed, ${d.added.length} added)`);
+            if (d.removed.length) {
+                lines.push('  REMOVED :');
+                d.removed.forEach((l, i) => lines.push(`    - [${d.firstLine + i}] ${l.slice(0, 120)}`));
+            }
+            if (d.added.length) {
+                lines.push('  ADDED   :');
+                d.added.forEach((l, i) => lines.push(`    + [${d.firstLine + i}] ${l.slice(0, 120)}`));
+            }
+        }
+        if (entry.note)    lines.push(`  Note    : ${entry.note}`);
+        if (entry.content) lines.push(`  Content : ${String(entry.content).slice(0, 200)}`);
+        lines.push(div, '');
+        fs.appendFileSync(LOG_EDITION_FILE, lines.join('\n') + '\n', 'utf8');
+    } catch (_) { /* silencieux */ }
+}
 const CONFIG_FILE = path.join(CONFIG_DIR, 'conf.json');
 const AI_MODELS_FILE = path.join(CONFIG_DIR, 'ai-models.json');
 
@@ -5341,7 +5400,31 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
         const content = req.body.content ?? '';
         const folderId = req.body.folderId || null;
         const publish = req.body.publish === true;
+        const editionSource = req.headers['x-edition-source'] || (publish ? 'publish' : 'auto-save');
+
+        // Lire l'ancien contenu pour le diff AVANT d'écraser
+        let oldContent = '';
+        try { oldContent = fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : ''; } catch (_) {}
+
         fs.writeFileSync(full, content, 'utf8');
+
+        // Logger la modification (seulement si le contenu a changé)
+        if (oldContent !== content) {
+            const diff = computeEditionDiff(oldContent, content);
+            logEdition({
+                event: 'SAVE',
+                project: req.params.name,
+                user: user.username || user.email || user.id,
+                source: editionSource,
+                file: item.path,
+                fileId: req.params.id,
+                size: oldContent.length,
+                newSize: content.length,
+                oldLines: oldContent.split('\n').length,
+                newLines: content.split('\n').length,
+                diff,
+            });
+        }
         await saveProjectConfig(req.params.name, config);
 
         // Git ou FTP : commit / upload selon le backend du projet
@@ -5421,6 +5504,20 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                 updatedByName: user.username || user.email || 'Utilisateur',
                 timestamp: new Date().toISOString()
             });
+            // Logger la diffusion SSE aux autres utilisateurs
+            logEdition({
+                event: 'SYNC-BROADCAST',
+                project: req.params.name,
+                user: user.username || user.email || user.id,
+                source: 'publish-broadcast',
+                file: item.path,
+                fileId: req.params.id,
+                size: content.length,
+                newSize: content.length,
+                oldLines: 0,
+                newLines: content.split('\n').length,
+                note: `Contenu diffusé via SSE content_update → ${folderId || 'root'}`,
+            });
             // Nouvel événement métier : signale aux autres users qu'une section a été partagée
             broadcastToProject(req.params.name, 'section_published', {
                 nodeId: req.params.id,
@@ -5456,6 +5553,49 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
 
         res.json({ success: true, commitHash: publishCommitHash, ftpUploaded: ftpPublishResult?.uploaded ?? null });
     } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Routes log édition ──────────────────────────────────────────────────────
+
+// GET /api/logs/edition?lines=500 — lire les N dernières lignes du log
+app.get('/api/logs/edition', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        if (!fs.existsSync(LOG_EDITION_FILE)) return res.json({ log: '', lines: 0 });
+        const raw = fs.readFileSync(LOG_EDITION_FILE, 'utf8');
+        const allLines = raw.split('\n');
+        const maxLines = Math.min(parseInt(req.query.lines || '1000', 10), 10000);
+        const slice = allLines.slice(-maxLines).join('\n');
+        res.json({ log: slice, lines: allLines.length, totalChars: raw.length });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/logs/edition — vider le log
+app.delete('/api/logs/edition', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        fs.writeFileSync(LOG_EDITION_FILE, '', 'utf8');
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /api/logs/edition — ajouter une entrée explicite (côté client)
+app.post('/api/logs/edition', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { event, project, source, file, fileId, note, content, size, newSize, oldLines, newLines } = req.body;
+    logEdition({
+        event: event || 'CLIENT-EVENT',
+        project: project || '?',
+        user: user.username || user.email || user.id,
+        source: source || 'client',
+        file, fileId, note, content,
+        size: size ?? 0, newSize: newSize ?? 0,
+        oldLines: oldLines ?? 0, newLines: newLines ?? 0,
+    });
+    res.json({ success: true });
 });
 
 // PATCH /api/projects/:name/files/:id (rename)
@@ -10533,24 +10673,50 @@ NE MÉLANGE JAMAIS les deux types. Si le projet concerne une maison d'hôte, une
 DISPOSITIF TYPE A — FORMATION / APPRENTISSAGE :
 (Utilise ce dispositif UNIQUEMENT pour les formations, cours, programmes pédagogiques)
 
-1. **Planning des séances** → \`\`\`ARRAY: Planning
-   Colonnes : Date | Thème | Objectif | Exercice | Statut
-   Une ligne par séance, dates calculées depuis début + fréquence.
+STRUCTURE OBLIGATOIRE — le cours DOIT être découpé en plusieurs sections (chaque titre \`##\` devient un dossier navigable). Respecte EXACTEMENT cet ordre et ces titres :
 
-2. **Agenda** → \`\`\`AGENDA: Séances
-   Une entrée par séance avec date, heure, thème.
+═══ A) EN PREMIER, une seule section de pilotage ═══
+\`## 📊 Bilan général et suivi du cours\`
+Cette section centralise TOUT le suivi global. Elle contient, dans cet ordre :
 
-3. **Exercices par thème** → \`\`\`FORM: Exercices [Thème]\`\`\` par grand thème ou séance-clé.
-   Questions QCM ou réponse libre.
+  1. \`\`\`ARRAY: Planning
+     Colonnes : Séance | Date | Thème | Objectif | Statut
+     Une ligne par séance, dates réelles calculées depuis la date de début + la fréquence.
 
-4. **Suivi des notes** → \`\`\`ARRAY: Suivi des notes
-   Colonnes : Séance | Date | Note | Max | % | Moyenne
-   Formules : =C2/D2*100 pour %, =AVG(C2:C20) pour la moyenne.
+  2. \`\`\`AGENDA: Séances
+     Une entrée par séance. IMPÉRATIF : le titre de chaque événement doit être STRICTEMENT IDENTIQUE au titre de la séance correspondante (« Séance N — Thème »), pour permettre le lien agenda → dossier.
 
-5. **Progression** → \`\`\`CHART: Progression des notes
-   source: Suivi des notes | col: Note
+  3. \`\`\`ARRAY: Suivi des notes
+     Colonnes : Séance | Date | Note | Max | % | Moyenne
+     Une ligne par séance, dans le MÊME ordre que le planning. Laisse les colonnes Note, % et Moyenne VIDES au départ : elles seront remplies automatiquement après correction des QCM.
+     Formules : =D2/E2*100 pour le %, =AVG(D2:D20) pour la moyenne.
 
-6. (optionnel) \`\`\`TRELLO: Avancement\`\`\` pour les tâches/séances.
+  4. \`\`\`CHART: Progression des notes
+     source: Suivi des notes | col: Note
+
+  5. (optionnel) \`\`\`TRELLO: Avancement\`\`\` pour le suivi des tâches/séances.
+
+═══ B) PUIS une section par séance ═══
+Pour CHAQUE séance, un titre \`## Séance N — YYYY-MM-DD : Thème\` (date réelle de la séance), au niveau 2 EXACTEMENT (deux #). Chaque section de séance contient :
+  - Le **contenu du cours** de la séance : explication pédagogique structurée du thème (texte, exemples, points clés).
+  - **UN QCM d'exercices** : un bloc \`\`\`FORM: QCM Séance N avec 3 à 6 questions à choix.
+    FORMAT OBLIGATOIRE du QCM (respecte-le À LA LETTRE, chaque option commence par « * ( ) » pour un choix unique ou « * [ ] » pour un choix multiple) :
+    \`\`\`FORM: QCM Séance 1
+    * **Question 1 : énoncé de la question ?**
+      * ( ) Première proposition
+      * ( ) Deuxième proposition
+      * ( ) Troisième proposition
+    * **Question 2 : autre énoncé ?**
+      * [ ] Proposition A
+      * [ ] Proposition B
+    \`\`\`
+    CHAQUE question DOIT avoir au moins 2 options en \`( )\` ou \`[ ]\`. N'écris JAMAIS une question sans ses options de réponse.
+
+RÈGLES STRICTES :
+- Les MegaOutils de pilotage (Planning, Agenda, Suivi des notes, Progression, Avancement) vont UNIQUEMENT dans « 📊 Bilan général et suivi du cours », JAMAIS dans une séance.
+- Le QCM va UNIQUEMENT dans sa séance, JAMAIS dans le Bilan.
+- Le titre d'une séance et le titre de son événement agenda doivent être rigoureusement identiques.
+- Ne fusionne pas plusieurs séances dans un même titre : une séance = un titre \`##\` = un dossier.
 
 ────────────────────────────────────────────────────────────────
 

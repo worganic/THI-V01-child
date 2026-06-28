@@ -1,6 +1,30 @@
 {
   "modifications": [
     {
+      "id": "mod-501",
+      "version": "B-0.314",
+      "date": "2026-06-28T12:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets", "server", "libs"],
+      "features": "projets:editor-zone|system:log-edition",
+      "title": "Éditeur : système de logs complet pour toutes les modifications de texte",
+      "description": "Ajout d'un système de traçabilité exhaustif pour toutes les modifications de texte dans l'éditeur. Chaque save HTTP est loggué dans /data/log-edition.txt avec : source (user-editing, ia-prompt-result, ia-workflow-result, system-cleanup, sse-content-update), diff avant/après, utilisateur, taille, timestamp. Côté server : logEdition() avec computeEditionDiff(), routes GET/POST/DELETE /api/logs/edition. Côté Angular : output editSource propagé de la zone → EditionOutilComponent → ProjetEditorComponent avec capture de la source avant chaque updateFile(). Côté service : updateFile() envoie le header x-edition-source ; logEditionEvent() envoie les événements clients (SSE reçus, etc.).",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "ajoute un système de log pour toutes modification de l'Edition d'un texte dans le système d'Edition, toutes modification, quelle soi manuel par le user, par l'IA ou par le système de synchro, tous doit être logué.",
+      "startedAt": "2026-06-28T11:00:00.000Z",
+      "completedAt": "2026-06-28T12:00:00.000Z"
+    },
+    {
       "id": "mod-500",
       "version": "B-0.313",
       "date": "2026-06-28T09:00:00.000Z",
