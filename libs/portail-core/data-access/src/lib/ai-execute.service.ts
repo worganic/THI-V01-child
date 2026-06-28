@@ -40,6 +40,43 @@ export class AiExecuteService {
     this.ngZone.run(() => this.isStreaming.set(false));
   }
 
+  /**
+   * Exécution IA « one-shot » indépendante du flux streamé partagé : ouvre sa PROPRE
+   * EventSource (sans toucher à `this.es`/`chunk$`/`done$`) et résout le texte complet.
+   * Sert aux corrections/analyses en tâche de fond pendant qu'un popup streame déjà.
+   */
+  executeOnce(systemPrompt: string | null, userPrompt: string, provider: string, model: string): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+      const params = new URLSearchParams({
+        systemPrompt: systemPrompt || '',
+        userPrompt,
+        provider,
+        model,
+        token: this.authService.getToken() || '',
+      });
+      const es = new EventSource(`${this.dataUrl}/api/mega-outils/prompt/execute-stream?${params.toString()}`);
+      let accumulated = '';
+      const finish = (fn: () => void) => { es.close(); this.ngZone.run(fn); };
+
+      es.addEventListener('ai-log', (e: MessageEvent) => {
+        const d = JSON.parse(e.data) as { stream: string; text: string };
+        if (d.stream === 'stdout') accumulated += d.text;
+      });
+      es.addEventListener('ai-error', (e: MessageEvent) => {
+        const d = JSON.parse(e.data) as { message: string };
+        finish(() => reject(new Error(d.message)));
+      });
+      es.addEventListener('run-failed', (e: MessageEvent) => {
+        const d = JSON.parse(e.data) as { message: string };
+        finish(() => reject(new Error(d.message)));
+      });
+      es.addEventListener('complete', () => finish(() => resolve(accumulated)));
+      es.onerror = () => {
+        if (es.readyState !== EventSource.CLOSED) finish(() => reject(new Error('Connexion SSE interrompue')));
+      };
+    });
+  }
+
   startExecution(systemPrompt: string | null, userPrompt: string, provider: string, model: string): void {
     this.cancel();
     this.isStreaming.set(true);

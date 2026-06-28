@@ -4,14 +4,14 @@
 
 ---
 
-## `2-5-2-2-1` — Arborescence des fichiers
+## `2-5-2-2-1` — [modification] Arborescence des fichiers
 
 - Affichage de l'arbre hiérarchique dossiers/fichiers/images (en excluant contenu.md et les fichiers -css.md)
 - Icônes spécifiques selon le type (dossier ouvert/fermé, fichier Markdown, image, image imbriquée)
 - Expand/Collapse dossier via clic sur le chevron ou le dossier
 - Auto-expand récursif des dossiers parents lors de la sélection d'un fichier
 - Sélection d'un nœud émettant l'événement fileSelect
-- Formatage personnalisé pour l'affichage des noms des Trello (TL: NOM) et Tableaux (AR: NOM)
+- Formatage personnalisé pour l'affichage des noms des Trello (TL: NOM), Tableaux (AR: NOM) et Prompts (PR: NOM) via `nodeDisplayName` ; les fences ```PROMPT: NOM sont extraites en fichiers physiques `prompt-NOM` par `parseContent` (même mécanisme que Trello/Array)
 - Gestion des classes et états visuels du nœud actif (activeFileId) et du survol en drag-and-drop
 - Affichage des images imbriquées sous leur document parent
 - **Priorité:** critique
@@ -127,13 +127,13 @@
 
 ---
 
-## `2-5-2-2-13` — Système d'outils (vB-0.249+)
+## `2-5-2-2-13` — [modification] Système d'outils (vB-0.249+)
 
 - Clic sur le titre du projet ouvrant le popup flottant "Ajouter un outil"
 - Options actives dans le popup : Edition, Tests, Agenda (option Code désactivée et marquée bientôt)
 - Clic en dehors du popup provoquant sa fermeture
 - Liste des outils actifs affichée avec icône et libellé
-- Chevron d'extension permettant de plier/déplier les root folder IDs associés à chaque outil
+- Chevron d'extension permettant de plier/déplier les root folder IDs associés à chaque outil (sauf agenda → liste d'événements, voir `2-5-2-2-19`)
 - Clic sur le nom d'un outil : émission de outilSelect pour adapter la zone centrale
 - Création d'un outil via POST /api/file-projects/{name}/outils
 - Rangement physique des fichiers sous le répertoire propre à l'outil (edition, tests, agenda)
@@ -216,3 +216,15 @@
 - Déclaration du statut annulable (undoable) et de la payload de rollback (undoAction)
 - **Priorité:** critique
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `libs/portail-core/data-access/src/lib/wo-action-history.service.ts`
+
+---
+
+## `2-5-2-2-19` — [modification] Liste des événements de l'agenda dans la sidebar
+
+- Un outil de type **agenda** n'affiche PAS de dossiers (root folders) mais la **liste de ses événements** sous son en-tête une fois déplié
+- Événements triés par date de début croissante ; chaque ligne montre une pastille couleur, le titre et la date (`formatAgendaEventDate` : « 29 juin 2026 · 10:00 », sans heure si allDay)
+- État vide : « Aucun événement »
+- Chargement indépendant via `AgendaOutilService.getEvents` (l'outil agenda n'est monté que s'il est actif) ; rechargé sur changement d'`outils`/`projectName` et après une modif dans l'agenda (`reloadAgendaEvents` appelée par le parent sur `eventsChanged`)
+- Clic sur un événement : émet `agendaEventSelect({ outilId, event })` → le parent active l'outil agenda et ouvre l'événement (voir agenda `2-5-2-10-6`)
+- **Priorité:** majeure
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`

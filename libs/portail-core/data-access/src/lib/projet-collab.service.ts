@@ -132,6 +132,8 @@ export class ProjetCollabService {
   readonly mockupUpdate$ = new Subject<{ instanceId: string | null; projectId: string; action: string }>();
   // Mega-outils Array : mutation d'une grille par un autre user
   readonly arrayUpdate$ = new Subject<{ instanceId: string | null; projectId: string; action: string }>();
+  // Mega-outils Prompt : exécution ou historique mis à jour par un autre user
+  readonly promptUpdate$ = new Subject<{ instanceId: string | null; projectId: string; action: string }>();
 
   // Demandes Partager / Annuler d'une section depuis le menu contextuel de la sidebar.
   // La zone d'édition (seule à connaître le contenu/les snapshots) écoute ces flux.
@@ -148,9 +150,9 @@ export class ProjetCollabService {
 
   // Demande de création d'un méga-outil (Trello / Tableau) dans une section,
   // depuis le menu contextuel de la sidebar. La zone d'édition crée l'instance.
-  readonly createMegaOutilRequest$ = new Subject<{ type: 'trello' | 'array'; folderId: string }>();
+  readonly createMegaOutilRequest$ = new Subject<{ type: 'trello' | 'array' | 'prompt'; folderId: string }>();
 
-  requestCreateMegaOutil(type: 'trello' | 'array', folderId: string): void {
+  requestCreateMegaOutil(type: 'trello' | 'array' | 'prompt', folderId: string): void {
     this.createMegaOutilRequest$.next({ type, folderId });
   }
 
@@ -320,6 +322,15 @@ export class ProjetCollabService {
           this.zone.run(() => this.arrayUpdate$.next(update));
         } catch (err) {
           console.warn('[Collab] SSE array_update parse error:', err);
+        }
+      });
+
+      this.eventSource.addEventListener('prompt_update', (e: MessageEvent) => {
+        try {
+          const update = JSON.parse(e.data) as { instanceId: string | null; projectId: string; action: string };
+          this.zone.run(() => this.promptUpdate$.next(update));
+        } catch (err) {
+          console.warn('[Collab] SSE prompt_update parse error:', err);
         }
       });
 

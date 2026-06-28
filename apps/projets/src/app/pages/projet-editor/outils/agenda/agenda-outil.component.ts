@@ -1,6 +1,6 @@
 import {
-  Component, Input, OnChanges, SimpleChanges,
-  signal, computed, inject
+  Component, Input, Output, EventEmitter, OnChanges, SimpleChanges,
+  signal, computed, inject, effect
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -356,6 +356,15 @@ const JOURS_LONGS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dim
           </div>
         }
 
+        <!-- Ouvrir la séance liée (cours vivant) -->
+        @if (editingEvent() && isSeanceEvent(editingEvent()!)) {
+          <button class="w-full flex items-center justify-center gap-1.5 mb-3 px-3 py-2 text-[12px] rounded-lg bg-indigo-500/10 border border-indigo-500/25 text-indigo-400 font-medium hover:bg-indigo-500/20 transition-colors"
+                  (click)="navigateToSection.emit(editingEvent()!); closePopup()">
+            <span class="material-symbols-outlined text-[15px]">menu_book</span>
+            Ouvrir la séance
+          </button>
+        }
+
         <!-- Actions -->
         <div class="flex items-center justify-between">
           @if (editingEvent()) {
@@ -388,8 +397,24 @@ export class AgendaOutilComponent implements OnChanges {
   @Input() projectId: string | null = null;
   @Input() projectName = '';
   @Input() activeOutilId: string | null = null;
+  /** Demande d'ouverture d'un événement depuis la sidebar (date + popup). Token = re-déclenchement. */
+  @Input() openEventRequest: { event: AgendaEvent; token: number } | null = null;
+  /** Émis quand l'utilisateur veut ouvrir la séance liée à un événement (titre de l'événement). */
+  @Output() navigateToSection = new EventEmitter<AgendaEvent>();
+  /** Émis à chaque changement de la liste d'événements (chargement, création, édition, suppression, drag). */
+  @Output() eventsChanged = new EventEmitter<void>();
 
   private agendaService = inject(AgendaOutilService);
+
+  constructor() {
+    // Notifier le parent (→ sidebar) à chaque modification de la liste d'événements.
+    let first = true;
+    effect(() => {
+      this.events();
+      if (first) { first = false; return; }
+      this.eventsChanged.emit();
+    });
+  }
 
   readonly JOURS_COURTS = JOURS_COURTS;
   readonly JOURS_LONGS = JOURS_LONGS;
@@ -489,6 +514,15 @@ export class AgendaOutilComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['projectId'] && this.projectId) {
       this.loadEvents();
+    }
+    // Ouverture d'un événement depuis la sidebar : aller à sa date (vue Mois) + ouvrir le popup.
+    if (changes['openEventRequest'] && this.openEventRequest) {
+      const ev = this.openEventRequest.event;
+      this.activeTab.set('mois');
+      this.currentDate.set(new Date(ev.startDate));
+      // Utiliser la version fraîche en mémoire si déjà chargée (sinon la copie reçue).
+      const fresh = this.events().find(e => e.id === ev.id) ?? ev;
+      this.onEventClick(fresh, new MouseEvent('click'));
     }
   }
 
@@ -756,6 +790,11 @@ export class AgendaOutilComponent implements OnChanges {
     this.showPopup.set(false);
     this.editingEvent.set(null);
     this.confirmDeleteGroup.set(false);
+  }
+
+  /** Un événement est une séance de cours si son titre commence par « Séance ». */
+  isSeanceEvent(ev: AgendaEvent): boolean {
+    return /^\s*s[ée]ance\b/i.test(ev.title);
   }
 
   // ── Groupe d'événements liés ──

@@ -17,7 +17,7 @@ Vue : textarea Markdown à gauche, rendu HTML miroir à droite
 
 ---
 
-## `2-5-2-4-2` — Mode Focus (section sélectionnée dans la sidebar)
+## `2-5-2-4-2` — [modification] Mode Focus (section sélectionnée dans la sidebar)
 
 - **Activation** : sélection d'un dossier dans la sidebar → `applyFocusByActiveNode()` → `enterFocusMode(handle)`
 - **Vue focusée** : seul le contenu de la section sélectionnée est affiché dans le textarea
@@ -110,11 +110,12 @@ Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :
 
 ---
 
-## `2-5-2-4-11` — Sections et parsing
+## `2-5-2-4-11` — [modification] Sections et parsing
 
 - **Détection headings** : regex `^(#{1,4}) (.+)$` → niveaux 1-4
 - **Niveaux** : `#` = niveau 1, `##` = niveau 2, `###` = niveau 3, `####` = niveau 4
 - **SectionRanges** : `{ folderId, lineStart, lineEnd }` pour chaque section. Le mappage titre→`folderId` itère dans l'ordre du **buffer** (`flatHeads`, ce que l'utilisateur voit) et associe chaque titre à un `docSection` non encore consommé (level + name) — robuste même quand l'ordre du buffer diverge de l'ordre stocké des fichiers (cas de la préservation du texte en mode Code, voir `2-5-2-4-16`). Sans cette logique, une section déplacée dans le code pointait vers le mauvais dossier (focus erroné à la navigation).
+- **Calcul de `lineEnd` (portée = section + sous-sections)** : la fin de plage d'une section va jusqu'à la prochaine section qui **n'est pas un descendant** dans l'arbre (`getDescendantFolderIds`), et non « la prochaine section de niveau markdown ≤ ». Indispensable car `buildDocSections` plafonne le niveau de titre à 4 (`####` max) : au-delà de 4 niveaux de profondeur, parent et enfants partagent le même niveau markdown → un calcul par niveau tronquerait la plage de focus au seul titre. Le focus d'une section profonde affiche donc bien la section ET toutes ses sous-sections (cohérent avec le filtre de la preview).
 - **FileRanges** : `{ fileId, lineStart, lineEnd }` pour les blocs fichiers additionnels
 - **Blocs-fichiers additionnels** : délimités par une ligne commençant par `'`, `` ` `` ou `^`. Les fences de code markdown ` ``` ` sont explicitement exclues (lookahead `(?!` + 3 backticks + `)` / garde `!startsWith('```')`) → un bloc de code ` ``` … ``` ` n'est jamais interprété comme un bloc-fichier ni reformaté à la sauvegarde
 

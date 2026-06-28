@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
 import { Subscription } from 'rxjs';
 import { ProjectService, Project } from '@worganic/portail-core/data-access';
-import { ProjectFilesService, FileNode, FtpNodeSyncStatus, Outil } from '@worganic/portail-core/data-access';
+import { ProjectFilesService, FileNode, FtpNodeSyncStatus, Outil, AgendaEvent } from '@worganic/portail-core/data-access';
 import { MegaOutilsService, MegaOutilInstance } from '@worganic/portail-core/data-access';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
@@ -54,6 +54,7 @@ import { ProjetAiEditService } from './services/projet-ai-edit.service';
 })
 export class ProjetEditorComponent implements OnInit, OnDestroy {
   @ViewChild(EditionOutilComponent) editionOutil?: EditionOutilComponent;
+  @ViewChild(ProjetSidebarComponent) sidebar?: ProjetSidebarComponent;
 
   readonly portailUrl = environment.portailUrl;
 
@@ -70,6 +71,10 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   activeNodeId = signal<string | null>(null);
   highlightNodeId = signal<string | null>(null);
   scrollToNodeId = signal<string | null>(null);
+  // Demande de bascule de mode de l'éditeur (token = re-déclenchement même mode identique).
+  editorModeRequest = signal<{ mode: 'edit' | 'visu' | 'structure'; token: number } | null>(null);
+  // Demande d'ouverture d'un événement dans l'agenda (depuis la sidebar).
+  agendaEventToOpen = signal<{ event: AgendaEvent; token: number } | null>(null);
   zone5Tab = signal<'conversation' | 'history'>('conversation');
   zone5Collapsed = signal(false);
   // F6 — Drawer des commentaires de section
@@ -88,6 +93,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   activeMegaOutil    = signal<MegaOutilInstance | null>(null);
   showTrelloList     = signal(false);
   showMockupList     = signal(false);
+  showPromptListView = signal(false);
 
   readonly trelloInstanceCount = computed(() => this.megaOutilInstances().filter(i => i.type === 'trello').length);
   readonly mockupInstanceCount = computed(() => this.megaOutilInstances().filter(i => i.type === 'mockup').length);
@@ -567,6 +573,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     }
     this.showTrelloList.set(false);
     this.showMockupList.set(false);
+    this.showPromptListView.set(false);
     this.activeNodeId.set(node.id);
     this.highlightNodeId.set(node.id);
     this.scrollToNodeId.set(null);
@@ -576,6 +583,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   onProjectRootSelect(): void {
     this.showTrelloList.set(false);
     this.showMockupList.set(false);
+    this.showPromptListView.set(false);
     this.activeNodeId.set(null);
     this.highlightNodeId.set(null);
     this.scrollToNodeId.set(null);
@@ -588,12 +596,20 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
   onTrelloListClick() {
     this.showMockupList.set(false);
+    this.showPromptListView.set(false);
     this.showTrelloList.set(true);
   }
 
   onMockupListClick() {
     this.showTrelloList.set(false);
+    this.showPromptListView.set(false);
     this.showMockupList.set(true);
+  }
+
+  onPromptListClick() {
+    this.showTrelloList.set(false);
+    this.showMockupList.set(false);
+    this.showPromptListView.set(true);
   }
 
   /** Navigation depuis la "Liste des trellos" : sélectionne la section et ferme la liste. */
@@ -681,6 +697,82 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.activeOutilId.set(outilId);
     this.activeNodeId.set(null);
     this.highlightNodeId.set(null);
+    // Sélection d'un outil par son en-tête : ne pas rouvrir un événement agenda (requête périmée).
+    this.agendaEventToOpen.set(null);
+  }
+
+  /** Clic sur un événement dans la sidebar : activer l'agenda et ouvrir l'événement (date + popup). */
+  onAgendaEventSelect(payload: { outilId: string; event: AgendaEvent }): void {
+    this.activeOutilId.set(payload.outilId);
+    this.activeNodeId.set(null);
+    this.highlightNodeId.set(null);
+    this.agendaEventToOpen.set({ event: payload.event, token: Date.now() });
+  }
+
+  /** L'agenda a modifié ses événements → rafraîchir la liste affichée dans la sidebar. */
+  onAgendaEventsChanged(): void {
+    this.sidebar?.reloadAgendaEvents();
+  }
+
+  /** Navigation depuis l'agenda : ouvre le dossier de la séance liée à l'événement. */
+  onAgendaNavigateToSection(ev: AgendaEvent): void {
+    const folder = this.findFolderByTitleLike(ev.title, this.files());
+    if (!folder) return;
+    // Basculer sur l'outil propriétaire du dossier (via son ancêtre de premier niveau)
+    const rootId = this.findTopLevelAncestorId(folder.id, this.files());
+    const owner = this.outils().find(o => rootId && o.rootFolderIds?.includes(rootId))
+               ?? this.outils().find(o => o.type === 'edition')
+               ?? this.outils().find(o => !o.rootFolderIds?.length);
+    if (owner) this.activeOutilId.set(owner.id);
+    this.activeNodeId.set(folder.id);
+    this.highlightNodeId.set(folder.id);
+    // Ouvrir la séance toujours en mode Edition (visu), pas en Code.
+    this.editorModeRequest.set({ mode: 'visu', token: Date.now() });
+    this.scrollToNodeId.set(null);
+    setTimeout(() => this.scrollToNodeId.set(folder.id), 50);
+  }
+
+  /** Numéro de séance extrait d'un libellé (« Séance 3 — … » → « 3 »). */
+  private seanceKey(s: string): string | null {
+    const m = s.match(/s[ée]ance\s*(\d+)/i);
+    return m ? m[1] : null;
+  }
+
+  private collectFolders(nodes: FileNode[], acc: FileNode[] = []): FileNode[] {
+    for (const n of nodes) {
+      if (n.type === 'folder') { acc.push(n); this.collectFolders(n.children || [], acc); }
+    }
+    return acc;
+  }
+
+  /** Trouve le dossier dont le nom correspond au titre d'un événement séance. */
+  private findFolderByTitleLike(title: string, nodes: FileNode[]): FileNode | null {
+    const folders = this.collectFolders(nodes);
+    const norm = (s: string) => s.toLowerCase().replace(/\s+/g, ' ').trim();
+    const target = norm(title);
+    // 1. Correspondance exacte / préfixe
+    const exact = folders.find(f => {
+      const n = norm(f.name);
+      return n === target || n.startsWith(target) || target.startsWith(n);
+    });
+    if (exact) return exact;
+    // 2. Par numéro de séance
+    const key = this.seanceKey(title);
+    if (key) {
+      const byNum = folders.find(f => this.seanceKey(f.name) === key && /s[ée]ance/i.test(f.name));
+      if (byNum) return byNum;
+    }
+    return null;
+  }
+
+  /** Id du nœud de premier niveau (dans this.files()) contenant le dossier donné. */
+  private findTopLevelAncestorId(folderId: string, nodes: FileNode[]): string | null {
+    const contains = (node: FileNode): boolean =>
+      node.id === folderId || (node.children || []).some(c => c.type === 'folder' && contains(c));
+    for (const n of nodes) {
+      if (n.type === 'folder' && contains(n)) return n.id;
+    }
+    return null;
   }
 
   async onOutilCreate(data: { type: string; name: string }): Promise<void> {

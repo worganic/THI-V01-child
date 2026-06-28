@@ -61,7 +61,8 @@
         (dragDrop)="onDragDrop($event)"
         (refresh)="onRefresh()"
         (outilSelect)="onOutilSelect($event)"
-        (outilCreate)="onOutilCreate($event)" />
+        (outilCreate)="onOutilCreate($event)"
+        (agendaEventSelect)="onAgendaEventSelect($event)" />
 
       @if (!diffEntry() && !hasPendingEdit()) {
         @if (!activeOutil() || activeOutil()?.type === 'edition') {
@@ -73,6 +74,7 @@
               [projectName]="project()?.id || ''"
               [activeNodeId]="activeNodeId()"
               [highlightNodeId]="highlightNodeId()"
+              [modeRequest]="editorModeRequest()"
               [commentCounts]="commentCounts()"
               [backupType]="project()?.backupType ?? null"
               [ftpSyncGlobalStatus]="ftpSyncGlobalStatus()"
@@ -84,6 +86,7 @@
               [activeOutilId]="activeOutilId()"
               [showTrelloList]="showTrelloList()"
               [showMockupList]="showMockupList()"
+              [showPromptListView]="showPromptListView()"
               (megaOutilSelect)="onMegaOutilSelect($event)"
               (megaOutilCreated)="onMegaOutilCreated($event)"
               (megaOutilDeleted)="onMegaOutilDeleted($event)"
@@ -93,6 +96,8 @@
               (closeMockupList)="showMockupList.set(false)"
               (mockupNavigate)="onMockupNavigate($event)"
               (openMockupDiagram)="onOpenMockupDiagram()"
+              (openPromptList)="onPromptListClick()"
+              (closePromptListView)="showPromptListView.set(false)"
               (fileSave)="onFileSave($event)"
               (sectionsChange)="onSectionsChange($event)"
               (nodeActive)="onNodeActive($event)"
@@ -111,7 +116,10 @@
           <app-agenda-outil
               [projectId]="project()?.id ?? null"
               [projectName]="project()?.title ?? ''"
-              [activeOutilId]="activeOutilId()" />
+              [activeOutilId]="activeOutilId()"
+              [openEventRequest]="agendaEventToOpen()"
+              (navigateToSection)="onAgendaNavigateToSection($event)"
+              (eventsChanged)="onAgendaEventsChanged()" />
         }
       } @else if (diffEntry()) {
         <app-projet-diff
