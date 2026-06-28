@@ -1,6 +1,25 @@
 {
   "modifications": [
     {
+      "id": "mod-499",
+      "version": "B-0.313",
+      "date": "2026-06-28T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor-zone|prompt:result-section",
+      "title": "Prompt : résultat inséré comme section sœur au même niveau",
+      "description": "Lors de l'exécution d'un prompt, le résultat 'Pr - NomPrompt' est désormais inséré comme section sœur au même niveau hiérarchique que la section du prompt (et non plus comme sous-section). Le résultat devient un vrai dossier sibling dans l'arborescence. Rétrocompatible : les anciens résultats placés en sous-section sont détectés et migrés. Les fonctions getPromptResultSectionText, getPromptResultLink et deletePromptResult ont été étendues pour chercher à la fois à l'ancienne et à la nouvelle position. Le headingRe accepte désormais le suffixe {{SID:id}} injecté automatiquement après rechargement.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je voudrais que lors d'un resultat de l'execution d'un prompt cela crait une section au niveau du prompt initial et tous les datas sont enregistré dans cette section, ainsi on à le PR: à un niveau, la section du résultat au même niveau avec un identifiant unique (la section) et les datas dans cette section (infos, form, trello, array etc).",
+      "startedAt": "2026-06-28T10:00:00.000Z",
+      "completedAt": "2026-06-28T10:15:00.000Z"
+    },
+    {
       "id": "mod-498",
       "version": "B-0.313",
       "date": "2026-06-28T00:00:00.000Z",

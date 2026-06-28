@@ -5959,9 +5959,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }).join('\n');
   }
 
-  /** Place le résultat d'un prompt dans une section "Résultat du prompt" située un niveau
-   *  sous la section du prompt, titres du résultat décalés pour rester dessous. Remplace
-   *  une éventuelle section résultat précédente (idempotent sur ré-exécution). */
+  /** Place le résultat d'un prompt dans une section "Pr - NomPrompt" au MÊME niveau que la
+   *  section du prompt (section sœur, insérée après), titres du résultat décalés d'un niveau.
+   *  Remplace une éventuelle section résultat précédente (idempotent sur ré-exécution).
+   *  Rétrocompatible : migre aussi les anciens résultats placés en sous-section. */
   private upsertPromptResultSection(promptInstanceId: string, markdown: string) {
     const inst = this.promptInstances.find(i => i.id === promptInstanceId);
     if (!inst || !markdown.trim()) return;
@@ -5973,16 +5974,30 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
     const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
     const sectionLevel = range?.level ?? 1;
-    const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
-    const headingLevel = Math.min(sectionLevel + 1, 6);
+    let folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
+    const headingLevel = Math.min(sectionLevel, 6);
     const heading = '#'.repeat(headingLevel) + ' Pr - ' + inst.name;
     const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
+    // Accepte l'éventuel {{SID:id}} injecté après le nom lors des rechargements
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
 
-    // 1. Retirer une section "Pr - NomPrompt" existante dans le folder (après le fence)
+    // 1. Retirer une section "Pr - NomPrompt" existante :
+    //    a) à l'ancienne position (sous-section dans le folder, après le fence)
+    //    b) à la nouvelle position (section sœur juste après le folder)
     let exIdx = -1;
     for (let i = closeIdx + 1; i <= folderEnd; i++) {
       if (headingRe.test((lines[i] || '').trim())) { exIdx = i; break; }
+    }
+    if (exIdx === -1) {
+      for (let i = folderEnd + 1; i < lines.length; i++) {
+        const hm = /^(#{1,6}) /.exec(lines[i] || '');
+        if (!hm) continue;
+        if (hm[1].length < headingLevel) break;
+        if (hm[1].length === headingLevel) {
+          if (headingRe.test((lines[i] || '').trim())) exIdx = i;
+          break;
+        }
+      }
     }
     if (exIdx !== -1) {
       const exLevel = (lines[exIdx].match(/^(#+)/)?.[1].length) ?? headingLevel;
@@ -5993,14 +6008,16 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         end++;
       }
       let start = exIdx;
-      while (start > closeIdx + 1 && lines[start - 1].trim() === '') start--;
-      lines.splice(start, end - start);
+      while (start > 0 && lines[start - 1].trim() === '') start--;
+      const removed = end - start;
+      if (start <= folderEnd) folderEnd -= removed;
+      lines.splice(start, removed);
     }
 
-    // 2. Démoter les titres du résultat et insérer juste après le fence du prompt
+    // 2. Démoter les titres du résultat et insérer APRÈS la section parente (section sœur)
     const now = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     const demoted = this.demoteHeadings(markdown.trim(), headingLevel);
-    lines.splice(closeIdx + 1, 0, '', heading, `_Exécuté le ${now}_`, '', ...demoted.split('\n'), '');
+    lines.splice(folderEnd + 1, 0, '', heading, `_Exécuté le ${now}_`, '', ...demoted.split('\n'), '');
 
     this.unifiedContent = lines.join('\n');
     this.recomputeRanges();
@@ -6043,7 +6060,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   confirmDeleteResultId: string | null = null;
 
-  /** Vérifie si une section "Pr - NomPrompt" existe pour ce prompt et en retourne le texte. */
+  /** Vérifie si une section "Pr - NomPrompt" existe pour ce prompt et en retourne le texte.
+   *  Cherche d'abord à l'ancienne position (sous-section), puis comme section sœur. */
   getPromptResultSectionText(instanceId: string): string | null {
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return null;
@@ -6052,12 +6070,25 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (openLine === -1) return null;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
+    const sectionLevel = range?.level ?? 1;
+    const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
     const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
     let hIdx = -1;
-    for (let i = closeIdx + 1; i < lines.length; i++) {
+    for (let i = closeIdx + 1; i <= folderEnd; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
-      if (/^#{1,6} /.test(lines[i])) break; // heading frère → pas de résultat
+    }
+    if (hIdx === -1) {
+      for (let i = folderEnd + 1; i < lines.length; i++) {
+        const hm = /^(#{1,6}) /.exec(lines[i] || '');
+        if (!hm) continue;
+        if (hm[1].length < sectionLevel) break;
+        if (hm[1].length === sectionLevel) {
+          if (headingRe.test((lines[i] || '').trim())) hIdx = i;
+          break;
+        }
+      }
     }
     if (hIdx === -1) return null;
     const hLevel = (lines[hIdx].match(/^(#+)/)?.[1].length) ?? 2;
@@ -6070,7 +6101,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return lines.slice(hIdx, end).join('\n');
   }
 
-  /** Retourne les infos du résultat "Pr - NomPrompt" d'un prompt si la section existe. */
+  /** Retourne les infos du résultat "Pr - NomPrompt" d'un prompt si la section existe.
+   *  Cherche d'abord à l'ancienne position (sous-section), puis comme section sœur. */
   getPromptResultLink(instanceId: string): { name: string; folderId: string | null; date: string } | null {
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return null;
@@ -6079,12 +6111,25 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (openLine === -1) return null;
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
+    const sectionLevel = range?.level ?? 1;
+    const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
     const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)\\s*$');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
     let hIdx = -1;
-    for (let i = closeIdx + 1; i < lines.length; i++) {
+    for (let i = closeIdx + 1; i <= folderEnd; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
-      if (/^#{1,6} /.test(lines[i])) break;
+    }
+    if (hIdx === -1) {
+      for (let i = folderEnd + 1; i < lines.length; i++) {
+        const hm = /^(#{1,6}) /.exec(lines[i] || '');
+        if (!hm) continue;
+        if (hm[1].length < sectionLevel) break;
+        if (hm[1].length === sectionLevel) {
+          if (headingRe.test((lines[i] || '').trim())) hIdx = i;
+          break;
+        }
+      }
     }
     if (hIdx === -1) return null;
     let date = '';
@@ -6092,8 +6137,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const m = (lines[i] || '').match(/_Exécuté le ([^_]+)_/);
       if (m) { date = m[1].trim(); break; }
     }
-    const range = this.sectionRanges.find(r => r.lineStart === hIdx);
-    return { name: 'Pr - ' + inst.name, folderId: range?.folderId ?? null, date };
+    const resultRange = this.sectionRanges.find(r => r.lineStart === hIdx);
+    return { name: 'Pr - ' + inst.name, folderId: resultRange?.folderId ?? null, date };
   }
 
   /**
@@ -6155,12 +6200,25 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (openLine === -1) { this.confirmDeleteResultId = null; return; }
     let closeIdx = openLine + 1;
     while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+    const rangeForDel = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
+    const sectionLevelDel = rangeForDel?.level ?? 1;
+    const folderEndDel = Math.min(rangeForDel?.lineEnd ?? lines.length - 1, lines.length - 1);
     const escapedNameDel = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedNameDel + '|Résultat du prompt)\\s*$');
+    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedNameDel + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
     let hIdx = -1;
-    for (let i = closeIdx + 1; i < lines.length; i++) {
+    for (let i = closeIdx + 1; i <= folderEndDel; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
-      if (/^#{1,6} /.test(lines[i])) break;
+    }
+    if (hIdx === -1) {
+      for (let i = folderEndDel + 1; i < lines.length; i++) {
+        const hm = /^(#{1,6}) /.exec(lines[i] || '');
+        if (!hm) continue;
+        if (hm[1].length < sectionLevelDel) break;
+        if (hm[1].length === sectionLevelDel) {
+          if (headingRe.test((lines[i] || '').trim())) hIdx = i;
+          break;
+        }
+      }
     }
     if (hIdx !== -1) {
       const hLevel = (lines[hIdx].match(/^(#+)/)?.[1].length) ?? 2;
@@ -6171,7 +6229,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         end++;
       }
       let start = hIdx;
-      while (start > closeIdx + 1 && lines[start - 1].trim() === '') start--;
+      while (start > 0 && lines[start - 1].trim() === '') start--;
       lines.splice(start, end - start);
     }
 
