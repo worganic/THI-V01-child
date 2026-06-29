@@ -4,7 +4,7 @@
 
 ---
 
-## `1-1-1` — Accès et navigation
+## `1-1-1` — [modification] Accès et navigation
 
 - **Affichage page publique** : la landing est accessible sans authentification
 - **Redirection automatique** : si l'utilisateur est déjà connecté (token valide en localStorage), redirection automatique vers la sous-application projets (port 4203) via `navigateToProjets` en transmettant le token, l'utilisateur et le thème dans les paramètres de requête de l'URL
@@ -15,7 +15,7 @@
 
 ---
 
-## `1-1-2` — Formulaire de connexion
+## `1-1-2` — [modification] Formulaire de connexion
 
 - **Pré-remplissage automatique** : l'ouverture du modal de connexion pré-remplit les champs email et mot de passe avec des identifiants de test (`admin@admin.com` / `admin`)
 - **Saisie email** : champ texte avec validation native du format de l'adresse email
@@ -32,7 +32,7 @@
 
 ---
 
-## `1-1-3` — États de la page
+## `1-1-3` — [modification] États de la page
 
 - **Non connecté** : affichage normal de la landing page avec un arrière-plan animé de 30 particules
 - **Déjà connecté** : redirection immédiate vers la sous-application projets (port 4203) en transmettant le token, l'utilisateur et le thème dans les paramètres de l'URL
@@ -43,7 +43,7 @@
 
 ---
 
-## `1-1-4` — Formulaire de création de compte
+## `1-1-4` — [modification] Formulaire de création de compte
 
 - **Saisie nom d'utilisateur** : champ texte, unique (trim et comparaison insensible à la casse effectués côté serveur)
 - **Saisie email** : champ texte, validation du format email, unique (converti en minuscules et trimé côté serveur)

@@ -178,7 +178,7 @@ app.use(cors({
         // 'https://app.worganic.com'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Call']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Call', 'x-edition-source', 'x-file-version']
 }));
 
 app.use(express.json({ limit: '50mb' }));
@@ -9216,8 +9216,17 @@ function callExecutorSse(sse, res, req, { stepId, content, provider, model, cwd 
         });
     });
     apiReq.on('error', (e) => {
-        sse('run-failed', { message: `Executor injoignable (port 3002) : ${e.message}` });
-        res.end();
+        if (!res.writableEnded) { sse('run-failed', { message: `Executor injoignable (port 3002) : ${e.message}` }); res.end(); }
+    });
+    // Filet de sécurité : si l'executor ne renvoie rien et ne ferme pas le socket dans le délai max
+    // (un peu plus large que le watchdog de l'executor), on coupe pour débloquer le client.
+    const SOCKET_TIMEOUT_MS = parseInt(process.env.AI_EXEC_TIMEOUT_MS || '', 10) || 5 * 60 * 1000;
+    apiReq.setTimeout(SOCKET_TIMEOUT_MS + 30000, () => {
+        if (!res.writableEnded) {
+            sse('run-failed', { message: `Délai dépassé : l'executor n'a pas répondu en ${Math.round((SOCKET_TIMEOUT_MS + 30000) / 1000)}s.` });
+            res.end();
+        }
+        try { apiReq.destroy(); } catch {}
     });
     apiReq.write(body);
     apiReq.end();
@@ -10906,18 +10915,56 @@ app.delete('/api/mega-outils/prompt/config/workflow', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// Store temporaire des prompts à exécuter (mécanisme prepare→stream). Évite de passer de gros
+// prompts en query string d'URL (EventSource = GET) : au-delà de ~16 Ko d'en-tête, Node rejette
+// la requête → flux SSE jamais établi (bug génération avec gros prompts). TTL 5 min.
+const _promptExecJobs = new Map();
+setInterval(() => {
+    const now = Date.now();
+    for (const [k, v] of _promptExecJobs) if (now - v.createdAt > 5 * 60 * 1000) _promptExecJobs.delete(k);
+}, 60000).unref?.();
+
+// POST /api/mega-outils/prompt/execute-prepare — enregistre un prompt et renvoie un jobId à passer
+// à execute-stream. Le corps POST n'a pas de limite d'en-tête → supporte des prompts volumineux.
+app.post('/api/mega-outils/prompt/execute-prepare', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { systemPrompt, userPrompt, provider, model } = req.body || {};
+    if (!userPrompt) return res.status(400).json({ error: 'userPrompt requis' });
+    const jobId = require('crypto').randomUUID();
+    _promptExecJobs.set(jobId, {
+        systemPrompt: (systemPrompt || '').toString(),
+        userPrompt: userPrompt.toString(),
+        provider: (provider || 'claude').toString(),
+        model: (model || '').toString(),
+        userId: user.id,
+        createdAt: Date.now()
+    });
+    res.json({ jobId });
+});
+
 // GET /api/mega-outils/prompt/execute-stream — Exécution SSE d'un prompt MO via l'executor local (port 3002).
 // Claude → stdout streamé. Agy → fichier de sortie pollé (agy bufferise stdout sur Windows pipe).
 // Événements nommés : start, ai-log {stream, text}, ai-error {message}, complete {text}, run-failed {message}
+// Deux modes d'entrée : ?jobId=… (recommandé, gros prompts via prepare) OU params directs (legacy, petits prompts).
 app.get('/api/mega-outils/prompt/execute-stream', (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
 
-    const systemPrompt = (req.query.systemPrompt || '').toString();
-    const userPrompt   = (req.query.userPrompt   || '').toString();
-    const provider     = (req.query.provider     || 'claude').toString();
-    const model        = (req.query.model        || '').toString();
-    const isAgy        = provider === 'antigravity' || provider === 'agy';
+    let systemPrompt, userPrompt, provider, model;
+    const jobId = (req.query.jobId || '').toString();
+    if (jobId) {
+        const job = _promptExecJobs.get(jobId);
+        if (!job) return res.status(404).json({ error: 'Job de prompt introuvable ou expiré' });
+        _promptExecJobs.delete(jobId); // usage unique
+        ({ systemPrompt, userPrompt, provider, model } = job);
+    } else {
+        systemPrompt = (req.query.systemPrompt || '').toString();
+        userPrompt   = (req.query.userPrompt   || '').toString();
+        provider     = (req.query.provider     || 'claude').toString();
+        model        = (req.query.model        || '').toString();
+    }
+    const isAgy = provider === 'antigravity' || provider === 'agy';
 
     if (!userPrompt) return res.status(400).json({ error: 'userPrompt requis' });
 
@@ -10961,11 +11008,26 @@ app.get('/api/mega-outils/prompt/execute-stream', (req, res) => {
         };
         const agyPoller = setInterval(pollAgy, 1500);
 
+        // Statut périodique : agy ne streame pas sur stdout (sortie fichier) → sans ce retour,
+        // le client n'a AUCUNE visibilité pendant que le modèle réfléchit/écrit. On émet un état
+        // toutes les 5s (temps écoulé + octets reçus dans le fichier de sortie).
+        const agyStart = Date.now();
+        const statusPoller = setInterval(() => {
+            const elapsed = Math.round((Date.now() - agyStart) / 1000);
+            sse('ai-log', { stream: 'info', text: lastSize > 0
+                ? `agy en cours… ${elapsed}s — ${lastSize} octets reçus`
+                : `agy en cours… ${elapsed}s — en attente de la réponse du modèle (rien écrit pour l'instant)` });
+        }, 5000);
+
         callExecutorSse(sse, res, req,
             { stepId, content, provider, model, cwd: PROJECT_ROOT },
             { onEnd: () => {
                 clearInterval(agyPoller);
+                clearInterval(statusPoller);
                 pollAgy();
+                if (!fullText.trim()) {
+                    sse('ai-log', { stream: 'stderr', text: `⚠ agy s'est terminé sans écrire dans le fichier de sortie. La réponse est vide — vérifie l'installation/authentification d'agy ou réessaie avec le provider Claude.` });
+                }
                 sse('complete', { text: fullText });
                 res.end();
             }}

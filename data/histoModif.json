@@ -6,7 +6,9 @@
       "date": "2026-06-28T23:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["server"],
+      "scope": [
+        "server"
+      ],
       "features": "server:mega-outils-execute|system:ai-monitoring",
       "title": "Exécution agy : statut périodique pendant l'attente (visibilité) + alerte sortie vide",
       "description": "agy (antigravity) écrit sa réponse dans un fichier et ne streame pas sur stdout → pendant la génération, le client n'avait aucun retour (zone vide, impression de blocage). Ajout d'un statut périodique toutes les 5s dans le flux SSE (event ai-log/info) : temps écoulé + octets reçus dans le fichier de sortie, ou « en attente de la réponse du modèle » si rien écrit. À la fin, si le fichier est resté vide, une alerte stderr explique le problème (installation/auth agy, ou suggère le provider Claude). Donne une vraie visibilité sur les allers-retours IA et distingue un agy lent d'un agy en échec.",
@@ -25,7 +27,9 @@
       "date": "2026-06-28T22:30:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:prompt-workflow|projets:form-execution",
       "title": "Workflow guidé : les réponses du formulaire ne sont plus perdues sur « Générer maintenant »",
       "description": "Bug diagnostiqué via le Journal IA : la requête de génération avait la même taille (4436 car.) que le cadrage → les réponses du formulaire n'étaient pas transmises à l'IA. Cause : le bouton secondaire « Générer le livrable maintenant » du form popup émettait un événement vide (secondary: void) → onForceGenerate() lançait la génération sans pousser les réponses dans le transcript. Fix : FormExecutionPopupComponent émet désormais la FormEntry (réponses saisies) sur l'action secondaire (refactor buildEntry partagé avec submit) ; onForceGenerate(entry) pousse ces réponses dans le transcript avant génération. Les réponses sont donc transmises à l'IA quel que soit le bouton utilisé.",
@@ -45,7 +49,9 @@
       "date": "2026-06-28T22:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:prompt-workflow|system:ai-monitoring",
       "title": "Workflow guidé : journal IA en direct (allers-retours requêtes/réponses)",
       "description": "Le popup de workflow guidé n'affichait que le stdout accumulé — vide avec agy (qui écrit dans un fichier, pas sur stdout) → aucune visibilité. Ajout d'un Journal IA en direct : il s'abonne à execSvc.log\\$ (flux info/stdout/stderr) et trace chaque requête envoyée (logRequest : SYSTEM+USER tronqués, provider/modèle) et chaque réponse reçue (taille + durée). Panneau repliable, horodaté, coloré par type de flux, plafonné à 400 lignes, bouton Vider. Permet de surveiller le bon fonctionnement des échanges IA et de diagnostiquer un blocage.",
@@ -64,7 +70,10 @@
       "date": "2026-06-28T21:30:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["server", "system"],
+      "scope": [
+        "server",
+        "system"
+      ],
       "features": "system:executor|server:mega-outils-execute",
       "title": "Exécution IA : watchdog timeout (plus de blocage infini sur génération)",
       "description": "Bug : exécuter un prompt (workflow guidé) restait bloqué indéfiniment sur 'Génération du livrable…' si le CLI (agy/antigravity) ne se terminait jamais. Cause : le process spawné (agy/claude) n'avait aucun timeout → close jamais émis → aucun 'complete' SSE → client bloqué en cascade. Fix executor (port 3002) : watchdog timeout max dur (5 min, configurable via AI_EXEC_TIMEOUT_MS) qui tue le process (SIGTERM puis SIGKILL) et émet error+end pour débloquer. NB : agy n'écrivant pas sur stdout (sortie fichier), un watchdog d'inactivité stdout est impossible → timeout sur durée totale. Fix server (callExecutorSse) : filet de sécurité apiReq.setTimeout (max + 30s) si l'executor devient injoignable en cours de stream.",
@@ -84,7 +93,9 @@
       "date": "2026-06-28T20:45:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone|system:markdown-paste",
       "title": "Collage markdown : re-leveling auto des titres sous le dossier cible",
       "description": "Bug : coller un texte markdown contenant un titre de niveau supérieur (ex: H1) dans un dossier de niveau 2 cassait la hiérarchie et le texte était supprimé. Fix : au collage (Mode Code + Mode Édition visu), si le presse-papier contient des titres markdown, ils sont automatiquement recalés (relevelMarkdownHeadings) pour que le plus haut titre devienne enfant du dossier cible (niveau cible + 1), plafonné à 6. Le parsing crée alors les sous-menus correspondants. Sans titres, le collage natif (texte/riche) est préservé. Mode Code : niveau cible déduit du dernier titre avant le curseur (fence-aware). Mode visu : niveau de la VisuSectionState, insertion en fin de contenu direct de la section.",
@@ -104,7 +115,10 @@
       "date": "2026-06-28T20:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets", "data"],
+      "scope": [
+        "projets",
+        "data"
+      ],
       "features": "projets:editor|system:mega-outils",
       "title": "Sync : ne plus supprimer un prompt (garde MOID sur orphan deletion)",
       "description": "Bug : renommer un prompt en Mode Code supprimait le prompt (fichier prompt-NOM.md effacé comme orphelin). Cause : l'étape 6 de processSectionsChange supprimait tout fichier additionnel non matché par nom, sans tenir compte de l'identité MOID. Fix : avant de supprimer un fichier MO (prompt-/trello-/array- ou contenant {{MOID:id}}), on vérifie si l'instance est encore vivante en DB (megaOutilInstances) — si oui, c'est un drift de parsing (renommage mal détecté), pas une suppression voulue → le fichier est protégé. Les suppressions explicites (deletePromptInstance, qui supprime d'abord l'instance DB) restent fonctionnelles. Restauration du prompt 'Ideation' perdu (projet cours d'anglais / Pr - Idéation) depuis l'historique git du projet.",
@@ -123,7 +137,11 @@
       "date": "2026-06-28T19:00:00.000Z",
       "type": "fix",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "server", "libs"],
+      "scope": [
+        "projets",
+        "server",
+        "libs"
+      ],
       "features": "projets:editor-zone|projets:editor|server:move-folder|server:files|libs:project-files-service",
       "title": "Stabilisation multi-user : SSE structure, ETag conflits, queue SSE, vue assemblée lecture seule",
       "description": "Phase 1 + Phase 2 de la stabilisation système Edition. Phase 1 : (a) SSE broadcast sur move-folder → les collaborateurs voient immédiatement les déplacements de dossiers ; (b) Détection de conflit ETag — le serveur calcule un hash de chaque fichier à chaque lecture/écriture, le client envoie x-file-version, si divergence → HTTP 409 avec le contenu serveur et affichage d'un panneau de résolution côté à côté ; (c) SSE contentUpdate mis en queue pendant isSaving → plus d'écrasement du buffer utilisateur pendant un cycle de sauvegarde ; (d) Lock fail-safe → 503 si DB inaccessible (plus de fail-open silencieux). Phase 2 : vue assemblée (aucune section sélectionnée) en lecture seule — textarea readonly + overlay invite, édition uniquement en mode focus (section sélectionnée dans la sidebar).",
@@ -146,7 +164,10 @@
       "date": "2026-06-28T16:30:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets", "server"],
+      "scope": [
+        "projets",
+        "server"
+      ],
       "features": "projets:editor-sidebar|server:move-folder",
       "title": "Drag & drop sidebar : renommage auto si conflit + toast erreur",
       "description": "Le déplacement d'un dossier vers une cible contenant un dossier du même nom retournait HTTP 400 silencieux. Fix côté serveur : auto-renommage avec suffixe numérique (ex: 'Section (2)'). Fix côté client : toast d'erreur générique en cas d'échec, toast de notification si renommage appliqué. Les deux toast disparaissent après 5 secondes.",
@@ -167,7 +188,9 @@
       "date": "2026-06-28T14:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone|system:sync-focus",
       "title": "Éditeur : 3 fixes sync — focus+SSE, markersFixed guard, purge image",
       "description": "Fix 1 (critique) : en mode focus, fullContentBackup n'était pas mis à jour lors de la réception d'un SSE content_update pour une section externe. À la sortie du focus, les modifs du collaborateur étaient écrasées. Fix : reconstruction depuis docSections + réinjection du contenu local à sa nouvelle position. Fix 2 : la garde preserveCodeBuffer était désactivée par markersFixed même si l'utilisateur tapait activement (localCodeSavePending). Le buffer utilisateur pouvait être écrasé par reconstructFromSections(). Fix : la règle markersFixed est désormais prioritaire sur preserveCodeBuffer (délai au cycle suivant). Fix 3 : recomputeMirrorLines déclenchait un saveAll() immédiat si localCodeSavePending, créant une double-save race condition. Guard ajouté.",
@@ -187,7 +210,11 @@
       "date": "2026-06-28T12:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "server", "libs"],
+      "scope": [
+        "projets",
+        "server",
+        "libs"
+      ],
       "features": "projets:editor-zone|system:log-edition",
       "title": "Éditeur : système de logs complet pour toutes les modifications de texte",
       "description": "Ajout d'un système de traçabilité exhaustif pour toutes les modifications de texte dans l'éditeur. Chaque save HTTP est loggué dans /data/log-edition.txt avec : source (user-editing, ia-prompt-result, ia-workflow-result, system-cleanup, sse-content-update), diff avant/après, utilisateur, taille, timestamp. Côté server : logEdition() avec computeEditionDiff(), routes GET/POST/DELETE /api/logs/edition. Côté Angular : output editSource propagé de la zone → EditionOutilComponent → ProjetEditorComponent avec capture de la source avant chaque updateFile(). Côté service : updateFile() envoie le header x-edition-source ; logEditionEvent() envoie les événements clients (SSE reçus, etc.).",
@@ -211,11 +238,15 @@
       "date": "2026-06-28T09:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["libs"],
+      "scope": [
+        "libs"
+      ],
       "features": "libs:mega-outils|prompt:collab",
       "title": "MO Prompt : rétrocompatibilité promptUpdate$ manquant",
       "description": "Rend l'abonnement à promptUpdate$ rétrocompatible via cast `as any` pour éviter TS2339 sur les repos ayant une version antérieure de ProjetCollabService.",
-      "files": ["libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts"],
+      "files": [
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts"
+      ],
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "j'ai un soucis avec un user qui à la même version et qui à un soucis : [ERROR] TS2339: Property 'promptUpdate$' does not exist on type 'ProjetCollabService'",
@@ -228,7 +259,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone|prompt:result-section",
       "title": "Prompt : résultat inséré comme section sœur au même niveau",
       "description": "Lors de l'exécution d'un prompt, le résultat 'Pr - NomPrompt' est désormais inséré comme section sœur au même niveau hiérarchique que la section du prompt (et non plus comme sous-section). Le résultat devient un vrai dossier sibling dans l'arborescence. Rétrocompatible : les anciens résultats placés en sous-section sont détectés et migrés. Les fonctions getPromptResultSectionText, getPromptResultLink et deletePromptResult ont été étendues pour chercher à la fois à l'ancienne et à la nouvelle position. Le headingRe accepte désormais le suffixe {{SID:id}} injecté automatiquement après rechargement.",
@@ -247,7 +280,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone",
       "title": "Résultat prompt : placement dans la bonne section (cap H6)",
       "description": "Quand un prompt était exécuté depuis une section en H4 (ou plus), le résultat 'Pr - NomPrompt' était inséré au même niveau que la section du prompt (sibling) au lieu d'être un niveau en dessous (child). Cause : Math.min(sectionLevel + 1, 4) plafonnait à H4 au lieu de laisser monter jusqu'à H6. Correction : le cap passe de 4 à 6 dans upsertPromptResultSection. Aussi corrigé : le regex de scan de la section existante passe de #{1,4} à #{1,6}.",
@@ -267,7 +302,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone,projets:sidebar",
       "title": "Éditeur : extension à 6 niveaux de titres (H5 / H6)",
       "description": "L'éditeur de projet supporte désormais 6 niveaux de titres (H1→H6) au lieu de 4. La limite de profondeur est passée de 4 à 6 dans la logique TypeScript (parseStructureNodes, changeHeadingLevel, canDemoteStructNode, openTitleDialogStructChild) et dans la sidebar (canDemoteNode). Le template HTML affiche les classes --l5/--l6, le bouton 'Ajouter un sous-titre' est disponible jusqu'au niveau 5, et le rendu visu inclut les balises <h5>/<h6>. Les couleurs L5 (Violet) et L6 (Teal) sont ajoutées au SCSS. Les données existantes (H1-H4) ne sont pas impactées.",
@@ -290,7 +327,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone",
       "title": "Workflow guidé : pas de formulaire en retour → génération directe",
       "description": "Lors de l'exécution d'un prompt en mode guidé, si la réponse de cadrage ne contenait pas de formulaire exploitable (et pas de ===PRÊT===), le popup affichait une erreur « La réponse de l'IA n'est pas un formulaire exploitable. » et bloquait. Désormais, l'absence de formulaire n'est plus une erreur : le workflow enchaîne directement sur la génération du livrable (startGenerate). Le mode guidé fonctionne donc avec ET sans formulaire. Le message d'erreur générique est réservé aux vrais échecs d'exécution/connexion.",
@@ -310,7 +349,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:agenda",
       "title": "Agenda : clic sur l'outil n'ouvre plus un popup d'événement périmé",
       "description": "Cliquer sur l'en-tête de l'outil Agenda dans la sidebar rouvrait le popup de modification du dernier événement ouvert. Cause : le signal agendaEventToOpen conservait sa valeur ; au (re)montage de l'agenda, son ngOnChanges firstChange lisait cet openEventRequest non-null et rouvrait le popup. Correction : onOutilSelect réinitialise agendaEventToOpen à null lors d'une sélection d'outil par l'en-tête.",
@@ -330,7 +371,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:agenda,projets:sidebar",
       "title": "Agenda : sidebar liste les événements + ouverture au clic",
       "description": "L'outil Agenda n'affiche plus les dossiers de l'outil Edition dans la sidebar mais la liste de ses événements (triés par date, pastille couleur + titre + date, état vide « Aucun événement »). La sidebar charge les événements via AgendaOutilService (chargement indépendant car l'outil agenda n'est monté que s'il est actif), et les recharge sur changement d'outils/projet et après une modif dans l'agenda (Output eventsChanged → reloadAgendaEvents). Au clic sur un événement, le parent active l'outil agenda et l'agenda passe en vue Mois, se positionne sur la date de l'événement et ouvre le popup (Input openEventRequest { event, token }).",
@@ -355,7 +398,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:agenda,projets:editor-zone",
       "title": "Agenda « Ouvrir la séance » : ouverture en mode Edition",
       "description": "Le bouton « Ouvrir la séance » du popup agenda envoyait vers la bonne section mais en mode Code. Il ouvre désormais l'outil Edition en mode Edition (visu). Ajout d'un Input modeRequest ({ mode, token }) sur la zone d'édition (propagé via edition-outil), consommé dans ngOnChanges pour appeler setMode. Le parent positionne editorModeRequest={ mode: 'visu', token } dans onAgendaNavigateToSection. Le token force le re-déclenchement même si le mode demandé est identique.",
@@ -379,7 +424,9 @@
       "date": "2026-06-28T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone",
       "title": "Focus section : inclure les sous-sections au-delà de 4 niveaux",
       "description": "En mode Code (et autres modes focus), cliquer sur une section profonde n'affichait que son titre, sans ses sous-sections. Cause : buildDocSections plafonne le niveau de titre markdown à 4 (#### max) ; au-delà de 4 niveaux de profondeur d'arbre, parent et enfants partagent le même niveau markdown et deviennent frères au sens des titres, ce qui tronquait la plage (lineEnd) à la seule ligne de titre. Correction : le calcul de lineEnd se base désormais sur la hiérarchie réelle de l'arbre (getDescendantFolderIds) — la plage va jusqu'à la prochaine section non-descendante — comme le fait déjà le filtre de la preview.",
@@ -399,7 +446,9 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["data"],
+      "scope": [
+        "data"
+      ],
       "features": "projets:mega-outils",
       "title": "Suppression des instances prompt orphelines (sans fichier lié)",
       "description": "Nettoyage BDD du projet test : suppression de 5 instances prompt qui n'avaient aucun fichier prompt-NOM correspondant (anciens essais), ainsi que leur historique d'exécution. État final : 2 instances prompt, chacune avec son fichier (Cours de maths → Prompt cours, Création projet maison d'hôte → Prompt maison).",
@@ -416,7 +465,10 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets", "data"],
+      "scope": [
+        "projets",
+        "data"
+      ],
       "features": "projets:editor|mega-outils",
       "title": "Prompt PR: corrections : double injection, résurrection, doublon",
       "description": "Corrections de la fonctionnalité 'prompt = fichier PR:'. (1) Double injection : la fence PROMPT existait à la fois inline dans contenu.md ET dans le fichier prompt-NOM → buildDocSections retire désormais du contenu.md les fences PROMPT inline qui ont déjà un fichier (garde celles sans fichier = prompt fraîchement créé). (2) Résurrection : un fichier prompt vidé n'est plus régénéré depuis l'instance (sera nettoyé en orphelin). (3) Nettoyage data du projet test : retrait des fences inline en double des contenu.md, suppression du fichier doublon 'Cours de maths' de 'Prompt maison', repointage de l'instance vers 'Prompt cours'.",
@@ -436,7 +488,9 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|mega-outils",
       "title": "Clic sur fichier prompt : focus sur le seul prompt (comme Trello)",
       "description": "Cliquer un fichier 'PR: NOM' affichait tout le document au lieu du seul prompt (contrairement à 'TL:'/'AR:'). Cause : recomputeRanges calculait les plages (fileRanges) pour les fences TRELLO et ARRAY mais pas PROMPT → pas de handle → pas de focus. Ajout du bloc de détection ```PROMPT: NOM dans recomputeRanges, mappant la fence vers son fichier prompt-NOM ; le focus mode (mode Code) restreint désormais l'affichage au seul prompt.",
@@ -455,7 +509,9 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|sidebar|mega-outils",
       "title": "MO Prompt extrait en fichier 'PR: NOM' comme Trello/Array",
       "description": "Les MO Prompt étaient inline dans le contenu, contrairement à Trello/Array qui sont extraits en fichiers physiques (trello-NOM/array-NOM, affichés 'TL:/AR:'). Ajout de l'extraction des fences ```PROMPT: NOM en fichiers 'prompt-NOM' dans parseContent (calqué sur Trello/Array ; buildDocSections relisait déjà ces fichiers), et du mapping d'affichage 'PR: NOM' dans la sidebar (nodeDisplayName).",
@@ -475,7 +531,9 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|mega-outils",
       "title": "Cours vivant : correction QCM ne doit plus vider le texte des séances",
       "description": "Répondre à un QCM vidait le texte des séances (dossiers en double + contenu perdu). Cause : materializeLivingCourse écrivait un titre `# Titre` en tête du contenu.md de chaque dossier ; ce titre niveau 1 était interprété comme une section fantôme, et la sauvegarde déclenchée par la correction redistribuait mal le contenu. Fix : écrire uniquement le corps (le nom du dossier sert de titre) ; neutraliser aussi les titres markdown dans le corps de la correction IA (→ gras) et les interdire dans le prompt système de correction. La redistribution est protégée par les marqueurs {{SID}} (niveau capé à 4 dans buildDocSections).",
@@ -494,7 +552,10 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["server", "projets"],
+      "scope": [
+        "server",
+        "projets"
+      ],
       "features": "system:workflow,projets:editor|mega-outils",
       "title": "Cours vivant : QCM répondable + vrais dossiers par séance",
       "description": "Corrections suite aux tests. (1) QCM n'affichait que les questions : le parser de formulaire exigeait une puce avant les options ; l'IA génère `  ( ) Option` sans puce → puce rendue optionnelle dans parseFormContent (zone + workflow popup). (2) Format QCM renforcé dans le prompt de génération (exemple explicite, options obligatoires). (3) Les séances n'étaient pas des dossiers (titres démotés au-delà du niveau 4 quand le prompt est imbriqué) : nouvelle matérialisation `materializeLivingCourse` qui crée de VRAIS dossiers via l'API (Bilan + un par séance) avec contenu et MegaOutils, non limités en profondeur.",
@@ -515,7 +576,11 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["server", "libs", "projets"],
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
       "features": "system:workflow,projets:editor|agenda|mega-outils",
       "title": "Cours vivant : structure par séances datées + correction QCM IA + lien agenda",
       "description": "Document de formation vivant et évolutif. (1) Le prompt de génération Type A impose une section « Bilan général et suivi du cours » (Planning, Agenda, Suivi des notes, Progression) + un dossier daté par séance contenant le cours et un QCM. (2) Soumission d'un QCM → correction IA automatique : correction détaillée insérée dans la séance + note injectée dans le tableau Suivi des notes du Bilan (CHART de progression auto-MAJ). Ajout d'une exécution IA one-shot (AiExecuteService.executeOnce). (3) Lien agenda → séance : bouton « Ouvrir la séance » sur un événement, navigation vers le dossier correspondant (bascule d'outil + scroll).",
@@ -540,7 +605,9 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|mega-outils",
       "title": "Bouton copier prompt complet dans popup workflow guidé",
       "description": "Ajout d'un bouton 'Copier le prompt' dans le footer du popup PromptWorkflowPopup (état idle) qui copie dans le clipboard le prompt complet : system (baseSystemPrompt + extraSystemPrompt + clarifyPrompt) + demande utilisateur.",
@@ -559,7 +626,11 @@
       "date": "2026-06-27T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "libs", "server"],
+      "scope": [
+        "projets",
+        "libs",
+        "server"
+      ],
       "features": "projets:agenda,projets:prompt",
       "title": "Agenda : groupes d'événements liés (prompt → famille navigable)",
       "description": "Ajout du système de groupes dans l'agenda. Les événements créés par la matérialisation d'un MO AGENDA reçoivent un groupId (UUID) et un groupName (nom du prompt). 1) Modèle AgendaEvent étendu (groupId, groupName). 2) Route DELETE /agenda/group/:groupId pour suppression collective. 3) Service : méthode deleteEventGroup. 4) materializeAgendaFence : génère un groupId par fence, passe groupId+groupName à createEvent, insère un commentaire HTML <!-- agenda-group:xxx --> dans la liste lisible. 5) deletePromptResult : utilise le commentaire pour supprimer par groupId (fallback titre+date pour anciens événements). 6) UI agenda : section 'Famille' dans la popup (nom du prompt, compteur, navigation précédent/suivant, suppression de tous les événements liés). Indicateur 🔗 sur les événements groupés en vue semaine.",
@@ -582,7 +653,10 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["server", "libs"],
+      "scope": [
+        "server",
+        "libs"
+      ],
       "features": "projets:editor,projets:prompt",
       "title": "Prompt workflow : méta-prompts adaptatifs Type A (formation) vs Type B (projet opérationnel)",
       "description": "Réécriture des méta-prompts de cadrage et de génération pour distinguer clairement deux types de projets. Type A (formation/apprentissage) : génère exercices, suivi des notes et graphique de progression. Type B (projet opérationnel : business plan, immobilier, maison d'hôte, chantier…) : génère planning, jalons, suivi de KPIs adaptés et Trello, sans exercices ni suivi des notes. Le prompt de cadrage pose des questions adaptées au type détecté. Ajout endpoint DELETE /api/mega-outils/prompt/config/workflow pour remettre les surcharges BDD aux defaults, et bouton 'Réinitialiser' dans Admin › Mega-outils › Prompt.",
@@ -603,7 +677,9 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor,projets:prompt",
       "title": "Prompt : renommage heading résultat, liste résultats, fix tab bar",
       "description": "1) Le heading de la section résultat est renommé de 'Résultat du prompt' en 'Pr - NomPrompt' avec la date d'exécution en italique. La regex de détection/suppression gère les deux formats (rétro-compatibilité). 2) Dans la liste des prompts, chaque carte affiche un lien vert vers la section 'Pr - NomPrompt' si elle existe, avec la date/heure. 3) Correction du tab bar : utilisait promptInstances (toutes les instances DB) au lieu de promptInstancesInContent (uniquement celles avec fence dans le texte) — le compteur et la liste sont maintenant filtrés.",
@@ -623,7 +699,9 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor,projets:prompt",
       "title": "Prompt : suppression cascade du résultat (MO + événements agenda)",
       "description": "Nouvelle méthode deletePromptResult : supprime en cascade la section « Résultat du prompt » depuis la carte prompt en mode Edition. Cascade : 1) suppression des instances Trello/Array dont le nom apparaît dans la section (via deleteInstance), 2) suppression des événements agenda matchant les lignes de liste `- **date** — Titre` (via agendaSvc.deleteEvent), 3) retrait de la section du markdown. Bouton « Supprimer le résultat » avec icône delete_sweep et confirmation affiché sous la carte prompt quand une section résultat existe (getPromptResultSectionText). confirmDeleteResultId gère l'état de confirmation.",
@@ -643,7 +721,9 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor",
       "title": "Fix : liste des prompts filtrée sur le texte + bouton supprimer",
       "description": "La liste des prompts (vue Liste) affichait tous les prompts DB de l'outil, même ceux sans fence dans le texte. Remplacement par promptInstancesInContent (getter filtrant sur la présence de la fence dans unifiedContent). Ajout d'un bouton supprimer avec confirmation sur chaque carte : deletePromptInstance supprime l'instance DB ET retire la fence du contenu puis sauvegarde.",
@@ -663,7 +743,10 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets", "libs"],
+      "scope": [
+        "projets",
+        "libs"
+      ],
       "features": "projets:editor,libs:prompt-admin",
       "title": "Fix : doublons prompts en Edition + bouton supprimer dans Admin Prompts",
       "description": "Correction d'un bug où orderedBoardsForVisuSection incluait des instances Prompt DB sans fence correspondante dans le contenu, provoquant des boards fantômes en mode Edition. Fix : on ignore les instances dont posOf retourne MAX_SAFE_INTEGER (fence absente). Ajout d'un bouton supprimer (avec confirmation) sur chaque carte de la liste Admin › Mega-outils › Prompt, appelant deleteInstance via MegaOutilsService.",
@@ -683,7 +766,11 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "server", "libs"],
+      "scope": [
+        "projets",
+        "server",
+        "libs"
+      ],
       "features": "projets:editor,projets:workflow-guidé,projets:chart-mo,projets:agenda-mo",
       "title": "Workflow guidé : formation évolutive, CHART, AGENDA, contexte adaptatif",
       "description": "Amélioration du workflow guidé MO Prompt pour gérer les projets se déroulant dans le temps (formations, cours). Réécriture des méta-prompts (cadrage : détecte projets temporels, demande durée/fréquence/éval/priorités ; génération : produit planning Array, agenda AGENDA, exercices Form, suivi des notes Array+formules =AVG/SUM, graphique CHART). Nouveau MO CHART : composant SVG line chart avec source live depuis un tableau ARRAY ou données inline. Nouveau MO AGENDA : matérialisation depuis fence → vrais événements AgendaOutilService + replacement par liste Markdown. Ré-exécution adaptative : buildTrainingStateContext collecte formulaires remplis et tableaux du dossier, injecté comme [État actuel du projet] dans le workflow pour adaptation de remédiation. Popup workflow étendu (currentState Input, detectMos/summarize pour CHART/AGENDA).",
@@ -709,7 +796,9 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:prompt-result",
       "title": "Résultat de prompt placé dans une section « Résultat du prompt »",
       "description": "Le résultat d'un prompt (simple ET livrable du mode guidé) est désormais placé dans une section markdown « Résultat du prompt » créée un niveau sous la section du prompt (upsertPromptResultSection). Les titres du résultat sont décalés vers le bas (demoteHeadings) pour rester sous ce titre, en ignorant les titres internes aux fences MO. Remplacement idempotent à chaque ré-exécution. En mode guidé, le transcript de cadrage est archivé en tête de section sous un bloc Cadrage (plus de stockage dans ===RÉSULTAT=== du fence).",
@@ -729,7 +818,11 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "libs", "server"],
+      "scope": [
+        "projets",
+        "libs",
+        "server"
+      ],
       "features": "projets:prompt-workflow,libs:prompt-config,server:prompt-config",
       "title": "Prompt Mode guidé : workflow IA cadrage → formulaire → MegaOutils",
       "description": "Nouveau Mode guidé du MO Prompt (flag MODE: guided). À l'exécution, ouvre PromptWorkflowPopupComponent : l'IA pose d'abord des questions de cadrage (méta-prompt configurable) traduites en formulaire (réutilise FormExecutionPopupComponent), l'utilisateur répond, plusieurs vagues possibles (===PRÊT=== ou forçage), puis l'IA génère le livrable en MegaOutils. Aperçu + validation des MO détectés (Trello/Array/Form) puis matérialisation : insertion du livrable + création des instances Trello (cartes BDD) et Array (grille BDD) via materializeMegaOutilsFromContent. Les 2 méta-prompts (cadrage + génération) sont stockés en BDD (mega_outil_prompt_config) et éditables dans Admin › Mega-outils › Prompt. Badge Guidé sur la card prompt.",
@@ -757,7 +850,10 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "libs"],
+      "scope": [
+        "projets",
+        "libs"
+      ],
       "features": "projets:form-board,libs:form-board",
       "title": "FORM : auto-détection du markdown brut en formulaire interactif",
       "description": "Tout bloc de formulaire en markdown brut (question '* **…:**' suivie d'options [ ] ou ( )) est automatiquement encadré dans une balise ```FORM à l'entrée du mode Edition (autoConvertRawForms), le rendant interactif sans action. Rendu des forms désormais basé sur la balise (nom) au lieu d'une instance DB : decouple les forms auto-détectés des instances MegaOutil. Synchronisation docSections.textContent depuis unifiedContent (syncDocSectionsTextFromContent) pour affichage immédiat. Stats robustes pour les options à champ libre (matching sur préfixe avant ______). Réponses stockées dans le fence (===RÉPONSES===) ; brut visible en mode Code, stats en mode Edition.",
@@ -779,7 +875,10 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "libs"],
+      "scope": [
+        "projets",
+        "libs"
+      ],
       "features": "projets:form-board,libs:form-board",
       "title": "Feature FORM : blocs formulaires interactifs dans l'éditeur",
       "description": "Nouveau type MegaOutil 'form' : fence ```FORM: Nom``` dans le markdown, rendu en vue Edition comme une card bleue avec questions (lecture seule), stats des réponses et bouton Remplir. Popup d'exécution avec checkboxes/radios et champs texte conditionnels. Réponses stockées dans le fence avec marqueur ===RÉPONSES=== (date | utilisateur + réponses). Factorisation complète via FormBoardComponent (libs/shared/ui) et FormExecutionPopupComponent.",
@@ -804,7 +903,9 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:prompt-insert",
       "title": "MO prompt — insertion résultat dans le fence, après la card prompt",
       "description": "Le résultat IA est désormais stocké à l'intérieur du bloc PROMPT fence (avec marqueur ===RÉSULTAT===) et affiché sous la card prompt-board en vue Edition. Suppression des > en début de lignes (incluant les > multiples). Remplacement du résultat précédent à chaque nouvelle exécution. Factorisation de getPromptBodyById pour exclure la section résultat lors du parsing du prompt.",
@@ -825,7 +926,9 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:prompt-insert",
       "title": "MO prompt — nettoyage des > en début de ligne avant insertion",
       "description": "Suppression des > en début de ligne dans le résultat renvoyé par l'IA avant de l'insérer en blockquote dans l'éditeur. Évite le double-quote des lignes déjà préfixées par agy.",
@@ -844,7 +947,11 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets", "server", "libs"],
+      "scope": [
+        "projets",
+        "server",
+        "libs"
+      ],
       "features": "server:ai-executor,libs:ai-execute-service,projets:prompt-popup",
       "title": "Factorisation exécution IA — agy via executor pour tous les points d'entrée",
       "description": "Correction du bug agy dans MO prompts : suppression de l'appel direct à l'API Gemini, remplacement par l'executor local (port 3002). Agy ne streamant pas sur stdout Windows (buffering pipe), ajout du mécanisme fichier de sortie + poll 1500ms identique à admin/tests. Création de callExecutorSse() côté serveur (helper partagé). Création de AiExecuteService dans libs/portail-core/data-access (service partagé portail+projets). PromptExecutionPopupComponent migré vers AiExecuteService.",
@@ -867,7 +974,10 @@
       "date": "2026-06-26T00:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets", "server"],
+      "scope": [
+        "projets",
+        "server"
+      ],
       "features": "projets:prompt-execution,server:mega-outils",
       "title": "MO Prompt : passage au système EventSource (même pattern admin/tests)",
       "description": "Remplacement du système d'exécution du prompt MO par EventSource SSE GET (même architecture qu'admin/tests). Nouvelle route GET /api/mega-outils/prompt/execute-stream : proxy executor port 3002 pour Claude, appel direct Gemini API pour AGY (contourne le buffering CLI Windows). ProjetPromptExecuteService réécrit avec EventSource et PromptLogItem. Journal de log par stream (stderr/info/stdout) avec couleurs dédiées.",
@@ -889,7 +999,9 @@
       "date": "2026-06-23T18:50:00.000Z",
       "type": "config",
       "commitType": "AMELIORATION",
-      "scope": ["data"],
+      "scope": [
+        "data"
+      ],
       "features": "system:sitemap-proposals",
       "title": "Sitemap — Propositions de mise à jour pour la zone Admin (sm-1782240441391)",
       "description": "Génération du fichier proposals.json pour refléter l'état réel de la zone d'administration dans la Site Map (sections, sous-onglets, widgets, formulaires et liaisons de navigation/activation).",
@@ -908,7 +1020,9 @@
       "date": "2026-06-22T20:01:00.000Z",
       "type": "config",
       "commitType": "AMELIORATION",
-      "scope": ["data"],
+      "scope": [
+        "data"
+      ],
       "features": "system:sitemap-proposals",
       "title": "Sitemap — Propositions de mise à jour pour la zone Admin",
       "description": "Génération du fichier proposals.json pour refléter l'état réel de la zone d'administration dans la Site Map (sections, sous-onglets, widgets, formulaires et liaisons de navigation/activation).",
@@ -927,7 +1041,9 @@
       "date": "2026-06-21T21:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests|ia|persistance",
       "title": "Admin/Tests — mémorisation du provider/modèle IA entre les formulaires",
       "description": "Quand un provider IA et un modèle sont sélectionnés dans un formulaire (exécution, génération, nouvelle section), le choix est persisté via ConfigService.saveHeaderSelection (headerSelection, partagé avec le sélecteur du header). Helper persistAiSelection + handlers onAiModelChange / onGenModelChange / onCsModelChange, et persistance ajoutée aux onXxxProviderChange. Tous les formulaires IA se ré-initialisant déjà depuis headerSelection, la dernière IA/modèle utilisée est désormais proposée par défaut au prochain test.",
@@ -948,7 +1064,9 @@
       "date": "2026-06-21T21:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests|execution|runner",
       "title": "Admin/Tests — testeur, date et campagne sous l'état du test précédent",
       "description": "Enrichissement de l'affichage de l'état du dernier test précédent dans le runner (mod-432). funcPrevious renvoie désormais un PrevTest { status, date (testedAt réel), tester, runName, isCampaign, mode }. Sous la pastille OK/KO : nom du testeur (icône person ; 'IA' + smart_toy pour un run automatique via prevTesterLabel), date du test, et nom de la campagne (icône campaign) si isCampaign. Infobulle complète. Bloc passé en colonne (items-end).",
@@ -969,7 +1087,9 @@
       "date": "2026-06-21T20:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests|cahier|filtre",
       "title": "Admin/Tests — clic sur titre de section affiche toute la section malgré le filtre",
       "description": "Dans le Cahier de recette, sous un filtre actif (En erreur, etc.) une section feuille n'affiche que ses fonctions correspondantes. Cliquer sur le titre de la section bascule l'affichage complet de toutes ses fonctions (forceFullPaths signal + onCahierNodeClick/toggleSectionFull), re-cliquer ré-applique le filtre. visibleTree honore l'override (items complets de l'arbre non filtré). Badge bleu 'Tout' tant que la surcharge est active. Effet de reset (untracked) qui vide forceFullPaths quand statusFilter/searchQuery/favOnly change.",
@@ -990,7 +1110,9 @@
       "date": "2026-06-21T19:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests|execution|runner",
       "title": "Admin/Tests — état du dernier test précédent affiché dans le runner",
       "description": "Dans l'onglet Exécution, à gauche des boutons OK/KO/ND, affichage de l'état du dernier test décidé issu des runs précédents (computed funcPrevious = funcLatest excluant activeRun.id). Pastille OK/KO verte/rouge + label 'préc.' + infobulle (statut + date). Flèche de tendance (resultTrend) : trending_up vert si corrigé (KO→OK), trending_down rouge si régression (OK→KO). loadMatrix() appelé au lancement du run pour fiabiliser l'historique. Permet de constater visuellement si un test a été corrigé ou est devenu négatif.",
@@ -1011,7 +1133,12 @@
       "date": "2026-06-21T18:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["server", "portail", "data", "system"],
+      "scope": [
+        "server",
+        "portail",
+        "data",
+        "system"
+      ],
       "features": "server:tests-needsRetest,portail:admin/tests|cahier|filtre,system:claude-directives",
       "title": "Tests — tag [modification] fonctionnel : parsing, filtre À retester, badge, retrait au test",
       "description": "Implémentation complète du mécanisme needsRetest. Serveur : parseFonctionsMd détecte/retire [modification] → needsRetest; writeFonctionsMd réinjecte le tag (préservé sur édition priorité + apply-functions); helper clearModificationTagForItems appelé par PUT runs/:id pour lever le tag des fonctions décidées OK/KO. Client admin-tests : champ needsRetest, 5e filtre 'À retester', badge ambre Modification sur nœud de section (isSectionNeedsRetest) et devant chaque fonction taguée. Tags posés sur les sections impactées par mod-430 (barre de style) : section 2-5-3 'Projet/Edition/bar de style' (fonctions 2-5-3-1 à 2-5-3-9) + toolbar 2-5-2-3-5 / 2-5-2-3-9 ; et auto-tag de 2-1-5-1 / 2-1-5-15 (composant admin-tests modifié). CLAUDE.md : directive actualisée (mécanisme implémenté) + nouvelle règle de rapport de fin de prompt (composants modifiés & tests liés). Inclut au passage les sections de tests créées par la session Antigravity (registry 2-5-2-12 + 2-5-3, _user-created).",
@@ -1038,7 +1165,9 @@
       "date": "2026-06-21T17:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|barre-style|zones-colorees",
       "title": "Éditeur — barre de style colorée par zone",
       "description": "Les boutons de la barre de style (modes Code et Visu) sont regroupés en zones colorées identifiées par un fond semi-transparent : history (gris), format B/I/U/S (indigo), title T▾ (violet), blocks listes/lien/image (vert), align (ambre), size A/A (orange), color/highlight (rouge), clear (gris), extras code-block/tableau/hr (bleu ciel). Les séparateurs `__sep` entre groupes sont remplacés par les zones flex. Padding et gap ajustés sur `--docked`.",
@@ -1058,7 +1187,9 @@
       "date": "2026-06-21T16:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|zone-code|zone-preview|barre-style",
       "title": "Éditeur — Annuler/Refaire (Ctrl+Z / Ctrl+Y) dans la barre de style",
       "description": "Ajout des boutons Annuler (undo) et Refaire (redo) en première position dans la barre de style des modes Code et Édition (Visu). Mode Code : pile custom (codeUndoStack/codeRedoStack, max 200 entrées) — snapshot avant chaque action toolbar (insertAt, codeClearFormat) et debounce 800 ms sur la frappe ; Ctrl+Z/Y interceptés dans onTextareaKeydown. Mode Visu : document.execCommand('undo'/'redo') natif contenteditable ; Ctrl+Y intercepté dans onVisuSectionKeydown.",
@@ -1080,7 +1211,10 @@
       "date": "2026-06-21T15:30:00.000Z",
       "type": "config",
       "commitType": "AMELIORATION",
-      "scope": ["system", "data"],
+      "scope": [
+        "system",
+        "data"
+      ],
       "features": "system:claude-directives,portail:admin/tests|cahier",
       "title": "CLAUDE.md — directive tag [modification] sur fonctions après changement de code",
       "description": "Ajout d'une règle obligatoire dans CLAUDE.md : après chaque modification de fichier de code, vérifier si le composant est référencé dans les tests pré-programmés (via champ Composants des fonctions.md ou table de correspondance), et ajouter le tag [modification] devant le libellé du heading ## concerné. Mise à jour de fonctions.md admin/tests : ajout du filtre 'À retester' dans 2-1-5-1 et nouvelle section 2-1-5-15 décrivant le mécanisme complet (détection, tag, retrait automatique, champ needsRetest, visuel cahier).",
@@ -1100,7 +1234,10 @@
       "date": "2026-06-21T14:20:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail", "server"],
+      "scope": [
+        "portail",
+        "server"
+      ],
       "features": "portail:admin/tests|cahier|resultats|execution,server:user-created",
       "title": "Admin/Tests — tag 'Personnalisée' sur les sections créées à la demande",
       "description": "Fichier _user-created.json (liste de folderIds) créé dans tests/fonctions/ au moment du create-section. scanAllFunctions() lit ce fichier et injecte userCreated:true sur les FunctionItems correspondants. Méthode isSectionUserCreated(folderId) dans le composant. Badge violet (person_add, 'Personnalisée') ajouté : dans le cahier (nœud feuille), dans l'en-tête de groupe de l'onglet Résultats, dans l'onglet Exécution.",
@@ -1122,7 +1259,10 @@
       "date": "2026-06-21T14:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail", "server"],
+      "scope": [
+        "portail",
+        "server"
+      ],
       "features": "portail:admin/tests|cahier,server:create-section",
       "title": "Admin/Tests — bouton Créer section + popup + endpoint serveur",
       "description": "Bouton 'Nouvelle section' (indigo, add_circle) dans la barre Admin › Tests. Popup avec champs : section parente (dropdown cahierTree), slug kebab-case, titre, objectif/précisions, provider/modèle IA, checkbox composants. Flux : POST /api/admin/tests/create-section (crée dossier + fonctions.md + entrée registry avec ID hiérarchique calculé) → refreshFunctions → ouvre le popup de génération pré-rempli avec les instructions de création (différentes des instructions de mise à jour) + objectif utilisateur.",
@@ -1144,7 +1284,9 @@
       "date": "2026-06-21T13:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests|cahier",
       "title": "Cahier — titre en bleu si section IA-optimisée non testée",
       "description": "Ajout de aiUpdatedPaths (computed, propage le flag updatedAt sur tous les ancêtres), nodeIsAiOptimized (AI-mis-à-jour ET non testé) et nodeTitleClass (retourne text-sky-400 si optimisé non testé, text-light-text dark:text-white sinon). Le [ngClass] du libellé de section dans le cahier utilise nodeTitleClass.",
@@ -1164,7 +1306,9 @@
       "date": "2026-06-21T13:10:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/projets",
       "title": "Admin/Projets — routing sous-onglets (/admin/projets/:subtab)",
       "description": "AdminProjetsComponent : ajout de ActivatedRoute, DestroyRef et takeUntilDestroyed. switchSubTab navigue vers /admin/projets/:subtab via activateSubTabInternal. Subscription route.params dans ngOnInit : redirect vers /admin/projets/projets si pas de subtab, activation réactive sinon. Nœud adm-projets mis à jour dans le sitemap.",
@@ -1184,7 +1328,9 @@
       "date": "2026-06-21T12:50:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests",
       "title": "Admin/Tests — routing sous-onglets (/admin/tests/:subtab)",
       "description": "Ajout de la route /admin/:tab/:subtab dans base-routes.ts. AdminTestsComponent injecte Router, ActivatedRoute et DestroyRef ; selectTab navigue vers /admin/tests/:subtab et activateTabInternal gère la logique d'activation. La subscription à route.params (takeUntilDestroyed) active le bon sous-onglet au chargement direct via URL et au retour arrière navigateur. /admin/tests sans subtab redirige vers /admin/tests/cahier. URL du nœud adm-tests mis à jour dans le sitemap.",
@@ -1205,7 +1351,9 @@
       "date": "2026-06-21T12:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin|sitemap",
       "title": "Admin — routing par segments de chemin (/admin/:tab)",
       "description": "Conversion du routing des onglets admin de queryParams (?tab=xxx) vers des segments de path (/admin/xxx). Ajout de la route /admin/:tab dans base-routes.ts. L'AdminComponent utilise désormais route.params (réactif via takeUntilDestroyed) et setTab navigue vers /admin/:tab. Rétrocompatibilité : les anciennes URLs ?tab=xxx sont redirigées automatiquement. Les URLs admin dans le sitemap sont mises à jour vers le nouveau format.",
@@ -1226,7 +1374,9 @@
       "date": "2026-06-21T10:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin/tests|sitemap",
       "title": "Admin/Tests : onglet Site Map graphique interactif",
       "description": "Ajout d'un 5e onglet 'Site Map' dans Admin > Tests. Carte SVG interactive reflétant le parcours réel de l'utilisateur : groupes encadrés (Public, App connectée avec menu Documents/Projets/Admin, Admin avec ses onglets réels du registry, App Projets :4203, Widgets embarqués), nœuds cliquables par page (composants Angular réels, onglets, URL, lien d'ouverture), arêtes de navigation (connexion/nav/cross-app) ET relations fonctionnelles en pointillés (Méga-outils Trello → Éditeur de projet, Admin Outils → widgets, Config admin → Config user). Zoom molette + pan, volet latéral de détails, filtre par section du cahier de recette avec highlight et mode 'voir seulement cette section'.",
@@ -12334,7 +12484,9 @@
       "date": "2026-06-23T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin-tests,system:tests",
       "title": "Site Map : mode plein écran masquant les barres de menu",
       "description": "Ajout d'un bouton 'Plein écran' dans la barre d'outils de la Site Map (Admin > Tests). En mode plein écran, la carte occupe toute la fenêtre via un overlay fixe (fixed inset-0 z-[100]) qui masque le header, la navigation Admin et les sous-onglets Tests ; seule la barre d'outils de la Site Map reste visible et la carte s'agrandit (calc(100vh - 90px)). Le bouton bascule en 'Mode normal' (icone fullscreen_exit) pour revenir a l'affichage standard. Signal sitemapFullscreen + methode toggleSitemapFullscreen.",
@@ -12355,7 +12507,10 @@
       "date": "2026-06-23T00:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail", "server"],
+      "scope": [
+        "portail",
+        "server"
+      ],
       "features": "portail:admin-tests,system:tests",
       "title": "Site Map : MAJ IA organisée (zones conteneurs) + auto-layout récursif emboîté",
       "description": "Le prompt IA de mise a jour de la Site Map (buildSitemapUpdatePrompt) est enrichi pour produire des cartes claires, aerees et hierarchisees dans le style de reference : nouveau niveau ZONE conteneur (role=zone) regroupant les pages d'un meme domaine via parentId, bloc 'Organisation graphique attendue' (regrouper les pages par domaine, chainer parentId/groupId, ranger chaque element dans une section, creer les sections manquantes, relier les domaines par des liaisons), exemple d'operation zone et regle parentId renforcee. Cote app, l'auto-layout devient RECURSIF (smMeasureTree/smPlaceTree) : il emboite zones conteneurs > pages > sections > elements, place les sous-groupes en grille avec retour a la ligne (ZONE_MAXW=1500) et dimensionne chaque zone sur son contenu. autoLayoutSitemap et autoLayoutPage utilisent ce moteur. defaultSmAiInstructions (popup) mis a jour pour mentionner l'organisation attendue.",
@@ -12376,7 +12531,9 @@
       "date": "2026-06-23T01:00:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin-tests,system:tests",
       "title": "Site Map plein écran : popups (Versions, MAJ IA…) passaient sous l'overlay",
       "description": "En mode plein ecran, l'overlay de la Site Map (z-[120]) recouvrait les popups (Versions, Mise a jour par IA, Revue des propositions, Confirmation) rendues en z-50 : elles etaient invisibles/non cliquables. Ces 4 popups passent en z-[130] pour rester au-dessus de l'overlay.",
@@ -12396,7 +12553,10 @@
       "date": "2026-06-23T01:30:00.000Z",
       "type": "fix",
       "commitType": "AMELIORATION",
-      "scope": ["portail", "server"],
+      "scope": [
+        "portail",
+        "server"
+      ],
       "features": "portail:admin-tests,system:tests",
       "title": "Site Map : intégration IA lisible — sections multi-colonnes + anti-chevauchement",
       "description": "Apres une MAJ IA, la carte devenait illisible (sections empilees/superposees dans la page Admin). Corrections : (1) smSectionsOf prend l'union des sections rattachees par parentId ET contenues geometriquement (plus de section oubliee en etat mixte) ; (2) disposition MULTI-COLONNES des sections d'une page (retour a la ligne sur SEC_MAX_COL_H au lieu d'une longue colonne unique) -> page compacte et epuree ; (3) sections orphelines (sans page valide) placees comme blocs de premier niveau et elements non rattaches (groupId vide/invalide) ranges en grille -> jamais de chevauchement meme si l'IA omet un parentId/groupId ; (4) largeur de page dynamique selon le nombre de colonnes. Cote prompt (buildSitemapUpdatePrompt) : regles de GRANULARITE (peu de sections larges, une section = aire structurelle et jamais une section par onglet/fonction ; les onglets sont des elements link dans une seule section Onglets) et rattachement obligatoire a la page existante via son id exact.",
@@ -12417,7 +12577,9 @@
       "date": "2026-06-23T19:05:00.000Z",
       "type": "config",
       "commitType": "AMELIORATION",
-      "scope": ["data"],
+      "scope": [
+        "data"
+      ],
       "features": "system:sitemap-proposals",
       "title": "Site Map — Propositions de mise à jour pour la zone Admin (sm-1782241403995)",
       "description": "Génération du fichier proposals.json pour refléter l'état réel de la zone d'administration dans la Site Map (sections, sous-onglets, widgets, formulaires et liaisons de navigation/activation).",
@@ -12436,7 +12598,9 @@
       "date": "2026-06-23T21:30:00+02:00",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["portail"],
+      "scope": [
+        "portail"
+      ],
       "features": "portail:admin-tests,system:tests",
       "title": "Site Map : multi-sélection des zones/sections pour les aligner",
       "description": "Auparavant seuls les noeuds (elements) etaient multi-selectionnables ; impossible d'aligner plusieurs sections/zones. Ajout d'une multi-selection des zones/sections via Ctrl/Maj+clic (sur la bordure ou l'etiquette) : nouveau signal smGroupMultiSelect, surlignage cyan, comptage combine noeuds+zones (smMultiCount) qui pilote la barre d'alignement. alignSelected et distributeSelected operent desormais sur des 'boites' combinees (noeuds + zones) via selectedBoxes/applyBoxDeltas : aligner/repartir une zone entraine du meme delta ses noeuds internes et zones imbriquees (coherence). resizeMultiWidth/uniformizeMultiWidth etendus aux zones. Nettoyage de la multi-selection de zones lors des autres selections (noeud, arete, mode liaison, reset disposition, changement d'onglet).",
@@ -12457,7 +12621,11 @@
       "date": "2026-06-25T14:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "libs", "server"],
+      "scope": [
+        "projets",
+        "libs",
+        "server"
+      ],
       "features": "projets:editor|mega-outils,portail:admin",
       "title": "MO Prompt : streaming fix AGY + prompt de base admin",
       "description": "Fix streaming : le fallback execute-simple-prompt mappait 'antigravity' vers Claude au lieu de Gemini API. Corrigé en renommant 'antigravity' en 'gemini' côté serveur avant la sélection du provider. Nouveau : prompt de base global (table mega_outil_prompt_config en BDD), éditable dans Admin › Mega-outils › Prompt (textarea + bouton Sauvegarder). Chargé dans le popup d'exécution et affiché en section collapsable distincte (badge 'global'). Combiné avec le system prompt de la section à l'exécution (base + '---' + section). Sélecteur IA revu : 2 colonnes IA (Claude / AGY) + Modèle filtré.",
@@ -12482,7 +12650,9 @@
       "date": "2026-06-25T13:00:00.000Z",
       "type": "fix",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|mega-outils",
       "title": "Popup Prompt : sélecteur IA + Modèle en 2 colonnes",
       "description": "Le sélecteur dans le popup d'exécution de prompt était un seul <select> combinant provider et modèle. Remplacé par un grid 2 colonnes : colonne gauche = IA (Claude / Gemini), colonne droite = modèles disponibles filtrés par provider sélectionné. Ajout des computed providers(), modelsForProvider(), signal selectedProvider, méthode onProviderChange(). Initialisation depuis headerSelection.model au ngOnInit.",
@@ -12501,7 +12671,9 @@
       "date": "2026-06-25T12:30:00.000Z",
       "type": "fix",
       "commitType": "FIX",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor|mega-outils",
       "title": "MO Prompt : suppression du texte brut en mode Edition",
       "description": "En mode Edition (visu), le contenu brut du bloc ```PROMPT: NOM``` (lignes SYSTEM:, ---, texte du prompt) était rendu par marked.parse() en plus du PromptBoardComponent. Ajout du strip regex pour les blocs PROMPT dans buildVisuSectionHtml(), sur le même modèle que TRELLO et ARRAY (lignes 5616-5618). Désormais seul le composant PromptBoard s'affiche inline en mode Edition.",
@@ -12520,7 +12692,13 @@
       "date": "2026-06-25T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets", "portail", "libs", "server", "data"],
+      "scope": [
+        "projets",
+        "portail",
+        "libs",
+        "server",
+        "data"
+      ],
       "features": "projets:editor|mega-outils,portail:admin",
       "title": "Mega-outil Prompt : bloc IA exécutable avec streaming et historique",
       "description": "Implémentation complète du méga-outil PROMPT. Côté backend : table MySQL mega_outil_prompt_history, route SSE /api/ai/execute-simple-prompt (Claude + Gemini), routes CRUD historique. Côté Angular : modèles (MegaOutilType + PromptExecution), service MegaOutilsService étendu, ProjetPromptExecuteService (double-fallback executor→server), PromptBoardComponent (inline Edition), PromptAdminComponent (vue admin), PromptExecutionPopupComponent (machine d'états idle→validating, streaming, variables {{x}}). Intégration éditeur-zone : barre MO amber, popup création, panneau bas Structure, boards inline Edition ordonnés, méthodes parsePromptFence/insertPromptResult. Admin portail : onglet Prompt dans AdminMegaOutilsComponent.",
@@ -12552,11 +12730,15 @@
       "date": "2026-06-25T00:00:00.000Z",
       "type": "config",
       "commitType": "AMELIORATION",
-      "scope": ["system"],
+      "scope": [
+        "system"
+      ],
       "features": "system:workflow",
       "title": "CLAUDE.md : règle persistance données partagées en BDD",
       "description": "Ajout d'une règle explicite dans CLAUDE.md : tout menu hors éditeur de projet doit persister ses données en MySQL (BDD partagée), jamais en fichiers JSON locaux.",
-      "files": ["CLAUDE.md"],
+      "files": [
+        "CLAUDE.md"
+      ],
       "ai": "Claude Code",
       "model": "claude-sonnet-4-6",
       "prompt": "rajoute dans claude.md comme informations que tous les menus en dehors du menu projet doivent être partagé avec tous les users et donc dans des bdd partagé",
@@ -12569,7 +12751,9 @@
       "date": "2026-06-25T00:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["server"],
+      "scope": [
+        "server"
+      ],
       "features": "system:admin-tests,system:bdd",
       "title": "Admin/Tests : migration complète vers MySQL (runs, résultats, sitemap, favoris, historique, réglages)",
       "description": "Toutes les données admin/tests (runs de tests, résultats individuels, historique des fonctions IA, favoris, réglages de validation, sitemap courant et versions de sitemap) étaient stockées en fichiers JSON locaux (data/tests-admin/). Migration vers 7 nouvelles tables MySQL (admin_test_runs, admin_test_results, admin_test_fn_history, admin_test_favorites, admin_test_settings, admin_test_sitemap, admin_test_sitemap_versions). Toutes les routes Express admin/tests converties en async/await avec pool.query. Migration one-shot automatique au démarrage du serveur (si les tables sont vides et les fichiers JSON existent, les données sont importées). Les données sont désormais partagées entre tous les utilisateurs via la BDD Hostinger. Les fonctions.md restent dans git (source de vérité versionnée). Les répertoires temporaires AI (ai-runs, gen-runs, sitemap-runs) restent sur le système de fichiers local.",
@@ -12671,6 +12855,74 @@
       "prompt": "lorsque je lance l'execution d'un prompt assez important (bc de ligne), cela affiche bien le form renvoyé par l'IA et lorsque je valide j'ai l'impression que le résultat n'est pas renvoyé à l'IA, en tous cas je ne vois aucune intéraction avec l'IA",
       "startedAt": "2026-06-29T10:35:00.000Z",
       "completedAt": "2026-06-29T10:45:00.000Z"
+    },
+    {
+      "id": "mod-493",
+      "version": "B-0.316",
+      "date": "2026-06-29T14:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-prompt-result,system:mo-prompt",
+      "title": "Insertion résultat de prompt : section « Résultat — {nom} » distincte (le prompt ne disparaît plus)",
+      "description": "À l'insertion du livrable d'un prompt (workflow ou exécution directe), le prompt (MO) disparaissait de la zone Édition et le contenu du résultat était perdu (contenu.md vide). Cause : upsertPromptResultSection nommait la section résultat « Pr - {nom} », identique au dossier qui contient le prompt et au même niveau → même slug. Dans recomputeRanges, deux titres de même nom/niveau ne peuvent matcher qu'un seul docSection (usedDocSections) → la section résultat devenait orpheline (sans folderId), son contenu était fusionné/perdu et le prompt disparaissait à la sauvegarde. Correctif : la section résultat est désormais nommée « Résultat — {nom} » (libellé distinct → dossier propre placé après le prompt, le PR reste affiché avant). Factorisation de la regex de titre dans un helper unique promptResultHeadingRe() partagé par l'écriture, la lecture (getPromptResultSectionText / getPromptResultLink) et la suppression ; il matche aussi les anciens noms (« Pr - {nom} », « Résultat du prompt ») pour migration rétrocompatible. Comportement identique pour TOUS les prompts.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "j'ai lancer une execution d'un prompt : Pr - Ideation, tous ce passe bien, mais au moment d'inssérer le résultat, le prompt (MO) disparait de la zone Edition. le PR devrait s'affiché avant le résultat qui devrait être dans un dossier spécifique placé après le prompt original, cela doit fonctionné de la même façon pour TOUS les prompts executé, verifi le système et corrige les problèmes",
+      "startedAt": "2026-06-29T14:00:00.000Z",
+      "completedAt": "2026-06-29T14:30:00.000Z"
+    },
+    {
+      "id": "mod-494",
+      "version": "B-0.316",
+      "date": "2026-06-29T15:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-prompt-result,system:mo-prompt",
+      "title": "Résultat de prompt : dossier unique « PR-Res {nom} » + cours vivant non vide",
+      "description": "Suite du fix précédent. (1) Renommage du dossier résultat en « PR-Res {nom} » (demande explicite, uniforme pour tous les prompts) via un helper canonique promptResultLabel() ; promptResultHeadingRe() matche aussi les anciens noms (« Résultat — {nom} », « Résultat du prompt », « Pr - {nom} ») pour migration. (2) Réécriture de materializeLivingCourse : l'ancienne version créait un dossier séparé par bloc (Bilan/Séance) via createFolder + updateFile, mais les updateFile échouaient silencieusement (.catch) → tous les dossiers restaient VIDES (contenu.md à 0 octet, confirmé sur disque et par l'absence de commit d'auto-save dans le git du projet). Désormais le cours vivant est inséré dans UN SEUL dossier « PR-Res {nom} » avec une sous-section par bloc, via unifiedContent + scheduleSave (le même chemin de sauvegarde fiable que l'édition normale et le résultat standard). Agenda → vrais événements ; Trello/Array → instances live, fences inline.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "cela crait des dossiers mais tous les dossiers sont vide et il faut mettre tous les dossiers dans un seul dossier 'PR-Res NOM DU PROMPT'",
+      "startedAt": "2026-06-29T15:00:00.000Z",
+      "completedAt": "2026-06-29T15:30:00.000Z"
+    },
+    {
+      "id": "mod-511",
+      "version": "B-0.316",
+      "date": "2026-06-29T12:24:29.942Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "libs",
+        "server"
+      ],
+      "features": "libs:auth-headers,server:cors,projets:editor-prompt-result",
+      "title": "Insertion résultat prompt : fix crash en-têtes HTTP (getAuthHeaders objet plat)",
+      "description": "À l'insertion du livrable d'un workflow de prompt (« Insérer dans la section »), la matérialisation crée des dossiers/fichiers puis sauvegarde. La sauvegarde plantait avec « Unexpected value of the headers header provided … got: undefined » → onSectionsChange en erreur, saveStatus='error', aucune section PR-Res affichée. Cause : AuthService.getAuthHeaders() renvoyait une INSTANCE HttpHeaders. ProjectFilesService.updateFile faisait `{ ...this.h() }` : étaler une instance HttpHeaders copie ses champs internes (headers:undefined, normalizedNames, lazyUpdate, lazyInit) → Angular reconstruit new HttpHeaders({ headers: undefined, … }) et lève l'erreur. Fix : getAuthHeaders() renvoie désormais un objet plat Record<string,string> (Angular accepte un objet plat pour { headers } partout, et il s'étale correctement). Aucun appelant ne chaînait de méthode HttpHeaders sur ce résultat. Note : un PATCH renameFolder renvoie aussi un 500 (mauvaise détection de renommage de sections type kanban) — capté/non bloquant, hors périmètre de ce fix. [2e cause révélée après le 1er fix] Une fois les en-têtes correctement construits, la requête PUT updateFile partait et heurtait un mur CORS : le serveur lit x-edition-source / x-file-version (server-data.js) mais ne les déclarait pas dans allowedHeaders → préflight OPTIONS rejeté (« Request header field x-edition-source is not allowed »), PUT bloqué, status 0, onSectionsChange en erreur. Fix : ajout de x-edition-source et x-file-version à la liste CORS allowedHeaders. Redémarrage serveur requis.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/auth.service.ts",
+        "tests/fonctions/non-connecte/landing/fonctions.md",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "j'execute un prompt cours d'anglais/Mon Prompt Maison tout se passe bien jusqu'au moment de créer la section PR-Res et de copier le résultat, rien ne s'affiche et en bas j'ai un message: Error",
+      "startedAt": "2026-06-29T12:24:29.942Z",
+      "completedAt": "2026-06-29T12:35:00.124Z"
     }
   ]
 }

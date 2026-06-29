@@ -1,5 +1,5 @@
 import { Injectable, signal, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { API_DATA_URL } from './tokens';
 
@@ -59,12 +59,19 @@ export class AuthService {
     return localStorage.getItem(this.TOKEN_KEY);
   }
 
-  getAuthHeaders(): HttpHeaders {
+  /**
+   * Retourne un objet d'en-têtes SIMPLE (et non une instance HttpHeaders) : Angular accepte
+   * un objet plat partout pour `{ headers }`, et surtout cet objet peut être étalé sans risque
+   * (`{ ...getAuthHeaders() }`). Étaler une instance HttpHeaders copiait ses champs internes
+   * (`headers: undefined`, `normalizedNames`, `lazyUpdate`…) → `new HttpHeaders({ headers: undefined })`
+   * levait « Unexpected value of the `headers` header … got: undefined » et cassait la sauvegarde.
+   */
+  getAuthHeaders(): Record<string, string> {
     const token = this.getToken();
-    return new HttpHeaders({
+    return {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {})
-    });
+    };
   }
 
   async login(email: string, password: string): Promise<AuthUser> {
