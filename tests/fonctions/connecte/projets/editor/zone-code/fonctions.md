@@ -113,10 +113,10 @@ Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :
 
 ## `2-5-2-4-11` — [modification] Sections et parsing
 
-- **Détection headings** : regex `^(#{1,4}) (.+)$` → niveaux 1-4
-- **Niveaux** : `#` = niveau 1, `##` = niveau 2, `###` = niveau 3, `####` = niveau 4
+- **Détection headings** : regex `^(#{1,6}) (.+)$` → niveaux 1-6
+- **Niveaux** : `#` = niveau 1 … `######` = niveau 6 (dossiers navigables jusqu'au niveau 6). La limite était précédemment de 4 (`####`) ; portée à 6 pour que les sous-sections profondes des livrables IA (séances, cours, sous-points) restent des dossiers dans la sidebar.
 - **SectionRanges** : `{ folderId, lineStart, lineEnd }` pour chaque section. Le mappage titre→`folderId` itère dans l'ordre du **buffer** (`flatHeads`, ce que l'utilisateur voit) et associe chaque titre à un `docSection` non encore consommé (level + name) — robuste même quand l'ordre du buffer diverge de l'ordre stocké des fichiers (cas de la préservation du texte en mode Code, voir `2-5-2-4-16`). Sans cette logique, une section déplacée dans le code pointait vers le mauvais dossier (focus erroné à la navigation).
-- **Calcul de `lineEnd` (portée = section + sous-sections)** : la fin de plage d'une section va jusqu'à la prochaine section qui **n'est pas un descendant** dans l'arbre (`getDescendantFolderIds`), et non « la prochaine section de niveau markdown ≤ ». Indispensable car `buildDocSections` plafonne le niveau de titre à 4 (`####` max) : au-delà de 4 niveaux de profondeur, parent et enfants partagent le même niveau markdown → un calcul par niveau tronquerait la plage de focus au seul titre. Le focus d'une section profonde affiche donc bien la section ET toutes ses sous-sections (cohérent avec le filtre de la preview).
+- **Calcul de `lineEnd` (portée = section + sous-sections)** : la fin de plage d'une section va jusqu'à la prochaine section qui **n'est pas un descendant** dans l'arbre (`getDescendantFolderIds`), et non « la prochaine section de niveau markdown ≤ ». Indispensable car `buildDocSections` plafonne le niveau de titre à 6 (`######` max) : au-delà de 6 niveaux de profondeur, parent et enfants partagent le même niveau markdown → un calcul par niveau tronquerait la plage de focus au seul titre. Le focus d'une section profonde affiche donc bien la section ET toutes ses sous-sections (cohérent avec le filtre de la preview).
 - **FileRanges** : `{ fileId, lineStart, lineEnd }` pour les blocs fichiers additionnels
 - **Blocs-fichiers additionnels** : délimités par une ligne commençant par `'`, `` ` `` ou `^`. Les fences de code markdown ` ``` ` sont explicitement exclues (lookahead `(?!` + 3 backticks + `)` / garde `!startsWith('```')`) → un bloc de code ` ``` … ``` ` n'est jamais interprété comme un bloc-fichier ni reformaté à la sauvegarde
 
@@ -359,18 +359,19 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-30` — [SYNC] Exécution Prompt → résultat inséré sans effacer le bloc PROMPT
+## `2-5-2-4-30` — [modification] [SYNC] Exécution Prompt → résultat inséré sans effacer le bloc PROMPT
 
 - **Précondition** : section avec un bloc `` ```PROMPT: Mon Prompt ``` `` en mode Code.
 - **Action** : exécuter le prompt → résultat reçu → `onPromptInsert()` → `upsertPromptResultSection()`.
-- **Résultat attendu** : une section sœur `# Pr - Mon Prompt` est insérée APRÈS la section parente du prompt (même niveau hiérarchique). Le bloc `` ```PROMPT: ... ``` `` original reste intact dans le document. L'ancienne section résultat (si elle existait) est retirée et remplacée. `currentEditSource = 'ia-prompt-result'` → log indique la source IA.
+- **Résultat attendu** : une sous-section `PR-Res Mon Prompt` (dossier enfant, titre un niveau SOUS le dossier du prompt) est insérée À L'INTÉRIEUR du dossier du prompt, après le bloc prompt. Le bloc `` ```PROMPT: ... ``` `` original reste intact dans le document. L'ancienne section résultat (si elle existait, y compris une ancienne section sœur) est retirée et remplacée. `currentEditSource = 'ia-prompt-result'` → log indique la source IA.
+- **Consigne de niveau de titre dynamique** : avant l'exécution, le system prompt envoyé à l'IA inclut une consigne `FORMAT DES TITRES` (via `promptResultStartHeadingLevel(folderId)` → input `startHeadingLevel` de la popup) indiquant le niveau markdown auquel démarrer les titres = niveau de `PR-Res` + 1, plafonné à 6, **dynamique** selon la profondeur du prompt. Le livrable est ainsi généré au bon niveau dès le départ ; `demoteHeadings` reste un filet de sécurité idempotent (delta = 0 si l'IA respecte la consigne). Ex. : prompt dans un dossier niveau 3 → PR-Res niveau 4 → IA démarre au niveau 5 (`#####`).
 - **Règle absolue** : un bloc `` ```PROMPT: ... ``` `` ne peut jamais être effacé par `upsertPromptResultSection()` ni par `reconcileTrelloLifecycle()` ni par `reconcileDeletedMoFiles()`.
-- **À vérifier** : après le save, les deux sections sont présentes en BDD : la section prompt ET la section résultat. Ré-exécuter le prompt → l'ancienne section résultat est remplacée, le prompt est intact.
-- **Composants:** `projet-editor-zone.component.ts`
+- **À vérifier** : après le save, les deux sections sont présentes en BDD : la section prompt ET la section résultat. Ré-exécuter le prompt → l'ancienne section résultat est remplacée, le prompt est intact. La consigne `FORMAT DES TITRES` est visible dans le system prompt envoyé (zone « prompt envoyé » de la popup) avec le bon niveau de départ.
+- **Composants:** `projet-editor-zone.component.ts`, `prompt-execution-popup.component.ts`
 
 ---
 
-## `2-5-2-4-31` — [SYNC] Exécution Workflow → livrable + MOs créés — cohérence document
+## `2-5-2-4-31` — [modification] [SYNC] Exécution Workflow → livrable + MOs créés — cohérence document
 
 - **Précondition** : section avec un bloc WORKFLOW configuré.
 - **Action** : exécuter le workflow → valider le livrable et sélectionner des MOs → `onWorkflowMaterialize()`.
@@ -571,3 +572,25 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Résultat à redouter (bug corrigé)** : en passant système+user+état dans les query params d'un GET, l'URL dépassait la limite d'en-tête HTTP → la requête n'atteignait jamais le serveur, aucun flux SSE, aucun log « agy en cours… », timer bloqué indéfiniment sur « Génération du livrable… » sans interaction IA visible.
 - **À vérifier** : un prompt court ET un prompt très long aboutissent tous deux ; couper la connexion pendant « Génération » affiche bien une erreur exploitable.
 - **Composants:** `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `server/server-data.js`
+
+---
+
+## `2-5-2-4-49` — [modification] Insertion du résultat de prompt : sous-dossier « PR-Res {nom} » dans le dossier du prompt (prompt jamais perdu)
+
+- **Précondition** : un prompt (MO) exécuté via workflow guidé ou exécution directe, dont le dossier parent peut porter le nom « Pr - {nom} ».
+- **Action** : valider le livrable → `upsertPromptResultSection()` insère le résultat comme sous-section (titre un niveau sous le dossier du prompt) À L'INTÉRIEUR du dossier du prompt, après le bloc prompt.
+- **Résultat attendu** : le titre de la section résultat est « PR-Res {nom} » (libellé/slug distincts du dossier « Pr - {nom} » qui contient le prompt). Dans la sidebar, « PR-Res {nom} » apparaît comme dossier enfant du dossier du prompt, juste après le nœud « PR: {nom} » (et non plus comme dossier sœur au même niveau). Au rechargement/save : aucune fusion, le prompt n'est pas perdu, pas de duplication. Écriture/lecture/info/suppression partagent `promptResultLabel()` + `promptResultHeadingRe()` (source unique) qui matche aussi les anciens noms (« Résultat — {nom} », « Résultat du prompt », « Pr - {nom} ») et migre une ancienne section sœur vers la nouvelle position enfant.
+- **Résultat à redouter (bug corrigé)** : nommer le résultat « Pr - {nom} » (identique au dossier parent, même niveau) produisait le même slug → dans `recomputeRanges` les deux titres ne pouvaient matcher qu'un seul `docSection` (`usedDocSections`) → section résultat orpheline, contenu fusionné/perdu (contenu.md vide) et **disparition du prompt** à la sauvegarde.
+- **À vérifier** : exécuter un prompt nommé « Ideation » dans un dossier « Pr - Ideation » → après insertion et rechargement, le prompt reste visible et la section « PR-Res Ideation » apparaît comme enfant du dossier, après le prompt, avec le livrable.
+- **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-50` — [modification] Cours vivant : un seul dossier « PR-Res {nom} » dans le dossier du prompt, séances en sous-dossiers (contenu non vide)
+
+- **Précondition** : un prompt produisant un livrable de cours structuré (≥1 titre `## Séance N` + `## Bilan`) → `isLivingCourseDeliverable()` vrai → `materializeLivingCourse()`.
+- **Action** : valider le livrable.
+- **Résultat attendu** : création d'UN dossier « PR-Res {nom} » (enfant du dossier prompt, à l'intérieur, après lui) contenant une sous-section/sous-dossier par bloc (Bilan + chaque Séance), chacun **avec son contenu** (cours + QCM en inline). Agenda → vrais événements + liste lisible ; Trello/Array → instances live (folderId = dossier du prompt), fences inline. Persistance via `unifiedContent` + `scheduleSave` (chemin fiable). Ré-exécution idempotente : l'ancien wrapper « PR-Res {nom} » est remplacé (y compris une ancienne position en section sœur).
+- **Résultat à redouter (bug corrigé)** : l'ancienne implémentation créait un dossier séparé par bloc via `createFolder`/`updateFile` ; les `updateFile` échouaient silencieusement (`.catch`) → **tous les dossiers vides** et dispersés au lieu d'un dossier unique.
+- **À vérifier** : exécuter un prompt « cours de maths » → un seul dossier « PR-Res … » avec Séance 1..N + Bilan remplis (pas de dossiers vides) ; les événements agenda et boards Trello/Array sont créés.
+- **Composants:** `projet-editor-zone.component.ts`

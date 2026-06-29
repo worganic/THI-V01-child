@@ -238,6 +238,9 @@ export class PromptExecutionPopupComponent implements OnInit, OnDestroy {
   @Input() systemPrompt: string | null = null;
   @Input() userPrompt = '';
   @Input() variables: string[] = [];
+  /** Niveau markdown auquel le livrable doit DÉMARRER ses titres (dynamique selon la profondeur
+   *  de la section « PR-Res {nom} » qui recevra le résultat). 0 = pas de consigne de niveau. */
+  @Input() startHeadingLevel = 0;
 
   @Output() insert = new EventEmitter<string>();
   @Output() cancel = new EventEmitter<void>();
@@ -359,13 +362,22 @@ export class PromptExecutionPopupComponent implements OnInit, OnDestroy {
     this.doExecute(resolved);
   }
 
+  /** Consigne dynamique sur le niveau de titre de départ : le livrable sera inséré comme
+   *  sous-section de « PR-Res {nom} », ses titres doivent donc démarrer un cran dessous. */
+  private headingLevelInstruction(): string | null {
+    const lvl = this.startHeadingLevel;
+    if (!lvl || lvl < 1) return null;
+    const hashes = '#'.repeat(lvl);
+    return `FORMAT DES TITRES (impératif) : le document généré sera inséré comme sous-section d'une section existante. Démarre TOUS tes titres Markdown au niveau ${lvl} (« ${hashes} ») et utilise des niveaux plus profonds (jusqu'à 6 « ###### » maximum) pour les sous-titres. N'emploie JAMAIS un titre avec moins de ${lvl} dièses. Le tout premier titre du document doit commencer par « ${hashes} ».`;
+  }
+
   private doExecute(resolvedPrompt: string) {
     this.accumulated.set('');
     this.logs.set([]);
     this.elapsedSeconds.set(0);
     this.state.set('running');
-    // Combiner prompt de base global + system prompt de la section
-    const parts = [this.baseSystemPrompt, this.systemPrompt].filter(Boolean);
+    // Combiner prompt de base global + system prompt de la section + consigne de niveau de titre
+    const parts = [this.baseSystemPrompt, this.systemPrompt, this.headingLevelInstruction()].filter(Boolean);
     const effectiveSystem = parts.length ? parts.join('\n\n---\n\n') : null;
     this.sentUserPrompt.set(resolvedPrompt);
     this.sentSystemPrompt.set(effectiveSystem);
@@ -397,7 +409,7 @@ export class PromptExecutionPopupComponent implements OnInit, OnDestroy {
     for (const [k, v] of Object.entries(this.varValues)) {
       resolved = resolved.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v);
     }
-    const parts = [this.baseSystemPrompt, this.systemPrompt].filter(Boolean);
+    const parts = [this.baseSystemPrompt, this.systemPrompt, this.headingLevelInstruction()].filter(Boolean);
     const effectiveSystem = parts.length ? parts.join('\n\n---\n\n') : null;
     this.execSvc.startExecution(effectiveSystem, resolved, this.activeProvider(), this.activeModel());
   }

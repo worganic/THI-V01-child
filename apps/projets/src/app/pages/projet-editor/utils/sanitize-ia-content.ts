@@ -15,7 +15,7 @@ export function sanitizeIaContent(content: string): string {
   // ── 1. Supprimer le heading initial ajouté par l'IA ──────────────────────
   // L'IA ajoute souvent "# Titre" car le prompt inclut le nom de la section.
   // Ce heading est auto-injecté par l'éditeur → le retirer du contenu brut.
-  text = text.replace(/^\s*#{1,4}\s+[^\n]+\n?/, '');
+  text = text.replace(/^\s*#{1,6}\s+[^\n]+\n?/, '');
 
   // ── 2. Supprimer les lignes vides en tête (reste propre après strip heading) ─
   text = text.replace(/^\n+/, '');

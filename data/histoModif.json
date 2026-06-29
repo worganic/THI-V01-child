@@ -1,6 +1,69 @@
 {
   "modifications": [
     {
+      "id": "mod-514",
+      "version": "B-0.316",
+      "date": "2026-06-29T14:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor-zone-code,projets:prompt-execution",
+      "title": "Consigne dynamique de niveau de titre envoyée à l'IA",
+      "description": "À l'exécution directe d'un prompt, le system prompt envoyé à l'IA inclut désormais une consigne FORMAT DES TITRES indiquant à quel niveau markdown démarrer les titres du livrable, pour qu'il s'imbrique correctement sous la section PR-Res. Le niveau est dynamique : promptResultStartHeadingLevel(folderId) = niveau de PR-Res (sectionLevel+1) + 1, plafonné à 6. Helpers ajoutés dans projet-editor-zone (promptResultHeadingLevel + promptResultStartHeadingLevel, source unique partagée avec upsertPromptResultSection). Input startHeadingLevel ajouté à la popup d'exécution, instruction injectée dans le system prompt (doExecute + reExecute). demoteHeadings reste un filet de sécurité idempotent. Le workflow guidé n'est PAS modifié (il repose sur une détection ## côté serveur pour le cours vivant).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsqu'on lance une execution de prompt, il faut indiqué à l'IA à combien il doit démarrer le niveau (Markdown), exemple si le PR d'origine est au niveau 4 il faut indiqué à l'IA que le document généré doit commencé en dessous du niveau 4 : #####. Le niveau 4 étant le niveau de la section PR-Res ou seront copier les résultats. Cela doit être dynamique car le niveau peux changer",
+      "startedAt": "2026-06-29T13:40:00.000Z",
+      "completedAt": "2026-06-29T14:00:00.000Z"
+    },
+    {
+      "id": "mod-513",
+      "version": "B-0.316",
+      "date": "2026-06-29T13:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor-zone-code",
+      "title": "Dossiers navigables jusqu'au niveau 6 (au lieu de 4)",
+      "description": "Suite au déplacement du résultat de prompt DANS le dossier du prompt (mod-512), le contenu du livrable était décalé d'un niveau et ses sous-sections dépassaient le niveau 4 (titres ##### / ######), qui n'étaient plus reconnus comme dossiers → sections manquantes dans la sidebar. La limite de profondeur des dossiers passe de 4 à 6 : tous les sites de parsing de sections (regex `#{1,4}` → `#{1,6}`, `buildDocSections` cap `Math.min(depth, 4)` → 6, détection des bornes de section, parse de titre, sanitize IA) sont alignés. Le cours vivant (`materializeLivingCourse`) profite des niveaux supplémentaires : wrapper/séances/corps démotés relativement (jusqu'au niveau 6). Les commentaires obsolètes mentionnant le plafond à 4 sont mis à jour.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/utils/sanitize-ia-content.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "il manque les section de niveau 5 et 6 dans le menu",
+      "startedAt": "2026-06-29T13:05:00.000Z",
+      "completedAt": "2026-06-29T13:30:00.000Z"
+    },
+    {
+      "id": "mod-512",
+      "version": "B-0.316",
+      "date": "2026-06-29T13:00:00.000Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor-zone-code",
+      "title": "Résultat de prompt placé dans le dossier du prompt",
+      "description": "La section résultat « PR-Res {nom} » d'une exécution de prompt était insérée comme dossier SŒUR du dossier du prompt (même niveau). Elle est désormais insérée comme dossier ENFANT, à l'intérieur du dossier du prompt, juste après le bloc PROMPT (à côté du nœud « PR: {nom} »). Mise en œuvre : le titre du résultat est écrit un niveau sous le dossier du prompt (headingLevel = sectionLevel + 1) sans changer la position d'insertion (folderEnd + 1), ce qui reparente la section en enfant. Idem pour le cours vivant (materializeLivingCourse : wrapperLevel = sectionLevel + 1). La logique d'idempotence/migration recherche l'ancien résultat en section sœur (au niveau sectionLevel) et le remplace par la nouvelle sous-section.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "actuellement tous les retours de l'IA pour l'execution d'un prompt s'enregistre dans une section au même niveau que la section ou est placé le prompt je voudrais que cette section soi dans le même dossier que le prompt",
+      "startedAt": "2026-06-29T12:50:00.000Z",
+      "completedAt": "2026-06-29T13:00:00.000Z"
+    },
+    {
       "id": "mod-510",
       "version": "B-0.315",
       "date": "2026-06-28T23:00:00.000Z",

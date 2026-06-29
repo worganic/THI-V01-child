@@ -465,6 +465,7 @@ Votre texte de prompt ici.
       [systemPrompt]="activePromptForExecution!.systemPrompt"
       [userPrompt]="activePromptForExecution!.userPrompt"
       [variables]="activePromptForExecution!.variables"
+      [startHeadingLevel]="activePromptForExecution!.startHeadingLevel"
       (insert)="onPromptInsert(activePromptForExecution!.instanceId, $event)"
       (cancel)="showPromptExecutePopup.set(false)" />
   }
@@ -1198,6 +1199,7 @@ Votre texte de prompt ici.
                   [value]="unifiedContent"
                   [readonly]="isActiveSectionUnsynced || isActiveSectionLockedByOther || (!focusedHandle && !activeNodeId)"
                   (beforeinput)="onTextareaBeforeInput($event)"
+                  (paste)="onTextareaPaste($event)"
                   (input)="onTextareaInput($event)"
                   (keydown)="onTextareaKeydown($event)"
                   (scroll)="onTextareaScroll($event)"
@@ -1805,6 +1807,7 @@ Votre texte de prompt ici.
                    [attr.data-section-id]="sec.sectionId"
                    (focus)="onVisuSectionFocus(sec.sectionId)"
                    (blur)="onVisuSectionBlur(sec.sectionId)"
+                   (paste)="onVisuSectionPaste(sec.sectionId, sec.level, $event)"
                    (input)="onVisuSectionInput(sec.sectionId)">
               </div>
 

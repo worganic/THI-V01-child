@@ -371,7 +371,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   promptSections = signal<Record<string, { folderId: string | null; name: string }>>({});
   // Popup d'exécution d'un prompt (mode Edition)
   showPromptExecutePopup = signal(false);
-  activePromptForExecution: { instanceId: string; instanceName: string; systemPrompt: string | null; userPrompt: string; variables: string[] } | null = null;
+  activePromptForExecution: { instanceId: string; instanceName: string; systemPrompt: string | null; userPrompt: string; variables: string[]; startHeadingLevel: number } | null = null;
   promptBaseSystemPrompt: string | null = null;
   private seenPromptMarkers = new Set<string>();
 
@@ -1304,7 +1304,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     const result: DocSection[] = [];
     for (const node of sorted) {
       if (node.type !== 'folder') continue;
-      const level = Math.min(depth, 4);
+      const level = Math.min(depth, 6);
       // Heading porté par son identifiant stable {{SID:folderId}} : dérivé du dossier
       // physique → toujours présent après reconstruction, migration legacy automatique.
       const heading = this.composeHeading(level, node.name, node.id);
@@ -1585,7 +1585,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
     for (let i = 0; i < lines.length; i++) {
       if (isInsideBlock(i)) continue;
-      const m = /^(#{1,4}) (.+)$/.exec(lines[i]);
+      const m = /^(#{1,6}) (.+)$/.exec(lines[i]);
       if (m) {
         const sp = this.splitHeadingSid(m[2].trim());
         flatHeads.push({ lineIdx: i, level: m[1].length, name: sp.title, sid: sp.sid });
@@ -1625,7 +1625,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     }
     // lineEnd = juste avant la prochaine section qui N'EST PAS un descendant (arbre) de r.
     // On se base sur la hiérarchie réelle de l'arbre — et non sur le niveau de titre markdown —
-    // car celui-ci est plafonné à 4 (#### max) par buildDocSections : au-delà de 4 niveaux de
+    // car celui-ci est plafonné à 6 (###### max) par buildDocSections : au-delà de 6 niveaux de
     // profondeur, parent et enfants partagent le même niveau markdown et deviennent « frères »
     // au sens des titres, ce qui tronquait la plage de focus à son seul titre. Les descendants
     // étant assemblés de façon contiguë après leur parent, le 1er non-descendant borne la plage.
@@ -1786,7 +1786,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     while (i < lines.length) {
       if (inSkip(i)) { i++; continue; }
       const t = lines[i].trimStart();
-      if (!t || /^#{1,4} /.test(t)) { i++; continue; }
+      if (!t || /^#{1,6} /.test(t)) { i++; continue; }
 
       // Code fence
       if (t.startsWith('```') || t.startsWith('~~~')) {
@@ -5052,7 +5052,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const folderById = new Map<string, { folder: FileNode; files: FileNode[] }>();
     for (const v of folderMap.values()) folderById.set(v.folder.id, v);
 
-    const regex = /^(#{1,4}) (.+)$/gm;
+    const regex = /^(#{1,6}) (.+)$/gm;
     const matches: { level: number; name: string; sid: string | null; index: number; contentStart: number }[] = [];
     let m: RegExpExecArray | null;
     while ((m = regex.exec(text)) !== null) {
@@ -5680,6 +5680,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       systemPrompt: parsed.systemPrompt,
       userPrompt: parsed.userPrompt,
       variables: parsed.variables,
+      startHeadingLevel: this.promptResultStartHeadingLevel(inst.folderId),
     };
     // Charger le prompt de base (une seule fois)
     if (this.promptBaseSystemPrompt === null) {
@@ -5752,7 +5753,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   private async materializeMegaOutilsFromContent(deliverable: string, selectedMos: MaterializedMoPreview[], folderId: string | undefined, promptInstanceId: string, transcript?: string) {
     if (!this.projectName) return;
     // Cours vivant : si le livrable est structuré en séances (titres ## Séance N),
-    // on crée de VRAIS dossiers (non limités au niveau 4) au lieu de démoter sous « Pr - Nom ».
+    // on crée de VRAIS dossiers (séances en sous-dossiers) au lieu de démoter en inline sous « Pr - Nom ».
     if (folderId && this.isLivingCourseDeliverable(deliverable)) {
       await this.materializeLivingCourse(deliverable, folderId, promptInstanceId, transcript);
       return;
@@ -5854,76 +5855,125 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   /**
-   * Matérialise un cours vivant : crée un VRAI dossier par section de niveau 2
-   * (Bilan général + une séance par titre) sous le dossier du prompt, avec leur
-   * contenu (cours + QCM) et leurs MegaOutils (Trello/Array → instances, Agenda → événements).
+   * Matérialise un cours vivant dans UN SEUL dossier « PR-Res {nom} » (placé dans le dossier du prompt, après lui),
+   * avec une sous-section (sous-dossier) par bloc de niveau 2 (Bilan + une séance par titre).
+   *
+   * Le contenu est écrit via `unifiedContent` + `scheduleSave` — le MÊME chemin fiable que l'édition
+   * normale et le résultat de prompt standard. L'ancienne implémentation créait les dossiers en direct
+   * (`createFolder`/`updateFile`) ; ces `updateFile` échouaient silencieusement (`.catch`) → tous les
+   * dossiers restaient vides, et chaque bloc devenait un dossier séparé au lieu d'un dossier unique.
+   *
+   * Agenda → vrais événements (fence remplacée par liste) ; Trello/Array → instances live, fences inline.
    */
   private async materializeLivingCourse(deliverable: string, promptFolderId: string, promptInstanceId: string, transcript?: string) {
+    const inst = this.promptInstances.find(i => i.id === promptInstanceId);
+    if (!inst) return;
     const blocks = this.splitTopLevelSections(deliverable);
     if (!blocks.length) return;
-    const promptInst = this.promptInstances.find(i => i.id === promptInstanceId);
-    const groupName = promptInst?.name ?? 'Cours';
+    const groupName = inst.name ?? 'Cours';
     const agendaGroupId = self.crypto.randomUUID();
     const moRe = /```(TRELLO|ARRAY|FORM|CHART|AGENDA):[ \t]*([^\n]+)\n([\s\S]*?)\n```/g;
 
+    const lines = this.unifiedContent.split('\n');
+    const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
+    if (openLine === -1) return;
+    let closeIdx = openLine + 1;
+    while (closeIdx < lines.length && lines[closeIdx].trim() !== '```') closeIdx++;
+
+    const range = promptFolderId ? this.sectionRanges.find(r => r.folderId === promptFolderId) : null;
+    const sectionLevel = range?.level ?? 1;
+    let folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
+    // Wrapper « PR-Res {nom} » placé À L'INTÉRIEUR du dossier du prompt (un niveau dessous) ;
+    // séances une demi-marche encore dessous. Dossiers navigables jusqu'au niveau 6 (h6).
+    const wrapperLevel = Math.min(sectionLevel + 1, 6);
+    const seanceLevel = Math.min(wrapperLevel + 1, 6);
+    const heading = '#'.repeat(wrapperLevel) + ' ' + this.promptResultLabel(inst.name);
+    const headingRe = this.promptResultHeadingRe(inst.name);
+
+    // 1. Construire le corps : une sous-section par bloc ; contenu interne démoté sous la séance
+    //    (devient des sous-dossiers navigables jusqu'au niveau 6). Agenda matérialisé en événements + liste.
+    const parts: string[] = [];
     for (let bi = 0; bi < blocks.length; bi++) {
-      const block = blocks[bi];
-      // 1. Créer le dossier réel sous le prompt
-      let folder;
-      try {
-        folder = await this.svc.createFolder(this.projectName, { name: this.courseFolderName(block.title), parentId: promptFolderId });
-      } catch (e) { console.error('[EditorZone] création dossier séance échouée :', block.title, e); continue; }
-      const contenuFile = (folder.children || []).find(c => c.type === 'file')
-        ?? await this.svc.createFile(this.projectName, { name: 'contenu.md', parentId: folder.id, content: '' }).catch(() => null);
-      if (!contenuFile) continue;
-
-      // 2. Préparer le corps : démoter les titres internes (≥#####) pour qu'ils restent
-      //    du contenu inline et ne créent pas de sous-dossiers parasites.
-      let body = this.demoteHeadings(block.body, 4);
-
-      // 3. Matérialiser les AGENDA du bloc (vrais événements) → liste lisible
+      let body = this.demoteHeadings(blocks[bi].body, seanceLevel);
       const agendaFences = [...body.matchAll(moRe)].filter(m => m[1].toUpperCase() === 'AGENDA').map(m => m[0]);
       for (const fence of agendaFences) {
-        const readable = await this.materializeAgendaFence(fence, folder.id, agendaGroupId, groupName);
+        const readable = await this.materializeAgendaFence(fence, promptFolderId, agendaGroupId, groupName);
         body = body.replace(fence, readable);
       }
-
-      // 4. Cadrage en tête du 1er bloc (Bilan)
       if (bi === 0 && transcript && transcript.trim()) {
         body = `**Cadrage**\n\n${transcript.trim()}\n\n---\n\n${body}`;
       }
+      parts.push('#'.repeat(seanceLevel) + ' ' + this.courseFolderName(blocks[bi].title));
+      if (body.trim()) parts.push(body.trim());
+    }
 
-      // 5. Écrire le contenu du dossier (SANS titre `#` : le nom du dossier sert de titre ;
-      //    un titre niveau 1 ici créerait une section fantôme et casserait la redistribution).
-      await this.svc.updateFile(this.projectName, contenuFile.id, body.trim()).catch(() => {});
+    // 2. Retirer un éventuel wrapper « PR-Res {nom} » précédent (idempotence), cherché APRÈS le fence
+    //    du prompt puis en section sœur.
+    let exIdx = -1;
+    for (let i = closeIdx + 1; i <= folderEnd; i++) {
+      if (headingRe.test((lines[i] || '').trim())) { exIdx = i; break; }
+    }
+    if (exIdx === -1) {
+      // Migration : ancien wrapper placé en section sœur (au niveau du dossier du prompt), après lui.
+      for (let i = folderEnd + 1; i < lines.length; i++) {
+        const hm = /^(#{1,6}) /.exec(lines[i] || '');
+        if (!hm) continue;
+        if (hm[1].length < sectionLevel) break;
+        if (hm[1].length === sectionLevel) { if (headingRe.test((lines[i] || '').trim())) exIdx = i; break; }
+      }
+    }
+    if (exIdx !== -1) {
+      const exLevel = (lines[exIdx].match(/^(#+)/)?.[1].length) ?? wrapperLevel;
+      let end = exIdx + 1;
+      while (end < lines.length) {
+        const hm = /^(#{1,6}) /.exec(lines[end]);
+        if (hm && hm[1].length <= exLevel) break;
+        end++;
+      }
+      let start = exIdx;
+      while (start > 0 && lines[start - 1].trim() === '') start--;
+      const removed = end - start;
+      if (start <= folderEnd) folderEnd -= removed;
+      lines.splice(start, removed);
+    }
 
-      // 6. Créer les instances Trello / Array du bloc (Form/Chart/Agenda = balise/liste)
-      for (const mm of [...body.matchAll(moRe)]) {
+    // 3. Insérer le wrapper en sous-section (dossier enfant), à l'intérieur du dossier du prompt après lui.
+    const now = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    lines.splice(folderEnd + 1, 0, '', heading, `_Exécuté le ${now}_`, '', ...parts.join('\n\n').split('\n'), '');
+    this.unifiedContent = lines.join('\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.currentEditSource = 'ia-prompt-result';
+    this.scheduleSave();
+    this.recomputeAll();
+
+    // 4. Créer les instances Trello / Array (live) — folderId = dossier du prompt, comme le chemin
+    //    standard. Les fences restent inline dans le contenu et sont rendues en boards.
+    for (const block of blocks) {
+      for (const mm of [...block.body.matchAll(moRe)]) {
         const type = mm[1].toLowerCase();
         if (type !== 'trello' && type !== 'array') continue;
         try {
-          const inst = await this.megaOutilsSvc.createInstance({
+          const moInst = await this.megaOutilsSvc.createInstance({
             type: type as MegaOutilType, name: mm[2].trim(), projectId: this.projectName,
-            outilId: this.activeOutilId || undefined, folderId: folder.id,
+            outilId: this.activeOutilId || undefined, folderId: promptFolderId,
           });
           const fenceBody = mm[3];
           if (type === 'trello') {
             const cards = this.parseTrelloBodyCards(fenceBody);
             for (let i = 0; i < cards.length; i++) {
               const c = cards[i];
-              await this.megaOutilsSvc.createTrelloCard(inst.id, { title: c.title, status: c.status, priority: c.priority, description: c.description, orderIndex: i }).catch(() => {});
+              await this.megaOutilsSvc.createTrelloCard(moInst.id, { title: c.title, status: c.status, priority: c.priority, description: c.description, orderIndex: i }).catch(() => {});
             }
           } else {
-            const base = await this.megaOutilsSvc.getArrayGrid(inst.id).catch(() => null);
+            const base = await this.megaOutilsSvc.getArrayGrid(moInst.id).catch(() => null);
             const grid = base ? this.deserializeArrayGrid(fenceBody, base) : null;
-            if (grid) await this.megaOutilsSvc.updateArrayGrid(inst.id, grid).catch(() => {});
+            if (grid) await this.megaOutilsSvc.updateArrayGrid(moInst.id, grid).catch(() => {});
           }
+          this.megaOutilCreated.emit(moInst);
         } catch (e) { console.error('[EditorZone] MO cours échoué :', mm[2], e); }
       }
     }
-
-    // 7. Recharger l'arborescence pour afficher les nouveaux dossiers
-    this.refresh.emit();
   }
 
   /** Crée des événements agenda depuis les lignes d'un fence AGENDA et retourne
@@ -5988,9 +6038,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const delta = (parentLevel + 1) - minLevel; // plus petit titre → parentLevel+1
     if (delta <= 0) return md;
     inFence = false;
-    // Cap à 6 (h5/h6) : au-delà du niveau 4, les titres ne sont plus des sections de la
-    // sidebar mais restent du contenu À L'INTÉRIEUR de « Résultat du prompt » (évite que les
-    // titres du livrable deviennent frères de « Résultat du prompt » quand le prompt est profond).
+    // Cap à 6 (h6 max) : les titres du livrable restent des sous-sections À L'INTÉRIEUR de
+    // « PR-Res {nom} » (navigables jusqu'au niveau 6) ; au-delà de 6 ils restent inline, ce qui
+    // évite qu'ils deviennent frères de « PR-Res {nom} » quand le prompt est profond.
     return src.map(l => {
       if (/^```/.test(l.trim())) { inFence = !inFence; return l; }
       if (inFence) return l;
@@ -6000,10 +6050,39 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }).join('\n');
   }
 
-  /** Place le résultat d'un prompt dans une section "Pr - NomPrompt" au MÊME niveau que la
-   *  section du prompt (section sœur, insérée après), titres du résultat décalés d'un niveau.
+  /** Libellé canonique de la section résultat d'un prompt : un dossier unique « PR-Res {nom} »,
+   *  distinct du dossier du prompt (« Pr - {nom} ») pour éviter toute collision de slug. */
+  private promptResultLabel(name: string): string { return 'PR-Res ' + name; }
+
+  /** Niveau markdown du titre « PR-Res {nom} » : un cran SOUS le dossier du prompt, plafonné à 6.
+   *  Source unique partagée par `upsertPromptResultSection` et le calcul du niveau de départ IA. */
+  private promptResultHeadingLevel(folderId: string | null | undefined): number {
+    const range = folderId ? this.sectionRanges.find(r => r.folderId === folderId) : null;
+    const sectionLevel = range?.level ?? 1;
+    return Math.min(sectionLevel + 1, 6);
+  }
+
+  /** Niveau markdown auquel l'IA doit DÉMARRER ses titres pour que le livrable s'imbrique sous
+   *  « PR-Res {nom} » : un cran sous PR-Res, plafonné à 6. Dynamique selon la profondeur du prompt.
+   *  Cohérent avec `demoteHeadings(markdown, headingLevel)` (qui ramène le plus petit titre à ce niveau). */
+  private promptResultStartHeadingLevel(folderId: string | null | undefined): number {
+    return Math.min(this.promptResultHeadingLevel(folderId) + 1, 6);
+  }
+
+  /** Regex d'un titre de section résultat de prompt. Matche le libellé canonique « PR-Res {name} »
+   *  ainsi que les anciens (« Résultat — {name} », « Résultat du prompt », « Pr - {name} » legacy)
+   *  pour rétrocompat/migration, avec l'éventuel {{SID:id}} injecté au rechargement.
+   *  Source unique partagée par écriture/lecture/suppression. */
+  private promptResultHeadingRe(name: string): RegExp {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp('^#{1,6}\\s+(?:PR-Res\\s+' + escaped + '|Résultat\\s*[—–-]\\s*' + escaped + '|Résultat du prompt|Pr\\s*-\\s*' + escaped + ')(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
+  }
+
+  /** Place le résultat d'un prompt dans une section "PR-Res NomPrompt" À L'INTÉRIEUR du dossier
+   *  du prompt (sous-section enfant, insérée après le prompt), titres du résultat décalés d'un niveau.
+   *  Le résultat occupe donc son propre dossier, placé dans le même dossier que le prompt, juste après lui.
    *  Remplace une éventuelle section résultat précédente (idempotent sur ré-exécution).
-   *  Rétrocompatible : migre aussi les anciens résultats placés en sous-section. */
+   *  Rétrocompatible : migre aussi les anciens résultats placés en section sœur ou nommés "Pr - …". */
   private upsertPromptResultSection(promptInstanceId: string, markdown: string) {
     const inst = this.promptInstances.find(i => i.id === promptInstanceId);
     if (!inst || !markdown.trim()) return;
@@ -6016,11 +6095,19 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
     const sectionLevel = range?.level ?? 1;
     let folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
-    const headingLevel = Math.min(sectionLevel, 6);
-    const heading = '#'.repeat(headingLevel) + ' Pr - ' + inst.name;
-    const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    // Accepte l'éventuel {{SID:id}} injecté après le nom lors des rechargements
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
+    // Titre du résultat un niveau SOUS le dossier du prompt → le résultat devient une sous-section
+    // (dossier enfant) à l'intérieur du dossier du prompt, et non plus une section sœur.
+    const headingLevel = this.promptResultHeadingLevel(inst.folderId);
+    // Nom du résultat VOLONTAIREMENT distinct de « Pr - {name} » (le dossier qui contient le
+    // prompt). Un titre identique au même niveau produit le même slug : dans recomputeRanges les
+    // deux titres ne peuvent matcher qu'un seul docSection (usedDocSections) → la section résultat
+    // devient orpheline, son contenu est fusionné/perdu et le prompt disparaît à la sauvegarde.
+    // « PR-Res {name} » garantit un dossier propre, après le prompt.
+    const heading = '#'.repeat(headingLevel) + ' ' + this.promptResultLabel(inst.name);
+    // Source unique du motif. Note : la recherche se fait toujours APRÈS le fence du prompt (jamais
+    // sur le titre du dossier parent), donc « Pr - {name} » ne peut viser que d'anciennes sections
+    // résultat à migrer, pas le prompt lui-même.
+    const headingRe = this.promptResultHeadingRe(inst.name);
 
     // 1. Retirer une section "Pr - NomPrompt" existante :
     //    a) à l'ancienne position (sous-section dans le folder, après le fence)
@@ -6030,11 +6117,12 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       if (headingRe.test((lines[i] || '').trim())) { exIdx = i; break; }
     }
     if (exIdx === -1) {
+      // Migration : ancien résultat placé en section sœur (au niveau du dossier du prompt), après lui.
       for (let i = folderEnd + 1; i < lines.length; i++) {
         const hm = /^(#{1,6}) /.exec(lines[i] || '');
         if (!hm) continue;
-        if (hm[1].length < headingLevel) break;
-        if (hm[1].length === headingLevel) {
+        if (hm[1].length < sectionLevel) break;
+        if (hm[1].length === sectionLevel) {
           if (headingRe.test((lines[i] || '').trim())) exIdx = i;
           break;
         }
@@ -6116,8 +6204,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
     const sectionLevel = range?.level ?? 1;
     const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
-    const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
+    const headingRe = this.promptResultHeadingRe(inst.name);
     let hIdx = -1;
     for (let i = closeIdx + 1; i <= folderEnd; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
@@ -6157,8 +6244,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const range = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
     const sectionLevel = range?.level ?? 1;
     const folderEnd = Math.min(range?.lineEnd ?? lines.length - 1, lines.length - 1);
-    const escapedName = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedName + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
+    const headingRe = this.promptResultHeadingRe(inst.name);
     let hIdx = -1;
     for (let i = closeIdx + 1; i <= folderEnd; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
@@ -6181,7 +6267,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       if (m) { date = m[1].trim(); break; }
     }
     const resultRange = this.sectionRanges.find(r => r.lineStart === hIdx);
-    return { name: 'Pr - ' + inst.name, folderId: resultRange?.folderId ?? null, date };
+    return { name: this.promptResultLabel(inst.name), folderId: resultRange?.folderId ?? null, date };
   }
 
   /**
@@ -6237,7 +6323,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       }
     }
 
-    // 3. Retirer la section "Pr - NomPrompt" du contenu markdown
+    // 3. Retirer la section "Résultat — NomPrompt" du contenu markdown (+ anciens noms legacy)
     const lines = this.unifiedContent.split('\n');
     const openLine = this.findFenceOpenLine(lines, 'PROMPT', inst);
     if (openLine === -1) { this.confirmDeleteResultId = null; return; }
@@ -6246,8 +6332,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const rangeForDel = inst.folderId ? this.sectionRanges.find(r => r.folderId === inst.folderId) : null;
     const sectionLevelDel = rangeForDel?.level ?? 1;
     const folderEndDel = Math.min(rangeForDel?.lineEnd ?? lines.length - 1, lines.length - 1);
-    const escapedNameDel = inst.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const headingRe = new RegExp('^#{1,6}\\s+(?:Pr\\s*-\\s*' + escapedNameDel + '|Résultat du prompt)(\\s+\\{\\{SID:[a-zA-Z0-9-]+\\}\\})?\\s*$');
+    const headingRe = this.promptResultHeadingRe(inst.name);
     let hIdx = -1;
     for (let i = closeIdx + 1; i <= folderEndDel; i++) {
       if (headingRe.test((lines[i] || '').trim())) { hIdx = i; break; }
@@ -6654,6 +6739,107 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       ta.focus();
       ta.setSelectionRange(start + before.length, start + before.length + selected.length);
     });
+  }
+
+  // ── Collage de markdown pré-formaté (re-leveling des titres) ───────────────
+  /** Recale tous les titres markdown pour que le plus haut devienne `desiredTopLevel`.
+   *  Gère les deux sens (descendre/monter), respecte les blocs ``` et plafonne à 6. */
+  private relevelMarkdownHeadings(md: string, desiredTopLevel: number): string {
+    const src = md.split('\n');
+    let inFence = false, minLevel = 99;
+    for (const l of src) {
+      if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      const m = /^(#{1,6}) /.exec(l);
+      if (m) minLevel = Math.min(minLevel, m[1].length);
+    }
+    if (minLevel === 99) return md;                 // aucun titre
+    const delta = desiredTopLevel - minLevel;
+    if (delta === 0) return md;
+    inFence = false;
+    return src.map(l => {
+      if (/^```/.test(l.trim())) { inFence = !inFence; return l; }
+      if (inFence) return l;
+      const m = /^(#{1,6})( .*)$/.exec(l);
+      if (!m) return l;
+      const nl = Math.min(Math.max(m[1].length + delta, 1), 6);
+      return '#'.repeat(nl) + m[2];
+    }).join('\n');
+  }
+
+  /** Niveau du dernier titre (1-6) précédant `offset` dans unifiedContent (fence-aware).
+   *  0 si aucun titre avant → le collage devient une section racine. */
+  private sectionLevelBeforeOffset(offset: number): number {
+    const before = this.unifiedContent.substring(0, offset);
+    const lines = before.split('\n');
+    let inFence = false, level = 0;
+    for (const l of lines) {
+      if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      const m = /^(#{1,6}) /.exec(l);
+      if (m) level = m[1].length;
+    }
+    return level;
+  }
+
+  /** Collage Mode Code : si le presse-papier contient des titres markdown, les recaler sous
+   *  le dossier où se trouve le curseur (le plus haut titre → niveau du dossier + 1) avant
+   *  insertion. Empêche un H1 collé de casser la hiérarchie et de perdre le texte. */
+  onTextareaPaste(ev: ClipboardEvent) {
+    if (this.isActiveSectionLockedByOther) return;
+    const text = ev.clipboardData?.getData('text/plain');
+    if (!text || !/^#{1,6}\s/m.test(text)) return;   // pas de titres → collage natif
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const parentLevel = this.sectionLevelBeforeOffset(start);
+    const desiredTop = Math.min(parentLevel + 1, 6);
+    const releveled = this.relevelMarkdownHeadings(text, desiredTop);
+    ev.preventDefault();
+    this.pushCodeUndoSnapshot();
+    const newVal = ta.value.substring(0, start) + releveled + ta.value.substring(end);
+    this.unifiedContent = newVal;
+    ta.value = newVal;
+    this.recomputeRanges();
+    this.recomputeMirrorLines();
+    this.scheduleSave();
+    setTimeout(() => {
+      ta.focus();
+      const pos = start + releveled.length;
+      ta.setSelectionRange(pos, pos);
+    });
+  }
+
+  /** Collage Mode Édition (visu) : si le presse-papier contient des titres markdown, les recaler
+   *  sous la section cible (niveau + 1) et les insérer dans unifiedContent → les sous-menus se
+   *  créent automatiquement. Sans titres, on laisse le collage natif (texte riche). */
+  onVisuSectionPaste(sectionId: string, level: number, ev: ClipboardEvent) {
+    if (this.collab.isLockedByOther(sectionId)) return;
+    const text = ev.clipboardData?.getData('text/plain');
+    if (!text || !/^#{1,6}\s/m.test(text)) return;   // pas de titres → collage natif
+    ev.preventDefault();
+    const desiredTop = Math.min(level + 1, 6);
+    const releveled = this.relevelMarkdownHeadings(text, desiredTop);
+
+    // Insérer à la fin du contenu DIRECT de la section (avant ses sous-sections enfants),
+    // même logique que insertAt (branche pendingMoFolderId) → placement correct par parseContent.
+    const range = this.sectionRanges.find(r => r.folderId === sectionId);
+    const lines = this.unifiedContent.split('\n');
+    if (range) {
+      const childFirst = this.sectionRanges
+        .filter(c => c.lineStart > range.lineStart && c.lineStart <= range.lineEnd && c.level > range.level)
+        .reduce((min, c) => Math.min(min, c.lineStart), range.lineEnd + 1);
+      lines.splice(childFirst, 0, '', ...releveled.split('\n'), '');
+    } else {
+      lines.push('', ...releveled.split('\n'), '');
+    }
+    this.unifiedContent = lines.join('\n').replace(/\n{3,}/g, '\n\n');
+    this.recomputeRanges();
+    this.syncDocSectionsTextFromContent();
+    this.forceVisuReinject = true;   // structure modifiée (nouvelles sous-sections) → re-render complet
+    this.buildVisuSections();
+    this.scheduleSave();
   }
 
   // ── Image upload ───────────────────────────────────────────
@@ -7720,7 +7906,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
           const headingLine = lines[range.lineStart];
           let directEnd = range.lineEnd;
           for (let j = range.lineStart + 1; j <= range.lineEnd; j++) {
-            if (/^#{1,4} /.test(lines[j])) { directEnd = j - 1; break; }
+            if (/^#{1,6} /.test(lines[j])) { directEnd = j - 1; break; }
           }
           const origLines = originalContent.split('\n').slice(1); // skip heading
           restored = [
@@ -8085,7 +8271,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const headingLine = lines[range!.lineStart];
       let directEnd = range!.lineEnd;
       for (let j = range!.lineStart + 1; j <= range!.lineEnd; j++) {
-        if (/^#{1,4} /.test(lines[j])) { directEnd = j - 1; break; }
+        if (/^#{1,6} /.test(lines[j])) { directEnd = j - 1; break; }
       }
       const origLines = snap!.split('\n').slice(1); // ignorer le heading
       restored = [
@@ -8339,7 +8525,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const lines = this.unifiedContent.split('\n');
     let directEnd = range.lineEnd;
     for (let j = range.lineStart + 1; j <= range.lineEnd; j++) {
-      if (/^#{1,4} /.test(lines[j])) { directEnd = j - 1; break; }
+      if (/^#{1,6} /.test(lines[j])) { directEnd = j - 1; break; }
     }
     lines.splice(directEnd + 1, 0, ...snippet.split('\n'));
     this.unifiedContent = lines.join('\n');
@@ -8398,7 +8584,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     // qui suit le heading courant pour ne pas les écraser.
     let directEnd = range.lineEnd;
     for (let j = range.lineStart + 1; j <= range.lineEnd; j++) {
-      if (/^#{1,4} /.test(lines[j])) {
+      if (/^#{1,6} /.test(lines[j])) {
         directEnd = j - 1;
         break;
       }
@@ -8770,7 +8956,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!sr) return null;
     let directEnd = sr.lineEnd;
     for (let j = sr.lineStart + 1; j <= sr.lineEnd; j++) {
-      if (/^#{1,4} /.test(lines[j])) { directEnd = j - 1; break; }
+      if (/^#{1,6} /.test(lines[j])) { directEnd = j - 1; break; }
     }
     let seen = 0;
     let insertLine = directEnd; // défaut : pas de contenu après → titre en fin de section
@@ -9026,7 +9212,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     // range.lineEnd englobe les sous-sections ; on cherche la première ligne heading enfant.
     let directEnd = range.lineEnd;
     for (let j = range.lineStart + 1; j <= range.lineEnd; j++) {
-      if (/^#{1,4} /.test(lines[j])) { directEnd = j - 1; break; }
+      if (/^#{1,6} /.test(lines[j])) { directEnd = j - 1; break; }
     }
     lines.splice(directEnd + 1, 0, ...insertion.split('\n'));
     this.unifiedContent = lines.join('\n');
@@ -9648,7 +9834,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   onStructTitleBlur(node: StructureNode, event: FocusEvent): void {
     if (!node.title.trim()) {
       const lines = this.unifiedContent.split('\n');
-      const m = /^(#{1,4}) (.+)$/.exec(lines[node.lineStart] ?? '');
+      const m = /^(#{1,6}) (.+)$/.exec(lines[node.lineStart] ?? '');
       if (m) {
         node.title = this.splitHeadingSid(m[2].trim()).title;
         (event.target as HTMLInputElement).value = node.title;
@@ -9918,7 +10104,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const range = ranges[idx];
     const recipientId = ranges[idx - 1].folderId; // section du dessus qui reçoit le texte
     const lines = this.unifiedContent.split('\n');
-    if (!/^#{1,4}\s/.test(lines[range.lineStart] ?? '')) return;
+    if (!/^#{1,6}\s/.test(lines[range.lineStart] ?? '')) return;
     lines.splice(range.lineStart, 1); // retire la seule ligne de heading
     this.unifiedContent = lines.join('\n');
     const ta = this.textareaRef?.nativeElement;
