@@ -33,11 +33,43 @@ export class AiExecuteService {
   log$   = new Subject<AiLogItem>();
 
   private es: EventSource | null = null;
+  private prepareAbort: AbortController | null = null;
+  private canceled = false;
 
   cancel(): void {
+    this.canceled = true;
+    this.prepareAbort?.abort();
+    this.prepareAbort = null;
     this.es?.close();
     this.es = null;
     this.ngZone.run(() => this.isStreaming.set(false));
+  }
+
+  /**
+   * Enregistre le prompt côté serveur (POST sans limite de taille) et renvoie un jobId.
+   * Indispensable pour les gros prompts (système + état projet) : en GET via query params,
+   * l'URL dépasse la limite d'en-tête HTTP → la requête n'atteint jamais le serveur et le
+   * flux SSE ne s'établit pas (génération bloquée sans aucun retour).
+   */
+  private async prepareJob(systemPrompt: string | null, userPrompt: string, provider: string, model: string): Promise<string> {
+    const ac = new AbortController();
+    this.prepareAbort = ac;
+    const token = this.authService.getToken() || '';
+    const res = await fetch(`${this.dataUrl}/api/mega-outils/prompt/execute-prepare`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ systemPrompt: systemPrompt || '', userPrompt, provider, model }),
+      signal: ac.signal,
+    });
+    this.prepareAbort = null;
+    if (!res.ok) {
+      let msg = `Préparation du prompt échouée (${res.status})`;
+      try { const j = await res.json(); if (j?.error) msg = j.error; } catch { /* ignore */ }
+      throw new Error(msg);
+    }
+    const { jobId } = await res.json();
+    if (!jobId) throw new Error('jobId manquant dans la réponse de préparation');
+    return jobId;
   }
 
   /**
@@ -45,15 +77,10 @@ export class AiExecuteService {
    * EventSource (sans toucher à `this.es`/`chunk$`/`done$`) et résout le texte complet.
    * Sert aux corrections/analyses en tâche de fond pendant qu'un popup streame déjà.
    */
-  executeOnce(systemPrompt: string | null, userPrompt: string, provider: string, model: string): Promise<string> {
+  async executeOnce(systemPrompt: string | null, userPrompt: string, provider: string, model: string): Promise<string> {
+    const jobId = await this.prepareJob(systemPrompt, userPrompt, provider, model);
     return new Promise<string>((resolve, reject) => {
-      const params = new URLSearchParams({
-        systemPrompt: systemPrompt || '',
-        userPrompt,
-        provider,
-        model,
-        token: this.authService.getToken() || '',
-      });
+      const params = new URLSearchParams({ jobId, token: this.authService.getToken() || '' });
       const es = new EventSource(`${this.dataUrl}/api/mega-outils/prompt/execute-stream?${params.toString()}`);
       let accumulated = '';
       const finish = (fn: () => void) => { es.close(); this.ngZone.run(fn); };
@@ -79,17 +106,22 @@ export class AiExecuteService {
 
   startExecution(systemPrompt: string | null, userPrompt: string, provider: string, model: string): void {
     this.cancel();
+    this.canceled = false;
     this.isStreaming.set(true);
     this.tokenInfo.set(null);
 
-    const params = new URLSearchParams({
-      systemPrompt: systemPrompt || '',
-      userPrompt,
-      provider,
-      model,
-      token: this.authService.getToken() || '',
-    });
+    // Préparation du job (POST) puis ouverture du flux SSE avec un simple jobId : évite le
+    // dépassement de longueur d'URL sur les gros prompts (génération du livrable bloquée).
+    this.prepareJob(systemPrompt, userPrompt, provider, model)
+      .then(jobId => { if (!this.canceled) this.openStream(jobId); })
+      .catch(err => {
+        if (this.canceled || err?.name === 'AbortError') return;
+        this.ngZone.run(() => { this.isStreaming.set(false); this.error$.next(err?.message || 'Préparation du prompt impossible'); });
+      });
+  }
 
+  private openStream(jobId: string): void {
+    const params = new URLSearchParams({ jobId, token: this.authService.getToken() || '' });
     const es = new EventSource(`${this.dataUrl}/api/mega-outils/prompt/execute-stream?${params.toString()}`);
     this.es = es;
     let accumulated = '';
