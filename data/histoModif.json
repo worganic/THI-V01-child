@@ -1,6 +1,123 @@
 {
   "modifications": [
     {
+      "id": "mod-510",
+      "version": "B-0.315",
+      "date": "2026-06-28T23:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["server"],
+      "features": "server:mega-outils-execute|system:ai-monitoring",
+      "title": "Exécution agy : statut périodique pendant l'attente (visibilité) + alerte sortie vide",
+      "description": "agy (antigravity) écrit sa réponse dans un fichier et ne streame pas sur stdout → pendant la génération, le client n'avait aucun retour (zone vide, impression de blocage). Ajout d'un statut périodique toutes les 5s dans le flux SSE (event ai-log/info) : temps écoulé + octets reçus dans le fichier de sortie, ou « en attente de la réponse du modèle » si rien écrit. À la fin, si le fichier est resté vide, une alerte stderr explique le problème (installation/auth agy, ou suggère le provider Claude). Donne une vraie visibilité sur les allers-retours IA et distingue un agy lent d'un agy en échec.",
+      "files": [
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "après les réponse validé du form cela lance la suite mais aucune info si l'IA est de nouveau contacté, je ne vois aucune data envoyé à l'IA et celle ci ne répond pas",
+      "startedAt": "2026-06-28T22:45:00.000Z",
+      "completedAt": "2026-06-28T23:00:00.000Z"
+    },
+    {
+      "id": "mod-509",
+      "version": "B-0.315",
+      "date": "2026-06-28T22:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets"],
+      "features": "projets:prompt-workflow|projets:form-execution",
+      "title": "Workflow guidé : les réponses du formulaire ne sont plus perdues sur « Générer maintenant »",
+      "description": "Bug diagnostiqué via le Journal IA : la requête de génération avait la même taille (4436 car.) que le cadrage → les réponses du formulaire n'étaient pas transmises à l'IA. Cause : le bouton secondaire « Générer le livrable maintenant » du form popup émettait un événement vide (secondary: void) → onForceGenerate() lançait la génération sans pousser les réponses dans le transcript. Fix : FormExecutionPopupComponent émet désormais la FormEntry (réponses saisies) sur l'action secondaire (refactor buildEntry partagé avec submit) ; onForceGenerate(entry) pousse ces réponses dans le transcript avant génération. Les réponses sont donc transmises à l'IA quel que soit le bouton utilisé.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque le form est validé, le système n'a pas l'air de renvoyé la réponse à l'IA pour continué l'execution du prompt",
+      "startedAt": "2026-06-28T22:15:00.000Z",
+      "completedAt": "2026-06-28T22:30:00.000Z"
+    },
+    {
+      "id": "mod-508",
+      "version": "B-0.315",
+      "date": "2026-06-28T22:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:prompt-workflow|system:ai-monitoring",
+      "title": "Workflow guidé : journal IA en direct (allers-retours requêtes/réponses)",
+      "description": "Le popup de workflow guidé n'affichait que le stdout accumulé — vide avec agy (qui écrit dans un fichier, pas sur stdout) → aucune visibilité. Ajout d'un Journal IA en direct : il s'abonne à execSvc.log\\$ (flux info/stdout/stderr) et trace chaque requête envoyée (logRequest : SYSTEM+USER tronqués, provider/modèle) et chaque réponse reçue (taille + durée). Panneau repliable, horodaté, coloré par type de flux, plafonné à 400 lignes, bouton Vider. Permet de surveiller le bon fonctionnement des échanges IA et de diagnostiquer un blocage.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "je n'ai aucune information provenant de l'IA, je dois voir les aller retour vers les IA pour surveillé le bon fonctionnement dy système",
+      "startedAt": "2026-06-28T21:45:00.000Z",
+      "completedAt": "2026-06-28T22:00:00.000Z"
+    },
+    {
+      "id": "mod-507",
+      "version": "B-0.315",
+      "date": "2026-06-28T21:30:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["server", "system"],
+      "features": "system:executor|server:mega-outils-execute",
+      "title": "Exécution IA : watchdog timeout (plus de blocage infini sur génération)",
+      "description": "Bug : exécuter un prompt (workflow guidé) restait bloqué indéfiniment sur 'Génération du livrable…' si le CLI (agy/antigravity) ne se terminait jamais. Cause : le process spawné (agy/claude) n'avait aucun timeout → close jamais émis → aucun 'complete' SSE → client bloqué en cascade. Fix executor (port 3002) : watchdog timeout max dur (5 min, configurable via AI_EXEC_TIMEOUT_MS) qui tue le process (SIGTERM puis SIGKILL) et émet error+end pour débloquer. NB : agy n'écrivant pas sur stdout (sortie fichier), un watchdog d'inactivité stdout est impossible → timeout sur durée totale. Fix server (callExecutorSse) : filet de sécurité apiReq.setTimeout (max + 30s) si l'executor devient injoignable en cours de stream.",
+      "files": [
+        "electron/executor/server-executor.js",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque j'execute un prompt (Ideation) après le lancement j'ai bien un form de précision, mais ensuite cela reste bloqué sur : Génération du livrable… 35s",
+      "startedAt": "2026-06-28T21:00:00.000Z",
+      "completedAt": "2026-06-28T21:30:00.000Z"
+    },
+    {
+      "id": "mod-506",
+      "version": "B-0.315",
+      "date": "2026-06-28T20:45:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": ["projets"],
+      "features": "projets:editor-zone|system:markdown-paste",
+      "title": "Collage markdown : re-leveling auto des titres sous le dossier cible",
+      "description": "Bug : coller un texte markdown contenant un titre de niveau supérieur (ex: H1) dans un dossier de niveau 2 cassait la hiérarchie et le texte était supprimé. Fix : au collage (Mode Code + Mode Édition visu), si le presse-papier contient des titres markdown, ils sont automatiquement recalés (relevelMarkdownHeadings) pour que le plus haut titre devienne enfant du dossier cible (niveau cible + 1), plafonné à 6. Le parsing crée alors les sous-menus correspondants. Sans titres, le collage natif (texte/riche) est préservé. Mode Code : niveau cible déduit du dernier titre avant le curseur (fence-aware). Mode visu : niveau de la VisuSectionState, insertion en fin de contenu direct de la section.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "j'essai de rajouté un texte déjà formaté en markdown [...] lorsque je place dans un dossier de niveau 2 un document avec des niveaux 1 et inférieur, le texte est direct supprimé, comment pourrais ton faire pour intégré un texte et adapté les menus en conséquance ?",
+      "startedAt": "2026-06-28T20:15:00.000Z",
+      "completedAt": "2026-06-28T20:45:00.000Z"
+    },
+    {
+      "id": "mod-505",
+      "version": "B-0.315",
+      "date": "2026-06-28T20:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": ["projets", "data"],
+      "features": "projets:editor|system:mega-outils",
+      "title": "Sync : ne plus supprimer un prompt (garde MOID sur orphan deletion)",
+      "description": "Bug : renommer un prompt en Mode Code supprimait le prompt (fichier prompt-NOM.md effacé comme orphelin). Cause : l'étape 6 de processSectionsChange supprimait tout fichier additionnel non matché par nom, sans tenir compte de l'identité MOID. Fix : avant de supprimer un fichier MO (prompt-/trello-/array- ou contenant {{MOID:id}}), on vérifie si l'instance est encore vivante en DB (megaOutilInstances) — si oui, c'est un drift de parsing (renommage mal détecté), pas une suppression voulue → le fichier est protégé. Les suppressions explicites (deletePromptInstance, qui supprime d'abord l'instance DB) restent fonctionnelles. Restauration du prompt 'Ideation' perdu (projet cours d'anglais / Pr - Idéation) depuis l'historique git du projet.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "dans le projet 'cours d'anglais' j'ai voulus renommé un prompt dans le Mode Code, le système à supprimé le prompt [...] la synchro ne doit pas supprimer un prompt",
+      "startedAt": "2026-06-28T19:30:00.000Z",
+      "completedAt": "2026-06-28T20:00:00.000Z"
+    },
+    {
       "id": "mod-504",
       "version": "B-0.314",
       "date": "2026-06-28T19:00:00.000Z",
@@ -12532,6 +12649,28 @@
       "prompt": "l'affichage d'un prompt s'affiche bien dans le mode Edition si on selectionne dans le menu la section dans lequel se trouve le prompt, mais l'affichage n'est pas bon lorsqu'on clique sur le prompt dans le menu.",
       "startedAt": "2026-06-28T08:50:00.000Z",
       "completedAt": "2026-06-28T09:00:00.000Z"
+    },
+    {
+      "id": "mod-492",
+      "version": "B-0.315",
+      "date": "2026-06-29T10:45:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "libs"
+      ],
+      "features": "projets:editor-workflow,system:ai-execute",
+      "title": "Workflow prompt : génération du livrable bloquée sur gros prompts (URL trop longue)",
+      "description": "Lors de l'exécution d'un prompt volumineux (système ~8000 car. + état du projet), la phase de génération du livrable restait bloquée sans aucun retour de l'IA : le formulaire de cadrage était validé mais la génération n'aboutissait jamais. Cause : AiExecuteService.startExecution/executeOnce passaient système+user+état dans les query params d'une requête GET (EventSource). Sur un gros prompt, l'URL dépassait la limite d'en-tête HTTP, la requête n'atteignait jamais le serveur, le flux SSE ne s'établissait pas (aucun log « agy en cours… »), timer bloqué. Le serveur disposait déjà d'un endpoint POST execute-prepare (jobId, sans limite de taille) inutilisé côté client. Correctif : startExecution et executeOnce passent désormais systématiquement par prepareJob (POST execute-prepare) puis ouvrent l'EventSource avec un simple ?jobId=. Gestion d'annulation pendant la préparation via AbortController.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/ai-execute.service.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque je lance l'execution d'un prompt assez important (bc de ligne), cela affiche bien le form renvoyé par l'IA et lorsque je valide j'ai l'impression que le résultat n'est pas renvoyé à l'IA, en tous cas je ne vois aucune intéraction avec l'IA",
+      "startedAt": "2026-06-29T10:35:00.000Z",
+      "completedAt": "2026-06-29T10:45:00.000Z"
     }
   ]
 }

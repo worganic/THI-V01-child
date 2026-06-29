@@ -380,7 +380,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-32` — [SYNC] Suppression MO via sidebar → fence retirée, aucun texte utilisateur perdu
+## `2-5-2-4-32` — [modification] [SYNC] Suppression MO via sidebar → fence retirée, aucun texte utilisateur perdu
 
 - **Précondition** : section avec un bloc `` ```TRELLO: Mon Board ``` `` et du texte utilisateur avant et après.
 - **Action** : supprimer le fichier `TL: Mon Board` depuis la sidebar (bouton supprimer).
@@ -497,3 +497,77 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Résultat à redouter** : user B ne voit pas le changement avant de recharger manuellement la page.
 - **À vérifier** : tester avec 2 onglets : déplacer un dossier dans l'onglet 1, observer que l'onglet 2 met à jour sa sidebar en moins de 2 secondes sans rechargement manuel.
 - **Composants:** `server/server-data.js` (route move-folder), `projet-editor.component.ts` (subscribeToCollabEvents)
+
+---
+
+## `2-5-2-4-43` — [SYNC] Garde MOID : la synchro ne supprime jamais un prompt/MO dont l'instance est vivante
+
+- **Précondition** : section contenant un prompt (`prompt-NOM.md` avec `{{MOID:id}}`), instance vivante en DB.
+- **Action** : renommer le prompt en Mode Code (ou tout événement qui fait disparaître transitoirement la fence du buffer parsé) → `processSectionsChange` étape 6 voit `prompt-NOM.md` non matché par nom dans `additionalFiles`.
+- **Résultat attendu** : avant suppression, on extrait le `{{MOID:id}}` du contenu du fichier et on vérifie `megaOutilInstances()`. Si l'instance `id` est vivante → suppression **bloquée** (log `Suppression bloquée : fichier MO ... instance encore vivante`). Le fichier prompt survit → à la reconstruction (`buildDocSections`), la fence est réinjectée dans le contenu.
+- **Cas legacy (sans MOID)** : fichier `prompt-/trello-/array-` sans `{{MOID}}` lisible → protégé si une instance homonyme vivante existe.
+- **Résultat à redouter** : sans la garde, le renommage supprime le fichier prompt comme orphelin → bloc PROMPT et instance perdus (bug réel observé projet « cours d'anglais »).
+- **Suppression explicite préservée** : `deletePromptInstance` supprime d'abord l'instance DB → l'instance n'est plus vivante → la garde laisse passer la suppression du fichier (comportement attendu).
+- **À vérifier** : renommer un prompt en Code → le bloc PROMPT reste présent après save + reload. Supprimer explicitement le prompt via sidebar → le fichier est bien supprimé.
+- **Composants:** `projet-editor.component.ts`
+
+---
+
+## `2-5-2-4-44` — Collage de markdown pré-formaté : re-leveling auto des titres
+
+- **Précondition** : curseur dans un dossier de niveau 2 (Mode Code) ou section visu de niveau 2. Presse-papier = texte markdown commençant par `# Titre` (H1) avec sous-niveaux.
+- **Action** : coller (Ctrl+V) → `onTextareaPaste` (Code) ou `onVisuSectionPaste` (visu).
+- **Résultat attendu** : `relevelMarkdownHeadings` détecte le plus haut titre (H1) et décale tous les titres pour que le plus haut devienne niveau cible + 1 (ici niveau 3). Décalage appliqué à tous, plafonné à 6, blocs ``` ignorés. Le texte est inséré, `parseContent` crée les sous-menus correspondants. Aucun texte perdu.
+- **Niveau cible** : Mode Code = niveau du dernier titre avant le curseur (fence-aware, `sectionLevelBeforeOffset`) ; Mode visu = `sec.level`, insertion en fin de contenu direct de la section (avant les enfants).
+- **Sans titres** : si le presse-papier ne contient aucun `^#{1,6}`, collage natif préservé (texte brut en Code, texte riche en visu) — pas de `preventDefault`.
+- **Résultat à redouter (bug corrigé)** : sans re-leveling, un H1 collé dans un dossier niveau 2 devient un dossier racine → hiérarchie cassée → texte supprimé à la reconstruction.
+- **À vérifier** : coller un document multi-niveaux dans un dossier niveau 2 → les titres apparaissent en sous-sections (niveau 3+), le menu reflète la nouvelle arborescence, le texte est intégralement présent. Niveaux 5-6 restent du contenu interne (pas de menu).
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor-zone.component.html`
+
+---
+
+## `2-5-2-4-45` — [modification] Exécution IA : watchdog timeout (anti-blocage infini)
+
+- **Précondition** : exécuter un prompt (workflow guidé ou direct) via un provider dont le CLI peut hang (ex: antigravity/agy gemini-3-pro).
+- **Action** : la génération démarre (`AiExecuteService.startExecution` → SSE `/api/mega-outils/prompt/execute-stream` → executor port 3002 spawn `agy`/`claude`).
+- **Résultat attendu** : si le process CLI ne se termine pas dans `AI_EXEC_TIMEOUT_MS` (défaut 5 min), l'executor le tue (SIGTERM puis SIGKILL) et émet `error` + `end` → le client reçoit `error$` → le popup workflow quitte l'état `generating` (plus de spinner infini). Filet serveur : `apiReq.setTimeout` (max + 30s) si l'executor devient injoignable.
+- **Spécificité agy** : agy n'écrit pas sur stdout (sortie fichier pollée) → impossible de détecter l'inactivité via stdout → le watchdog borne la **durée totale**, pas l'inactivité.
+- **Résultat à redouter (bug corrigé)** : sans watchdog, un CLI qui hang ne ferme jamais le process → aucun `complete` SSE → popup bloqué indéfiniment sur « Génération du livrable… ».
+- **À vérifier** : un prompt qui hang finit par afficher une erreur claire (timeout) au lieu de tourner sans fin ; un prompt normal (réponse < timeout) se termine normalement.
+- **Statut périodique agy** : agy n'écrivant pas sur stdout, le serveur émet toutes les 5s un `ai-log`/`info` (« agy en cours… Xs — N octets reçus » ou « en attente de la réponse du modèle ») → visibilité dans le Journal IA. Si agy se termine sans rien écrire → alerte `stderr` (vérifier install/auth agy ou utiliser Claude).
+- **Composants:** `electron/executor/server-executor.js`, `server/server-data.js`
+
+---
+
+## `2-5-2-4-46` — Workflow guidé : journal IA en direct (surveillance des échanges)
+
+- **Précondition** : exécuter un prompt en workflow guidé (popup `PromptWorkflowPopupComponent`).
+- **Action** : démarrer le cadrage puis la génération du livrable.
+- **Résultat attendu** : un panneau « Journal IA » s'affiche, horodaté, montrant : la requête envoyée (`logRequest` → SYSTEM+USER tronqués + provider/modèle), le flux `log$` (info/stdout/stderr coloré), et la réponse reçue (taille + durée). Plafonné à 400 lignes, repliable, bouton Vider. Persiste à travers les vagues de cadrage et la génération.
+- **Cas agy** : agy n'écrivant pas sur stdout, le journal montre au moins les lignes `info` de l'executor (« Executing Antigravity CLI… ») + la requête → l'utilisateur voit que l'exécution est lancée même sans stdout.
+- **Résultat à redouter (avant correctif)** : le popup n'affichait que `accumulated()` (stdout) → vide avec agy → aucune visibilité sur les échanges.
+- **À vérifier** : pendant la génération, le journal liste les événements en temps réel ; en cas d'erreur/timeout, la ligne `stderr` rouge apparaît.
+- **Composants:** `prompt-workflow-popup.component.ts`
+
+---
+
+## `2-5-2-4-47` — Workflow guidé : réponses du formulaire transmises à l'IA (toutes les voies)
+
+- **Précondition** : prompt en workflow guidé, l'IA a renvoyé un formulaire de cadrage, l'utilisateur le remplit.
+- **Action A — « Envoyer les réponses »** : `submit()` → `submitted` → `onFormSubmitted` → push transcript → vague de cadrage suivante (`buildClarifyUser` inclut `[Échanges de cadrage précédents]`) jusqu'à `===PRÊT===` ou `maxWaves` (5).
+- **Action B — « Générer le livrable maintenant »** : `onSecondary()` → `secondary` émet la `FormEntry` → `onForceGenerate(entry)` pousse les réponses dans le transcript AVANT `startGenerate` → `buildGenerateUser` inclut `[Réponses de cadrage]`.
+- **Résultat attendu** : dans les deux cas, la requête de génération (vérifiable dans le Journal IA) est plus longue que le prompt initial (réponses incluses). L'IA reçoit les réponses et produit un livrable cohérent.
+- **Résultat à redouter (bug corrigé)** : le bouton secondaire émettait un événement vide → réponses perdues → requête de génération identique au prompt initial (même nombre de caractères) → l'IA génère sans le cadrage utilisateur.
+- **À vérifier** : remplir le form, cliquer « Générer le livrable maintenant » → le Journal IA montre `[Réponses de cadrage]` dans la requête de génération.
+- **Composants:** `form-execution-popup.component.ts`, `prompt-workflow-popup.component.ts`
+
+---
+
+## `2-5-2-4-48` — Exécution IA : gros prompts via jobId (POST prepare, anti-URL trop longue)
+
+- **Précondition** : exécuter un prompt volumineux en workflow guidé — système ~8000 car. (méta-prompt de génération) + demande + état du projet inclus dans la phase de génération du livrable.
+- **Action** : valider le formulaire de cadrage → la génération démarre. `AiExecuteService.startExecution` (et `executeOnce`) appellent d'abord `prepareJob` → `POST /api/mega-outils/prompt/execute-prepare` (corps JSON, sans limite de taille) qui renvoie un `jobId`, puis ouvrent l'EventSource sur `…/execute-stream?jobId=…&token=…` (URL courte).
+- **Résultat attendu** : le flux SSE s'établit, le Journal IA affiche les retours (« agy en cours… » / stdout Claude), le livrable est généré et passe en aperçu. Annulation pendant la préparation gérée via `AbortController` (pas d'erreur fantôme).
+- **Résultat à redouter (bug corrigé)** : en passant système+user+état dans les query params d'un GET, l'URL dépassait la limite d'en-tête HTTP → la requête n'atteignait jamais le serveur, aucun flux SSE, aucun log « agy en cours… », timer bloqué indéfiniment sur « Génération du livrable… » sans interaction IA visible.
+- **À vérifier** : un prompt court ET un prompt très long aboutissent tous deux ; couper la connexion pendant « Génération » affiche bien une erreur exploitable.
+- **Composants:** `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `server/server-data.js`
