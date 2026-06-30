@@ -233,7 +233,14 @@
               <span class="material-symbols-outlined text-base text-amber-400">terminal</span>
               Outils CLI (Antigravity CLI / Claude Code)
             </label>
-            <p class="text-xs text-light-text-muted dark:text-white/40 mt-0.5">Active la section de configuration des outils CLI installés localement.</p>
+            <p class="text-xs text-light-text-muted dark:text-white/40 mt-0.5">
+              Active la section de configuration des outils CLI installés localement.
+              <button type="button" (click)="openCliHelp()"
+                class="inline-flex items-center gap-1 ml-1 font-semibold text-light-primary dark:text-primary hover:underline">
+                <span class="material-symbols-outlined text-sm">help</span>
+                Comment installer ?
+              </button>
+            </p>
           </div>
           <button (click)="toggleCliIa()"
             [ngClass]="cliIaEnabled ? 'bg-light-primary dark:bg-primary' : 'bg-gray-300 dark:bg-white/20'"
@@ -554,4 +561,138 @@
     </section>
 
   </div>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- Popup : aide installation des outils CLI (AGY / Claude Code) -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  @if (showCliHelp) {
+    <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div class="w-full max-w-3xl max-h-[88vh] flex flex-col rounded-2xl bg-white dark:bg-surface shadow-2xl border border-light-border dark:border-white/10 overflow-hidden">
+
+        <!-- Header -->
+        <div class="flex items-start justify-between gap-4 px-6 py-4 border-b border-light-border dark:border-white/10">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-2xl text-amber-400">terminal</span>
+            <div>
+              <h3 class="font-bold text-light-text dark:text-white">Installer les outils CLI pour Frankenstein</h3>
+              <p class="text-xs text-light-text-muted dark:text-white/40 mt-0.5">Antigravity CLI (agy) et Claude Code, détectés automatiquement par l'executor local</p>
+            </div>
+          </div>
+          <button type="button" (click)="closeCliHelp()"
+            class="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-colors flex-shrink-0">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <!-- Body -->
+        <div class="flex-1 overflow-y-auto px-6 py-5 space-y-6 text-sm text-light-text dark:text-white/80">
+
+          <!-- Prérequis -->
+          <div class="p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-500/20">
+            <p class="font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-2">
+              <span class="material-symbols-outlined text-base">priority_high</span>
+              Comment Frankenstein détecte les CLI
+            </p>
+            <ul class="mt-2 space-y-1.5 text-xs text-amber-800 dark:text-amber-300/80 list-disc list-inside">
+              <li>L'executor local (Electron, <strong>port 3002</strong>) doit tourner — lance <code class="bg-amber-500/15 px-1 rounded">launch-frankenstein.bat</code> ou l'app Worganic Launcher.</li>
+              <li>Les binaires doivent être accessibles dans le <strong>PATH</strong> : Frankenstein fait <code class="bg-amber-500/15 px-1 rounded">where agy</code> et <code class="bg-amber-500/15 px-1 rounded">where claude</code>.</li>
+              <li>Après installation, clique sur <strong>Actualiser</strong> (icône ⟳) sur la carte correspondante pour relancer la détection.</li>
+            </ul>
+          </div>
+
+          <!-- Antigravity CLI -->
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center font-black">A</div>
+              <h4 class="font-bold text-light-text dark:text-white">Antigravity CLI <span class="text-light-text-muted dark:text-white/40 font-normal">· Google · agy</span></h4>
+            </div>
+            <ol class="space-y-3 list-decimal list-inside marker:text-blue-500 marker:font-bold">
+              <li>
+                <strong>Lance le script d'installation officiel</strong> selon ton système. Le script télécharge le binaire <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">agy</code> et te montre la ligne à ajouter au PATH si besoin.
+                <p class="mt-1.5 text-[11px] font-semibold text-light-text-muted dark:text-white/40">Windows (PowerShell) :</p>
+                <pre class="mt-1 p-2.5 rounded-lg bg-gray-900 text-blue-200 text-xs overflow-x-auto font-mono">irm https://antigravity.google/cli/install.ps1 | iex</pre>
+                <p class="mt-1.5 text-[11px] font-semibold text-light-text-muted dark:text-white/40">Windows (Invite de commandes) :</p>
+                <pre class="mt-1 p-2.5 rounded-lg bg-gray-900 text-blue-200 text-xs overflow-x-auto font-mono">curl -fsSL https://antigravity.google/cli/install.cmd -o install.cmd &amp;&amp; install.cmd &amp;&amp; del install.cmd</pre>
+                <p class="mt-1.5 text-[11px] font-semibold text-light-text-muted dark:text-white/40">macOS / Linux :</p>
+                <pre class="mt-1 p-2.5 rounded-lg bg-gray-900 text-blue-200 text-xs overflow-x-auto font-mono">curl -fsSL https://antigravity.google/cli/install.sh | bash</pre>
+              </li>
+              <li>
+                <strong>Vérifie que le binaire est dans le PATH.</strong> L'installeur dépose <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">agy</code> dans :
+                <ul class="mt-1.5 ml-4 space-y-0.5 text-xs list-disc list-inside text-light-text-muted dark:text-white/50">
+                  <li>Windows : <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">%LOCALAPPDATA%\agy\bin</code> (ex : <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">C:\Users\&lt;user&gt;\AppData\Local\agy\bin</code>)</li>
+                  <li>macOS / Linux : <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">~/.local/bin</code></li>
+                </ul>
+                <p class="mt-1.5 text-xs text-light-text-muted dark:text-white/50">Si « commande introuvable », ajoute ce dossier au PATH puis <strong>redémarre le terminal</strong> (et l'app Frankenstein).</p>
+              </li>
+              <li>
+                <strong>Authentifie-toi</strong> : lance <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">agy</code> une première fois → un flux <strong>Google Sign-In</strong> s'ouvre dans le navigateur, accepte l'autorisation OAuth.
+              </li>
+              <li>
+                <strong>Vérifie l'installation</strong> :
+                <pre class="mt-1.5 p-2.5 rounded-lg bg-gray-900 text-green-300 text-xs overflow-x-auto font-mono">agy --version
+where agy   (Windows)   /   which agy   (macOS/Linux)</pre>
+              </li>
+            </ol>
+            <p class="mt-2 text-xs text-light-text-muted dark:text-white/40 italic">
+              Frankenstein appelle ensuite <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">agy -p "..." --dangerously-skip-permissions</code> en spawn direct. La liste de modèles est statique (pas d'API publique de listing pour agy).
+            </p>
+          </div>
+
+          <!-- Claude Code -->
+          <div>
+            <div class="flex items-center gap-2 mb-3">
+              <div class="w-8 h-8 rounded-lg bg-light-primary/10 dark:bg-primary/20 text-light-primary dark:text-primary flex items-center justify-center font-black">C</div>
+              <h4 class="font-bold text-light-text dark:text-white">Claude Code <span class="text-light-text-muted dark:text-white/40 font-normal">· Anthropic · claude</span></h4>
+            </div>
+            <ol class="space-y-3 list-decimal list-inside marker:text-light-primary dark:marker:text-primary marker:font-bold">
+              <li>
+                <strong>Installe Node.js ≥ 18</strong> (depuis nodejs.org), puis vérifie :
+                <pre class="mt-1.5 p-2.5 rounded-lg bg-gray-900 text-purple-200 text-xs overflow-x-auto font-mono">node --version
+npm --version</pre>
+              </li>
+              <li>
+                <strong>Installe Claude Code en global</strong> via npm :
+                <pre class="mt-1.5 p-2.5 rounded-lg bg-gray-900 text-purple-200 text-xs overflow-x-auto font-mono">npm install -g &#64;anthropic-ai/claude-code</pre>
+              </li>
+              <li>
+                <strong>Authentifie-toi</strong> : lance <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">claude</code> une première fois et suis le flux de connexion (compte Anthropic / Claude, ou clé API).
+              </li>
+              <li>
+                <strong>Vérifie l'installation</strong> :
+                <pre class="mt-1.5 p-2.5 rounded-lg bg-gray-900 text-green-300 text-xs overflow-x-auto font-mono">claude --version
+where claude   (Windows)   /   which claude   (macOS/Linux)</pre>
+              </li>
+              <li>
+                Le provider et le modèle par défaut sont lus depuis
+                <code class="bg-gray-100 dark:bg-white/10 px-1 rounded">~/.claude/settings.json</code>. Renseigne une clé API Claude dans la section « Clés API » pour récupérer la liste réelle des modèles (sinon liste de fallback).
+              </li>
+            </ol>
+          </div>
+
+          <!-- Activation dans Frankenstein -->
+          <div class="p-4 rounded-xl bg-gray-50 dark:bg-white/5 border border-light-border dark:border-white/10">
+            <p class="font-semibold text-light-text dark:text-white flex items-center gap-2">
+              <span class="material-symbols-outlined text-base text-light-primary dark:text-primary">check_circle</span>
+              Une fois installés
+            </p>
+            <ol class="mt-2 space-y-1.5 text-xs text-light-text-muted dark:text-white/50 list-decimal list-inside">
+              <li>Reviens sur cette page, clique sur <strong>Actualiser</strong> sur chaque carte → le statut passe à « Installé ».</li>
+              <li>Coche <strong>Provider actif</strong> et sélectionne les modèles à afficher dans le header.</li>
+              <li>Clique sur <strong>Sauvegarder</strong>.</li>
+            </ol>
+          </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-end px-6 py-4 border-t border-light-border dark:border-white/10">
+          <button type="button" (click)="closeCliHelp()"
+            class="px-5 py-2.5 rounded-xl bg-light-primary dark:bg-primary text-white dark:text-btn-text font-bold text-sm transition-all hover:scale-105">
+            J'ai compris
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
 </main>

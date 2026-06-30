@@ -25,7 +25,7 @@
 
 ---
 
-## `2-2-3` — Configuration CLI IA
+## `2-2-3` — [modification] Configuration CLI IA
 
 - Affichage/masquage de la section des outils CLI au clic sur son toggle global (toggleCliIa)
 - Activation/désactivation d'un fournisseur CLI (Antigravity ou Claude) via sa checkbox dédiée (toggleProvider)
@@ -99,3 +99,15 @@
 - Modification de la version via le champ de saisie de texte dédié dans la section Général
 - Persistance du numéro de version dans le fichier conf.json global lors d'une sauvegarde manuelle (POST /api/config/keys)
 - **Composants:** `apps/portail/src/app/pages/user/config/config.component.ts`, `apps/portail/src/app/pages/user/config/config.component.html`, `server/server-data.js`
+
+---
+
+## `2-2-9` — [modification] Aide installation des outils CLI
+
+- Affichage d'un lien "Comment installer ?" à côté du toggle de la section Outils CLI (openCliHelp)
+- Ouverture d'un popup modal expliquant l'installation d'Antigravity CLI (agy) et de Claude Code pour Frankenstein
+- Rappel des prérequis de détection : executor Electron port 3002 actif et binaires accessibles dans le PATH (where agy / where claude)
+- Instructions pas-à-pas séparées pour Antigravity CLI (installation, PATH, authentification, agy --version) et Claude Code (npm install -g @anthropic-ai/claude-code, authentification, claude --version)
+- Rappel des étapes post-installation : Actualiser le statut, cocher Provider actif, sélectionner les modèles, Sauvegarder
+- Fermeture explicite du popup via le bouton ✕, le bouton "J'ai compris" (closeCliHelp) — pas de fermeture au clic sur le backdrop
+- **Composants:** `apps/portail/src/app/pages/user/config/config.component.ts`, `apps/portail/src/app/pages/user/config/config.component.html`

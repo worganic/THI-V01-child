@@ -6,7 +6,9 @@
       "date": "2026-06-29T14:00:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone-code,projets:prompt-execution",
       "title": "Consigne dynamique de niveau de titre envoyée à l'IA",
       "description": "À l'exécution directe d'un prompt, le system prompt envoyé à l'IA inclut désormais une consigne FORMAT DES TITRES indiquant à quel niveau markdown démarrer les titres du livrable, pour qu'il s'imbrique correctement sous la section PR-Res. Le niveau est dynamique : promptResultStartHeadingLevel(folderId) = niveau de PR-Res (sectionLevel+1) + 1, plafonné à 6. Helpers ajoutés dans projet-editor-zone (promptResultHeadingLevel + promptResultStartHeadingLevel, source unique partagée avec upsertPromptResultSection). Input startHeadingLevel ajouté à la popup d'exécution, instruction injectée dans le system prompt (doExecute + reExecute). demoteHeadings reste un filet de sécurité idempotent. Le workflow guidé n'est PAS modifié (il repose sur une détection ## côté serveur pour le cours vivant).",
@@ -28,7 +30,9 @@
       "date": "2026-06-29T13:30:00.000Z",
       "type": "feature",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone-code",
       "title": "Dossiers navigables jusqu'au niveau 6 (au lieu de 4)",
       "description": "Suite au déplacement du résultat de prompt DANS le dossier du prompt (mod-512), le contenu du livrable était décalé d'un niveau et ses sous-sections dépassaient le niveau 4 (titres ##### / ######), qui n'étaient plus reconnus comme dossiers → sections manquantes dans la sidebar. La limite de profondeur des dossiers passe de 4 à 6 : tous les sites de parsing de sections (regex `#{1,4}` → `#{1,6}`, `buildDocSections` cap `Math.min(depth, 4)` → 6, détection des bornes de section, parse de titre, sanitize IA) sont alignés. Le cours vivant (`materializeLivingCourse`) profite des niveaux supplémentaires : wrapper/séances/corps démotés relativement (jusqu'au niveau 6). Les commentaires obsolètes mentionnant le plafond à 4 sont mis à jour.",
@@ -49,7 +53,9 @@
       "date": "2026-06-29T13:00:00.000Z",
       "type": "fix",
       "commitType": "AMELIORATION",
-      "scope": ["projets"],
+      "scope": [
+        "projets"
+      ],
       "features": "projets:editor-zone-code",
       "title": "Résultat de prompt placé dans le dossier du prompt",
       "description": "La section résultat « PR-Res {nom} » d'une exécution de prompt était insérée comme dossier SŒUR du dossier du prompt (même niveau). Elle est désormais insérée comme dossier ENFANT, à l'intérieur du dossier du prompt, juste après le bloc PROMPT (à côté du nœud « PR: {nom} »). Mise en œuvre : le titre du résultat est écrit un niveau sous le dossier du prompt (headingLevel = sectionLevel + 1) sans changer la position d'insertion (folderEnd + 1), ce qui reparente la section en enfant. Idem pour le cours vivant (materializeLivingCourse : wrapperLevel = sectionLevel + 1). La logique d'idempotence/migration recherche l'ancien résultat en section sœur (au niveau sectionLevel) et le remplace par la nouvelle sous-section.",
@@ -12986,6 +12992,29 @@
       "prompt": "j'execute un prompt cours d'anglais/Mon Prompt Maison tout se passe bien jusqu'au moment de créer la section PR-Res et de copier le résultat, rien ne s'affiche et en bas j'ai un message: Error",
       "startedAt": "2026-06-29T12:24:29.942Z",
       "completedAt": "2026-06-29T12:35:00.124Z"
+    },
+    {
+      "id": "mod-512",
+      "version": "B-0.317",
+      "date": "2026-06-30T16:51:44.533002Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail"
+      ],
+      "features": "portail:config-cli-ia",
+      "title": "Popup aide installation CLI (Antigravity agy / Claude Code) dans Config IA",
+      "description": "Ajout d'un lien « Comment installer ? » a cote du toggle « Outils CLI (Antigravity CLI / Claude Code) » dans Admin/Config > Intelligence Artificielle. Le lien ouvre un popup modal expliquant pas-a-pas comment installer Antigravity CLI (binaire agy : installation, ajout au PATH, authentification Google, verification agy --version) et Claude Code (npm install -g @anthropic-ai/claude-code, authentification, verification claude --version) pour qu'ils soient detectes par Frankenstein. Le popup rappelle les prerequis de detection (executor Electron port 3002 actif, binaires accessibles dans le PATH via where agy / where claude) et les etapes post-installation (Actualiser le statut, cocher Provider actif, selectionner les modeles, Sauvegarder). Fermeture explicite uniquement (bouton X / J'ai compris), pas de fermeture au clic sur le backdrop.",
+      "files": [
+        "apps/portail/src/app/pages/user/config/config.component.ts",
+        "apps/portail/src/app/pages/user/config/config.component.html",
+        "tests/fonctions/connecte/config/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "dans la zone admin/config/Intelligence Artificielle/Outils CLI (Antigravity CLI / Claude Code) ajoute un lien vers un popup qui explique precisement comment installe antigravity cli (AGY) et claude code pour qu'il fonctionne avec frankenstein",
+      "startedAt": "2026-06-30T16:51:44.533002Z",
+      "completedAt": "2026-06-30T16:51:44.533002Z"
     }
   ]
 }
