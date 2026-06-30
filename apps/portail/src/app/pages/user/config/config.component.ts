@@ -49,6 +49,11 @@ export class ConfigComponent implements OnInit, OnDestroy {
   get cliIaEnabled(): boolean { return this.configService.cliIaEnabled(); }
   toggleCliIa() { this.configService.cliIaEnabled.set(!this.cliIaEnabled); }
 
+  // Popup d'aide installation des outils CLI (Antigravity / Claude Code)
+  showCliHelp = false;
+  openCliHelp() { this.showCliHelp = true; }
+  closeCliHelp() { this.showCliHelp = false; }
+
   get apiKeysEnabled(): boolean { return this.configService.apiKeysEnabled(); }
   toggleApiKeys() { this.configService.apiKeysEnabled.set(!this.apiKeysEnabled); }
 
