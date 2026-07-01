@@ -41,6 +41,10 @@ export interface SectionInfo {
   // Identifiant stable encodé dans le heading via {{SID:folderId}} — source de vérité
   // du lien section↔dossier, prioritaire sur le matching par chemin/ordre.
   sid: string | null;
+  // Sauvegarde déclenchée par un moment significatif (blur, changement de section,
+  // publication...) plutôt que par le simple débounce de frappe → force la création
+  // d'un checkpoint BDD immédiat côté serveur au lieu d'attendre le throttle (45s).
+  forceCheckpoint?: boolean;
 }
 
 interface DocSection {
@@ -224,9 +228,18 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     return false;
   }
 
-  /** Section active verrouillée par un autre utilisateur (cadenas rouge) → lecture seule totale. */
+  /** Présence douce : un autre utilisateur édite aussi la section active — n'empêche plus
+   *  la frappe (les 2 utilisateurs peuvent éditer en même temps), sert uniquement à afficher
+   *  une alerte non bloquante ; la fusion éventuelle se fait via le bouton Synchro. */
   get isActiveSectionLockedByOther(): boolean {
     return this.isFolderLockedByOther(this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null));
+  }
+
+  /** Nom de l'utilisateur dont la présence est détectée sur la section active (pour l'alerte). */
+  get activeSectionOtherEditorName(): string {
+    const folderId = this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null);
+    if (!folderId) return 'Un autre utilisateur';
+    return this.collab.getLock(folderId)?.lockedByName || 'Un autre utilisateur';
   }
 
   /** True si la section d'une instance Trello est verrouillée par un autre utilisateur. */
@@ -481,6 +494,16 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Popup de création de titre (création atomique d'un dossier + heading + SID)
   titleDialog: { level: number; prefilled: string; parentFolderId: string | null; parentLabel: string; insertLine: number } | null = null;
   titleDialogBusy = false;
+  // Popup de prévisualisation du collage markdown (recalage des niveaux avant insertion)
+  pastePreview: {
+    mode: 'code' | 'visu';
+    proposed: string;          // texte recalé (éditable avant collage)
+    parentLevel: number;       // niveau de la section cible (0 = racine)
+    desiredTop: number;        // niveau du plus haut titre après recalage
+    shift: number;             // décalage appliqué (peut être négatif)
+    code?: { start: number; end: number };
+    visu?: { sectionId: string };
+  } | null = null;
   visuInsertMenu: { sectionId: string; top: number; left: number } | null = null;
   activeVisuSectionId: string | null = null;
   editingVisuSectionId = signal<string | null>(null);
@@ -3413,7 +3436,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   /** Retire les marqueurs de mise en forme (Markdown inline + balises span/u/b/i) de la sélection. */
   codeClearFormat() {
-    if (this.isActiveSectionLockedByOther) return;
     const ta = this.textareaRef?.nativeElement;
     if (!ta) return;
     this.pushCodeUndoSnapshot();
@@ -4519,10 +4541,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     clearTimeout(this.saveTimeout);
     // Pas d'auto-save si des sections sont repliées (pour ne pas forcer le dépli)
     if (this.foldedContent.size > 0) return;
-    this.saveTimeout = setTimeout(() => this.saveAll(), 2000);
+    // Débounce de frappe pure → pas de checkpoint forcé (laisse le throttle serveur 45s agir).
+    this.saveTimeout = setTimeout(() => this.saveAll(false), 2000);
   }
 
-  private saveAll() {
+  // Par défaut (appel direct hors débounce : blur, changement de section, publish, undo...),
+  // c'est un moment significatif → force un checkpoint BDD immédiat côté serveur.
+  private saveAll(forceCheckpoint = true) {
     if (this.unifiedContent === this.lastSavedContent) {
       if (this.localDirty) {
         this.localDirty = false;
@@ -4590,6 +4615,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
     this.editSource.emit(this.currentEditSource);
     this.currentEditSource = 'user-editing';
+    if (forceCheckpoint) { for (const s of sections) s.forceCheckpoint = true; }
     this.sectionsChange.emit(sections);
   }
 
@@ -6655,7 +6681,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   insertAt(before: string, after = '') {
-    if (this.isActiveSectionLockedByOther) return;
     const ta = this.textareaRef?.nativeElement;
     if (ta) this.pushCodeUndoSnapshot();
 
@@ -6742,28 +6767,36 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   // ── Collage de markdown pré-formaté (re-leveling des titres) ───────────────
+  /** Détecte une ligne de titre markdown, tolérante à l'absence d'espace après les `#`
+   *  (ex: `#1. Titre` aussi bien que `## Titre`). Retourne { level, text } ou null.
+   *  Exige du contenu non vide après les `#` (un `###` seul n'est pas un titre). */
+  private parseHeadingLine(line: string): { level: number; text: string } | null {
+    const m = /^(#{1,6})(?!#)[ \t]*(\S.*?)[ \t]*$/.exec(line);
+    return m ? { level: m[1].length, text: m[2] } : null;
+  }
+
   /** Recale tous les titres markdown pour que le plus haut devienne `desiredTopLevel`.
-   *  Gère les deux sens (descendre/monter), respecte les blocs ``` et plafonne à 6. */
+   *  Gère les deux sens (descendre/monter), respecte les blocs ```, plafonne à 6 et
+   *  NORMALISE l'espace après les `#` (sinon `parseContent` ne crée pas le sous-menu). */
   private relevelMarkdownHeadings(md: string, desiredTopLevel: number): string {
     const src = md.split('\n');
     let inFence = false, minLevel = 99;
     for (const l of src) {
       if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
       if (inFence) continue;
-      const m = /^(#{1,6}) /.exec(l);
-      if (m) minLevel = Math.min(minLevel, m[1].length);
+      const h = this.parseHeadingLine(l);
+      if (h) minLevel = Math.min(minLevel, h.level);
     }
     if (minLevel === 99) return md;                 // aucun titre
     const delta = desiredTopLevel - minLevel;
-    if (delta === 0) return md;
     inFence = false;
     return src.map(l => {
       if (/^```/.test(l.trim())) { inFence = !inFence; return l; }
       if (inFence) return l;
-      const m = /^(#{1,6})( .*)$/.exec(l);
-      if (!m) return l;
-      const nl = Math.min(Math.max(m[1].length + delta, 1), 6);
-      return '#'.repeat(nl) + m[2];
+      const h = this.parseHeadingLine(l);
+      if (!h) return l;
+      const nl = Math.min(Math.max(h.level + delta, 1), 6);
+      return '#'.repeat(nl) + ' ' + h.text;         // espace normalisé → titre valide
     }).join('\n');
   }
 
@@ -6782,21 +6815,46 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return level;
   }
 
-  /** Collage Mode Code : si le presse-papier contient des titres markdown, les recaler sous
-   *  le dossier où se trouve le curseur (le plus haut titre → niveau du dossier + 1) avant
-   *  insertion. Empêche un H1 collé de casser la hiérarchie et de perdre le texte. */
+  /** Niveau du plus haut titre markdown d'un texte (fence-aware). 0 si aucun titre. */
+  private minMarkdownHeadingLevel(md: string): number {
+    let inFence = false, min = 99;
+    for (const l of md.split('\n')) {
+      if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      const h = this.parseHeadingLine(l);
+      if (h) min = Math.min(min, h.level);
+    }
+    return min === 99 ? 0 : min;
+  }
+
+  /** Collage Mode Code : si le presse-papier contient des titres markdown, recaler le plus haut
+   *  titre sous le dossier où se trouve le curseur (niveau du dossier + 1) puis OUVRIR le popup
+   *  de prévisualisation. L'insertion réelle se fait à la validation (confirmPastePreview). */
   onTextareaPaste(ev: ClipboardEvent) {
-    if (this.isActiveSectionLockedByOther) return;
     const text = ev.clipboardData?.getData('text/plain');
-    if (!text || !/^#{1,6}\s/m.test(text)) return;   // pas de titres → collage natif
+    if (!text || !/^#{1,6}(?!#)[ \t]*\S/m.test(text)) return;   // pas de titres → collage natif
     const ta = this.textareaRef?.nativeElement;
     if (!ta) return;
+    ev.preventDefault();
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const parentLevel = this.sectionLevelBeforeOffset(start);
     const desiredTop = Math.min(parentLevel + 1, 6);
     const releveled = this.relevelMarkdownHeadings(text, desiredTop);
-    ev.preventDefault();
+    this.pastePreview = {
+      mode: 'code',
+      proposed: releveled,
+      parentLevel,
+      desiredTop,
+      shift: desiredTop - this.minMarkdownHeadingLevel(text),
+      code: { start, end }
+    };
+  }
+
+  /** Insertion effective en Mode Code (après validation du popup). */
+  private applyCodePaste(start: number, end: number, releveled: string) {
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
     this.pushCodeUndoSnapshot();
     const newVal = ta.value.substring(0, start) + releveled + ta.value.substring(end);
     this.unifiedContent = newVal;
@@ -6811,17 +6869,26 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     });
   }
 
-  /** Collage Mode Édition (visu) : si le presse-papier contient des titres markdown, les recaler
-   *  sous la section cible (niveau + 1) et les insérer dans unifiedContent → les sous-menus se
-   *  créent automatiquement. Sans titres, on laisse le collage natif (texte riche). */
+  /** Collage Mode Édition (visu) : recaler les titres sous la section cible (niveau + 1) puis
+   *  OUVRIR le popup de prévisualisation. L'insertion réelle se fait à la validation. */
   onVisuSectionPaste(sectionId: string, level: number, ev: ClipboardEvent) {
-    if (this.collab.isLockedByOther(sectionId)) return;
     const text = ev.clipboardData?.getData('text/plain');
-    if (!text || !/^#{1,6}\s/m.test(text)) return;   // pas de titres → collage natif
+    if (!text || !/^#{1,6}(?!#)[ \t]*\S/m.test(text)) return;   // pas de titres → collage natif
     ev.preventDefault();
     const desiredTop = Math.min(level + 1, 6);
     const releveled = this.relevelMarkdownHeadings(text, desiredTop);
+    this.pastePreview = {
+      mode: 'visu',
+      proposed: releveled,
+      parentLevel: level,
+      desiredTop,
+      shift: desiredTop - this.minMarkdownHeadingLevel(text),
+      visu: { sectionId }
+    };
+  }
 
+  /** Insertion effective en Mode Édition (après validation du popup). */
+  private applyVisuPaste(sectionId: string, releveled: string) {
     // Insérer à la fin du contenu DIRECT de la section (avant ses sous-sections enfants),
     // même logique que insertAt (branche pendingMoFolderId) → placement correct par parseContent.
     const range = this.sectionRanges.find(r => r.folderId === sectionId);
@@ -6840,6 +6907,24 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.forceVisuReinject = true;   // structure modifiée (nouvelles sous-sections) → re-render complet
     this.buildVisuSections();
     this.scheduleSave();
+  }
+
+  /** Valide le popup de collage : insère le texte recalé (éventuellement édité) puis ferme. */
+  confirmPastePreview() {
+    const p = this.pastePreview;
+    if (!p) return;
+    const content = p.proposed;
+    if (p.mode === 'code' && p.code) {
+      this.applyCodePaste(p.code.start, p.code.end, content);
+    } else if (p.mode === 'visu' && p.visu) {
+      this.applyVisuPaste(p.visu.sectionId, content);
+    }
+    this.pastePreview = null;
+  }
+
+  /** Annule le collage : rien n'est inséré. */
+  cancelPastePreview() {
+    this.pastePreview = null;
   }
 
   // ── Image upload ───────────────────────────────────────────
@@ -7746,13 +7831,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   // ── Visu edit : événements section ─────────────────────────
   onVisuSectionFocus(sectionId: string) {
-    // Refuser le focus si la section est verrouillée par un autre user
-    if (this.collab.isLockedByOther(sectionId)) {
-      const idx = this.visuSections.findIndex(vs => vs.sectionId === sectionId);
-      const el = idx >= 0 ? this.visuSectionEls.get(idx)?.nativeElement : null;
-      el?.blur();
-      return;
-    }
+    // Présence douce : la section peut être éditée même si un autre utilisateur y est aussi
+    // (badge "Édité par X" affiché dans le template) — le focus n'est plus bloqué.
     this.activeVisuSectionId = sectionId;
     this.suppressScrollOnNextActiveChange = true;
     this.nodeActive.emit(sectionId);
@@ -8882,7 +8962,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   /** Ouvre le popup depuis la barre de style du mode Édition. */
   openTitleDialogFromVisu(level: number) {
     this.visuDropdown = null;
-    if (this.isActiveSectionLockedByOther) return;
     const sel = window.getSelection();
     const prefilled = (sel?.toString() || '').trim().replace(/\s+/g, ' ').slice(0, 120);
     // Point de coupe au curseur : la nouvelle section démarre à la ligne du curseur
@@ -10175,8 +10254,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     // État de partage/verrou : uniquement pour les projets avec sauvegarde externe.
     if (!this.backupType) return;
     if (this.structEntityLocks.has(entityId)) return;
-    // Vérifier que l'entité n'est pas verrouillée par un autre user
-    if (this.collab.isLockedByOther(entityId)) return;
+    // Présence douce : la présence d'un autre utilisateur n'empêche plus d'éditer.
     this.structEntityLocks.add(entityId);
     this.collab.addLocalPending(entityId);
     if (this.projectName) this.collab.lockNode(this.projectName, entityId).catch(() => {});

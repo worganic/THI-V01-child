@@ -40,10 +40,10 @@
       Actuel : cliquer ← ou → pour remplacer une ligne
     </span>
     <span class="flex items-center gap-1 ml-auto">
-      <kbd class="px-1 py-0 rounded border border-white/15 font-mono">←</kbd> copier la ligne depuis "Avant"
+      <kbd class="px-1 py-0 rounded border border-white/15 font-mono">←</kbd> copier la ligne depuis "{{ leftLabel }}"
     </span>
     <span class="flex items-center gap-1">
-      <kbd class="px-1 py-0 rounded border border-white/15 font-mono">→</kbd> copier la ligne depuis "Après"
+      <kbd class="px-1 py-0 rounded border border-white/15 font-mono">→</kbd> copier la ligne depuis "{{ rightLabel }}"
     </span>
   </div>
 
@@ -87,7 +87,7 @@
     <div class="flex-1 flex flex-col min-w-0 border-r border-light-border dark:border-white/10 overflow-hidden">
       <div class="flex-shrink-0 px-3 py-1.5 bg-red-500/8 border-b border-red-500/20 flex items-center gap-2">
         <span class="material-symbols-outlined text-sm text-red-400">remove_circle</span>
-        <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider">Avant</span>
+        <span class="text-[10px] font-bold text-red-400 uppercase tracking-wider">{{ leftLabel }}</span>
         <span class="text-[9px] text-red-400/60 ml-auto">{{ leftLineCount }} lignes</span>
       </div>
       <div class="flex-1 overflow-auto">
@@ -122,7 +122,7 @@
     <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
       <div class="flex-shrink-0 px-3 py-1.5 bg-green-500/8 border-b border-green-500/20 flex items-center gap-2">
         <span class="material-symbols-outlined text-sm text-green-400">add_circle</span>
-        <span class="text-[10px] font-bold text-green-400 uppercase tracking-wider">Après</span>
+        <span class="text-[10px] font-bold text-green-400 uppercase tracking-wider">{{ rightLabel }}</span>
         <span class="text-[9px] text-green-400/60 ml-auto">{{ rightLineCount }} lignes</span>
       </div>
       <div class="flex-1 overflow-auto">

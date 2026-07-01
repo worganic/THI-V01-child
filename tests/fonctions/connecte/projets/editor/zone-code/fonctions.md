@@ -86,13 +86,11 @@ Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :
 
 ---
 
-## `2-5-2-4-9` — Gestion des verrous et état "en attente" (projets backup)
+## `2-5-2-4-9` — [modification] Présence douce et état "en attente" (projets backup)
 
 - **Premier keystroke dans une section** : snapshot du contenu → `codeSectionSnapshots`
-- **Lock granulaire** : verrouillage de l'entité précise (fichier ou bloc)
-  - `collab.lockNode(projectName, entityId)`
-  - `activeEntityLocks: Set<entityId>`
-- **Affichage** : badge rouge sur le nœud dans la sidebar
+- **Présence granulaire (non bloquante)** : `collab.lockNode(projectName, entityId)` enregistre une présence (avec heartbeat ~20s tant que la section reste active), `activeEntityLocks: Set<entityId>` — n'empêche plus un autre utilisateur d'éditer la même entité en même temps (voir `2-5-2-4-37`)
+- **Affichage** : badge rouge sur le nœud dans la sidebar (indicatif — "quelqu'un édite aussi ici")
 - **Partager / Annuler depuis le menu de la section** (vB-0.279) : les actions sont déclenchées depuis le **menu contextuel de la sidebar** (voir `2-5-2-2-9`), et non plus depuis une barre en bas de zone. La zone écoute `collab.publishSectionRequest$` / `cancelSectionRequest$` (abonnement `takeUntilDestroyed` dans le constructeur) → `publishSection(sectionId)` / `cancelSection(sectionId)`.
   - **Portée = sous-arbre** : publier/annuler une section traite la section **ET ses sous-sections modifiées** (descendants `pending`). `collectSectionPublishIds(sectionId)` = `{ sectionId }` ∪ descendants (`getDescendantFolderIds`) qui sont `isLocalPending` ∪ dossiers des entités granulaires verrouillées du sous-arbre. Les sous-sections **non modifiées** ne sont jamais écrites (pas de `publish=true` superflu).
   - **`publishSection(sectionId)`** : indépendant du mode/focus. Calcule `publishFolderIds` (sous-arbre) et capture les entités verrouillées **avant** le flush, reconstruit le document si focus, parse, écrit avec `publish=true` les fichiers dont `folderId ∈ publishFolderIds`, exécute les suppressions d'images différées, puis `releaseSectionsPending()` + `unlockNode()` pour chaque dossier.
@@ -212,7 +210,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-13` — États
+## `2-5-2-4-13` — [modification] États
 
 | État | Description |
 |------|-------------|
@@ -226,7 +224,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 | Section verrouillée | Barre Annuler/Partager visible |
 | Barre cross-mode | Barre persistante si switch de mode avec pending |
 | Lecture seule FTP | `[readonly]` sur textarea si section en cours de sync |
-| Section verrouillée (autre user) | Lecture seule **totale** : textarea code, inputs Structure, board Trello (`readonly`), board Array, insertions toolbar/slash. Getters `isActiveSectionLockedByOther` / `isTrelloInstanceLocked` / `isArrayInstanceLocked` / `isStructNodeLocked` |
+| Présence d'un autre user sur la section active | **Non bloquant** : bannière ambre "X édite aussi cette section" (Code) / badge "Édité par X" (Visu) — la frappe reste possible pour les deux utilisateurs. Getters `isActiveSectionLockedByOther` (affichage uniquement) / `activeSectionOtherEditorName` / `isTrelloInstanceLocked` / `isArrayInstanceLocked` / `isStructNodeLocked` |
 
 ---
 
@@ -435,14 +433,14 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-37` — [modification] [SYNC] Multi-users : sauvegarde simultanée même section — détection de conflit ETag
+## `2-5-2-4-37` — [modification] [SYNC] Multi-users : édition simultanée même section — présence douce + checkpoint BDD
 
-- **Précondition** : user A et user B ont le même projet ouvert, même section active, textes différents localement.
-- **Action** : user A et user B sauvegardent en même temps (délai < 1 s entre les deux saves).
-- **Résultat attendu** : le serveur traite les deux PUT séquentiellement. Le deuxième PUT écrase le premier (last-write-wins). Le perdant (user A ou B) reçoit un SSE `content_update` avec le contenu du gagnant. Sa zone reçoit `hasStructuralChange = false` → pas de reconstruction → son buffer local reste intact jusqu'à son prochain save qui réécrira le contenu du gagnant.
-- **Règle absolue** : pas de corruption silencieuse — le log `log-edition.txt` doit montrer les deux SAVE avec leurs sources et les deux contenus distincts.
-- **À vérifier** : après convergence (30 s), les deux users voient le même contenu. Vérifier dans `log-edition.txt` l'ordre exact des événements SAVE + SYNC-RECEIVE + SYNC-BROADCAST.
-- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `server-data.js`
+- **Précondition** : user A et user B ont le même projet ouvert, même section active, textes différents localement. Aucun des deux n'est bloqué en lecture seule (verrou pessimiste supprimé).
+- **Action** : les deux tapent en même temps sur la même section. Chacun voit une bannière non bloquante "X édite aussi cette section" (Code) / badge "Édité par X" (Visu), issue du registre de présence `projet_section_lock` (upsert + heartbeat ~20s, plus aucun blocage HTTP 409 sur `POST /api/collab/:projetId/nodes/:nodeId/lock`).
+- **Résultat attendu** : la source de vérité du contenu est désormais `projet_content_version` (BDD, immuable) — plus aucun `git checkout` de branche `wip` sur le dossier de travail partagé pendant l'édition live (cause historique de pertes de texte). Chaque autosave écrit sur disque en sauvegarde passive (best-effort) systématiquement, mais ne crée une version BDD ("checkpoint") que si ≥45s se sont écoulées depuis le dernier checkpoint du fichier, ou si l'événement est significatif (blur, changement de section, publish — `forceCheckpoint`). Au premier checkpoint qui arrive après celui de l'autre utilisateur, le serveur détecte le conflit réel (comparaison `baseVersionId` vs dernière version BDD) → 409 → panneau de fusion (voir `2-5-2-4-40`).
+- **Règle absolue** : aucune perte silencieuse — toute tentative de sauvegarde en conflit (y compris la version écartée) est conservée dans `projet_content_version` avec `origin='conflict-mine'`, jamais supprimée.
+- **À vérifier** : après résolution du conflit (fusion ou choix rapide), les deux users voient le même contenu. La zone Historique (`2-5-2-8-13`) liste bien les versions `checkpoint`/`conflict-mine`/`merge` créées pendant le scénario.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `server/server-data.js`, `server/modules/projet-git.js`
 
 ---
 
@@ -468,14 +466,16 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-40` — [SYNC] Détection de conflit ETag (HTTP 409) + panneau de résolution
+## `2-5-2-4-40` — [modification] [SYNC] Détection de conflit réel (HTTP 409, version BDD) + fusion ligne à ligne
 
-- **Précondition** : user A et user B ouvrent le même projet. User B modifie et sauvegarde la section "Intro". User A avait chargé le fichier avant la modification de B.
-- **Action** : user A tape du texte et laisse le debounce sauvegarder → `PUT /files/:id` avec `x-file-version: <hashChargement>`. Le hash diverge de celui du serveur (car B a sauvegardé entre-temps).
-- **Résultat attendu** : serveur répond HTTP 409 avec `{ serverContent, serverUpdatedAt }`. Côté client : un panneau ambre "Conflit" apparaît avec deux colonnes (Ma version / Version du serveur). Boutons "Garder ma version" et "Utiliser la version du serveur".
-- **Résultat à redouter** : la réponse 409 est ignorée → last-write-wins → perte silencieuse.
-- **À vérifier** : choisir "Utiliser la version du serveur" → le contenu serveur est sauvegardé sans conflit, panel disparaît. Choisir "Garder ma version" → le contenu local est envoyé (sans ETag cette fois).
-- **Composants:** `projet-editor.component.ts`, `projet-editor.component.html`, `server/server-data.js`, `project-files.service.ts`
+- **Précondition** : user A et user B ouvrent le même projet. User B modifie et checkpointe la section "Intro" (voir règle de checkpoint `2-5-2-4-37`). User A avait chargé le fichier avant le checkpoint de B.
+- **Action** : au prochain checkpoint de user A (45s, blur, changement de section ou publish), `PUT /files/:id` envoie `x-base-version-id: <versionId chargé>`. Le serveur compare (transaction `SELECT ... FOR UPDATE`) à la dernière version BDD réelle du fichier — elle a changé (B a checkpointé entre-temps).
+- **Résultat attendu** : serveur répond HTTP 409 avec `{ error:'conflict', base:{versionId}, server:{versionId, content, authorName, createdAt}, mine:{content} }` (aucune écriture BDD). Côté client : panneau ambre "Conflit — {auteur} a modifié ce fichier entre-temps" avec 2 boutons rapides ("Garder ma version" / "Utiliser la version du serveur") **et** en dessous une vue 3 panneaux (`ProjetDiffComponent` réutilisé, `leftLabel="Version serveur"` / `rightLabel="Ma version"`) permettant de composer une fusion ligne à ligne (`←`/`→` par ligne) avant de cliquer "Appliquer dans l'éditeur".
+- **Bouton Synchro** : dès qu'un checkpoint d'un autre utilisateur arrive (SSE `version_saved`) sur la section active, une bannière indigo "Synchro" apparaît **avant même** qu'un conflit ne survienne — cliquer dessus ouvre le même écran de fusion sans attendre un 409.
+- **Résolution** : `POST /files/:id/resolve-conflict {baseVersionId, folderId, mineContent, mergedContent}` insère 2 versions immuables (`origin:'conflict-mine'` = tentative écartée préservée, puis `origin:'merge'` = nouvelle tête) — jamais de perte, jamais d'écrasement silencieux.
+- **Résultat à redouter** : la réponse 409 est ignorée → perte silencieuse (ne doit plus se produire : le composant capture systématiquement le 409 et ouvre le panneau).
+- **À vérifier** : choisir "Utiliser la version du serveur" ou "Garder ma version" → résolution immédiate. Cherry-pick quelques lignes puis "Appliquer" → le contenu fusionné est sauvegardé et visible par les deux utilisateurs (SSE `content_update`).
+- **Composants:** `projet-editor.component.ts`, `projet-editor.component.html`, `components/projet-diff/projet-diff.component.ts`, `server/server-data.js`, `project-files.service.ts`
 
 ---
 
@@ -514,15 +514,17 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-44` — Collage de markdown pré-formaté : re-leveling auto des titres
+## `2-5-2-4-44` — [modification] Collage de markdown pré-formaté : re-leveling auto des titres + popup de prévisualisation
 
 - **Précondition** : curseur dans un dossier de niveau 2 (Mode Code) ou section visu de niveau 2. Presse-papier = texte markdown commençant par `# Titre` (H1) avec sous-niveaux.
 - **Action** : coller (Ctrl+V) → `onTextareaPaste` (Code) ou `onVisuSectionPaste` (visu).
-- **Résultat attendu** : `relevelMarkdownHeadings` détecte le plus haut titre (H1) et décale tous les titres pour que le plus haut devienne niveau cible + 1 (ici niveau 3). Décalage appliqué à tous, plafonné à 6, blocs ``` ignorés. Le texte est inséré, `parseContent` crée les sous-menus correspondants. Aucun texte perdu.
+- **Résultat attendu** : `relevelMarkdownHeadings` détecte le plus haut titre (H1) et décale tous les titres pour que le plus haut devienne niveau cible + 1 (ici niveau 3). Au lieu d'insérer directement, un **popup de prévisualisation** (`pastePreview`) s'ouvre : il affiche la section cible, le niveau cible, le décalage appliqué (ex: « +2 ») et le texte recalé dans une zone éditable. Décalage appliqué à tous, plafonné à 6, blocs ``` ignorés.
+- **Validation** : bouton « Coller » (`confirmPastePreview`) → insertion effective (`applyCodePaste` / `applyVisuPaste`), `parseContent` crée les sous-menus ; bouton « Annuler » (`cancelPastePreview`) → rien n'est inséré. Le texte de l'aperçu est modifiable avant de coller (collage du contenu éventuellement édité).
 - **Niveau cible** : Mode Code = niveau du dernier titre avant le curseur (fence-aware, `sectionLevelBeforeOffset`) ; Mode visu = `sec.level`, insertion en fin de contenu direct de la section (avant les enfants).
-- **Sans titres** : si le presse-papier ne contient aucun `^#{1,6}`, collage natif préservé (texte brut en Code, texte riche en visu) — pas de `preventDefault`.
-- **Résultat à redouter (bug corrigé)** : sans re-leveling, un H1 collé dans un dossier niveau 2 devient un dossier racine → hiérarchie cassée → texte supprimé à la reconstruction.
-- **À vérifier** : coller un document multi-niveaux dans un dossier niveau 2 → les titres apparaissent en sous-sections (niveau 3+), le menu reflète la nouvelle arborescence, le texte est intégralement présent. Niveaux 5-6 restent du contenu interne (pas de menu).
+- **Sans titres** : si le presse-papier ne contient aucun `^#{1,6}`, collage natif préservé (texte brut en Code, texte riche en visu) — pas de `preventDefault`, pas de popup.
+- **Titres sans espace** : la détection (`parseHeadingLine`) tolère les titres écrits sans espace après les `#` (ex: `#1. Préparation` autant que `## Objectif`). Ils sont comptés dans le calcul du plus haut niveau ET recalés. En sortie, l'espace est **normalisé** (`### 1. Préparation`) pour que `parseContent` crée bien le sous-menu.
+- **Résultat à redouter (bug corrigé)** : (1) sans re-leveling, un H1 collé dans un dossier niveau 2 devient un dossier racine → hiérarchie cassée → texte supprimé à la reconstruction ; (2) un titre `#1.` sans espace était ignoré → niveau le plus haut détecté faux (décalage +1 au lieu de +2) et titre non recalé.
+- **À vérifier** : coller un document multi-niveaux (y compris titres `#1.` sans espace) dans un dossier niveau 2 → le popup s'affiche avec le décalage +2, tous les titres recalés et espacés, « Coller » insère les titres en sous-sections (niveau 3+), le menu reflète la nouvelle arborescence, le texte est intégralement présent ; « Annuler » ne touche à rien.
 - **Composants:** `projet-editor-zone.component.ts`, `projet-editor-zone.component.html`
 
 ---

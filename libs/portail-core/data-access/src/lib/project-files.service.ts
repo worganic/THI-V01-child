@@ -12,8 +12,32 @@ export interface FileNode {
   order: number;
   fileType?: 'text' | 'image';
   content?: string;
+  /** UUID de la dernière version BDD connue de ce fichier (source de vérité). */
   fileVersion?: string;
   children?: FileNode[];
+}
+
+export interface SaveConflict {
+  error: 'conflict';
+  message: string;
+  base: { versionId: string | null } | null;
+  server: { versionId: string; content: string; authorName: string; createdAt: string };
+  mine: { content: string };
+}
+
+export interface ContentVersionMeta {
+  version_id: string;
+  author_id: string | null;
+  author_name: string;
+  origin: string;
+  content_hash: string;
+  base_version_id: string | null;
+  merged_from_version_id: string | null;
+  created_at: string;
+}
+
+export interface ContentVersionFull extends ContentVersionMeta {
+  content: string;
 }
 
 export interface Outil {
@@ -96,11 +120,34 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.post<FileNode>(`${this.apiUrl}/api/file-projects/${projectName}/files`, data, { headers: this.h() }));
   }
 
-  updateFile(projectName: string, fileId: string, content: string, folderId?: string, publish = false, source?: string, fileVersion?: string): Promise<any> {
+  /**
+   * @param baseVersionId dernier `fileVersion` connu côté client (UUID de version BDD) — permet
+   *   au serveur de détecter un conflit réel si quelqu'un d'autre a checkpointé entre-temps.
+   * @param checkpoint force la création d'une version BDD même si le throttle (45s) n'est pas écoulé
+   *   (blur de section, changement de section, beforeunload, acceptation d'édition IA, publication).
+   * @throws HttpErrorResponse avec status 409 et `error` typé `SaveConflict` en cas de conflit réel.
+   */
+  updateFile(projectName: string, fileId: string, content: string, folderId?: string, publish = false, source?: string, baseVersionId?: string, checkpoint = false): Promise<{ success: boolean; checkpointed: boolean; versionId?: string; commitHash?: string | null; ftpUploaded?: boolean | null }> {
     const headers: Record<string, string> = { ...this.h() };
     if (source) headers['x-edition-source'] = source;
-    if (fileVersion) headers['x-file-version'] = fileVersion;
-    return firstValueFrom(this.http.put(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { content, folderId: folderId ?? null, publish }, { headers }));
+    if (baseVersionId) headers['x-base-version-id'] = baseVersionId;
+    return firstValueFrom(this.http.put<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { content, folderId: folderId ?? null, publish, checkpoint }, { headers }));
+  }
+
+  getVersions(projectName: string, fileId: string, limit = 50, offset = 0): Promise<{ versions: ContentVersionMeta[] }> {
+    return firstValueFrom(this.http.get<{ versions: ContentVersionMeta[] }>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/versions`, { headers: this.h(), params: { limit, offset } }));
+  }
+
+  getVersionContent(projectName: string, fileId: string, versionId: string): Promise<ContentVersionFull> {
+    return firstValueFrom(this.http.get<ContentVersionFull>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/versions/${versionId}`, { headers: this.h() }));
+  }
+
+  restoreVersion(projectName: string, fileId: string, versionId: string, folderId?: string): Promise<{ success: boolean; versionId: string; content: string }> {
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/restore`, { versionId, folderId: folderId ?? null }, { headers: this.h() }));
+  }
+
+  resolveConflict(projectName: string, fileId: string, data: { baseVersionId: string | null; folderId?: string; mineContent: string; mergedContent: string }): Promise<{ success: boolean; versionId: string; conflictMineVersionId: string }> {
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/resolve-conflict`, { ...data, folderId: data.folderId ?? null }, { headers: this.h() }));
   }
 
   /** Enregistre un événement d'édition explicite côté client (sync reçu, undo, etc.). */

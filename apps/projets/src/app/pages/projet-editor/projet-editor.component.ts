@@ -4,13 +4,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { runtimeEnv } from '../../runtime-env';
 import { Subscription } from 'rxjs';
 import { ProjectService, Project } from '@worganic/portail-core/data-access';
-import { ProjectFilesService, FileNode, FtpNodeSyncStatus, Outil, AgendaEvent } from '@worganic/portail-core/data-access';
+import { ProjectFilesService, FileNode, FtpNodeSyncStatus, Outil, AgendaEvent, SaveConflict } from '@worganic/portail-core/data-access';
 import { MegaOutilsService, MegaOutilInstance } from '@worganic/portail-core/data-access';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { LayoutService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
-import { ProjetCollabService, CollabHistoryEntry } from '@worganic/portail-core/data-access';
+import { ProjetCollabService, CollabHistoryEntry, VersionSavedEvent } from '@worganic/portail-core/data-access';
 
 import { WorgMiniHeaderComponent } from '@worganic/shared/ui';
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
@@ -115,7 +115,60 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   onEditSource(source: string) { this.pendingEditSource = source; }
   dragDropError = signal<string | null>(null);
   private dragDropErrorTimer: ReturnType<typeof setTimeout> | null = null;
-  conflictState = signal<{ fileId: string; folderId?: string; myContent: string; serverContent: string; updatedAt?: number } | null>(null);
+  conflictState = signal<{
+    fileId: string; folderId?: string;
+    baseVersionId: string | null;
+    mineContent: string;
+    serverContent: string; serverAuthorName: string; serverCreatedAt: string;
+  } | null>(null);
+
+  // Checkpoints BDD créés par d'AUTRES utilisateurs, en attente de synchro manuelle
+  // (bouton "Synchro" — ouvre le même écran de fusion qu'un conflit, sans attendre un 409).
+  newerVersions = signal<Map<string, VersionSavedEvent>>(new Map());
+
+  readonly activeSectionNewerVersion = computed<VersionSavedEvent | null>(() => {
+    const activeId = this.activeNodeId();
+    if (!activeId) return null;
+    for (const evt of this.newerVersions().values()) {
+      if (evt.folderId === activeId || evt.nodeId === activeId) return evt;
+    }
+    return null;
+  });
+
+  async onSyncClick(): Promise<void> {
+    const evt = this.activeSectionNewerVersion();
+    if (!evt) return;
+    const fileNode = this.findFileById(evt.nodeId, this.files());
+    if (!fileNode) return;
+    try {
+      const versionData = await this.projectFilesService.getVersionContent(this.projectFolderName, evt.nodeId, evt.versionId);
+      this.conflictState.set({
+        fileId: evt.nodeId,
+        folderId: evt.folderId ?? undefined,
+        baseVersionId: fileNode.fileVersion ?? null,
+        mineContent: fileNode.content ?? '',
+        serverContent: versionData.content,
+        serverAuthorName: versionData.author_name,
+        serverCreatedAt: versionData.created_at
+      });
+      this.newerVersions.update(m => { const n = new Map(m); n.delete(evt.nodeId); return n; });
+    } catch (e) {
+      console.error('[Synchro] Récupération de la version échouée:', e);
+    }
+  }
+
+  // Objet "entrée d'historique" synthétique pour réutiliser <app-projet-diff> (3 panneaux
+  // Actuel/Avant/Après + cherry-pick ligne à ligne) sur un conflit de sauvegarde multi-user.
+  readonly conflictDiffEntry = computed<CollabHistoryEntry | null>(() => {
+    const c = this.conflictState();
+    if (!c) return null;
+    return {
+      id: 'conflict', timestamp: c.serverCreatedAt, section: '', actionType: 'conflict',
+      label: 'Conflit de sauvegarde', entityType: 'file', entityId: c.fileId, entityLabel: '',
+      userId: null, username: c.serverAuthorName, undone: false,
+      beforeState: { content: c.serverContent }, afterState: { content: c.mineContent }
+    };
+  });
   aiEditService = inject(ProjetAiEditService);
   private megaOutilsService = inject(MegaOutilsService);
   hasPendingEdit = computed(() => !!this.aiEditService.pendingEdit());
@@ -155,6 +208,19 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   // - Dossier sélectionné → folder + descendants + blocs inline appartenant à ces folders
   // - contenu.md sélectionné → traité comme le dossier parent
   // - Fichier additionnel → uniquement lui-même
+  // Fichier de contenu principal (contenu.md) de la section active — pour la zone
+  // Historique, groupe "Versions de cette section".
+  readonly activeContentFileId = computed<string | null>(() => {
+    const id = this.activeNodeId();
+    if (!id || id.includes('##')) return null;
+    const folder = this.findFolderById(id, this.files());
+    if (folder) {
+      const contentFile = (folder.children || []).find(c => c.type === 'file' && c.name === 'contenu.md');
+      return contentFile?.id ?? null;
+    }
+    return this.findFileById(id, this.files())?.id ?? null;
+  });
+
   readonly activeHistoryIds = computed<Set<string> | null>(() => {
     const id = this.activeNodeId();
     if (!id) return null;
@@ -204,13 +270,13 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   // Met à jour le contenu d'un fichier dans le signal `files` sans recharger depuis le serveur.
   // Cela garde le signal synchronisé avec ce qui est sur disque, pour que si l'éditeur est
   // démonté/remonté (ex: ouverture du diff), il reconstruise depuis le contenu à jour.
-  private patchFileContent(fileId: string, content: string) {
+  private patchFileContent(fileId: string, content: string, versionId?: string) {
     const patch = (nodes: FileNode[]): { changed: boolean; nodes: FileNode[] } => {
       let changed = false;
       const out = nodes.map(n => {
         if (n.id === fileId && n.type === 'file') {
           changed = true;
-          return { ...n, content };
+          return { ...n, content, ...(versionId ? { fileVersion: versionId } : {}) };
         }
         if (n.children) {
           const sub = patch(n.children);
@@ -484,6 +550,11 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       }),
       this.collab.sectionPublished$.subscribe(() => {
         this.autoPullAndRefresh();
+      }),
+      // Un autre user a checkpointé une nouvelle version — mémorise-la pour proposer
+      // le bouton "Synchro" sans attendre un conflit 409 au prochain enregistrement.
+      this.collab.versionSaved$.subscribe(evt => {
+        this.newerVersions.update(m => { const n = new Map(m); n.set(evt.nodeId, evt); return n; });
       }),
       this.collab.ftpFolderSynced$.subscribe(({ folderId, status, totalChecked, totalFiles }) => {
         this.nodeSyncStatus.update(m => new Map(m).set(folderId, status));
@@ -1366,20 +1437,23 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           const oldContent = oldContentMap.get(s.fileId) ?? '';
           if (oldContent !== clean) {
             const fileNode2 = this.findFileById(s.fileId, this.files());
-            const fileVersion = fileNode2?.fileVersion;
+            const baseVersionId = fileNode2?.fileVersion;
             try {
-              await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined, false, editSource, fileVersion);
-              this.patchFileContent(s.fileId, clean);
+              const result = await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined, false, editSource, baseVersionId, s.forceCheckpoint === true);
+              this.patchFileContent(s.fileId, clean, result.versionId);
               const fileNode = { id: s.fileId, name: 'contenu.md', type: 'file' as const, path: '', order: 0 };
               this.trackContentUpdate(fileNode, s.folderName, oldContent, clean);
             } catch (err: any) {
-              if (err?.status === 409 && err?.error?.serverContent !== undefined) {
+              if (err?.status === 409 && err?.error?.error === 'conflict') {
+                const c = err.error as SaveConflict;
                 this.conflictState.set({
                   fileId: s.fileId,
                   folderId: s.folderId ?? undefined,
-                  myContent: clean,
-                  serverContent: err.error.serverContent,
-                  updatedAt: err.error.serverUpdatedAt
+                  baseVersionId: c.base?.versionId ?? null,
+                  mineContent: clean,
+                  serverContent: c.server.content,
+                  serverAuthorName: c.server.authorName,
+                  serverCreatedAt: c.server.createdAt
                 });
                 return; // Arrêter le cycle de sauvegarde
               }
@@ -1958,14 +2032,29 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.aiEditService.cancelEdit();
   }
 
-  async resolveConflict(choice: 'mine' | 'server'): Promise<void> {
+  // Choix rapide (tout garder d'un côté) — pour le cas simple où aucune fusion ligne à ligne n'est nécessaire.
+  async resolveConflictQuick(choice: 'mine' | 'server'): Promise<void> {
     const conflict = this.conflictState();
     if (!conflict) return;
-    const content = choice === 'mine' ? conflict.myContent : conflict.serverContent;
+    await this.applyConflictResolution(choice === 'mine' ? conflict.mineContent : conflict.serverContent);
+  }
+
+  // Fusion ligne à ligne via <app-projet-diff> (bouton Synchro / résolution de conflit).
+  onConflictDiffApply(mergedContent: string): void {
+    this.applyConflictResolution(mergedContent);
+  }
+
+  private async applyConflictResolution(mergedContent: string): Promise<void> {
+    const conflict = this.conflictState();
+    if (!conflict) return;
     try {
-      await this.projectFilesService.updateFile(this.projectFolderName, conflict.fileId, content, conflict.folderId, false, 'conflict-resolution');
-      this.patchFileContent(conflict.fileId, content);
-      await this.loadFiles();
+      const result = await this.projectFilesService.resolveConflict(this.projectFolderName, conflict.fileId, {
+        baseVersionId: conflict.baseVersionId,
+        folderId: conflict.folderId,
+        mineContent: conflict.mineContent,
+        mergedContent
+      });
+      this.patchFileContent(conflict.fileId, mergedContent, result.versionId);
     } catch (e) {
       console.error('[Conflict] Résolution échouée:', e);
     } finally {

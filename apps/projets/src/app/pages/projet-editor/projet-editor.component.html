@@ -35,6 +35,19 @@
         (pulled)="onProjectPulled($event)" />
     </div>
 
+    @if (activeSectionNewerVersion(); as newer) {
+      <div class="px-4 pb-2">
+        <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-medium">
+          <span class="material-symbols-outlined text-sm">sync</span>
+          <span class="flex-1 truncate">{{ newer.authorName }} a enregistré une nouvelle version de cette section</span>
+          <button (click)="onSyncClick()"
+                  class="px-2.5 py-1 rounded-md bg-indigo-500 text-white font-semibold text-[11px] hover:bg-indigo-400 transition-colors flex-shrink-0">
+            Synchro
+          </button>
+        </div>
+      </div>
+    }
+
 
     <div class="flex flex-1 overflow-hidden pb-[72px]">
 
@@ -65,30 +78,27 @@
         (agendaEventSelect)="onAgendaEventSelect($event)" />
 
       @if (conflictState(); as conflict) {
-        <!-- Panneau de résolution de conflit multi-user -->
+        <!-- Panneau de résolution de conflit multi-user : choix rapide + fusion ligne à ligne -->
         <div class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
           <div class="flex-shrink-0 flex items-center gap-3 px-4 py-2 bg-amber-600/95 backdrop-blur text-white text-xs font-medium border-b border-amber-400/30">
             <span class="material-symbols-outlined text-sm">sync_problem</span>
-            <span class="flex-1 truncate">Conflit — ce fichier a été modifié par un autre utilisateur</span>
-            <button (click)="resolveConflict('mine')"
+            <span class="flex-1 truncate">Conflit — {{ conflict.serverAuthorName || 'un autre utilisateur' }} a modifié ce fichier entre-temps</span>
+            <button (click)="resolveConflictQuick('mine')"
                     class="px-3 py-1 rounded-md bg-white text-amber-800 font-bold text-xs hover:bg-amber-50 transition-colors flex-shrink-0">
               Garder ma version
             </button>
-            <button (click)="resolveConflict('server')"
+            <button (click)="resolveConflictQuick('server')"
                     class="px-3 py-1 rounded-md bg-white/15 hover:bg-white/25 transition-colors text-xs flex-shrink-0">
               Utiliser la version du serveur
             </button>
           </div>
-          <div class="flex flex-1 overflow-hidden">
-            <div class="flex-1 flex flex-col overflow-hidden border-r border-amber-500/20">
-              <div class="flex-shrink-0 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-amber-950/30 text-amber-300">Ma version</div>
-              <pre class="flex-1 overflow-auto p-3 text-xs text-white/80 whitespace-pre-wrap font-mono leading-relaxed">{{ conflict.myContent }}</pre>
-            </div>
-            <div class="flex-1 flex flex-col overflow-hidden">
-              <div class="flex-shrink-0 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider bg-amber-950/30 text-amber-300">Version du serveur{{ conflict.updatedAt ? ' — ' + (conflict.updatedAt | date:'HH:mm:ss') : '' }}</div>
-              <pre class="flex-1 overflow-auto p-3 text-xs text-white/80 whitespace-pre-wrap font-mono leading-relaxed">{{ conflict.serverContent }}</pre>
-            </div>
-          </div>
+          <app-projet-diff
+            [entry]="conflictDiffEntry()"
+            [currentContent]="conflict.serverContent"
+            leftLabel="Version serveur"
+            rightLabel="Ma version"
+            (applyContent)="onConflictDiffApply($event)"
+            (close)="resolveConflictQuick('server')" />
         </div>
       } @else if (!diffEntry() && !hasPendingEdit()) {
         @if (!activeOutil() || activeOutil()?.type === 'edition') {
@@ -248,6 +258,7 @@
               <app-projet-history
                 [projetId]="project()?.id || null"
                 [activeIds]="activeHistoryIds()"
+                [activeFileId]="activeContentFileId()"
                 (entryClick)="onHistoryEntryClick($event)"
                 (restored)="onHistoryRestored($event)" />
             }

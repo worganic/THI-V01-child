@@ -1197,7 +1197,7 @@ Votre texte de prompt ici.
                   class="ed-textarea"
                   spellcheck="false"
                   [value]="unifiedContent"
-                  [readonly]="isActiveSectionUnsynced || isActiveSectionLockedByOther || (!focusedHandle && !activeNodeId)"
+                  [readonly]="isActiveSectionUnsynced || (!focusedHandle && !activeNodeId)"
                   (beforeinput)="onTextareaBeforeInput($event)"
                   (paste)="onTextareaPaste($event)"
                   (input)="onTextareaInput($event)"
@@ -1206,6 +1206,15 @@ Votre texte de prompt ici.
                   (keyup)="onTextareaCursor($event)"
                   (mouseup)="onTextareaCursor($event)"
                   (blur)="onTextareaBlur()"></textarea>
+
+        <!-- Alerte non bloquante : un autre utilisateur édite aussi cette section (les 2 peuvent
+             continuer à écrire ; la fusion se fera via le bouton Synchro au prochain checkpoint). -->
+        @if (isActiveSectionLockedByOther) {
+          <div class="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 text-[11px] font-medium pointer-events-none">
+            <span class="material-symbols-outlined text-sm">group</span>
+            {{ activeSectionOtherEditorName }} édite aussi cette section
+          </div>
+        }
 
         <!-- Overlay vue assemblée : invitation à sélectionner une section -->
         @if (!focusedHandle && !activeNodeId) {
@@ -1800,10 +1809,11 @@ Votre texte de prompt ici.
                 </div>
               }
 
-              <!-- Corps éditable (contenteditable) -->
+              <!-- Corps éditable (contenteditable) — reste éditable même si un autre user
+                   est aussi présent sur cette section (badge d'alerte ci-dessus, non bloquant). -->
               <div #visuSectionEl
                    class="visu-sec-content"
-                   [attr.contenteditable]="collab.isLockedByOther(sec.sectionId) ? 'false' : 'true'"
+                   contenteditable="true"
                    [attr.data-section-id]="sec.sectionId"
                    (focus)="onVisuSectionFocus(sec.sectionId)"
                    (blur)="onVisuSectionBlur(sec.sectionId)"
@@ -2152,6 +2162,52 @@ Votre texte de prompt ici.
       (confirm)="onTitleDialogConfirm($event)"
       (cancel)="onTitleDialogCancel()">
     </worg-title-create-dialog>
+  }
+
+  <!-- Popup de prévisualisation du collage markdown (recalage des niveaux) -->
+  @if (pastePreview) {
+    <div class="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 backdrop-blur-[2px] p-4">
+      <div class="w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl border border-indigo-500/20 bg-white dark:bg-[#1a1a2e] shadow-2xl">
+        <!-- Header -->
+        <div class="flex items-center gap-2 px-5 pt-5 pb-3">
+          <div class="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-indigo-400 text-base">content_paste</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold text-light-text dark:text-white">Coller du markdown — ajustement des niveaux</h3>
+            <p class="text-[11px] text-light-text-muted dark:text-white/50 mt-0.5">
+              Section cible : niveau {{ pastePreview.parentLevel === 0 ? 'racine' : pastePreview.parentLevel }} →
+              titres recalés au niveau {{ pastePreview.desiredTop }}
+              @if (pastePreview.shift !== 0) {
+                <span class="ml-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 font-semibold">
+                  décalage {{ pastePreview.shift > 0 ? '+' : '' }}{{ pastePreview.shift }}
+                </span>
+              } @else {
+                <span class="ml-1 px-1.5 py-0.5 rounded bg-gray-500/10 text-light-text-muted dark:text-white/40 font-semibold">aucun décalage</span>
+              }
+            </p>
+          </div>
+        </div>
+        <!-- Aperçu éditable -->
+        <div class="px-5 flex-1 overflow-hidden flex flex-col">
+          <label class="block text-[11px] font-medium text-light-text-muted dark:text-white/50 mb-1">Texte qui sera collé (modifiable)</label>
+          <textarea
+            class="w-full flex-1 min-h-[180px] text-xs font-mono bg-light-background dark:bg-background border border-light-border dark:border-white/20 rounded-lg px-3 py-2 text-light-text dark:text-white outline-none focus:border-indigo-500 dark:focus:border-indigo-400 resize-none"
+            [(ngModel)]="pastePreview.proposed"
+            spellcheck="false"></textarea>
+        </div>
+        <!-- Footer -->
+        <div class="flex gap-2 px-5 py-4">
+          <button class="flex-1 text-xs px-3 py-2 rounded-lg bg-indigo-500 text-white font-semibold hover:bg-indigo-600 transition-colors flex items-center justify-center gap-1.5"
+                  (click)="confirmPastePreview()">
+            <span class="material-symbols-outlined text-sm">content_paste_go</span>
+            Coller
+          </button>
+          <button class="flex-1 text-xs px-3 py-2 rounded-lg border border-light-border dark:border-white/20 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors"
+                  (click)="cancelPastePreview()">Annuler</button>
+        </div>
+      </div>
+    </div>
   }
 
 </div>

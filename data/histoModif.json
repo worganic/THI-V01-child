@@ -1,6 +1,43 @@
 {
   "modifications": [
     {
+      "id": "mod-518",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
+      "features": "projets:editor-zone-code,projets:zone5-historique,server:collab,server:projet-git",
+      "title": "Sauvegarde collaborative : versions BDD immuables, fin des pertes de texte multi-user",
+      "description": "Refonte complète du système de sauvegarde de l'éditeur de projet suite à un signalement de perte de texte quand 2 utilisateurs travaillent sur le même document. Cause racine : data/projets/<id>/ était un seul dossier de travail git partagé par tous les utilisateurs, et verrouiller une section faisait un git checkout de branche wip sur ce dossier partagé, écrasant le contenu non commité d'un autre utilisateur éditant une autre section au même moment ; la détection de conflit existante (hash en mémoire process, jamais persistée) était par ailleurs ignorée par la plupart des chemins d'écriture. Nouvelle architecture : (1) nouvelle table MySQL projet_content_version (immuable, jamais UPDATE/DELETE) devient la source de vérité du contenu, avec checkpoint throttlé (45s ou moment significatif : blur, changement de section, publish) plutôt qu'une version par frappe ; (2) PUT /api/file-projects/:name/files/:id réécrit : écriture disque toujours en sauvegarde passive best-effort, détection de conflit réelle via transaction SELECT...FOR UPDATE + comparaison à la dernière version BDD (header x-base-version-id, remplace x-file-version en mémoire) ; (3) nouvelles routes GET .../versions, GET .../versions/:versionId, POST .../restore, POST .../resolve-conflict ; (4) verrou de section transformé en registre de présence non bloquant (upsert toujours, TTL 5min, heartbeat client ~20s) — 2 utilisateurs peuvent désormais éditer la même section en même temps, avec bannière d'alerte non bloquante au lieu d'un readonly total ; (5) découplage total de git de l'édition live : nouvelle fonction projetGit.publishContent() (commit direct sur main, mutex par projet, plus aucun checkout de branche wip), migration one-shot au boot qui nettoie les branches wip orphelines existantes ; (6) UI de fusion ligne à ligne réutilisant ProjetDiffComponent (labels configurables) pour résoudre un conflit ou via un nouveau bouton Synchro déclenché par SSE version_saved, sans attendre un 409 ; (7) zone Historique enrichie d'un groupe 'Versions de cette section' pour naviguer/restaurer les checkpoints BDD ; (8) nettoyage d'une route /api/wo-action-history dupliquée (dead code, Express ne matchant que la première définition) et fix undo pour qu'il détecte lui aussi un conflit réel avant d'écraser.",
+      "files": [
+        "server/server-data.js",
+        "server/modules/projet-git.js",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-diff/projet-diff.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-diff/projet-diff.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.html",
+        "apps/projets/src/app/pages/projet-editor/services/projet-ai-edit.service.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le système de sauvegarde dans le menu projet est encore instable, si un utilisateur ce connect et qu'il n'a pas certaine modification cela supprime ces données pour l'autre utilisateur, ce n'est pas normal, les textes ne doivent pas pouvoir disparaitre sans validation. 2 utilisateurs doivent pouvoir enregistré leur données sur le même document. Chaque données doit être enregistré dans la base de données sans pouvoir être effacer pour garder un historique. il faut pouvoir revenir en arrière dans la modification d'un texte (zone historique). Si 2 personnes travail sur le même document et la même section, une alerte doit être indiqué à l'utilisateur, en appuyant sur un bouton synchro cela devra mettre une interface permettant de choisir quel ligne, texte sera migré dans la version. Il faut donc pouvoir. Les textes doivent être sauvegardé dans les fichiers du dossier data/projets\\ mais uniquement en temps que sauvegarde, les fichiers ne doivent pas servir à la synchro juste de sauvegarde. On doit pouvoir travailler sur le même document à des moments identique. Propose moi des solutions afin d'obtenir un outils de gestion de document partageable et surtout stable.",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
       "id": "mod-517",
       "version": "B-0.318",
       "date": "2026-07-01T00:00:00.000Z",

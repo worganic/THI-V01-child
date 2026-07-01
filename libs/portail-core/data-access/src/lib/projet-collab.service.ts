@@ -70,6 +70,16 @@ export interface ProjectSyncedEvent {
   timestamp: string;
 }
 
+export interface VersionSavedEvent {
+  nodeId: string;
+  folderId: string | null;
+  versionId: string;
+  authorId: string;
+  authorName: string;
+  timestamp: string;
+  origin: string;
+}
+
 export interface SyncStatus {
   isRepo: boolean;
   hasRemote?: boolean;
@@ -118,6 +128,9 @@ export class ProjetCollabService {
   }
 
   readonly contentUpdate$ = new Subject<ContentUpdateEvent>();
+  // Checkpoint BDD créé par un AUTRE utilisateur (autosave throttlé ou publish) —
+  // sert à afficher le bouton "Synchro" sans attendre un conflit 409.
+  readonly versionSaved$ = new Subject<VersionSavedEvent>();
   // Déclenché par les opérations d'annulation (undo) — sans filtre d'auteur
   readonly fileRestored$ = new Subject<ContentUpdateEvent>();
   readonly structureUpdate$ = new Subject<StructureUpdateEvent>();
@@ -178,6 +191,8 @@ export class ProjetCollabService {
     this.locks.set(new Map());
     this.localPendingSections.set(new Set());
     this.pendingUpdates.set(new Map());
+    for (const handle of this.lockHeartbeats.values()) clearInterval(handle);
+    this.lockHeartbeats.clear();
   }
 
   upsertPending(entry: PendingHistoryEntry): void {
@@ -285,6 +300,16 @@ export class ProjetCollabService {
           if (update.updatedBy !== me?.id) this.contentUpdate$.next(update);
         } catch (err) {
           console.warn('[Collab] SSE content_update parse error:', err);
+        }
+      });
+
+      this.eventSource.addEventListener('version_saved', (e: MessageEvent) => {
+        try {
+          const evt: VersionSavedEvent = JSON.parse(e.data);
+          const me = this.auth.currentUser();
+          if (evt.authorId !== me?.id) this.zone.run(() => this.versionSaved$.next(evt));
+        } catch (err) {
+          console.warn('[Collab] SSE version_saved parse error:', err);
         }
       });
 
@@ -413,18 +438,39 @@ export class ProjetCollabService {
     }
   }
 
+  // Heartbeats de présence actifs, keyés par `${projetId}:${nodeId}` — tant que la
+  // section reste "verrouillée" (= en cours d'édition par l'utilisateur courant),
+  // on répète l'appel de lock pour que la présence ne soit jamais nettoyée par le
+  // balayage TTL serveur (5 min) pendant une session d'édition longue.
+  private lockHeartbeats = new Map<string, ReturnType<typeof setInterval>>();
+  private static readonly HEARTBEAT_INTERVAL_MS = 20000;
+
   async lockNode(projetId: string, nodeId: string): Promise<LockInfo> {
     const user = this.auth.currentUser();
-    return firstValueFrom(
+    const key = `${projetId}:${nodeId}`;
+    const doLock = () => firstValueFrom(
       this.http.post<LockInfo>(`${this.apiUrl}/api/collab/${projetId}/nodes/${nodeId}/lock`, {
         userId: user?.id || 'anonymous',
         userName: user?.username || 'Utilisateur'
       })
     );
+    const lock = await doLock();
+    if (!this.lockHeartbeats.has(key)) {
+      this.lockHeartbeats.set(key, setInterval(() => {
+        doLock().catch(() => {});
+      }, ProjetCollabService.HEARTBEAT_INTERVAL_MS));
+    }
+    return lock;
   }
 
   async unlockNode(projetId: string, nodeId: string): Promise<void> {
     const user = this.auth.currentUser();
+    const key = `${projetId}:${nodeId}`;
+    const handle = this.lockHeartbeats.get(key);
+    if (handle) {
+      clearInterval(handle);
+      this.lockHeartbeats.delete(key);
+    }
     await firstValueFrom(
       this.http.delete(`${this.apiUrl}/api/collab/${projetId}/nodes/${nodeId}/lock?userId=${user?.id || ''}`)
     );
