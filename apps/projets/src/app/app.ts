@@ -7,7 +7,7 @@ import {
   WoToolsPanelComponent
 } from '@worganic/shared/ui';
 import { LayoutService } from '@worganic/portail-core/data-access';
-import { environment } from '../environments/environment';
+import { runtimeEnv } from './runtime-env';
 
 @Component({
   imports: [
@@ -26,7 +26,7 @@ import { environment } from '../environments/environment';
 })
 export class App {
   @ViewChild('toolsPanel') toolsPanel?: WoToolsPanelComponent;
-  portailUrl = environment.portailUrl;
+  portailUrl = runtimeEnv.portailUrl;
 
   constructor(public layoutService: LayoutService) {}
 

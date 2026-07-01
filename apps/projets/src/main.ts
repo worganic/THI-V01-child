@@ -8,6 +8,7 @@ const params = new URLSearchParams(window.location.search);
 const token = params.get('token');
 const user = params.get('user');
 const theme = params.get('theme');
+const portOffset = params.get('portOffset');
 if (token) {
   localStorage.setItem('frankenstein_token', token);
   if (user) localStorage.setItem('frankenstein_user', user);
@@ -15,11 +16,15 @@ if (token) {
 if (theme && ['dark', 'light', 'pink'].includes(theme)) {
   localStorage.setItem('theme', theme);
 }
-if (token || theme) {
+if (portOffset) {
+  localStorage.setItem('port_offset', portOffset);
+}
+if (token || theme || portOffset) {
   const clean = new URL(window.location.href);
   clean.searchParams.delete('token');
   clean.searchParams.delete('user');
   clean.searchParams.delete('theme');
+  clean.searchParams.delete('portOffset');
   window.history.replaceState({}, '', clean.toString());
 }
 

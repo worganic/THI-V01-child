@@ -4,23 +4,23 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
-import { environment } from '../environments/environment';
+import { runtimeEnv } from './runtime-env';
 import { authInterceptor } from '@worganic/portail-core/auth';
 import { DbStatusService, AppConfigService, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING } from '@worganic/portail-core/data-access';
 import { CHILD_ADMIN_TABS_PROVIDERS } from './child/child-admin-tabs';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    { provide: API_DATA_URL, useValue: environment.apiDataUrl },
-    { provide: API_EXECUTOR_URL, useValue: environment.apiExecutorUrl },
-    { provide: API_AGENT_URL, useValue: environment.apiAgentUrl },
+    { provide: API_DATA_URL, useValue: runtimeEnv.apiDataUrl },
+    { provide: API_EXECUTOR_URL, useValue: runtimeEnv.apiExecutorUrl },
+    { provide: API_AGENT_URL, useValue: runtimeEnv.apiAgentUrl },
     {
       provide: APP_BRANDING,
       useValue: {
-        appName: environment.appName,
-        copyrightHolder: environment.copyrightHolder,
-        copyrightTagline: environment.copyrightTagline,
-        copyrightYear: environment.copyrightYear,
+        appName: runtimeEnv.appName,
+        copyrightHolder: runtimeEnv.copyrightHolder,
+        copyrightTagline: runtimeEnv.copyrightTagline,
+        copyrightYear: runtimeEnv.copyrightYear,
       }
     },
     provideZoneChangeDetection({ eventCoalescing: true }),

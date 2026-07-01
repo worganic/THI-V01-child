@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
 import { AuthService } from '@worganic/portail-core/data-access';
-import { environment } from '../environments/environment';
+import { runtimeEnv } from './runtime-env';
 
 export const authGuard: CanActivateFn = async () => {
   const auth = inject(AuthService);
@@ -10,7 +10,7 @@ export const authGuard: CanActivateFn = async () => {
   await auth.initDone;
 
   if (!auth.isAuthenticated()) {
-    window.location.href = environment.portailUrl;
+    window.location.href = runtimeEnv.portailUrl;
     return false;
   }
 

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { runtimeEnv } from '../../runtime-env';
 import { Subscription } from 'rxjs';
 import { ProjectService, Project } from '@worganic/portail-core/data-access';
 import { ProjectFilesService, FileNode, FtpNodeSyncStatus, Outil, AgendaEvent } from '@worganic/portail-core/data-access';
@@ -56,7 +56,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   @ViewChild(EditionOutilComponent) editionOutil?: EditionOutilComponent;
   @ViewChild(ProjetSidebarComponent) sidebar?: ProjetSidebarComponent;
 
-  readonly portailUrl = environment.portailUrl;
+  readonly portailUrl = runtimeEnv.portailUrl;
 
   project = signal<Project | null>(null);
   files = signal<FileNode[]>([]);
@@ -1446,11 +1446,15 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       let additionalFileOrphanDeleted = false;
       if (hasStructural) {
         const freshFiles = this.files();
+        // IDs des instances Méga-Outils encore vivantes (DB). Sert à protéger les fichiers
+        // prompt-/trello-/array- d'une suppression accidentelle par drift de parsing :
+        // un MO n'est supprimé que via le flux explicite (qui supprime d'abord l'instance DB).
+        const liveInstanceIds = new Set(this.megaOutilInstances().map(i => i.id));
         for (const s of resolved) {
           if (!s.folderId) continue;
           const freshFolder = this.findFolderById(s.folderId, freshFiles);
           if (!freshFolder || !freshFolder.children) continue;
-          
+
           const existingFiles = freshFolder.children.filter(c => c.type === 'file');
           for (const ef of existingFiles) {
             if (ef.name === 'contenu.md') continue;
@@ -1458,6 +1462,26 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             if (this.projectFilesService.isImageFile(ef.name)) continue;
             const stillExists = s.additionalFiles.some(af => this.slugify(af.name) === this.slugify(ef.name.replace(/\.md$/, '')));
             if (!stillExists) {
+              // GARDE MÉGA-OUTIL : si le fichier porte un {{MOID:id}} dont l'instance est encore
+              // vivante en DB, c'est un drift de parsing (ex: renommage mal détecté), PAS une
+              // suppression voulue → on protège le fichier. La synchro ne doit jamais supprimer
+              // un prompt/trello/array dont l'instance existe encore.
+              const moidMatch = /\{\{MOID:([a-zA-Z0-9-]+)\}\}/.exec(ef.content || '');
+              const isMoFile = /^(prompt|trello|array)-/i.test(ef.name);
+              if (moidMatch && liveInstanceIds.has(moidMatch[1])) {
+                console.warn(`[EDITOR] Suppression bloquée : fichier MO "${ef.name}" (MOID ${moidMatch[1]}) — instance encore vivante. Drift de parsing protégé.`);
+                continue;
+              }
+              if (isMoFile && !moidMatch) {
+                // Fichier MO sans MOID lisible (legacy) : par prudence, ne pas supprimer si une
+                // instance du même nom existe encore.
+                const baseName = ef.name.replace(/^(prompt|trello|array)-/i, '').replace(/\.md$/, '');
+                const hasLiveByName = this.megaOutilInstances().some(i => this.slugify(i.name) === this.slugify(baseName));
+                if (hasLiveByName) {
+                  console.warn(`[EDITOR] Suppression bloquée : fichier MO legacy "${ef.name}" — instance homonyme vivante. Protégé.`);
+                  continue;
+                }
+              }
               console.log(`[EDITOR] Deleting orphaned additional file ${ef.name} from ${freshFolder.name}...`);
               await this.projectFilesService.deleteFile(this.projectFolderName, ef.id).catch(e => console.error(e));
               additionalFileOrphanDeleted = true;

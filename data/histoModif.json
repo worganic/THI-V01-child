@@ -1,6 +1,39 @@
 {
   "modifications": [
     {
+      "id": "mod-515",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system",
+        "portail",
+        "projets"
+      ],
+      "features": "system:launcher,portail:runtime-config,projets:runtime-config",
+      "title": "Sélecteur d'instance dans le launcher (test multi-users, ports décalés)",
+      "description": "Ajout d'une popup au lancement de launcher_app.py permettant de choisir Instance 1 (ports par défaut) ou Instance 2 (+10 sur tous les ports : API 3011, Agent 3013, Portail 4212, Projets 4213), pour lancer 2 systèmes complets en parallèle et tester avec 2 users différents. Manager/MainWindow acceptent désormais une liste de services construite dynamiquement (build_services) au lieu du global SERVICES figé, avec injection des variables d'env PORT/AGENT_PORT pour les serveurs Node. Côté Angular, ajout de apps/portail/src/app/runtime-env.ts et apps/projets/src/app/runtime-env.ts qui décalent au runtime les URLs des services (API, executor, agent, app croisée) selon un offset persisté dans localStorage (clé port_offset), transmis via le query param ?portOffset= comme pour token/theme. app.config.ts, navigate-to-projets.ts, auth.guard.ts, app.ts et projet-editor.component.ts basculés sur runtimeEnv. L'app Electron (poste de dev, port 4202 en dur) n'est lancée que pour l'instance 1.",
+      "files": [
+        "launcher_app.py",
+        "apps/portail/src/app/runtime-env.ts",
+        "apps/portail/src/main.ts",
+        "apps/portail/src/app/app.config.ts",
+        "apps/portail/src/app/shared/utils/navigate-to-projets.ts",
+        "apps/projets/src/app/runtime-env.ts",
+        "apps/projets/src/main.ts",
+        "apps/projets/src/app/app.config.ts",
+        "apps/projets/src/app/auth.guard.ts",
+        "apps/projets/src/app/app.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l'application @launcher_app.py j'ai besoin de lancer 2 instances différentes de mon système afin de tester avec 2 users différents. Met en place un selector au lancement pour lancer l'ensemble des applications sur des ports différents",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
       "id": "mod-514",
       "version": "B-0.316",
       "date": "2026-06-29T14:00:00.000Z",
@@ -13015,6 +13048,51 @@
       "prompt": "dans la zone admin/config/Intelligence Artificielle/Outils CLI (Antigravity CLI / Claude Code) ajoute un lien vers un popup qui explique precisement comment installe antigravity cli (AGY) et claude code pour qu'il fonctionne avec frankenstein",
       "startedAt": "2026-06-30T16:51:44.533002Z",
       "completedAt": "2026-06-30T16:51:44.533002Z"
+    },
+    {
+      "id": "mod-513",
+      "version": "B-0.318",
+      "date": "2026-06-30T17:41:13.953337Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-paste",
+      "title": "Collage markdown : popup de previsualisation du recalage des niveaux avant insertion",
+      "description": "Le collage de markdown pre-formate dans une section (Mode Code et Mode Edition/visu) ne s'insere plus automatiquement. Au collage (Ctrl+V) d'un texte contenant des titres markdown, onTextareaPaste/onVisuSectionPaste recalent toujours les niveaux (le plus haut titre -> niveau de la section cible + 1, ex: collage dans niveau 2 d'un texte commencant au niveau 1 -> decalage de +2) mais ouvrent desormais un popup de previsualisation (pastePreview) au lieu d'inserer directement. Le popup affiche la section cible, le niveau cible, le decalage applique et le texte recale dans une zone editable. L'utilisateur valide avec 'Coller' (confirmPastePreview -> applyCodePaste/applyVisuPaste) ou abandonne avec 'Annuler' (cancelPastePreview). Le texte de l'apercu est modifiable avant le collage. Sans titres markdown, collage natif inchange (pas de popup). Helper minMarkdownHeadingLevel ajoute pour calculer le decalage affiche.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque je copie du texte au format markdown dans une section qui a donc deja un niveau, il faut recuperer le code, mettre a niveau tous les niveaux du texte copie et ensuite le coller, exemple si je copie dans une section de niveau 2 et que le texte copie commence au niveau 1, il faut decaler tous les niveaux du texte copie de 2 niveau. + previsualisation avant collage (coller ou annuler), les deux modes, source markdown avec #",
+      "startedAt": "2026-06-30T17:41:13.953337Z",
+      "completedAt": "2026-06-30T17:41:13.953337Z"
+    },
+    {
+      "id": "mod-514",
+      "version": "B-0.318",
+      "date": "2026-06-30T18:55:46.535777Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-paste",
+      "title": "Collage markdown : titres sans espace (#1.) detectes/recales + normalisation espace",
+      "description": "Suite au collage avec popup, les titres ecrits sans espace apres les # (ex: '#1. P - Preparation') n'etaient pas reconnus comme titres (regex /^(#{1,6}) / exigeant un espace). Consequences : (1) le titre n'etait pas recale (restait a 1 #), (2) le plus haut niveau detecte etait fausse (## Objectif niveau 2 au lieu du # niveau 1) -> decalage +1 au lieu de +2. Fix : nouvelle detection parseHeadingLine tolerante a l'absence d'espace (/^(#{1,6})(?!#)[ \t]*(\\S.*?)[ \t]*$/) utilisee par relevelMarkdownHeadings, minMarkdownHeadingLevel et les deux gates onTextareaPaste/onVisuSectionPaste. En sortie, l'espace apres les # est normalise (### 1. P - Preparation) pour que parseContent cree bien le sous-menu. Le decalage delta=0 ne court-circuite plus la normalisation. Verifie : collage d'un doc commencant par '#1.' dans une section niveau 2 -> badge decalage +2, tous les titres recales et espaces.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "le texte affiche apres un coller n'inclus pas la modifications des menus dans le texte markdown, le niveau est bien indique mais le texte n'a pas les niveau mis a jour",
+      "startedAt": "2026-06-30T18:55:46.535777Z",
+      "completedAt": "2026-06-30T18:55:46.535777Z"
     }
   ]
 }
