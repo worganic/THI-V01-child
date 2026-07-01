@@ -9,6 +9,7 @@ import { ProjectFilesService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { DocumentService, DocCategory, DocDocument } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@worganic/portail-core/data-access';
 
 @Component({
   selector: 'app-admin-projets',
@@ -62,6 +63,7 @@ export class AdminProjetsComponent implements OnInit {
 
   private woHistory = inject(WoActionHistoryService);
   private documentService = inject(DocumentService);
+  configService = inject(ConfigService);
 
   private route = inject(ActivatedRoute);
   private readonly destroyRef = inject(DestroyRef);

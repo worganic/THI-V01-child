@@ -67,6 +67,25 @@ async function getLatestVersion(dbConnOrPool, projectId, nodeId) {
     return rows[0] || null;
 }
 
+// ── Réglages plateforme (clé/valeur, MySQL) ─────────────────────────────────
+async function getPlatformSetting(key, defaultValue) {
+    try {
+        const [rows] = await pool.query('SELECT value FROM platform_settings WHERE key_name = ?', [key]);
+        if (!rows.length) return defaultValue;
+        try { return JSON.parse(rows[0].value); } catch { return rows[0].value; }
+    } catch (e) {
+        console.warn('[SETTINGS] getPlatformSetting error:', e.message);
+        return defaultValue;
+    }
+}
+
+async function setPlatformSetting(key, value) {
+    await pool.query(
+        'INSERT INTO platform_settings (key_name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)',
+        [key, JSON.stringify(value)]
+    );
+}
+
 /** Dernière version de chaque noeud d'un projet, en une requête (évite le N+1 sur attachContent). */
 async function getLatestVersionsMap(projectId) {
     const [rows] = await pool.query(
@@ -5888,6 +5907,31 @@ app.post('/api/file-projects/:name/files/:id/resolve-conflict', async (req, res)
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// ── Réglages plateforme (Admin) ─────────────────────────────────────────────
+
+// GET /api/admin/platform-settings — lecture ouverte à tout user connecté
+// (nécessaire pour masquer côté UI les options FTP si désactivées globalement)
+app.get('/api/admin/platform-settings', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const ftpSyncEnabled = await getPlatformSetting('ftpSyncEnabled', false);
+        res.json({ ftpSyncEnabled });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// PUT /api/admin/platform-settings — modification réservée aux administrateurs
+app.put('/api/admin/platform-settings', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    if (user.role !== 'admin') return res.status(403).json({ error: 'Réservé aux administrateurs' });
+    try {
+        const { ftpSyncEnabled } = req.body || {};
+        if (ftpSyncEnabled !== undefined) await setPlatformSetting('ftpSyncEnabled', Boolean(ftpSyncEnabled));
+        res.json({ success: true, ftpSyncEnabled: await getPlatformSetting('ftpSyncEnabled', false) });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── Routes log édition ──────────────────────────────────────────────────────
 
 // GET /api/logs/edition?lines=500 — lire les N dernières lignes du log
@@ -7018,6 +7062,9 @@ app.post('/api/file-projects/:name/initial-backup-push', async (req, res) => {
         const backupType = proj.backup_type;
 
         if (backupType === 'ftp') {
+            if (!(await ftpService.isFtpGloballyEnabled(pool))) {
+                return res.status(400).json({ error: 'La synchronisation FTP est désactivée (Admin → Config)' });
+            }
             const ftpConfig = await ftpService.getFtpConfig(pool, projectName);
             if (!ftpConfig) return res.status(400).json({ error: 'Config FTP introuvable' });
             // Tester la connexion
@@ -11846,6 +11893,15 @@ app.listen(PORT, async () => {
             INDEX idx_pcv_base (base_version_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `).catch(e => console.error('[DB] projet_content_version init error:', e.message));
+
+    // Réglages plateforme (clé/valeur) — ex. activation globale de la synchro FTP.
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS platform_settings (
+            key_name   VARCHAR(64) PRIMARY KEY,
+            value      TEXT        NOT NULL,
+            updated_at DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] platform_settings init error:', e.message));
 
     // Migration one-shot : nettoyer les branches wip/* laissées par l'ancien
     // mécanisme de checkout live (le contenu de référence vit désormais en BDD).

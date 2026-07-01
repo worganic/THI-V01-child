@@ -1,6 +1,37 @@
 {
   "modifications": [
     {
+      "id": "mod-519",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "config",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "portail"
+      ],
+      "features": "portail:config,portail:admin-projets,server:ftp-service",
+      "title": "Option admin pour mettre en stand-by la synchronisation FTP des projets",
+      "description": "À la demande de l'utilisateur, le système de partage de fichiers via FTP est mis en stand-by : ajout d'un réglage global (table MySQL platform_settings, clé ftpSyncEnabled, désactivé par défaut) et d'un toggle réservé aux administrateurs dans la page Config (visible via auth.currentUser()?.role==='admin'). Gating centralisé côté serveur : ftpService.getBackupType()/getFtpConfig() traitent tout projet backup_type='ftp' comme sans sauvegarde configurée tant que le réglage global est désactivé (fallback git/local automatique, aucune donnée existante modifiée — réversible en réactivant le toggle). Toutes les routes qui dépendaient déjà de ces deux fonctions (PUT file, ftp-sync, ftp-sync-background, ensure-local, auto-sync) sont gated automatiquement ; le seul point qui lisait backup_type directement (initial-backup-push) a reçu une vérification explicite avec message clair. Côté Admin › Projets, l'option FTP du select de sauvegarde est désactivée et un avertissement ambre s'affiche si un projet existant est configuré en FTP pendant que le réglage global est éteint. Nouvelles routes GET/PUT /api/admin/platform-settings (lecture ouverte à tout user connecté pour permettre aux écrans de masquer l'option, écriture réservée aux admins).",
+      "files": [
+        "server/server-data.js",
+        "server/modules/ftp-service.js",
+        "libs/portail-core/data-access/src/lib/config.service.ts",
+        "apps/portail/src/app/pages/user/config/config.component.ts",
+        "apps/portail/src/app/pages/user/config/config.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-projets/admin-projets.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-projets/admin-projets.component.html",
+        "tests/fonctions/connecte/config/fonctions.md",
+        "tests/fonctions/connecte/admin/projets/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le système de partage de fichier ne me conviens pas et je voudrais le mettre en stand bye pour le moment. JE ne veux plus que le système enregistre et récupère les fichier via ftp, met une option dans l'admin pour activer ou non cette option. Les fichiers ne serviront que de sauvegarde local, tous les enregistrements et partage ce paseront via la bdd. met en place toutes ses options pour un objectif de stabilité.",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
       "id": "mod-518",
       "version": "B-0.318",
       "date": "2026-07-01T00:00:00.000Z",
