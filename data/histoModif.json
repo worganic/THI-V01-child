@@ -1,6 +1,55 @@
 {
   "modifications": [
     {
+      "id": "mod-517",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail"
+      ],
+      "features": "portail:landing",
+      "title": "Fermeture des popups login/inscription uniquement via boutons explicites",
+      "description": "Sur la landing page non connectée, les popups Connexion et Inscription se fermaient au clic sur le backdrop (onOverlayClick) et à l'appui sur Échap (onKeydown sur le conteneur racine), ce qui contrevient à la règle du projet imposant une fermeture explicite (croix, Annuler ou validation). Suppression du binding (click)='onOverlayClick($event)' sur les deux .modal-overlay, suppression du binding (keydown)='onKeydown($event)' + tabindex sur .landing-root, et suppression des méthodes onOverlayClick/onKeydown désormais mortes dans landing.component.ts. Seule la croix ✕ (closeModals()) ferme les popups.",
+      "files": [
+        "apps/portail/src/app/pages/public/landing/landing.component.ts",
+        "apps/portail/src/app/pages/public/landing/landing.component.html",
+        "tests/fonctions/non-connecte/landing/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans la page d'accueil lorsque le popup de connexion est ouvert on ne doit pouvoir le fermer qu'avec les boutons (annuler/fermé ou se connecter) et pas en cliquant à coté du popup. Faire la même chose sur tous les popup de la page d'accueil non connecté",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
+      "id": "mod-516",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
+      "features": "projets:accueil,server:frank-projects",
+      "title": "Partage d'un projet (Mes Projets) avec un autre utilisateur",
+      "description": "Ajout d'une vraie fonctionnalité de partage sur le modèle de données actif 'Mes Projets' (table MySQL frank_projects, filtrée strictement par user_id) qui n'avait aucun mécanisme de partage jusqu'ici (l'ancienne route /api/projects/:id/share découverte précédemment appartenait à un modèle de données mort, plus utilisé par l'app). Nouvelle table frank_project_shares (project_id, user_id) créée au boot du serveur. Nouvelles routes : GET/POST /api/frank/projects/:id/shares (lister/ajouter par email) et DELETE /api/frank/projects/:id/shares/:userId. GET /api/frank/projects et GET /api/frank/projects/:id incluent désormais les projets partagés avec l'utilisateur (via frankUserHasAccess), avec le flag _sharedWithMe. PUT /api/frank/projects/:id autorise aussi les users partagés à éditer. Côté Angular : ProjectService (getShares/shareProject/unshareProject), bouton 'Partager' + popup (liste des partages, ajout par email, retrait) dans apps/projets/src/app/pages/projets, badge 'Partagé' sur les projets partagés avec moi.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/project.service.ts",
+        "apps/projets/src/app/pages/projets/projets.component.ts",
+        "apps/projets/src/app/pages/projets/projets.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l'application frankenstein comment je fait pour partager un projet (cours d'anglais) avec un autre user (blubsy) / lorsque je me connect sous blubsy je ne vois aucun projet alors que tu ma dit qu'il n'y avait aucune restriction pour voir tous les projet",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
       "id": "mod-515",
       "version": "B-0.318",
       "date": "2026-07-01T00:00:00.000Z",

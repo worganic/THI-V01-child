@@ -44,6 +44,15 @@ export class ProjetsComponent implements OnInit {
   githubReachable = signal<boolean | null>(null);
   projectsWithRemote = signal<Set<string>>(new Set());
 
+  // Modale de partage
+  showShareModal = signal(false);
+  shareProject_ = signal<Project | null>(null);
+  shareEmail = '';
+  sharing = signal(false);
+  shareError = signal('');
+  shares = signal<{ id: string; username: string; email: string }[]>([]);
+  loadingShares = signal(false);
+
   private woHistory = inject(WoActionHistoryService);
 
   constructor(
@@ -256,6 +265,56 @@ export class ProjetsComponent implements OnInit {
   openProjectFolder(id: string, event: Event) {
     event.stopPropagation();
     this.projectFilesService.openFolder(id).catch(() => {});
+  }
+
+  async openShareModal(project: Project, event: Event) {
+    event.stopPropagation();
+    this.shareProject_.set(project);
+    this.shareEmail = '';
+    this.shareError.set('');
+    this.showShareModal.set(true);
+    this.loadingShares.set(true);
+    try {
+      this.shares.set(await this.projectService.getShares(project.id));
+    } catch {
+      this.shares.set([]);
+    } finally {
+      this.loadingShares.set(false);
+    }
+  }
+
+  closeShareModal() {
+    this.showShareModal.set(false);
+    this.shareProject_.set(null);
+    this.shares.set([]);
+  }
+
+  async addShare() {
+    const project = this.shareProject_();
+    const email = this.shareEmail.trim();
+    if (!project || !email) return;
+    this.sharing.set(true);
+    this.shareError.set('');
+    try {
+      const result = await this.projectService.shareProject(project.id, email);
+      this.shares.update(list => [...list, result.user]);
+      this.shareEmail = '';
+    } catch (e: any) {
+      this.shareError.set(e?.error?.error || 'Erreur lors du partage');
+    } finally {
+      this.sharing.set(false);
+    }
+  }
+
+  async removeShare(userId: string) {
+    const project = this.shareProject_();
+    if (!project) return;
+    try {
+      await this.projectService.unshareProject(project.id, userId);
+      this.shares.update(list => list.filter(s => s.id !== userId));
+    } catch (e: any) {
+      this.shareError.set(e?.error?.error || 'Erreur lors du retrait du partage');
+    }
   }
 
   formatDate(iso: string): string {

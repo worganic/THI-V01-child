@@ -4374,6 +4374,7 @@ function frankRowToObj(r) {
         status: r.status, userId: r.user_id,
         linkedDocId: r.linked_doc_id || null,
         _ownerUsername: r.owner_username || null,
+        _sharedWithMe: !!r._sharedWithMe,
         createdAt: r.created_at, updatedAt: r.updated_at,
         iaInstructions: r.ia_instructions || null,
         backupType: r.backup_type || null,
@@ -4388,23 +4389,33 @@ function frankRowToObj(r) {
     };
 }
 
-// GET /api/frank/projects — liste (admin: tous, user: les siens)
+// Vérifie si un user a accès à un projet frank (propriétaire, partagé, ou admin)
+async function frankUserHasAccess(projectRow, user) {
+    if (user.role === 'admin' || projectRow.user_id === user.id) return true;
+    const [shares] = await pool.query(
+        'SELECT 1 FROM frank_project_shares WHERE project_id = ? AND user_id = ? LIMIT 1',
+        [projectRow.id, user.id]
+    );
+    return shares.length > 0;
+}
+
+// GET /api/frank/projects — liste (admin: tous, user: les siens + ceux partagés avec lui)
 app.get('/api/frank/projects', async (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     try {
         let query, params;
         if (user.role === 'admin') {
-            query = `SELECT fp.*, u.username AS owner_username FROM frank_projects fp
+            query = `SELECT fp.*, u.username AS owner_username, 0 AS _sharedWithMe FROM frank_projects fp
                      LEFT JOIN users u ON fp.user_id = u.id
                      ORDER BY COALESCE(fp.updated_at, fp.created_at) DESC`;
             params = [];
         } else {
-            query = `SELECT fp.*, u.username AS owner_username FROM frank_projects fp
+            query = `SELECT fp.*, u.username AS owner_username, (fp.user_id != ?) AS _sharedWithMe FROM frank_projects fp
                      LEFT JOIN users u ON fp.user_id = u.id
-                     WHERE fp.user_id = ?
+                     WHERE fp.user_id = ? OR fp.id IN (SELECT project_id FROM frank_project_shares WHERE user_id = ?)
                      ORDER BY COALESCE(fp.updated_at, fp.created_at) DESC`;
-            params = [user.id];
+            params = [user.id, user.id, user.id];
         }
         const [rows] = await pool.query(query, params);
         res.json(rows.map(frankRowToObj));
@@ -4425,11 +4436,80 @@ app.get('/api/frank/projects/:id', async (req, res) => {
             [req.params.id]
         );
         if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
-        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+        if (!(await frankUserHasAccess(rows[0], user)))
             return res.status(403).json({ error: 'Accès refusé' });
         res.json(frankRowToObj(rows[0]));
     } catch (e) {
         console.error('[FRANK] Get error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// GET /api/frank/projects/:id/shares — liste des users avec qui le projet est partagé
+app.get('/api/frank/projects/:id/shares', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query('SELECT user_id FROM frank_projects WHERE id = ?', [req.params.id]);
+        if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
+        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+            return res.status(403).json({ error: 'Accès refusé' });
+        const [shares] = await pool.query(
+            `SELECT s.user_id AS id, u.username, u.email FROM frank_project_shares s
+             JOIN users u ON u.id = s.user_id WHERE s.project_id = ? ORDER BY u.username`,
+            [req.params.id]
+        );
+        res.json(shares);
+    } catch (e) {
+        console.error('[FRANK] List shares error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// POST /api/frank/projects/:id/shares — partager avec un user (par email)
+app.post('/api/frank/projects/:id/shares', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { email } = req.body || {};
+    if (!email) return res.status(400).json({ error: 'email requis' });
+    try {
+        const [rows] = await pool.query('SELECT user_id FROM frank_projects WHERE id = ?', [req.params.id]);
+        if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
+        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+            return res.status(403).json({ error: 'Accès refusé' });
+
+        const [targetRows] = await pool.query('SELECT id, username, email FROM users WHERE email = ?', [email]);
+        const target = targetRows[0];
+        if (!target) return res.status(404).json({ error: 'Utilisateur introuvable avec cet email' });
+        if (target.id === rows[0].user_id) return res.status(400).json({ error: 'Impossible de partager avec le propriétaire du projet' });
+
+        await pool.query(
+            'INSERT IGNORE INTO frank_project_shares (project_id, user_id) VALUES (?, ?)',
+            [req.params.id, target.id]
+        );
+        res.json({ success: true, user: { id: target.id, username: target.username, email: target.email } });
+    } catch (e) {
+        console.error('[FRANK] Share error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// DELETE /api/frank/projects/:id/shares/:userId — retirer le partage
+app.delete('/api/frank/projects/:id/shares/:userId', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query('SELECT user_id FROM frank_projects WHERE id = ?', [req.params.id]);
+        if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
+        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+            return res.status(403).json({ error: 'Accès refusé' });
+        await pool.query(
+            'DELETE FROM frank_project_shares WHERE project_id = ? AND user_id = ?',
+            [req.params.id, req.params.userId]
+        );
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[FRANK] Unshare error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
@@ -4473,7 +4553,7 @@ app.put('/api/frank/projects/:id', async (req, res) => {
         const [rows] = await pool.query('SELECT * FROM frank_projects WHERE id = ?', [req.params.id]);
         if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
         const p = rows[0];
-        if (user.role !== 'admin' && p.user_id !== user.id)
+        if (!(await frankUserHasAccess(p, user)))
             return res.status(403).json({ error: 'Accès refusé' });
         const { title, description, status, iaInstructions, backupType, backupServer, backupUsername, backupPassword, backupPort, backupDirectory, backupOwnerType, backupRepoName, backupVisibility } = req.body;
         const updatedAt = new Date().toISOString();
@@ -11696,6 +11776,18 @@ app.listen(PORT, async () => {
             INDEX idx_pc_folder  (project_id, folder_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] project_comments init error:', e.message));
+
+    // Partage d'un projet "Mes Projets" (frank_projects) avec d'autres users
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS frank_project_shares (
+            project_id  CHAR(36)     NOT NULL,
+            user_id     CHAR(36)     NOT NULL,
+            created_at  DATETIME     DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (project_id, user_id),
+            FOREIGN KEY (project_id) REFERENCES frank_projects(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch(e => console.error('[DB] frank_project_shares init error:', e.message));
 
     // Métadonnées et structure des file-projects (source de vérité partagée entre children)
     await pool.query(`

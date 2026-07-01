@@ -73,6 +73,13 @@
                       GitHub hors ligne
                     </span>
                   }
+                  @if (project._sharedWithMe) {
+                    <span class="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
+                          title="Projet partagé avec vous">
+                      <span class="material-symbols-outlined text-[11px]">group</span>
+                      Partagé
+                    </span>
+                  }
                   @if (project.backupType) {
                     <span class="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20"
                           title="Sauvegarde : {{ backupLabel(project.backupType) }}">
@@ -121,6 +128,13 @@
                       class="flex items-center justify-center gap-1 px-3 py-2.5 text-xs font-medium text-light-text-muted dark:text-white/40 hover:text-amber-400 hover:bg-amber-500/5 transition-all border-r border-light-border dark:border-white/5">
                 <span class="material-symbols-outlined text-sm">folder_open</span>
               </button>
+              @if (!project._sharedWithMe) {
+                <button (click)="openShareModal(project, $event)"
+                        title="Partager ce projet avec un autre utilisateur"
+                        class="flex items-center justify-center gap-1 px-3 py-2.5 text-xs font-medium text-light-text-muted dark:text-white/40 hover:text-indigo-400 hover:bg-indigo-500/5 transition-all border-r border-light-border dark:border-white/5">
+                  <span class="material-symbols-outlined text-sm">share</span>
+                </button>
+              }
               <button (click)="confirmDelete(project.id, $event)"
                       class="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-light-text-muted dark:text-white/40 hover:text-red-400 hover:bg-red-500/5 transition-all">
                 <span class="material-symbols-outlined text-sm">delete</span>
@@ -251,6 +265,78 @@
             Copier le projet
           }
         </button>
+      </div>
+
+    </div>
+  </div>
+}
+
+<!-- Modale Partage de projet -->
+@if (showShareModal() && shareProject_()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-md bg-white dark:bg-surface rounded-2xl border border-light-border dark:border-white/10 shadow-2xl p-6">
+
+      <div class="flex items-center justify-between mb-5">
+        <div>
+          <h2 class="text-lg font-bold text-light-text dark:text-white">Partager le projet</h2>
+          <p class="text-xs text-light-text-muted dark:text-white/40 mt-0.5">
+            «&nbsp;{{ shareProject_()!.title }}&nbsp;»
+          </p>
+        </div>
+        <button (click)="closeShareModal()"
+                class="p-1.5 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-all">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      @if (shareError()) {
+        <div class="mb-3 p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-xs">
+          {{ shareError() }}
+        </div>
+      }
+
+      <div class="flex gap-2">
+        <input type="email"
+               [(ngModel)]="shareEmail"
+               placeholder="email@exemple.com"
+               (keydown.enter)="addShare()"
+               class="flex-1 px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm placeholder:text-light-text-muted/50 dark:placeholder:text-white/20 focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        <button (click)="addShare()"
+                [disabled]="!shareEmail.trim() || sharing()"
+                class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold bg-indigo-600 text-white transition-all hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+          @if (sharing()) {
+            <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+          } @else {
+            <span class="material-symbols-outlined text-base">person_add</span>
+          }
+        </button>
+      </div>
+
+      <div class="mt-5">
+        <p class="text-xs font-semibold text-light-text-muted dark:text-white/50 mb-2 uppercase tracking-wider">
+          Partagé avec
+        </p>
+        @if (loadingShares()) {
+          <p class="text-xs text-light-text-muted dark:text-white/30">Chargement...</p>
+        } @else if (shares().length === 0) {
+          <p class="text-xs text-light-text-muted dark:text-white/30">Ce projet n'est partagé avec personne pour l'instant.</p>
+        } @else {
+          <div class="space-y-1.5">
+            @for (u of shares(); track u.id) {
+              <div class="flex items-center justify-between px-3 py-2 rounded-lg bg-light-surface dark:bg-white/5">
+                <div class="min-w-0">
+                  <p class="text-sm font-medium text-light-text dark:text-white truncate">{{ u.username }}</p>
+                  <p class="text-[11px] text-light-text-muted dark:text-white/40 truncate">{{ u.email }}</p>
+                </div>
+                <button (click)="removeShare(u.id)"
+                        title="Retirer le partage"
+                        class="p-1 rounded-lg text-light-text-muted dark:text-white/40 hover:text-red-400 hover:bg-red-500/5 transition-all flex-shrink-0">
+                  <span class="material-symbols-outlined text-base">close</span>
+                </button>
+              </div>
+            }
+          </div>
+        }
       </div>
 
     </div>

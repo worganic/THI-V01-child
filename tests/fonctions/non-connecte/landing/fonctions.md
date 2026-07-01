@@ -25,7 +25,7 @@
 - **Succès** : stockage du token JWT (clé `frankenstein_token`) et de l'utilisateur (clé `frankenstein_user`) dans le `localStorage` puis redirection vers la sous-application projets
 - **Erreur identifiants** : affichage du message d'erreur renvoyé par l'API (ou message par défaut) dans le modal sous forme de bannière d'erreur au-dessus du formulaire
 - **État chargement** : bouton de soumission désactivé et affichage d'un spinner pendant la requête
-- **Fermeture** : fermeture du modal via la croix ✕, clic sur l'overlay (hors de la boîte de dialogue) ou appui sur la touche Échap
+- **Fermeture** : uniquement via la croix ✕ (le clic sur l'overlay et la touche Échap ne ferment plus le modal, fermeture explicite obligatoire)
 - **Bascule** : bouton pour rediriger l'utilisateur vers le formulaire d'inscription
 - **Priorité:** bloquant
 - **Composants:** `apps/portail/src/app/pages/public/landing/landing.component.ts`, `apps/portail/src/app/pages/public/landing/landing.component.html`, `libs/portail-core/data-access/src/lib/auth.service.ts`, `server/server-data.js`, `apps/portail/src/app/shared/utils/navigate-to-projets.ts`
@@ -55,7 +55,7 @@
 - **Succès** : stockage du token JWT (clé `frankenstein_token`) et de l'utilisateur (clé `frankenstein_user`) dans le `localStorage` puis redirection vers la sous-application projets
 - **Erreur doublon ou validation** : affichage du message d'erreur (email déjà utilisé, nom d'utilisateur déjà pris, ou erreur serveur) dans le modal au-dessus du formulaire
 - **État chargement** : bouton de soumission désactivé et affichage d'un spinner pendant la requête
-- **Fermeture** : fermeture possible en cliquant sur la croix ✕, sur l'overlay extérieur ou en appuyant sur la touche Échap
+- **Fermeture** : uniquement via la croix ✕ (le clic sur l'overlay et la touche Échap ne ferment plus le modal, fermeture explicite obligatoire)
 - **Bascule** : lien de redirection vers le modal de connexion
 - **Priorité:** bloquant
 - **Composants:** `apps/portail/src/app/pages/public/landing/landing.component.ts`, `apps/portail/src/app/pages/public/landing/landing.component.html`, `libs/portail-core/data-access/src/lib/auth.service.ts`, `server/server-data.js`, `apps/portail/src/app/shared/utils/navigate-to-projets.ts`

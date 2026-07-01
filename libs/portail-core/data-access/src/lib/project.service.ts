@@ -28,6 +28,7 @@ export interface Project {
   userId: string;
   linkedDocId?: string | null;
   _ownerUsername?: string | null;
+  _sharedWithMe?: boolean;
   iaInstructions?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -88,6 +89,24 @@ export class ProjectService {
   copyProject(id: string, title: string): Promise<Project> {
     return firstValueFrom(
       this.http.post<Project>(`${this.apiUrl}/api/frank/projects/${id}/copy`, { title }, { headers: this.headers() })
+    );
+  }
+
+  getShares(projectId: string): Promise<{ id: string; username: string; email: string }[]> {
+    return firstValueFrom(
+      this.http.get<{ id: string; username: string; email: string }[]>(`${this.apiUrl}/api/frank/projects/${projectId}/shares`, { headers: this.headers() })
+    );
+  }
+
+  shareProject(projectId: string, email: string): Promise<{ success: boolean; user: { id: string; username: string; email: string } }> {
+    return firstValueFrom(
+      this.http.post<{ success: boolean; user: { id: string; username: string; email: string } }>(`${this.apiUrl}/api/frank/projects/${projectId}/shares`, { email }, { headers: this.headers() })
+    );
+  }
+
+  unshareProject(projectId: string, userId: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.apiUrl}/api/frank/projects/${projectId}/shares/${userId}`, { headers: this.headers() })
     );
   }
 
