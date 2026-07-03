@@ -1,0 +1,41 @@
+* **Horizon temporel et date de démarrage souhaitée :**
+  * ( ) Court terme (achat et travaux d'ici 6 mois)
+  * ( ) Moyen terme (achat et travaux d'ici 1 à 2 ans)
+  * ( ) Long terme (plus de 2 ans)
+  * ( ) Autre : ______
+
+* **Localisation et type de bien recherché :**
+  * [ ] Zone rurale / Campagne
+  * [ ] Zone touristique côtière ou montagneuse
+  * [ ] Centre historique ou urbain
+  * [ ] Autre : ______
+
+* **Budget global estimé (achat + travaux) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Capacité d'accueil visée (nombre de chambres d'hôtes) :**
+  * ( ) Petite structure (1 à 3 chambres)
+  * ( ) Moyenne structure (4 à 5 chambres - limite réglementaire de la chambre d'hôte en France)
+  * ( ) Grande structure (plus de 5 chambres / gîtes / meublés de tourisme)
+  * ( ) Autre : ______
+
+* **Contraintes et démarches réglementaires prioritaires à valider :**
+  * [ ] Changement de destination du bien et règles d'urbanisme (PLU)
+  * [ ] Normes de sécurité incendie et accessibilité (ERP)
+  * [ ] Obtention du financement (prêt bancaire, subventions)
+  * [ ] Autre : ______
+
+* **Critères de succès principaux à court terme :**
+  * [ ] Taux d'occupation minimum (ex: > 50% dès la première année)
+  * [ ] Rentabilité financière immédiate (remboursement des charges et de l'emprunt)
+  * [ ] Excellente e-réputation rapide (note > 9/10 sur Booking/Airbnb)
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs identifiés :**
+  * [ ] Dépassement du budget ou des délais de rénovation
+  * [ ] Refus d'autorisation d'urbanisme ou de prêt bancaire
+  * [ ] Saisonnalité trop marquée ou concurrence locale élevée
+  * [ ] Autre : ______

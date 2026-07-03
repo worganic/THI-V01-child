@@ -1,0 +1,196 @@
+[
+  {
+    "id": "2-5-2-2-1",
+    "section": "Arborescence des fichiers",
+    "tasks": "- Affichage de l'arbre hiérarchique dossiers/fichiers/images (en excluant contenu.md et les fichiers -css.md)\n- Icônes spécifiques selon le type (dossier ouvert/fermé, fichier Markdown, image, image imbriquée)\n- Expand/Collapse dossier via clic sur le chevron ou le dossier\n- Auto-expand récursif des dossiers parents lors de la sélection d'un fichier\n- Sélection d'un nœud émettant l'événement fileSelect\n- Formatage personnalisé pour l'affichage des noms des Trello (TL: NOM) et Tableaux (AR: NOM)\n- Gestion des classes et états visuels du nœud actif (activeFileId) et du survol en drag-and-drop\n- Affichage des images imbriquées sous leur document parent",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-2",
+    "section": "Indicateurs de collaboration",
+    "tasks": "- Affichage d'un cadenas vert si la section est verrouillée par l'utilisateur courant\n- Affichage d'un cadenas rouge avec tooltip (nom + heure) si verrouillé par un tiers\n- Affichage d'un cadenas jaune avec texte de la section en rouge/orange si modifications locales en attente non partagées\n- Affichage d'une icône forum clignotante/pulsante (badge conversation) si la section possède des commentaires",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "libs/portail-core/data-access/src/lib/projet-collab.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-3",
+    "section": "Indicateurs FTP (projets avec backup FTP)",
+    "tasks": "- Affichage d'un fond ambré sur les lignes des dossiers dont le statut FTP est inconnu (unknown)\n- Affichage d'une icône de synchronisation animée en bleu (spinning) en statut syncing\n- Affichage d'une icône d'erreur rouge en statut error",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-4",
+    "section": "Création de dossier",
+    "tasks": "- Déclenchement via option \"Nouvelle section\" du menu contextuel\n- Affichage d'un champ de saisie inline sous le parent sélectionné\n- Validation du nom via Enter : envoi de la requête POST /api/file-projects/{name}/folders avec outilSlug et parentId\n- Création physique du répertoire et d'un fichier contenu.md vide à l'intérieur\n- Annulation via Escape pour réinitialiser la saisie\n- Règle d'unicité du nom (récupère le dossier existant en cas de doublon)\n- Enregistrement de la création dans l'historique d'annulation (Undo)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "server/server-data.js",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-5",
+    "section": "Création de fichier",
+    "tasks": "- Déclenchement via option \"Nouveau fichier\" du menu contextuel\n- Affichage d'un champ de saisie inline\n- Validation du nom via Enter : envoi de la requête POST /api/file-projects/{name}/files avec outilSlug et parentId\n- Création physique du fichier Markdown\n- Annulation via Escape\n- Enregistrement de la création dans l'historique d'annulation (Undo)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "server/server-data.js",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-6",
+    "section": "Renommage",
+    "tasks": "- Déclenchement via option \"Renommer\" du menu contextuel\n- Saisie inline pré-remplie avec le nom actuel (sans extension .md pour les fichiers)\n- Validation via Enter : envoi d'une requête PATCH /api/file-projects/{name}/files/{id} pour les fichiers ou PATCH /api/file-projects/{name}/folders/{id} pour les dossiers\n- Annulation via Escape\n- Enregistrement du renommage dans l'historique d'annulation (Undo) pour les fichiers",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "server/server-data.js",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-7",
+    "section": "Suppression",
+    "tasks": "- Déclenchement via option \"Supprimer\" du menu contextuel\n- Affichage d'un modal de confirmation de suppression\n- Clic sur \"Supprimer\" : envoi de DELETE /api/file-projects/{name}/files/{id} ou DELETE /api/file-projects/{name}/folders/{id}\n- Clic sur \"Annuler\" : fermeture du modal\n- Règle : suppression physique récursive sur disque de la ressource et de ses enfants",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "server/server-data.js",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-8",
+    "section": "Drag & Drop",
+    "tasks": "- Glisser-déposer de nœuds dans l'arborescence (dossier interdit de drop sur un fichier)\n- Visualisation en direct de la position de drop cible (before, after, inside)\n- Drop : émission de dragDrop avec les nœuds et positions\n- Envoi des requêtes POST /api/file-projects/{name}/move-file ou POST /api/file-projects/{name}/move-folder\n- Mise à jour physique des fichiers, réorganisation dans config.json et rafraîchissement de l'arbre",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "server/server-data.js",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-9",
+    "section": "Menu contextuel (clic droit)",
+    "tasks": "- Affichage d'un menu contextuel au clic droit avec options dépendant de la sélection\n- Options pour les dossiers : Nouvelle section, Nouveau fichier, Renommer, Supprimer, Monter/Descendre, Supprimer le titre, Ajout MO Trello, Ajout MO Tableau, options de verrous\n- Options pour les fichiers : Renommer, Supprimer, options de verrous\n- Options de verrous dynamiques (Partager, Annuler, Déverrouiller, Verrouiller, ou Affichage info verrou)\n- Fermeture du menu lors d'un clic à l'extérieur (document:click)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-2-10",
+    "section": "Verrous de collaboration (projets avec backup)",
+    "tasks": "- Pose de verrou : requête POST /api/collab/{projetId}/nodes/{nodeId}/lock avec identifiants utilisateur\n- Libération de verrou : requête DELETE /api/collab/{projetId}/nodes/{nodeId}/lock\n- Détermination des statuts isLockedByMe, isLockedByOther et isLocalPending\n- Récupération et formattage des détails de verrou (qui et quand) dans le tooltip\n- Verrouillage automatique lors de la prise de focus en édition d'une section",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-2-13",
+    "section": "Système d'outils (vB-0.249+)",
+    "tasks": "- Clic sur le titre du projet ouvrant le popup flottant \"Ajouter un outil\"\n- Options actives dans le popup : Edition, Tests, Agenda (option Code désactivée et marquée bientôt)\n- Clic en dehors du popup provoquant sa fermeture\n- Liste des outils actifs affichée avec icône et libellé\n- Chevron d'extension permettant de plier/déplier les root folder IDs associés à chaque outil\n- Clic sur le nom d'un outil : émission de outilSelect pour adapter la zone centrale\n- Création d'un outil via POST /api/file-projects/{name}/outils\n- Rangement physique des fichiers sous le répertoire propre à l'outil (edition, tests, agenda)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "server/server-data.js",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-2-11",
+    "section": "Bouton réduire/rouvrir",
+    "tasks": "- Bascule de l'état zone5Collapsed pour masquer/afficher la sidebar\n- Mode réduit limitant la largeur et n'affichant que la bande gauche des icônes\n- Mode étendu affichant l'ensemble de l'arborescence",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-2-12",
+    "section": "États",
+    "tasks": "- Gestion graphique de l'arbre vide (bouton créer dossier, message)\n- Surlignage du nœud actif selon son type (vert pour fichier, bleu/doré pour dossier)\n- Input de saisie inline désactivant temporairement les autres actions\n- Affichage visuel des indicateurs de verrous (icônes et couleurs de cadenas)\n- Guidage visuel pour le drag-and-drop\n- Panneau réduit affichant uniquement les icônes",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-2-14",
+    "section": "Bouton \"Liste des trellos\"",
+    "tasks": "- Affiché en bas de la sidebar si trelloCount > 0\n- Badge avec le décompte des instances Trello de l'outil\n- Clic émettant trelloListClick pour ouvrir la vue liste de Trello dans la zone centrale",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-2-15",
+    "section": "Changer le niveau d'une section (menu contextuel sidebar)",
+    "tasks": "- Action \"Monter d'un niveau\" / \"Descendre d'un niveau\" sur un dossier depuis le menu contextuel\n- Monter : remonte le niveau et récupère les sections suivantes en tant qu'enfants\n- Descendre : place le nœud sous sa sœur précédente en tant qu'enfant\n- Modification des caractères heading (#) dans le Markdown de la section\n- Conditions de disponibilité canPromoteNode et canDemoteNode (profondeur max de sous-arbre <= 4)\n- Émission de nodeLevelChange vers la zone d'édition pour appliquer le traitement",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-2-16",
+    "section": "Supprimer le titre en gardant le texte (menu contextuel sidebar)",
+    "tasks": "- Action \"Supprimer le titre (garder le texte)\" sur un dossier\n- Suppression de la ligne de heading (#) et fusion du texte de la section dans la section supérieure\n- Condition de disponibilité canMergeTitle (section précédente ou parente requise)\n- Prise en charge de la sortie du mode focus et réinjection du contenu avant fusion\n- Émission de titleMerge pour déléguer l'opération à la zone d'édition",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html"
+    ]
+  },
+  {
+    "section": "Bouton \"Liste des mockups\"",
+    "tasks": "- Affiché en bas de la sidebar si mockupCount > 0\n- Badge avec le décompte des maquettes/mockups présents dans l'outil\n- Clic émettant mockupListClick pour ouvrir la vue liste de maquettes dans la zone centrale",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+      "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+      "apps/projets/src/app/pages/projet-editor/projet-editor.component.html"
+    ]
+  },
+  {
+    "section": "Historisation et annulation des actions (Undo)",
+    "tasks": "- Enregistrement dans l'historique des actions utilisateur (création de fichier, dossier et renommage de fichier) via WoActionHistoryService\n- Déclaration du statut annulable (undoable) et de la payload de rollback (undoAction)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+      "libs/portail-core/data-access/src/lib/wo-action-history.service.ts"
+    ]
+  }
+]

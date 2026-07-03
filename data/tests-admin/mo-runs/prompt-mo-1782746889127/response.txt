@@ -1,0 +1,227 @@
+# Programme de Consolidation : Géométrie et Trigonométrie (Lycée)
+
+## 📊 Bilan général et suivi du cours
+
+Ce tableau de pilotage vous permet de suivre le déroulement de votre formation intensive de 4 semaines, d'avoir un aperçu des séances planifiées et de suivre l'évolution de vos résultats.
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-06-29 | Le cercle trigonométrique et mesures d'angles | Maîtriser le radian et le placement des valeurs remarquables | À faire |
+| Séance 2 | 2026-07-06 | Fonctions trigonométriques et équations | Savoir résoudre des équations trigonométriques simples | À faire |
+| Séance 3 | 2026-07-13 | Produit scalaire dans le plan | Calculer et appliquer le produit scalaire pour démontrer l'orthogonalité | À faire |
+| Séance 4 | 2026-07-20 | Applications du produit scalaire et formules | Utiliser les formules d'addition et de duplication en géométrie | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 14:00-16:00 | Séance 1 — 2026-06-29 : Le cercle trigonométrique et mesures d'angles | Étude du cercle, conversion degrés/radians, valeurs remarquables de cos et sin.
+2026-07-06 | 14:00-16:00 | Séance 2 — 2026-07-06 : Fonctions trigonométriques et équations | Propriétés de cos et sin, résolution d'équations trigonométriques standards.
+2026-07-13 | 14:00-16:00 | Séance 3 — 2026-07-13 : Produit scalaire dans le plan | Définitions du produit scalaire, propriétés géométriques et orthogonalité.
+2026-07-20 | 14:00-16:00 | Séance 4 — 2026-07-20 : Applications du produit scalaire et formules | Formules d'addition, de duplication et applications aux calculs de longueurs et d'angles.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-06-29 | | 20 | =C2/D2*100 | =AVG(C2:C5) |
+| Séance 2 | 2026-07-06 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-13 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-20 | | 20 | =C5/D5*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer les fiches de révision formule `[low]`
+- [ ] Réaliser le QCM de la Séance 1 `[medium]`
+- [ ] Réaliser le QCM de la Séance 2 `[medium]`
+- [ ] Réaliser le QCM de la Séance 3 `[medium]`
+- [ ] Réaliser le QCM de la Séance 4 `[medium]`
+### En cours
+- [ ] Assimiler les valeurs remarquables du cercle trigonométrique `[high]`
+### Terminé
+```
+
+## Séance 1 — 2026-06-29 : Le cercle trigonométrique et mesures d'angles
+
+### 1. Cours : Fondations et Cercle Trigonométrique
+Le cercle trigonométrique est un cercle de rayon 1, centré à l'origine d'un repère orthonormé direct $(O; \vec{i}, \vec{j})$, orienté dans le sens trigonométrique (sens inverse des aiguilles d'une montre).
+
+#### A. Le Radian
+Le radian (rad) est la mesure d'un angle au centre qui intercepte un arc de cercle dont la longueur est égale au rayon du cercle.
+* Un tour complet correspond à un angle de $2\pi$ radians ($360^\circ$).
+* Relation de conversion entre degrés ($D$) et radians ($R$) :
+  $$\frac{D}{180} = \frac{R}{\pi}$$
+
+#### B. Définition du Cosinus et du Sinus
+Soit $M$ un point du cercle trigonométrique associé au nombre réel $x$.
+* Le **cosinus** de $x$, noté $\cos(x)$, est l'abscisse du point $M$.
+* Le **sinus** de $x$, noté $\sin(x)$, est l'ordonnée du point $M$.
+* Propriété fondamentale : pour tout réel $x$, $\cos^2(x) + \sin^2(x) = 1$.
+* Les valeurs de $\cos(x)$ et $\sin(x)$ sont toujours comprises entre $-1$ et $1$.
+
+#### C. Valeurs remarquables
+| $x$ (rad) | $0$ | $\frac{\pi}{6}$ | $\frac{\pi}{4}$ | $\frac{\pi}{3}$ | $\frac{\pi}{2}$ | $\pi$ |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| $\cos(x)$ | $1$ | $\frac{\sqrt{3}}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{1}{2}$ | $0$ | $-1$ |
+| $\sin(x)$ | $0$ | $\frac{1}{2}$ | $\frac{\sqrt{2}}{2}$ | $\frac{\sqrt{3}}{2}$ | $1$ | $0$ |
+
+### 2. Exercices d'évaluation (QCM)
+
+```FORM: QCM Séance 1
+* **Question 1 : Quelle est la valeur en radians d'un angle de 60 degrés ?**
+  * ( ) $\frac{\pi}{6}$
+  * ( ) $\frac{\pi}{4}$
+  * ( ) $\frac{\pi}{3}$
+  * ( ) $\frac{\pi}{2}$
+* **Question 2 : Si $\cos(x) = \frac{1}{2}$ et $x \in [0 ; \pi]$, quelle est la valeur de $x$ ?**
+  * ( ) $\frac{\pi}{6}$
+  * ( ) $\frac{\pi}{3}$
+  * ( ) $\frac{2\pi}{3}$
+* **Question 3 : Laquelle des relations suivantes est toujours vraie pour tout réel $x$ ?**
+  * ( ) $\cos(x) + \sin(x) = 1$
+  * ( ) $\cos^2(x) + \sin^2(x) = 1$
+  * ( ) $\cos(x)^2 - \sin(x)^2 = 1$
+* **Question 4 : Quelle est l'ordonnée du point associé à $\frac{\pi}{2}$ sur le cercle trigonométrique ?**
+  * ( ) 0
+  * ( ) 1
+  * ( ) -1
+```
+
+## Séance 2 — 2026-07-06 : Fonctions trigonométriques et équations
+
+### 1. Cours : Fonctions Cosinus et Sinus, Équations
+
+#### A. Propriétés des Fonctions Trigonométriques
+* **Périodicité** : Pour tout réel $x$, $\cos(x + 2\pi) = \cos(x)$ et $\sin(x + 2\pi) = \sin(x)$. Les fonctions cosinus et sinus sont $2\pi$-périodiques.
+* **Parité** :
+  * La fonction cosinus est **paire** : $\cos(-x) = \cos(x)$ (symétrie par rapport à l'axe des ordonnées).
+  * La fonction sinus est **impaire** : $\sin(-x) = -\sin(x)$ (symétrie par rapport à l'origine).
+
+#### B. Angles associés
+Pour tout réel $x$ :
+* $\cos(\pi - x) = -\cos(x)$ et $\sin(\pi - x) = \sin(x)$
+* $\cos(\pi + x) = -\cos(x)$ et $\sin(\pi + x) = -\sin(x)$
+* $\cos(\frac{\pi}{2} - x) = \sin(x)$ et $\sin(\frac{\pi}{2} - x) = \cos(x)$
+
+#### C. Résolution d'équations trigonométriques
+* **Équation $\cos(x) = \cos(a)$** :
+  $$x = a + 2k\pi \quad \text{ou} \quad x = -a + 2k\pi \quad (k \in \mathbb{Z})$$
+* **Équation $\sin(x) = \sin(a)$** :
+  $$x = a + 2k\pi \quad \text{ou} \quad x = \pi - a + 2k\pi \quad (k \in \mathbb{Z})$$
+
+### 2. Exercices d'évaluation (QCM)
+
+```FORM: QCM Séance 2
+* **Question 1 : Quelle est la valeur de $\cos(-\frac{\pi}{4})$ ?**
+  * ( ) $-\frac{\sqrt{2}}{2}$
+  * ( ) $\frac{\sqrt{2}}{2}$
+  * ( ) $-\frac{1}{2}$
+* **Question 2 : Résoudre dans $\mathbb{R}$ l'équation $\cos(x) = \cos(\frac{\pi}{6})$. Quelles sont les solutions possibles ?**
+  * ( ) $x = \frac{\pi}{6} + 2k\pi$ uniquement
+  * ( ) $x = \frac{\pi}{6} + 2k\pi$ ou $x = -\frac{\pi}{6} + 2k\pi$ (avec $k \in \mathbb{Z}$)
+  * ( ) $x = \frac{\pi}{6} + 2k\pi$ ou $x = \frac{5\pi}{6} + 2k\pi$ (avec $k \in \mathbb{Z}$)
+* **Question 3 : Simplifier l'expression $\sin(\pi - x) + \sin(-x)$.**
+  * ( ) $2\sin(x)$
+  * ( ) 0
+  * ( ) $-2\sin(x)$
+* **Question 4 : La fonction sinus est :**
+  * ( ) Paire et périodique de période $\pi$
+  * ( ) Impaire et périodique de période $2\pi$
+  * ( ) Paire et périodique de période $2\pi$
+```
+
+## Séance 3 — 2026-07-13 : Produit scalaire dans le plan
+
+### 1. Cours : Définitions et Propriétés du Produit Scalaire
+
+Le produit scalaire est une opération entre deux vecteurs qui renvoie un nombre réel.
+
+#### A. Définitions
+Soient $\vec{u}$ et $\vec{v}$ deux vecteurs du plan.
+1. **Expression géométrique** : Si $\vec{u}$ et $\vec{v}$ sont non nuls :
+   $$\vec{u} \cdot \vec{v} = \|\vec{u}\| \times \|\vec{v}\| \times \cos(\theta)$$
+   où $\theta$ est l'angle géométrique formé par les vecteurs $\vec{u}$ et $\vec{v}$.
+2. **Expression analytique (dans un repère orthonormé)** : Si $\vec{u}(x; y)$ et $\vec{v}(x'; y')$ :
+   $$\vec{u} \cdot \vec{v} = xx' + yy'$$
+3. **Expression avec projeté orthogonal** : Si $\vec{u} = \vec{AB}$ et $\vec{v} = \vec{AC}$, et si $H$ est le projeté orthogonal de $C$ sur la droite $(AB)$ :
+   $$\vec{AB} \cdot \vec{AC} = AB \times AH \quad \text{si } \vec{AB} \text{ et } \vec{AH} \text{ sont de même sens}$$
+   $$\vec{AB} \cdot \vec{AC} = -AB \times AH \quad \text{si } \vec{AB} \text{ et } \vec{AH} \text{ sont de sens contraires}$$
+
+#### B. Propriétés
+* **Orthogonalité** : Deux vecteurs $\vec{u}$ et $\vec{v}$ sont orthogonaux si et seulement si leur produit scalaire est nul :
+  $$\vec{u} \cdot \vec{v} = 0$$
+* **Symétrie** : $\vec{u} \cdot \vec{v} = \vec{v} \cdot \vec{u}$
+* **Bilinéarité** :
+  * $\vec{u} \cdot (\vec{v} + \vec{w}) = \vec{u} \cdot \vec{v} + \vec{u} \cdot \vec{w}$
+  * $(k\vec{u}) \cdot \vec{v} = k(\vec{u} \cdot \vec{v})$
+
+### 2. Exercices d'évaluation (QCM)
+
+```FORM: QCM Séance 3
+* **Question 1 : Dans un repère orthonormé, on donne $\vec{u}(3; -1)$ et $\vec{v}(2; 4)$. Que vaut le produit scalaire $\vec{u} \cdot \vec{v}$ ?**
+  * ( ) 10
+  * ( ) 2
+  * ( ) -2
+  * ( ) 14
+* **Question 2 : Soient deux vecteurs $\vec{u}$ et $\vec{v}$ tels que $\|\vec{u}\| = 3$, $\|\vec{v}\| = 4$, et l'angle entre eux est $\frac{\pi}{3}$. Calculer $\vec{u} \cdot \vec{v}$.**
+  * ( ) 12
+  * ( ) 6
+  * ( ) $6\sqrt{3}$
+* **Question 3 : Les vecteurs $\vec{a}(2; 5)$ et $\vec{b}(-5; 2)$ sont-ils orthogonaux ?**
+  * ( ) Oui, car leur produit scalaire est nul.
+  * ( ) Non, car leur produit scalaire vaut 20.
+  * ( ) Non, car leur produit scalaire vaut -10.
+* **Question 4 : Si $A$, $B$ et $C$ sont trois points tels que $AB = 5$, $AC = 3$ et les points $A, B, C$ sont alignés dans cet ordre. Que vaut $\vec{AB} \cdot \vec{AC}$ ?**
+  * ( ) 15
+  * ( ) -15
+  * ( ) 8
+```
+
+## Séance 4 — 2026-07-20 : Applications du produit scalaire et formules
+
+### 1. Cours : Formules de Trigonométrie et Géométrie
+
+#### A. Formules d'addition et de duplication
+Pour tous réels $a$ et $b$ :
+* **Formules d'addition** :
+  $$\cos(a - b) = \cos(a)\cos(b) + \sin(a)\sin(b)$$
+  $$\cos(a + b) = \cos(a)\cos(b) - \sin(a)\sin(b)$$
+  $$\sin(a - b) = \sin(a)\cos(b) - \cos(a)\sin(b)$$
+  $$\sin(a + b) = \sin(a)\cos(b) + \cos(a)\sin(b)$$
+* **Formules de duplication** (obtenues en posant $b = a$) :
+  $$\cos(2a) = \cos^2(a) - \sin^2(a) = 2\cos^2(a) - 1 = 1 - 2\sin^2(a)$$
+  $$\sin(2a) = 2\sin(a)\cos(a)$$
+
+#### B. Théorème d'Al-Kashi (Loi des cosinus)
+Dans un triangle $ABC$ quelconque, avec $a = BC$, $b = AC$ et $c = AB$ :
+$$a^2 = b^2 + c^2 - 2bc\cos(\widehat{A})$$
+Ce théorème généralise la relation de Pythagore aux triangles non rectangles.
+
+#### C. Théorème de la médiane
+Soit $[AB]$ un segment de milieu $I$. Pour tout point $M$ du plan :
+$$MA^2 + MB^2 = 2MI^2 + \frac{AB^2}{2}$$
+
+### 2. Exercices d'évaluation (QCM)
+
+```FORM: QCM Séance 4
+* **Question 1 : Quelle est l'expression simplifiée de $\cos(2x)$ en fonction de $\sin^2(x)$ ?**
+  * ( ) $2\sin^2(x) - 1$
+  * ( ) $1 - 2\sin^2(x)$
+  * ( ) $\cos^2(x) + \sin^2(x)$
+* **Question 2 : En utilisant les formules d'addition, calculer la valeur exacte de $\cos(\frac{\pi}{12})$ sachant que $\frac{\pi}{12} = \frac{\pi}{3} - \frac{\pi}{4}$.**
+  * ( ) $\frac{\sqrt{6} - \sqrt{2}}{4}$
+  * ( ) $\frac{\sqrt{6} + \sqrt{2}}{4}$
+  * ( ) $\frac{\sqrt{2} - \sqrt{6}}{4}$
+* **Question 3 : Dans un triangle $ABC$, on a $AB = 5$, $AC = 8$ et l'angle $\widehat{A} = 60^\circ$. Calculer la longueur $BC$.**
+  * ( ) 7
+  * ( ) $\sqrt{89}$
+  * ( ) $\sqrt{129}$
+* **Question 4 : Soit $[AB]$ un segment de longueur 6 et de milieu $I$. Si $M$ est un point tel que $MI = 4$, calculer $MA^2 + MB^2$.**
+  * ( ) 50
+  * ( ) 38
+  * ( ) 20
+```

@@ -1,0 +1,31 @@
+* **Format attendu pour le dossier bancaire :**
+  * ( ) Un Business Plan synthétique (10-15 pages)
+  * ( ) Un dossier financier complet avec prévisionnel détaillé
+  * ( ) Un pitch deck visuel pour présentation orale
+  * ( ) Autre : ______
+
+* **État d'avancement actuel du projet :**
+  * ( ) Bien immobilier déjà identifié avec compromis ou offre en cours
+  * ( ) Recherche active du bien immobilier
+  * ( ) Projet au stade de l'idée / étude de marché globale
+
+* **Type de maison d'hôtes et prestations envisagées :**
+  * [ ] Hébergement simple (nuit + petit-déjeuner)
+  * [ ] Prestations haut de gamme (spa, piscine, activités)
+  * [ ] Table d'hôtes / Restauration
+  * [ ] Événementiel / Séminaires / Gîtes de groupe
+
+* **Profil des porteurs de projet et expérience :**
+  * ( ) Débutants en reconversion professionnelle sans expérience en tourisme/gestion
+  * ( ) Expérience préalable en gestion d'entreprise ou dans le secteur touristique/hôtelier
+  * ( ) Autre : ______
+
+* **Niveau de détail financier requis immédiatement :**
+  * ( ) Plan de financement initial et compte de résultat prévisionnel simplifié
+  * ( ) Modèle financier complet sur 3 ans (besoin de fonds de roulement, ratios bancaires, seuil de rentabilité)
+
+* **Montant approximatif de l'investissement envisagé (achat + travaux + lancements) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 700 000 €
+  * ( ) Plus de 700 000 €
+  * ( ) Autre : ______

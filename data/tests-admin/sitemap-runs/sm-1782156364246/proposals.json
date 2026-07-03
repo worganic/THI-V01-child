@@ -1,0 +1,140 @@
+[
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Projets",
+      "url": "/admin/projets",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet d'administration des projets."
+    },
+    "reason": "Ajout de l'onglet Projets manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Déploiement",
+      "url": "/admin/deploiement",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet d'administration des déploiements."
+    },
+    "reason": "Ajout de l'onglet Déploiement manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Config",
+      "url": "/admin/config",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet de configuration globale."
+    },
+    "reason": "Ajout de l'onglet Config manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Thème",
+      "url": "/admin/theme",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet de personnalisation graphique."
+    },
+    "reason": "Ajout de l'onglet Thème manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Méga-outils",
+      "url": "/admin/mega-outils",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet d'administration des méga-outils."
+    },
+    "reason": "Ajout de l'onglet Méga-outils manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Mémo",
+      "url": "/admin/memo",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet Mémo pour l'aide et la documentation."
+    },
+    "reason": "Ajout de l'onglet Mémo manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Onglet Outils",
+      "url": "/admin/tools",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet de gestion des outils."
+    },
+    "reason": "Ajout de l'onglet Outils manquant dans la Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-adm-tab-config",
+      "to": "group:sec-adm-config",
+      "label": "affiche",
+      "type": "relation"
+    },
+    "reason": "Relation entre le nouvel onglet Config et sa section existante"
+  }
+]

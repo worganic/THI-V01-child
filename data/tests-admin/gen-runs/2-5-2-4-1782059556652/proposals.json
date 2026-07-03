@@ -1,0 +1,234 @@
+[
+  {
+    "id": "2-5-2-4-1",
+    "section": "Saisie et édition",
+    "tasks": "- **Textarea principale** : saisie libre du contenu Markdown unifié (toutes sections du projet)\n- **Auto-save** : délai 2s après dernière frappe → `scheduleSave()` → `saveAll()`\n- **Sauvegarde forcée** : clic badge \"Non sauvegardé\" → `forceSave()`\n- **Dirty state** : `localDirty = true` dès la première frappe → emit `dirtyChange(true)`\n- **Contenu unifié** : toutes les sections (`## Nom dossier`) concaténées en un seul document\n- **Retour à la ligne automatique** : `white-space: pre-wrap` + `overflow-wrap: break-word` — le texte long passe à la ligne sans ascenseur horizontal; `overflow-x: hidden` sur mirror et textarea\n- **Redimensionnement** : la zone s'étend dynamiquement selon la fenêtre via `:host { flex: 1; min-width: 0 }`",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-4-2",
+    "section": "Mode Focus (section sélectionnée dans la sidebar)",
+    "tasks": "- **Activation** : sélection d'un dossier dans la sidebar → `applyFocusByActiveNode()` → `enterFocusMode(handle)`\n- **Vue focusée** : seul le contenu de la section sélectionnée est affiché dans le textarea\n- **Sauvegarde du contexte** : `fullContentBackup` conserve le document complet, `focusedLineStart` et `focusedOriginalLineCount` mémorisent la position\n- **Sortie de focus** : changement de mode (→ Structure/Preview) → `exitFocusMode()` → merge du contenu\n- **Mode focus sur image** : si le nœud est une image, affiche le marqueur `{{IMG:id}}` uniquement",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-4-3",
+    "section": "Rendu miroir (aperçu)",
+    "tasks": "- **Synchronisation** : le HTML rendu suit le scroll de la textarea\n- **Highlights** : sections surlignées selon `highlightNodeId`\n- **Scroll auto** : `scrollToNodeId` → défile vers la section demandée\n- **Rendu Markdown** : via `marked`\n- **Marqueur Trello** : `{{TRELLO:id}}` est présent dans le texte brut ; le board Trello complet est affiché dans le panneau bas (voir `2-5-2-4-15`)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+    ]
+  },
+  {
+    "id": "2-5-2-4-4",
+    "section": "Slash commands (/)",
+    "tasks": "- **Déclenchement** : saisie `/` en début de ligne → affiche `SlashCommandMenuComponent`\n- **Options** : `/nouveau dossier`, `/nouveau fichier`, `/table`, `/code`, `/liste`, `/titre`, etc.\n- **Sélection** : Enter ou clic sur l'option → insère le contenu approprié\n- **Fermeture** : Escape ou clic ailleurs",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/slash-command-menu/slash-command-menu.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/slash-command-menu/slash-command-menu.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-4-5",
+    "section": "Insertion de formatage",
+    "tasks": "Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :\n- **Gras** : sélection + Ctrl+B\n- **Italique** : sélection + Ctrl+I\n- **Insertion à la position curseur** : les boutons H1-H4, liste, séparateur, etc.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-4-6",
+    "section": "Gestion des images (mode Code)",
+    "tasks": "- **Upload** : clic bouton image (toolbar) → input file → POST `/api/file-projects/{name}/files` ou `/api/file-projects/{name}/upload-image` (multipart)\n- **Types acceptés** : jpeg, jpg, png, gif, webp, svg, bmp\n- **Insertion** : marqueur `{{IMG:uuid}}` inséré à la position du curseur dans le texte\n- **Affichage** : rendu comme `<figure>` dans le miroir HTML\n- **Erreur upload** : toast rouge avec message d'erreur (cliquable pour fermer)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-4-7",
+    "section": "Repliage de sections (folding)",
+    "tasks": "- **Replier une section** : clic sur le handle de la section → `foldSection(sectionId)`\n  - Contenu de la section masqué dans la textarea (indicateur `[...]`)\n  - Auto-save bloqué si sections repliées\n- **Déplier** : clic handle → `unfoldSection(sectionId)`\n- **Déplier tout** : `unfoldAll()` → lors du changement de mode ou sortie focus",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-4-8",
+    "section": "Drag & Drop dans la zone Code",
+    "tasks": "- **Drag handles** : icônes de déplacement sur les sections, fichiers, images\n- **Réorganisation** : glisser-déposer → repositionne dans le document Markdown\n- **Sections** (dossiers) : déplacement de blocs Markdown complets\n- **Fichiers additionnels** : documents secondaires dans une section\n- **Images** : déplacement des marqueurs `{{IMG:id}}` entre sections",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-4-9",
+    "section": "Gestion des verrous et état \"en attente\" (projets backup)",
+    "tasks": "- **Premier keystroke dans une section** : snapshot du contenu → `codeSectionSnapshots`\n- **Lock granulaire** : verrouillage de l'entité précise (fichier ou bloc)\n  - `collab.lockNode(projectName, entityId)`\n  - `activeEntityLocks: Set<entityId>`\n- **Affichage** : badge rouge sur le nœud dans la sidebar\n- **Partager / Annuler depuis le menu de la section** (vB-0.279) : les actions sont déclenchées depuis le **menu contextuel de la sidebar** (voir `2-5-2-2-9`), et non plus depuis une barre en bas de zone. La zone écoute `collab.publishSectionRequest$` / `cancelSectionRequest$` (abonnement `takeUntilDestroyed` dans le constructeur) → `publishSection(sectionId)` / `cancelSection(sectionId)`.\n  - **Portée = sous-arbre** : publier/annuler une section traite la section **ET ses sous-sections modifiées** (descendants `pending`). `collectSectionPublishIds(sectionId)` = `{ sectionId }` ∪ descendants (`getDescendantFolderIds`) qui sont `isLocalPending` ∪ dossiers des entités granulaires verrouillées du sous-arbre. Les sous-sections **non modifiées** ne sont jamais écrites (pas de `publish=true` superflu).\n  - **`publishSection(sectionId)`** : indépendant du mode/focus. Calcule `publishFolderIds` (sous-arbre) et capture les entités verrouillées **avant** le flush, reconstruit le document si focus, parse, écrit avec `publish=true` les fichiers dont `folderId ∈ publishFolderIds`, exécute les suppressions d'images différées, puis `releaseSectionsPending()` + `unlockNode()` pour chaque dossier.\n  - **`cancelSection(sectionId)`** : restaure chaque section du sous-arbre depuis `codeSectionSnapshots` (remplacement par plage via `sectionRanges`, **du bas vers le haut** pour préserver les indices de ligne), restaure les images annulées, `recomputeAll()` + `saveAll()`, puis `releaseSectionsPending()` + `unlockNode()`.\n  - **`releaseSectionsPending(folderIds, lockedEntityIds)`** : libère verrous + pending de l'ensemble de sections et de leurs entités granulaires (blocs/fichiers), nettoie `codeSectionSnapshots`, `dirtyVisuSectionIds`, `visuSectionLockSnapshot`, `editingVisuSectionId`, `cursorEntityId`.\n- **Barre du bas** : ne contient plus de boutons Annuler/Partager pour le mode Code (`showCodePublishBar` / `showCrossModePendingBar` n'affichent qu'un libellé « Modifications en cours — partager via le menu de la section »). La **barre Preview** (mode visu) a été **supprimée** (vB-0.282) : partage/annulation via le menu contextuel de la section. Seule la barre Structure (`structureHasPending`) conserve ses boutons.\n- **Portée du partage (mode focus, `publishCodeEdit`)** : seules les sections **réellement éditées** sont publiées et déverrouillées. `publishFolderIds` est calculé depuis `activeEntityLocks` (mappés vers leur `folderId` via `modifiedEntities`), sinon la section ciblée. Le document complet est reconstruit uniquement pour résoudre les `folderId` des sous-sections ; les sections enfants **non modifiées ne sont pas écrites** avec `publish=true`, donc elles restent verrouillées (correctif : sans ce filtre, toutes les sous-sections enfants étaient partagées + déverrouillées côté serveur)",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-4-10",
+    "section": "Snapshot pre-édition vue document (sans focus)",
+    "tasks": "- **Premier keystroke** (hors mode focus) : `codeDocSnapshot = lastSavedContent`\n- **Annuler vue document** : restaure le snapshot entier du document\n- **Partager vue document** : publie toutes les sections du document",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-4-11",
+    "section": "Sections et parsing",
+    "tasks": "- **Détection headings** : regex `^(#{1,4}) (.+)$` → niveaux 1-4\n- **Niveaux** : `#` = niveau 1, `##` = niveau 2, `###` = niveau 3, `####` = niveau 4\n- **SectionRanges** : `{ folderId, lineStart, lineEnd }` pour chaque section. Le mappage titre→`folderId` itère dans l'ordre du **buffer** (`flatHeads`, ce que l'utilisateur voit) et associe chaque titre à un `docSection` non encore consommé (level + name) — robuste même quand l'ordre du buffer diverge de l'ordre stocké des fichiers (cas de la préservation du texte en mode Code, voir `2-5-2-4-16`). Sans cette logique, une section déplacée dans le code pointait vers le mauvais dossier (focus erroné à la navigation).\n- **FileRanges** : `{ fileId, lineStart, lineEnd }` pour les blocs fichiers additionnels\n- **Blocs-fichiers additionnels** : délimités par une ligne commençant par `\'`, ``` ` ``` ou `^`. Les fences de code markdown ` ``` ` sont explicitement exclues (lookahead `(?!` + 3 backticks + `)` / garde `!startsWith('```')`) → un bloc de code ` ``` … ``` ` n'est jamais interprété comme un bloc-fichier ni reformaté à la sauvegarde",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-4-12",
+    "section": "Raccourcis clavier",
+    "tasks": "- **Ctrl+S** : Forcer la sauvegarde\n- **Escape** : Fermer menu slash commands\n- **/** : Ouvrir menu slash commands (si début de ligne)\n- **Tab** : Indentation",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-4-15",
+    "section": "Panneau Trello en mode Code",
+    "tasks": "- **Affichage** : le panneau `app-trello-board` s'affiche dès que le marqueur ` ```TRELLO: NOM ` est présent dans la section active (voir `2-5-2-4-14`)\n- **Synchronisation live** : le composant reste monté lors des changements de mode → les modifications (ajout/édition/déplacement de tâche) faites dans un mode sont immédiatement visibles dans les autres\n- **SSE** : les mises à jour de collaborateurs (`trelloUpdate$`) sont reçues dans tous les modes puisque le board n'est jamais détruit\n- **Propagation vers Code** : `@Output() cardsChanged` → `onTrelloCardsChanged` → `syncTrelloInlineBlock()` met à jour le bloc fencé inline **uniquement si le toggle Sync auto est activé** (voir `2-5-2-4-14`)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-4-14",
+    "section": "Bloc Trello inline dans le contenu (mode Code)",
+    "tasks": "- **Format** : bloc fencé ` ```TRELLO: NOM_DU_TRELLO ` inséré directement dans le markdown de la section\n- **Structure** :\n  ```\n  ```TRELLO: Nom du board\n  ### À faire\n  - [ ] Titre task `[Haute]` — auteur · date\n  ### En cours\n  - [~] Task 2\n  ```\n  ```\n- **Source de vérité = le code** : le marqueur ` ```TRELLO: NOM ` dans le contenu pilote l'existence du Trello (nœud sidebar, onglet MO, vue board). Le `folderId` DB n'est qu'un fallback de migration.\n- **Insertion** : création d'un Trello → `confirmTrelloPopup()` crée l'instance DB + insère le bloc à la position du curseur. À la sauvegarde, le fence est parsé comme **fichier additionnel système** → fichier créé (nœud sidebar) via la réconciliation parente.\n- **Carte de démarrage** (vB-0.281) : à la création d'un Trello vierge, une carte par défaut est ajoutée. `confirmTrelloPopup()` appelle `createTrelloCard(inst.id, { title:'Task test 1', status:'todo', priority:'medium', description:'Description Task test 1' })` (BDD) et insère le fence avec le corps généré par `buildDefaultTrelloBody()` :\n  ```\n  ### À faire\n  - [ ] Task test 1 `[Normale]` — <user> · <jj/mm/aa>\n    Description Task test 1\n  ```\n  La réconciliation par titre (`reconcileTrelloCardsFromCode`) évite tout doublon entre la carte BDD et la carte du code.\n- **Création depuis le menu section** (vB-0.280) : le menu contextuel de la sidebar (voir `2-5-2-2-9`) propose « Ajout MO Trello » / « Ajout MO Tableau ». La zone écoute `collab.createMegaOutilRequest$` (abonnement `takeUntilDestroyed`) → mémorise `pendingMoFolderId` puis ouvre `openTrelloPopup()` / `openArrayPopup()`. `confirmTrelloPopup` / `confirmArrayPopup` utilisent `pendingMoFolderId` comme `folderId` de l'instance (fallback : curseur/section active) et insèrent le fence **en fin de section focalisée** (curseur déplacé en fin de textarea) pour qu'il appartienne bien à la section. `pendingMoFolderId` est réinitialisé à la confirmation/annulation.\n- **Nom du nœud sidebar** : le fichier est nommé ` TL: NOM ` (préfixe ajouté par `parseContent`) ; le fence dans le code reste ` ```TRELLO: NOM `. `buildDocSections` retire le préfixe pour matcher l'instance, `reconcileTrelloLifecycle` l'ignore à la suppression.\n- **Parsing** : `parseContent()` pré-scanne les fences Trello (exclut leurs `###` internes de la détection de sections) puis extrait chaque ` ```TRELLO: NOM … ``` ` en `AdditionalFile{name:NOM, content:body}` (retiré de `contenu.md`).\n- **Re-sérialisation** : `buildDocSections()` re-sérialise un fichier lié à une instance trello (match `folderId`+nom) en fence ` ```TRELLO: NOM … ``` ` (au lieu du délimiteur `\'`).\n- **Affichage miroir** : la ligne d'ouverture ` ```TRELLO: NOM ` est affichée en **code brut** (classe `.ed-trello-fence`, plus de badge) ; le corps du bloc s'affiche normalement.\n- **Vue board selon le mode** : le panneau `app-trello-board` (bas) est affiché **uniquement en mode Structure** (`mode === \'structure\'`), pour la **section active** seulement. Masqué en Code et en Preview. `recomputeContentTrelloIds()` scope toujours à la section active (résolution fichier→dossier via `resolveActiveFolderId`).\n- **Board visuel en Preview** : en mode Preview, le bloc Trello est rendu **inline** dans la zone d'édition sous forme de **kanban visuel** (4 colonnes, cartes titre + badge priorité + description) via `renderTrelloVisuHtml` (injecté dans `buildVisuSectionHtml`). Pas de panneau bas.\n- **Tag graphique en Structure** : en mode Structure, le code brut du fence est remplacé par un **tag graphique bleu « TRELLO : NOM »** (`getStructBodySegments` émet un segment `trello`, bloc complet préservé). `parseStructureNodes` exclut les `###` internes du fence de la détection de headings.\n- **Suppression / corruption** : à la sauvegarde, `reconcileTrelloLifecycle()` détecte qu'un marqueur vu auparavant a disparu (bloc effacé) ou n'est plus reconnu (ex: ` ```TREO: `) → supprime l'instance DB, émet `megaOutilDeleted` (onglet MO retiré), supprime le fichier `trello.md` (+`refresh`). Le texte corrompu restant est intégré à `contenu.md`, l'affichage de la section ne change pas. `seedSeenTrelloMarkers()` amorce le suivi au chargement pour ne jamais supprimer une instance legacy sans marqueur.\n- **Migration** : l'ancienne syntaxe ` ```## Trello: NAME ` reste reconnue en lecture.\n- **Élément à part entière / focus** : le fence a une `fileRange` (mappée au fichier `TL: NOM` via `recomputeRanges`) → un handle `file`. Cliquer sur le nœud sidebar `TL: NOM` met la zone Code en **mode focus** sur le seul bloc Trello. Clic sur l'onglet MO (`selectMegaOutil`, mode édition) → émet l'id du fichier Trello → même focus.\n- **Label MO** : les onglets Trello dans la barre instances affichent `[trello:NOM]`\n- **Sync bidirectionnelle code ↔ board** :\n  - **board → code** : ajouter/modifier une carte → `onTrelloCardsChanged()` → `syncTrelloInlineBlock()` régénère le corps du fence (### colonnes + cartes). Le regex gère le bloc vide ` ```TRELLO: NOM\\n``` ` (corps optionnel `(?:[\\s\\S]*?\\n)?`).\n  - **code → board/BDD** : à la sauvegarde, `reconcileTrelloCardsFromCode()` parse le corps du bloc et réconcilie les cartes en base (correspondance par **titre**) : ligne supprimée → carte supprimée, ligne ajoutée → carte créée, statut/priorité modifiés → carte mise à jour. Le board se rafraîchit via SSE. Helpers : `parseTrelloBodyCards`, `trelloLabelToStatus`, `trelloLabelToPriority`. Réconciliation limitée aux instances dont les cartes sont déjà chargées (anti-doublon au démarrage).\n- **Toggle Sync auto** : bouton dans la barre des actions Trello (mode Code) → `trelloAutoSync` (signal, **activé par défaut**). Désactivé → `onTrelloCardsChanged()` n'appelle pas `syncTrelloInlineBlock()`, le code n'est jamais modifié automatiquement. Activé → le bloc inline se met à jour quand les cartes changent",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-4-16",
+    "section": "Préservation du texte exact en mode Code (vB-0.279)",
+    "tasks": "- **Principe** : en mode Code, la saisie de l'utilisateur n'est plus réécrite/normalisée par la reconstruction. Le texte exact (lignes vides multiples, espaces de fin, `#` seul, indentation) est conservé tel que tapé.\n- **Mécanisme** : un drapeau `localCodeSavePending` est armé dans `saveAll()` (vue document, hors focus) à l'émission du save, et **libéré uniquement à la fin du cycle** quand le `@Input saveStatus` repasse à `'idle'`/`'error'`. Quand le `@Input files` revient avec la nouvelle structure, `ngOnChanges` calcule `preserveCodeBuffer` (mode `edit`, hors focus, `hasStructuralChange`, sans `markersFixed`, drapeau actif) et **n'écrase pas** `unifiedContent`/textarea avec `reconstructFromSections()`.\n- **Pourquoi pas un drapeau one-shot ni un délai fixe** : le parent (`processSectionsChange`) appelle `loadFiles()` **plusieurs fois** par cycle de save (création, fichiers additionnels, synchro d'ordre) → plusieurs émissions de `files`, le tout pendant `saveStatus === \'saving\'`. Un one-shot consommé à la 1ʳᵉ émission, ou une fenêtre temporelle fixe (ex. 6 s) trop courte pour un save serveur lent, laissaient une émission tardive reconstruire et **réordonner** les sections. Lier la garde à `saveStatus` couvre tout le cycle quelle que soit sa durée.\n- **Restructuration conservée** : les dossiers/sections sont toujours créés/renommés/supprimés côté parent (`processSectionsChange`). Seul le texte affiché est préservé ; `recomputeAll()` remappe les ranges sur le buffer conservé.\n- **Changements externes** : un changement structurel ne provenant pas de la saisie Code (renommage/suppression via sidebar, drag, collaboration) garde `localStructuralSavePending = false` → reconstruction normale (le code reflète le changement).\n- **Navigation préservée** : comme le buffer peut diverger de l'ordre des fichiers, `recomputeRanges` associe les titres aux dossiers **dans l'ordre du buffer** (voir `2-5-2-4-11`) → cliquer une section dans la sidebar focus bien la bonne section dans la zone Code.\n- **Réordonnancement de sections dans le code → menu + dossiers physiques** : changer l'ordre des `###` directement dans le code réordonne les dossiers de section sans toucher au texte. Côté parent (`processSectionsChange`, étape 7), `applySectionFolderOrder()` regroupe les `folderId` par parent dans l'ordre d'apparition dans le document et met à jour `folder.order` (clé de tri du menu sidebar **et** de `buildDocSections`), persisté via `updateStructure()` + `loadFiles()`. Le menu et les dossiers physiques suivent le code ; l'ordre fichiers == ordre buffer rétablit la cohérence (plus de divergence à terme).\n- **Limite connue** : au rechargement du projet, le contenu est reconstruit depuis les fichiers → la version normalisée s'affiche (le texte exact n'est pas persisté verbatim)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-4-17",
+    "section": "Système double fichier : Markdown propre + jumeau stylisé (vB-0.283)",
+    "tasks": "- **Objectif** : garder un `contenu.md` **propre** (Markdown standard uniquement) pour l'IA, et déporter les styles non-markdown (couleur, surlignage, taille, soulignage, alignement) dans un **jumeau `contenu-css.md`**.\n- **Invariant** : `stripStyleMarkdown(contenu-css.md)` == `contenu.md` (texte affiché identique). Utilitaires dans `apps/projets/src/app/pages/projet-editor/content-style.util.ts` : `stripStyleMarkdown`, `mergeCleanIntoStyled`, `cssTwinName`, `isCssTwinName`.\n- **Master = stylisé** : le buffer (`unifiedContent`) provient du jumeau `-css.md` (`buildDocSections`). Le Markdown standard (`**`, `*`, `#`, listes, liens, code) reste dans le contenu ; seul le HTML de style va dans le jumeau.\n- **Images en Markdown standard** (vB-0.284) : dans le fichier propre (`contenu.md`, vu par l'IA en mode Code), les marqueurs `{{IMG:id}}` sont convertis en image Markdown `![alt](nom-fichier)` (chemin = nom du fichier image, situé dans le dossier de la section ; alt = légende ou nom sans extension). Géré par `stripStyleMarkdown(md, imgResolver)` (résolveur `cleanImgResolver` côté zone et parent). Le jumeau stylisé garde `{{IMG:id}}` ; le round-trip est assuré par `mergeCleanIntoStyled` (mapping ligne clean ↔ styled).\n- **Styles markdown-compatibles toujours en Markdown** : gras `**…**`, italique `*…*`, barré `~~…~~` sont écrits en **Markdown dans les deux fichiers** (jamais en `<b>`/`<strong style=\"...\">`). `normalizeStyledMarkdown` convertit toute balise `<b>/<strong>/<i>/<em>/<s>/<del>` en Markdown avant écriture du jumeau et au chargement. Le `-css.md` n'ajoute du HTML que pour les styles **sans** équivalent Markdown (couleur, surlignage, taille, soulignage, alignement). Exemple : `<span style=\"color:purple\">**gras**</span>`.\n- **Lecture / réconciliation IA→app** : si `contenu.md` (propre) diverge de `strip(jumeau)` (édition externe par l'IA), `buildDocSections` fusionne via `mergeCleanIntoStyled` (texte IA prioritaire, styles conservés sur les lignes inchangées).\n- **Écriture** : à chaque sauvegarde, `contenu.md = strip(styled)` et `contenu-css.md = styled`. Auto-save : côté parent (`processSectionsChange` + `saveCssTwin`). « Partager » : côté zone (`writeSectionStyled`, publish des deux fichiers).\n- **Fusion ligne par ligne** : les lignes inchangées gardent leur style, les lignes modifiées/ajoutées repassent en texte brut (si le nombre de lignes diverge → styles abandonnés, invariant préservé).\n- **Toggle « Markdown propre / Avec style »** (`showCssInCode`) : en mode Code, vue **lecture seule du Markdown propre** par défaut (`.ed-clean-view` = `codeCleanView` = `strip(unifiedContent)`) ; bascule pour afficher/éditer le contenu stylisé (textarea + miroir habituels).\n- **Sidebar** : `contenu.md` et `*-css.md` sont masqués de l'arborescence.\n- **Tableaux/éléments riches stylés** : restent gérés par le MO Array (style en base), hors périmètre du double fichier.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/content-style.util.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-4-13",
+    "section": "États",
+    "tasks": "- **Vérification des différents états visuels** : Mode normal (textarea pleine largeur), Mode focus (seule la section sélectionnée visible), Dirty (badge orange dans la barre d'info en bas de zone), Saving (spinner), Erreur upload image (toast rouge), Sections repliées (indicateur `[...]` sur la ligne repliée), Slash menu ouvert (menu flottant au curseur), Section verrouillée (barre Annuler/Partager visible pour l'entité), Barre cross-mode (barre persistante si switch de mode avec pending).\n- **Lecture seule FTP** : `[readonly]` sur textarea si section en cours de sync.\n- **Section verrouillée (autre user)** : Lecture seule **totale** : textarea code, inputs Structure, board Trello (`readonly`), board Array, insertions toolbar/slash. Getters `isActiveSectionLockedByOther` / `isTrelloInstanceLocked` / `isArrayInstanceLocked` / `isStructNodeLocked`.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+    ]
+  },
+  {
+    "id": "2-5-2-4-18",
+    "section": "Suppression d'image par effacement de la ligne {{IMG:id}}",
+    "tasks": "- **Déclenchement** : l'utilisateur efface manuellement la ligne `{{IMG:id}}` dans la textarea Code → `onTextareaInput` → `scheduleSave` → `saveAll` → `reconcileImageLifecycle(content)`\n- **Détection** : toute image de `this.files` non référencée par un `{{IMG:id}}` dans le contenu (et hors `recentlyAddedImageIds` / `pendingLocalImages`) est candidate à la suppression\n- **Suppression physique** (cohérente avec `deleteImageUnified`) :\n  - Projet **backup** : différée au Partager via `pendingVisuDeletions` (le contenu publié référence encore l'image — un `deleteFile` immédiat échouerait) + garde `recentlyDeletedImageIds`\n  - Projet **local** : `svc.deleteFile` immédiat\n- **Réconciliation inverse** : une image redevenue référencée (couper/coller, undo, ré-ajout) est retirée de `recentlyDeletedImageIds` / `pendingVisuDeletions` et restaurée dans `allImages`\n- **Garde anti-réapparition** : `recentlyDeletedImageIds` (durable) empêche `buildDocSections` de ré-injecter l'image tant que son nœud subsiste dans `this.files`",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-4-19",
+    "section": "Identifiant stable de section `{{SID:folderId}}`",
+    "tasks": "- **Format** : chaque heading porte en fin de ligne un marqueur `{{SID:<folderId>}}` (ex. `## Présentation {{SID:c7e0205f-…}}`) qui lie de façon **stable** la section à son dossier physique, indépendamment du nom et de l'ordre.\n- **Origine** : dérivé du dossier par `buildDocSections` (`composeHeading(level, name, folderId)`) → présent après chaque reconstruction (`reconstructFromSections`). Les projets sans SID sont **migrés automatiquement** au premier chargement.\n- **Visibilité** : visible en mode Code (buffer brut, comme `{{IMG:}}`/`{{TRELLO:}}`) mais **atténué** (opacité réduite) dans le mirror ; **masqué** en modes Structure et Édition.\n- **Rôle anti-régression** : `parseContent` et `recomputeRanges` résolvent le `folderId` **prioritairement par SID** (puis chemin slugifié, puis nom). Le renommage d'un titre ou le réordonnancement ne perd plus le lien section↔dossier et ne crée plus de dossier parasite.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+    ]
+  },
+  {
+    "id": "2-5-2-4-20",
+    "section": "Re-parentage automatique sur changement d'imbrication",
+    "tasks": "- **Principe** : insérer/déplacer un titre en mode Code modifie l'imbrication markdown des sections suivantes → leurs dossiers physiques sont **déplacés** en conséquence (`processSectionsChange` → `moveFolder`).\n- **Exemple** : insérer un `## H2` au milieu d'une suite de `### H3` → les H3 **suivants** deviennent enfants du nouveau H2 ; les H3 **au-dessus** restent rattachés à l'ancien H2.\n- **Mécanique** : pour chaque section identifiée par son `{{SID}}`, le parent textuel (imbrication courante) est comparé au parent physique ; en cas de différence → `moveFolder(folderId, targetParentId)`. Tri parents→enfants ; promotion en racine → ajout à `outil.rootFolderIds`.\n- **Robustesse** : l'identité étant garantie par le SID, le déplacement ne provoque jamais de recréation/suppression. Déclenché même sans autre changement structurel (`needsReparent` dans `hasStructural`).\n- **Résolution du parent** : le parent textuel est la section précédente de niveau **strictement inférieur** le plus proche (pas forcément `level-1`), avec réinitialisation des niveaux plus profonds. Gère les sauts de niveau (ex. insérer un H1 entre des H3).\n- **Normalisation de niveau** : le niveau d'affichage d'un titre = sa **profondeur** dans l'arbre de dossiers (`buildDocSections`, `level = depth`). Conséquence : insérer un H1 au milieu de H3 → les H3 suivants, devenus enfants directs du H1, sont automatiquement **remontés en H2** (profondeur 2), uniquement dans la nouvelle section. Les titres au-dessus du H1 sont inchangés.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "section": "Bloc Array inline dans le contenu (mode Code)",
+    "tasks": "- **Format** : bloc fencé ` ```ARRAY: NOM_DU_TABLEAU ` inséré directement dans le markdown de la section.\n- **Source de vérité** : le code brut pilote l'existence du Tableau (nœud sidebar, onglet MO, vue grille).\n- **Insertion** : création d'un Tableau → `confirmArrayPopup()` crée l'instance DB + insère le bloc à la position du curseur. À la sauvegarde, le fence est parsé comme **fichier additionnel système** → fichier créé (nœud sidebar) via la réconciliation parente.\n- **Création depuis le menu section** : le menu contextuel de la sidebar propose « Ajout MO Tableau ». La zone écoute `collab.createMegaOutilRequest$` (abonnement `takeUntilDestroyed` dans le constructeur) → mémorise `pendingMoFolderId` et insère le fence en fin de section focalisée.\n- **Parsing et réconciliation** : `parseContent()` extrait les fences Array. À la sauvegarde, `reconcileArrayLifecycle()` réconcilie les instances DB et supprime celles orphelines.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "section": "Panneau Array en mode Code",
+    "tasks": "- **Affichage** : le panneau `app-array-board` s'affiche si le marqueur ` ```ARRAY: NOM ` est présent dans la section active.\n- **Synchronisation live** : le composant reste monté lors des changements de mode pour refléter immédiatement les modifications.\n- **Sécurité et verrous** : le board passe en lecture seule (`readonly`) si la section parente de l'Array est verrouillée par un collaborateur.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "section": "Liaison et gestion de Mockup (mode Code)",
+    "tasks": "- **Liaison** : le clic sur le bouton mockup (toolbar) ouvre le popup `showMockupLiaisonPopup` affichant la liste des mockups du projet.\n- **Insertion** : sélectionner un mockup insère le marqueur `{{MOCKUP:id}}` à la position du curseur dans la textarea ou en fin de section focalisée.\n- **Affichage miroir** : rendu sous forme de card/bouton cliquable dans le miroir HTML permettant de scroller vers le board correspondant.\n- **Suppression** : effacer manuellement le marqueur `{{MOCKUP:id}}` détruit la liaison à la sauvegarde.",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  }
+]

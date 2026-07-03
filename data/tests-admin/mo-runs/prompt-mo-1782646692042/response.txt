@@ -1,0 +1,95 @@
+# 🏡 Projet d'Acquisition et de Création d'une Maison d'Hôtes
+
+Ce document présente le plan de cadrage opérationnel, financier et immobilier pour le projet d'achat d'un bien immobilier et sa transformation en maison d'hôtes. En tant qu'expert immobilier et comptable, j'ai structuré ce projet pour maximiser la rentabilité et minimiser les risques d'acquisition.
+
+## 📌 Présentation du Projet
+L'objectif est d'acquérir une propriété de caractère avec un potentiel de 4 à 5 chambres d'hôtes, idéalement située dans une zone touristique à fort potentiel. Le projet intègre une phase d'audit immobilier, de montage financier (business plan), de réalisation des travaux de mise aux normes ERP (Établissement Recevant du Public), et de lancement commercial.
+
+## 📅 Planning et Phases du Projet
+
+Voici le calendrier opérationnel prévisionnel pour mener à bien l'acquisition et le lancement de l'activité.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-05 | Cadrage | Définition du cahier des charges et critères de recherche | Porteur de projet | Terminé |
+| 2 | 2026-07-20 | Recherche | Visites de biens et sélection de la bâtisse cible | Agent immobilier, Porteur de projet | En cours |
+| 3 | 2026-08-10 | Faisabilité | Audit technique, estimation des travaux et devis ERP | Artisans, Maître d'œuvre | À faire |
+| 4 | 2026-08-30 | Financement | Réalisation du business plan et montage du dossier de prêt | Comptable, Courtier | À faire |
+| 5 | 2026-09-15 | Achat | Signature du compromis de vente | Notaire, Porteur de projet | À faire |
+| 6 | 2026-11-15 | Achat | Signature de l'acte authentique et remise des clés | Notaire, Porteur de projet | À faire |
+| 7 | 2026-12-01 | Travaux | Travaux de rénovation, mise aux normes et décoration | Artisans, Maître d'œuvre | À faire |
+| 8 | 2027-03-15 | Lancement | Déclarations administratives (mairie, licences) et site web | Porteur de projet | À faire |
+| 9 | 2027-04-01 | Ouverture | Lancement officiel et accueil des premiers clients | Porteur de projet | À faire |
+```
+
+## 📍 Agenda des Jalons Clés
+
+Voici les dates et réunions décisives pour sécuriser le calendrier du projet.
+
+```AGENDA: Jalons
+2026-07-20 | 10:00-12:00 | Sélection du bien | Réunion de synthèse après visites des biens présélectionnés
+2026-08-20 | 14:00-16:00 | Validation Financière | Validation finale du business plan avec l'expert-comptable
+2026-09-15 | 09:00-11:00 | Compromis de Vente | Signature chez le notaire et versement du dépôt de garantie
+2026-11-15 | 14:00-16:00 | Acte Authentique | Signature finale chez le notaire et récupération des clés
+2027-03-15 | 09:00-12:00 | Contrôle Normes ERP | Visite de sécurité avant ouverture au public
+```
+
+## 💰 Budget Prévisionnel et Suivi des Coûts
+
+Ce tableau permet de suivre l'allocation du budget initial d'acquisition et de démarrage de l'activité.
+
+```ARRAY: Budget
+| Poste de dépense | Budget prévu | Dépensé | Restant |
+|---|---|---|---|
+| Acquisition du bien | 350000 | 0 | =B2-C2 |
+| Frais de notaire | 28000 | 0 | =B3-C3 |
+| Travaux de rénovation | 85000 | 0 | =B4-C4 |
+| Mobilier et décoration | 25000 | 0 | =B5-C5 |
+| Frais administratifs et marketing | 7000 | 0 | =B6-C6 |
+| Trésorerie de sécurité | 15000 | 0 | =B7-C7 |
+| Total | =SUM(B2:B7) | =SUM(C2:C7) | =SUM(D2:D7) |
+```
+
+## 📋 Suivi Opérationnel des Tâches
+
+Suivi détaillé de l'avancement des actions à mener sur le terrain.
+
+```TRELLO: Tâches
+### À faire
+- [ ] Préparer le dossier de demande de prêt `[critical]`
+  Rassembler bilans personnels, apport, et prévisionnel comptable.
+- [ ] Demander des devis estimatifs de travaux `[high]`
+  Consulter au moins 3 électriciens et plombiers pour valider l'enveloppe rénovation.
+- [ ] Rédiger le règlement intérieur de la maison `[low]`
+  Définir les règles d'usage des espaces partagés.
+### En cours
+- [ ] Visiter les propriétés cibles `[medium]`
+  Visite de la ferme en pierre à rénover le 30 juin.
+### Terminé
+- [ ] Valider l'étude de marché de la région `[medium]`
+  Analyse de la concurrence et des taux d'occupation locaux.
+```
+
+## 🚦 Décisions de Validation et Points de Vigilance
+
+Avant de s'engager définitivement sur l'acquisition d'un bien, cette grille de décision doit être impérativement complétée.
+
+```FORM: Grille d'évaluation du bien
+* **Le bien répond-il aux critères d'emplacement géographique ?**
+  * ( ) Oui, parfait (attractivité touristique élevée, commodités à proximité)
+  * ( ) Moyen (calme mais nécessite un véhicule pour toute activité)
+  * ( ) Non conforme (trop éloigné des points d'intérêt)
+* **Les travaux de mise en conformité sécurité et accessibilité (ERP) sont-ils chiffrés ?**
+  * ( ) Oui, intégrés dans les devis et validés
+  * ( ) En cours d'évaluation par le maître d'œuvre
+  * ( ) Non chiffrés (risque financier élevé)
+* **Le diagnostic technique immobilier présente-t-il des anomalies majeures (amiante, plomb, structure) ?**
+  * ( ) Aucun problème majeur identifié
+  * ( ) Problèmes identifiés mais chiffrés et négociables
+  * ( ) Anomalies graves (à rejeter ou renégociation totale)
+* **Le modèle économique est-il viable (seuil de rentabilité atteignable avec un taux d'occupation de 40%) ?**
+  * ( ) Oui, le point mort est bas
+  * ( ) Limite, nécessite des tarifs élevés
+  * ( ) Non viable en l'état
+```

@@ -1,0 +1,30 @@
+* **Format attendu pour le livrable final (le document et formulaire P.A.R.S.) :**
+  * [ ] Document Markdown statique (modèle/template d'atelier)
+  * [ ] Page web interactive (HTML/CSS/JS) autonome
+  * [ ] Script interactif en ligne de commande (Python/Node.js)
+  * [ ] Autre : ______
+
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Démarrage immédiat avec finalisation sous 24-48h
+  * ( ) Démarrage planifié avec un calendrier sur plusieurs semaines : ______
+
+* **Contraintes principales de réalisation :**
+  * [ ] Aucune dépendance externe (HTML/JS pur, pas de base de données)
+  * [ ] Intégration nécessaire avec un outil tiers (Mind Mapping, CRM, etc.) : ______
+  * [ ] Contraintes de ressources (développement en solo sans budget additionnel)
+
+* **Critères de succès mesurables pour ce livrable :**
+  * [ ] Taux d'adoption par les utilisateurs (ex: > 80% de complétion de l'atelier)
+  * [ ] Rapidité d'exécution (génération du rapport final en moins de 2 minutes)
+  * [ ] Simplicité d'utilisation (aucune formation requise pour l'animateur)
+  * [ ] Autre : ______
+
+* **Risques ou blocages anticipés lors de l'atelier d'écriture :**
+  * [ ] Blocage de la page ou perte du texte brut en cours d'écriture (absence de sauvegarde locale)
+  * [ ] Difficulté de qualification automatique des unités de sens (nécessite une IA externe)
+  * [ ] Non-respect du temps imparti par le participant
+
+* **Durée suggérée par défaut pour la session de Freewriting :**
+  * ( ) 10 minutes
+  * ( ) 15 minutes
+  * ( ) Personnalisable par l'utilisateur : ______

@@ -1,0 +1,35 @@
+* **Avancement du projet de maison d'hôtes :**
+  * ( ) En phase de réflexion / recherche de concept
+  * ( ) Bien immobilier identifié / visites en cours
+  * ( ) Compromis de vente signé ou en cours de signature
+  * ( ) Autre : ______
+
+* **Montant total estimé du besoin de financement (achat, travaux, trésorerie) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Niveau d'apport personnel par rapport au montant total :**
+  * ( ) Moins de 10%
+  * ( ) Entre 10% et 30%
+  * ( ) Plus de 30%
+  * ( ) Autre : ______
+
+* **Profil et expérience des porteurs de projet :**
+  * [ ] Expérience préalable en gestion d'entreprise / comptabilité
+  * [ ] Expérience dans le secteur du tourisme, de l'hôtellerie ou de la restauration
+  * [ ] Compétences techniques (travaux, rénovation, décoration)
+  * [ ] Reconversion totale sans expérience préalable dans ces domaines
+
+* **Format et structure du livrable attendu pour la banque :**
+  * [ ] Business plan complet rédigé (présentation, étude de marché, stratégie)
+  * [ ] Modèle financier et prévisionnel (compte de résultat, plan de financement, trésorerie)
+  * [ ] Executive Summary synthétique (une à deux pages pour pitch rapide)
+  * [ ] Support de présentation visuel (diaporama / Pitch Deck)
+
+* **Prestations annexes envisagées pour la maison d'hôtes :**
+  * [ ] Table d'hôtes / Restauration / Vente de produits locaux
+  * [ ] Espace bien-être (spa, piscine, massages) / Activités touristiques
+  * [ ] Privatisation d'espaces / Événementiel / Séminaires
+  * [ ] Uniquement hébergement et petit-déjeuner

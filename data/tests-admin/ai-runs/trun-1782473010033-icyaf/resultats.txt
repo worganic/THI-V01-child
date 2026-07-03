@@ -1,0 +1,6 @@
+@@TEST_RESULT@@{"itemId":"1-1-1","status":"ok","note":"Page publique et redirection opérationnelles"}
+@@TEST_RESULT@@{"itemId":"1-1-2","status":"ok","note":"Connexion avec pré-remplissage et redirection ok"}
+@@TEST_RESULT@@{"itemId":"1-1-3","status":"ok","note":"États de page non connecté/connecté conformes"}
+@@TEST_RESULT@@{"itemId":"1-1-4","status":"ok","note":"Formulaire d'inscription et règles de rôle ok"}
+@@TEST_RESULT@@{"itemId":"1-1-5","status":"ok","note":"Gestion d'erreur de base de données complète et conforme"}
+@@TEST_RESULT@@{"itemId":"1-1-6","status":"ok","note":"Personnalisation et branding dynamiques ok"}

@@ -1,0 +1,120 @@
+# 🏡 Projet d'Acquisition et Création de Maison d'Hôtes - Horizon 2026-2027
+
+Ce document constitue le dossier de cadrage stratégique, financier et opérationnel pour l'achat d'un bien immobilier en vue de l'exploitation d'une activité de chambres d'hôtes. Conçu selon une approche d'expert immobilier et comptable, il regroupe l'ensemble des outils nécessaires au pilotage de cette opération.
+
+---
+
+## 📋 1. Cadrage Stratégique & Réglementation
+
+L'exploitation d'une maison d'hôtes (chambres d'hôtes) est encadrée en France par des dispositions réglementaires et fiscales strictes qu'il convient de respecter dès la phase de recherche du bien :
+
+### Cadre Réglementaire (Chambres d'Hôtes vs ERP)
+- **Capacité maximale** : Limite stricte de **5 chambres** et **15 personnes** accueillies simultanément. Au-delà, l'établissement est qualifié d'Établissement Recevant du Public (ERP) de 5e catégorie, avec des normes de sécurité incendie et d'accessibilité (PMR) considérablement plus lourdes.
+- **Prestations obligatoires** : Fourniture de la nuitée, du linge de maison (draps et serviettes) et du petit-déjeuner. Le prix doit être global (chambre + petit-déjeuner).
+
+### Choix du Statut Juridique et Fiscal
+Le choix de la structure juridique aura un impact direct sur l'imposition des bénéfices et le traitement des plus-values immobilières :
+1. **LMNP (Loueur en Meublé Non Professionnel) au régime Réel** : Option souvent privilégiée au démarrage. Permet d'amortir le bien immobilier (hors terrain) et le mobilier, ramenant le résultat imposable à un montant proche de zéro, tout en bénéficiant du régime fiscal des plus-values des particuliers lors de la revente.
+2. **LMP (Loueur en Meublé Professionnel)** : Obligatoire si les recettes annuelles dépassent 23 000 € ET les revenus du foyer fiscal. Permet d'imputer les déficits sur le revenu global, mais soumet l'activité aux cotisations sociales (SSI) et à la fiscalité des plus-values professionnelles.
+3. **SARL de Famille** : Permet d'opter pour l'impôt sur le revenu (IR) tout en s'associant en famille, avec amortissement du bien.
+
+---
+
+## 🛠️ 2. Pilotage Opérationnel
+
+Le bon déroulement du projet exige une coordination rigoureuse des différents intervenants (agent immobilier, notaire, courtier, banquier, comptable, artisans).
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions clés | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Cadrage financier | Définition de l'apport, validation de la capacité d'emprunt | Porteurs de projet, Courtier | À faire |
+| 2 | 2026-07-15 | Recherche du bien | Visites ciblées et études techniques/d'implantation | Porteurs de projet, Agents | À faire |
+| 3 | 2026-09-01 | Négociation et offre | Offre d'achat et préparation du dossier notarié | Porteurs de projet, Notaire | À faire |
+| 4 | 2026-10-15 | Montage financier | Finalisation du business plan et démarchage bancaire | Expert-Comptable, Banques | À faire |
+| 5 | 2026-12-15 | Acquisition | Signature de l'acte authentique de vente | Notaire, Banques | À faire |
+| 6 | 2027-01-05 | Rénovation | Travaux de mise aux normes, plomberie et électricité | Artisans, Architecte | À faire |
+| 7 | 2027-04-15 | Lancement commercial | Déclarations officielles, création de l'identité web | Mairie, Greffe, Webmaster | À faire |
+| 8 | 2027-05-15 | Exploitation | Accueil des premiers clients et ouverture officielle | Porteurs de projet | À faire |
+```
+
+```AGENDA: Jalons
+2026-07-05 | 10:00-12:00 | Réunion de cadrage bancaire | Validation de l'enveloppe globale d'achat et de l'apport requis
+2026-09-15 | 14:00-16:30 | Signature du compromis | Formalisation de la vente sous conditions suspensives d'obtention de prêt
+2026-11-15 | 09:00-12:00 | Dépôt officiel des dossiers de prêt | Envoi des dossiers complets avec Business Plan aux banques présélectionnées
+2026-12-15 | 11:00-13:00 | Signature de l'acte authentique | Transfert de propriété et remise des clés chez le notaire
+2027-04-01 | 09:00-17:00 | Réception des travaux de rénovation | Contrôle de la conformité des travaux et levée des réserves
+2027-04-15 | 14:00-15:00 | Envoi de la déclaration en mairie | Dépôt du formulaire de déclaration d'activité (Cerfa n°13566*03)
+```
+
+---
+
+## 📊 3. Plan de Financement & Budget Prévisionnel
+
+Le tableau ci-dessous détaille le budget prévisionnel de l'opération d'acquisition et de démarrage de l'activité.
+
+```ARRAY: Budget
+| Poste de dépense | Budget estimé | Financement apport | Emprunt requis | Statut |
+|---|---|---|---|---|
+| Achat immobilier (Net vendeur) | 450000 | 90000 | 360000 | À engager |
+| Frais d'acquisition (Notaire, agence) | 36000 | 36000 | 0 | À engager |
+| Travaux de rénovation / Mise aux normes | 80000 | 10000 | 70000 | À engager |
+| Équipements, mobilier et décoration | 25000 | 5000 | 20000 | À engager |
+| Site internet, communication et enseigne | 5000 | 5000 | 0 | À engager |
+| Trésorerie de sécurité | 15000 | 15000 | 0 | À engager |
+```
+
+Voici l'évolution du besoin de trésorerie cumulé au fil de l'avancement des étapes du projet (exprimé en milliers d'euros) :
+
+```CHART: Trésorerie cumulée
+Cadrage: 0
+Compromis: 5
+Acte de vente: 491
+Fin des travaux: 596
+Lancement: 611
+```
+
+---
+
+## 📋 4. Planification et Suivi des Actions
+
+Le tableau Kanban ci-dessous regroupe les actions concrètes indispensables à mener pour sécuriser l'acquisition et le montage du projet.
+
+```TRELLO: Plan d actions
+### À faire
+- [ ] Valider le statut fiscal optimal (LMNP vs LMP vs SARL) `[high]`
+  Faire valider l'impact de l'amortissement du bien immobilier par un cabinet d'expertise comptable.
+- [ ] Rédiger le cahier des charges d'acquisition `[medium]`
+  Définir la zone géographique cible, le nombre de chambres potentielles, l'état du bâti et le budget travaux maximal.
+- [ ] Rédiger la structure de l'offre commerciale et tarifaire `[low]`
+  Définir les tarifs par chambre, les formules de table d'hôtes et les services additionnels (spa, vélos...).
+- [ ] Souscrire une assurance RC Professionnelle `[high]`
+  Garantir la couverture de l'activité d'hébergement touristique et de restauration.
+### En cours
+- [ ] Constituer le dossier de présentation financière `[high]`
+  Rédiger le dossier comprenant la présentation des porteurs de projet, l'étude de marché locale et le business plan.
+### Terminé
+```
+
+---
+
+## 🧭 5. Outils de Décision et Qualification des Visites
+
+Lors des visites immobilières, chaque bien sélectionné doit faire l'objet d'une validation rigoureuse pour s'assurer de sa viabilité économique et de sa conformité.
+
+```FORM: Grille de qualification de visite
+* **Le bien immobilier respecte-t-il la limite réglementaire de la chambre d'hôtes (5 chambres / 15 personnes max) ?**
+  * ( ) Oui, parfait pour une gestion familiale simplifiée
+  * ( ) Non, le bien est plus grand et impose de passer en statut ERP (catégorie 5)
+* **Quelle est l'ampleur des travaux de rénovation et d'adaptation à prévoir ?**
+  * ( ) Légers : uniquement décoration et ameublement
+  * ( ) Modérés : rafraîchissement général et aménagement des salles d'eau privatives
+  * ( ) Lourds : gros œuvre, mise aux normes d'isolation, chauffage et électricité
+* **Quelle est la situation géographique et l'attractivité touristique du bien ?**
+  * ( ) Zone à fort potentiel (proximité de pôles touristiques majeurs, accès facile)
+  * ( ) Zone intermédiaire (tourisme vert, halte routière ou cycliste)
+  * ( ) Zone isolée (nécessite une proposition de valeur très forte ou thématique spécifique)
+* **Le bien permet-il de proposer une table d'hôtes (cuisine professionnelle ou semi-professionnelle, salle commune de taille suffisante) ?**
+  * ( ) Oui, espace commun et cuisine parfaitement adaptés
+  * ( ) Oui, mais nécessite un réaménagement ou agrandissement de la cuisine
+  * ( ) Non, la structure ne se prête qu'à la formule nuitée + petit-déjeuner
+```

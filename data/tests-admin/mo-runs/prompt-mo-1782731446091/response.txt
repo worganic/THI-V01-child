@@ -1,0 +1,109 @@
+# Pilotage Opérationnel : Projet de Création de Maison d'Hôtes
+
+Ce document rassemble l'ensemble des outils de cadrage, de planification et de suivi financier pour l'acquisition et la transformation d'un bien immobilier en maison d'hôtes.
+
+---
+
+## 1. Planification et Phases Clés
+
+Le planning ci-dessous détaille le déroulement opérationnel pour sécuriser l'acquisition et lancer l'activité dans les meilleurs délais.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Cadrage financier | Finalisation du business plan et du prévisionnel d'activité | Porteur de projet, Comptable | À faire |
+| 2 | 2026-07-15 | Recherche immobilière | Visites de biens, études de conformité d'urbanisme (PLU) | Porteur de projet, Agent immo | À faire |
+| 3 | 2026-08-01 | Financement bancaire | Dépôt des demandes de prêt et pitch devant les banques | Courtier, Banques | À faire |
+| 4 | 2026-08-20 | Signature compromis | Signature du compromis de vente sous condition suspensive | Notaire, Vendeur | À faire |
+| 5 | 2026-09-10 | Démarches urbanisme | Dépôt du dossier de déclaration préalable de travaux (ERP) | Architecte, Mairie | À faire |
+| 6 | 2026-10-01 | Travaux de rénovation | Rénovation des chambres et mise aux normes ERP (sécurité/incendie) | Artisans | À faire |
+| 7 | 2026-11-01 | Ouverture officielle | Déclaration en mairie (CERFA) et ouverture des réservations | Porteur de projet | À faire |
+```
+
+---
+
+## 2. Agenda des Jalons Réglementaires et Financiers
+
+Les dates limites et réunions de validation critiques pour respecter l'horizon temporel de 3 mois.
+
+```AGENDA: Jalons
+2026-07-01 | 09:00-11:00 | Réunion Business Plan | Session de validation des hypothèses de chiffre d'affaires et charges.
+2026-07-15 | 10:00-17:00 | Session Visites Biens | Visites physiques et premières analyses techniques de faisabilité ERP.
+2026-08-01 | 14:30-16:00 | Comité de Financement | Soutenance du dossier de crédit auprès des établissements bancaires.
+2026-08-20 | 10:00-11:30 | Signature Compromis | Signature officielle de l'acte sous seing privé chez le notaire.
+2026-09-10 | 16:00-17:00 | Dépôt Mairie | Enregistrement de la demande d'aménagement et de travaux.
+2026-11-01 | 09:00-18:00 | Ouverture Exploitation | Lancement opérationnel et accueil de la première clientèle.
+```
+
+---
+
+## 3. Plan de Financement et Suivi Budgétaire
+
+Suivi des dépenses pour anticiper les éventuels surcoûts liés aux travaux de rénovation et aux normes ERP.
+
+```ARRAY: Suivi Budget
+| Poste de dépense | Budget prévu (€) | Dépensé (€) | Solde disponible (€) |
+|---|---|---|---|
+| Achat immobilier (Frais inclus) | 350000 | 0 | =B2-C2 |
+| Travaux de mise aux normes ERP | 75000 | 0 | =B3-C3 |
+| Mobilier et décoration | 25000 | 0 | =B4-C4 |
+| Communication et site internet | 5000 | 0 | =B5-C5 |
+| Trésorerie de sécurité | 15000 | 0 | =B6-C6 |
+| **TOTAL** | =SUM(B2:B6) | =SUM(C2:C6) | =SUM(D2:D6) |
+```
+
+---
+
+## 4. Indicateurs Clés de Performance (KPI)
+
+Les objectifs financiers pour atteindre le seuil de rentabilité sous 12 à 24 mois.
+
+```ARRAY: Suivi Indicateurs
+| Indicateur | Cible | Valeur actuelle | Statut |
+|---|---|---|---|
+| Taux d'occupation annuel (%) | 55 | 0 | En attente |
+| Prix moyen de la nuitée (€) | 120 | 0 | En attente |
+| Chiffre d'Affaires annuel (€) | 120000 | 0 | En attente |
+| Excédent Brut d'Exploitation (€) | 45000 | 0 | En attente |
+| Seuil de rentabilité (mois d'activité) | 18 | 0 | En attente |
+```
+
+---
+
+## 5. Avancement des Tâches Opérationnelles
+
+Suivi des actions concrètes à mener au quotidien.
+
+```TRELLO: Avancement
+### À faire
+- [ ] Finaliser l'étude de marché locale `[high]`
+  Analyse de la concurrence directe et prix pratiqués dans la zone géographique ciblée.
+- [ ] Prendre rendez-vous avec le service urbanisme de la mairie `[critical]`
+  Vérification de la faisabilité du changement d'usage et des contraintes du PLU.
+- [ ] Solliciter des devis estimatifs pour les travaux ERP `[high]`
+  Obtenir des chiffrages pour la sécurité incendie et l'accessibilité PMR.
+### En cours
+- [ ] Élaboration du plan financier prévisionnel `[critical]`
+  Construction des tableaux de trésorerie et d'amortissement avec l'expert-comptable.
+### Terminé
+```
+
+---
+
+## 6. Fiche de Validation et Décision d'Achat d'un Bien
+
+Ce questionnaire permet d'évaluer de manière objective l'opportunité d'acquisition d'un bien immobilier spécifique.
+
+```FORM: Validation Bien
+* **Conformité urbanistique et réglementaire :**
+  * [ ] Le Plan Local d'Urbanisme (PLU) autorise l'hébergement touristique.
+  * [ ] La structure générale permet une mise aux normes ERP de 5ème catégorie.
+  * [ ] L'avis technique ne mentionne aucun problème structurel majeur (murs, toiture).
+* **Faisabilité financière de l'acquisition :**
+  * ( ) Oui, le prix d'acquisition permet de respecter notre budget global de 470k€ (travaux inclus).
+  * ( ) Non, les travaux de rénovation nécessaires dépassent notre capacité d'endettement.
+* **Potentiel d'exploitation commerciale :**
+  * [ ] Possibilité d'aménager au moins 4 à 5 chambres indépendantes.
+  * [ ] Attractivité de l'emplacement (calme, accès facile, proximité touristique).
+  * [ ] Présence d'un espace extérieur exploitable (terrasse, jardin).
+```

@@ -1,0 +1,115 @@
+# Formation en Mathématiques — Soutien Scolaire Personnalisé
+
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-06-29 | Positionnement et Cadrage | Définir le niveau et les objectifs | À faire |
+| Séance 2 | 2026-07-06 | Calcul numérique et fractions | Maîtriser les opérations sur les fractions | À faire |
+| Séance 3 | 2026-07-13 | Équations du premier degré | Résoudre des équations simples | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 10:00-11:30 | Séance 1 — 2026-06-29 : Positionnement et Cadrage | Session d'évaluation diagnostique, choix du niveau et de la matière.
+2026-07-06 | 10:00-11:30 | Séance 2 — 2026-07-06 : Calcul numérique et fractions | Cours sur les fractions et résolution d'exercices.
+2026-07-13 | 10:00-11:30 | Séance 3 — 2026-07-13 : Équations du premier degré | Cours sur les équations du premier degré et applications.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 | 2026-06-29 | | 20 | =C2/D2*100 | =AVG(C2:C4) |
+| Séance 2 | 2026-07-06 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-13 | | 20 | =C4/D4*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer la séance 1 `[medium]`
+- [ ] Réaliser le test de positionnement `[high]`
+- [ ] Étudier le cours sur les fractions `[medium]`
+- [ ] Résoudre les exercices sur les fractions `[medium]`
+- [ ] Étudier le cours sur les équations `[high]`
+- [ ] Résoudre les exercices sur les équations `[medium]`
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-06-29 : Positionnement et Cadrage
+
+### Contenu du cours
+Cette première séance permet d'évaluer vos connaissances de base et de cibler vos besoins. Répondez avec précision aux questions ci-dessous pour adapter la suite de votre parcours d'apprentissage en mathématiques.
+
+### Exercices de positionnement
+```FORM: QCM Séance 1
+* **Quel est votre niveau scolaire actuel ?**
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+* **Quelle thématique souhaitez-vous travailler en priorité ?**
+  * ( ) Algèbre et équations
+  * ( ) Géométrie et théorèmes
+  * ( ) Calcul numérique (fractions, puissances)
+* **Question de diagnostic 1 : Quelle est la valeur de x dans l'équation 2x + 5 = 15 ?**
+  * ( ) x = 5
+  * ( ) x = 10
+  * ( ) x = 20
+* **Question de diagnostic 2 : Quelle est la somme de 1/3 et 1/2 ?**
+  * ( ) 2/5
+  * ( ) 5/6
+  * ( ) 1/6
+```
+
+## Séance 2 — 2026-07-06 : Calcul numérique et fractions
+
+### Contenu du cours
+Les fractions expriment un partage ou un rapport entre deux nombres entiers. Pour les manipuler efficacement :
+- Addition et soustraction : Mettez les fractions au même dénominateur avant d'additionner ou soustraire leurs numérateurs. Exemple : 1/4 + 2/3 = 3/12 + 8/12 = 11/12.
+- Multiplication : Multipliez les numérateurs entre eux et les dénominateurs entre eux. Exemple : (2/3) * (5/7) = 10/21.
+- Division : Diviser par une fraction revient à multiplier par son inverse. Exemple : (3/4) / (2/5) = (3/4) * (5/2) = 15/8.
+
+### Exercices d'application
+```FORM: QCM Séance 2
+* **Question 1 : Calculez la somme : 3/4 + 1/2. Quelle est la fraction simplifiée ?**
+  * ( ) 4/6
+  * ( ) 5/4
+  * ( ) 1/2
+* **Question 2 : Calculez le produit : 2/3 * 9/4. Quelle est la valeur simplifiée ?**
+  * ( ) 3/2
+  * ( ) 18/12
+  * ( ) 11/7
+* **Question 3 : Calculez la division : (2/5) / (3/10). Quel est le résultat ?**
+  * ( ) 4/3
+  * ( ) 6/50
+  * ( ) 3/25
+```
+
+## Séance 3 — 2026-07-13 : Équations du premier degré
+
+### Contenu du cours
+Une équation du premier degré à une inconnue est une égalité contenant une variable (souvent notée x). Résoudre l'équation consiste à trouver la valeur de x qui rend l'égalité vraie.
+Méthode de résolution :
+1. Regroupez les termes en x d'un côté de l'égalité et les nombres constants de l'autre.
+2. Si vous déplacez un terme d'un côté à l'autre, son signe change (un plus devient moins, et inversement).
+3. Divisez enfin par le coefficient devant x.
+Exemple : 3x - 4 = 11 => 3x = 11 + 4 => 3x = 15 => x = 15 / 3 = 5.
+
+### Exercices d'application
+```FORM: QCM Séance 3
+* **Question 1 : Résolvez l'équation 4x - 7 = 5. Quelle est la valeur de x ?**
+  * ( ) x = 3
+  * ( ) x = -3
+  * ( ) x = 0.5
+* **Question 2 : Résolvez l'équation 2x + 8 = -2. Quelle est la valeur de x ?**
+  * ( ) x = 5
+  * ( ) x = -5
+  * ( ) x = -3
+* **Question 3 : Résolvez l'équation 3(x - 2) = 12. Quelle est la valeur de x ?**
+  * ( ) x = 6
+  * ( ) x = 4
+  * ( ) x = 2
+```

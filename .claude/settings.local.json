@@ -1,4 +1,22 @@
 {
+  "statusLine": {
+    "type": "command",
+    "command": "node \"E:/www/projet creat projet 2026-01/--projets--/THI-V01-child-user3/.claude/statusline.js\"",
+    "refreshInterval": 10,
+    "padding": 0
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"E:/www/projet creat projet 2026-01/--projets--/THI-V01-child-user3/.claude/prompt-counter.js\""
+          }
+        ]
+      }
+    ]
+  },
   "permissions": {
     "allow": [
       "Bash(npx ng *)",

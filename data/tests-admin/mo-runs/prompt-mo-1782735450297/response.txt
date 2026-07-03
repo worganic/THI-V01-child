@@ -1,0 +1,123 @@
+# 🏡 Projet d'Acquisition et Création de Maison d'Hôtes
+
+Ce document constitue la feuille de route et le tableau de bord pour le projet d'acquisition d'un bien immobilier en vue de l'exploiter en maison d'hôtes. L'objectif est de sécuriser le processus financier, technique et réglementaire pour un lancement opérationnel sous 12 mois.
+
+---
+
+## 📊 Pilotage Global et Suivi du Projet
+
+Ce module centralise la planification temporelle, financière et les objectifs stratégiques du projet de création.
+
+### 📅 Planning Opérationnel
+
+Le planning ci-dessous détaille les grandes phases du projet avec les dates cibles basées sur un lancement immédiat de la recherche et une ouverture visée dans 1 an.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions Clés | Responsable | Statut |
+|----|------|-------|--------------|-------------|--------|
+| 1 | 2026-07-01 | Cadrage & BP | Étude de marché et finalisation du Business Plan | Porteur de projet | Terminé |
+| 2 | 2026-08-01 | Recherche Bien | Prospection et visites de biens avec critères ERP | Porteur de projet | En cours |
+| 3 | 2026-10-01 | Offre & Prêt | Négociation, signature compromis et montage du dossier bancaire | Comptable | À faire |
+| 4 | 2026-12-15 | Acquisition | Signature chez le notaire et réception des clés | Porteur de projet | À faire |
+| 5 | 2027-01-05 | Travaux | Rénovation générale et mise aux normes sécurité incendie (ERP) | Architecte / Artisans | À faire |
+| 6 | 2027-05-01 | Lancement | Aménagement, décoration, marketing et pré-réservations | Porteur de projet | À faire |
+| 7 | 2027-06-01 | Ouverture | Accueil des premiers clients et suivi de la performance | Porteur de projet | À faire |
+```
+
+### 🗓️ Jalons Clés du Projet
+
+Ces événements et réunions jalonnent le parcours d'acquisition et d'ouverture.
+
+```AGENDA: Jalons
+2026-07-31 | 14:00-16:00 | Clôture du Business Plan | Validation des prévisions financières avec l'expert-comptable.
+2026-09-30 | 09:00-12:00 | Sélection finale du bien | Décision finale d'achat après validation technique.
+2026-11-15 | 10:00-12:00 | Dépôt de la demande de prêt | Envoi officiel du dossier complet aux banques partenaires.
+2026-12-20 | 14:00-16:00 | Signature de l'acte authentique | Signature de l'achat chez le notaire.
+2027-04-15 | 09:00-13:00 | Commission de Sécurité | Passage de la commission de sécurité incendie pour ouverture ERP.
+2027-06-01 | 08:00-19:00 | Lancement Commercial | Ouverture officielle de la maison d'hôtes et arrivée des premiers clients.
+```
+
+### 💰 Plan de Financement & Budget Prévisionnel
+
+Le budget global est plafonné à 300 000 €. Le tableau ci-dessous permet de piloter la répartition et le consommé réel.
+
+```ARRAY: Budget
+| Poste de dépense | Budget Cible (€) | Dépensé Réel (€) | Écart (€) | Statut |
+|------------------|------------------|------------------|-----------|--------|
+| Acquisition du bien immobilier | 200000 | 0 | =B2-C2 | À faire |
+| Travaux de rénovation & ERP | 70000 | 0 | =B3-C3 | À faire |
+| Équipements, Mobilier & Décoration | 15000 | 0 | =B4-C4 | À faire |
+| Frais de notaire & Acquisition | 10000 | 0 | =B5-C5 | À faire |
+| Marketing, Site web & Lancement | 5000 | 0 | =B6-C6 | À faire |
+| **Total du projet** | =SUM(B2:B6) | =SUM(C2:C6) | =SUM(D2:D6) | En cours |
+```
+
+### 📊 Répartition Prévisionnelle du Budget
+
+```CHART: Repartition Budget
+Acquisition: 200000
+Travaux Rénovation: 70000
+Équipements Déco: 15000
+Frais Notaire: 10000
+Frais Lancement: 5000
+```
+
+### 📈 Indicateurs de Performance Cibles (An 1)
+
+```ARRAY: Performance
+| Indicateur de Réussite | Cible | Réel | Écart | Commentaire |
+|-------------------------|-------|------|-------|-------------|
+| Taux d'occupation moyen | 45% | 0% | -45% | Seuil de rentabilité fixé à 40% |
+| Nombre de chambres d'hôtes | 4 | 0 | -4 | Capacité optimale pour ERP de 5e catégorie |
+| Chiffre d'affaires annuel (€) | 48000 | 0 | -48000 | Basé sur 80€/nuitée moyenne |
+| Note de satisfaction client | 9.0 | 0.0 | -9.0 | Cible sur Booking.com / Google Reviews |
+```
+
+---
+
+## 🛠️ Plan d'Action Opérationnel
+
+Les tâches sont réparties ci-dessous pour assurer le suivi quotidien de l'avancement.
+
+```TRELLO: Plan de Tâches
+### À faire
+- [ ] Préparer l'étude de marché locale `[high]`
+  Analyser la concurrence directe et les flux touristiques dans la région.
+- [ ] Valider le modèle de Business Plan `[critical]`
+  Mettre au propre les hypothèses de charges (assurances, entretien, petit déjeuner).
+- [ ] Contacter des banques locales pour pré-accord `[critical]`
+  Tester la réceptivité des banques au projet de maison d'hôtes avec un budget de 300 000 €.
+- [ ] Rédiger le cahier des charges de recherche du bien `[medium]`
+  Définir les critères clés : surface, nombre de chambres possibles, accessibilité.
+- [ ] Prendre rendez-vous avec un consultant en sécurité ERP `[high]`
+  Valider les contraintes de sécurité incendie (portes coupe-feu, issues de secours).
+### En cours
+- [ ] Définir la structure juridique de l'exploitation `[medium]`
+  Choix entre SARL, SAS ou nom propre pour optimiser la fiscalité immobilière.
+### Terminé
+### Bloqué
+```
+
+---
+
+## 🔍 Validation et Critères de Choix du Bien
+
+Lors des visites de biens, ce questionnaire sert de grille de validation comptable et technique pour décider ou non d'une offre d'achat.
+
+```FORM: Grille de Décision Bien
+* **Le coût total (achat + frais + travaux estimés) reste-t-il sous l'enveloppe des 300 000 € ?**
+  * ( ) Oui, le prix d'achat et le devis estimatif de rénovation entrent dans le budget
+  * ( ) Non, le coût global présente un risque de dépassement important
+* **Le bien est-il techniquement adaptable aux exigences de sécurité incendie ERP (5e catégorie) ?**
+  * ( ) Oui, les issues, la structure et les dégagements permettent une mise aux normes aisée
+  * ( ) Non, la structure rend les travaux de sécurité trop complexes ou coûteux
+* **La capacité d'accueil permet-elle d'aménager au moins 3 à 5 chambres d'hôtes ?**
+  * ( ) Oui, la surface habitable et la disposition actuelle ou projetée s'y prêtent parfaitement
+  * ( ) Non, la capacité de création de chambres est trop restreinte
+* **La localisation géographique du bien présente-t-elle un intérêt touristique ou d'affaires ?**
+  * ( ) Oui, forte zone touristique, proximité d'axes majeurs ou de commodités
+  * ( ) Non, zone isolée à faible flux de visiteurs
+* **Le rendement locatif prévisionnel basé sur le taux d'occupation cible (45%) couvre-t-il les échéances d'emprunt ?**
+  * ( ) Oui, le cash-flow prévisionnel est positif
+  * ( ) Non, le projet nécessite un apport personnel ou un autofinancement permanent
+```

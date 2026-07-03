@@ -1,0 +1,38 @@
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Démarrage immédiat (moins de 3 mois)
+  * ( ) Démarrage à moyen terme (6 à 12 mois)
+  * ( ) Démarrage à long terme (plus de 12 mois)
+  * ( ) Autre : ______
+
+* **Budget global estimé pour l'achat et les travaux :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Principales contraintes et réglementations à intégrer :**
+  * [ ] Normes ERP (Établissement Recevant du Public) et accessibilité
+  * [ ] Urbanisme et permis de construire (changement d'usage)
+  * [ ] Financement (apport personnel minimal, obtention de prêt)
+  * [ ] Capacité d'accueil et nombre de chambres souhaité
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables pour valider la réussite du projet :**
+  * [ ] Taux d'occupation cible (ex: > 60% la première année)
+  * [ ] Rentabilité financière globale (ROI)
+  * [ ] Note de satisfaction client (ex: > 9/10 sur les plateformes)
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Refus de prêt bancaire
+  * [ ] Dépassement du budget ou retard des travaux de rénovation
+  * [ ] Réglementation locale stricte (PLU, autorisation mairie)
+  * [ ] Manque d'attractivité touristique de la zone géographique
+  * [ ] Autre : ______
+
+* **Prochaines étapes clés (jalons) sur lesquelles se concentrer en priorité :**
+  * [ ] Étude de marché et ciblage géographique
+  * [ ] Établissement du plan de financement et business plan
+  * [ ] Visites et sélection du bien immobilier
+  * [ ] Conception de l'offre commerciale et des services
+  * [ ] Autre : ______

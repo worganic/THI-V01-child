@@ -1,0 +1,92 @@
+# Cadrage de Projet : Acquisition et Création de Maison d'Hôte
+
+Ce document constitue le dossier de cadrage opérationnel et financier pour l'achat d'un bien immobilier et sa transformation en maison d'hôte, avec un budget global de 300 000 € et un objectif d'ouverture sous 2 ans.
+
+## 📊 Pilotage Global et Suivi du Projet
+
+### 📅 Planning Opérationnel
+Le planning est structuré autour des phases clés de recherche, de financement, de travaux et de mise en conformité réglementaire.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Cadrage | Analyse du PLU et pré-diagnostic de changement d'usage | Porteur de projet | À faire |
+| 2 | 2026-08-01 | Recherche | Visites de biens immobiliers (< 200k€) et sélection | Porteur de projet, Agent | À faire |
+| 3 | 2026-10-01 | Financement | Montage et dépôt du dossier de prêt | Porteur de projet, Courtier | À faire |
+| 4 | 2026-12-15 | Acquisition | Signature de l'acte authentique de vente | Notaire, Porteur de projet | À faire |
+| 5 | 2027-02-01 | Travaux | Rénovation, aménagement des chambres et décoration | Artisans, Porteur de projet | À faire |
+| 6 | 2027-10-01 | Réglementation | Déclaration en mairie et demande d'ouverture ERP | Mairie, Porteur de projet | À faire |
+| 7 | 2028-04-01 | Lancement | Lancement commercial et ouverture des réservations | Porteur de projet | À faire |
+```
+
+### 📆 Échéances et Jalons
+Les dates clés du projet pour assurer l'ouverture dans les temps.
+
+```AGENDA: Jalons
+2026-07-15 | 10:00-12:00 | RDV Mairie Service Urbanisme | Validation de la faisabilité du changement d'usage.
+2026-09-30 | 09:00-18:00 | Date limite de sélection du bien | Choix du bien immobilier pour offre d'achat.
+2026-11-15 | 14:00-16:00 | Dépôt des demandes de financement | Remise des dossiers de prêt aux banques.
+2026-12-15 | 10:00-12:00 | Signature de l'acte de vente | Signature finale chez le notaire.
+2027-01-15 | 09:00-17:00 | Début des travaux de rénovation | Lancement du chantier de mise aux normes.
+2028-03-01 | 08:00-18:00 | Lancement du site de réservation | Mise en ligne de la plateforme.
+```
+
+### 💰 Budget Prévisionnel
+Le budget total inclut l'acquisition du bien, les frais annexes et l'enveloppe de travaux pour respecter le plafond de 300 000 €.
+
+```ARRAY: Budget
+| Poste de dépense | Budget prévu (€) | Montant dépensé (€) | Solde restant (€) |
+|------------------|------------------|---------------------|-------------------|
+| Acquisition du bien | 180000 | 0 | =B2-C2 |
+| Frais de notaire et d'agence | 18000 | 0 | =B3-C3 |
+| Travaux de rénovation | 80000 | 0 | =B4-C4 |
+| Équipements & Décoration | 15000 | 0 | =B5-C5 |
+| Communication & Lancement | 7000 | 0 | =B6-C6 |
+| Total | =SUM(B2:B6) | =SUM(C2:C6) | =SUM(D2:D6) |
+```
+
+### 📈 Suivi des Objectifs et Performance
+Indicateurs de succès pour mesurer l'atteinte des cibles opérationnelles.
+
+```ARRAY: Suivi
+| Indicateur | Cible Année 1 | Valeur Actuelle | Écart |
+|------------|---------------|-----------------|-------|
+| Taux d'occupation annuel (%) | 50 | 0 | =C2-B2 |
+| Chiffre d'Affaires annuel (€) | 45000 | 0 | =C3-B3 |
+| Note de satisfaction client | 4.8 | 0 | =C4-B4 |
+```
+
+### 📋 Actions et Tâches de Démarrage (Kanban)
+Suivi de l'avancement des premières tâches opérationnelles critiques.
+
+```TRELLO: Taches
+### À faire
+- [ ] Analyser le PLU de la zone ciblée `[critical]`
+  Vérifier les possibilités de changement d'usage.
+- [ ] Établir le cahier des charges du bien recherché `[high]`
+  Nombre de chambres, accessibilité, localisation.
+- [ ] Sélectionner un courtier en crédit immobilier `[high]`
+  Aide au montage financier pour anticiper un refus bancaire.
+- [ ] Définir l'identité de marque et le concept `[medium]`
+  Nom de la maison d'hôte, positionnement et charte.
+### En cours
+### Terminé
+```
+
+### 🗳️ Questionnaire de Décision et Faisabilité
+Points de validation indispensables avant d'engager les fonds.
+
+```FORM: Faisabilite
+* **La mairie confirme-t-elle la possibilité de changement d'usage du bien ?**
+  * ( ) Oui, sans condition particulière
+  * ( ) Oui, sous conditions de mise aux normes (stationnement, accessibilité)
+  * ( ) Non, le PLU interdit l'activité de chambres d'hôtes sur cette zone
+* **L'enveloppe financière de 300 000 € est-elle validée après chiffrage des travaux ?**
+  * ( ) Oui, l'acquisition et les travaux rentrent dans le budget
+  * ( ) Limite, nécessite de négocier le prix d'achat ou de réduire les travaux
+  * ( ) Non, le budget estimé dépasse l'enveloppe maximale
+* **L'analyse du marché confirme-t-elle la viabilité du taux d'occupation cible ?**
+  * ( ) Oui, la demande touristique locale garantit d'atteindre > 50%
+  * ( ) Oui, moyennant une communication ciblée et une ouverture à l'année
+  * ( ) Non, le marché local est saturé ou trop saisonnier
+```

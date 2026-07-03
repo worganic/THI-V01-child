@@ -1,0 +1,1597 @@
+{
+  "versions": [
+    {
+      "id": "smv-mqpkgizo",
+      "name": "version 0.03",
+      "createdAt": "2026-06-22T18:46:08.676Z",
+      "createdBy": "admin",
+      "layout": {
+        "schema": "v3",
+        "nodes": {
+          "el-landing-logo": {
+            "x": -149,
+            "y": -93,
+            "w": 136,
+            "h": 30,
+            "groupId": "sec-landing-header",
+            "label": "Logo",
+            "elType": "link"
+          },
+          "el-landing-login": {
+            "x": -2,
+            "y": -92,
+            "w": 148,
+            "h": 30,
+            "groupId": "sec-landing-header",
+            "label": "Connexion",
+            "elType": "link"
+          },
+          "el-landing-pitch": {
+            "x": -152,
+            "y": 26,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-landing-content",
+            "label": "Présentation",
+            "elType": "widget"
+          },
+          "el-landing-cta": {
+            "x": -152,
+            "y": 68,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-landing-content",
+            "label": "CTA Inscription",
+            "elType": "button"
+          },
+          "el-landing-legal": {
+            "x": -152,
+            "y": 162,
+            "w": 296,
+            "h": 28,
+            "groupId": "sec-landing-footer",
+            "label": "Liens légaux",
+            "elType": "link"
+          },
+          "el-doc-nav-docs": {
+            "x": 362,
+            "y": -200,
+            "w": 260,
+            "h": 30,
+            "groupId": "sec-doc-menu",
+            "label": "Lien Documents",
+            "elType": "link"
+          },
+          "el-doc-nav-admin": {
+            "x": 362,
+            "y": -239,
+            "w": 260,
+            "h": 30,
+            "groupId": "sec-doc-menu",
+            "label": "Lien Admin",
+            "elType": "link"
+          },
+          "el-doc-list": {
+            "x": 374,
+            "y": 206,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-doc-content",
+            "label": "Liste documents",
+            "elType": "widget"
+          },
+          "el-doc-add": {
+            "x": 374,
+            "y": 248,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-doc-content",
+            "label": "Ajouter un document",
+            "elType": "button"
+          },
+          "el-w-tchat": {
+            "x": -157,
+            "y": 481,
+            "w": 296,
+            "h": 28,
+            "groupId": "sec-widgets",
+            "label": "TchatIA",
+            "elType": "widget"
+          },
+          "el-w-tickets": {
+            "x": -157,
+            "y": 513,
+            "w": 296,
+            "h": 28,
+            "groupId": "sec-widgets",
+            "label": "Tickets",
+            "elType": "widget"
+          },
+          "el-w-cahier": {
+            "x": -157,
+            "y": 545,
+            "w": 296,
+            "h": 28,
+            "groupId": "sec-widgets",
+            "label": "Cahier de recette",
+            "elType": "widget"
+          },
+          "el-adm-tab-users": {
+            "x": 975,
+            "y": -213,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-tabs",
+            "label": "Onglet Utilisateurs",
+            "elType": "link"
+          },
+          "el-adm-tab-tests": {
+            "x": 975,
+            "y": -175,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-tabs",
+            "label": "Onglet Tests",
+            "elType": "link"
+          },
+          "el-adm-users-table": {
+            "x": 1437,
+            "y": -252,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-users",
+            "label": "Table utilisateurs",
+            "elType": "widget"
+          },
+          "el-adm-users-form": {
+            "x": 1437,
+            "y": -214,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-users",
+            "label": "Création utilisateur",
+            "elType": "form"
+          },
+          "el-adm-tests-cahier": {
+            "x": 1439,
+            "y": 472,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-tests",
+            "label": "Cahier de recette",
+            "elType": "link"
+          },
+          "el-adm-tests-sitemap": {
+            "x": 1439,
+            "y": 510,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-tests",
+            "label": "Site Map",
+            "elType": "link"
+          },
+          "el-adm-tests-run": {
+            "x": 1439,
+            "y": 547,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-tests",
+            "label": "Lancer un test",
+            "elType": "button"
+          },
+          "el-adm-config-form": {
+            "x": 1437,
+            "y": 49,
+            "w": 276,
+            "h": 30,
+            "groupId": "sec-adm-config",
+            "label": "Formulaire config",
+            "elType": "form"
+          },
+          "el-proj-grid": {
+            "x": 1002,
+            "y": 1161,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-proj-content",
+            "label": "Grille des projets",
+            "elType": "widget"
+          },
+          "el-proj-create": {
+            "x": 1002,
+            "y": 1201,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-proj-content",
+            "label": "Créer un projet",
+            "elType": "button"
+          },
+          "el-proj-open": {
+            "x": 1002,
+            "y": 1241,
+            "w": 296,
+            "h": 32,
+            "groupId": "sec-proj-content",
+            "label": "Ouvrir un projet",
+            "elType": "link"
+          },
+          "el-ed-toolbar": {
+            "x": 1499,
+            "y": 1154,
+            "w": 336,
+            "h": 24,
+            "groupId": "sec-ed-toolbar",
+            "label": "Barre d'outils",
+            "elType": "widget"
+          },
+          "el-ed-tree": {
+            "x": 1499,
+            "y": 1245,
+            "w": 146,
+            "h": 26,
+            "groupId": "sec-ed-sidebar",
+            "label": "Arborescence",
+            "elType": "widget"
+          },
+          "el-ed-editor": {
+            "x": 1681,
+            "y": 1243,
+            "w": 154,
+            "h": 26,
+            "groupId": "sec-ed-code",
+            "label": "Éditeur de code",
+            "elType": "widget"
+          },
+          "el-ed-chat": {
+            "x": 1496,
+            "y": 1388,
+            "w": 336,
+            "h": 26,
+            "groupId": "sec-ed-chat",
+            "label": "Chat IA",
+            "elType": "widget"
+          }
+        },
+        "groups": {
+          "pg-landing": {
+            "x": -184,
+            "y": -166,
+            "w": 360,
+            "h": 430,
+            "label": "Landing",
+            "role": "page",
+            "url": "/",
+            "component": "LandingComponent"
+          },
+          "sec-landing-header": {
+            "x": -164,
+            "y": -116,
+            "w": 320,
+            "h": 96,
+            "label": "Header",
+            "role": "section",
+            "sectionType": "header",
+            "component": "LandingComponent"
+          },
+          "sec-landing-content": {
+            "x": -164,
+            "y": -12,
+            "w": 320,
+            "h": 128,
+            "label": "Contenu",
+            "role": "section",
+            "sectionType": "content",
+            "component": "LandingComponent"
+          },
+          "sec-landing-footer": {
+            "x": -164,
+            "y": 124,
+            "w": 320,
+            "h": 78,
+            "label": "Footer",
+            "role": "section",
+            "sectionType": "footer"
+          },
+          "pg-documents": {
+            "x": 335,
+            "y": -301,
+            "w": 418,
+            "h": 238,
+            "label": "Documents",
+            "role": "page",
+            "url": "/documents",
+            "component": "DocumentsComponent"
+          },
+          "sec-doc-menu": {
+            "x": 350,
+            "y": -258,
+            "w": 355,
+            "h": 178,
+            "label": "Menu",
+            "role": "section",
+            "sectionType": "menu",
+            "component": "NavComponent"
+          },
+          "sec-doc-content": {
+            "x": 362,
+            "y": 166,
+            "w": 320,
+            "h": 146,
+            "label": "Contenu",
+            "role": "section",
+            "sectionType": "content",
+            "component": "DocumentsComponent"
+          },
+          "pg-widgets": {
+            "x": -189,
+            "y": 391,
+            "w": 382,
+            "h": 415,
+            "label": "Outils embarqués",
+            "role": "page",
+            "url": "embed"
+          },
+          "sec-widgets": {
+            "x": -169,
+            "y": 441,
+            "w": 330,
+            "h": 342,
+            "label": "Widgets",
+            "role": "section",
+            "sectionType": "content"
+          },
+          "pg-admin": {
+            "x": 945,
+            "y": -300,
+            "w": 1046,
+            "h": 1216,
+            "label": "Admin",
+            "role": "page",
+            "url": "/admin",
+            "component": "AdminComponent"
+          },
+          "sec-adm-tabs": {
+            "x": 963,
+            "y": -243,
+            "w": 300,
+            "h": 378,
+            "label": "Onglets",
+            "role": "section",
+            "sectionType": "menu",
+            "component": "AdminTabsRegistryService"
+          },
+          "sec-adm-users": {
+            "x": 1425,
+            "y": -282,
+            "w": 300,
+            "h": 112,
+            "label": "Utilisateurs",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminUsersComponent"
+          },
+          "sec-adm-tests": {
+            "x": 1427,
+            "y": 442,
+            "w": 300,
+            "h": 454,
+            "label": "Tests",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminTestsComponent"
+          },
+          "sec-adm-config": {
+            "x": 1425,
+            "y": 19,
+            "w": 300,
+            "h": 74,
+            "label": "Config",
+            "role": "section",
+            "sectionType": "content",
+            "component": "ConfigComponent"
+          },
+          "pg-projets": {
+            "x": 970,
+            "y": 1073,
+            "w": 365,
+            "h": 260,
+            "label": "Liste des projets",
+            "role": "page",
+            "url": "/projets",
+            "component": "ProjetsComponent"
+          },
+          "sec-proj-content": {
+            "x": 990,
+            "y": 1123,
+            "w": 320,
+            "h": 180,
+            "label": "Contenu",
+            "role": "section",
+            "sectionType": "content",
+            "component": "ProjetsComponent"
+          },
+          "pg-editor": {
+            "x": 1467,
+            "y": 1068,
+            "w": 405,
+            "h": 375,
+            "label": "Éditeur de projet",
+            "role": "page",
+            "url": "/projets/:id",
+            "component": "ProjetEditorComponent"
+          },
+          "sec-ed-toolbar": {
+            "x": 1487,
+            "y": 1118,
+            "w": 360,
+            "h": 64,
+            "label": "Toolbar",
+            "role": "section",
+            "sectionType": "header",
+            "component": "ProjetToolbarComponent"
+          },
+          "sec-ed-sidebar": {
+            "x": 1487,
+            "y": 1205,
+            "w": 172,
+            "h": 120,
+            "label": "Sidebar",
+            "role": "section",
+            "sectionType": "aside",
+            "component": "ProjetSidebarComponent"
+          },
+          "sec-ed-code": {
+            "x": 1669,
+            "y": 1203,
+            "w": 178,
+            "h": 122,
+            "label": "Zone Code",
+            "role": "section",
+            "sectionType": "content",
+            "component": "ProjetEditorZoneComponent"
+          },
+          "sec-ed-chat": {
+            "x": 1484,
+            "y": 1350,
+            "w": 360,
+            "h": 70,
+            "label": "Conversation",
+            "role": "section",
+            "sectionType": "content",
+            "component": "ProjetConversationComponent"
+          }
+        },
+        "edges": {
+          "edge-mqpltc2l": {
+            "fromSide": "right",
+            "bend": -60
+          }
+        },
+        "customGroups": [
+          {
+            "id": "grp-mqpkeelq",
+            "label": "Connecté",
+            "role": "zone",
+            "x": 290,
+            "y": -331,
+            "w": 1848,
+            "h": 1972,
+            "stroke": "#10b981",
+            "fill": "#10b9810a"
+          },
+          {
+            "id": "grp-mqplsjzq",
+            "label": "Documents",
+            "role": "zone",
+            "x": 330,
+            "y": 115,
+            "w": 407,
+            "h": 241,
+            "stroke": "#ec4899",
+            "fill": "#ec48990a"
+          },
+          {
+            "id": "grp-mqqzi23e",
+            "label": "Projets",
+            "role": "zone",
+            "x": 950,
+            "y": 1000,
+            "w": 983,
+            "h": 518,
+            "stroke": "#10b981",
+            "fill": "#10b9810a"
+          },
+          {
+            "id": "sec-mqr0lc9i-94t4",
+            "label": "Projets",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminProjetsComponent",
+            "description": "Contenu de l'onglet Projets : liste, configurations IA et sauvegardes",
+            "parentId": "pg-admin",
+            "x": 1425,
+            "y": -145,
+            "w": 300,
+            "h": 56,
+            "stroke": "#7c8aa0",
+            "fill": "#7c8aa00f"
+          },
+          {
+            "id": "sec-mqr0lc9i-9gqq",
+            "label": "Déploiement",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminDeploymentsComponent",
+            "description": "Contenu de l'onglet Déploiement : historique et statut Git local",
+            "parentId": "pg-admin",
+            "x": 1425,
+            "y": -58,
+            "w": 300,
+            "h": 56,
+            "stroke": "#7c8aa0",
+            "fill": "#7c8aa00f"
+          },
+          {
+            "id": "sec-mqr0lc9i-qcpx",
+            "label": "Thème",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminThemeComponent",
+            "description": "Contenu de l'onglet Thème : variables CSS, styles et presets",
+            "parentId": "pg-admin",
+            "x": 1425,
+            "y": 115,
+            "w": 300,
+            "h": 56,
+            "stroke": "#7c8aa0",
+            "fill": "#7c8aa00f"
+          },
+          {
+            "id": "sec-mqr0lc9i-hunr",
+            "label": "Méga-outils",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminMegaOutilsComponent",
+            "description": "Contenu de l'onglet Méga-outils : gestion des outils transverses comme Trello",
+            "parentId": "pg-admin",
+            "x": 1425,
+            "y": 201,
+            "w": 300,
+            "h": 56,
+            "stroke": "#7c8aa0",
+            "fill": "#7c8aa00f"
+          },
+          {
+            "id": "sec-mqr0lc9i-fj7e",
+            "label": "Mémo",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminMemoComponent",
+            "description": "Contenu de l'onglet Mémo : aide technique et faq d'administration",
+            "parentId": "pg-admin",
+            "x": 1425,
+            "y": 283,
+            "w": 300,
+            "h": 56,
+            "stroke": "#7c8aa0",
+            "fill": "#7c8aa00f"
+          },
+          {
+            "id": "sec-mqr0lc9i-yo1x",
+            "label": "Outils",
+            "role": "section",
+            "sectionType": "content",
+            "component": "AdminToolsComponent",
+            "description": "Contenu de l'onglet Outils : gestion de la visibilité des widgets",
+            "parentId": "pg-admin",
+            "x": 1425,
+            "y": 359,
+            "w": 300,
+            "h": 56,
+            "stroke": "#7c8aa0",
+            "fill": "#7c8aa00f"
+          }
+        ],
+        "customEdges": [
+          {
+            "id": "edge-mqpltc2l",
+            "from": "el-doc-nav-docs",
+            "to": "group:grp-mqplsjzq",
+            "type": "nav",
+            "label": ""
+          },
+          {
+            "id": "edge-mqr0lc9i-0q0x",
+            "from": "el-mqplyz8s-256z",
+            "to": "group:sec-mqr0lc9i-94t4",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-lryi",
+            "from": "el-mqplyz8s-0hbc",
+            "to": "group:sec-mqr0lc9i-9gqq",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-r6az",
+            "from": "el-mqplyz8s-pj86",
+            "to": "group:sec-adm-config",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-cixw",
+            "from": "el-mqplyz8s-akj2",
+            "to": "group:sec-mqr0lc9i-qcpx",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-lqe1",
+            "from": "el-mqplyz8s-bqll",
+            "to": "group:sec-mqr0lc9i-hunr",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-75ti",
+            "from": "el-mqplyz8s-ykj8",
+            "to": "group:sec-mqr0lc9i-fj7e",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-hygk",
+            "from": "el-mqplyz8s-kfpo",
+            "to": "group:sec-mqr0lc9i-yo1x",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-1dr9",
+            "from": "el-adm-tests-sitemap-svg",
+            "to": "group:pg-admin",
+            "type": "relation",
+            "label": "visualise"
+          }
+        ],
+        "customNodes": [
+          {
+            "id": "el-mqplrlo5-wjbg",
+            "label": "Lien Projets",
+            "url": "/projets",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-doc-menu",
+            "x": 362,
+            "y": -161,
+            "w": 260,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "NavComponent"
+            ],
+            "description": "Lien Projets du menu de navigation (NavComponent).",
+            "cahierPaths": [
+              "connecte/projets/accueil"
+            ]
+          },
+          {
+            "id": "el-mqplrlo5-tmkk",
+            "label": "Lien Historique",
+            "url": "/wo-action-history",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-doc-menu",
+            "x": 362,
+            "y": -123,
+            "w": 260,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "NavComponent"
+            ],
+            "description": "Lien Historique du menu de navigation (NavComponent).",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-256z",
+            "label": "Onglet Projets",
+            "url": "/admin/projets",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": -137,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet d'administration des projets.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-0hbc",
+            "label": "Onglet Déploiement",
+            "url": "/admin/deploiement",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": -99,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet d'administration des déploiements.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-pj86",
+            "label": "Onglet Config",
+            "url": "/admin/config",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": -61,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet de configuration globale.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-akj2",
+            "label": "Onglet Thème",
+            "url": "/admin/theme",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": -23,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet de personnalisation graphique.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-bqll",
+            "label": "Onglet Méga-outils",
+            "url": "/admin/mega-outils",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": 15,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet d'administration des méga-outils.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-ykj8",
+            "label": "Onglet Mémo",
+            "url": "/admin/memo",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": 53,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet Mémo pour l'aide et la documentation.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqplyz8s-kfpo",
+            "label": "Onglet Outils",
+            "url": "/admin/tools",
+            "port": 4202,
+            "kind": "admin",
+            "groupId": "sec-adm-tabs",
+            "x": 975,
+            "y": 91,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminComponent"
+            ],
+            "description": "Onglet de gestion des outils.",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-g576",
+            "label": "Sous-onglet Exécution",
+            "url": "/admin/tests/execution",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 586,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Lancement et suivi des tests manuels ou automatiques via IA",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-9jjk",
+            "label": "Sous-onglet Résultats",
+            "url": "/admin/tests/resultats",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 624,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Historique matriciel des résultats de tests",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-24nj",
+            "label": "Sous-onglet Historique",
+            "url": "/admin/tests/historique",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 662,
+            "w": 276,
+            "h": 30,
+            "elType": "link",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Journal de modification du référentiel des tests",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-vxl9",
+            "label": "Bouton Nouvelle section",
+            "url": "embed",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 700,
+            "w": 276,
+            "h": 30,
+            "elType": "button",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Création d'une nouvelle section de test dans le référentiel",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-xn2s",
+            "label": "Runner de test",
+            "url": "embed",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 738,
+            "w": 276,
+            "h": 30,
+            "elType": "widget",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Interface interactive d'exécution de tests (Manuel / IA)",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-5yc0",
+            "label": "Matrice des résultats de tests",
+            "url": "embed",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 776,
+            "w": 276,
+            "h": 30,
+            "elType": "widget",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Tableau de synthèse historique des résultats OK/KO par run",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-wu92",
+            "label": "Changelog du référentiel",
+            "url": "embed",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 814,
+            "w": 276,
+            "h": 30,
+            "elType": "widget",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Affichage chronologique des créations et modifications du référentiel",
+            "cahierPaths": []
+          },
+          {
+            "id": "el-mqr0lc9i-gwpj",
+            "label": "Visualiseur Site Map interactif",
+            "url": "embed",
+            "port": 4202,
+            "kind": "protected",
+            "groupId": "sec-adm-tests",
+            "x": 1439,
+            "y": 852,
+            "w": 276,
+            "h": 30,
+            "elType": "widget",
+            "components": [
+              "AdminTestsComponent"
+            ],
+            "description": "Visualisation SVG interactive des zones, pages, sections et liaisons",
+            "cahierPaths": []
+          }
+        ],
+        "edgesAll": [
+          {
+            "id": "e-login",
+            "from": "el-landing-login",
+            "to": "group:pg-documents",
+            "label": "connexion",
+            "type": "auth"
+          },
+          {
+            "id": "e-nav-admin",
+            "from": "el-doc-nav-admin",
+            "to": "group:pg-admin",
+            "label": "ouvre",
+            "type": "nav"
+          },
+          {
+            "id": "e-tab-users",
+            "from": "el-adm-tab-users",
+            "to": "group:sec-adm-users",
+            "label": "affiche",
+            "type": "relation"
+          },
+          {
+            "id": "e-tab-tests",
+            "from": "el-adm-tab-tests",
+            "to": "group:sec-adm-tests",
+            "label": "affiche",
+            "type": "relation"
+          },
+          {
+            "id": "e-open-proj",
+            "from": "el-proj-open",
+            "to": "group:pg-editor",
+            "label": "ouvre",
+            "type": "nav"
+          },
+          {
+            "id": "e-cross-proj",
+            "from": "group:pg-documents",
+            "to": "group:pg-projets",
+            "label": "contenu",
+            "type": "cross-app"
+          },
+          {
+            "id": "edge-mqpltc2l",
+            "from": "el-doc-nav-docs",
+            "to": "group:grp-mqplsjzq",
+            "type": "nav",
+            "label": ""
+          },
+          {
+            "id": "edge-mqr0lc9i-0q0x",
+            "from": "el-mqplyz8s-256z",
+            "to": "group:sec-mqr0lc9i-94t4",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-lryi",
+            "from": "el-mqplyz8s-0hbc",
+            "to": "group:sec-mqr0lc9i-9gqq",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-r6az",
+            "from": "el-mqplyz8s-pj86",
+            "to": "group:sec-adm-config",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-cixw",
+            "from": "el-mqplyz8s-akj2",
+            "to": "group:sec-mqr0lc9i-qcpx",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-lqe1",
+            "from": "el-mqplyz8s-bqll",
+            "to": "group:sec-mqr0lc9i-hunr",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-75ti",
+            "from": "el-mqplyz8s-ykj8",
+            "to": "group:sec-mqr0lc9i-fj7e",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-hygk",
+            "from": "el-mqplyz8s-kfpo",
+            "to": "group:sec-mqr0lc9i-yo1x",
+            "type": "relation",
+            "label": "affiche"
+          },
+          {
+            "id": "edge-mqr0lc9i-1dr9",
+            "from": "el-adm-tests-sitemap-svg",
+            "to": "group:pg-admin",
+            "type": "relation",
+            "label": "visualise"
+          }
+        ]
+      },
+      "updatedAt": "2026-06-23T20:59:15.976Z",
+      "updatedBy": "admin"
+    },
+    {
+      "id": "smv-mqpfh946",
+      "name": "version 0.02",
+      "createdAt": "2026-06-22T16:26:44.454Z",
+      "createdBy": "admin",
+      "layout": {
+        "nodes": {
+          "landing": {
+            "x": -37,
+            "y": 31,
+            "groupId": "public",
+            "label": "Landing"
+          },
+          "cahier-doc": {
+            "x": 839,
+            "y": 1058,
+            "groupId": "grp-mqp84y8k",
+            "label": "Doc · Cahier recette"
+          },
+          "tchat-doc": {
+            "x": -242,
+            "y": 1257,
+            "groupId": "widgets",
+            "label": "Doc · TchatIA"
+          },
+          "ticket-doc": {
+            "x": -240,
+            "y": 1180,
+            "groupId": "widgets",
+            "label": "Doc · Ticket widget"
+          },
+          "documents": {
+            "x": 421,
+            "y": 62,
+            "groupId": "app",
+            "label": "Documents [Menu]"
+          },
+          "projets-nav": {
+            "x": 417,
+            "y": 147,
+            "groupId": "app",
+            "label": "Projets [Menu]"
+          },
+          "historique": {
+            "x": 892,
+            "y": 1315,
+            "groupId": "grp-mqp84y8k",
+            "label": "Historique actions"
+          },
+          "config": {
+            "x": 847,
+            "y": 496,
+            "groupId": "grp-mqp84y8k",
+            "label": "Configuration"
+          },
+          "deployments": {
+            "x": 820,
+            "y": 885,
+            "groupId": "grp-mqp84y8k",
+            "label": "Déploiements"
+          },
+          "admin": {
+            "x": 416,
+            "y": 235,
+            "groupId": "app",
+            "label": "Admin  [Menu]"
+          },
+          "adm-projets": {
+            "x": 413,
+            "y": 578,
+            "groupId": "admin",
+            "label": "Projets"
+          },
+          "adm-users": {
+            "x": 415,
+            "y": 415,
+            "groupId": "admin",
+            "label": "Utilisateurs"
+          },
+          "adm-deploy": {
+            "x": 413,
+            "y": 883,
+            "groupId": "admin",
+            "label": "Déploiement"
+          },
+          "adm-config": {
+            "x": 416,
+            "y": 495,
+            "groupId": "admin",
+            "label": "Config"
+          },
+          "adm-theme": {
+            "x": 413,
+            "y": 797,
+            "groupId": "admin",
+            "label": "Thème"
+          },
+          "adm-mega": {
+            "x": 411,
+            "y": 712,
+            "groupId": "admin",
+            "label": "Méga-outils"
+          },
+          "adm-memo": {
+            "x": 413,
+            "y": 967,
+            "groupId": "admin",
+            "label": "Mémo"
+          },
+          "adm-outils": {
+            "x": 403,
+            "y": 1315,
+            "groupId": "admin",
+            "label": "Outils"
+          },
+          "adm-tests": {
+            "x": 417,
+            "y": 1056,
+            "groupId": "admin",
+            "label": "Tests"
+          },
+          "proj-list": {
+            "x": 1341,
+            "y": 174,
+            "groupId": "projets",
+            "label": "Liste des projets"
+          },
+          "proj-editor": {
+            "x": 1341,
+            "y": 260,
+            "groupId": "projets",
+            "label": "Éditeur de projet"
+          },
+          "w-tchat": {
+            "x": -240,
+            "y": 867,
+            "groupId": "widgets",
+            "label": "TchatIA"
+          },
+          "w-tickets": {
+            "x": -240,
+            "y": 975,
+            "groupId": "widgets",
+            "label": "Tickets"
+          },
+          "w-cahier": {
+            "x": -240,
+            "y": 1085,
+            "groupId": "widgets",
+            "label": "Cahier de recette"
+          }
+        },
+        "groups": {
+          "public": {
+            "x": -57,
+            "y": -25,
+            "w": 298,
+            "h": 144,
+            "label": "Public (non connecté)"
+          },
+          "app": {
+            "x": 387,
+            "y": 30,
+            "w": 367,
+            "h": 293,
+            "label": "App connectée"
+          },
+          "admin": {
+            "x": 384,
+            "y": 381,
+            "w": 370,
+            "h": 1110,
+            "label": "Admin — section"
+          },
+          "projets": {
+            "x": 1317,
+            "y": 124,
+            "w": 480,
+            "h": 624,
+            "label": "App Projets — :4203"
+          },
+          "widgets": {
+            "x": -280,
+            "y": 817,
+            "w": 419,
+            "h": 538,
+            "label": "Outils & widgets embarqués (visibilité pilotée par Admin › Outils)"
+          }
+        },
+        "edges": {
+          "r-out-hist": {
+            "bend": -11,
+            "fromSide": "right",
+            "toSide": "left"
+          },
+          "r-projets": {
+            "bend": 17
+          }
+        },
+        "customGroups": [
+          {
+            "id": "grp-mqp84y8k",
+            "label": "Privé - Connecter",
+            "x": 332,
+            "y": -23,
+            "w": 1505,
+            "h": 1543,
+            "stroke": "#ec4899",
+            "fill": "#ec48990a"
+          }
+        ],
+        "customEdges": [
+          {
+            "id": "edge-mqpefr63",
+            "from": "landing",
+            "to": "app",
+            "type": "nav",
+            "label": "Connexion"
+          },
+          {
+            "id": "edge-mqpf75sl",
+            "from": "admin",
+            "to": "group:admin",
+            "type": "nav",
+            "label": ""
+          },
+          {
+            "id": "edge-mqpf7lzp",
+            "from": "projets-nav",
+            "to": "group:projets",
+            "type": "nav",
+            "label": ""
+          }
+        ],
+        "edgesAll": [
+          {
+            "id": "e-login",
+            "from": "landing",
+            "to": "documents",
+            "label": "connexion",
+            "type": "auth"
+          },
+          {
+            "id": "e-proj-edit",
+            "from": "proj-list",
+            "to": "proj-editor",
+            "type": "nav"
+          },
+          {
+            "id": "r-mega-edit",
+            "from": "adm-mega",
+            "to": "proj-editor",
+            "label": "Trello dans l’éditeur",
+            "type": "relation"
+          },
+          {
+            "id": "r-out-tchat",
+            "from": "adm-outils",
+            "to": "w-tchat",
+            "label": "visibilité",
+            "type": "relation"
+          },
+          {
+            "id": "r-out-ticket",
+            "from": "adm-outils",
+            "to": "w-tickets",
+            "type": "relation"
+          },
+          {
+            "id": "r-out-cahier",
+            "from": "adm-outils",
+            "to": "w-cahier",
+            "type": "relation"
+          },
+          {
+            "id": "r-out-hist",
+            "from": "adm-outils",
+            "to": "historique",
+            "label": "active menu",
+            "type": "relation"
+          },
+          {
+            "id": "r-cfg-config",
+            "from": "adm-config",
+            "to": "config",
+            "label": "même composant",
+            "type": "relation"
+          },
+          {
+            "id": "r-projets",
+            "from": "adm-projets",
+            "to": "proj-list",
+            "label": "gère",
+            "type": "relation"
+          },
+          {
+            "id": "edge-mqpefr63",
+            "from": "landing",
+            "to": "app",
+            "type": "nav",
+            "label": "Connexion"
+          },
+          {
+            "id": "edge-mqpf75sl",
+            "from": "admin",
+            "to": "group:admin",
+            "type": "nav",
+            "label": ""
+          },
+          {
+            "id": "edge-mqpf7lzp",
+            "from": "projets-nav",
+            "to": "group:projets",
+            "type": "nav",
+            "label": ""
+          }
+        ]
+      }
+    },
+    {
+      "id": "smv-mqpcohlg",
+      "name": "version 0.01",
+      "createdAt": "2026-06-22T15:08:23.188Z",
+      "createdBy": "admin",
+      "layout": {
+        "nodes": {
+          "landing": {
+            "x": -55,
+            "y": 81,
+            "groupId": "public"
+          },
+          "cahier-doc": {
+            "x": -55,
+            "y": 157,
+            "groupId": "public"
+          },
+          "tchat-doc": {
+            "x": -55,
+            "y": 231,
+            "groupId": "public"
+          },
+          "ticket-doc": {
+            "x": -55,
+            "y": 305,
+            "groupId": "public"
+          },
+          "documents": {
+            "x": 421,
+            "y": 62,
+            "groupId": "app"
+          },
+          "projets-nav": {
+            "x": 417,
+            "y": 147,
+            "groupId": "app"
+          },
+          "historique": {
+            "x": 411,
+            "y": 228,
+            "groupId": "app"
+          },
+          "config": {
+            "x": 411,
+            "y": 302,
+            "groupId": "app"
+          },
+          "deployments": {
+            "x": 411,
+            "y": 376,
+            "groupId": "app"
+          },
+          "admin": {
+            "x": 411,
+            "y": 450,
+            "groupId": "app"
+          },
+          "adm-projets": {
+            "x": 1135,
+            "y": 243,
+            "groupId": "admin"
+          },
+          "adm-users": {
+            "x": 1137,
+            "y": 80,
+            "groupId": "admin"
+          },
+          "adm-deploy": {
+            "x": 1138,
+            "y": 375,
+            "groupId": "admin"
+          },
+          "adm-config": {
+            "x": 1138,
+            "y": 160,
+            "groupId": "admin"
+          },
+          "adm-theme": {
+            "x": 1135,
+            "y": 462,
+            "groupId": "admin"
+          },
+          "adm-mega": {
+            "x": 1135,
+            "y": 550,
+            "groupId": "admin"
+          },
+          "adm-memo": {
+            "x": 1135,
+            "y": 632,
+            "groupId": "admin"
+          },
+          "adm-outils": {
+            "x": 1125,
+            "y": 980,
+            "groupId": "admin"
+          },
+          "adm-tests": {
+            "x": 1139,
+            "y": 721,
+            "groupId": "admin"
+          },
+          "proj-list": {
+            "x": 1739,
+            "y": 79,
+            "groupId": "projets"
+          },
+          "proj-editor": {
+            "x": 1739,
+            "y": 165,
+            "groupId": "projets"
+          },
+          "w-tchat": {
+            "x": 392,
+            "y": 798,
+            "groupId": "widgets"
+          },
+          "w-tickets": {
+            "x": 392,
+            "y": 906,
+            "groupId": "widgets"
+          },
+          "w-cahier": {
+            "x": 392,
+            "y": 1016,
+            "groupId": "widgets"
+          }
+        },
+        "groups": {
+          "public": {
+            "x": -75,
+            "y": 25,
+            "w": 305,
+            "h": 356,
+            "label": "Public — :4202 (non connecté)"
+          },
+          "app": {
+            "x": 387,
+            "y": 30,
+            "w": 382,
+            "h": 565,
+            "label": "App connectée — :4202  ·  menu : Documents · Projets · Admin"
+          },
+          "admin": {
+            "x": 1106,
+            "y": 46,
+            "w": 372,
+            "h": 1021,
+            "label": "Admin — réservé admin (onglets)"
+          },
+          "projets": {
+            "x": 1715,
+            "y": 29,
+            "w": 480,
+            "h": 624,
+            "label": "App Projets — :4203"
+          },
+          "widgets": {
+            "x": 352,
+            "y": 748,
+            "w": 515,
+            "h": 376,
+            "label": "Outils & widgets embarqués (visibilité pilotée par Admin › Outils)"
+          }
+        },
+        "edges": {
+          "e-nav-admin": {
+            "bend": 10
+          },
+          "e-nav-proj": {
+            "bend": -185
+          },
+          "r-out-hist": {
+            "bend": -51,
+            "fromSide": "left",
+            "toSide": "right"
+          },
+          "r-projets": {
+            "bend": 17
+          }
+        },
+        "customGroups": [
+          {
+            "id": "grp-mqp84y8k",
+            "label": "Privé - Connecter",
+            "x": 332,
+            "y": -23,
+            "w": 1940,
+            "h": 1424,
+            "stroke": "#ec4899",
+            "fill": "#ec48990a"
+          }
+        ],
+        "customEdges": []
+      }
+    }
+  ]
+}

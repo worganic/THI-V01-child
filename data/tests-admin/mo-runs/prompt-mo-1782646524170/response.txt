@@ -1,0 +1,409 @@
+================================================================================
+DOSSIER COMPLET DE CRÉATION DE PROJET DE MAISON D'HÔTES
+================================================================================
+Auteur : Expert Immobilier & Comptable
+Date : 28 Juin 2026
+Projet : Acquisition d'un bien immobilier et exploitation de chambres d'hôtes
+
+Ce dossier regroupe l'ensemble des documents méthodologiques, comptables, 
+juridiques et administratifs requis pour structurer et lancer votre projet 
+de chambres d'hôtes.
+
+--------------------------------------------------------------------------------
+SOMMAIRE
+--------------------------------------------------------------------------------
+1. LE BUSINESS PLAN OPÉRATIONNEL (Modèle de Présentation)
+2. LE PRÉVISIONNEL FINANCIER & COMPTABLE (Modèles de Tableaux)
+3. L'ANALYSE JURIDIQUE, FISCALE ET SOCIALE
+4. LA SÉLECTION DU BIEN IMMOBILIER (Cahier des charges)
+5. LES MODÈLES DE DOCUMENTS ADMINISTRATIFS ET CONTRACTUELS
+   - 5.1 Déclaration de création en Mairie (Modèle Cerfa)
+   - 5.2 Contrat type de réservation de chambre d'hôte
+   - 5.3 Modèle de Fiche Individuelle de Police (Obligation légale)
+
+================================================================================
+1. LE BUSINESS PLAN OPÉRATIONNEL
+================================================================================
+
+Le business plan est le document de référence pour convaincre vos partenaires 
+financiers (banques, investisseurs) et structurer votre vision.
+
+--- FICHE D'IDENTITÉ DU PROJET ---
+* Nom commercial envisagé : La Bastide des Étoiles
+* Porteurs de projet : M. et Mme [Nom]
+* Activité : Hébergement touristique (chambres d'hôtes) avec table d'hôtes (optionnelle)
+* Concept : Maison d'hôtes de charme, axée sur le bien-être, le terroir local, 
+  et des prestations haut de gamme (spa, piscine, produits bio).
+* Zone géographique ciblée : Provence-Alpes-Côte d'Azur (Arrière-pays varois)
+
+--- ÉTUDE DE MARCHÉ ET POSITIONNEMENT ---
+* Analyse de la demande :
+  - Clientèle visée : Couples sans enfants à la recherche de calme, touristes 
+    étrangers (Allemagne, Belgique, Royaume-Uni), clientèle de week-end 
+    (proximité des grandes métropoles).
+  - Saisonnalité : Haute saison de mai à septembre (taux d'occupation estimé à 85%),
+    Moyenne saison en avril et octobre (50%), Basse saison de novembre à mars (20%).
+* Analyse de la concurrence :
+  - Identification des concurrents directs dans un rayon de 15 km (chambres d'hôtes 
+    similaires, gîtes de charme, petits hôtels de caractère).
+  - Différenciation : Service de conciergerie personnalisé, privatisation possible
+    du domaine, partenariats avec les vignerons locaux pour des ateliers œnologiques.
+
+--- STRATÉGIE COMMERCIALE (MARKETING & TARIFICATION) ---
+* Politique tarifaire (basée sur 5 chambres) :
+  - Haute Saison : 180 € / nuit (petit-déjeuner inclus)
+  - Moyenne Saison : 140 € / nuit
+  - Basse Saison : 110 € / nuit
+* Canaux de distribution :
+  - Site internet propriétaire avec moteur de réservation en direct (sans commission)
+  - Plateformes de réservation (Booking.com, Airbnb, Expedia) - commission moyenne de 15%
+  - Réseaux de labels touristiques (Gîtes de France, Clévacances)
+  - Réseaux sociaux (Instagram, Pinterest) pour le marketing visuel.
+
+--- PRÉVISIONS D'ACTIVITÉ (ANNEE 1) ---
+* Nombre de chambres ouvertes à la location : 5 (limite légale pour rester sous le 
+  statut de chambres d'hôtes).
+* Capacité maximale d'accueil : 15 personnes simultanément.
+* Hypothèse de taux d'occupation annuel moyen : 45% (soit 164 nuits réservées par 
+  chambre sur l'année).
+* Nombre total de nuitées vendues : 5 chambres x 365 jours x 45% = 821 nuitées.
+* Chiffre d'affaires hébergement estimé (panier moyen de 150 €/nuitée) : 123 150 €
+* Activités annexes (Table d'hôtes, location de vélos, massages) : 15 000 €
+* Chiffre d'affaires total prévisionnel An 1 : 138 150 €
+
+================================================================================
+2. LE PRÉVISIONNEL FINANCIER & COMPTABLE (Sur 3 ans)
+================================================================================
+
+--- DOCUMENT 2.1 : LE PLAN DE FINANCEMENT INITIAL (HT et TTC) ---
+Ce tableau liste les besoins financiers pour le lancement du projet et les ressources associées.
+
++-----------------------------------------+-----------------------------------------+
+| BESOINS (Emplois)                       | RESSOURCES (Origines)                   |
++-----------------------------------------+-----------------------------------------+
+| Acquisition du bien (Immobilier) :      | Apport personnel des associés :         |
+|   - Prix d'achat : 650 000 €            |   - Épargne propre : 250 000 €          |
+|   - Droits de mutation / Notaire : 52 000 €                                       |
+|                                         | Emprunt bancaire (long terme) :         |
+| Travaux de rénovation & normes ERP :    |   - Prêt immobilier (20 ans) : 480 000 €|
+|   - Mise aux normes de sécurité : 15 000 €                                         |
+|   - Décoration/Aménagement : 40 000 €   | Subventions & Aides régionales :        |
+|                                         |   - Aide au tourisme rural : 10 000 €   |
+| Équipements & Mobilier :                |                                         |
+|   - Literie professionnelle : 8 000 €   | Emprunt de trésorerie (court terme) :   |
+|   - Mobilier chambres & extérieur : 15 000 € - Prêt d'honneur (sans intérêt) : 15 000 €|
+|                                         |                                         |
+| Trésorerie de départ (BFR) : 15 000 €   |                                         |
+| Frais d'établissement & comm : 5 000 €  |                                         |
++-----------------------------------------+-----------------------------------------+
+| TOTAL BESOINS : 800 000 €               | TOTAL RESSOURCES : 800 000 €            |
++-----------------------------------------+-----------------------------------------+
+
+--- DOCUMENT 2.2 : LE COMPTE DE RÉSULTAT PRÉVISIONNEL ---
+Projection comptable de l'activité sur les trois premiers exercices (en Euros HT).
+
++-----------------------------------------+--------------+--------------+--------------+
+| POSTES DE COMPTES                       |   ANNÉE 1    |   ANNÉE 2    |   ANNÉE 3    |
++-----------------------------------------+--------------+--------------+--------------+
+| Chiffre d'affaires (Hébergement)        |    123 150 € |    137 000 € |    150 000 € |
+| Chiffre d'affaires (Prestations annexes)|     15 000 € |     18 000 € |     22 000 € |
+| TOTAL PRODUITS D'EXPLOITATION (A)       |    138 150 € |    155 000 € |    172 000 € |
++-----------------------------------------+--------------+--------------+--------------+
+| Achats consommés (petits déj, linge)    |     14 000 € |     16 000 € |     18 000 € |
+| Services extérieurs (Assurances, pub)   |     18 500 € |     19 000 € |     19 500 € |
+| Impôts et taxes (Taxe foncière, CFE)    |      4 500 € |      4 800 € |      5 000 € |
+| Charges de personnel (Ménage saisonnier)|     12 000 € |     15 000 € |     18 000 € |
+| Charges sociales exploitant(s)          |      8 000 € |      9 500 € |     11 000 € |
+| TOTAL CHARGES D'EXPLOITATION (B)        |     57 000 € |     64 300 € |     71 500 € |
++-----------------------------------------+--------------+--------------+--------------+
+| EXCÉDENT BRUT D'EXPLOITATION (EBE) (A-B)|     81 150 € |     90 700 € |    100 500 € |
++-----------------------------------------+--------------+--------------+--------------+
+| Dotations aux amortissements (Bâtiment) |     25 000 € |     25 000 € |     25 000 € |
+| Charges financières (Intérêts emprunt)  |     16 000 € |     14 800 € |     13 500 € |
++-----------------------------------------+--------------+--------------+--------------+
+| RÉSULTAT COURANT AVANT IMPÔT (RCAI)     |     40 150 € |     50 900 € |     62 000 € |
+| Impôt sur les bénéfices (IS estimé)     |      6 022 € |      7 635 € |      9 300 € |
++-----------------------------------------+--------------+--------------+--------------+
+| RÉSULTAT NET COMPTABLE (Bénéfice)       |     34 128 € |     43 265 € |     52 700 € |
++-----------------------------------------+--------------+--------------+--------------+
+
+--- DOCUMENT 2.3 : TABLEAU DES FLUX DE TRÉSORERIE PRÉVISIONNEL (An 1 - Trimestriel) ---
+Permet de s'assurer que la structure ne se retrouve pas en cessation de paiements.
+
++--------------------------+--------------+--------------+--------------+--------------+
+| FLUX DE TRÉSORERIE       |   TRIM. 1    |   TRIM. 2    |   TRIM. 3    |   TRIM. 4    |
++--------------------------+--------------+--------------+--------------+--------------+
+| Trésorerie d'ouverture   |     15 000 € |     16 500 € |     42 500 € |     68 500 € |
+| (+) Entrées (Encaissements)|    18 500 € |     54 000 € |     50 650 € |     15 000 € |
+| (-) Sorties (Décaissements)|    17 000 € |     28 000 € |     24 650 € |     21 000 € |
++--------------------------+--------------+--------------+--------------+--------------+
+| SOLDE FIN DE PÉRIODE     |     16 500 € |     42 500 € |     68 500 € |     62 500 € |
++--------------------------+--------------+--------------+--------------+--------------+
+
+--- DOCUMENT 2.4 : CALCUL DU SEUIL DE RENTABILITÉ (POINT MORT) ---
+* Charges Fixes Annuelles (CF) :
+  - Assurances : 3 000 €
+  - Impôts/Taxes : 4 500 €
+  - Intérêts d'emprunt : 16 000 €
+  - Amortissements : 25 000 €
+  - Électricité / Chauffage / Télécom : 6 000 €
+  - Total Charges Fixes = 54 500 €
+* Taux de Marge sur Coûts Variables (TMICV) :
+  - Chiffre d'affaires moyen par nuitée : 150 €
+  - Coûts variables par nuitée (Petit-déjeuner, blanchisserie, consommables) : 25 €
+  - Marge sur coût variable par nuitée = 125 € (soit 83,3% du chiffre d'affaires)
+* Seuil de Rentabilité (SR) = Charges Fixes / TMICV = 54 500 € / 0,833 = 65 426 €
+* Point Mort (en nuitées) = SR / Prix de vente moyen = 65 426 € / 150 € = 436 nuitées par an.
+  - L'activité devient rentable à partir de la 437ème nuitée vendue dans l'année 
+    (soit un taux d'occupation moyen requis de 24%).
+
+================================================================================
+3. L'ANALYSE JURIDIQUE, FISCALE ET SOCIALE
+================================================================================
+
+Le choix de la structure juridique détermine la responsabilité de l'exploitant, 
+le régime fiscal et la protection sociale du dirigeant.
+
+--- COMPARATIF DES STRUCURES JURIDIQUES ---
+
+1. L'ENTREPRISE INDIVIDUELLE (Micro-Entreprise)
+   - Avantages : Formalités ultra-simplifiées, comptabilité réduite, charges 
+     sociales calculées sur le chiffre d'affaires réellement encaissé.
+   - Limites : Plafond de chiffre d'affaires limité à 188 700 € pour l'hébergement. 
+     Impossibilité de déduire les charges réelles (amortissement des travaux et 
+     du bâtiment, intérêts d'emprunt), ce qui est très pénalisant dans le cadre 
+     d'un investissement immobilier lourd.
+   - Fiscalité : Impôt sur le Revenu (abattement forfaitaire de 71%).
+
+2. LA SOCIÉTÉ (SARL / EURL ou SAS / SASU)
+   - Avantages : Responsabilité limitée aux apports. Possibilité de déduire 
+     l'intégralité des charges réelles (amortissements, travaux, charges de 
+     personnel, frais bancaires). Permet d'intégrer un conjoint (statut de 
+     conjoint collaborateur ou co-associé).
+   - Limites : Coûts de création et de gestion comptable plus élevés (recours 
+     recommandé à un expert-comptable).
+   - Fiscalité : Impôt sur les Sociétés (IS) avec taux réduit à 15% jusqu'à 
+     42 500 € de bénéfice, puis 25% au-delà.
+
+--- RECOMMANDATION DE L'EXPERT COMPTABLE ---
+Dans le cas d'une acquisition immobilière de 650 000 € avec d'importants travaux, 
+il est fortement conseillé de dissocier le patrimoine immobilier de l'activité 
+d'exploitation afin d'optimiser la fiscalité et de protéger les actifs :
+
+* Création d'une SCI (Société Civile Immobilière) soumise à l'impôt sur les 
+  sociétés (IS) : Elle achète le bien immobilier et le loue à la société 
+  d'exploitation. Les loyers perçus remboursent l'emprunt bancaire de la SCI, 
+  et les intérêts ainsi que l'amortissement du bâtiment annulent ou réduisent 
+  fortement l'impôt sur les bénéfices de la SCI.
+* Création d'une SARL d'exploitation (Société à Responsabilité Limitée) : 
+  Elle exploite le fonds de commerce de la maison d'hôtes, verse un loyer à 
+  la SCI, encaisse les clients et supporte les charges opérationnelles. Le 
+  gérant majoritaire de la SARL sera affilié à la Sécurité Sociale des Indépendants 
+  (TNS), ce qui génère des charges sociales moins élevées qu'en SAS.
+
+--- LE RÉGIME DE TVA ---
+* En dessous de 91 900 € de chiffre d'affaires, l'exploitant peut bénéficier de 
+  la franchise en base de TVA (pas de collecte de TVA sur les ventes, mais 
+  pas de récupération sur les achats).
+* Au-delà, ou sur option volontaire : Assujettissement à la TVA.
+  - Taux applicable aux nuitées de chambres d'hôtes : 10% (si des prestations 
+    similaires à l'hôtellerie sont fournies : petit-déjeuner, nettoyage régulier, 
+    fourniture de linge, accueil).
+  - Taux applicable aux boissons alcoolisées de la table d'hôtes : 20%.
+  - Avantage de l'assujettissement : Permet de récupérer la TVA à 20% sur 
+    l'ensemble des travaux de rénovation et d'équipements initiaux (économie 
+    potentielle de plusieurs dizaines de milliers d'euros sur le budget de départ).
+
+================================================================================
+4. LA SÉLECTION DU BIEN IMMOBILIER (Cahier des charges)
+================================================================================
+
+Avant de signer un compromis de vente, plusieurs éléments réglementaires et 
+techniques spécifiques aux maisons d'hôtes doivent être validés.
+
+--- CHECK-LIST DE CONFORMITÉ IMMOBILIÈRE ---
+* [ ] Capacité légale : Le bien permet-il l'aménagement d'un maximum de 5 chambres 
+      d'hôtes pour une capacité d'accueil maximale de 15 personnes ? (Au-delà, 
+      le bien est classé comme hôtel ou ERP de 5ème catégorie avec des normes de 
+      sécurité incendie et d'accessibilité très lourdes).
+* [ ] Sanitaires : Chaque chambre dispose-t-elle (ou peut-elle disposer après 
+      travaux) d'une salle d'eau et d'un WC privatifs ?
+* [ ] Urbanisme : Le Plan Local d'Urbanisme (PLU) autorise-t-il les modifications 
+      de façade (création de fenêtres pour les nouvelles chambres) ou les extensions ?
+* [ ] Stationnement : Y a-t-il suffisamment de places de parking privatives sur 
+      le terrain pour les clients (idéalement 1 place par chambre d'hôte) ?
+* [ ] Accessibilité (Normes PMR - Personnes à Mobilité Réduite) : Bien que les 
+      chambres d'hôtes chez l'habitant (strictement limitées à 5 chambres et 15 
+      personnes) ne soient pas soumises aux obligations d'accessibilité de la loi 
+      Handicap de 2005, il est fortement conseillé d'avoir au moins une chambre 
+      en rez-de-chaussée accessible pour élargir sa clientèle.
+* [ ] Diagnostics techniques : Vérifier le DPE, l'état de l'assainissement non 
+      collectif (si non raccordé au tout-à-l'égout, la fosse septique doit être 
+      dimensionnée pour la capacité maximale d'accueil, soit environ 15 à 18 Equivalents-Habitants).
+
+================================================================================
+5. LES MODÈLES DE DOCUMENTS ADMINISTRATIFS ET CONTRACTUELS
+================================================================================
+
+--------------------------------------------------------------------------------
+5.1 MODÈLE DE DÉCLARATION EN MAIRIE (Cerfa n° 13566*03 - Équivalent texte)
+--------------------------------------------------------------------------------
+Cette déclaration est obligatoire avant toute ouverture de chambre d'hôte (Article 
+L. 324-4 du Code du tourisme).
+
+À adresser en recommandé avec accusé de réception ou à déposer en mairie.
+
+--------------------------------------------------------------------------------
+À l'attention de Monsieur/Madame le Maire de la commune de : [Nom de la commune]
+Adresse de la Mairie : [Adresse complète]
+
+OBJET : Déclaration de location de chambres d'hôtes (Article L. 324-4 du Code du tourisme)
+
+Je soussigné(e),
+* Nom, Prénom du déclarant : ...................................................
+* Adresse du déclarant : ........................................................
+* Téléphone : ........................ E-mail : .................................
+
+Déclare par la présente l'ouverture d'une activité de chambres d'hôtes :
+* Adresse du bien loué (si différente de l'adresse ci-dessus) :
+  ...............................................................................
+* Date de début d'activité prévisionnelle : [JJ/MM/AAAA]
+* Nombre de chambres offertes à la location : [Nombre de 1 à 5]
+* Capacité d'accueil maximale (nombre de personnes) : [Nombre de 1 à 15]
+
+Prestations proposées :
+[ ] Petit-déjeuner (obligatoirement inclus dans le prix de la chambre)
+[ ] Table d'hôtes (repas du soir uniquement, sur réservation)
+[ ] Équipements de loisir (piscine, spa, location de vélos)
+
+Je certifie sur l'honneur l'exactitude des informations fournies dans la présente 
+déclaration.
+
+Fait à ........................, le ........................
+
+Signature du déclarant :
+
+
+--------------------------------------------------------------------------------
+5.2 CONTRAT TYPE DE RÉSERVATION DE CHAMBRE D'HÔTE
+--------------------------------------------------------------------------------
+Ce document lie juridiquement l'exploitant et le client et fixe les conditions 
+d'annulation et de paiement.
+
+--------------------------------------------------------------------------------
+ENTRE LES SOUSSIGNÉS :
+L'exploitant : [Raison sociale / Nom du gérant], exerçant sous l'enseigne [Nom commercial]
+Adresse de l'établissement : [Adresse complète]
+N° SIRET : [SIRET] - Code APE : 5520Z
+Ci-après dénommé "Le Propriétaire", d'une part,
+
+ET
+
+Le Client : M./Mme [Nom et Prénom du client]
+Adresse : [Adresse du client]
+Téléphone : [Numéro] - E-mail : [E-mail]
+Ci-après dénommé "Le Client", d'autre part.
+
+IL A ÉTÉ CONVENU CE QUI SUIT :
+
+ARTICLE 1 - OBJET DU CONTRAT
+Le présent contrat est destiné à l'usage exclusif de la réservation de chambres 
+d'hôtes à l'adresse du Propriétaire. 
+
+ARTICLE 2 - DURÉE DU SÉJOUR
+Le Client s'engage pour une durée déterminée :
+* Date d'arrivée (Check-in) : [JJ/MM/AAAA] à partir de [HH:MM]
+* Date de départ (Check-out) : [JJ/MM/AAAA] avant [HH:MM]
+Le client ne pourra en aucun cas se prévaloir d'un quelconque droit au maintien 
+dans les lieux à l'expiration de la période de séjour prévue.
+
+ARTICLE 3 - DESCRIPTION DE LA RÉSERVATION
+* Nombre de chambres réservées : ...... (Nom(s) de(s) chambre(s) : ....................)
+* Nombre de personnes prévues (adultes et enfants) : ......
+* Animaux de compagnie : [ ] Oui (soumis à accord préalable)  [ ] Non admis
+
+ARTICLE 4 - TARIFS ET CONDITIONS DE PAIEMENT
+* Prix de la nuitée (base petit-déjeuner inclus) : ................ €
+* Nombre de nuitées : ......
+* Prestations annexes réservées (ex: table d'hôtes, accès spa) : ................ €
+* Taxe de séjour (fixée par la commune, par adulte/jour) : ................ €
+* MONTANT TOTAL DU SÉJOUR : ................................ € HT / TTC
+
+Modalités de versement :
+* Arrhes / Acompte : Un montant de .......... € (équivalent à ...... % du montant total, 
+  ou au prix de la première nuitée) est exigé à la signature du présent contrat. 
+  La réservation ne devient ferme et définitive qu'à réception de ce versement.
+* Solde : Le solde de la réservation, soit .......... €, sera réglé le jour de l'arrivée.
+* Modes de règlement acceptés : Virement bancaire, Carte bancaire, Espèces, Chèques vacances.
+
+ARTICLE 5 - CONDITIONS D'ANNULATION
+* Annulation par le Client : 
+  - Si l'annulation intervient plus de [30] jours avant la date d'arrivée, l'acompte 
+    est intégralement remboursé au Client.
+  - Si l'annulation intervient moins de [30] jours avant le séjour, l'acompte reste 
+    acquis au Propriétaire.
+  - En cas de non-présentation (no-show) ou de séjour écourté, la totalité du séjour 
+    facturé reste due au Propriétaire.
+* Annulation par le Propriétaire : En cas d'annulation du séjour par le Propriétaire 
+  avant la date d'arrivée, ce dernier s'engage à reverser au Client le double des 
+  sommes perçues (conformément à l'article 1590 du Code Civil sur les arrhes).
+
+ARTICLE 6 - ART DE VIVRE ET RÈGLEMENT INTÉRIEUR
+Le Client s'engage à respecter les règles de vie de la maison (respect du calme, 
+interdiction de fumer à l'intérieur des locaux, horaires de la piscine).
+
+Fait à ........................, le ........................ (en deux exemplaires)
+
+Signature du Client (précédée de "Lu et approuvé") :
+
+
+Signature du Propriétaire :
+
+
+--------------------------------------------------------------------------------
+5.3 MODÈLE DE FICHE INDIVIDUELLE DE POLICE (Obligation légale)
+--------------------------------------------------------------------------------
+En vertu de l'article R. 611-35 du Code de l'entrée et du séjour des étrangers et 
+du droit d'asile, les logeurs de clients de nationalité étrangère sont tenus de 
+leur faire compléter et signer une fiche de police dès leur arrivée. Ce document 
+doit être conservé pendant une durée de 6 mois et transmis aux services de police 
+ou de gendarmerie uniquement à leur demande.
+
+--------------------------------------------------------------------------------
+ESTABLISHMENT / ÉTABLISSEMENT : [Nom de la Maison d'hôtes]
+
+INDIVIDUAL POLICE FORM FOR FOREIGN TOURISTS
+FICHE INDIVIDUELLE DE POLICE POUR TOURISTES ÉTRANGERS
+
+(Decree of August 18, 2015 / Décret du 18 août 2015)
+
+* Family Name / Nom de famille : ...............................................
+* First Names / Prénoms : ......................................................
+* Date of birth / Date de naissance : [JJ/MM/AAAA]
+* Place of birth / Lieu de naissance (City & Country / Ville et Pays) :
+  ...............................................................................
+* Nationality / Nationalité : ..................................................
+* Home Address / Adresse du domicile habituel (Street, City, Postcode, Country) :
+  ...............................................................................
+  ...............................................................................
+* Mobile Phone / Téléphone portable : ..........................................
+* E-mail : .....................................................................
+
+* Accompanied children under 15 (Name and age) / Enfants de moins de 15 ans 
+  accompagnants (Nom et âge) :
+  1. ............................................................................
+  2. ............................................................................
+
+* Date of arrival / Date d'arrivée : [JJ/MM/AAAA]
+* Date of departure (expected) / Date de départ (prévue) : [JJ/MM/AAAA]
+
+I declare that all the information provided above is correct.
+Je certifie l'exactitude des informations mentionnées ci-dessus.
+
+Fait à ........................, le ........................
+
+Signature of Guest / Signature du Client :
+
+================================================================================
+FIN DU DOSSIER DE CRÉATION DE PROJET - MAISON D'HÔTES
+================================================================================

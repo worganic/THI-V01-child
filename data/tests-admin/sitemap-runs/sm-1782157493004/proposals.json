@@ -1,0 +1,734 @@
+[
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "temp-sec-adm-projets",
+    "data": {
+      "label": "Projets",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminProjetsComponent"
+    },
+    "reason": "Nouvelle section d'administration des projets associée à l'onglet Projets"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "temp-sec-adm-deploiement",
+    "data": {
+      "label": "Déploiement",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminDeploymentsComponent"
+    },
+    "reason": "Nouvelle section d'administration des déploiements"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "temp-sec-adm-theme",
+    "data": {
+      "label": "Thème",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminThemeComponent"
+    },
+    "reason": "Nouvelle section de personnalisation et de thèmes graphiques"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "temp-sec-adm-mega-outils",
+    "data": {
+      "label": "Méga-outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMegaOutilsComponent"
+    },
+    "reason": "Nouvelle section d'administration des méga-outils partagés"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "temp-sec-adm-memo",
+    "data": {
+      "label": "Mémo",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMemoComponent"
+    },
+    "reason": "Nouvelle section d'aide, documentation et aides contextuelles"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "temp-sec-adm-tools",
+    "data": {
+      "label": "Outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminToolsComponent"
+    },
+    "reason": "Nouvelle section de gestion et d'activation de la visibilité des outils"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tests-execution",
+    "data": {
+      "label": "Onglet Exécution",
+      "elType": "link",
+      "groupId": "sec-adm-tests",
+      "url": "/admin/tests/execution",
+      "components": ["AdminTestsComponent"],
+      "description": "Sous-onglet pour exécuter les tests (manuels ou via IA)."
+    },
+    "reason": "Sous-onglet d'exécution de tests"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tests-resultats",
+    "data": {
+      "label": "Onglet Résultats",
+      "elType": "link",
+      "groupId": "sec-adm-tests",
+      "url": "/admin/tests/resultats",
+      "components": ["AdminTestsComponent"],
+      "description": "Sous-onglet affichant la matrice des résultats de tests."
+    },
+    "reason": "Sous-onglet de résultats de tests"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tests-historique",
+    "data": {
+      "label": "Onglet Historique",
+      "elType": "link",
+      "groupId": "sec-adm-tests",
+      "url": "/admin/tests/historique",
+      "components": ["AdminTestsComponent"],
+      "description": "Sous-onglet d'historique des modifications du référentiel."
+    },
+    "reason": "Sous-onglet d'historique de tests"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tests-new-section",
+    "data": {
+      "label": "Nouvelle section",
+      "elType": "button",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Bouton créant une nouvelle section de tests via popup IA."
+    },
+    "reason": "Bouton de création de section de tests"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tests-open-folder",
+    "data": {
+      "label": "Ouvrir le dossier local",
+      "elType": "button",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Bouton pour ouvrir le dossier contenant le fichier fonctions.md dans l'explorateur."
+    },
+    "reason": "Bouton d'exploration locale"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tests-run-node",
+    "data": {
+      "label": "Lancer un test sur cette section",
+      "elType": "button",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Lancer un test sur la section sélectionnée."
+    },
+    "reason": "Bouton de lancement rapide de test"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-subtab-list",
+    "data": {
+      "label": "Onglet Liste Projets",
+      "elType": "link",
+      "groupId": "temp-sec-adm-projets",
+      "url": "/admin/projets/projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Affiche la liste des projets d'administration."
+    },
+    "reason": "Sous-onglet de gestion des projets"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-subtab-ia",
+    "data": {
+      "label": "Onglet Modèles IA",
+      "elType": "link",
+      "groupId": "temp-sec-adm-projets",
+      "url": "/admin/projets/ia-instructions",
+      "components": ["AdminProjetsComponent"],
+      "description": "Affiche les modèles d'instructions IA globales."
+    },
+    "reason": "Sous-onglet d'instructions IA globales"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-list",
+    "data": {
+      "label": "Liste des projets",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Tableau de bord affichant tous les projets et leurs configurations."
+    },
+    "reason": "Widget liste des projets"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-edit-form",
+    "data": {
+      "label": "Modifier le projet",
+      "elType": "form",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Popup de modification du titre et statut d'un projet."
+    },
+    "reason": "Formulaire d'édition de projet"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-backup-form",
+    "data": {
+      "label": "Configuration Backup",
+      "elType": "form",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Formulaire de configuration du backup (FTP, GitHub, GitLab, Google Drive)."
+    },
+    "reason": "Formulaire de backup projet"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-ia-form",
+    "data": {
+      "label": "Instructions IA",
+      "elType": "form",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Éditeur d'instructions IA spécifiques au projet."
+    },
+    "reason": "Formulaire d'instructions IA"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-ia-docs-list",
+    "data": {
+      "label": "Modèles d'instructions",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Modèles d'instructions IA globales."
+    },
+    "reason": "Widget modèles d'instructions IA"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-apply-doc-form",
+    "data": {
+      "label": "Appliquer instruction",
+      "elType": "form",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Appliquer un modèle d'instruction IA globale à un projet."
+    },
+    "reason": "Formulaire d'application de modèle IA"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-btn-test-ftp",
+    "data": {
+      "label": "Tester connexion FTP",
+      "elType": "button",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Bouton pour tester la connexion FTP configurée."
+    },
+    "reason": "Bouton test FTP"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-btn-run-push",
+    "data": {
+      "label": "Transfert initial",
+      "elType": "button",
+      "groupId": "temp-sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Lancer le transfert initial vers le backup configuré."
+    },
+    "reason": "Bouton de transfert vers le backup"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-projets-btn-go-docs",
+    "data": {
+      "label": "Aller aux documents",
+      "elType": "link",
+      "groupId": "temp-sec-adm-projets",
+      "url": "/documents",
+      "components": ["AdminProjetsComponent"],
+      "description": "Naviguer vers l'onglet Documents."
+    },
+    "reason": "Lien de redirection documents"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-deployments-list",
+    "data": {
+      "label": "Liste des déploiements",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Historique des déploiements et commits."
+    },
+    "reason": "Widget liste des déploiements"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-deployments-form",
+    "data": {
+      "label": "Nouveau déploiement",
+      "elType": "form",
+      "groupId": "temp-sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Formulaire d'enregistrement d'un nouveau déploiement."
+    },
+    "reason": "Formulaire de nouveau déploiement"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-deployments-git-status",
+    "data": {
+      "label": "État Git",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Affichage de l'état Git et des versions locales."
+    },
+    "reason": "Widget état Git"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-deployments-btn-migrate",
+    "data": {
+      "label": "Migrer les versions",
+      "elType": "button",
+      "groupId": "temp-sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Bouton pour migrer les anciennes versions de déploiement."
+    },
+    "reason": "Bouton migration de versions"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-deployments-btn-git-refresh",
+    "data": {
+      "label": "Charger état Git",
+      "elType": "button",
+      "groupId": "temp-sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Bouton pour recharger l'état Git local."
+    },
+    "reason": "Bouton actualisation Git"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-theme-palette",
+    "data": {
+      "label": "Palette & Presets",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Sélecteurs de presets et modification des couleurs du thème."
+    },
+    "reason": "Widget palette de couleurs"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-theme-styles-form",
+    "data": {
+      "label": "Variables de style",
+      "elType": "form",
+      "groupId": "temp-sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Réglages de style (arrondis, tailles, interlignes, polices)."
+    },
+    "reason": "Formulaire de variables de style"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-theme-css-form",
+    "data": {
+      "label": "CSS personnalisé",
+      "elType": "form",
+      "groupId": "temp-sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Éditeur de CSS personnalisé injecté à la volée."
+    },
+    "reason": "Formulaire CSS personnalisé"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-theme-btn-save-colors",
+    "data": {
+      "label": "Enregistrer couleurs",
+      "elType": "button",
+      "groupId": "temp-sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Enregistrer les modifications de couleurs."
+    },
+    "reason": "Bouton sauvegarde couleurs"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-theme-btn-save-styles",
+    "data": {
+      "label": "Enregistrer styles",
+      "elType": "button",
+      "groupId": "temp-sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Enregistrer les variables de style."
+    },
+    "reason": "Bouton sauvegarde styles"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-theme-btn-save-css",
+    "data": {
+      "label": "Enregistrer CSS",
+      "elType": "button",
+      "groupId": "temp-sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Enregistrer le CSS personnalisé."
+    },
+    "reason": "Bouton sauvegarde CSS"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-megaoutils-types",
+    "data": {
+      "label": "Types disponibles",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-mega-outils",
+      "url": "embed",
+      "components": ["AdminMegaOutilsComponent"],
+      "description": "Grille affichant les types de méga-outils actifs ou disponibles."
+    },
+    "reason": "Widget types méga-outils"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-megaoutils-trello-admin",
+    "data": {
+      "label": "Instances Trello",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-mega-outils",
+      "url": "embed",
+      "components": ["AdminMegaOutilsComponent", "TrelloAdminComponent"],
+      "description": "Gestion des instances Trello partagées."
+    },
+    "reason": "Widget d'administration Trello"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-megaoutils-btn-open",
+    "data": {
+      "label": "Ouvrir dans l'éditeur",
+      "elType": "button",
+      "groupId": "temp-sec-adm-mega-outils",
+      "url": "embed",
+      "components": ["AdminMegaOutilsComponent"],
+      "description": "Ouvrir l'instance de méga-outil sélectionnée dans l'éditeur de projet."
+    },
+    "reason": "Bouton d'ouverture dans l'éditeur"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-memo-help-list",
+    "data": {
+      "label": "Aides contextuelles",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-memo",
+      "url": "embed",
+      "components": ["AdminMemoComponent"],
+      "description": "Gestion (CRUD) des aides contextuelles utilisateur."
+    },
+    "reason": "Widget aides contextuelles CRUD"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-memo-help-form",
+    "data": {
+      "label": "Éditeur d'aide",
+      "elType": "form",
+      "groupId": "temp-sec-adm-memo",
+      "url": "embed",
+      "components": ["AdminMemoComponent"],
+      "description": "Popup de création/modification d'une aide."
+    },
+    "reason": "Formulaire d'aide contextuelle"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-memo-btn-new-help",
+    "data": {
+      "label": "Nouvelle aide",
+      "elType": "button",
+      "groupId": "temp-sec-adm-memo",
+      "url": "embed",
+      "components": ["AdminMemoComponent"],
+      "description": "Bouton pour créer une nouvelle aide."
+    },
+    "reason": "Bouton de création d'aide"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-memo-btn-delete-help",
+    "data": {
+      "label": "Supprimer l'aide",
+      "elType": "button",
+      "groupId": "temp-sec-adm-memo",
+      "url": "embed",
+      "components": ["AdminMemoComponent"],
+      "description": "Bouton de suppression d'une aide."
+    },
+    "reason": "Bouton de suppression d'aide"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "temp-el-adm-tools-config-grid",
+    "data": {
+      "label": "Visibilité des outils",
+      "elType": "widget",
+      "groupId": "temp-sec-adm-tools",
+      "url": "embed",
+      "components": ["AdminToolsComponent", "WoToolsAdminComponent"],
+      "description": "Grille d'activation globale des onglets et boutons flottants."
+    },
+    "reason": "Widget grille de visibilité des outils"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-256z",
+      "to": "group:temp-sec-adm-projets",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Projets et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-0hbc",
+      "to": "group:temp-sec-adm-deploiement",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Déploiement et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-pj86",
+      "to": "group:sec-adm-config",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Config et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-akj2",
+      "to": "group:temp-sec-adm-theme",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Thème et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-bqll",
+      "to": "group:temp-sec-adm-mega-outils",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Méga-outils et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-ykj8",
+      "to": "group:temp-sec-adm-memo",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Mémo et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-kfpo",
+      "to": "group:temp-sec-adm-tools",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison entre l'onglet Outils et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "temp-el-adm-projets-list",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Lien ouvrant un projet d'administration dans l'éditeur"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "temp-el-adm-projets-btn-go-docs",
+      "to": "group:pg-documents",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Lien vers la page de gestion des documents"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "temp-el-adm-megaoutils-trello-admin",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Lien ouvrant une instance Trello partagée dans l'éditeur de son projet"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "temp-el-adm-tools-config-grid",
+      "to": "el-w-tchat",
+      "type": "relation",
+      "label": "pilote"
+    },
+    "reason": "La configuration pilote la visibilité du widget de tchat IA"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "temp-el-adm-tools-config-grid",
+      "to": "el-w-tickets",
+      "type": "relation",
+      "label": "pilote"
+    },
+    "reason": "La configuration pilote la visibilité du widget de tickets"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "temp-el-adm-tools-config-grid",
+      "to": "el-w-cahier",
+      "type": "relation",
+      "label": "pilote"
+    },
+    "reason": "La configuration pilote la visibilité du widget du cahier de recette"
+  }
+]

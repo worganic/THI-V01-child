@@ -1,0 +1,43 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (du CP au CM2)
+  * ( ) Collège (de la 6ème à la 3ème)
+  * ( ) Lycée (de la 2nde à la Terminale)
+  * ( ) Enseignement supérieur / Université
+  * ( ) Autre : ______
+
+* **Matières ou thématiques précises à travailler en mathématiques :**
+  * [ ] Algèbre (équations, inéquations, systèmes...)
+  * [ ] Analyse (fonctions, suites, limites, dérivation, intégration...)
+  * [ ] Géométrie (plane, espace, vecteurs, trigonométrie...)
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique et Spécialité
+  * [ ] Autre : ______
+
+* **Objectif mesurable et niveau de départ :**
+  * ( ) Remise à niveau (difficultés importantes) -> Viser la moyenne (10/20)
+  * ( ) Consolidation des acquis (niveau moyen) -> Viser 12-14/20
+  * ( ) Perfectionnement (bon niveau) -> Viser 15-18/20 ou préparation concours
+  * ( ) Autre : ______
+
+* **Durée de l'accompagnement et date de début :**
+  * ( ) Court terme (1 à 4 semaines) - Début : ______
+  * ( ) Moyen terme (1 à 3 mois) - Début : ______
+  * ( ) Long terme (année scolaire complète) - Début : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 fois par semaine
+  * ( ) Plus de 2 fois par semaine
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation de la progression :**
+  * [ ] QCM rapides
+  * [ ] Devoirs surveillés / Bilans écrits notés sur 20
+  * [ ] Auto-évaluation guidée par l'élève
+  * [ ] Aucun contrôle formel (évaluation continue informelle)
+
+* **Points prioritaires à travailler en premier :**
+  * [ ] Méthodologie et rigueur de rédaction
+  * [ ] Apprentissage et compréhension des formules de cours
+  * [ ] Résolution de problèmes complexes et concrets
+  * [ ] Gestion du temps lors des évaluations

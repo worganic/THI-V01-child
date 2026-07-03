@@ -1,0 +1,33 @@
+* **Quel est le format attendu pour le livrable final de cet atelier ?**
+  * ( ) Une invite système (prompt) configurée pour un agent conversationnel
+  * ( ) Une application web mono-page interactive (HTML/CSS/JS)
+  * ( ) Un document de cadrage méthodologique statique
+  * ( ) Autre : ______
+
+* **Quel est l'horizon temporel et la date de démarrage souhaités pour le projet ?**
+  * ( ) Démarrage immédiat pour une livraison sous 24 à 48 heures
+  * ( ) Démarrage planifié avec un calendrier de développement sur plusieurs semaines
+  * ( ) Autre : ______
+
+* **Quels sont les jalons ou étapes clés de la mise en œuvre ?**
+  * [ ] Étape 1 : Conception du prompt / prototype d'interface
+  * [ ] Étape 2 : Phase de tests avec des textes bruts réels
+  * [ ] Étape 3 : Déploiement et intégration finale
+  * [ ] Autre : ______
+
+* **Quelles sont les contraintes principales de réalisation (budget, réglementation, ressources) ?**
+  * [ ] Ressources : Doit fonctionner uniquement avec des outils gratuits ou open-source
+  * [ ] Technique : Intégration stricte dans un environnement Markdown standard
+  * [ ] Autre : ______
+
+* **Quels sont les critères de succès mesurables pour ce projet ?**
+  * [ ] Extraction exhaustive et pertinente des unités de sens (sans faux positifs)
+  * [ ] Clarté et lisibilité du document de synthèse final (Markdown structuré)
+  * [ ] Facilité de prise en main par le Business Owner lors de la phase d'écriture
+  * [ ] Autre : ______
+
+* **Quels sont les risques ou blocages anticipés ?**
+  * [ ] Blocage créatif du Business Owner ou refus du cadre d'écriture libre
+  * [ ] Hallucinations de l'IA lors de la qualification des unités de sens (Récolte)
+  * [ ] Perte de données si la session d'écriture n'est pas sauvegardée localement
+  * [ ] Autre : ______

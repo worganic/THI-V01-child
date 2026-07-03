@@ -1,0 +1,198 @@
+## 📊 Bilan général et suivi du cours
+
+Bienvenue dans votre espace de formation. Veuillez valider votre niveau scolaire et la matière à travailler ci-dessous. Par défaut, le programme a été configuré pour le niveau **3ème** en **Mathématiques** (Algèbre et Équations).
+
+```FORM: Choix du niveau et de la matière
+* **Quel est le niveau scolaire à travailler ?**
+  ( ) Troisième (Préparation au Brevet)
+  ( ) Seconde
+  ( ) Première / Terminale (Spécialité Mathématiques)
+* **Quel est le domaine des mathématiques à travailler en priorité ?**
+  ( ) Algèbre, Calcul littéral et Équations
+  ( ) Géométrie, Vecteurs et Trigonométrie
+  ( ) Fonctions et Analyse
+  ( ) Probabilités et Statistiques
+```
+
+### Planification et Progression
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-01 | Développement et Factorisation | Distributivité et factorisation par facteur commun | À faire |
+| Séance 2 | 2026-07-08 | Équations du premier degré | Résolution d'équations simples et mise en équation | À faire |
+| Séance 3 | 2026-07-15 | Équations-produits nuls | Résolution d'équations-produits nuls | À faire |
+```
+
+```AGENDA: Séances
+2026-07-01 | 14:00-15:30 | Séance 1 — 2026-07-01 : Développement et Factorisation | Introduction au calcul littéral, distributivité simple/double et factorisation.
+2026-07-08 | 14:00-15:30 | Séance 2 — 2026-07-08 : Équations du premier degré | Résolution d'équations linéaires du premier degré et résolution de problèmes.
+2026-07-15 | 14:00-15:30 | Séance 3 — 2026-07-15 : Équations-produits nuls | Étude et résolution des équations de la forme (ax+b)(cx+d)=0.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-01 | | 20 | | |
+| Séance 2 | 2026-07-08 | | 20 | | |
+| Séance 3 | 2026-07-15 | | 20 | | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Suivi des tâches
+### À faire
+- [ ] Réaliser le QCM de la Séance 1 `[medium]`
+- [ ] Réaliser le QCM de la Séance 2 `[medium]`
+- [ ] Réaliser le QCM de la Séance 3 `[high]`
+### En cours
+### Terminé
+```
+
+---
+
+## Séance 1 — 2026-07-01 : Développement et Factorisation
+
+### Cours : Développement et Factorisation
+
+#### 1. Le développement
+Développer une expression littérale consiste à transformer un produit en une somme ou une différence.
+- Distributivité simple : a * (b + c) = a * b + a * c
+- Double distributivité : (a + b) * (c + d) = a * c + a * d + b * c + b * d
+
+Exemple :
+Développer 3 * (x + 2) = 3x + 6.
+Développer (x + 2) * (x + 5) = x² + 5x + 2x + 10 = x² + 7x + 10.
+
+#### 2. La factorisation
+Factoriser consiste à transformer une somme ou une différence en un produit de facteurs. C'est l'inverse du développement.
+- Recherche d'un facteur commun : a * b + a * c = a * (b + c)
+
+Exemple :
+Factoriser 5x + 15 = 5 * (x + 3).
+
+---
+
+### Exercices d'évaluation
+
+Veuillez répondre au questionnaire ci-dessous pour valider vos acquis de la Séance 1.
+
+```FORM: QCM Séance 1
+* **Question 1 : Quelle est la forme développée de l'expression A = 4 * (2x - 3) ?**
+  ( ) A = 8x - 3
+  ( ) A = 8x - 12
+  ( ) A = 6x - 7
+* **Question 2 : Développer et réduire l'expression B = (x + 3) * (x + 2). Quelle est la bonne réponse ?**
+  ( ) B = x² + 5x + 6
+  ( ) B = x² + 6
+  ( ) B = x² + 5x + 5
+* **Question 3 : Quelle est la forme factorisée de l'expression C = 7x² - 14x ?**
+  ( ) C = 7x * (x - 2)
+  ( ) C = 7 * (x² - 2)
+  ( ) C = 7x * (x - 14)
+* **Question 4 : Factoriser l'expression D = (x + 1) * (2x + 3) + (x + 1) * (x - 5). Quelle est la bonne réponse ?**
+  ( ) D = (x + 1) * (3x - 2)
+  ( ) D = (x + 1) * (3x + 8)
+  ( ) D = (x + 1) * (2x - 2)
+```
+
+---
+
+## Séance 2 — 2026-07-08 : Équations du premier degré
+
+### Cours : Équations du premier degré
+
+#### 1. Définition et règles de base
+Une équation est une égalité contenant une ou plusieurs inconnues (souvent notées x). Résoudre une équation, c'est trouver la ou les valeurs de x pour lesquelles l'égalité est vraie.
+Pour résoudre une équation du premier degré, on utilise les règles suivantes :
+- On peut ajouter ou soustraire un même nombre aux deux membres d'une égalité.
+- On peut multiplier ou diviser par un même nombre non nul les deux membres d'une égalité.
+
+Exemple :
+Résoudre 3x - 5 = 7 :
+3x = 7 + 5
+3x = 12
+x = 12 / 3 = 4.
+La solution est 4.
+
+#### 2. Mise en équation d'un problème
+- Étape 1 : Choisir l'inconnue (soit x la quantité recherchée).
+- Étape 2 : Traduire l'énoncé par une équation.
+- Étape 3 : Résoudre l'équation.
+- Étape 4 : Conclure en interprétant le résultat.
+
+---
+
+### Exercices d'évaluation
+
+Veuillez répondre au questionnaire ci-dessous pour valider vos acquis de la Séance 2.
+
+```FORM: QCM Séance 2
+* **Question 1 : Quelle est la solution de l'équation x - 7 = 12 ?**
+  ( ) x = 5
+  ( ) x = 19
+  ( ) x = -5
+* **Question 2 : Résoudre l'équation 4x = 24. Quelle est la solution ?**
+  ( ) x = 6
+  ( ) x = 20
+  ( ) x = 96
+* **Question 3 : Résoudre l'équation 2x + 8 = 0. Quelle est la solution ?**
+  ( ) x = 4
+  ( ) x = -4
+  ( ) x = -8
+* **Question 4 : Un rectangle a un périmètre de 30 cm. Sa longueur mesure 3 cm de plus que sa largeur x. Quelle équation permet de trouver x ?**
+  ( ) x + (x + 3) = 30
+  ( ) 2 * (x + x + 3) = 30
+  ( ) 2x + 3 = 30
+```
+
+---
+
+## Séance 3 — 2026-07-15 : Équations-produits nuls
+
+### Cours : Équations-produits nuls
+
+#### 1. Théorème du produit nul
+Un produit de facteurs est nul si, et seulement si, l'un au moins des facteurs est nul.
+Soit l'équation : A * B = 0.
+Cette équation équivaut à : A = 0 ou B = 0.
+
+#### 2. Méthode de résolution
+Pour résoudre une équation de la forme (ax + b) * (cx + d) = 0 :
+- Étape 1 : On pose ax + b = 0 ou cx + d = 0.
+- Étape 2 : On résout séparément ces deux équations du premier degré.
+- Étape 3 : On liste les deux solutions obtenues.
+
+Exemple :
+Résoudre (2x - 4) * (3x + 9) = 0 :
+2x - 4 = 0 => 2x = 4 => x = 2
+ou
+3x + 9 = 0 => 3x = -9 => x = -3.
+Les solutions sont -3 et 2.
+
+---
+
+### Exercices d'évaluation
+
+Veuillez répondre au questionnaire ci-dessous pour valider vos acquis de la Séance 3.
+
+```FORM: QCM Séance 3
+* **Question 1 : Quelles sont les solutions de l'équation-produit (x - 3) * (x + 5) = 0 ?**
+  ( ) x = 3 et x = -5
+  ( ) x = -3 et x = 5
+  ( ) x = 3 et x = 5
+* **Question 2 : Quelles sont les solutions de l'équation (2x - 8) * (3x + 6) = 0 ?**
+  ( ) x = 4 et x = -2
+  ( ) x = -4 et x = 2
+  ( ) x = 8 et x = -6
+* **Question 3 : Soit l'équation x * (5x - 10) = 0. Quelles sont ses solutions ?**
+  ( ) x = 0 et x = 2
+  ( ) x = 0 et x = -2
+  ( ) uniquement x = 2
+* **Question 4 : Après factorisation, l'équation x² - 9 = 0 s'écrit (x - 3) * (x + 3) = 0. Quelles sont ses solutions ?**
+  ( ) x = 3 et x = -3
+  ( ) uniquement x = 3
+  ( ) x = 9 et x = -9
+```

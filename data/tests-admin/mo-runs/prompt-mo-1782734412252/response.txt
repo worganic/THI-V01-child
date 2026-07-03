@@ -1,0 +1,121 @@
+## Analyse du Projet de Création de Maison d'Hôtes
+
+### 1. Synthèse du Projet Immobilier et Touristique
+Ce projet vise à acquérir un bien de caractère en zone rurale (de type corps de ferme ou domaine) pour y exploiter une activité de chambres d'hôtes. Conformément à la réglementation française, la capacité d'accueil est limitée à 5 chambres et 15 personnes simultanément afin de conserver le statut fiscal et administratif de "chambre d'hôtes" (au-delà, l'établissement serait classé comme ERP de type O - hôtel, avec des contraintes d'accessibilité et de sécurité incendie beaucoup plus lourdes).
+
+Le budget total de l'opération est fixé à 300 000 €, comprenant :
+* L'acquisition immobilière (cible à 180 000 € net vendeur).
+* Les frais d'acquisition et de mutation (estimés à 18 000 €).
+* Une enveloppe de travaux de 80 000 € pour la création des salles d'eau privatives, la mise aux normes et la décoration des espaces de vie.
+* Une réserve pour le mobilier et la trésorerie de départ.
+
+### 2. Viabilité Financière et Comptable
+L'apport personnel mobilisé est de 90 000 € (soit 30% du besoin global), ce qui constitue un excellent signal pour les banques. Le besoin de financement externe s'élève à 210 000 € sous forme de prêt à moyen/long terme (15 ans). Le principal risque identifié est l'octroi de ce financement. Pour convaincre le partenaire bancaire, le dossier met en avant un taux d'occupation cible de 50% dès la première année d'exploitation (soit 750 nuitées vendues sur une base d'ouverture de 300 jours par an).
+
+Voici le plan de financement prévisionnel :
+
+```ARRAY: Financement
+| Poste de Dépenses | Montant (€) | Source de Financement | Montant (€) |
+|---|---|---|---|
+| Acquisition immobilière | 180000 | Apport personnel | 90000 |
+| Frais de mutation et notaire | 18000 | Emprunt bancaire | 210000 |
+| Rénovation & normes ERP | 80000 | Subventions estimées | 0 |
+| Mobilier et décoration | 15000 | | |
+| Trésorerie de démarrage | 7000 | | |
+| Total Besoins | 300000 | Total Ressources | 300000 |
+```
+
+Le compte de résultat prévisionnel sur 3 ans montre la rentabilité de l'activité, en intégrant une progression prudente du taux d'occupation (50% en année 1, 60% en année 2, et 70% en année 3) pour un tarif moyen à la nuitée de 90 € :
+
+```ARRAY: Previsionnel
+| Poste de Gestion | Année 1 (50%) | Année 2 (60%) | Année 3 (70%) |
+|---|---|---|---|
+| Chiffre d'Affaires | 67500 | 81000 | 94500 |
+| Charges variables (15%) | 10125 | 12150 | 14175 |
+| Commissions plateformes (12%) | 8100 | 9720 | 11340 |
+| Charges fixes (Énergie, Assurances, Entretien) | 13500 | 14000 | 14500 |
+| Excédent Brut d'Exploitation (EBE) | 35775 | 45130 | 54485 |
+| Frais financiers (Emprunt) | 8000 | 7500 | 7000 |
+| Amortissements du bien & travaux | 12000 | 12000 | 12000 |
+| Résultat Net Estimé | 15775 | 25630 | 35485 |
+```
+
+L'évolution du chiffre d'affaires prévisionnel démontre la dynamique de croissance attendue grâce à la fidélisation des clients et à l'optimisation des canaux de distribution :
+
+```CHART: Evolution CA
+Année 1: 67500
+Année 2: 81000
+Année 3: 94500
+```
+
+### 3. Planification Opérationnelle
+L'objectif est de réaliser l'acquisition du bien et de lancer les travaux dans un délai maximum de 6 mois. Le planning ci-dessous détaille les grandes étapes indispensables.
+
+```ARRAY: Planning
+| N° | Date | Étape | Objectif | Responsable | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Cadrage et Recherche | Prospection et sélection finale du corps de ferme | Promoteur | En cours |
+| 2 | 2026-08-15 | Négociation | Signature du compromis de vente chez le notaire | Promoteur | À faire |
+| 3 | 2026-09-01 | Dossier de Financement | Dépôt des demandes de prêt auprès des banques | Comptable | À faire |
+| 4 | 2026-11-01 | Obtention du Financement | Réception des offres de prêt officielles | Promoteur | À faire |
+| 5 | 2026-12-15 | Signature de l'Acte | Signature de l'acte authentique et remise des clés | Notaire | À faire |
+| 6 | 2026-12-20 | Lancement des Travaux | Rénovation des chambres et mise aux normes de sécurité | Artisans | À faire |
+```
+
+L'agenda ci-dessous matérialise les jalons temporels et rendez-vous cruciaux pour les 6 prochains mois :
+
+```AGENDA: Jalons
+2026-07-15 | 10:00-12:00 | Visite corps de ferme | Première sélection de biens ruraux
+2026-08-30 | 14:00-16:00 | Signature compromis | Signature du compromis de vente chez le notaire
+2026-09-15 | 09:00-12:00 | Dépôt dossiers bancaires | Envoi des demandes de financement aux banques partenaires
+2026-11-15 | 11:00-12:00 | Réception offres de prêt | Réception et analyse des offres de prêt
+2026-12-15 | 14:00-17:00 | Signature acte authentique | Remise des clés et transfert de propriété
+2026-12-22 | 08:00-17:00 | Début des travaux | Lancement des chantiers de rénovation et de mise aux normes ERP
+```
+
+### 4. Suivi et Pilotage des Indicateurs
+Pour mesurer le succès de l'opération, un tableau de bord des indicateurs de réussite est établi.
+
+```ARRAY: Suivi
+| Indicateur Clé | Cible Objectif | Valeur Actuelle | Écart constaté |
+|---|---|---|---|
+| Taux d'occupation annuel | 50% | 0% | -50% |
+| Budget travaux consommé | 80000 | 0 | 80000 |
+| Chambres d'hôtes prêtes | 5 | 0 | -5 |
+| Financement bancaire accordé | 210000 | 0 | -210000 |
+```
+
+### 5. Plan d'Action (Trello)
+Les tâches et actions prioritaires à mener immédiatement sont organisées dans le tableau d'avancement suivant :
+
+```TRELLO: Avancement
+### À faire
+- [ ] Solliciter les subventions régionales et départementales pour le tourisme vert `[low]`
+- [ ] Obtenir des devis détaillés d'artisans pour la mise aux normes incendie `[high]`
+- [ ] Rédiger les statuts de la société d'exploitation (EI ou SARL) `[medium]`
+- [ ] Effectuer la déclaration de travaux en mairie pour le changement de destination `[medium]`
+### En cours
+- [ ] Visiter les propriétés présélectionnées en zone rurale `[high]`
+  Cible : corps de ferme ou domaine sous les 200 000 € net vendeur
+- [ ] Finaliser le Business Plan comptable officiel `[critical]`
+  Dossier de présentation complet pour les banques
+### Terminé
+- [ ] Valider l'étude de marché et la capacité d'accueil maximale `[medium]`
+  Choix de la limitation à 5 chambres et 15 personnes maximum
+```
+
+### 6. Validation Décisionnelle
+Avant d'engager les fonds d'acquisition, l'investisseur doit procéder aux vérifications suivantes :
+
+```FORM: Validation
+* **Faisabilité Financière & Prêt Bancaire :**
+  * [ ] L'apport de 90 000 € (30%) est disponible sur un compte bloqué
+  * [ ] Au moins 2 banques ont émis un avis de faisabilité sur le dossier de 210 000 €
+  * [ ] Le devis global de rénovation de 80 000 € intègre une marge pour imprévus (10%)
+* **Conformité Technique & Réglementaire :**
+  * ( ) Validé : Le bien permet l'aménagement de 5 chambres d'hôtes conformes ERP sans travaux structurels majeurs
+  * ( ) Non validé : Le bien nécessite des transformations lourdes sortant du cadre budgétaire
+* **Choix Juridique & Fiscal :**
+  * ( ) Option A : Régime de la micro-entreprise (abattement forfaitaire de 71%)
+  * ( ) Option B : Régime réel simplifié (amortissement de l'immeuble et des travaux)
+```

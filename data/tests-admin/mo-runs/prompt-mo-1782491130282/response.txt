@@ -1,0 +1,34 @@
+* **Niveau scolaire ciblé pour l'apprenant :**
+  * ( ) Primaire (du CP au CM2)
+  * ( ) Collège (de la 6ème à la 3ème)
+  * ( ) Lycée (de la Seconde à la Terminale)
+  * ( ) Enseignement supérieur (Université, Classes Préparatoires)
+  * ( ) Autre : ______
+
+* **Matière ou branche des mathématiques à travailler :**
+  * [ ] Algèbre, arithmétique et calculs
+  * [ ] Analyse, fonctions et suites
+  * [ ] Géométrie plane et dans l'espace
+  * [ ] Probabilités et statistiques
+  * [ ] Autre : ______
+
+* **Objectif principal du plan de travail et des cours :**
+  * ( ) Remise à niveau et consolidation des bases
+  * ( ) Soutien régulier et suivi du programme scolaire
+  * ( ) Préparation intensive à un examen (Brevet, Bac, etc.)
+  * ( ) Approfondissement et perfectionnement
+  * ( ) Autre : ______
+
+* **Format souhaité pour les cours et les exercices :**
+  * [ ] Résumés de cours synthétiques
+  * [ ] Exercices d'application directe corrigés
+  * [ ] Exercices d'entraînement et de réflexion plus complexes
+  * [ ] Planning de travail hebdomadaire
+  * [ ] Autre : ______
+
+* **Durée totale ou rythme de travail prévu :**
+  * ( ) Intensif sur quelques jours à une semaine
+  * ( ) À court terme (1 mois)
+  * ( ) À moyen terme (un trimestre)
+  * ( ) À long terme (toute l'année scolaire)
+  * ( ) Autre : ______

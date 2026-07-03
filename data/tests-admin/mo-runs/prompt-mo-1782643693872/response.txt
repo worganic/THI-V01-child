@@ -1,0 +1,44 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Domaine ou matière spécifique des mathématiques à travailler :**
+  * [ ] Algèbre et Analyse
+  * [ ] Géométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique
+  * [ ] Autre : ______
+
+* **Niveau de départ et objectif mesurable visé :**
+  * [ ] Niveau débutant - Objectif : Acquisition des bases et remise à niveau
+  * [ ] Niveau intermédiaire - Objectif : Consolidation et amélioration des notes (ex: +3 points de moyenne)
+  * [ ] Niveau avancé - Objectif : Perfectionnement et préparation à un examen/concours (ex: obtention d'une mention)
+  * [ ] Autre : ______
+
+* **Durée de l'accompagnement et date de début souhaitée :**
+  * ( ) Court terme (1 à 4 semaines) - Début immédiat
+  * ( ) Moyen terme (1 à 3 mois) - Début dans quelques semaines
+  * ( ) Long terme (Trimestre ou année scolaire complète) - Début à la rentrée
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 à 3 séances par semaine
+  * ( ) Quotidien (stage intensif)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation préférées pour mesurer la progression :**
+  * [ ] Quiz et QCM réguliers
+  * [ ] Devoirs surveillés classiques (notes sur 20)
+  * [ ] Auto-évaluation et bilans de compétences
+  * [ ] Autre : ______
+
+* **Points prioritaires ou difficultés majeures à travailler :**
+  * [ ] Méthodologie et rigueur de rédaction
+  * [ ] Compréhension des concepts théoriques et formules
+  * [ ] Application pratique et résolution de problèmes complexes
+  * [ ] Gestion du stress et du temps lors des examens
+  * [ ] Autre : ______

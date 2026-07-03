@@ -1,0 +1,86 @@
+# Programme de Formation Personnalisé en Mathématiques
+
+Bonjour ! En tant qu'expert en formation en mathématiques, je vous souhaite la bienvenue dans ce programme d'accompagnement sur mesure. L'apprentissage des mathématiques nécessite de la rigueur, de la régularité et une approche structurée adaptée à chaque profil.
+
+Afin de concevoir le parcours d'apprentissage idéal, veuillez remplir le formulaire de diagnostic ci-dessous.
+
+---
+
+## 1. Diagnostic de l'Élève (Formulaire)
+
+Veuillez préciser vos besoins en répondant aux questions suivantes :
+
+*   **Niveau scolaire actuel :**
+    *   [ ] Primaire (préciser la classe : ______ )
+    *   [ ] Collège (6ème, 5ème, 4ème, 3ème)
+    *   [ ] Lycée (Seconde, Première Générale/Technologique, Terminale Générale/Technologique/Spécialité)
+    *   [ ] Enseignement Supérieur (Licence, Prépa, École d'ingénieurs, etc.)
+    *   [ ] Autre / Reconversion professionnelle
+
+*   **Matière / Chapitre spécifique à travailler :**
+    *   [ ] Algèbre & Arithmétique (Nombres, équations, systèmes, fractions...)
+    *   [ ] Géométrie (Théorèmes classiques, géométrie dans l'espace, vecteurs...)
+    *   [ ] Analyse (Fonctions, dérivées, intégrales, limites, suites...)
+    *   [ ] Probabilités & Statistiques (Dénombrement, lois de probabilité, statistiques descriptives...)
+    *   [ ] Algorithmique & Programmation (Python, logique...)
+
+*   **Objectifs visés :**
+    *   [ ] Remise à niveau / Consolidation des bases
+    *   [ ] Préparation à un examen (Brevet, Baccalauréat, Concours)
+    *   [ ] Perfectionnement / Anticipation du programme de l'année suivante
+
+*   **Disponibilité hebdomadaire pour le travail personnel :**
+    *   [ ] 1 à 2 heures
+    *   [ ] 3 à 5 heures
+    *   [ ] Plus de 5 heures
+
+---
+
+## 2. Plan de Travail Standardisé (Exemple sur 4 semaines)
+
+Une fois vos réponses reçues, nous adapterons ce plan. Voici la structure type d'un module d'apprentissage :
+
+| Étape | Activité | Objectif | Temps estimé |
+| :--- | :--- | :--- | :--- |
+| **Semaine 1** | Évaluation diagnostique & Théorie de base | Identifier les lacunes et s'approprier les définitions fondamentales. | 2 heures |
+| **Semaine 2** | Applications directes du cours | Savoir appliquer les formules et propriétés dans des cas simples. | 3 heures |
+| **Semaine 3** | Exercices d'approfondissement | Résoudre des problèmes plus complexes et croiser les notions. | 3 heures |
+| **Semaine 4** | Évaluation finale & Bilan | Valider les acquis en conditions d'examen et identifier les points de vigilance. | 2 heures |
+
+---
+
+## 3. Structure d'un Cours Type
+
+Chaque séance ou chapitre suit une progression logique pour ancrer durablement les connaissances :
+
+1.  **L'Essentiel du Cours :** Définitions claires, propriétés indispensables et théorèmes clés.
+2.  **Exemples d'Application Immédiate :** Exercices résolus pas à pas pour illustrer la théorie.
+3.  **Les Pièges à Éviter :** Liste des erreurs fréquentes commises par les élèves.
+4.  **Fiche de Synthèse :** Carte mentale ou résumé visuel à mémoriser.
+
+---
+
+## 4. Exercices Progressifs (Exemple d'illustration)
+
+*Voici un échantillon de la progressivité des exercices proposés (exemple niveau Seconde/Première sur les fonctions) :*
+
+### Niveau 1 : Application directe (Facile)
+**Énoncé :** Soit la fonction $f$ définie sur $\mathbb{R}$ par $f(x) = 3x^2 - 5x + 2$. Calculer l'image de $2$ et de $-1$ par la fonction $f$.
+*   *Objectif :* Maîtriser le calcul d'images par substitution.
+
+### Niveau 2 : Approfondissement (Moyen)
+**Énoncé :** Résoudre dans $\mathbb{R}$ l'équation $f(x) = 2$. Interpréter graphiquement le résultat.
+*   *Objectif :* Résoudre une équation du second degré simple et faire le lien avec la géométrie analytique.
+
+### Niveau 3 : Problème de synthèse (Difficile)
+**Énoncé :** Déterminer les coordonnées des points d'intersection de la courbe représentative de $f$ avec la droite d'équation $y = x + 2$.
+*   *Objectif :* Modéliser une situation géométrique par un système d'équations et le résoudre algébriquement.
+
+---
+
+## 5. Méthodologie pour Réussir
+
+Pour progresser efficacement en mathématiques, voici les 3 règles d'or :
+1.  **Ne jamais lire une correction sans avoir cherché :** Passer au moins 10 à 15 minutes sur un exercice difficile développe la plasticité cérébrale et la recherche de solutions.
+2.  **Refaire les calculs par soi-même :** Comprendre une démonstration ou un calcul au tableau n'est pas suffisant pour savoir le reproduire seul le jour de l'évaluation.
+3.  **Ficher régulièrement :** Noter les formules, les méthodes types et ses propres erreurs sur des fiches de révision pour y revenir régulièrement.

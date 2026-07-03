@@ -1,0 +1,41 @@
+* **Niveau scolaire de l'élève :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Matière / domaine des mathématiques à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations...)
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Durée de la formation et date de début :**
+  * ( ) Court terme (1 à 4 semaines) - Début : ______
+  * ( ) Moyen terme (1 à 3 mois) - Début : ______
+  * ( ) Long terme (toute l'année scolaire) - Début : ______
+
+* **Fréquence des séances de travail :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 fois par semaine
+  * ( ) Plus de 2 fois par semaine
+  * ( ) Autre : ______
+
+* **Niveau de départ et objectif mesurable :**
+  * [ ] Niveau fragile (moyenne < 8/20) vers un objectif de ______/20
+  * [ ] Niveau moyen (moyenne 8-12/20) vers un objectif de ______/20
+  * [ ] Niveau solide (moyenne > 12/20) vers un objectif de ______/20
+  * [ ] Préparation à un examen (Brevet, Bac, Concours) : ______
+
+* **Modalités d'évaluation privilégiées :**
+  * [ ] QCM et quiz rapides
+  * [ ] Devoirs écrits notés sur 20
+  * [ ] Exercices d'auto-évaluation
+  * [ ] Autre : ______
+
+* **Points prioritaires à travailler :**
+  * [ ] Assimilation des notions de cours
+  * [ ] Rigueur de la rédaction et démonstrations
+  * [ ] Rapidité et automatismes de calcul
+  * [ ] Résolution de problèmes complexes

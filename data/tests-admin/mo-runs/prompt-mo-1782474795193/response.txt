@@ -1,0 +1,160 @@
+================================================================================
+          PROGRAMME DE FORMATION ET D'ACCOMPAGNEMENT EN MATHÉMATIQUES
+================================================================================
+Expert en Formation : Antigravity
+Objectif : Accompagnement personnalisé et réussite scolaire
+
+--------------------------------------------------------------------------------
+1. QUESTIONNAIRE DE DIAGNOSTIC ET D'ORIENTATION
+--------------------------------------------------------------------------------
+Afin de concevoir votre parcours d'apprentissage personnalisé, merci de compléter
+les informations suivantes :
+
+A. Informations Générales
+   * Nom et Prénom de l'apprenant : ............................................
+   * Classe / Niveau scolaire actuel :
+     [ ] Collège : [ ] 6ème  [ ] 5ème  [ ] 4ème  [ ] 3ème (Préparation Brevet)
+     [ ] Lycée :  [ ] Seconde  [ ] Première Spécialité  [ ] Terminale Spécialité / Complémentaire / Experte
+     [ ] Enseignement Supérieur : ............................................
+
+B. Matières et Thèmes à travailler (Cochez les thèmes prioritaires)
+   [ ] Nombres et Calculs (Arithmétique, fractions, puissances)
+   [ ] Algèbre (Calcul littéral, équations, inéquations, systèmes)
+   [ ] Analyse (Fonctions, suites numériques, limites, dérivation, intégration)
+   [ ] Géométrie (Vecteurs, géométrie plane, géométrie dans l'espace, trigonométrie)
+   [ ] Probabilités et Statistiques (Combinatoire, lois de probabilité, échantillonnage)
+   [ ] Algorithmique et Programmation (Python)
+
+C. Objectifs de la Formation
+   [ ] Soutien scolaire et remise à niveau (Combler les lacunes)
+   [ ] Consolidation des acquis (Renforcer la moyenne et la confiance)
+   [ ] Perfectionnement et approfondissement (Viser l'excellence / Dossier Parcoursup)
+   [ ] Préparation à un examen (Brevet, Baccalauréat, Concours)
+
+D. Profil d'Apprentissage
+   * Quelles sont vos principales difficultés en mathématiques ?
+     (Ex: Gestion du temps, compréhension des énoncés, rigueur de rédaction, calcul mental...)
+     ...........................................................................
+   * Quel est votre rythme de travail idéal ? (Ex: 2h par semaine en 1 ou 2 séances)
+     ...........................................................................
+
+--------------------------------------------------------------------------------
+2. PLAN DE TRAVAIL TYPE : LES FONCTIONS DE RÉFÉRENCE (NIVEAU : SECONDE)
+--------------------------------------------------------------------------------
+Durée estimée : 4 semaines (à raison de 2 heures de cours particuliers + 2 heures de travail personnel par semaine)
+
+* Semaine 1 : Fondations et Généralités sur les Fonctions
+  - Objectif : Maîtriser le vocabulaire (image, antécédent, ensemble de définition) et la lecture graphique.
+  - Activités : Évaluation diagnostique, cours théorique interactif, exercices de lecture de courbes.
+
+* Semaine 2 : Variations et Extremums
+  - Objectif : Dresser et exploiter un tableau de variations. Identifier les maximums et minimums.
+  - Activités : Cours sur les variations, exercices de modélisation et de tracé de tableaux.
+
+* Semaine 3 : Les Fonctions de Référence (Carrée et Inverse)
+  - Objectif : Connaître les propriétés, les courbes représentatives et les variations des fonctions fondamentales.
+  - Activités : Étude détaillée des fonctions f(x)=x² et f(x)=1/x. Résolution d'équations et inéquations associées.
+
+* Semaine 4 : Consolidation, Bilan et Évaluation
+  - Objectif : Appliquer les connaissances à des problèmes de synthèse et valider les acquis.
+  - Activités : Résolution d'un problème concret d'optimisation (géométrique ou économique), évaluation finale et bilan de compétences.
+
+--------------------------------------------------------------------------------
+3. MODULE DE COURS : LA FONCTION CARRÉE (Niveau Seconde)
+--------------------------------------------------------------------------------
+
+A. DÉFINITION
+La fonction carrée est la fonction f définie sur R (l'ensemble des nombres réels) par :
+   f(x) = x²
+
+Exemples :
+* L'image de 3 par f est : f(3) = 3² = 9.
+* L'image de -5 par f est : f(-5) = (-5)² = 25. (Attention : le carré d'un nombre réel est toujours positif ou nul).
+
+B. VARIATIONS
+La fonction carrée est :
+* Strictement décroissante sur l'intervalle ]-oo ; 0]
+* Strictement croissante sur l'intervalle [0 ; +oo[
+
+Tableau de variations :
+   x   | -oo                 0                 +oo
+  -----+-------------------------------------------
+       |  +oo                                  +oo
+  f(x) |   \                 |                 /
+       |    \                |                /
+       |     \               v               /
+       |                    0
+
+C. REPRÉSENTATION GRAPHIQUE
+Dans un repère orthogonal, la courbe représentative de la fonction carrée est appelée une PARABOLE de sommet l'origine O(0;0).
+Cette courbe admet l'axe des ordonnées comme axe de symétrie. (On dit que la fonction carrée est PAIR car f(-x) = f(x) pour tout réel x).
+
+--------------------------------------------------------------------------------
+4. FICHE D'EXERCICES ET D'APPLICATIONS
+--------------------------------------------------------------------------------
+
+EXERCICE 1 : Application directe et calculs (Difficulté : * )
+Soit f la fonction carrée définie par f(x) = x².
+1. Calculer les images de : 4 ; -1/3 ; racine(7).
+2. Déterminer les antécédents éventuels par f de : 16 ; -9 ; 0.
+
+EXERCICE 2 : Comparaisons sans calculatrice (Difficulté : ** )
+En utilisant le sens de variation de la fonction carrée, comparer les nombres suivants :
+1. a = 2,568²  et  b = 2,57²
+2. c = (-1,4)²  et  d = (-1,5)²
+3. Justifier soigneusement chaque réponse en énonçant la règle du cours.
+
+EXERCICE 3 : Résolution d'inéquations graphiques et algébriques (Difficulté : ** )
+Résoudre dans R les inéquations suivantes :
+1. x² <= 9
+2. x² > 5
+
+EXERCICE 4 : Problème concret de modélisation (Difficulté : *** )
+Un agriculteur souhaite construire un enclos rectangulaire le long d'un mur en pierre existant. Il dispose de 40 mètres de grillage. Le mur sert de quatrième côté et n'a pas besoin de grillage.
+Soit x la largeur du rectangle (perpendiculaire au mur) en mètres.
+1. Exprimer la longueur du rectangle en fonction de x.
+2. Montrer que l'aire A(x) de l'enclos, en mètres carrés, est donnée par :
+   A(x) = -2x² + 40x
+3. Montrer que A(x) peut s'écrire sous la forme : A(x) = 200 - 2(x - 10)²
+4. En déduire la valeur de x pour laquelle l'aire de l'enclos est maximale. Quelle est alors cette aire maximale ?
+
+--------------------------------------------------------------------------------
+5. CORRIGÉS DÉTAILLÉS ET CONSEILS MÉTHODOLOGIQUES
+--------------------------------------------------------------------------------
+
+CORRIGÉ DE L'EXERCICE 1 :
+1. Calcul des images :
+   * f(4) = 4² = 16
+   * f(-1/3) = (-1/3)² = 1/9
+   * f(racine(7)) = (racine(7))² = 7
+2. Recherche des antécédents :
+   * Les antécédents de 16 sont les solutions de l'équation x² = 16. Donc x = 4 ou x = -4. (16 a deux antécédents).
+   * L'équation x² = -9 n'a pas de solution réelle car un carré est toujours positif ou nul. Donc -9 n'a pas d'antécédent.
+   * L'équation x² = 0 a pour unique solution x = 0. Donc 0 a un unique antécédent qui est 0.
+
+CORRIGÉ DE L'EXERCICE 2 :
+1. Les nombres 2,568 et 2,57 appartiennent à l'intervalle [0 ; +oo[. Or, sur cet intervalle, la fonction carrée est strictement croissante. Comme 2,568 < 2,57, alors 2,568² < 2,57². Donc a < b.
+2. Les nombres -1,4 et -1,5 appartiennent à l'intervalle ]-oo ; 0]. Or, sur cet intervalle, la fonction carrée est strictement décroissante (elle renverse l'ordre). Comme -1,5 < -1,4, alors (-1,5)² > (-1,4)². Donc d > c (ou c < d).
+
+CORRIGÉ DE L'EXERCICE 3 :
+1. x² <= 9 équivaut à dire que la distance à l'origine du carré est inférieure ou égale à 9. Graphiquement, cela correspond aux points de la parabole situés sous la droite horizontale d'équation y = 9. Les abscisses de ces points sont dans l'intervalle [-3 ; 3].
+   S = [-3 ; 3]
+2. x² > 5. Les solutions sont les abscisses des points de la parabole situés strictement au-dessus de la droite y = 5.
+   S = ]-oo ; -racine(5)[ U ]racine(5) ; +oo[
+
+CORRIGÉ DE L'EXERCICE 4 :
+1. Si la largeur est x, les deux côtés perpendiculaires au mur mesurent x. La longueur restante pour le côté parallèle au mur est donc : 40 - 2x.
+2. L'aire d'un rectangle est Longueur * Largeur.
+   A(x) = x * (40 - 2x) = 40x - 2x² = -2x² + 40x.
+3. Développons l'expression proposée :
+   200 - 2(x - 10)² = 200 - 2(x² - 20x + 100) = 200 - 2x² + 40x - 200 = -2x² + 40x.
+   Les deux expressions sont bien égales.
+4. Pour maximiser A(x), on observe que A(x) = 200 - 2(x - 10)².
+   Comme (x - 10)² est un carré, il est toujours positif ou nul. Donc -2(x - 10)² est toujours négatif ou nul.
+   Par conséquent, A(x) est toujours inférieure ou égale à 200.
+   L'aire maximale est donc de 200 m², et elle est atteinte lorsque le terme soustrait est nul, c'est-à-dire quand x - 10 = 0, soit x = 10 mètres.
+   L'enclos aura alors une largeur de 10 m et une longueur de 20 m (40 - 2*10).
+
+================================================================================
+FIN DU DOCUMENT
+================================================================================

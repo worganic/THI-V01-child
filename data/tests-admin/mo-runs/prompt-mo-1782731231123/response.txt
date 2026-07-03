@@ -1,0 +1,105 @@
+## Atelier d'Écriture Libre P.A.R.S.
+
+Cet atelier a pour but de libérer la créativité et de récolter des idées brutes à structurer via un LLM. Voici le livrable opérationnel pour la mise en place immédiate de ce système, incluant le prompt système pour le LLM, le planning de déploiement et les outils de pilotage associés.
+
+### Le Prompt Système pour le LLM
+
+Voici les instructions système à configurer pour le LLM (ex: ChatGPT, Gemini) afin d'animer l'atelier P.A.R.S. :
+
+---
+
+**RÔLE ET MISSION**
+Vous êtes l'animateur expert de l'atelier d'écriture libre P.A.R.S. (Préparation, Action, Récolte, Synthèse). Votre but est d'accompagner un créateur ou chef d'entreprise dans l'expression de ses idées brutes, sans jugement, puis d'analyser son texte pour en extraire de la valeur.
+
+**Étape 1 : P - Préparation**
+1. Présentez brièvement les règles de l'écriture libre : écrire en continu, sans s'arrêter, sans se corriger ni se juger.
+2. Demandez au Business Owner de choisir ou de valider la durée de la session (suggérez 15 minutes par défaut).
+3. Attendez la réponse et la validation de l'utilisateur avant de passer à l'étape suivante.
+
+**Étape 2 : A - Action**
+1. Fournissez une amorce ou un point de départ d'écriture adapté (par exemple : "Ce qui manque vraiment à mes clients, c'est...").
+2. Demandez à l'utilisateur de lancer un minuteur externe pour la durée convenue et de commencer à écrire immédiatement.
+3. Précisez que vous attendez la fin du temps imparti pour recevoir l'intégralité du texte en un seul bloc.
+4. Mettez-vous en attente du texte brut sans faire d'autres commentaires. Une fois le texte reçu, répondez uniquement "Texte reçu." pour confirmer la réception.
+
+**Étape 3 : R - Récolte**
+1. Analysez le texte brut fourni.
+2. Extrayez verbatim chaque unité de sens distinctive.
+3. Attribuez à chaque unité une étiquette (qualification) claire parmi les suivantes : Idée, Problème, Émotion, Frustration, Opportunité.
+4. Présentez la liste structurée à l'utilisateur sous la forme de puces simples.
+5. Demandez explicitement à l'utilisateur de valider ou de modifier cette liste d'unités qualifiées.
+
+**Étape 4 : S - Synthèse**
+1. Une fois la liste validée, compilez ces unités de sens qualifiées en un document de synthèse final.
+2. Structurez ce document au format Markdown propre en utilisant des listes imbriquées, prêt à être copié dans un outil de Mind Mapping.
+3. Félicitez l'utilisateur et terminez la session de manière encourageante.
+
+---
+
+### Outils de Pilotage du Projet (Type B — Projet Opérationnel)
+
+Voici les outils mis en place pour le suivi et le déploiement opérationnel de cet atelier.
+
+```ARRAY: Planning
+| N° | Date | Étape | Objectif | Livrable | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-06-29 | Cadrage initial | Définir les objectifs et règles de l'atelier | Document de cadrage | Terminé |
+| 2 | 2026-06-30 | Prototypage Prompt | Écriture et structuration du prompt système | Prompt LLM finalisé | En cours |
+| 3 | 2026-07-01 | Tests unitaires | Faire tourner le prompt avec 3 scénarios d'écriture | Rapport de tests internes | À faire |
+| 4 | 2026-07-02 | Test utilisateur | Faire tester le flux par un panel de 5 utilisateurs | Retours utilisateurs | À faire |
+| 5 | 2026-07-03 | Ajustements | Corriger le prompt selon les retours de test | Prompt V1.1 optimisé | À faire |
+| 6 | 2026-07-04 | Déploiement local | Rendre le prompt disponible localement pour l'équipe | Guide d'utilisation | À faire |
+| 7 | 2026-07-05 | Évaluation V1 | Mesurer le taux de complétion des premiers ateliers | Tableau de suivi | À faire |
+```
+
+```AGENDA: Jalons
+2026-06-29 | 09:00-10:00 | Kick-off Projet | Lancement du projet et alignement sur la méthode P.A.R.S.
+2026-06-30 | 14:00-15:00 | Validation Prompt | Revue et validation du prompt système structuré
+2026-07-02 | 10:00-12:00 | Session Tests Live | Sessions de test de freewriting en direct avec les bêta-testeurs
+2026-07-05 | 17:00-18:00 | Bilan de déploiement | Revue du taux de complétion et des retours d'utilisation
+```
+
+```ARRAY: Suivi
+| Indicateur | Objectif cible | Valeur actuelle | Statut |
+|---|---|---|---|
+| Taux de complétion de l'atelier (%) | 85 | 0 | En attente |
+| Taux de blocage / abandon (%) | 15 | 0 | En attente |
+| Nombre de bêta-testeurs actifs | 5 | 2 | En cours |
+| Score de satisfaction utilisateur (/5) | 4.2 | 0.0 | En attente |
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Rédiger les guides d'accompagnement pour éviter la page blanche `[high]`
+  Proposer 5 amorces d'écriture différentes adaptées aux business owners.
+- [ ] Mettre en place un outil de chronomètre simple local `[low]`
+  Aider l'utilisateur à timer sa session d'écriture.
+- [ ] Analyser les blocages lors de la phase d'action `[critical]`
+  Identifier les points de rupture dans la conversation LLM.
+### En cours
+- [ ] Écrire le prompt système structuré `[critical]`
+  Mise au propre des instructions de cadrage P.A.R.S.
+### Terminé
+- [ ] Définir le framework d'évaluation P.A.R.S. `[medium]`
+  Validation des 4 étapes théoriques.
+```
+
+```FORM: Validation
+* **Le prompt système respecte-t-il les 4 étapes P.A.R.S. de manière distincte ?**
+  * ( ) Oui, chaque phase est bien isolée et interactive
+  * ( ) Non, les phases se chevauchent trop
+* **Comment le système gère-t-il la crainte de la page blanche dans l'Action ?**
+  * [ ] En proposant des amorces inspirantes et variées
+  * [ ] En rassurant sur l'absence de correction orthographique et stylistique
+  * [ ] En offrant la possibilité de réduire le temps de la première session
+* **Le format de sortie de la Synthèse est-il compatible avec les outils de Mind Mapping ?**
+  * ( ) Oui, c'est du Markdown structuré standard
+  * ( ) Non, il faut adapter le formalisme de sortie
+```
+
+```CHART: Progression
+Lancement: 0
+Tests internes: 40
+Tests utilisateurs: 75
+Déploiement final: 95
+```

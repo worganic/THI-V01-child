@@ -1,0 +1,511 @@
+[
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "tmp-sec-adm-projets",
+    "data": {
+      "label": "Gestion des projets",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminProjetsComponent",
+      "parentId": "pg-admin"
+    },
+    "reason": "Section ajoutée pour afficher la liste et la configuration des projets."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "tmp-sec-adm-deploiement",
+    "data": {
+      "label": "Déploiements et Git",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminDeploymentsComponent",
+      "parentId": "pg-admin"
+    },
+    "reason": "Section ajoutée pour gérer l'historique des déploiements et le statut Git."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "tmp-sec-adm-theme",
+    "data": {
+      "label": "Thème et style",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminThemeComponent",
+      "parentId": "pg-admin"
+    },
+    "reason": "Section ajoutée pour personnaliser l'apparence visuelle et le CSS."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "tmp-sec-adm-mega-outils",
+    "data": {
+      "label": "Méga-outils partagés",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMegaOutilsComponent",
+      "parentId": "pg-admin"
+    },
+    "reason": "Section ajoutée pour gérer les outils partagés (Trello)."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "tmp-sec-adm-memo",
+    "data": {
+      "label": "Mémos et Aide",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMemoComponent",
+      "parentId": "pg-admin"
+    },
+    "reason": "Section ajoutée pour afficher la documentation technique et configurer l'aide."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "tmp-sec-adm-tools",
+    "data": {
+      "label": "Outils et Widgets",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminToolsComponent",
+      "parentId": "pg-admin"
+    },
+    "reason": "Section ajoutée pour paramétrer la visibilité des widgets flottants."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Tableau des projets",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Affiche la liste des projets avec titre, statut, date, backup et actions d'administration."
+    },
+    "reason": "Ajout du tableau listant les projets dans l'administration des projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Édition de projet",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Modal/formulaire pour modifier le titre et le statut d'un projet."
+    },
+    "reason": "Ajout du formulaire de modification de projet."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Configuration du backup",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Modal de configuration de backup Git/FTP/Drive avec test de connexion."
+    },
+    "reason": "Ajout du formulaire de configuration de backup projet."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Instructions IA du projet",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Éditeur des instructions IA personnalisées pour le projet."
+    },
+    "reason": "Ajout du formulaire de personnalisation des instructions IA projet."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Modèles d'instructions IA",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Liste des modèles réutilisables d'instructions globales pour projets."
+    },
+    "reason": "Ajout du sous-onglet gérant les modèles d'instructions IA globales."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Application d'instruction",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Popup d'application d'un modèle d'instruction globale à un projet."
+    },
+    "reason": "Ajout du formulaire d'application de modèle global à un projet."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Historique des déploiements",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Affiche l'historique des versions enregistrées avec filtres."
+    },
+    "reason": "Ajout du tableau d'historique des déploiements."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Nouveau déploiement",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Formulaire d'enregistrement manuel d'une version."
+    },
+    "reason": "Ajout du formulaire pour ajouter manuellement un déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Statut Git",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Affiche l'état Git du dépôt local."
+    },
+    "reason": "Ajout de la zone affichant le statut de la branche Git locale."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Migrer les versions",
+      "elType": "button",
+      "groupId": "tmp-sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Bouton pour migrer les anciennes versions vers le nouveau schéma."
+    },
+    "reason": "Ajout du bouton de migration des schémas de versions."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Presets de thème",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Sélecteur de presets de couleurs."
+    },
+    "reason": "Ajout du sélecteur de presets de thème."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Personnalisation des couleurs",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Formulaire de modification des couleurs CSS de l'application."
+    },
+    "reason": "Ajout du réglage des couleurs personnalisées."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Styles & Typographies",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Réglage des styles d'arrondi, bordure et typographie."
+    },
+    "reason": "Ajout des réglages de style et typographie globale."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "CSS personnalisé",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Éditeur de code CSS personnalisé injecté à la volée."
+    },
+    "reason": "Ajout de la zone d'édition du CSS personnalisé."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Gestion Trello",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-mega-outils",
+      "components": ["AdminMegaOutilsComponent", "TrelloAdminComponent"],
+      "description": "Gestionnaire des instances de Trello partagées entre projets."
+    },
+    "reason": "Ajout du widget de gestion des méga-outils Trello."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Documentation & Mémos",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-memo",
+      "components": ["AdminMemoComponent"],
+      "description": "Commandes Claude Code, raccourcis, conventions et architecture."
+    },
+    "reason": "Ajout de la documentation statique de référence."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Aide contextuelle",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-memo",
+      "components": ["AdminMemoComponent", "WorgHelpTriggerComponent"],
+      "description": "Interface CRUD de gestion des aides contextuelles dynamiques."
+    },
+    "reason": "Ajout de l'interface d'administration des fiches d'aide."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire d'aide",
+      "elType": "form",
+      "groupId": "tmp-sec-adm-memo",
+      "components": ["AdminMemoComponent"],
+      "description": "Modal de création et d'édition pour les aides contextuelles."
+    },
+    "reason": "Ajout du formulaire de saisie pour l'aide contextuelle."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Configuration Outils",
+      "elType": "widget",
+      "groupId": "tmp-sec-adm-tools",
+      "components": ["AdminToolsComponent", "WoToolsAdminComponent"],
+      "description": "Contrôle d'activation/visibilité des widgets flottants externes."
+    },
+    "reason": "Ajout de l'interface de gestion de visibilité des outils flottants."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Nouvelle section",
+      "elType": "button",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Bouton pour ajouter une nouvelle section de test avec génération IA de fonctions."
+    },
+    "reason": "Ajout du bouton de création de section par IA introduit dans mod-426."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire de nouvelle section",
+      "elType": "form",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Popup/formulaire de saisie pour la nouvelle section de tests et choix du modèle/provider IA."
+    },
+    "reason": "Ajout du formulaire de création de section par IA introduit dans mod-426."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Runner automatique IA",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Widget d'exécution automatique des tests par l'IA avec Browser MCP et flux SSE."
+    },
+    "reason": "Ajout du runner automatique IA introduit dans mod-418."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Ouvrir dossier local",
+      "elType": "button",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Bouton pour ouvrir le répertoire du test local dans l'explorateur."
+    },
+    "reason": "Ajout du bouton d'ouverture du répertoire local introduit dans mod-415."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-256z",
+      "to": "group:tmp-sec-adm-projets",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Projets affiche la section de gestion des projets."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-0hbc",
+      "to": "group:tmp-sec-adm-deploiement",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Déploiement affiche la section de gestion des déploiements."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-pj86",
+      "to": "group:sec-adm-config",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Config affiche la section de configuration générale."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-akj2",
+      "to": "group:tmp-sec-adm-theme",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Thème affiche la section de gestion du thème."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-bqll",
+      "to": "group:tmp-sec-adm-mega-outils",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Méga-outils affiche la section des méga-outils."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-ykj8",
+      "to": "group:tmp-sec-adm-memo",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Mémo affiche la section d'aide et documentation."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-kfpo",
+      "to": "group:tmp-sec-adm-tools",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'onglet : l'onglet Outils affiche la section de gestion de la visibilité des widgets."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "group:tmp-sec-adm-projets",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Liaison de navigation : l'administrateur peut ouvrir directement le projet dans l'éditeur."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "group:tmp-sec-adm-projets",
+      "to": "group:pg-documents",
+      "type": "nav",
+      "label": "gérer documents"
+    },
+    "reason": "Liaison de navigation : l'administrateur peut gérer les documents d'instructions globales."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "group:tmp-sec-adm-mega-outils",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Liaison de navigation : permet d'ouvrir une instance de Trello directement dans le projet lié."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "group:tmp-sec-adm-tools",
+      "to": "group:pg-widgets",
+      "type": "relation",
+      "label": "pilote"
+    },
+    "reason": "Liaison fonctionnelle : l'administration des outils pilote l'activation et la visibilité des widgets flottants."
+  }
+]

@@ -1,0 +1,627 @@
+[
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "pg-admin",
+    "data": {
+      "parentId": "grp-mqpkeelq"
+    },
+    "reason": "Rattachement de la page d'administration à la zone conteneur Connecté"
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-tabs",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement structurel de la section Onglets à la page Admin"
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-users",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement structurel de la section Utilisateurs à la page Admin"
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-tests",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement structurel de la section Tests à la page Admin"
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-config",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement structurel de la section Config à la page Admin"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-projets",
+    "data": {
+      "label": "Projets",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminProjetsComponent",
+      "parentId": "pg-admin",
+      "description": "Contenu de l'onglet Projets : liste, configurations IA et sauvegardes"
+    },
+    "reason": "Création de la section de contenu manquante pour l'onglet Projets"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-deploiement",
+    "data": {
+      "label": "Déploiement",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminDeploymentsComponent",
+      "parentId": "pg-admin",
+      "description": "Contenu de l'onglet Déploiement : historique et statut Git local"
+    },
+    "reason": "Création de la section de contenu manquante pour l'onglet Déploiement"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-theme",
+    "data": {
+      "label": "Thème",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminThemeComponent",
+      "parentId": "pg-admin",
+      "description": "Contenu de l'onglet Thème : variables CSS, styles et presets"
+    },
+    "reason": "Création de la section de contenu manquante pour l'onglet Thème"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-mega-outils",
+    "data": {
+      "label": "Méga-outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMegaOutilsComponent",
+      "parentId": "pg-admin",
+      "description": "Contenu de l'onglet Méga-outils : gestion des outils transverses comme Trello"
+    },
+    "reason": "Création de la section de contenu manquante pour l'onglet Méga-outils"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-memo",
+    "data": {
+      "label": "Mémo",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMemoComponent",
+      "parentId": "pg-admin",
+      "description": "Contenu de l'onglet Mémo : aide technique et faq d'administration"
+    },
+    "reason": "Création de la section de contenu manquante pour l'onglet Mémo"
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-tools",
+    "data": {
+      "label": "Outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminToolsComponent",
+      "parentId": "pg-admin",
+      "description": "Contenu de l'onglet Outils : gestion de la visibilité des widgets"
+    },
+    "reason": "Création de la section de contenu manquante pour l'onglet Outils"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Liste des projets",
+      "elType": "widget",
+      "groupId": "sec-adm-projets",
+      "url": "/admin/projets/projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Tableau d'administration et d'accès aux projets"
+    },
+    "reason": "Ajout de la table de projets d'administration"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire édition projet",
+      "elType": "form",
+      "groupId": "sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Édition du titre et statut d'un projet"
+    },
+    "reason": "Ajout du formulaire d'édition de projet"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire instructions IA",
+      "elType": "form",
+      "groupId": "sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Configuration des instructions IA personnalisées pour le projet"
+    },
+    "reason": "Ajout du formulaire des instructions IA du projet"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire sauvegardes",
+      "elType": "form",
+      "groupId": "sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Formulaire de configuration des synchronisations Git/FTP"
+    },
+    "reason": "Ajout du formulaire de configuration de sauvegarde"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Modèles d'instructions IA",
+      "elType": "widget",
+      "groupId": "sec-adm-projets",
+      "url": "/admin/projets/ia-instructions",
+      "components": ["AdminProjetsComponent"],
+      "description": "Liste et gestion des documents de modèles d'instructions IA réutilisables"
+    },
+    "reason": "Ajout de la liste des modèles d'instructions IA réutilisables"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire application d'instructions IA",
+      "elType": "form",
+      "groupId": "sec-adm-projets",
+      "url": "embed",
+      "components": ["AdminProjetsComponent"],
+      "description": "Associer un modèle d'instruction IA à un projet"
+    },
+    "reason": "Ajout du formulaire d'application d'un modèle d'instructions"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Statut Git local",
+      "elType": "widget",
+      "groupId": "sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Informations git locales (branche, commit, fichiers modifiés)"
+    },
+    "reason": "Ajout du widget de statut Git local"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Historique des déploiements",
+      "elType": "widget",
+      "groupId": "sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Liste chronologique des versions et déploiements effectués"
+    },
+    "reason": "Ajout de la liste d'historique des déploiements"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Enregistrement déploiement",
+      "elType": "form",
+      "groupId": "sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Enregistrer un nouveau déploiement avec changelog"
+    },
+    "reason": "Ajout du formulaire de création/déclaration de déploiement"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Migration versions",
+      "elType": "button",
+      "groupId": "sec-adm-deploiement",
+      "url": "embed",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Bouton pour lancer la migration de format de versions"
+    },
+    "reason": "Ajout du bouton de migration de format de version"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Configuration des couleurs",
+      "elType": "form",
+      "groupId": "sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Ajustement des couleurs fondamentales du thème (fond, texte, primaire)"
+    },
+    "reason": "Ajout de la configuration des variables de couleurs CSS"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Presets thématiques",
+      "elType": "widget",
+      "groupId": "sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Sélection rapide d'une palette de couleur prédéfinie (Emerald, Amber...)"
+    },
+    "reason": "Ajout du sélecteur de presets de thèmes"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Configuration des styles",
+      "elType": "form",
+      "groupId": "sec-adm-theme",
+      "url": "embed",
+      "components": ["AdminThemeComponent"],
+      "description": "Réglage des polices, tailles, arrondis et espacements"
+    },
+    "reason": "Ajout de la configuration des styles typographiques et de composants"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Types d'outils disponibles",
+      "elType": "widget",
+      "groupId": "sec-adm-mega-outils",
+      "url": "embed",
+      "components": ["AdminMegaOutilsComponent"],
+      "description": "Liste des méga-outils actifs ou activables"
+    },
+    "reason": "Ajout de la liste d'état des types d'outils"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Administration Trello",
+      "elType": "widget",
+      "groupId": "sec-adm-mega-outils",
+      "url": "embed",
+      "components": ["AdminMegaOutilsComponent", "TrelloAdminComponent"],
+      "description": "Gestion des instances Trello partagées"
+    },
+    "reason": "Ajout du composant de gestion d'instances Trello"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Commandes et aide-mémoire",
+      "elType": "widget",
+      "groupId": "sec-adm-memo",
+      "url": "embed",
+      "components": ["AdminMemoComponent"],
+      "description": "Documentation des commandes IA, raccourcis et architecture"
+    },
+    "reason": "Ajout de l'affichage de documentation technique"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Gestion de l'aide contextuelle",
+      "elType": "form",
+      "groupId": "sec-adm-memo",
+      "url": "embed",
+      "components": ["AdminMemoComponent"],
+      "description": "Édition et suppression des fiches d'aide de l'application"
+    },
+    "reason": "Ajout de l'interface de gestion de l'aide/FAQ"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Visibilité des outils projet",
+      "elType": "widget",
+      "groupId": "sec-adm-tools",
+      "url": "embed",
+      "components": ["AdminToolsComponent", "WoToolsAdminComponent"],
+      "description": "Activation et configuration de visibilité des widgets flottants d'outils"
+    },
+    "reason": "Ajout du gestionnaire de visibilité d'outils projet"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Sous-onglet Exécution",
+      "elType": "link",
+      "groupId": "sec-adm-tests",
+      "url": "/admin/tests/execution",
+      "components": ["AdminTestsComponent"],
+      "description": "Lancement et suivi des tests manuels ou automatiques via IA"
+    },
+    "reason": "Ajout du lien d'onglet vers le runner d'exécution de test"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Sous-onglet Résultats",
+      "elType": "link",
+      "groupId": "sec-adm-tests",
+      "url": "/admin/tests/resultats",
+      "components": ["AdminTestsComponent"],
+      "description": "Historique matriciel des résultats de tests"
+    },
+    "reason": "Ajout du lien d'onglet vers la matrice de résultats de test"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Sous-onglet Historique",
+      "elType": "link",
+      "groupId": "sec-adm-tests",
+      "url": "/admin/tests/historique",
+      "components": ["AdminTestsComponent"],
+      "description": "Journal de modification du référentiel des tests"
+    },
+    "reason": "Ajout du lien d'onglet vers l'historique du référentiel"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Bouton Nouvelle section",
+      "elType": "button",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Création d'une nouvelle section de test dans le référentiel"
+    },
+    "reason": "Ajout du bouton de création de section de test"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Runner de test",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Interface interactive d'exécution de tests (Manuel / IA)"
+    },
+    "reason": "Ajout du runner de test"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Matrice des résultats de tests",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Tableau de synthèse historique des résultats OK/KO par run"
+    },
+    "reason": "Ajout du composant matrice de résultats de tests"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Changelog du référentiel",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Affichage chronologique des créations et modifications du référentiel"
+    },
+    "reason": "Ajout du changelog de tests"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Visualiseur Site Map interactif",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "url": "embed",
+      "components": ["AdminTestsComponent"],
+      "description": "Visualisation SVG interactive des zones, pages, sections et liaisons"
+    },
+    "reason": "Ajout du visualiseur graphique interactif de Site Map"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-256z",
+      "to": "group:sec-adm-projets",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Projets et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-0hbc",
+      "to": "group:sec-adm-deploiement",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Déploiement et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-pj86",
+      "to": "group:sec-adm-config",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Config et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-akj2",
+      "to": "group:sec-adm-theme",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Thème et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-bqll",
+      "to": "group:sec-adm-mega-outils",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Méga-outils et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-ykj8",
+      "to": "group:sec-adm-memo",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Mémo et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-kfpo",
+      "to": "group:sec-adm-tools",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage entre l'onglet Outils et sa section de contenu"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-adm-proj-list",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Navigation de la liste des projets vers l'éditeur de projet spécifique"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-adm-mega-outils-trello",
+      "to": "group:pg-editor",
+      "type": "cross-app",
+      "label": "ouvre"
+    },
+    "reason": "Liaison d'ouverture d'instance Trello partagée dans l'éditeur de projet (cross-app)"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-adm-tools-vis",
+      "to": "group:pg-widgets",
+      "type": "relation",
+      "label": "pilote la visibilité"
+    },
+    "reason": "Relation de contrôle de la visibilité des widgets flottants d'outils"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-adm-tests-sitemap-svg",
+      "to": "group:pg-admin",
+      "type": "relation",
+      "label": "visualise"
+    },
+    "reason": "Relation montrant que le Site Map SVG visualise la page d'administration"
+  }
+]

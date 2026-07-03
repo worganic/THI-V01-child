@@ -19,11 +19,11 @@
 
 ---
 
-## `2-5-2-2-2` — Indicateurs de collaboration
+## `2-5-2-2-2` — [modification] Indicateurs de collaboration
 
 - Affichage d'un cadenas vert si la section est verrouillée par l'utilisateur courant
-- Affichage d'un cadenas rouge avec tooltip (nom + heure) si verrouillé par un tiers
-- Affichage d'un cadenas jaune avec texte de la section en rouge/orange si modifications locales en attente non partagées
+- Affichage d'un cadenas rouge (icône `lock`) avec tooltip (nom + heure) si un seul autre utilisateur édite la section ; icône `groups` si plusieurs autres utilisateurs sont présents simultanément, tooltip listant chacun avec son heure de début
+- Affichage d'un cadenas jaune avec texte de la section en rouge/orange si modifications locales en attente non partagées (brouillon local propre à l'utilisateur, jamais partagé tant que "Enregistrer et partager" n'a pas été cliqué)
 - Affichage d'une icône forum clignotante/pulsante (badge conversation) si la section possède des commentaires
 - **Priorité:** critique
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`
@@ -115,15 +115,17 @@
 
 ---
 
-## `2-5-2-2-10` — Verrous de collaboration (projets avec backup)
+## `2-5-2-2-10` — [modification] Présence multi-utilisateurs (projets avec backup)
 
-- Pose de verrou : requête POST /api/collab/{projetId}/nodes/{nodeId}/lock avec identifiants utilisateur
-- Libération de verrou : requête DELETE /api/collab/{projetId}/nodes/{nodeId}/lock
-- Détermination des statuts isLockedByMe, isLockedByOther et isLocalPending
-- Récupération et formattage des détails de verrou (qui et quand) dans le tooltip
+- Pose de présence : requête POST /api/collab/{projetId}/nodes/{nodeId}/lock avec identifiants utilisateur — insère désormais UNE LIGNE PAR UTILISATEUR (table `projet_section_lock`, clé primaire composite `node_id + locked_by_id`), plusieurs utilisateurs peuvent donc être présents simultanément sur le même nœud
+- Libération de présence : requête DELETE /api/collab/{projetId}/nodes/{nodeId}/lock?userId=... — ne retire que la ligne de l'utilisateur courant
+- `ProjetCollabService.locks` est une `Map<string, LockInfo[]>` (liste de présences par nœud, plus une seule) ; `getPresences(nodeId)`/`getOtherEditors(nodeId)` exposent la liste complète/filtrée
+- Détermination des statuts isLockedByMe, isLockedByOther (basés sur `.some()` sur la liste) et isLocalPending
+- Événement SSE `presence` : rediffuse l'état complet des présences sur un nœud à chaque (dé)verrouillage ou balayage TTL (en plus de `lock`/`unlock` conservés)
+- Récupération et formattage des détails de présence (qui et depuis quand, un ou plusieurs noms) dans le tooltip (`getLockTooltip`) — badge sidebar bascule sur l'icône `groups` quand plusieurs autres utilisateurs sont présents
 - Verrouillage automatique lors de la prise de focus en édition d'une section
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `server/server-data.js`
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `server/server-data.js`
 
 ---
 

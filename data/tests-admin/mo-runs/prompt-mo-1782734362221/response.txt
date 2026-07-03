@@ -1,0 +1,41 @@
+* **Horizon temporel et date de démarrage du projet d'achat :**
+  * ( ) Court terme (achat et début des travaux d'ici 6 mois)
+  * ( ) Moyen terme (achat d'ici 6 à 12 mois)
+  * ( ) Long terme (plus de 12 mois)
+  * ( ) Autre : ______
+
+* **Budget global estimé pour l'opération (acquisition, frais et travaux) :**
+  * ( ) Moins de 300 000 €
+  * ( ) De 300 000 € à 750 000 €
+  * ( ) Plus de 750 000 €
+  * ( ) Autre : ______
+
+* **Capacité d'accueil envisagée et contraintes réglementaires :**
+  * ( ) Activité limitée à 5 chambres et 15 personnes (régime classique de la chambre d'hôte)
+  * ( ) Plus de 5 chambres (soumis à la réglementation des ERP - Établissement Recevant du Public)
+  * ( ) Autre : ______
+
+* **Localisation géographique et type de bien ciblés :**
+  * [ ] Campagne ou zone rurale (corps de ferme, domaine)
+  * [ ] Zone touristique (mer, montagne)
+  * [ ] Milieu urbain ou périurbain (maison bourgeoise, hôtel particulier)
+  * [ ] Autre : ______
+
+* **Principaux risques et obstacles identifiés pour ce projet :**
+  * [ ] Obtention du financement bancaire
+  * [ ] Conformité réglementaire et autorisations d'urbanisme (changement d'usage)
+  * [ ] Gestion et coût des travaux de rénovation ou de mise aux normes (sécurité, accessibilité)
+  * [ ] Autre : ______
+
+* **Indicateurs et critères de succès mesurables pour valider le lancement :**
+  * [ ] Taux d'occupation cible (ex : > 50% sur la première année)
+  * [ ] Atteinte du point mort financier dès la première ou deuxième année
+  * [ ] Niveau de satisfaction client (ex : note > 9/10 sur Booking/Google)
+  * [ ] Autre : ______
+
+* **Documents et livrables prioritaires dont vous avez besoin :**
+  * [ ] Business Plan complet (compte de résultat prévisionnel, plan de financement)
+  * [ ] Cahier des charges pour la recherche immobilière (critères de sélection du bien)
+  * [ ] Plan d'action chronologique (jalons de l'achat à l'ouverture)
+  * [ ] Modèles de contrats et documents administratifs (règlement intérieur, déclaration en mairie)
+  * [ ] Autre : ______

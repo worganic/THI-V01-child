@@ -85,7 +85,7 @@ import { FormQuestion, FormEntry } from '@worganic/portail-core/data-access';
           </button>
           @if (secondaryAction) {
             <button class="text-xs px-4 py-2.5 rounded-lg border border-blue-500/30 text-blue-400 font-semibold hover:bg-blue-500/10 transition-colors"
-                    (click)="secondary.emit()">{{ secondaryAction }}</button>
+                    (click)="onSecondary()">{{ secondaryAction }}</button>
           }
           <button class="text-xs px-4 py-2.5 rounded-lg border border-light-border dark:border-white/20 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors"
                   (click)="cancel.emit()">Annuler</button>
@@ -103,7 +103,7 @@ export class FormExecutionPopupComponent implements OnInit {
 
   @Output() submitted = new EventEmitter<FormEntry>();
   @Output() cancel = new EventEmitter<void>();
-  @Output() secondary = new EventEmitter<void>();
+  @Output() secondary = new EventEmitter<FormEntry>();
 
   checkboxAnswers = signal<boolean[][]>([]);
   radioAnswers = signal<number[]>([]);
@@ -155,7 +155,8 @@ export class FormExecutionPopupComponent implements OnInit {
     return false;
   }
 
-  submit() {
+  /** Construit l'entrée de formulaire à partir des réponses cochées/saisies. */
+  private buildEntry(): FormEntry {
     const now = new Date().toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     const answers: Record<string, string | string[]> = {};
 
@@ -179,7 +180,16 @@ export class FormExecutionPopupComponent implements OnInit {
         }
       }
     }
+    return { date: now, user: this.userName, answers };
+  }
 
-    this.submitted.emit({ date: now, user: this.userName, answers });
+  submit() {
+    this.submitted.emit(this.buildEntry());
+  }
+
+  /** Action secondaire (ex: « Générer le livrable maintenant ») : émet AUSSI les réponses
+   *  saisies pour qu'elles ne soient pas perdues si l'utilisateur force la génération. */
+  onSecondary() {
+    this.secondary.emit(this.buildEntry());
   }
 }

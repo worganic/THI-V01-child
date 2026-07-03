@@ -1,0 +1,27 @@
+* **Quel est le format attendu pour l'implémentation de cet atelier P.A.R.S. ? :**
+  * ( ) Un document texte interactif sous forme de guide pas-à-pas
+  * ( ) Une application Web monopage (HTML/CSS/JS) autonome
+  * ( ) Un script d'automatisation (Python ou autre)
+  * ( ) Autre : ______
+* **Quel est l'horizon temporel visé pour la mise en service de cet outil et sa première utilisation ? :**
+  * ( ) Immédiat (dans les prochains jours)
+  * ( ) À court terme (1 à 2 semaines)
+  * ( ) À moyen terme (1 mois ou plus)
+  * ( ) Autre : ______
+* **Quelles sont les principales contraintes techniques ou d'intégration pour ce projet ? :**
+  * [ ] Aucune, exécution purement locale dans le navigateur ou la console
+  * [ ] Intégration dans un site web existant
+  * [ ] Stockage local des données (localStorage ou fichier markdown local)
+  * [ ] Utilisation d'API externes
+  * [ ] Autre : ______
+* **Quels sont les critères de succès mesurables pour cet outil d'atelier ? :**
+  * [ ] Facilité d'utilisation par un utilisateur non technique
+  * [ ] Respect strict du timing et du flux d'écriture (minuteur intégré)
+  * [ ] Précision et pertinence de la récolte (qualification automatique des idées/frustrations)
+  * [ ] Formatage parfait du rapport de synthèse final pour Mind Mapping
+  * [ ] Autre : ______
+* **Quels sont les risques ou blocages majeurs identifiés pour le bon déroulement de cet atelier ? :**
+  * [ ] Abandon de l'utilisateur pendant la phase d'action (15 minutes d'écriture continue)
+  * [ ] Difficulté de l'IA à qualifier correctement les unités de sens dans un texte très décousu
+  * [ ] Perte des données saisies en cas de rafraîchissement de la page
+  * [ ] Autre : ______

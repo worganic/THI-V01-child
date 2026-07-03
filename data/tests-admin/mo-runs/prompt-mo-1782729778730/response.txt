@@ -1,0 +1,34 @@
+* **Format attendu pour le livrable final :**
+  * ( ) Un prompt système structuré pour guider un LLM dans l'animation de l'atelier
+  * ( ) Un document de cadrage méthodologique écrit (PDF / Markdown)
+  * ( ) Une application web interactive (HTML / CSS / JS)
+  * ( ) Autre : ______
+
+* **Horizon temporel et date de démarrage de la mise en œuvre :**
+  * ( ) Immédiat (moins de 2 semaines)
+  * ( ) À court terme (1 mois)
+  * ( ) Autre : ______
+
+* **Étapes ou jalons clés du projet :**
+  * [ ] Prototypage rapide du système P.A.R.S.
+  * [ ] Tests utilisateurs avec des business owners
+  * [ ] Déploiement et intégration dans un outil existant
+  * [ ] Autre : ______
+
+* **Contraintes principales de réalisation (technologies, ressources) :**
+  * [ ] Ressources techniques limitées (pas de dev dédié, utilisation exclusive de prompts)
+  * [ ] Intégration stricte avec un outil tiers (ex: Obsidian, Notion, Miro)
+  * [ ] Budget restreint
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables :**
+  * [ ] Capacité à générer une mind map valide en moins de 30 minutes
+  * [ ] Précision de la qualification des unités de sens (moins de 10% de correction)
+  * [ ] Satisfaction et fluidité de l'atelier pour le business owner
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Réticence de l'utilisateur face à la contrainte du temps ou au concept d'écriture libre
+  * [ ] Difficulté d'analyse et de qualification sémantique automatique par le système
+  * [ ] Complexité d'usage de l'interface ou du prompt
+  * [ ] Autre : ______

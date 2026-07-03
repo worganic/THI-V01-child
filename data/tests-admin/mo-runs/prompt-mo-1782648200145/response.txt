@@ -1,0 +1,27 @@
+### Format et Objectifs
+* **Quel est le format attendu pour le livrable final du système d'atelier P.A.R.S. ?**
+  * ( ) Un document de conception détaillé (Cahier des charges au format Markdown)
+  * ( ) Un prototype de formulaire interactif (HTML / CSS / JavaScript)
+  * ( ) Un script d'automatisation ou un prompt système complet
+  * ( ) Autre : ______
+* **Quels sont les critères de succès mesurables pour cet outil d'atelier ?**
+  * [ ] Autonomie complète de l'utilisateur lors de la session d'écriture
+  * [ ] Fidélité stricte des étapes (P -> A -> R -> S) et de la récolte
+  * [ ] Qualité et formatage sans erreur du fichier de synthèse Markdown final
+  * [ ] Autre : ______
+
+### Planification et Contraintes
+* **Quel est l'horizon temporel pour le démarrage et la réalisation de ce projet ?**
+  * ( ) Immédiat (moins de 24h)
+  * ( ) À court terme (une semaine)
+  * ( ) Autre : ______
+* **Quelles sont les principales contraintes technologiques ou de ressources pour l'implémentation de cet atelier ?**
+  * [ ] Aucune contrainte spécifique
+  * [ ] Intégration dans un outil existant (ex : Notion, Obsidian)
+  * [ ] Utilisation exclusive de technologies web légères (HTML/JS statique)
+  * [ ] Autre : ______
+* **Quels sont les risques ou blocages principaux identifiés pour le bon déroulement de l'atelier ?**
+  * [ ] Perte de données si le navigateur ou la session est rafraîchie
+  * [ ] Difficulté de l'utilisateur à respecter la consigne d'écriture continue
+  * [ ] Erreurs ou imprécisions dans l'extraction automatisée des unités de sens
+  * [ ] Autre : ______

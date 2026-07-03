@@ -1,0 +1,172 @@
+## 📊 Bilan général et suivi du cours
+
+Ce tableau de pilotage vous permet de suivre votre avancement tout au long de la formation.
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| Séance 1 — 2026-06-29 : Théorème de Pythagore | 2026-06-29 | Théorème de Pythagore | Maîtriser le théorème et sa réciproque | À faire |
+| Séance 2 — 2026-07-06 : Théorème de Thalès | 2026-07-06 | Théorème de Thalès | Utiliser le théorème pour calculer des longueurs et prouver le parallélisme | À faire |
+| Séance 3 — 2026-07-13 : Trigonométrie | 2026-07-13 | Trigonométrie | Utiliser le cosinus, le sinus et la tangente pour calculer des angles et des longueurs | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 14:00-15:30 | Séance 1 — 2026-06-29 : Théorème de Pythagore | Cours et exercices sur le théorème de Pythagore et sa réciproque.
+2026-07-06 | 14:00-15:30 | Séance 2 — 2026-07-06 : Théorème de Thalès | Cours et exercices sur le théorème de Thalès et sa réciproque.
+2026-07-13 | 14:00-15:30 | Séance 3 — 2026-07-13 : Trigonométrie | Cours et exercices sur la trigonométrie dans le triangle rectangle.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 — 2026-06-29 : Théorème de Pythagore | 2026-06-29 | | 20 | =C2/D2*100 | =AVG(C2:C4) |
+| Séance 2 — 2026-07-06 : Théorème de Thalès | 2026-07-06 | | 20 | =C3/D3*100 | =AVG(C2:C4) |
+| Séance 3 — 2026-07-13 : Trigonométrie | 2026-07-13 | | 20 | =C4/D4*100 | =AVG(C2:C4) |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer la Séance 1 `[medium]`
+  Lire le cours sur Pythagore et faire les exemples.
+- [ ] Réaliser le QCM de la Séance 1 `[medium]`
+  Valider les acquis sur le théorème de Pythagore.
+- [ ] Préparer la Séance 2 `[medium]`
+  Lire le cours sur Thalès.
+- [ ] Réaliser le QCM de la Séance 2 `[high]`
+  Valider les acquis sur le théorème de Thalès.
+- [ ] Préparer la Séance 3 `[medium]`
+  Apprendre les formules de trigonométrie (SOH CAH TOA).
+- [ ] Réaliser le QCM de la Séance 3 `[critical]`
+  Valider l'ensemble du module de géométrie.
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-06-29 : Théorème de Pythagore
+
+### 📖 Cours : Théorème de Pythagore et sa réciproque
+
+#### 1. Le Théorème de Pythagore
+Dans un triangle rectangle, le carré de la longueur de l'hypoténuse (le côté le plus long, opposé à l'angle droit) est égal à la somme des carrés des longueurs des deux autres côtés.
+Si un triangle ABC est rectangle en A, alors :
+BC² = AB² + AC²
+
+Exemple : Soit ABC un triangle rectangle en A tel que AB = 3 cm et AC = 4 cm. Calculons BC.
+BC² = AB² + AC² = 3² + 4² = 9 + 16 = 25
+Donc BC = 5 cm (car 5² = 25).
+
+#### 2. La Réciproque du Théorème de Pythagore
+Si dans un triangle, le carré du plus long côté est égal à la somme des carrés des deux autres côtés, alors ce triangle est rectangle.
+Si dans un triangle ABC, le plus grand côté est BC et que BC² = AB² + AC², alors le triangle ABC est rectangle en A.
+
+Exemple : Soit un triangle DEF tel que DE = 5 cm, DF = 12 cm et EF = 13 cm. Est-il rectangle ?
+Le plus long côté est [EF].
+EF² = 13² = 169
+DE² + DF² = 5² + 12² = 25 + 144 = 169
+Puisque EF² = DE² + DF², d'après la réciproque du théorème de Pythagore, le triangle DEF est rectangle en D.
+
+### 📝 QCM d'entraînement
+
+```FORM: QCM Séance 1
+* **Question 1 : Si un triangle rectangle a des côtés de l'angle droit mesurant 6 cm et 8 cm, quelle est la longueur de son hypoténuse ?**
+  * ( ) 10 cm
+  * ( ) 14 cm
+  * ( ) 100 cm
+  * ( ) 7 cm
+* **Question 2 : Soit un triangle RST tel que RS = 8 cm, ST = 15 cm et RT = 17 cm. Ce triangle est-il rectangle ?**
+  * ( ) Oui, il est rectangle en S
+  * ( ) Oui, il est rectangle en R
+  * ( ) Non, il n'est pas rectangle
+* **Question 3 : Dans quel type de triangle peut-on appliquer le théorème de Pythagore ?**
+  * ( ) Triangle rectangle uniquement
+  * ( ) Triangle isocèle uniquement
+  * ( ) N'importe quel triangle
+* **Question 4 : Si ABC est un triangle rectangle en B, quelle est l'égalité correcte ?**
+  * ( ) AC² = AB² + BC²
+  * ( ) BC² = AB² + AC²
+  * ( ) AB² = AC² + BC²
+```
+
+## Séance 2 — 2026-07-06 : Théorème de Thalès
+
+### 📖 Cours : Théorème de Thalès et sa réciproque
+
+#### 1. Le Théorème de Thalès
+Soient deux droites (d) et (d') sécantes en un point A.
+Soient B et M deux points de (d), distincts de A.
+Soient C et N deux points de (d'), distincts de A.
+Si les droites (BC) et (MN) sont parallèles, alors :
+AM/AB = AN/AC = MN/BC
+
+Exemple : Dans un triangle ABC, on a M sur [AB] et N sur [AC] avec (MN) parallèle à (BC). Si AB = 6 cm, AM = 2 cm et BC = 9 cm, calculons MN.
+D'après le théorème de Thalès :
+AM/AB = MN/BC => 2/6 = MN/9 => MN = (2 * 9) / 6 = 3 cm.
+
+#### 2. La Réciproque et la Contraposée du Théorème de Thalès
+Soient deux droites sécantes en A. Soient B, M sur l'une et C, N sur l'autre, dans le même ordre.
+- Si AM/AB = AN/AC, alors les droites (BC) et (MN) sont parallèles (Réciproque).
+- Si AM/AB != AN/AC, alors les droites (BC) et (MN) ne sont pas parallèles (Contraposée).
+
+### 📝 QCM d'entraînement
+
+```FORM: QCM Séance 2
+* **Question 1 : Pour pouvoir appliquer le théorème de Thalès, quelle condition géométrique sur les droites est indispensable ?**
+  * ( ) Deux droites doivent être parallèles
+  * ( ) Deux droites doivent être perpendiculaires
+  * ( ) Les triangles doivent être rectangles
+* **Question 2 : Dans une configuration de Thalès avec (DE) parallèle à (BC), on a AD = 3, AB = 9 et AE = 4. Combien vaut AC ?**
+  * ( ) 12
+  * ( ) 8
+  * ( ) 10
+  * ( ) 16
+* **Question 3 : Si AM/AB = 0.5 et AN/AC = 0.5, et que les points A, M, B et A, N, C sont alignés dans le même ordre, que peut-on dire des droites (MN) et (BC) ?**
+  * ( ) Elles sont parallèles
+  * ( ) Elles sont perpendiculaires
+  * ( ) On ne peut pas savoir
+```
+
+## Séance 3 — 2026-07-13 : Trigonométrie
+
+### 📖 Cours : Trigonométrie dans le triangle rectangle
+
+Dans un triangle rectangle, on définit les rapports trigonométriques d'un angle aigu à l'aide des côtés du triangle :
+- Le côté adjacent à l'angle est le côté de l'angle droit qui touche cet angle.
+- Le côté opposé à l'angle est le côté qui ne touche pas cet angle.
+- L'hypoténuse est le côté le plus long.
+
+#### Formules (Moyen mnémotechnique : SOH CAH TOA)
+- Sinus = Opposé / Hypoténuse
+  sin(Angle) = Côté opposé / Hypoténuse
+- Cosinus = Adjacent / Hypoténuse
+  cos(Angle) = Côté adjacent / Hypoténuse
+- Tangente = Opposé / Adjacent
+  tan(Angle) = Côté opposé / Côté adjacent
+
+Exemple : Soit ABC un triangle rectangle en B tel que AC = 10 cm (hypoténuse) et l'angle CAB = 30°. Calculons la longueur BC (côté opposé à CAB).
+sin(CAB) = BC / AC => sin(30°) = BC / 10 => BC = 10 * sin(30°) = 10 * 0.5 = 5 cm.
+
+### 📝 QCM d'entraînement
+
+```FORM: QCM Séance 3
+* **Question 1 : Quel est le moyen mnémotechnique classique pour retenir les trois formules de trigonométrie ?**
+  * ( ) SOH CAH TOA
+  * ( ) SOH TOA CAH
+  * ( ) COH SAH TOA
+* **Question 2 : Dans un triangle rectangle, le cosinus d'un angle aigu est le rapport de :**
+  * ( ) Côté adjacent / Hypoténuse
+  * ( ) Côté opposé / Hypoténuse
+  * ( ) Côté opposé / Côté adjacent
+* **Question 3 : Si la tangente d'un angle de 45° vaut 1, et que le côté adjacent mesure 5 cm, combien mesure le côté opposé ?**
+  * ( ) 5 cm
+  * ( ) 10 cm
+  * ( ) 2.5 cm
+  * ( ) 1 cm
+* **Question 4 : La valeur du sinus ou du cosinus d'un angle aigu dans un triangle rectangle est toujours :**
+  * ( ) Comprise entre 0 et 1
+  * ( ) Supérieure à 1
+  * ( ) Comprise entre -1 et 1
+```

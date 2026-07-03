@@ -1,0 +1,90 @@
+## 📝 Atelier P.A.R.S - Application Web Interactive
+
+L'atelier P.A.R.S (Préparation, Action, Récolte, Synthèse) vise à guider les créateurs d'entreprise et business owners dans un processus d'écriture libre pour débloquer leur créativité et structurer leurs idées. Ce document cadre le déploiement opérationnel d'une application web responsive dédiée à cet atelier, développée sur un horizon d'une semaine par un développeur unique.
+
+### 🎯 Objectifs de l'application
+- **Simplicité & Focus :** Zéro distraction pour la phase d'écriture libre.
+- **Sécurité :** Sauvegarde locale en temps réel pour contrer les risques de perte de données.
+- **Intelligence :** Extraction sémantique des unités de sens (objectifs de précision > 90%).
+
+---
+
+### 📅 Planification globale
+
+```ARRAY: Planning
+| N° | Date | Étape | Objectif | Livrable | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-06-29 | Spécifications | Valider le workflow P.A.R.S et l'UI/UX | Cahier des charges | Terminé |
+| 2 | 2026-06-30 | Phase P (Préparation) | Développer les écrans d'accueil et de configuration | Module de paramétrage | En cours |
+| 3 | 2026-07-01 | Phase A (Action) | Implémenter le minuteur et la zone d'écriture continue | Zone de saisie avec timer | À faire |
+| 4 | 2026-07-02 | Phase R (Récolte) | Intégrer l'algorithme d'extraction et de taggage | Module d'analyse de texte | À faire |
+| 5 | 2026-07-03 | Phase S & Tests | Mettre au point l'export Markdown et les tests d'intégration | Rapport de synthèse final | À faire |
+| 6 | 2026-07-04 | Déploiement | Publier l'application web responsive et effectuer la démo | Application en production | À faire |
+```
+
+---
+
+### ⏱️ Jalons et Réunions clés
+
+```AGENDA: Jalons
+2026-06-29 | 09:00-11:00 | Cadrage initial | Définition des règles et choix du déclencheur standard
+2026-06-30 | 17:00-18:00 | Revue UX/UI | Validation des interfaces de préparation (P)
+2026-07-02 | 14:00-15:00 | Validation algorithmique | Revue du taux d'extraction sémantique (cible > 90%)
+2026-07-04 | 10:00-11:00 | Recette & Clôture | Démo finale de l'application mobile & desktop
+```
+
+---
+
+### 💰 Suivi Budgétaire du Projet
+
+```ARRAY: Budget
+| Poste | Budget prévu | Dépensé | Restant |
+|---|---|---|---|
+| Conception & Design | 800 | 800 | 0 |
+| Développement Frontend | 1500 | 400 | 1100 |
+| Moteur d'Analyse IA | 1000 | 0 | 1000 |
+| Déploiement & Cloud | 200 | 0 | 200 |
+| Total | 3500 | 1200 | 2300 |
+```
+
+---
+
+### 📋 Suivi des Tâches Opérationnelles
+
+```TRELLO: Tâches
+### À faire
+- [ ] Implémenter la sauvegarde automatique locale (localStorage) `[critical]`
+  Prévenir la perte de données en cas d'interruption accidentelle durant les 15 minutes d'écriture brute.
+- [ ] Développer l'algorithme de récolte des unités de sens `[critical]`
+  Extraire verbatim les phrases clés et leur assigner des étiquettes sémantiques (Idée, Problème, Frustration, Émotion).
+- [ ] Concevoir le module d'exportation de la synthèse `[medium]`
+  Générer le rendu final au format Markdown structuré.
+- [ ] Optimiser la responsivité mobile `[medium]`
+  Ajuster la zone d'écriture continue pour les écrans tactiles et claviers virtuels.
+
+### En cours
+- [ ] Créer l'UI de la phase P (Préparation) `[medium]`
+  Intégrer les écrans de configuration de la durée de session (10 à 15 minutes) et du déclencheur d'écriture.
+
+### Terminé
+- [ ] Définir l'architecture technique `[high]`
+  Choix des technologies d'intégration locale et modélisation du flux de données P.A.R.S.
+- [ ] Rédiger les règles fondamentales de l'atelier `[low]`
+  Formuler les consignes d'écriture sans jugement pour guider le business owner.
+```
+
+---
+
+### 🚦 Validation d'Étape (Go/No-Go)
+
+```FORM: Validation Etape R
+* **Taux d'extraction d'unités de sens correct (cible > 90%) :**
+  * ( ) Oui, supérieur à 90% sur le jeu de test
+  * ( ) Non, ajustement de l'algorithme nécessaire
+* **Robustesse de la saisie (sauvegarde automatique en cours de frappe) :**
+  * ( ) Validé, aucune perte de texte lors d'un rechargement forcé
+  * ( ) Non validé, des pertes de caractères subsistent
+* **Conformité aux règles de non-censure (interdiction de retour arrière / correction durant l'action) :**
+  * ( ) Oui, le comportement de l'éditeur force le flux continu
+  * ( ) Non
+```

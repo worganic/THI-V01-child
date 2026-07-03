@@ -38,7 +38,10 @@ const LOG_EDITION_FILE = path.join(BASE_DIR, 'log-edition.txt');
 // ── Versions de contenu de fichiers de projet (source de vérité BDD) ────────
 // Historique immuable : jamais d'UPDATE/DELETE sur projet_content_version,
 // toute correction (restauration, fusion) insère une nouvelle ligne.
-const CHECKPOINT_INTERVAL_MS = 45000;
+// Aucun checkpoint automatique : chaque appel à la route de sauvegarde est
+// désormais un acte volontaire de l'utilisateur (bouton "Enregistrer et
+// partager"), les frappes intermédiaires ne passent que par le brouillon
+// local (voir projet_local_draft plus bas).
 
 function sha256Hex(str) {
     return crypto.createHash('sha256').update(str || '').digest('hex');
@@ -220,7 +223,7 @@ app.use(cors({
         // 'https://app.worganic.com'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Call', 'x-edition-source', 'x-file-version']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Call', 'x-edition-source', 'x-file-version', 'x-base-version-id']
 }));
 
 app.use(express.json({ limit: '50mb' }));
@@ -5531,18 +5534,15 @@ app.post('/api/file-projects/:name/files', async (req, res) => {
         const existing = parentItems.find(i => i.name.toLowerCase() === fileName.toLowerCase());
         if (existing) {
             if (existing.type !== 'file') return res.status(409).json({ error: 'Un dossier porte déjà ce nom' });
-            // Si c'est le même fichier, on met juste à jour le contenu (source de vérité = BDD)
+            // Écriture disque best-effort uniquement — pas de checkpoint BDD automatique ici
+            // (la validation explicite via "Enregistrer et partager" reste seule responsable des
+            // versions BDD ; sinon un checkpoint prématuré avec un contenu encore incomplet
+            // écraserait visuellement le brouillon en cours au prochain rechargement structurel).
             const full = safeProjectPath(req.params.name, existing.path);
             if (full) {
                 try { fs.mkdirSync(path.dirname(full), { recursive: true }); fs.writeFileSync(full, content || '', 'utf8'); }
                 catch (diskErr) { console.warn('[BACKUP] écriture disque échouée (create dedup):', diskErr.message); }
             }
-            const latest = await getLatestVersion(pool, req.params.name, existing.id);
-            await insertContentVersion(pool, {
-                projectId: req.params.name, nodeId: existing.id, filePath: existing.path,
-                content: content || '', baseVersionId: latest?.version_id ?? null, mergedFromVersionId: null,
-                origin: 'checkpoint', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
-            });
             return res.status(200).json({ ...existing, content: content || '' });
         }
 
@@ -5552,11 +5552,9 @@ app.post('/api/file-projects/:name/files', async (req, res) => {
         fs.writeFileSync(full, content || '', 'utf8');
         const newFile = { id: crypto.randomUUID(), type: 'file', name: fileName, path: filePath, order: parentItems.length + 1 };
         parentItems.push(newFile);
-        await insertContentVersion(pool, {
-            projectId: req.params.name, nodeId: newFile.id, filePath: newFile.path,
-            content: content || '', baseVersionId: null, mergedFromVersionId: null,
-            origin: 'checkpoint', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
-        });
+        // Pas de checkpoint BDD automatique à la création : attachContent() bootstrape depuis le
+        // disque (origin migration-bootstrap) à la première lecture si aucune version n'existe
+        // encore, et le vrai checkpoint n'est créé qu'au clic explicite "Enregistrer et partager".
 
         await saveProjectConfig(req.params.name, config);
         projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `create_file ${fileName}`)
@@ -5583,8 +5581,7 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
         const content = req.body.content ?? '';
         const folderId = req.body.folderId || null;
         const publish = req.body.publish === true;
-        const forceCheckpoint = req.body.checkpoint === true;
-        const editionSource = req.headers['x-edition-source'] || (publish ? 'publish' : 'auto-save');
+        const editionSource = req.headers['x-edition-source'] || (publish ? 'publish' : 'manual-save');
         const baseVersionId = req.headers['x-base-version-id'] || req.headers['x-file-version'] || null;
         if (req.headers['x-file-version'] && !req.headers['x-base-version-id']) {
             console.warn('[VERSION] header x-file-version obsolète reçu — le client doit migrer vers x-base-version-id');
@@ -5599,14 +5596,10 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
         }
 
         const latestBeforeSave = await getLatestVersion(pool, req.params.name, req.params.id);
-        const isCheckpointMoment = forceCheckpoint || publish || !latestBeforeSave ||
-            (Date.now() - new Date(latestBeforeSave.created_at).getTime()) >= CHECKPOINT_INTERVAL_MS;
 
-        if (!isCheckpointMoment) {
-            return res.json({ success: true, checkpointed: false });
-        }
-
-        // Moment de checkpoint : transaction + détection de conflit réelle contre la BDD
+        // Transaction + détection de conflit réelle contre la BDD. Cette route n'est
+        // plus appelée que sur une action volontaire de l'utilisateur (Enregistrer et
+        // partager, ou création initiale du fichier) — chaque appel est un checkpoint.
         const conn = await pool.getConnection();
         let versionId = null;
         try {
@@ -5765,11 +5758,13 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                 commitHash: publishCommitHash,
                 timestamp: new Date().toISOString()
             });
-            // Libérer la présence automatiquement au moment de la publication
+            // Libérer uniquement la présence de l'auteur de la publication — un autre
+            // utilisateur peut encore être en train d'éditer la même section en local.
             const unlockId = folderId || req.params.id;
             try {
-                await pool.query('DELETE FROM projet_section_lock WHERE node_id = ? AND projet_id = ?', [unlockId, req.params.name]);
-                broadcastToProject(req.params.name, 'unlock', { nodeId: unlockId, projetId: req.params.name });
+                await pool.query('DELETE FROM projet_section_lock WHERE node_id = ? AND projet_id = ? AND locked_by_id = ?', [unlockId, req.params.name, user.id]);
+                broadcastToProject(req.params.name, 'unlock', { nodeId: unlockId, projetId: req.params.name, userId: user.id });
+                await broadcastPresence(req.params.name, unlockId);
             } catch (e2) {
                 console.error('[LOCK] unlock on publish error:', e2.message);
             }
@@ -5786,6 +5781,72 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
         }
 
         res.json({ success: true, checkpointed: true, versionId, commitHash: publishCommitHash, ftpUploaded: ftpPublishResult?.uploaded ?? null });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Brouillon local par utilisateur (jamais partagé, jamais dans projet_content_version) ──
+
+// GET /api/file-projects/:name/drafts — liste légère des brouillons de l'utilisateur courant sur ce projet
+app.get('/api/file-projects/:name/drafts', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT node_id, folder_id, updated_at FROM projet_local_draft WHERE project_id = ? AND user_id = ?`,
+            [req.params.name, user.id]
+        );
+        res.json(rows.map(r => ({ nodeId: r.node_id, folderId: r.folder_id, updatedAt: r.updated_at })));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/file-projects/:name/files/:id/draft — contenu complet du brouillon de l'utilisateur courant
+app.get('/api/file-projects/:name/files/:id/draft', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT folder_id, content, base_version_id, updated_at FROM projet_local_draft
+             WHERE project_id = ? AND node_id = ? AND user_id = ?`,
+            [req.params.name, req.params.id, user.id]
+        );
+        if (!rows.length) return res.json({ exists: false });
+        const r = rows[0];
+        res.json({ exists: true, folderId: r.folder_id, content: r.content, baseVersionId: r.base_version_id, updatedAt: r.updated_at });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// PUT /api/file-projects/:name/files/:id/draft — écrit/écrase le brouillon de l'utilisateur courant.
+// N'écrit jamais projet_content_version ni le disque : c'est une zone de travail
+// strictement privée, indépendante de la publication et de la structure config.json.
+app.put('/api/file-projects/:name/files/:id/draft', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const content = req.body.content ?? '';
+        const folderId = req.body.folderId || null;
+        const baseVersionId = req.body.baseVersionId || null;
+        await pool.query(
+            `INSERT INTO projet_local_draft (project_id, node_id, user_id, folder_id, content, base_version_id)
+             VALUES (?,?,?,?,?,?)
+             ON DUPLICATE KEY UPDATE folder_id = VALUES(folder_id), content = VALUES(content),
+                 base_version_id = VALUES(base_version_id), updated_at = CURRENT_TIMESTAMP(3)`,
+            [req.params.name, req.params.id, user.id, folderId, content, baseVersionId]
+        );
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/file-projects/:name/files/:id/draft — supprime le brouillon de l'utilisateur courant
+// (après validation réussie via "Enregistrer et partager", ou annulation explicite).
+app.delete('/api/file-projects/:name/files/:id/draft', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        await pool.query(
+            `DELETE FROM projet_local_draft WHERE project_id = ? AND node_id = ? AND user_id = ?`,
+            [req.params.name, req.params.id, user.id]
+        );
+        res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -6084,11 +6145,10 @@ app.post('/api/file-projects/:name/folders', async (req, res) => {
             children: [{ id: contentFileId, type: 'file', name: 'contenu.md', path: contentPath, order: 1 }]
         };
         parentItems.push(newFolder);
-        await insertContentVersion(pool, {
-            projectId: req.params.name, nodeId: contentFileId, filePath: contentPath,
-            content: '', baseVersionId: null, mergedFromVersionId: null,
-            origin: 'checkpoint', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
-        });
+        // Pas de checkpoint BDD automatique à la création : attachContent() bootstrape depuis le
+        // disque (contenu vide, origin migration-bootstrap) à la première lecture si nécessaire —
+        // sinon ce checkpoint vide prématuré écraserait visuellement le brouillon local au premier
+        // rechargement structurel qui suit (ex: ajout d'un titre pendant la frappe).
 
         // Si dossier racine avec outilSlug → ajouter à rootFolderIds de l'outil correspondant
         if (!parentId && outilSlug) {
@@ -8021,11 +8081,24 @@ app.get('/api/collab/:projetId/locks', async (req, res) => {
     }
 });
 
+/** Rediffuse l'état complet des présences actives sur un nœud (0..n utilisateurs). */
+async function broadcastPresence(projetId, nodeId) {
+    const [rows] = await pool.query('SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]);
+    broadcastToProject(projetId, 'presence', {
+        nodeId,
+        projetId,
+        users: rows.map(r => ({
+            nodeId: r.node_id, projetId: r.projet_id,
+            lockedById: r.locked_by_id, lockedByName: r.locked_by_name, lockedAt: r.locked_at
+        }))
+    });
+}
+
 // POST /api/collab/:projetId/nodes/:nodeId/lock
-// Registre de présence "dernier éditeur connu par section" — n'a plus de rôle
-// bloquant (2 users peuvent éditer la même section en même temps). Sert
-// uniquement à afficher une alerte non bloquante côté client. Un balayage TTL
-// (voir plus bas) nettoie les entrées périmées (onglet fermé/crashé).
+// Registre de présence multi-utilisateurs : n'a aucun rôle bloquant (plusieurs users
+// peuvent éditer la même section en même temps, chacun avec son propre brouillon
+// local). Sert uniquement à afficher qui édite quoi et depuis quand côté client.
+// Un balayage TTL (voir plus bas) nettoie les entrées périmées (onglet fermé/crashé).
 app.post('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
     const { projetId, nodeId } = req.params;
     const { userId, userName } = req.body;
@@ -8034,12 +8107,12 @@ app.post('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
         await pool.query(
             `INSERT INTO projet_section_lock (node_id, projet_id, locked_by_id, locked_by_name)
              VALUES (?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE locked_by_id=VALUES(locked_by_id),
-             locked_by_name=VALUES(locked_by_name), locked_at=NOW()`,
+             ON DUPLICATE KEY UPDATE locked_by_name=VALUES(locked_by_name), locked_at=NOW()`,
             [nodeId, projetId, userId, userName || 'Utilisateur']
         );
         const lock = { nodeId, projetId, lockedById: userId, lockedByName: userName || 'Utilisateur', lockedAt: new Date().toISOString() };
         broadcastToProject(projetId, 'lock', lock);
+        await broadcastPresence(projetId, nodeId);
         res.json(lock);
     } catch (e) {
         console.error('[COLLAB] lock error:', e);
@@ -8052,13 +8125,10 @@ app.delete('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
     const { projetId, nodeId } = req.params;
     const userId = req.query.userId;
     try {
-        const [existing] = await pool.query('SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]);
-        if (existing.length === 0) return res.json({ success: true });
-        if (userId && existing[0].locked_by_id !== userId) {
-            return res.status(403).json({ error: 'Vous ne pouvez pas déverrouiller cette section' });
-        }
-        await pool.query('DELETE FROM projet_section_lock WHERE node_id = ?', [nodeId]);
-        broadcastToProject(projetId, 'unlock', { nodeId, projetId });
+        if (!userId) return res.status(400).json({ error: 'userId requis' });
+        await pool.query('DELETE FROM projet_section_lock WHERE node_id = ? AND locked_by_id = ?', [nodeId, userId]);
+        broadcastToProject(projetId, 'unlock', { nodeId, projetId, userId });
+        await broadcastPresence(projetId, nodeId);
         res.json({ success: true });
     } catch (e) {
         console.error('[COLLAB] unlock error:', e);
@@ -8071,18 +8141,40 @@ app.delete('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
 setInterval(async () => {
     try {
         const [stale] = await pool.query(
-            'SELECT node_id, projet_id FROM projet_section_lock WHERE locked_at < (NOW() - INTERVAL 5 MINUTE)'
+            'SELECT node_id, projet_id, locked_by_id FROM projet_section_lock WHERE locked_at < (NOW() - INTERVAL 5 MINUTE)'
         );
         if (!stale.length) return;
         await pool.query('DELETE FROM projet_section_lock WHERE locked_at < (NOW() - INTERVAL 5 MINUTE)');
+        const seenNodes = new Set();
         for (const row of stale) {
-            broadcastToProject(row.projet_id, 'unlock', { nodeId: row.node_id, projetId: row.projet_id });
+            broadcastToProject(row.projet_id, 'unlock', { nodeId: row.node_id, projetId: row.projet_id, userId: row.locked_by_id });
+            const key = `${row.projet_id}::${row.node_id}`;
+            if (!seenNodes.has(key)) {
+                seenNodes.add(key);
+                await broadcastPresence(row.projet_id, row.node_id);
+            }
         }
         console.log(`[PRESENCE] ${stale.length} présence(s) périmée(s) nettoyée(s)`);
     } catch (e) {
         console.warn('[PRESENCE] TTL sweep error:', e.message);
     }
 }, 60 * 1000);
+
+// Balayage périodique (best-effort) : purge les brouillons locaux abandonnés
+// depuis longtemps (utilisateur parti sans jamais valider ni annuler). TTL
+// large car un brouillon peut légitimement rester ouvert plusieurs jours.
+setInterval(async () => {
+    try {
+        const [result] = await pool.query(
+            'DELETE FROM projet_local_draft WHERE updated_at < (NOW() - INTERVAL 30 DAY)'
+        );
+        if (result.affectedRows) {
+            console.log(`[DRAFT] ${result.affectedRows} brouillon(s) local(aux) abandonné(s) nettoyé(s)`);
+        }
+    } catch (e) {
+        console.warn('[DRAFT] TTL sweep error:', e.message);
+    }
+}, 60 * 60 * 1000);
 
 // ============================================================
 // Admin Tests — Sessions de tests manuels sur fonctions.md
@@ -11866,10 +11958,17 @@ app.listen(PORT, async () => {
             locked_by_id   VARCHAR(128)  NOT NULL,
             locked_by_name VARCHAR(128)  NOT NULL DEFAULT '',
             locked_at      DATETIME      DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (node_id),
+            PRIMARY KEY (node_id, locked_by_id),
             INDEX idx_psl_projet (projet_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] projet_section_lock init error:', e.message));
+
+    // Migration : anciennes installations où la PK était sur node_id seul (un seul
+    // éditeur connu par section). Passage à une PK composite pour supporter plusieurs
+    // présences simultanées sur le même nœud. Idempotent — no-op si déjà migré.
+    await pool.query(`
+        ALTER TABLE projet_section_lock DROP PRIMARY KEY, ADD PRIMARY KEY (node_id, locked_by_id)
+    `).catch(() => { /* déjà migré, ou PK déjà composite */ });
 
     // Historique immuable du contenu des fichiers de projet (source de vérité,
     // remplace fileVersions en mémoire + les écrasements disque à l'aveugle).
@@ -11893,6 +11992,24 @@ app.listen(PORT, async () => {
             INDEX idx_pcv_base (base_version_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `).catch(e => console.error('[DB] projet_content_version init error:', e.message));
+
+    // Brouillon local par utilisateur : contenu tapé mais pas encore validé via
+    // "Enregistrer et partager". N'alimente jamais projet_content_version — sert
+    // uniquement de zone de travail privée par (projet, nœud, utilisateur), pour
+    // que deux utilisateurs puissent éditer la même section sans s'écraser.
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS projet_local_draft (
+            project_id       VARCHAR(255) NOT NULL,
+            node_id          VARCHAR(64)  NOT NULL,
+            user_id          VARCHAR(64)  NOT NULL,
+            folder_id        VARCHAR(64)  DEFAULT NULL,
+            content          LONGTEXT     NOT NULL,
+            base_version_id  VARCHAR(36)  DEFAULT NULL,
+            updated_at       DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+            PRIMARY KEY (project_id, node_id, user_id),
+            INDEX idx_pld_project (project_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch(e => console.error('[DB] projet_local_draft init error:', e.message));
 
     // Réglages plateforme (clé/valeur) — ex. activation globale de la synchro FTP.
     await pool.query(`

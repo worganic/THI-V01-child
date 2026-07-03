@@ -1,0 +1,31 @@
+* **Niveau scolaire ciblé :**
+  * ( ) Primaire (CP - CM2)
+  * ( ) Collège (6e - 3e)
+  * ( ) Lycée (Seconde - Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Branche des mathématiques ou matière précise à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations, suites...)
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique
+  * [ ] Autre : ______
+
+* **Objectif principal de la formation :**
+  * [ ] Remise à niveau / Consolidation des bases
+  * [ ] Préparation à un examen (Brevet, Bac, etc.)
+  * [ ] Perfectionnement et dépassement du programme
+  * [ ] Autre : ______
+
+* **Durée estimée ou rythme souhaité pour le plan de travail :**
+  * ( ) Session intensive sur quelques jours
+  * ( ) Rythme hebdomadaire sur 1 mois
+  * ( ) Rythme hebdomadaire sur un trimestre ou plus
+  * ( ) Autre : ______
+
+* **Format attendu pour les cours et exercices :**
+  * [ ] Fiches de cours synthétiques avec exemples
+  * [ ] Exercices d'application directe
+  * [ ] Problèmes de réflexion / Situations concrètes
+  * [ ] Quiz d'auto-évaluation / QCM

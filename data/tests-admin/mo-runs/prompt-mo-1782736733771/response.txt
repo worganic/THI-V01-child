@@ -1,0 +1,215 @@
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-07-01 | Les bases du calcul algébrique | Maîtriser le calcul fractionnaire, les puissances et les développements simples | À faire |
+| Séance 2 | 2026-07-08 | Équations et inéquations du premier degré | Résoudre des équations et des inéquations du premier degré | À faire |
+| Séance 3 | 2026-07-15 | Introduction et généralités sur les fonctions | Définir une fonction, calculer des images/antécédents et lire un graphique | À faire |
+| Séance 4 | 2026-07-22 | Fonctions de référence et second degré | Connaître les fonctions carré et inverse et résoudre des équations du second degré | À faire |
+```
+
+```AGENDA: Séances
+2026-07-01 | 14:00-16:00 | Séance 1 — 2026-07-01 : Les bases du calcul algébrique | Séance d'introduction sur le calcul algébrique.
+2026-07-08 | 14:00-16:00 | Séance 2 — 2026-07-08 : Équations et inéquations du premier degré | Résolution d'équations et inéquations.
+2026-07-15 | 14:00-16:00 | Séance 3 — 2026-07-15 : Introduction et généralités sur les fonctions | Étude des concepts clés sur les fonctions.
+2026-07-22 | 14:00-16:00 | Séance 4 — 2026-07-22 : Fonctions de référence et second degré | Fonctions de référence et initiation au second degré.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 — 2026-07-01 : Les bases du calcul algébrique | 2026-07-01 | | 5 | =C2/D2*100 | |
+| Séance 2 — 2026-07-08 : Équations et inéquations du premier degré | 2026-07-08 | | 5 | =C3/D3*100 | |
+| Séance 3 — 2026-07-15 : Introduction et généralités sur les fonctions | 2026-07-15 | | 5 | =C4/D4*100 | |
+| Séance 4 — 2026-07-22 : Fonctions de référence et second degré | 2026-07-22 | | 5 | =C5/D5*100 | =AVG(C2:C5) |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer la Séance 1 `[medium]`
+  Revoir les notions de fraction et de distributivité.
+- [ ] Préparer la Séance 2 `[medium]`
+  Revoir la règle du produit nul et le changement de sens des inéquations.
+- [ ] Préparer la Séance 3 `[medium]`
+  S'entraîner sur les lectures graphiques.
+- [ ] Préparer la Séance 4 `[medium]`
+  Se familiariser avec le second degré.
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-07-01 : Les bases du calcul algébrique
+
+### 1. Rappels sur les fractions
+Pour additionner ou soustraire deux fractions, on les met au même dénominateur :
+a/b + c/d = (ad + bc)/(bd)
+
+Pour multiplier deux fractions, on multiplie les numérateurs entre eux et les dénominateurs entre eux :
+(a/b) * (c/d) = (ac)/(bd)
+
+Pour diviser par une fraction, on multiplie par son inverse :
+(a/b) / (c/d) = (a/b) * (d/c) = (ad)/(bc)
+
+### 2. Les puissances
+Soit a un nombre réel non nul et n, m deux entiers relatifs :
+- a^n * a^m = a^(n+m)
+- (a^n)^m = a^(n*m)
+- a^n / a^m = a^(n-m)
+- a^(-n) = 1 / a^n
+
+### 3. Le développement
+Développer, c'est transformer un produit en une somme.
+- Simple distributivité : k(a + b) = ka + kb
+- Double distributivité : (a + b)(c + d) = ac + ad + bc + bd
+- Identités remarquables (indispensables au lycée) :
+  - (a + b)^2 = a^2 + 2ab + b^2
+  - (a - b)^2 = a^2 - 2ab + b^2
+  - (a - b)(a + b) = a^2 - b^2
+
+```FORM: QCM Séance 1
+* **Question 1 : Quelle est la valeur simplifiée de la fraction 2/3 - 1/4 ?**
+  * ( ) 1/12
+  * ( ) 5/12
+  * ( ) 3/7
+* **Question 2 : Développer l'expression (2x - 3)^2.**
+  * ( ) 4x^2 - 9
+  * ( ) 4x^2 - 12x + 9
+  * ( ) 4x^2 - 6x + 9
+* **Question 3 : Simplifier l'expression (x^3 * x^5) / x^2.**
+  * ( ) x^6
+  * ( ) x^8
+  * ( ) x^10
+* **Question 4 : Quelle est la factorisation de 9x^2 - 16 ?**
+  * ( ) (3x - 4)^2
+  * ( ) (9x - 4)(9x + 4)
+  * ( ) (3x - 4)(3x + 4)
+* **Question 5 : Quelle est la valeur de -3^2 + (-3)^2 ?**
+  * ( ) -18
+  * ( ) 0
+  * ( ) 18
+```
+
+## Séance 2 — 2026-07-08 : Équations et inéquations du premier degré
+
+### 1. Équations du premier degré
+Une équation du premier degré se présente sous la forme ax + b = c.
+Pour la résoudre :
+1. On isole le terme en x d'un côté de l'égalité : ax = c - b.
+2. On divise par a (si a est non nul) : x = (c - b)/a.
+
+### 2. Équations-produits
+Un produit de facteurs est nul si et seulement si l'un au moins des facteurs est nul.
+A(x) * B(x) = 0 équivaut à A(x) = 0 ou B(x) = 0.
+Exemple : (x - 3)(2x + 4) = 0 <=> x - 3 = 0 ou 2x + 4 = 0 <=> x = 3 ou x = -2.
+
+### 3. Inéquations du premier degré
+La méthode de résolution est similaire à celle des équations, à une règle fondamentale près :
+Si l'on multiplie ou divise les deux membres d'une inéquation par un nombre négatif, on doit changer le sens de l'inégalité.
+Exemple : -3x > 6 <=> x < 6 / (-3) <=> x < -2.
+
+```FORM: QCM Séance 2
+* **Question 1 : Résoudre l'équation 3x - 5 = 7.**
+  * ( ) x = 2/3
+  * ( ) x = 4
+  * ( ) x = -4
+* **Question 2 : Résoudre l'équation produit (2x - 4)(3x + 9) = 0.**
+  * ( ) x = 2 ou x = -3
+  * ( ) x = -2 ou x = 3
+  * ( ) x = 4 ou x = -9
+* **Question 3 : Résoudre l'inéquation -2x + 4 >= 10.**
+  * ( ) x >= -3
+  * ( ) x <= -3
+  * ( ) x <= -7
+* **Question 4 : Si x appartient à [-3 ; 2], à quel intervalle appartient -3x + 1 ?**
+  * ( ) [-8 ; 7]
+  * ( ) [-5 ; 10]
+  * ( ) [-5 ; 7]
+* **Question 5 : Résoudre l'équation (2x - 1)/3 = (x + 2)/2.**
+  * ( ) x = 8
+  * ( ) x = 4
+  * ( ) x = 1/2
+```
+
+## Séance 3 — 2026-07-15 : Introduction et généralités sur les fonctions
+
+### 1. Notion de fonction
+Une fonction f associe à chaque nombre x d'un ensemble de définition D un unique nombre réel noté f(x).
+- x est la variable, c'est l'antécédent.
+- f(x) est l'image de x par f.
+
+### 2. Détermination par le calcul et graphiquement
+- Par le calcul : pour trouver l'image de 3 par f(x) = x^2 - 1, on calcule f(3) = 3^2 - 1 = 8. Pour trouver les antécédents de 3, on résout f(x) = 3 <=> x^2 - 1 = 3.
+- Graphiquement :
+  - L'image de a est l'ordonnée du point de la courbe d'abscisse a.
+  - Les antécédents de b sont les abscisses des points d'intersection de la courbe avec la droite horizontale y = b.
+
+### 3. Variations et extremums
+- Une fonction f est croissante sur un intervalle si elle conserve l'ordre des nombes : si u < v, alors f(u) < f(v).
+- Une fonction f est décroissante sur un intervalle si elle inverse l'ordre des nombres : si u < v, alors f(u) > f(v).
+- Le maximum de f sur un intervalle est la plus grande valeur atteinte par f(x). Le minimum est la plus petite.
+
+```FORM: QCM Séance 3
+* **Question 1 : Soit f(x) = x^2 - 2x. Quelle est l'image de -2 par f ?**
+  * ( ) 0
+  * ( ) 8
+  * ( ) -8
+* **Question 2 : Soit g(x) = 3x - 5. Quel est l'antécédent de 4 par g ?**
+  * ( ) 7
+  * ( ) 3
+  * ( ) -3
+* **Question 3 : Si la courbe de f coupe l'axe des abscisses en -1 et 3, quelles sont les solutions de f(x) = 0 ?**
+  * ( ) x = -1 et x = 3
+  * ( ) x = 0
+  * ( ) On ne peut pas savoir
+* **Question 4 : Si f est strictement décroissante sur [1 ; 5], quelle affirmation est correcte ?**
+  * ( ) f(2) < f(4)
+  * ( ) f(2) > f(4)
+  * ( ) f(2) = f(4)
+* **Question 5 : Le maximum de f sur [-2 ; 3] est 5, atteint en x = 1. Quelle affirmation est vraie ?**
+  * ( ) f(5) = 1
+  * ( ) f(1) = 5
+  * ( ) f(-2) = 5
+```
+
+## Séance 4 — 2026-07-22 : Fonctions de référence et second degré
+
+### 1. Les fonctions de référence
+- Fonction carré (f(x) = x^2) : définie sur R, décroissante sur les réels négatifs et croissante sur les réels positifs. Elle est toujours positive.
+- Fonction inverse (f(x) = 1/x) : définie sur R* (c'est-à-dire R privé de 0). Elle est strictement décroissante sur les nombres négatifs, et strictement décroissante sur les nombres positifs.
+
+### 2. Résolution d'équations du second degré simples
+L'équation x^2 = k admet :
+- Deux solutions si k > 0 : x = racine(k) ou x = -racine(k).
+- Une solution si k = 0 : x = 0.
+- Aucune solution réelle si k < 0.
+
+### 3. Signe d'une expression factorisée du second degré
+Pour étudier le signe d'un produit comme (x - a)(x - b), on dresse un tableau de signes combinant le signe de chaque facteur linéaire.
+
+```FORM: QCM Séance 4
+* **Question 1 : Comparer (-2.5)^2 et (-1.5)^2.**
+  * ( ) (-2.5)^2 < (-1.5)^2
+  * ( ) (-2.5)^2 > (-1.5)^2
+  * ( ) (-2.5)^2 = (-1.5)^2
+* **Question 2 : Résoudre l'équation x^2 = 7 dans R.**
+  * ( ) x = racine(7)
+  * ( ) x = racine(7) ou x = -racine(7)
+  * ( ) Pas de solution
+* **Question 3 : Résoudre l'inéquation 1/x <= 2 pour x > 0.**
+  * ( ) x >= 1/2
+  * ( ) x <= 1/2
+  * ( ) x > 0
+* **Question 4 : Quel est le signe de l'expression (x - 2)(x + 3) pour x = 0 ?**
+  * ( ) Positif
+  * ( ) Négatif
+  * ( ) Nul
+* **Question 5 : Quel est l'ensemble de définition de la fonction h(x) = 1 / (x - 3) ?**
+  * ( ) R
+  * ( ) R \ {3}
+  * ( ) R \ {-3}
+```

@@ -1,0 +1,116 @@
+# Atelier d'Écriture Libre : Méthode P.A.R.S.
+*(Préparation - Action - Récolte - Synthèse)*
+
+Ce document est un guide méthodologique et un support d'atelier conçu pour accompagner un Business Owner (ou tout créateur de projet) dans la génération, l'analyse et la structuration d'idées brutes à travers l'écriture libre (Freewriting).
+
+---
+
+## 📋 Fiche d'identification de l'Atelier
+*   **Projet :** [Nom du projet]
+*   **Participant (Business Owner) :** [Nom du participant]
+*   **Facilitateur (ou Système IA) :** [Nom du facilitateur / Système]
+*   **Date :** [Date de la session]
+
+---
+
+## Etape 1 : P - Préparation
+
+### 🎯 Objectif
+Mettre en place un environnement propice à la créativité et définir un cadre clair pour la session d'écriture libre afin de maximiser le flux d'idées.
+
+### ⚙️ Règles fondamentales (Rappel au participant)
+1. **Écrire sans s'arrêter :** Si vous bloquez, écrivez "je ne sais pas quoi écrire" ou répétez le dernier mot jusqu'à ce qu'une nouvelle idée vienne. Ne levez pas le stylo ou ne cessez pas de taper au clavier.
+2. **Pas de jugement ni de censure :** Il n'y a pas de mauvaise idée, de phrase mal formulée ou d'erreur. Tout ce qui sort est utile.
+3. **Pas de correction :** Interdiction de faire des retours arrière (backspace), de corriger l'orthographe ou de restructurer vos phrases en cours de route.
+4. **Focus sur le flux :** L'objectif est la quantité et le flux de conscience, non la qualité ou la cohérence.
+
+### ⏱️ Paramètres de la session (À valider)
+*   **Durée suggérée :** 15 minutes (Standard recommandé : 10 à 15 minutes)
+*   **Durée validée par le Business Owner :** [ ___ ] minutes
+*   **Point de départ / Déclencheur (Trigger) :**
+    *   *Option A (Par défaut) :* "Ce qui manque vraiment aux [utilisateurs cibles / clients], c'est..."
+    *   *Option B (Sur-mesure) :* "Le plus grand obstacle pour notre produit aujourd'hui est..."
+    *   *Option sélectionnée :* [ ___ ]
+
+---
+
+## Etape 2 : A - Action
+
+### 🎯 Objectif
+Lancer la session d'écriture et permettre au business owner de produire un texte brut et continu, en respectant le cadre défini.
+
+### 🚀 Consignes de démarrage
+1. Réglez votre minuteur sur la durée convenue (ex: 15 minutes).
+2. Lancez le minuteur et commencez à écrire immédiatement à partir du déclencheur choisi.
+3. Ne vous arrêtez sous aucun prétexte avant le signal sonore.
+4. Une fois le temps écoulé, copiez-collez l'intégralité de votre texte brut ci-dessous sans y apporter la moindre modification.
+
+### 📥 Zone de saisie du Texte Brut (Input)
+```text
+[Collez votre texte brut non-édité ici...]
+```
+
+---
+
+## Etape 3 : R - Récolte
+
+### 🎯 Objectif
+Analyser le texte brut pour extraire et qualifier (attribuer une étiquette) toutes les unités de sens (verbatim).
+
+### 🔍 Processus d'analyse (Pour le facilitateur / système)
+Pour chaque phrase, segment ou expression porteuse de sens dans le texte brut :
+1. Extraire la citation exacte (*verbatim*).
+2. Lui attribuer une qualification parmi les catégories suivantes :
+    *   💡 **Idée :** Piste de solution, opportunité, suggestion d'amélioration.
+    *   ⚠️ **Problème :** Dysfonctionnement constaté, obstacle technique ou d'usage.
+    *   ❤️ **Émotion :** Expression d'un sentiment (joie, peur, soulagement, excitation).
+    *   🔥 **Frustration :** Point de douleur aigu, agacement, blocage persistant.
+    *   🧩 **Besoin :** Attente explicite ou implicite de l'utilisateur.
+
+### 📋 Grille de Récolte (À valider par le Business Owner)
+
+| N° | Verbatim Extrait (Citation exacte) | Qualification (Idée / Problème / Émotion / Frustration / Besoin) | Validation (Oui/Non) | Commentaires / Ajustements |
+|----|-----------------------------------|-----------------------------------------------------------------|----------------------|---------------------------|
+| 1  | *Exemple : "peur de se perdre"* | Émotion / Frustration | | |
+| 2  | *Exemple : "guides papier trop lourds"* | Problème / Frustration | | |
+| 3  | *Exemple : "partager une découverte"* | Idée / Émotion | | |
+| 4  | | | | |
+| 5  | | | | |
+
+*   **Validation globale par le Business Owner :** [ ] Oui / [ ] Non (si Non, spécifier les modifications dans la colonne commentaires).
+
+---
+
+## Etape 4 : S - Synthèse
+
+### 🎯 Objectif
+Compiler la liste finale des unités de sens qualifiées en un document de synthèse structuré au format Markdown, prêt à l'emploi pour des outils de Mind Mapping ou de gestion de projet.
+
+### 📊 Rapport de Synthèse Final (Payload)
+
+```markdown
+# Synthèse de l'Atelier P.A.R.S - [Nom du Projet]
+
+## 💡 Idées
+- [Insérer l'idée 1]
+- [Insérer l'idée 2]
+
+## ⚠️ Problèmes
+- [Insérer le problème 1]
+- [Insérer le problème 2]
+
+## ❤️ Émotions
+- [Insérer l'émotion 1]
+- [Insérer l'émotion 2]
+
+## 🔥 Frustrations
+- [Insérer la frustration 1]
+- [Insérer la frustration 2]
+
+## 🧩 Besoins
+- [Insérer le besoin 1]
+- [Insérer le besoin 2]
+```
+
+---
+*Fin de l'atelier P.A.R.S.*

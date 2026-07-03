@@ -1,0 +1,8 @@
+@@TEST_RESULT@@{"itemId":"2-5-2-12-1","status":"ok","note":"Création standard en fin de zone avec SID et création du dossier BDD."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-2","status":"ok","note":"Scission au curseur, sauvegarde automatique immédiate et reset dirty de la section donneuse."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-3","status":"ok","note":"Création depuis arborescence bridée à H4, parent correct affiché."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-4","status":"ok","note":"Promotion/rétrogradation avec préservation SID et normalisation/re-parentage en cascade."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-5","status":"ok","note":"Suppression/fusion avec remontée du texte, destruction dossier BDD et gestion du focus."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-6","status":"ko","note":"Titre non éditable par contenteditable en mode Visu, uniquement via Structure (input) ou Code."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-7","status":"ok","note":"Slash Menu filtré selon le niveau de la section courante."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-8","status":"ok","note":"Validation TitleCreateDialog (focus auto, erreur si vide, pas de fermeture au backdrop, Escape/Cancel)."}

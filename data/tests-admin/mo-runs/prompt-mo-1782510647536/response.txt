@@ -1,0 +1,109 @@
+## Projet d'Acquisition et Création d'une Maison d'Hôtes
+
+Ce document présente la feuille de route opérationnelle pour l'acquisition d'un bien immobilier et sa transformation en maison d'hôtes.
+
+### 1. Planning Opérationnel
+
+Le planning ci-dessous détaille les grandes étapes du projet, de la définition du besoin initial jusqu'à l'ouverture officielle.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Cadrage | Définition du cahier des charges et étude de marché locale | Porteur de projet | Terminé |
+| 2 | 2026-08-15 | Recherche | Visites de biens et sélection de la propriété | Porteur de projet, Agent immobilier | En cours |
+| 3 | 2026-10-15 | Financement | Montage du business plan et obtention du prêt bancaire | Courtier, Banquier, Comptable | À faire |
+| 4 | 2026-12-01 | Acquisition | Signature de l'acte authentique chez le notaire | Notaire, Vendeur, Acheteur | À faire |
+| 5 | 2027-01-15 | Travaux | Rénovation, aménagement et mise aux normes ERP | Maître d'œuvre, Artisans | À faire |
+| 6 | 2027-05-01 | Commercialisation | Création du site internet, shooting photos et référencement | Webmaster, Photographe | À faire |
+| 7 | 2027-06-01 | Ouverture | Lancement officiel et accueil des premiers clients | Porteur de projet | À faire |
+```
+
+### 2. Agenda des Jalons Clés
+
+Voici les dates limites, réunions stratégiques et jalons administratifs indispensables.
+
+```AGENDA: Jalons
+2026-09-01 | 10:00-12:00 | Réunion avec le courtier | Validation de la capacité d'emprunt et enveloppe budgétaire globale
+2026-10-30 | 14:00-16:00 | Signature du compromis de vente | Signature du compromis de vente à l'étude notariale
+2026-11-30 | 18:00-19:00 | Date limite dépôt dossier de prêt | Envoi complet du dossier de financement aux banques
+2027-01-10 | 09:00-12:00 | Réunion de chantier initiale | Alignement avec le maître d'œuvre et les artisans avant démarrage des travaux
+2027-05-15 | 10:00-16:00 | Visite de sécurité ERP | Passage de la commission de sécurité pour l'ouverture au public
+```
+
+### 3. Plan de Financement et Budget Prévisionnel
+
+Ce tableau permet de suivre l'allocation du budget total et de contrôler les coûts réels.
+
+```ARRAY: Budget
+| Poste | Budget prévu | Dépensé | Restant |
+|---|---|---|---|
+| Achat immobilier (Net vendeur) | 350000 | 0 | =B2-C2 |
+| Frais de notaire et d'agence | 35000 | 2000 | =B3-C3 |
+| Travaux de rénovation et normes ERP | 80000 | 0 | =B4-C4 |
+| Ameublement et décoration | 25000 | 0 | =B5-C5 |
+| Frais de communication (Web, marketing) | 5000 | 0 | =B6-C6 |
+| Trésorerie de démarrage | 15000 | 0 | =B7-C7 |
+| **Total** | =SUM(B2:B7) | =SUM(C2:C7) | =SUM(D2:D7) |
+```
+
+### 4. Graphique de Progression Opérationnelle
+
+```CHART: Progression
+Cadrage: 100
+Recherche du bien: 40
+Financement: 0
+Acquisition: 0
+Travaux: 0
+Ouverture: 0
+```
+
+### 5. Kanban de Suivi des Actions
+
+Suivi de l'avancement des actions au quotidien.
+
+```TRELLO: Actions
+### À faire
+- [ ] Finaliser le prévisionnel financier `[critical]`
+  Dossier à présenter aux banques avec l'aide de l'expert-comptable.
+- [ ] Valider le devis du maître d'œuvre `[high]`
+  Devis estimatif pour les travaux de rénovation et de mise aux normes PMR/incendie.
+- [ ] Préparer le dossier d'urbanisme `[medium]`
+  Déclaration préalable en mairie pour le changement de destination ou modification de façade.
+
+### En cours
+- [ ] Visiter les propriétés présélectionnées `[high]`
+  3 visites prévues cette semaine dans la zone cible.
+- [ ] Rédaction du business plan `[critical]`
+  Mise en forme du projet de maison d'hôtes et étude de marché locale.
+
+### Terminé
+- [ ] Définition du cahier des charges `[medium]`
+  Critères de recherche : surface habitable, nombre de chambres minimum (4), budget maximum.
+```
+
+### 6. Formulaire de Validation lors d'une Visite (Go / No-Go)
+
+Ce questionnaire sert de grille d'évaluation lors de la visite d'un bien pour valider sa viabilité technique et commerciale.
+
+```FORM: Validation
+* **1. Emplacement et attractivité touristique :**
+  * ( ) Excellent : Proximité immédiate d'attractions majeures, flux touristique garanti.
+  * ( ) Moyen : Cadre agréable mais véhicule nécessaire, peu d'attractions immédiates.
+  * ( ) Faible : Zone isolée, peu propice à une activité de maison d'hôtes.
+
+* **2. Capacité et agencement du bien :**
+  * ( ) Idéal : Au moins 4 chambres avec salles d'eau privatives existantes ou facilement aménageables.
+  * ( ) Acceptable : 3 chambres aménageables, travaux modérés à prévoir.
+  * ( ) Insuffisant : Moins de 3 chambres, configuration ne permettant pas l'intimité des hôtes.
+
+* **3. État structurel et enveloppe travaux :**
+  * ( ) Bon état général : Uniquement du rafraîchissement et de la décoration.
+  * ( ) Travaux modérés : Rénovation de salles d'eau, électricité à revoir mais gros œuvre sain.
+  * ( ) Travaux lourds : Gros œuvre à reprendre (toiture, charpente, assainissement non conforme).
+
+* **4. Réglementation et accessibilité (ERP) :**
+  * [ ] Possibilité d'aménager une chambre PMR au rez-de-chaussée.
+  * [ ] Voies de dégagement et issues de secours conformes aux normes incendie.
+  * [ ] Parking suffisant sur le terrain pour les hôtes.
+  * [ ] Pas de restriction d'urbanisme locale (PLU) faisant obstacle au projet.
+```

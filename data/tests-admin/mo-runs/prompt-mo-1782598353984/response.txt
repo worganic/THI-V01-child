@@ -1,0 +1,42 @@
+* **Matière à travailler en mathématiques :**
+  ( ) Algèbre et Analyse
+  ( ) Géométrie
+  ( ) Probabilités et Statistiques
+  ( ) Autre : ______
+
+* **Niveau scolaire de l'apprenant :**
+  ( ) Primaire (CP à CM2)
+  ( ) Collège (6ème à 3ème)
+  ( ) Lycée (Seconde à Terminale)
+  ( ) Enseignement supérieur
+  ( ) Autre : ______
+
+* **Objectif principal mesurable :**
+  ( ) Remise à niveau / Consolidation des bases
+  ( ) Préparation à un examen (Brevet, Bac, etc.)
+  ( ) Perfectionnement / Approfondissement
+  ( ) Autre : ______
+
+* **Durée de l'accompagnement et date de début souhaitée :**
+  ( ) 1 mois (début immédiat)
+  ( ) 1 trimestre (début immédiat)
+  ( ) Année scolaire complète
+  ( ) Autre : ______
+
+* **Fréquence des séances de travail :**
+  ( ) 1 fois par semaine
+  ( ) 2 fois par semaine
+  ( ) Quotidien (micro-séances)
+  ( ) Autre : ______
+
+* **Modalités d'évaluation privilégiées :**
+  [ ] QCM réguliers
+  [ ] Devoirs surveillés notés (sur 20)
+  [ ] Auto-évaluation et fiches de suivi
+  [ ] Exercices pratiques d'application directe
+
+* **Points prioritaires à travailler / Difficultés principales :**
+  [ ] Méthodologie et rigueur de rédaction
+  [ ] Résolution de problèmes complexes
+  [ ] Calcul mental et calcul rapide
+  [ ] Apprentissage et compréhension des notions théoriques

@@ -1,0 +1,100 @@
+# Dossier de Présentation Bancaire - Création de Maison d'Hôtes
+
+Ce document constitue le dossier de présentation destiné aux établissements bancaires pour l'obtention d'un prêt professionnel dans le cadre de l'acquisition et de l'aménagement d'un bien immobilier en maison d'hôtes.
+
+## 1. Synthèse du Projet et Positionnement
+Le projet consiste en l'acquisition d'une bâtisse de caractère pour la transformer en maison d'hôtes de charme comprenant 5 chambres d'hôtes (capacité maximale réglementaire pour éviter les contraintes lourdes des ERP de catégorie 1 à 4). Le positionnement ciblé est haut de gamme, axé sur le tourisme vert, le calme, et la découverte du patrimoine local, avec une offre complémentaire de table d'hôtes et d'espace bien-être.
+
+---
+
+## 2. Plan de Lancement Opérationnel
+
+Le tableau ci-dessous présente les étapes clés pour la concrétisation du projet, de l'acquisition à l'ouverture officielle.
+
+```TRELLO: Plan de Lancement
+### À faire
+- [ ] Obtenir les devis définitifs des artisans `[critical]`
+  Nécessaire pour le dossier de prêt final et la validation de l'enveloppe travaux.
+- [ ] Finaliser la décoration et les achats d'ameublement `[low]`
+  Sélection des fournisseurs et négociation des tarifs de gros.
+- [ ] Créer le site internet et lancer les réseaux sociaux `[medium]`
+  Mise en place du module de réservation directe en ligne.
+
+### En cours
+- [ ] Négocier le compromis de vente du bien immobilier `[critical]`
+  Insertion de la clause suspensive d'obtention de prêt bancaire.
+- [ ] Rédiger les statuts de la société `[high]`
+  Choix de la structure juridique (SARL ou SAS) adaptée à l'activité.
+
+### Terminé
+- [ ] Valider l'étude de marché locale `[high]`
+  Analyse de la concurrence, des prix moyens de la nuitée et du taux d'occupation de la zone.
+- [ ] Définir la charte graphique et l'identité de la marque `[low]`
+  Création du logo et choix de l'univers visuel de la maison d'hôtes.
+```
+
+---
+
+## 3. Plan de Financement et Prévisionnel Financier
+
+### Budget de Financement Initial
+Ce tableau présente l'équilibre financier nécessaire pour le démarrage du projet, incluant l'achat des murs, les frais et le besoin de trésorerie de départ.
+
+```ARRAY: Budget Financement
+| Besoins | Montant (€) | Ressources | Montant (€) |
+|---|---|---|---|
+| Acquisition immobilière (murs) | 350000 | Apport personnel | 118000 |
+| Frais de notaire et d'agence | 28000 | Emprunt bancaire sollicité | 320000 |
+| Travaux de rénovation / mise aux normes | 30000 | | |
+| Équipement et ameublement des chambres | 10000 | | |
+| Trésorerie de démarrage (BFR) | 20000 | | |
+| **Total Besoins** | **438000** | **Total Ressources** | **438000** |
+```
+
+### Prévisionnel d'Activité (3 ans)
+Projections financières basées sur un prix moyen de nuitée de 90 € (petit-déjeuner inclus) et une ouverture de 250 jours par an (capacité totale de 1250 nuitées par an pour 5 chambres).
+
+```ARRAY: Previsionnel Activite
+| Indicateur Financier | Année 1 | Année 2 | Année 3 |
+|---|---|---|---|
+| Taux d'occupation moyen | 45 % | 55 % | 60 % |
+| Nombre de nuitées vendues | 562 | 687 | 750 |
+| Chiffre d'Affaires Hébergement (€) | 50580 | 61830 | 67500 |
+| CA Annexe (Table d'hôtes, Spa...) (€) | 12000 | 15000 | 18000 |
+| **Chiffre d'Affaires Total (€)** | **62580** | **76830** | **85500** |
+| Charges d'exploitation (matières, électricité...) (€) | 22000 | 24000 | 25000 |
+| **Excédent Brut d'Exploitation (EBE) (€)** | **40580** | **52830** | **60500** |
+| Remboursement annuel du prêt (capital + intérêts) (€) | 24000 | 24000 | 24000 |
+| **Trésorerie Nette Disponible (€)** | **16580** | **28830** | **36500** |
+```
+
+---
+
+## 4. Auto-Évaluation du Dossier de Crédit
+
+Ce questionnaire permet d'évaluer la viabilité et la solidité du projet avant son dépôt final en banque.
+
+```FORM: Evaluation Viabilite
+* **Quel est le montant de votre apport personnel par rapport au total des besoins ?**
+  * [ ] Plus de 30% (Excellent signal pour la banque)
+  * [ ] Entre 20% et 30% (Standard et rassurant)
+  * [ ] Entre 10% et 20% (Acceptable sous conditions)
+  * [ ] Moins de 10% (Risqué, garanties supplémentaires requises)
+
+* **Quel est le niveau de mise aux normes de sécurité (incendie, accessibilité) requis pour le bien ?**
+  * [ ] Conforme (Aucun travaux réglementaires à prévoir)
+  * [ ] Normes domestiques simples (Moins de 15 personnes accueillies)
+  * [ ] ERP de 5ème catégorie (Travaux de conformité légers requis)
+  * [ ] ERP de 1ère à 4ème catégorie (Travaux lourds et coûteux)
+
+* **Quelle est votre stratégie de commercialisation principale ?**
+  * [ ] Canaux directs majoritaires (Site web propre, réseaux sociaux, baisse des commissions OTAs)
+  * [ ] Mixte équilibré (Plateformes OTAs type Booking/Airbnb et réservations directes)
+  * [ ] Plateformes de réservation exclusives (Forte dépendance aux commissions)
+
+* **Avez-vous une expérience métier ou de gestion d'entreprise ?**
+  * [ ] Oui, expérience significative en gestion ou hôtellerie
+  * [ ] Oui, compétences transposables (commerce, management)
+  * [ ] Non, mais accompagnement/formation prévu
+  * [ ] Non, aucune expérience préalable
+```

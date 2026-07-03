@@ -270,6 +270,7 @@ this.{nom}Sub?.unsubscribe()
 | Nom | Type | Route standalone | Depuis |
 |-----|------|-----------------|--------|
 | Trello | `trello` | `/trello` | 2026-06 |
+| Prompt | `prompt` | — | 2026-06 |
 
 ---
 

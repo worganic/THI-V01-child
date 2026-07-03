@@ -1210,7 +1210,7 @@ Votre texte de prompt ici.
         <!-- Alerte non bloquante : un autre utilisateur édite aussi cette section (les 2 peuvent
              continuer à écrire ; la fusion se fera via le bouton Synchro au prochain checkpoint). -->
         @if (isActiveSectionLockedByOther) {
-          <div class="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-400 text-[11px] font-medium pointer-events-none">
+          <div class="absolute top-2 right-2 z-20 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-sky-500/30 bg-sky-500/10 text-sky-400 text-[11px] font-medium pointer-events-none" [title]="activeSectionOtherEditorsTooltip">
             <span class="material-symbols-outlined text-sm">group</span>
             {{ activeSectionOtherEditorName }} édite aussi cette section
           </div>
@@ -1793,11 +1793,12 @@ Votre texte de prompt ici.
                 </div>
               }
 
-              <!-- Badge de verrou par un autre user (rouge) -->
+              <!-- Badge de présence d'un ou plusieurs autres users — info seule, jamais un verrou :
+                   n'empêche jamais d'éditer, indique juste qui travaille aussi sur cette section. -->
               @if (collab.isLockedByOther(sec.sectionId)) {
-                <div class="visu-lock-badge">
-                  <span class="material-symbols-outlined">lock</span>
-                  Édité par {{ collab.getLock(sec.sectionId)?.lockedByName }}
+                <div class="visu-presence-badge" [title]="otherEditorsTooltip(sec.sectionId)">
+                  <span class="material-symbols-outlined">{{ collab.getOtherEditors(sec.sectionId).length > 1 ? 'groups' : 'visibility' }}</span>
+                  Édité par {{ otherEditorsNames(sec.sectionId) }}
                 </div>
               }
 
@@ -2137,7 +2138,7 @@ Votre texte de prompt ici.
         <span class="material-symbols-outlined">edit</span>
         Modifications en cours — partager via le menu de la section
       </span>
-    } @else if (backupType && structureHasPending()) {
+    } @else if (structureHasPending()) {
       <span class="code-publish-bar__info">
         <span class="material-symbols-outlined">edit</span>
         Modifications en cours
@@ -2146,7 +2147,7 @@ Votre texte de prompt ici.
         <button class="visu-publish-bar__cancel" (click)="cancelStructureEdit()">Annuler</button>
         <button class="visu-publish-bar__publish" (click)="publishStructureEdit()" [disabled]="isPublishing()">
           <span class="material-symbols-outlined">share</span>
-          Partager mes modifications
+          Enregistrer et partager
         </button>
       </div>
     }
@@ -2174,27 +2175,62 @@ Votre texte de prompt ici.
             <span class="material-symbols-outlined text-indigo-400 text-base">content_paste</span>
           </div>
           <div>
-            <h3 class="text-sm font-semibold text-light-text dark:text-white">Coller du markdown — ajustement des niveaux</h3>
+            <h3 class="text-sm font-semibold text-light-text dark:text-white">Coller du markdown — ajustement proposé</h3>
             <p class="text-[11px] text-light-text-muted dark:text-white/50 mt-0.5">
-              Section cible : niveau {{ pastePreview.parentLevel === 0 ? 'racine' : pastePreview.parentLevel }} →
-              titres recalés au niveau {{ pastePreview.desiredTop }}
-              @if (pastePreview.shift !== 0) {
-                <span class="ml-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 font-semibold">
-                  décalage {{ pastePreview.shift > 0 ? '+' : '' }}{{ pastePreview.shift }}
-                </span>
+              Section cible : niveau {{ pastePreview.parentLevel === 0 ? 'racine' : pastePreview.parentLevel }}
+              @if (pastePreview.strategy === 'relevel') {
+                → titres recalés au niveau {{ pastePreview.desiredTop }}
+                @if (pastePreview.shift !== 0) {
+                  <span class="ml-1 px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 font-semibold">
+                    décalage {{ pastePreview.shift > 0 ? '+' : '' }}{{ pastePreview.shift }}
+                  </span>
+                } @else {
+                  <span class="ml-1 px-1.5 py-0.5 rounded bg-gray-500/10 text-light-text-muted dark:text-white/40 font-semibold">aucun décalage</span>
+                }
               } @else {
-                <span class="ml-1 px-1.5 py-0.5 rounded bg-gray-500/10 text-light-text-muted dark:text-white/40 font-semibold">aucun décalage</span>
+                → englobé dans une nouvelle section intermédiaire
               }
             </p>
           </div>
         </div>
+        <!-- Choix de la stratégie d'ajustement -->
+        <div class="px-5 pb-3 flex gap-2">
+          <button type="button"
+                  class="flex-1 text-xs px-3 py-2 rounded-lg border transition-colors"
+                  [class]="pastePreview.strategy === 'relevel' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 font-semibold' : 'border-light-border dark:border-white/20 text-light-text-muted dark:text-white/50'"
+                  (click)="pastePreview.strategy = 'relevel'">
+            Recaler les niveaux de titres
+          </button>
+          <button type="button"
+                  class="flex-1 text-xs px-3 py-2 rounded-lg border transition-colors"
+                  [class]="pastePreview.strategy === 'wrap' ? 'border-indigo-500 bg-indigo-500/10 text-indigo-500 dark:text-indigo-300 font-semibold' : 'border-light-border dark:border-white/20 text-light-text-muted dark:text-white/50'"
+                  (click)="pastePreview.strategy = 'wrap'">
+            Créer une section intermédiaire
+          </button>
+        </div>
+        <!-- Titre de la section intermédiaire (uniquement stratégie 'wrap') -->
+        @if (pastePreview.strategy === 'wrap') {
+          <div class="px-5 pb-2">
+            <label class="block text-[11px] font-medium text-light-text-muted dark:text-white/50 mb-1">Titre de la nouvelle section</label>
+            <input type="text" class="w-full text-xs bg-light-background dark:bg-background border border-light-border dark:border-white/20 rounded-lg px-3 py-2 text-light-text dark:text-white outline-none focus:border-indigo-500 dark:focus:border-indigo-400"
+                   [ngModel]="pastePreview.wrapTitle"
+                   (ngModelChange)="updatePastePreviewWrapTitle($event)" />
+          </div>
+        }
         <!-- Aperçu éditable -->
         <div class="px-5 flex-1 overflow-hidden flex flex-col">
           <label class="block text-[11px] font-medium text-light-text-muted dark:text-white/50 mb-1">Texte qui sera collé (modifiable)</label>
-          <textarea
-            class="w-full flex-1 min-h-[180px] text-xs font-mono bg-light-background dark:bg-background border border-light-border dark:border-white/20 rounded-lg px-3 py-2 text-light-text dark:text-white outline-none focus:border-indigo-500 dark:focus:border-indigo-400 resize-none"
-            [(ngModel)]="pastePreview.proposed"
-            spellcheck="false"></textarea>
+          @if (pastePreview.strategy === 'wrap') {
+            <textarea
+              class="w-full flex-1 min-h-[180px] text-xs font-mono bg-light-background dark:bg-background border border-light-border dark:border-white/20 rounded-lg px-3 py-2 text-light-text dark:text-white outline-none focus:border-indigo-500 dark:focus:border-indigo-400 resize-none"
+              [(ngModel)]="pastePreview.wrapProposed"
+              spellcheck="false"></textarea>
+          } @else {
+            <textarea
+              class="w-full flex-1 min-h-[180px] text-xs font-mono bg-light-background dark:bg-background border border-light-border dark:border-white/20 rounded-lg px-3 py-2 text-light-text dark:text-white outline-none focus:border-indigo-500 dark:focus:border-indigo-400 resize-none"
+              [(ngModel)]="pastePreview.proposed"
+              spellcheck="false"></textarea>
+          }
         </div>
         <!-- Footer -->
         <div class="flex gap-2 px-5 py-4">

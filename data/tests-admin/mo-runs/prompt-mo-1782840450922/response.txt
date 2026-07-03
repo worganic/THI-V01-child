@@ -1,0 +1,138 @@
+# 🏨 Projet d'Acquisition et Création de Maison d'Hôtes
+
+En tant qu'expert immobilier et comptable, j'ai structuré ce projet d'acquisition d'un bien immobilier destiné à être exploité comme maison d'hôtes. Le projet est configuré sur un horizon de 6 mois avec une enveloppe budgétaire globale de 300 000 €, incluant l'achat, les frais et les travaux de mise en conformité (ERP / accessibilité / sécurité incendie). L'objectif d'exploitation de la première année vise un taux d'occupation supérieur à 40 %, tout en maîtrisant les risques financiers, notamment le refus de prêt.
+
+Voici les outils opérationnels de pilotage pour mener à bien ce projet de Type B.
+
+---
+
+## 📅 Planning Opérationnel du Projet
+
+Ce planning détaille les phases clés pour l'acquisition et le lancement de l'activité dans le respect du délai de 6 mois.
+
+```ARRAY: Planning du Projet
+| N° | Phase | Actions Clés | Date Cible | Responsable | Statut |
+|---|---|---|---|---|---|
+| 1 | Recherche & Sélection | Visites de biens, études de viabilité locale, pré-chiffrage travaux | 2026-07-31 | Promoteur & Expert Immo | Terminé |
+| 2 | Négociation & Offre | Rédaction de l'offre d'achat et signature du compromis de vente | 2026-08-15 | Notaire & Acheteur | En cours |
+| 3 | Financement | Dépôt du dossier de prêt et obtention de l'accord de principe | 2026-09-15 | Comptable & Banque | À faire |
+| 4 | Réglementation & ERP | Dépôt du dossier de changement d'usage et autorisation travaux ERP | 2026-09-30 | Architecte & Mairie | À faire |
+| 5 | Acquisition finale | Signature de l'acte de vente authentique | 2026-10-31 | Notaire & Banque | À faire |
+| 6 | Travaux & Conformité | Travaux de mise aux normes incendie, accessibilité et décoration | 2026-11-30 | Artisans & Acheteur | À faire |
+| 7 | Lancement | Ouverture de la structure, site web et premières réservations | 2026-12-15 | Exploitant | À faire |
+```
+
+---
+
+## 📌 Agenda des Jalons Clés
+
+Cet agenda recense les dates charnières, les rendez-vous administratifs et les étapes obligatoires pour valider l'ouverture de l'ERP.
+
+```AGENDA: Jalons Cles
+2026-07-15 | 10:00-12:00 | Visite technique Bien Principal | Évaluation de la structure et des travaux de mise aux normes ERP
+2026-08-20 | 14:00-16:00 | Signature du Compromis | Signature chez le notaire sous condition suspensive de prêt et d'autorisation ERP
+2026-09-05 | 09:00-11:00 | Rendez-vous Banque | Présentation du business plan rédigé par le comptable
+2026-09-25 | 11:00-12:30 | Dépôt dossier Mairie | Dépôt de la demande d'autorisation de travaux et d'aménagement d'un ERP de 5ème catégorie
+2026-10-25 | 14:00-15:30 | Signature Acte Authentique | Transfert de propriété et déblocage des fonds
+2026-11-15 | 08:00-17:00 | Passage Commission Sécurité | Visite de contrôle pour l'accessibilité et la sécurité incendie
+2026-12-01 | 09:00-12:00 | Séance Photo & Site Web | Prise de vue professionnelle pour le lancement des réservations
+2026-12-15 | 18:00-22:00 | Inauguration Officielle | Lancement de l'activité avec les partenaires locaux et la presse
+```
+
+---
+
+## 📊 Suivi Budgétaire et Objectifs
+
+### Plan de Financement (Budget global : 300 000 €)
+
+Ce tableau permet de suivre en temps réel la consommation du budget pour éviter tout dépassement.
+
+```ARRAY: Suivi Budgetaire
+| Poste de Dépense | Budget Prévu | Dépensé | Restant |
+|---|---|---|---|
+| Acquisition du Bien Immo | 180000 | 0 | 180000 |
+| Frais d'Acquisition (Notaire) | 15000 | 1500 | 13500 |
+| Travaux & Rénovation | 70000 | 0 | 70000 |
+| Équipements & Décoration | 20000 | 0 | 20000 |
+| Marketing & Lancement | 5000 | 500 | 4500 |
+| Trésorerie de Démarrage | 10000 | 0 | 10000 |
+```
+
+### Répartition Prévisionnelle du Budget
+
+Le graphique ci-dessous illustre la ventilation de l'enveloppe de 300 000 € afin de visualiser les postes de coûts majeurs.
+
+```CHART: Repartition du Budget
+Acquisition: 180000
+Travaux: 70000
+Equipement: 20000
+Frais Notaire: 15000
+Tresorerie: 10000
+Marketing: 5000
+```
+
+### Indicateurs de Performance (Objectifs An 1)
+
+Ce tableau permet de mesurer le succès de la première année d'exploitation par rapport à la cible de 40 % de taux d'occupation.
+
+```ARRAY: Objectifs Exploitation
+| Indicateur de Performance | Cible An 1 | Valeur Actuelle | Écart |
+|---|---|---|---|
+| Taux d'occupation moyen (%) | 40 | 0 | -40 |
+| Chiffre d'Affaires Mensuel Moyen (€) | 4500 | 0 | -4500 |
+| Nombre d'avis 5 étoiles (Google/Booking) | 50 | 0 | -50 |
+```
+
+---
+
+## 📋 Fiche de Validation et Viabilité du Bien
+
+Ce formulaire sert de grille de décision technique et réglementaire lors des visites de biens immobiliers pour s'assurer de leur viabilité comme ERP (Établissement Recevant du Public).
+
+```FORM: Evaluation Viabilite Bien
+* **1. Conformité Urbanisme et Destination :**
+  * ( ) Le PLU autorise le changement de destination en hébergement touristique sans restriction.
+  * ( ) Le changement de destination requiert une dérogation ou une compensation.
+  * ( ) Le PLU interdit ou restreint fortement ce type d'activité.
+* **2. Sécurité Incendie et ERP (Établissement Recevant du Public) :**
+  * [ ] Le bien dispose d'au moins 2 issues de secours dégagées.
+  * [ ] Les planchers et structures respectent le degré coupe-feu réglementaire.
+  * [ ] Possibilité d'installer facilement un système d'alarme de type 4.
+  * [ ] Le bien est de plain-pied ou dispose de dispositifs d'évacuation adaptés.
+* **3. Accessibilité PMR (Personnes à Mobilité Réduite) :**
+  * ( ) Au moins une chambre et une salle d'eau sont configurables PMR à moindre coût.
+  * ( ) Des travaux lourds (rampe d'accès, élargissement portes, ascenseur) sont requis.
+  * ( ) Impossibilité technique absolue de rendre le bâtiment accessible.
+* **4. Faisabilité Financière (Budget max 300k€) :**
+  * ( ) Prix d'achat + Travaux estimés + Frais = Moins de 280 000 € (marge de sécurité de 20k€).
+  * ( ) Prix d'achat + Travaux estimés + Frais = Entre 280 000 € et 300 000 €.
+  * ( ) Prix d'achat + Travaux estimés + Frais = Plus de 300 000 € (PROJET INVIABLE).
+```
+
+---
+
+## 🛠️ Plan d'Action Opérationnel (Kanban)
+
+Le tableau ci-dessous permet de répartir les tâches urgentes entre les différents intervenants et de suivre l'avancement opérationnel.
+
+```TRELLO: Suivi des Actions
+### À faire
+- [ ] Obtenir 3 devis détaillés pour les travaux d'accessibilité PMR `[high]`
+  Nécessaire pour le montage final du dossier bancaire.
+- [ ] Rédiger les statuts de la future société d'exploitation (SARL ou SAS) `[medium]`
+  Choix fiscal à valider avec le comptable (IR vs IS).
+- [ ] Finaliser le business plan prévisionnel sur 3 ans `[critical]`
+  Dossier à présenter aux banques partenaires.
+- [ ] Déposer la demande de déclaration préalable en mairie `[high]`
+  Pour les modifications de façade et le changement d'usage.
+### En cours
+- [ ] Négocier le prix d'achat final du bien identifié `[critical]`
+  Objectif de baisse de 5% par rapport au prix affiché.
+- [ ] Valider le plan de financement avec le courtier `[high]`
+  Recherche du meilleur taux et des garanties d'assurance emprunteur.
+### Terminé
+- [ ] Visiter 5 propriétés cibles dans la zone géographique définie `[medium]`
+  Sélection finale du bien situé à moins de 15 minutes des attractions touristiques.
+- [ ] Réaliser l'étude de marché locale `[low]`
+  Analyse des concurrents et tarifs moyens à la nuitée par saison.
+```

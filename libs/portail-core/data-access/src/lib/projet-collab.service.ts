@@ -96,7 +96,9 @@ export class ProjetCollabService {
 
   readonly history = signal<CollabHistoryEntry[]>([]);
   readonly pending = signal<PendingHistoryEntry[]>([]);
-  readonly locks = signal<Map<string, LockInfo>>(new Map());
+  // Présence multi-utilisateurs : plusieurs éditeurs peuvent être présents simultanément
+  // sur le même nœud (chacun avec son propre brouillon local).
+  readonly locks = signal<Map<string, LockInfo[]>>(new Map());
   readonly connected = signal(false);
 
   // Sections avec modifications locales non encore partagées (publish)
@@ -239,8 +241,12 @@ export class ProjetCollabService {
       const locks = await firstValueFrom(
         this.http.get<LockInfo[]>(`${this.apiUrl}/api/collab/${projetId}/locks`)
       );
-      const map = new Map<string, LockInfo>();
-      for (const lock of locks) map.set(lock.nodeId, lock);
+      const map = new Map<string, LockInfo[]>();
+      for (const lock of locks) {
+        const arr = map.get(lock.nodeId) ?? [];
+        arr.push(lock);
+        map.set(lock.nodeId, arr);
+      }
       this.locks.set(map);
     } catch (e) {
       console.warn('[Collab] loadLocks error:', e);
@@ -282,15 +288,43 @@ export class ProjetCollabService {
       this.eventSource.addEventListener('lock', (e: MessageEvent) => {
         const lock: LockInfo = JSON.parse(e.data);
         this.zone.run(() => {
-          this.locks.update(map => { const m = new Map(map); m.set(lock.nodeId, lock); return m; });
+          this.locks.update(map => {
+            const m = new Map(map);
+            const arr = (m.get(lock.nodeId) ?? []).filter(l => l.lockedById !== lock.lockedById);
+            arr.push(lock);
+            m.set(lock.nodeId, arr);
+            return m;
+          });
         });
       });
 
       this.eventSource.addEventListener('unlock', (e: MessageEvent) => {
-        const { nodeId } = JSON.parse(e.data);
+        const { nodeId, userId } = JSON.parse(e.data);
         this.zone.run(() => {
-          this.locks.update(map => { const m = new Map(map); m.delete(nodeId); return m; });
+          this.locks.update(map => {
+            const m = new Map(map);
+            const arr = (m.get(nodeId) ?? []).filter(l => l.lockedById !== userId);
+            if (arr.length) m.set(nodeId, arr); else m.delete(nodeId);
+            return m;
+          });
         });
+      });
+
+      // État complet des présences sur un nœud — rediffusé par le serveur à chaque
+      // (dé)verrouillage ou balayage TTL, remplace la liste locale (source de vérité).
+      this.eventSource.addEventListener('presence', (e: MessageEvent) => {
+        try {
+          const evt: { nodeId: string; projetId: string; users: LockInfo[] } = JSON.parse(e.data);
+          this.zone.run(() => {
+            this.locks.update(map => {
+              const m = new Map(map);
+              if (evt.users.length) m.set(evt.nodeId, evt.users); else m.delete(evt.nodeId);
+              return m;
+            });
+          });
+        } catch (err) {
+          console.warn('[Collab] SSE presence parse error:', err);
+        }
       });
 
       this.eventSource.addEventListener('content_update', (e: MessageEvent) => {
@@ -509,18 +543,28 @@ export class ProjetCollabService {
 
   isLockedByMe(nodeId: string): boolean {
     const user = this.auth.currentUser();
-    const lock = this.locks().get(nodeId);
-    return !!lock && lock.lockedById === (user?.id || '');
+    return this.getPresences(nodeId).some(l => l.lockedById === (user?.id || ''));
   }
 
   isLockedByOther(nodeId: string): boolean {
     const user = this.auth.currentUser();
-    const lock = this.locks().get(nodeId);
-    return !!lock && lock.lockedById !== (user?.id || '');
+    return this.getPresences(nodeId).some(l => l.lockedById !== (user?.id || ''));
   }
 
+  /** Toutes les présences actives sur un nœud (moi inclus le cas échéant). */
+  getPresences(nodeId: string): LockInfo[] {
+    return this.locks().get(nodeId) ?? [];
+  }
+
+  /** Présences d'autres utilisateurs sur un nœud (moi exclu) — pour les badges/tooltips. */
+  getOtherEditors(nodeId: string): LockInfo[] {
+    const user = this.auth.currentUser();
+    return this.getPresences(nodeId).filter(l => l.lockedById !== (user?.id || ''));
+  }
+
+  /** @deprecated conservé pour compat — retourne la première présence connue sur ce nœud. */
   getLock(nodeId: string): LockInfo | undefined {
-    return this.locks().get(nodeId);
+    return this.getPresences(nodeId)[0];
   }
 
   hasPendingUpdate(nodeId: string): boolean {

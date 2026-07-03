@@ -1,0 +1,44 @@
+* **Niveau scolaire visé :**
+  * ( ) Primaire (CP-CM2)
+  * ( ) Collège (6ème-3ème)
+  * ( ) Lycée (Seconde-Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Matière mathématique ou domaine principal à travailler :**
+  * ( ) Algèbre, équations et fonctions
+  * ( ) Géométrie et trigonométrie
+  * ( ) Probabilités et statistiques
+  * ( ) Programme complet du niveau scolaire
+  * ( ) Autre : ______
+
+* **Durée totale du programme et période de début :**
+  * ( ) Moins d'un mois (début immédiat)
+  * ( ) 1 à 3 mois (début sous 2 semaines)
+  * ( ) Un semestre ou année complète (début à la rentrée)
+  * ( ) Autre : ______
+
+* **Fréquence des séances d'apprentissage souhaitée :**
+  * ( ) 1 séance par semaine (1 à 2h d'étude)
+  * ( ) 2 à 3 séances par semaine (3 à 5h d'étude)
+  * ( ) Rythme intensif quotidien (plus de 5h par semaine)
+  * ( ) Autre : ______
+
+* **Niveau de départ et objectif principal mesurable :**
+  * ( ) Difficultés prononcées (Objectif : remise à niveau et obtention de la moyenne)
+  * ( ) Niveau moyen (Objectif : consolidation et amélioration des notes de 2-3 points)
+  * ( ) Bon niveau (Objectif : perfectionnement, mention ou préparation aux examens/concours)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation des acquis :**
+  * [ ] QCM rapides et auto-évaluation à la fin de chaque cours
+  * [ ] Devoirs écrits types examens notés sur 20
+  * [ ] Exercices pratiques d'application avec correction détaillée
+  * [ ] Autre : ______
+
+* **Points prioritaires à travailler en priorité :**
+  * [ ] Calcul pur, automatismes et formules fondamentales
+  * [ ] Rigueur de rédaction et démonstrations logiques
+  * [ ] Modélisation et résolution de problèmes concrets
+  * [ ] Gestion du temps et du stress en examen
+  * [ ] Autre : ______

@@ -1,0 +1,23 @@
+===NOTE=== 3/4
+===CORRECTION===
+* **Question 1 : Quel est votre niveau scolaire actuel ?**
+  * Statut : ✅
+  * Bonne réponse : Lycée (Seconde à Terminale)
+  * Explication : Cette question de profil permet d'adapter le contenu à votre niveau scolaire. Votre réponse a bien été enregistrée.
+
+* **Question 2 : Quelle est la matière ou le domaine des mathématiques que vous souhaitez travailler en priorité ?**
+  * Statut : ✅
+  * Bonne réponse : Analyse et Fonctions (études de fonctions, dérivées, limites)
+  * Explication : Cette question permet d'identifier vos objectifs de travail. Votre choix a bien été pris en compte.
+
+* **Question 3 : Résoudre l'équation simple : 2x + 5 = 15. Quelle est la valeur de x ?**
+  * Statut : ❌
+  * Bonne réponse : x = 5
+  * Explication : Pour résoudre 2x + 5 = 15, on soustrait d'abord 5 de chaque côté, ce qui donne 2x = 10. Ensuite, on divise par 2 pour isoler x, ce qui donne x = 5. Vous avez probablement confondu avec l'étape intermédiaire 2x = 10.
+
+* **Question 4 : Quelle est l'expression développée de (x + 3)^2 ?**
+  * Statut : ✅
+  * Bonne réponse : x^2 + 6x + 9
+  * Explication : Vous avez correctement appliqué l'identité remarquable (a + b)^2 = a^2 + 2ab + b^2 avec a = x et b = 3, ce qui donne bien x^2 + 6x + 9.
+
+C'est un travail encourageant avec une très bonne maîtrise du développement des identités remarquables. Veillez simplement à bien décomposer chaque étape lors de la résolution d'équations pour éviter les erreurs d'inattention.

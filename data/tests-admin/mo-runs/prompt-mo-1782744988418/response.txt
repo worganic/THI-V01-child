@@ -1,0 +1,366 @@
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-07-06 | Les bases de la géométrie | Découvrir le point, le segment, la droite, et les droites perpendiculaires/parallèles | À faire |
+| Séance 2 | 2026-07-13 | Les polygones et les quadrilatères | Identifier et tracer le carré, le rectangle, le losange | À faire |
+| Séance 3 | 2026-07-20 | Les triangles et leurs propriétés | Distinguer et construire les triangles isocèle, équilatéral et rectangle | À faire |
+| Séance 4 | 2026-07-27 | Le cercle et ses caractéristiques | Utiliser le compas, identifier le centre, le rayon et le diamètre | À faire |
+| Séance 5 | 2026-08-03 | La symétrie axiale | Comprendre la symétrie et tracer le symétrique d'une figure | À faire |
+| Séance 6 | 2026-08-10 | Les angles et l'utilisation de l'équerre | Distinguer les angles aigus, droits et obtus | À faire |
+| Séance 7 | 2026-08-17 | Mesurer des angles avec le rapporteur | Apprendre à utiliser le rapporteur pour mesurer des angles en degrés | À faire |
+| Séance 8 | 2026-08-24 | Le périmètre des figures planes | Calculer le périmètre des carrés, rectangles et triangles | À faire |
+| Séance 9 | 2026-08-31 | L'aire des figures planes | Utiliser les formules d'aire pour le carré, le rectangle et le triangle rectangle | À faire |
+| Séance 10 | 2026-09-07 | Introduction aux proportions dans le triangle rectangle | Comprendre le rapport entre angles et longueurs des côtés | À faire |
+```
+
+```AGENDA: Séances
+2026-07-06 | 14:00-15:30 | Séance 1 — 2026-07-06 : Les bases de la géométrie | Découverte des bases de la géométrie.
+2026-07-13 | 14:00-15:30 | Séance 2 — 2026-07-13 : Les polygones et les quadrilatères | Étude des quadrilatères particuliers.
+2026-07-20 | 14:00-15:30 | Séance 3 — 2026-07-20 : Les triangles et leurs propriétés | Les différents types de triangles.
+2026-07-27 | 14:00-15:30 | Séance 4 — 2026-07-27 : Le cercle et ses caractéristiques | Utilisation du compas et vocabulaire du cercle.
+2026-08-03 | 14:00-15:30 | Séance 5 — 2026-08-03 : La symétrie axiale | Tracé de figures symétriques.
+2026-08-10 | 14:00-15:30 | Séance 6 — 2026-08-10 : Les angles et l'utilisation de l'équerre | Vocabulaire des angles et utilisation de l'équerre.
+2026-08-17 | 14:00-15:30 | Séance 7 — 2026-08-17 : Mesurer des angles avec le rapporteur | Mesure et construction d'angles.
+2026-08-24 | 14:00-15:30 | Séance 8 — 2026-08-24 : Le périmètre des figures planes | Calculs de périmètres.
+2026-08-31 | 14:00-15:30 | Séance 9 — 2026-08-31 : L'aire des figures planes | Calculs de surfaces.
+2026-09-07 | 14:00-15:30 | Séance 10 — 2026-09-07 : Introduction aux proportions dans le triangle rectangle | Initiation simple aux rapports trigonométriques.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 — 2026-07-06 : Les bases de la géométrie | 2026-07-06 | | 20 | =C2/D2*100 | |
+| Séance 2 — 2026-07-13 : Les polygones et les quadrilatères | 2026-07-13 | | 20 | =C3/D3*100 | |
+| Séance 3 — 2026-07-20 : Les triangles et leurs propriétés | 2026-07-20 | | 20 | =C4/D4*100 | |
+| Séance 4 — 2026-07-27 : Le cercle et ses caractéristiques | 2026-07-27 | | 20 | =C5/D5*100 | |
+| Séance 5 — 2026-08-03 : La symétrie axiale | 2026-08-03 | | 20 | =C6/D6*100 | |
+| Séance 6 — 2026-08-10 : Les angles et l'utilisation de l'équerre | 2026-08-10 | | 20 | =C7/D7*100 | |
+| Séance 7 — 2026-08-17 : Mesurer des angles avec le rapporteur | 2026-08-17 | | 20 | =C8/D8*100 | |
+| Séance 8 — 2026-08-24 : Le périmètre des figures planes | 2026-08-24 | | 20 | =C9/D9*100 | |
+| Séance 9 — 2026-08-31 : L'aire des figures planes | 2026-08-31 | | 20 | =C10/D10*100 | |
+| Séance 10 — 2026-09-07 : Introduction aux proportions dans le triangle rectangle | 2026-09-07 | | 20 | =C11/D11*100 | =AVG(C2:C11) |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer la Séance 1 `[medium]`
+  Revoir le vocabulaire du point, segment, droite.
+- [ ] Préparer la Séance 2 `[medium]`
+  S'exercer au tracé des quadrilatères particuliers.
+- [ ] Préparer la Séance 3 `[medium]`
+  Revoir les caractéristiques des triangles particuliers.
+- [ ] Préparer la Séance 4 `[medium]`
+  S'entraîner à tracer des cercles au compas.
+- [ ] Préparer la Séance 5 `[medium]`
+  Pratiquer la symétrie axiale sur papier quadrillé.
+- [ ] Préparer la Séance 6 `[medium]`
+  Apprendre à manipuler l'équerre pour tracer des angles droits.
+- [ ] Préparer la Séance 7 `[medium]`
+  S'entraîner à lire des angles sur un rapporteur.
+- [ ] Préparer la Séance 8 `[medium]`
+  Apprendre les formules des périmètres.
+- [ ] Préparer la Séance 9 `[medium]`
+  Apprendre les formules d'aires.
+- [ ] Préparer la Séance 10 `[medium]`
+  Comprendre la notion d'échelle et de proportion.
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-07-06 : Les bases de la géométrie
+
+### 1. Le Point
+Un point est le plus petit élément en géométrie. Il n'a ni largeur, ni longueur.
+* On le représente par une petite croix.
+* On le nomme par une lettre majuscule (par exemple : A, B ou C).
+
+### 2. Le Segment
+Un segment est une partie de ligne droite délimitée par deux points appelés ses extrémités.
+* On note le segment qui va de A à B entre crochets : [AB].
+* La longueur du segment se note sans crochets : AB = 5 cm.
+
+### 3. La Droite
+Une droite est une ligne droite infinie. Elle n'a pas d'extrémités.
+* On note la droite qui passe par A et B entre parenthèses : (AB).
+* On peut aussi la nommer avec une lettre minuscule entre parenthèses : (d).
+
+### 4. Positions de deux droites
+* Droites perpendiculaires : Deux droites qui se coupent en formant un angle droit (90°). On utilise une équerre pour les construire ou vérifier leur perpendicularité.
+* Droites parallèles : Deux droites qui ne se coupent jamais, quelle que soit leur longueur. L'écartement entre les deux droites reste toujours le même.
+
+```FORM: QCM Séance 1
+* **Question 1 : Comment note-t-on le segment reliant le point A au point B ?**
+  * ( ) (AB)
+  * ( ) [AB]
+  * ( ) AB
+* **Question 2 : Quelle est la caractéristique principale de deux droites perpendiculaires ?**
+  * ( ) Elles ne se coupent jamais.
+  * ( ) Elles se croisent en formant un angle droit.
+  * ( ) Elles se coupent sans former d'angle droit.
+* **Question 3 : Quel instrument de géométrie permet de tracer ou vérifier un angle droit ?**
+  * ( ) Le compas
+  * ( ) Le rapporteur
+  * ( ) L'équerre
+```
+
+## Séance 2 — 2026-07-13 : Les polygones et les quadrilatères
+
+### 1. Qu'est-ce qu'un polygone ?
+Un polygone est une figure géométrique plane fermée, délimitée par plusieurs segments de droite appelés côtés.
+* Les points de rencontre des côtés s'appellent des sommets.
+* Un quadrilatère est un polygone à 4 côtés, 4 sommets et 4 angles.
+
+### 2. Les quadrilatères particuliers
+* Le Carré : Il a 4 côtés de même longueur et 4 angles droits. Ses diagonales se coupent en leur milieu, sont perpendiculaires et ont la même longueur.
+* Le Rectangle : Il a 4 angles droits et ses côtés opposés ont la même longueur. Ses diagonales se coupent en leur milieu et ont la même longueur (mais ne sont pas perpendiculaires).
+* Le Losange : Il a 4 côtés de même longueur (mais pas d'angles droits). Ses diagonales se coupent en leur milieu et sont perpendiculaires (mais n'ont pas la même longueur).
+
+```FORM: QCM Séance 2
+* **Question 1 : Quel quadrilatère possède 4 côtés égaux mais pas d'angles droits ?**
+  * ( ) Le rectangle
+  * ( ) Le carré
+  * ( ) Le losange
+* **Question 2 : Quelles sont les propriétés des diagonales du carré ?**
+  * [ ] Elles ont la même longueur.
+  * [ ] Elles se coupent en leur milieu.
+  * [ ] Elles sont perpendiculaires.
+* **Question 3 : Combien de côtés possède un hexagone ?**
+  * ( ) 5 côtés
+  * ( ) 6 côtés
+  * ( ) 8 côtés
+```
+
+## Séance 3 — 2026-07-20 : Les triangles et leurs propriétés
+
+### 1. Qu'est-ce qu'un triangle ?
+Un triangle est un polygone qui possède 3 côtés, 3 sommets et 3 angles. La somme de ses 3 angles est toujours égale à 180°.
+
+### 2. Les triangles particuliers
+* Le Triangle Rectangle : Il possède un angle droit (90°). Le côté le plus long situé en face de l'angle droit s'appelle l'hypoténuse.
+* Le Triangle Isocèle : Il possède deux côtés de même longueur. Ses deux angles à la base sont de même mesure.
+* Le Triangle Équilatéral : Ses trois côtés ont la même longueur. Ses trois angles sont égaux et mesurent tous 60°.
+* Le Triangle Quelconque (Scalène) : Il n'a pas de côtés égaux ni d'angles droits.
+
+```FORM: QCM Séance 3
+* **Question 1 : Comment s'appelle un triangle possédant 3 côtés égaux ?**
+  * ( ) Un triangle isocèle
+  * ( ) Un triangle équilatéral
+  * ( ) Un triangle rectangle
+* **Question 2 : Dans un triangle rectangle, quel est le nom du côté opposé à l'angle droit ?**
+  * ( ) La base
+  * ( ) L'hypoténuse
+  * ( ) La hauteur
+* **Question 3 : Un triangle possède des côtés de 6 cm, 6 cm et 10 cm. Quel type de triangle est-ce ?**
+  * ( ) Un triangle équilatéral
+  * ( ) Un triangle isocèle
+  * ( ) Un triangle quelconque
+```
+
+## Séance 4 — 2026-07-27 : Le cercle et ses caractéristiques
+
+### 1. Définition du cercle
+Un cercle est l'ensemble de tous les points situés à la même distance (le rayon) d'un point appelé le centre.
+
+### 2. Le vocabulaire du cercle
+* Le Centre : Le point central situé à égale distance de tous les points du cercle.
+* Le Rayon : Un segment reliant le centre à un point situé sur le cercle.
+* Le Diamètre : Un segment reliant deux points du cercle en passant par le centre. La longueur du diamètre est le double de celle du rayon (Diamètre = 2 x Rayon).
+* La Corde : Un segment reliant deux points du cercle sans passer par le centre.
+
+### 3. Comment tracer un cercle ?
+On utilise un compas. On place la pointe sèche sur le centre, et on écarte la mine de la longueur du rayon pour tracer la ligne courbe fermée.
+
+```FORM: QCM Séance 4
+* **Question 1 : Si le rayon d'un cercle est de 5 cm, combien mesure son diamètre ?**
+  * ( ) 2,5 cm
+  * ( ) 10 cm
+  * ( ) 20 cm
+* **Question 2 : Quel segment relie deux points d'un cercle sans passer par son centre ?**
+  * ( ) Un rayon
+  * ( ) Un diamètre
+  * ( ) Une corde
+* **Question 3 : Quel instrument permet de tracer un cercle ?**
+  * ( ) L'équerre
+  * ( ) Le compas
+  * ( ) Le rapporteur
+```
+
+## Séance 5 — 2026-08-03 : La symétrie axiale
+
+### 1. Définition
+La symétrie axiale consiste à réaliser le « reflet » d'une figure par rapport à une droite appelée axe de symétrie. Si l'on plie la feuille le long de cet axe, la figure initiale et sa figure symétrique se superposent parfaitement.
+
+### 2. Les propriétés de la symétrie axiale
+La symétrie axiale conserve :
+* Les longueurs des segments.
+* Les mesures des angles.
+* Les aires des figures.
+* L'alignement des points.
+
+### 3. Axe de symétrie d'une figure
+Certaines figures ont un ou plusieurs axes de symétrie internes.
+* Un rectangle a 2 axes de symétrie (ses médiatrices).
+* Un carré a 4 axes de symétrie (ses médiatrices et ses diagonales).
+* Un cercle a une infinité d'axes de symétrie (tous ses diamètres).
+
+```FORM: QCM Séance 5
+* **Question 1 : Si on trace le symétrique d'un segment de 7 cm, quelle sera la longueur du nouveau segment ?**
+  * ( ) Moins de 7 cm
+  * ( ) Exactement 7 cm
+  * ( ) Plus de 7 cm
+* **Question 2 : Combien d'axes de symétrie possède un rectangle ?**
+  * ( ) 2 axes
+  * ( ) 4 axes
+  * ( ) Une infinité d'axes
+* **Question 3 : Que se passe-t-il lorsqu'on plie une figure selon son axe de symétrie ?**
+  * ( ) Les deux parties se superposent exactement.
+  * ( ) Les deux parties s'excluent mutuellement.
+  * ( ) Les deux parties changent de forme.
+```
+
+## Séance 6 — 2026-08-10 : Les angles et l'utilisation de l'équerre
+
+### 1. Qu'est-ce qu'un angle ?
+Un angle est l'écartement entre deux demi-droites qui se croisent en un point appelé le sommet.
+
+### 2. Les différents types d'angles
+* L'Angle Droit : C'est l'angle de référence (comme le coin d'une feuille). Il mesure 90°.
+* L'Angle Aigu : C'est un angle plus petit (fermé) que l'angle droit (mesure inférieure à 90°).
+* L'Angle Obtus : C'est un angle plus grand (ouvert) que l'angle droit (mesure entre 90° et 180°).
+* L'Angle Plat : C'est un angle tout droit. Il mesure 180°.
+
+### 3. L'utilisation de l'équerre
+L'équerre permet de vérifier si un angle est droit, aigu ou obtus en superposant son coin droit sur l'angle de la figure.
+
+```FORM: QCM Séance 6
+* **Question 1 : Comment appelle-t-on un angle plus petit qu'un angle droit ?**
+  * ( ) Un angle obtus
+  * ( ) Un angle aigu
+  * ( ) Un angle plat
+* **Question 2 : Quelle est la mesure d'un angle droit ?**
+  * ( ) 45°
+  * ( ) 90°
+  * ( ) 180°
+* **Question 3 : Si un angle est ouvert à 115°, de quel type d'angle s'agit-il ?**
+  * ( ) Aigu
+  * ( ) Droit
+  * ( ) Obtus
+```
+
+## Séance 7 — 2026-08-17 : Mesurer des angles avec le rapporteur
+
+### 1. Le Degré
+L'unité de mesure des angles est le degré, noté par le symbole °.
+
+### 2. Le Rapporteur
+Le rapporteur est l'outil semi-circulaire gradué en degrés de 0° à 180°. Il possède souvent deux graduations (l'une de gauche à droite, l'autre de droite à gauche).
+
+### 3. Méthode pour mesurer un angle
+1. Place le centre du rapporteur (le petit viseur) précisément sur le sommet de l'angle.
+2. Aligne la ligne du 0° (le bas du rapporteur) avec l'un des côtés de l'angle.
+3. Repère l'autre côté de l'angle sur le rapporteur et lis la mesure sur la graduation qui démarre à 0°.
+
+```FORM: QCM Séance 7
+* **Question 1 : Quel outil sert à mesurer précisément un angle en degrés ?**
+  * ( ) L'équerre
+  * ( ) Le compas
+  * ( ) Le rapporteur
+* **Question 2 : Quelle est la mesure en degrés d'un angle plat ?**
+  * ( ) 90°
+  * ( ) 180°
+  * ( ) 360°
+* **Question 3 : Lors de la mesure d'un angle, où doit-on placer le repère central du rapporteur ?**
+  * ( ) Sur le milieu d'un des côtés
+  * ( ) Sur le sommet de l'angle
+  * ( ) À l'extrémité extérieure d'un côté
+```
+
+## Séance 8 — 2026-08-24 : Le périmètre des figures planes
+
+### 1. Définition
+Le périmètre d'une figure géométrique fermée est la longueur totale de son contour. On le calcule en additionnant la longueur de tous ses côtés.
+
+### 2. Formules de calcul des périmètres
+* Carré : Périmètre = 4 x côté
+* Rectangle : Périmètre = (Longueur + largeur) x 2
+* Triangle quelconque : Périmètre = côté A + côté B + côté C
+
+### 3. Unités
+Le périmètre s'exprime dans les unités de longueur classiques : millimètre (mm), centimètre (cm), décimètre (dm), mètre (m).
+
+```FORM: QCM Séance 8
+* **Question 1 : Quel est le périmètre d'un carré de 8 cm de côté ?**
+  * ( ) 16 cm
+  * ( ) 32 cm
+  * ( ) 64 cm
+* **Question 2 : Un rectangle a une longueur de 7 cm et une largeur de 3 cm. Quel est son périmètre ?**
+  * ( ) 10 cm
+  * ( ) 20 cm
+  * ( ) 21 cm
+* **Question 3 : Quelle formule permet de calculer le périmètre d'un rectangle ?**
+  * ( ) Longueur x largeur
+  * ( ) 4 x côté
+  * ( ) (Longueur + largeur) x 2
+```
+
+## Séance 9 — 2026-08-31 : L'aire des figures planes
+
+### 1. Définition
+L'aire (ou surface) est la mesure de la place occupée à l'intérieur d'une figure plane fermée.
+
+### 2. Formules de calcul des aires
+* Carré : Aire = côté x côté
+* Rectangle : Aire = Longueur x largeur
+* Triangle rectangle : Aire = (base x hauteur) / 2 (car un triangle rectangle correspond à la moitié d'un rectangle).
+
+### 3. Unités
+L'aire se mesure en unités carrées. Par exemple : centimètres carrés (cm²), mètres carrés (m²).
+
+```FORM: QCM Séance 9
+* **Question 1 : Quelle est l'aire d'un carré de 9 cm de côté ?**
+  * ( ) 36 cm²
+  * ( ) 81 cm²
+  * ( ) 18 cm²
+* **Question 2 : Quelle est l'aire d'un rectangle de 10 cm de Longueur et 4 cm de largeur ?**
+  * ( ) 14 cm²
+  * ( ) 28 cm²
+  * ( ) 40 cm²
+* **Question 3 : Un triangle rectangle possède une base de 6 cm et une hauteur de 4 cm. Quelle est son aire ?**
+  * ( ) 10 cm²
+  * ( ) 12 cm²
+  * ( ) 24 cm²
+```
+
+## Séance 10 — 2026-09-07 : Introduction aux proportions dans le triangle rectangle
+
+### 1. Concept de proportionnalité géométrique
+Dans des triangles rectangles différents mais ayant les mêmes angles, les longueurs des côtés restent toujours dans les mêmes proportions. C'est le principe qui permet de mesurer de grandes hauteurs à l'aide de petites ombres.
+
+### 2. Exemple historique (L'ombre et la hauteur)
+Si à un moment de la journée, un bâton de 1 mètre planté verticalement dans le sol projette une ombre de 2 mètres :
+* Le rapport entre la hauteur et l'ombre est de 1 / 2 = 0,5.
+* À la même heure, un arbre qui projette une ombre de 12 mètres mesurera donc : 12 x 0,5 = 6 mètres de haut.
+
+### 3. Vers la trigonométrie
+Cette relation constante entre la mesure d'un angle et le rapport des côtés d'un triangle rectangle est la base d'une branche des mathématiques appelée la trigonométrie. Elle permet de calculer des distances inaccessibles (comme la hauteur d'une montagne).
+
+```FORM: QCM Séance 10
+* **Question 1 : Si un piquet vertical de 2 m projette une ombre de 4 m, quelle sera la hauteur d'un poteau ayant une ombre de 10 m au même instant ?**
+  * ( ) 5 m
+  * ( ) 8 m
+  * ( ) 20 m
+* **Question 2 : Dans un triangle rectangle, si tous les côtés doublent de longueur, que font ses angles ?**
+  * ( ) Ils doublent aussi.
+  * ( ) Ils restent identiques.
+  * ( ) Ils sont divisés par deux.
+* **Question 3 : À quoi sert l'étude de la trigonométrie ?**
+  * ( ) À calculer le périmètre d'un cercle.
+  * ( ) À relier les angles aux rapports de longueurs des côtés d'un triangle rectangle.
+  * ( ) À dessiner des carrés parfaits.
+```

@@ -1,0 +1,28 @@
+* **Format attendu pour le livrable final du projet :**
+  * [ ] Un script d'application interactive ou prototype de chatbot
+  * [ ] Un document de spécifications fonctionnelles détaillées
+  * [ ] Un prompt système structuré pour un assistant IA
+  * [ ] Autre : ______
+
+* **Contraintes principales pour la mise en œuvre de cet atelier :**
+  * [ ] Budget limité ou absence d'outils payants
+  * [ ] Intégration technique obligatoire avec des outils de mind mapping spécifiques (ex: Miro, Obsidian)
+  * [ ] Contrainte de temps de développement très court
+  * [ ] Autre : ______
+
+* **Horizon temporel et jalons clés pour la livraison :**
+  * ( ) Moins d'une semaine (très court terme)
+  * ( ) Entre 1 et 4 semaines (moyen terme)
+  * ( ) Plus d'un mois (long terme)
+
+* **Critères de succès mesurables pour valider le bon fonctionnement :**
+  * [ ] Taux d'adoption par les business owners (ex: > 80%)
+  * [ ] Précision et pertinence de la qualification des unités de sens (minimiser les corrections manuelles)
+  * [ ] Facilité d'exportation de la synthèse finale vers d'autres formats
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Résistance du business owner face à l'exercice d'écriture libre sans correction
+  * [ ] Difficultés d'analyse des textes bruts très longs ou décousus par l'IA
+  * [ ] Perte de données durant la session chronométrée
+  * [ ] Autre : ______

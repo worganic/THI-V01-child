@@ -1,0 +1,37 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Études supérieures / Adulte
+  * ( ) Autre : ______
+
+* **Domaines ou chapitres prioritaires à travailler en mathématiques :**
+  * [ ] Algèbre et Analyse (fonctions, équations, suites...)
+  * [ ] Géométrie (théorèmes, trigonométrie, vecteurs...)
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique et calcul de base
+  * [ ] Autre : ______
+
+* **Durée globale de l'accompagnement et date de début souhaitée :**
+  * ( ) Intensif sur 1 à 2 semaines (stage de révisions)
+  * ( ) Régulier sur 1 trimestre
+  * ( ) Accompagnement annuel (année scolaire complète)
+  * ( ) Autre (préciser la durée et date de début) : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 fois par semaine
+  * ( ) Plus de 2 fois par semaine
+  * ( ) Autre : ______
+
+* **Niveau actuel estimé et objectif visé :**
+  * [ ] Niveau en difficulté (remise à niveau complète, objectif : moyenne)
+  * [ ] Niveau moyen (consolidation, objectif : progression ou mention)
+  * [ ] Bon niveau (perfectionnement, objectif : excellent dossier / concours)
+  * [ ] Autre : ______
+
+* **Modalités d'évaluation privilégiées pour mesurer la progression :**
+  * [ ] Évaluations notées classiques (sur /20)
+  * [ ] Questionnaires à choix multiples (QCM) de fin de séance
+  * [ ] Auto-évaluation et bilans de compétences
+  * [ ] Aucun test formel, validation par la réussite des exercices

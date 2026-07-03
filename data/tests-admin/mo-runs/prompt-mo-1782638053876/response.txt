@@ -1,0 +1,40 @@
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Lancement immédiat (recherche active et achat sous 6 mois)
+  * ( ) Moyen terme (achat d'ici 1 à 2 ans)
+  * ( ) Autre : ______
+
+* **Budget global estimé (achat + travaux + lancement) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Zone géographique ciblée et type de bien :**
+  * [ ] Campagne / Nature (corps de ferme, domaine)
+  * [ ] Mer / Littoral (villa, maison de pêcheur)
+  * [ ] Ville / Touristique (maison de maître, immeuble historique)
+  * [ ] Autre : ______
+
+* **Capacité d'accueil visée (nombre de chambres d'hôtes) :**
+  * ( ) Petite structure (1 à 3 chambres)
+  * ( ) Structure moyenne (4 à 5 chambres - limite légale en France)
+  * ( ) Grande structure / Gîtes multiples (plus de 5 chambres / besoin de statut ERP)
+  * ( ) Autre : ______
+
+* **Principales contraintes identifiées :**
+  * [ ] Financement / Obtention d'un prêt bancaire
+  * [ ] Réglementation locale (PLU, autorisations d'urbanisme)
+  * [ ] Travaux importants de rénovation ou de mise aux normes (accessibilité PMR, sécurité incendie)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables à court terme :**
+  * [ ] Taux d'occupation minimum ciblé (ex : 50% la première année)
+  * [ ] Rentabilité financière atteinte dès la deuxième année
+  * [ ] Niveau de satisfaction client (notes sur les plateformes de réservation)
+  * [ ] Autre : ______
+
+* **Risques majeurs ou blocages anticipés :**
+  * [ ] Difficultés à trouver le bien idéal avec le potentiel requis
+  * [ ] Dépassement du budget de travaux
+  * [ ] Retards administratifs ou refus de permis
+  * [ ] Autre : ______

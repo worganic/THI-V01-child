@@ -1,0 +1,37 @@
+* **Format attendu pour le livrable final :**
+  * [ ] Un prompt système structuré pour un assistant IA (ex: ChatGPT, Claude)
+  * [ ] Une application web interactive (HTML/CSS/JS)
+  * [ ] Un script de terminal interactif
+  * [ ] Un document de cadrage ou de spécification textuelle
+  * [ ] Autre : ______
+
+* **Public cible de l'atelier P.A.R.S. :**
+  * ( ) Des porteurs de projet / Business Owners individuels
+  * ( ) Des équipes collaboratives en entreprise
+  * ( ) Des étudiants ou apprenants en entrepreneuriat
+  * ( ) Autre : ______
+
+* **Horizon temporel et date de démarrage pour le développement du projet :**
+  * ( ) Lancement immédiat (moins d'une semaine)
+  * ( ) Horizon à court terme (1 à 4 semaines)
+  * ( ) Horizon à moyen terme (1 à 3 mois)
+  * ( ) Autre : ______
+
+* **Contraintes principales pour la mise en œuvre :**
+  * [ ] Budget limité
+  * [ ] Technologies imposées (ex: HTML/JS pur sans base de données)
+  * [ ] Simplicité d'installation pour l'utilisateur final
+  * [ ] Respect de la confidentialité des données textuelles saisies
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables pour le projet :**
+  * [ ] Taux de complétion de l'atelier par les utilisateurs (supérieur à 80%)
+  * [ ] Temps de traitement de l'analyse (Récolte) inférieur à quelques secondes
+  * [ ] Pertinence des unités de sens extraites validées par l'utilisateur
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Abandon de l'utilisateur pendant l'écriture libre (Action)
+  * [ ] Mauvaise qualification des unités de sens par l'IA (Récolte)
+  * [ ] Problèmes d'ergonomie ou de fluidité de l'interface utilisateur
+  * [ ] Autre : ______

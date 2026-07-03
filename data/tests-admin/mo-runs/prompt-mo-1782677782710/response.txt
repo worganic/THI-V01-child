@@ -1,0 +1,44 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (du CP au CM2)
+  * ( ) Collège (de la 6ème à la 3ème)
+  * ( ) Lycée (de la 2nde à la Terminale)
+  * ( ) Supérieur / Adulte
+  * ( ) Autre : ______
+
+* **Matière ou thématique mathématique spécifique à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations...)
+  * [ ] Géométrie (théorèmes, repérage...)
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique
+  * [ ] Autre : ______
+
+* **Niveau de départ et objectif mesurable visé :**
+  * ( ) Remise à niveau (combler des lacunes importantes)
+  * ( ) Consolidation et perfectionnement (viser une mention ou le haut du classement)
+  * ( ) Préparation spécifique à un examen (Brevet, Bac, Concours)
+  * ( ) Autre : ______
+
+* **Durée estimée et date de début souhaitée pour le plan de travail :**
+  * ( ) Intensif sur 1 à 2 semaines (période de vacances)
+  * ( ) Régulier sur 1 trimestre
+  * ( ) Annuel (accompagnement tout au long de l'année scolaire)
+  * ( ) Autre : ______
+
+* **Fréquence et format des séances d'apprentissage :**
+  * ( ) 1 séance par semaine (1h à 1h30)
+  * ( ) 2 séances ou plus par semaine
+  * ( ) Autonomie complète avec suivi hebdomadaire
+  * ( ) Autre : ______
+
+* **Points prioritaires à travailler :**
+  * [ ] Méthodologie et rigueur de rédaction
+  * [ ] Vitesse d'exécution et calcul mental
+  * [ ] Résolution de problèmes complexes
+  * [ ] Apprentissage et restitution des formules du cours
+  * [ ] Autre : ______
+
+* **Modalités d'évaluation souhaitées pour valider les acquis :**
+  * [ ] QCM rapides en fin de chapitre
+  * [ ] Devoirs sur table notés (sur 20)
+  * [ ] Auto-évaluation et exercices corrigés détaillés
+  * [ ] Autre : ______

@@ -1,0 +1,117 @@
+# PROGRAMME DE FORMATION PERSONNALISÉ EN MATHÉMATIQUES
+
+Ce document sert de base pour définir, structurer et lancer votre accompagnement personnalisé en mathématiques.
+
+---
+
+## 1. FORMULAIRE DE DIAGNOSTIC INITIAL
+
+Veuillez remplir les informations suivantes pour nous permettre d'adapter précisément le contenu à vos besoins :
+
+### A. Informations Élève / Apprenant
+* **Niveau scolaire actuel :**
+  - [ ] Collège (6ème, 5ème, 4ème, 3ème)
+  - [ ] Lycée (Seconde, Première Spécialité/Option, Terminale Spécialité/Option)
+  - [ ] Supérieur (Licence, Prépa, BTS, BUT)
+  - [ ] Adulte / Reconversion / Concours
+  - *Précisez la classe exacte :* ________________________
+
+* **Objectifs de la formation :**
+  - [ ] Remise à niveau / Consolidation des bases
+  - [ ] Perfectionnement / Visée d'une mention ou classe préparatoire
+  - [ ] Préparation à un examen (Brevet, Baccalauréat, Concours)
+
+### B. Matières et Thématiques à Travailler
+Cochez la ou les matières / branches des mathématiques à cibler en priorité :
+  - [ ] Algèbre (Équations, inéquations, systèmes)
+  - [ ] Analyse (Fonctions, dérivées, intégrales, suites)
+  - [ ] Géométrie (Plane, dans l'espace, trigonométrie)
+  - [ ] Probabilités et Statistiques
+  - [ ] Algorithmique et Programmation (Python, etc.)
+  - *Précisez les chapitres précis ou difficultés identifiées :* ________________________
+
+---
+
+## 2. EXEMPLE DE PLAN DE TRAVAIL TYPE (Module de 4 Semaines)
+
+*Voici un exemple de planification pour un élève de **Seconde/Première** travaillant le thème des **Fonctions**.*
+
+### Semaine 1 : Évaluation diagnostique et Fondations
+* **Objectif :** Comprendre la notion de fonction, de courbe représentative et d'image/antécédent.
+* **Activités :** Lecture du cours de base, exercices de lecture graphique, quiz de validation des acquis.
+
+### Semaine 2 : Variations et Extremums
+* **Objectif :** Dresser un tableau de variations, identifier les maximums et minimums locaux.
+* **Activités :** Études graphiques et analytiques (fonctions de référence), exercices de manipulation d'inégalités.
+
+### Semaine 3 : Fonctions de Référence et Résolution d'équations
+* **Objectif :** Maîtriser les fonctions affines, carré, inverse et résoudre graphiquement $f(x) = k$ et $f(x) < g(x)$.
+* **Activités :** Résolution d'exercices d'application directe et problèmes modélisant des situations réelles.
+
+### Semaine 4 : Évaluation Bilan et Approfondissement
+* **Objectif :** Valider l'autonomie sur le chapitre et aborder des problèmes de synthèse.
+* **Activités :** Devoir surveillé blanc (type contrôle), correction détaillée et remédiation sur les erreurs fréquentes.
+
+---
+
+## 3. EXEMPLE DE COURS SYNTHÉTIQUE : LES FONCTIONS (Niveau Seconde)
+
+### I. Définition d'une fonction
+Une **fonction** $f$ est un procédé qui, à chaque nombre réel $x$ d'un ensemble de départ $D$ (appelé ensemble de définition), associe un **unique** nombre réel, noté $f(x)$.
+* $x$ est la **variable** (ou l'antécédent).
+* $f(x)$ est l'**image** de $x$ par la fonction $f$.
+
+### II. Représentation graphique
+Dans un repère, la courbe représentative $C_f$ de la fonction $f$ est l'ensemble des points de coordonnées $(x ; y)$ tels que $y = f(x)$.
+
+### III. Exemple d'application directe
+Soit la fonction $f$ définie sur $\mathbb{R}$ par $f(x) = 3x^2 - 5$.
+* Pour calculer l'image de $2$ :
+  $$f(2) = 3 \times (2)^2 - 5 = 3 \times 4 - 5 = 12 - 5 = 7$$
+  L'image de $2$ par $f$ est $7$. Le point $(2 ; 7)$ appartient à la courbe $C_f$.
+
+---
+
+## 4. FICHE D'EXERCICES
+
+### Exercice 1 : Calculs d'images et d'antécédents (Niveau 1 - Facile)
+Soit la fonction $g$ définie sur $\mathbb{R}$ par $g(x) = -2x + 6$.
+1. Calculer l'image de $-3$ par $g$.
+2. Déterminer l'antécédent de $10$ par $g$.
+
+### Exercice 2 : Lecture graphique (Niveau 2 - Intermédiaire)
+Une fonction $h$ est définie sur l'intervalle $[-4 ; 5]$. Sa courbe $C_h$ passe par les points $A(-2 ; 3)$, $B(0 ; -1)$ et $C(3 ; 0)$.
+1. Donner les valeurs de $h(-2)$, $h(0)$ et $h(3)$.
+2. Donner un antécédent possible de $-1$ par $h$.
+
+### Exercice 3 : Problème de modélisation (Niveau 3 - Avancé)
+Un artisan fabrique des objets. Le coût de fabrication de $x$ objets (avec $x \in [0 ; 50]$) est donné par la fonction :
+$$C(x) = x^2 - 20x + 200$$
+Chaque objet est vendu 15 €.
+1. Exprimer la recette $R(x)$ en fonction du nombre d'objets $x$ vendus.
+2. Exprimer le bénéfice $B(x)$ réalisé par l'artisan.
+3. Pour quelle quantité d'objets le bénéfice est-il maximal ?
+
+---
+
+## 5. CORRIGÉS DÉTAILLÉS
+
+### Corrigé de l'Exercice 1 :
+1. **Image de $-3$ :**
+   $$g(-3) = -2 \times (-3) + 6 = 6 + 6 = 12$$
+2. **Antécédent de $10$ :**
+   On résout l'équation $g(x) = 10$ :
+   $$-2x + 6 = 10 \implies -2x = 4 \implies x = -2$$
+   L'antécédent de $10$ par $g$ est $-2$.
+
+### Corrigé de l'Exercice 2 :
+1. $h(-2) = 3$ (car le point $A(-2;3) \in C_h$), $h(0) = -1$ (car $B(0;-1) \in C_h$) et $h(3) = 0$ (car $C(3;0) \in C_h$).
+2. Un antécédent possible de $-1$ par $h$ est $0$ puisque $h(0) = -1$.
+
+### Corrigé de l'Exercice 3 :
+1. La recette est $R(x) = 15x$.
+2. Le bénéfice est la recette moins le coût :
+   $$B(x) = R(x) - C(x) = 15x - (x^2 - 20x + 200) = -x^2 + 35x - 200$$
+3. La fonction $B(x) = -x^2 + 35x - 200$ est une fonction polynôme du second degré de la forme $ax^2 + bx + c$ avec $a = -1$ et $b = 35$.
+   Comme $a < 0$, la fonction admet un maximum en $x_0 = -\frac{b}{2a} = -\frac{35}{2 \times (-1)} = 17,5$.
+   Puisque $x$ doit être un entier (nombre d'objets), le bénéfice maximum est atteint pour 17 ou 18 objets vendus.

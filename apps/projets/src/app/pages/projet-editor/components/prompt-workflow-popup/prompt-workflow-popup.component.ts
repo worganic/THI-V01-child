@@ -22,7 +22,7 @@ interface TranscriptEntry { rawForm: string; answers: FormEntry; }
         [userName]="userName"
         [secondaryAction]="'Générer le livrable maintenant'"
         (submitted)="onFormSubmitted($event)"
-        (secondary)="onForceGenerate()"
+        (secondary)="onForceGenerate($event)"
         (cancel)="cancel.emit()" />
     } @else {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -97,6 +97,32 @@ interface TranscriptEntry { rawForm: string; answers: FormEntry; }
                   }
                 </div>
                 <pre class="rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background p-3 text-[12px] text-light-text dark:text-white/80 whitespace-pre-wrap font-mono overflow-y-auto max-h-60 leading-relaxed">{{ accumulated() || ' ' }}</pre>
+              </div>
+            }
+
+            <!-- Journal IA en direct : allers-retours requêtes/réponses + logs CLI (surveillance) -->
+            @if (aiLog().length > 0) {
+              <div class="flex flex-col gap-1.5 mt-1">
+                <div class="flex items-center gap-2">
+                  <button (click)="showAiLog.set(!showAiLog())"
+                          class="flex items-center gap-1 text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide hover:text-light-text dark:hover:text-white transition-colors">
+                    <span class="material-symbols-outlined text-[14px]">{{ showAiLog() ? 'expand_more' : 'chevron_right' }}</span>
+                    Journal IA ({{ aiLog().length }})
+                  </button>
+                  <span class="flex-1"></span>
+                  <button (click)="clearAiLog()" class="text-[10px] text-light-text-muted dark:text-white/30 hover:text-light-text dark:hover:text-white transition-colors">Vider</button>
+                </div>
+                @if (showAiLog()) {
+                  <div class="rounded-lg border border-light-border dark:border-white/10 bg-black/40 p-2.5 text-[11px] font-mono overflow-y-auto max-h-52 leading-relaxed flex flex-col gap-0.5">
+                    @for (l of aiLog(); track $index) {
+                      <div class="flex gap-2"
+                           [ngClass]="l.stream === 'stderr' ? 'text-red-400/80' : (l.stream === 'info' ? 'text-blue-400/70' : 'text-light-text dark:text-white/75')">
+                        <span class="text-light-text-muted dark:text-white/25 flex-shrink-0">{{ l.ts }}</span>
+                        <span class="whitespace-pre-wrap break-words">{{ l.text }}</span>
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             }
 
@@ -211,6 +237,9 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
   state = signal<WfState>('idle');
   accumulated = signal('');
   elapsedSeconds = signal(0);
+  // Journal IA en direct (requêtes envoyées + flux info/stdout/stderr) — surveillance des allers-retours.
+  aiLog = signal<{ stream: string; text: string; ts: string }[]>([]);
+  showAiLog = signal(true);
   transcript = signal<TranscriptEntry[]>([]);
   currentQuestions = signal<FormQuestion[]>([]);
   deliverable = signal('');
@@ -266,9 +295,26 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     this.subs.push(
       this.execSvc.chunk$.subscribe(c => this.accumulated.update(v => v + c)),
       this.execSvc.done$.subscribe(full => this.onStreamDone(full)),
-      this.execSvc.error$.subscribe(err => { this.stopTimer(); this.accumulated.update(v => v + `\n\n⚠ ERREUR : ${err}`); this.state.set('error'); }),
+      this.execSvc.error$.subscribe(err => { this.stopTimer(); this.accumulated.update(v => v + `\n\n⚠ ERREUR : ${err}`); this.pushLog('stderr', `ERREUR : ${err}`); this.state.set('error'); }),
+      this.execSvc.log$.subscribe(l => this.pushLog(l.stream, l.text)),
     );
   }
+
+  /** Ajoute une ligne au journal IA (horodatée, plafonné à 400 lignes). */
+  private pushLog(stream: string, text: string) {
+    if (!text) return;
+    const ts = new Date().toLocaleTimeString('fr-FR', { hour12: false });
+    this.aiLog.update(arr => [...arr, { stream, text, ts }].slice(-400));
+  }
+
+  /** Trace la requête envoyée à l'IA (système + user, tronqués) dans le journal. */
+  private logRequest(label: string, system: string, user: string) {
+    this.pushLog('info', `──────── ${label} → REQUÊTE (${this.activeProvider()}/${this.activeModel()}) ────────`);
+    if (system) this.pushLog('info', `[SYSTEM] ${system.length > 600 ? system.slice(0, 600) + '… (' + system.length + ' car.)' : system}`);
+    this.pushLog('info', `[USER] ${user.length > 600 ? user.slice(0, 600) + '… (' + user.length + ' car.)' : user}`);
+  }
+
+  clearAiLog() { this.aiLog.set([]); }
 
   ngOnDestroy() {
     this.stopTimer();
@@ -284,11 +330,14 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     this.state.set('clarifying');
     this.startTimer();
     const system = this.combineSystem(this.clarifyPrompt);
-    this.execSvc.startExecution(system, this.buildClarifyUser(), this.activeProvider(), this.activeModel());
+    const user = this.buildClarifyUser();
+    this.logRequest('Cadrage', system, user);
+    this.execSvc.startExecution(system, user, this.activeProvider(), this.activeModel());
   }
 
   private onStreamDone(full: string) {
     this.stopTimer();
+    this.pushLog('info', `←──── RÉPONSE reçue (${(full || '').length} car., ${this.elapsedSeconds()}s) ────`);
     if (this.phase === 'generate') { this.onGenerateDone(full); return; }
     // Phase cadrage : ===PRÊT=== → génération ; sinon parser un formulaire
     if (/===\s*PR[ÊE]T\s*===/i.test(full)) { this.startGenerate(); return; }
@@ -312,8 +361,12 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     this.startClarify();   // vague suivante : l'IA reposera ou répondra ===PRÊT===
   }
 
-  onForceGenerate() {
-    // Si on force depuis le formulaire courant sans l'avoir soumis, on génère avec ce qu'on a.
+  onForceGenerate(entry?: FormEntry) {
+    // Forcer la génération depuis le formulaire courant : on capture les réponses saisies
+    // (si fournies) dans le transcript pour qu'elles soient transmises à l'IA, au lieu de les perdre.
+    if (entry && Object.keys(entry.answers || {}).length > 0) {
+      this.transcript.update(t => [...t, { rawForm: this.lastRawForm, answers: entry }]);
+    }
     this.startGenerate();
   }
 
@@ -325,7 +378,9 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     this.state.set('generating');
     this.startTimer();
     const system = this.combineSystem(this.generatePrompt);
-    this.execSvc.startExecution(system, this.buildGenerateUser(), this.activeProvider(), this.activeModel());
+    const user = this.buildGenerateUser();
+    this.logRequest('Génération du livrable', system, user);
+    this.execSvc.startExecution(system, user, this.activeProvider(), this.activeModel());
   }
 
   private onGenerateDone(full: string) {

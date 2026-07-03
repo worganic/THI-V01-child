@@ -1,0 +1,26 @@
+* **Classe précise du lycée ciblée :**
+  * ( ) Seconde
+  * ( ) Première (Spécialité Mathématiques)
+  * ( ) Première (Autre / Technologique)
+  * ( ) Terminale (Spécialité Mathématiques)
+  * ( ) Terminale (Mathématiques Expertes)
+  * ( ) Terminale (Mathématiques Complémentaires)
+  * ( ) Autre : ______
+
+* **Volume horaire hebdomadaire consacré à cette remise à niveau :**
+  * ( ) Moins de 2 heures par semaine
+  * ( ) Entre 2 et 5 heures par semaine
+  * ( ) Plus de 5 heures par semaine
+  * ( ) Autre : ______
+
+* **Support et format de livraison souhaité :**
+  * [ ] Fichier Markdown (.md) ou texte
+  * [ ] Document PDF mis en page
+  * [ ] Exercices interactifs
+  * [ ] Autre : ______
+
+* **Usage des technologies et outils de calcul :**
+  * [ ] Calculatrice graphique (mode examen)
+  * [ ] Programmation Python (algorithmique)
+  * [ ] Aucun outil (calculs à la main uniquement)
+  * [ ] Autre : ______

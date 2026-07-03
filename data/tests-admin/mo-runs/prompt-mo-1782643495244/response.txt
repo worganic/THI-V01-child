@@ -1,0 +1,35 @@
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Court terme (lancement prévu dans moins de 6 mois)
+  * ( ) Moyen terme (lancement prévu d'ici 6 à 18 mois)
+  * ( ) Long terme (lancement prévu à plus de 18 mois)
+  * ( ) Autre : ______
+
+* **Quel est le budget global prévisionnel pour l'achat et les travaux ?**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 750 000 €
+  * ( ) Plus de 750 000 €
+  * ( ) Autre : ______
+
+* **Quelles sont les contraintes réglementaires et juridiques prioritaires à valider ?**
+  * [ ] Changement d'usage et urbanisme (PLU)
+  * [ ] Normes de sécurité incendie et accessibilité (ERP)
+  * [ ] Statut juridique et fiscal de l'exploitation (SARL, LMNP...)
+  * [ ] Autre : ______
+
+* **Quels sont les critères de succès mesurables à court terme ?**
+  * [ ] Taux d'occupation minimum ciblé (ex: 50% la première année)
+  * [ ] Rentabilité nette ou retour sur investissement rapide
+  * [ ] Satisfaction client (ex: note supérieure à 9/10 sur les plateformes)
+  * [ ] Autre : ______
+
+* **Quels sont les principaux risques ou blocages anticipés ?**
+  * [ ] Difficultés d'obtention du financement bancaire
+  * [ ] Dépassement du budget ou des délais de travaux
+  * [ ] Concurrence locale ou faible demande touristique
+  * [ ] Autre : ______
+
+* **Quels types de documents souhaitez-vous générer en priorité pour ce projet ?**
+  * [ ] Business plan et prévisionnel financier
+  * [ ] Cahier des charges pour la recherche du bien immobilier
+  * [ ] Dossier de présentation pour les banques ou investisseurs
+  * [ ] Autre : ______

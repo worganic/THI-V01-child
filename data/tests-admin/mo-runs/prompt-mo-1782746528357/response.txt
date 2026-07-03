@@ -1,0 +1,114 @@
+# Projet de Création d'une Maison d'Hôtes - Acquisition & Rénovation
+
+Ce document constitue le dossier de cadrage opérationnel pour l'achat et la transformation d'un bien immobilier en maison d'hôtes. L'objectif est de lancer l'activité sous 6 mois, pour un budget global inférieur à 300 000 €, en sécurisant le financement et les démarches réglementaires d'urbanisme.
+
+## 1. Cadrage Stratégique et Objectifs
+* **Budget global :** 300 000 € maximum (acquisition, frais de notaire, travaux de mise en conformité et aménagement).
+* **Horizon temporel :** Lancement de l'activité sous 6 mois (échéance fin 2026).
+* **Cible de performance :** Atteindre un taux d'occupation de 50 % au minimum dès la première année d'exercice.
+* **Risques majeurs identifiés :** Refus de prêt bancaire, dépassement budgétaire des travaux, non-conformité avec le Plan Local d'Urbanisme (PLU) ou refus du changement de destination.
+
+---
+
+## 2. Planning Opérationnel
+Le tableau suivant présente la planification des étapes clés de l'acquisition jusqu'au lancement opérationnel de la maison d'hôtes.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| 1 | 2026-07-05 | Cadrage | Étude de marché locale et ciblage de la clientèle | Porteur de projet | Terminé |
+| 2 | 2026-07-20 | Cadrage | Rédaction du Business Plan & Budget prévisionnel | Comptable, Porteur | En cours |
+| 3 | 2026-08-10 | Réglementaire | Validation PLU & Demande de changement de destination | Urbaniste, Mairie | À faire |
+| 4 | 2026-09-01 | Financement | Démarchage des banques & montage du dossier de prêt | Courtier, Banques | À faire |
+| 5 | 2026-10-15 | Acquisition | Signature du compromis de vente & acte authentique | Notaire, Vendeur | À faire |
+| 6 | 2026-11-01 | Travaux | Rénovation et mise en conformité (sécurité, PMR) | Artisans, Architecte | À faire |
+| 7 | 2026-12-15 | Lancement | Campagne marketing et ouverture des réservations | Porteur de projet | À faire |
+| 8 | 2027-01-01 | Exploitation | Accueil des premiers clients et suivi d'activité | Porteur de projet | À faire |
+```
+
+---
+
+## 3. Agenda des Jalons Clés
+Les dates critiques pour le respect du calendrier de 6 mois et la validation des étapes administratives et financières.
+
+```AGENDA: Jalons
+2026-07-25 | 09:00-11:00 | Validation Business Plan | Présentation du budget finalisé avec l'expert-comptable.
+2026-08-15 | 14:00-16:00 | RDV Mairie - PLU | Réunion avec le service urbanisme pour valider le changement de destination du bâtiment.
+2026-09-30 | 10:00-12:00 | Obtention Financement | Date limite pour obtenir l'accord de principe de l'organisme bancaire.
+2026-10-20 | 11:00-12:30 | Signature Acte de Vente | Signature finale chez le notaire pour l'acquisition de la propriété.
+2026-12-20 | 08:00-18:00 | Réception des Travaux | Fin des chantiers de rénovation et levée des réserves.
+2027-01-01 | 09:00-23:00 | Inauguration & Lancement | Ouverture officielle de la maison d'hôtes aux clients.
+```
+
+---
+
+## 4. Suivi Budgétaire
+Ce tableau permet de suivre l'allocation des fonds par poste de dépense, en respectant la contrainte stricte de budget global.
+
+```ARRAY: Budget
+| Poste | Budget Prévu | Dépensé | Restant |
+| :--- | :--- | :--- | :--- |
+| Acquisition Immobilière | 180000 | 0 | =B2-C2 |
+| Travaux de Rénovation | 80000 | 0 | =B3-C3 |
+| Changement Destination & PLU | 5000 | 500 | =B4-C4 |
+| Frais de Notaire & Annexes | 15000 | 1500 | =B5-C5 |
+| Marketing & Lancement | 5000 | 0 | =B6-C6 |
+| Trésorerie de Démarrage | 15000 | 0 | =B7-C7 |
+| **Total** | =SUM(B2:B7) | =SUM(C2:C7) | =SUM(D2:D7) |
+```
+
+---
+
+## 5. Graphique des Prévisions de Performance
+L'objectif est d'atteindre et de maintenir un taux d'occupation supérieur à 50% dès le lancement. Voici le profil prévisionnel par trimestre pour la première année :
+
+```CHART: Taux d'Occupation
+Trimestre 1: 35
+Trimestre 2: 50
+Trimestre 3: 65
+Trimestre 4: 55
+```
+
+---
+
+## 6. Avancement des Tâches
+Suivi quotidien des actions opérationnelles à mener par le porteur de projet.
+
+```TRELLO: Tâches
+### À faire
+- [ ] Négociation bancaire `[critical]`
+  Présenter le business plan consolidé aux banques locales pour sécuriser le prêt.
+- [ ] Demande de déclaration préalable `[high]`
+  Dossier pour changement de destination du bâtiment en maison d'hôtes.
+- [ ] Devis des artisans `[medium]`
+  Finaliser le comparatif des devis de rénovation.
+### En cours
+- [ ] Rédaction du business plan `[critical]`
+  Modélisation financière avec prévision d'occupation à 50% minimum.
+- [ ] Vérification du PLU `[critical]`
+  Validation des règles locales d'urbanisme (stationnement, emprise au sol).
+### Terminé
+- [ ] Étude de marché locale `[high]`
+  Analyse de la concurrence directe et fixation des tarifs cibles.
+### Bloqué
+```
+
+---
+
+## 7. Formulaire de Validation Réglementaire et Foncière
+Ce formulaire sert de grille de validation lors des visites immobilières et des échanges avec les services d'urbanisme de la mairie.
+
+```FORM: Conformite PLU
+* **Le bien visé respecte-t-il les conditions d'urbanisme (PLU) ?**
+  * ( ) Oui, sans condition ni aménagement particulier
+  * ( ) Oui, sous réserve de la création de places de stationnement obligatoires
+  * ( ) Non, la zone interdit les activités commerciales ou hébergements touristiques
+* **Quelle est la situation concernant le changement de destination ?**
+  * ( ) Faisable par simple déclaration préalable (sans modification de façade ou structure porteuse)
+  * ( ) Nécessite un permis de construire complet (modifications de façade ou travaux d'ERP)
+  * ( ) Non autorisé par le règlement de copropriété ou de lotissement
+* **Quel est le statut d'accessibilité PMR (Personnes à Mobilité Réduite) requis ?**
+  * ( ) ERP de 5ème catégorie avec dérogation partielle possible
+  * ( ) ERP avec conformité obligatoire complète dès l'ouverture (chambres PMR en RDC)
+  * ( ) Pas d'obligation PMR (capacité d'accueil inférieure à 5 personnes)
+```

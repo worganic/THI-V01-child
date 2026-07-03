@@ -1,0 +1,92 @@
+# Prototype de Chatbot d'Atelier d'Écriture P.A.R.S.
+
+Ce projet vise à concevoir et déployer en moins d'une semaine un prototype de chatbot interactif pour accompagner les dirigeants d'entreprise (business owners) dans un atelier d'écriture créative libre. L'objectif de la méthode P.A.R.S. (Préparation, Action, Récolte, Synthèse) est d'extraire des idées brutes, des frustrations et des opportunités d'affaires sans la barrière de l'autocensure.
+
+## 📊 Pilotage opérationnel du projet
+
+Ce tableau de bord centralise la planification, les jalons clés, les indicateurs et le suivi des tâches pour la livraison du chatbot interactif.
+
+```ARRAY: Planning
+| N° | Date | Étape | Objectif | Livrable | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-06-29 | Préparation & Cadrage | Établir le flux de conversation et les invites du chatbot | Script de dialogue P.A.R.S. | Terminé |
+| 2 | 2026-06-30 | Développement Prototype | Coder le script d'application web interactive de base | Code source HTML/JS v1 | En cours |
+| 3 | 2026-07-01 | Tests utilisateurs internes | Valider la fluidité des étapes P, A, R et S avec des testeurs | Retours de tests d'écriture | À faire |
+| 4 | 2026-07-02 | Déploiement & Lancement | Mettre en ligne l'outil pour un panel pilote de business owners | Lien d'accès au prototype | À faire |
+| 5 | 2026-07-03 | Suivi & Optimisation | Mesurer le taux d'adoption et corriger les bugs majeurs | Rapport de satisfaction | À faire |
+```
+
+```AGENDA: Jalons
+2026-06-29 | 10:00-11:30 | Alignement P.A.R.S. | Validation du flux utilisateur et de la méthode d'écriture
+2026-06-30 | 16:00-17:30 | Revue Technique | Démo du prototype web interactif et du parser textuel
+2026-07-02 | 09:00-10:00 | Lancement Pilote | Envoi du lien d'accès au panel de business owners testeurs
+2026-07-03 | 15:00-16:30 | Bilan d'Adoption | Analyse des statistiques d'usage et planification de la v2
+```
+
+```ARRAY: Suivi
+| Indicateur | Cible | Valeur actuelle | Écart |
+|-----------|-------|-----------------|-------|
+| Taux d'adoption (Business owners) | 80 | 15 | -65 |
+| Sessions d'écriture terminées | 15 | 2 | -13 |
+| Temps moyen par session (min) | 12 | 11 | -1 |
+| Retours utilisateurs positifs (%) | 85 | 90 | 5 |
+```
+
+```CHART: Taux d'adoption
+source: Suivi | col: Valeur actuelle
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Déployer l'application sur un hébergeur gratuit (Vercel/Netlify) `[high]`
+  Rendre le prototype accessible en ligne rapidement.
+- [ ] Concevoir le module d'extraction IA gratuit (Gemini API Free Tier) `[critical]`
+  Développer le prompt d'analyse pour l'étape R (Récolte) afin de classer les idées.
+- [ ] Intégrer un exportateur Markdown automatique pour la Synthèse `[medium]`
+  Permettre à l'utilisateur de télécharger le livrable S d'un seul clic.
+### En cours
+- [ ] Créer l'interface utilisateur web interactive `[critical]`
+  Conception de l'interface avec minuteur intégré et zone de texte bloquée.
+- [ ] Rédiger les messages d'encouragement anti-censure `[medium]`
+  Messages d'aide pour guider l'utilisateur bloqué pendant la phase d'écriture libre.
+### Terminé
+- [ ] Cartographier le flux conversationnel P.A.R.S. `[high]`
+  Définition des transitions d'états dans l'application.
+```
+
+```FORM: Choix Techniques
+* **Quelle solution d'hébergement minimaliste privilégier pour le prototype ?**
+  * ( ) GitHub Pages (Simple et gratuit, convient pour du pur HTML/JS frontend)
+  * ( ) Vercel / Netlify (Idéal pour déployer un serveur API léger si besoin)
+  * ( ) Exécution locale uniquement via script partagé
+* **Comment traiter la classification des idées lors de la Récolte ?**
+  * ( ) API Gemini Gratuite avec prompt système structuré
+  * ( ) Tri manuel par le business owner via une interface glisser-déposer
+  * ( ) Expressions régulières simples basées sur des mots-clés
+* **Quelles fonctionnalités de confort intégrer pour l'écriture continue ?**
+  * [ ] Floutage optionnel du texte en cours d'écriture (pour éviter de se relire)
+  * [ ] Signal sonore à la fin du temps imparti
+  * [ ] Blocage de la touche "Retour arrière" (BackSpace) pour forcer le flux
+```
+
+## 🛠️ Spécification fonctionnelle des étapes du prototype
+
+L'application guidera l'utilisateur à travers quatre étapes distinctes.
+
+### 1. P - Préparation
+Le chatbot instaure le cadre et aide à choisir le sujet. Il rappelle qu'il ne faut pas se corriger ni s'arrêter.
+- **Paramètre clé :** Choix de la durée (10 à 15 minutes).
+- **Déclencheur :** Proposition d'une phrase d'accroche ou saisie d'un thème libre par l'utilisateur.
+
+### 2. A - Action
+Une interface épurée avec une zone de saisie texte s'affiche.
+- **Mécanisme :** Lancement d'un minuteur interactif. L'utilisateur écrit continuellement.
+- **Contrainte :** Pas de relecture ni de correction possible pendant le temps imparti. Le texte est stocké localement dans l'application et n'est soumis qu'à la fin de la période.
+
+### 3. R - Récolte
+L'application analyse le texte brut saisi à l'étape Action et en extrait automatiquement les idées clés.
+- **Classification automatique :** Catégorisation des fragments de texte en *Idées*, *Problèmes*, *Émotions*, *Frustrations*.
+- **Validation :** L'utilisateur peut modifier, supprimer ou ajuster les étiquettes via l'interface avant de passer à l'étape suivante.
+
+### 4. S - Synthèse
+Génération automatique du rapport final. Le chatbot exporte un récapitulatif structuré contenant toutes les unités de sens validées. Ce rapport est directement exportable sous format Markdown pour être intégré dans des outils externes (Mind Mapping, Notion, etc.).

@@ -1,0 +1,583 @@
+[
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "pg-admin",
+    "data": {
+      "parentId": "grp-mqpkeelq"
+    },
+    "reason": "Rattachement de la page d'administration à la zone Connecté pour structurer le sitemap."
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-tabs",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement de la section des onglets d'administration à sa page pg-admin."
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-users",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement de la section Utilisateurs à sa page pg-admin."
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-tests",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement de la section Tests à sa page pg-admin."
+  },
+  {
+    "op": "modify",
+    "kind": "group",
+    "id": "sec-adm-config",
+    "data": {
+      "parentId": "pg-admin"
+    },
+    "reason": "Rattachement de la section Config à sa page pg-admin."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-projets",
+    "data": {
+      "label": "Projets",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminProjetsComponent",
+      "parentId": "pg-admin",
+      "description": "Administration et sauvegarde des projets (instructions IA, backups)."
+    },
+    "reason": "Section correspondante à l'onglet d'administration des projets."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-deploiement",
+    "data": {
+      "label": "Déploiement",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminDeploymentsComponent",
+      "parentId": "pg-admin",
+      "description": "Suivi des versions déployées, commits de branches et propagation."
+    },
+    "reason": "Section correspondante à l'onglet d'administration des versions et déploiements."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-theme",
+    "data": {
+      "label": "Thème",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminThemeComponent",
+      "parentId": "pg-admin",
+      "description": "Personnalisation des variables CSS de styles et CSS personnalisé."
+    },
+    "reason": "Section correspondante à l'onglet d'administration du thème visuel."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-mega-outils",
+    "data": {
+      "label": "Méga-outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMegaOutilsComponent",
+      "parentId": "pg-admin",
+      "description": "Gestion des outils transverses partagés comme Trello Kanban."
+    },
+    "reason": "Section correspondante à l'onglet d'administration des méga-outils."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-memo",
+    "data": {
+      "label": "Mémo",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMemoComponent",
+      "parentId": "pg-admin",
+      "description": "Documentation interactive des commandes Claude Code et architecture."
+    },
+    "reason": "Section correspondante à l'onglet de documentation Mémo."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": "sec-adm-tools",
+    "data": {
+      "label": "Outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminToolsComponent",
+      "parentId": "pg-admin",
+      "description": "Configuration et visibilité des outils/widgets embarqués."
+    },
+    "reason": "Section correspondante à l'onglet d'administration des outils."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "tmp-adm-projects-list",
+    "data": {
+      "label": "Grille des projets",
+      "elType": "widget",
+      "groupId": "sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Grille d'administration des projets avec recherche, édition et suppression.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget principal de la grille des projets dans l'admin projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Sauvegarde & Backup",
+      "elType": "form",
+      "groupId": "sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Formulaire de configuration des sauvegardes distantes (GitHub, GitLab, FTP, Drive).",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Formulaire de configuration de sauvegarde rattaché à l'onglet Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Instructions IA du projet",
+      "elType": "form",
+      "groupId": "sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Configuration des invites système personnalisées par projet.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Élément d'invite système personnalisée pour l'IA rattaché à l'onglet Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Bibliothèque d'instructions IA",
+      "elType": "widget",
+      "groupId": "sec-adm-projets",
+      "components": ["AdminProjetsComponent"],
+      "description": "Sélecteur pour charger des instructions types depuis la bibliothèque de documents.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de sélection d'instructions IA dans la bibliothèque de documents."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Historique des versions",
+      "elType": "widget",
+      "groupId": "sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Historique des versions déployées avec détails des modifications.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Historique d'affichage des versions déployées de l'onglet Déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Enregistrement de version",
+      "elType": "form",
+      "groupId": "sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Formulaire de déclaration manuelle d'une version pour mise à jour de la base locale.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Formulaire pour enregistrer manuellement des déploiements."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Statut Git & Commits",
+      "elType": "widget",
+      "groupId": "sec-adm-deploiement",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "État du dépôt Git local, branche courante et commits en attente de propagation.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de suivi de statut Git local de l'onglet Déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Variables CSS de style",
+      "elType": "form",
+      "groupId": "sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Formulaire dynamique de réglage des dimensions, polices et arrondis par curseur.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Champs de formulaire de modification de variables CSS dans l'onglet Thème."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Presets de couleurs",
+      "elType": "widget",
+      "groupId": "sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Boutons d'application rapide de palettes de couleurs prédéfinies.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Sélecteur de palettes prédéfinies dans l'onglet Thème."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "CSS Personnalisé",
+      "elType": "form",
+      "groupId": "sec-adm-theme",
+      "components": ["AdminThemeComponent"],
+      "description": "Zone de saisie de feuilles de style CSS personnalisées persistées localement.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Formulaire d'écriture CSS personnalisé."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": "tmp-adm-megaoutils-trello",
+    "data": {
+      "label": "Instances Trello",
+      "elType": "widget",
+      "groupId": "sec-adm-mega-outils",
+      "components": ["AdminMegaOutilsComponent", "TrelloAdminComponent"],
+      "description": "Configuration et sélection des tableaux de tickets Kanban Trello.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Composant Trello d'administration intégré de l'onglet Méga-outils."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Types disponibles",
+      "elType": "widget",
+      "groupId": "sec-adm-mega-outils",
+      "components": ["AdminMegaOutilsComponent"],
+      "description": "Liste des méga-outils disponibles et leur état d'activation globale.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de types de méga-outils disponibles."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Commandes Claude Code",
+      "elType": "widget",
+      "groupId": "sec-adm-memo",
+      "components": ["AdminMemoComponent"],
+      "description": "Référentiel interactif des raccourcis clavier et commandes slash pour Claude Code.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de documentation des commandes d'aide."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Architecture & Patterns",
+      "elType": "widget",
+      "groupId": "sec-adm-memo",
+      "components": ["AdminMemoComponent"],
+      "description": "Document de référence sur l'organisation du monorepo NX et les consignes de dev.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget explicatif sur l'architecture."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Visibilité des outils",
+      "elType": "form",
+      "groupId": "sec-adm-tools",
+      "components": ["AdminToolsComponent", "WoToolsAdminComponent"],
+      "description": "Gestion de la visibilité globale et de l'activation des widgets embarqués.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Formulaire de configuration et activation des outils de l'admin."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Exécution des tests",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Interface d'exécution interactive ou automatique des cas de tests par l'IA.",
+      "url": "/admin/tests/execution",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de lancement des tests de l'onglet Tests."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Matrice des résultats",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Vue matricielle croisée des derniers résultats de tests par campagne.",
+      "url": "/admin/tests/resultats",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de matrice des résultats de test."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Historique des tests",
+      "elType": "widget",
+      "groupId": "sec-adm-tests",
+      "components": ["AdminTestsComponent"],
+      "description": "Historique des exécutions et modifications des fonctions de test.",
+      "url": "/admin/tests/historique",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Widget de consultation historique des runs de tests."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Clés d'API",
+      "elType": "form",
+      "groupId": "sec-adm-config",
+      "components": ["ConfigComponent"],
+      "description": "Configuration sécurisée des clés d'accès API pour Anthropic Claude et Google Gemini.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Champs de formulaire de clés d'API dans l'onglet Config."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Configuration CLI IA",
+      "elType": "form",
+      "groupId": "sec-adm-config",
+      "components": ["ConfigComponent"],
+      "description": "Gestion de l'installation et des modèles actifs pour la CLI Antigravity et Claude Code.",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin"
+    },
+    "reason": "Formulaire de configuration et état de la CLI IA dans l'onglet Config."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-256z",
+      "to": "group:sec-adm-projets",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Projets à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-0hbc",
+      "to": "group:sec-adm-deploiement",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Déploiement à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-pj86",
+      "to": "group:sec-adm-config",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Config à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-akj2",
+      "to": "group:sec-adm-theme",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Thème à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-bqll",
+      "to": "group:sec-adm-mega-outils",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Méga-outils à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-ykj8",
+      "to": "group:sec-adm-memo",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Mémo à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-kfpo",
+      "to": "group:sec-adm-tools",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Liaison d'affichage reliant l'onglet Outils à sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-256z",
+      "to": "group:pg-projets",
+      "type": "relation",
+      "label": "lien applicatif"
+    },
+    "reason": "Liaison de liaison applicative reliant l'onglet Projets de l'admin à l'application Projets."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-kfpo",
+      "to": "group:pg-widgets",
+      "type": "relation",
+      "label": "contrôle la visibilité"
+    },
+    "reason": "Liaison décrivant que l'onglet Outils de l'admin régit les widgets embarqués."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "tmp-adm-projects-list",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre éditeur"
+    },
+    "reason": "Liaison de navigation directe depuis la table d'administration des projets vers l'éditeur de projet."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "tmp-adm-megaoutils-trello",
+      "to": "group:pg-editor",
+      "type": "nav",
+      "label": "ouvre éditeur"
+    },
+    "reason": "Liaison de navigation reliant les instances Trello à leur ouverture correspondante dans l'éditeur de projet."
+  }
+]

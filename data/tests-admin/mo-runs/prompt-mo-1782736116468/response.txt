@@ -1,0 +1,41 @@
+* **Quel est le niveau scolaire de l'apprenant :**
+  * ( ) Primaire / Collège (6ème - 3ème)
+  * ( ) Lycée (Seconde - Terminale)
+  * ( ) Enseignement supérieur (Licence, Prépa, etc.)
+  * ( ) Autre : ______
+
+* **Quelle est la matière ou thématique des mathématiques à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations, suites...)
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Quels sont la durée totale souhaitée de l'accompagnement et la date de début :**
+  * ( ) Intensif (moins d'un mois, démarrage immédiat)
+  * ( ) Moyen terme (1 à 3 mois, démarrage sous peu)
+  * ( ) Long terme / Année scolaire complète
+  * ( ) Autre : ______
+
+* **Quelle est la fréquence souhaitée pour les séances de travail :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 à 3 fois par semaine
+  * ( ) Quotidienne
+  * ( ) Autre : ______
+
+* **Quel est le niveau de départ et l'objectif mesurable visé :**
+  * ( ) Difficultés importantes (hausse de moyenne visée : ______ )
+  * ( ) Niveau moyen à consolider (hausse de moyenne visée : ______ )
+  * ( ) Bon niveau à perfectionner (objectif : mention, concours...)
+  * ( ) Autre : ______
+
+* **Quelles sont les modalités d'évaluation préférées :**
+  * [ ] Auto-évaluation et exercices d'application directe
+  * [ ] Quiz / QCM réguliers
+  * [ ] Devoirs surveillés types examens (notes /20)
+  * [ ] Autre : ______
+
+* **Quels sont les points prioritaires à travailler :**
+  * [ ] Rigueur de rédaction et démonstrations
+  * [ ] Compréhension des concepts théoriques
+  * [ ] Vitesse de calcul et automatismes
+  * [ ] Autre : ______

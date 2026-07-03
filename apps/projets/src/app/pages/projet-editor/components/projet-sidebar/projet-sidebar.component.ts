@@ -101,9 +101,8 @@ export class ProjetSidebarComponent implements OnChanges {
     return base;
   }
 
-  // ── Verrous collaboration ──────────────────────────────────
+  // ── Présence collaborative (jamais un verrou : purement informatif) ────────
 
-  isLockedByMe(nodeId: string): boolean { return this.collab.isLockedByMe(nodeId); }
   isLockedByOther(nodeId: string): boolean { return this.collab.isLockedByOther(nodeId); }
   isLocalPending(nodeId: string): boolean { return this.collab.isLocalPending(nodeId); }
 
@@ -128,28 +127,14 @@ export class ProjetSidebarComponent implements OnChanges {
   }
   getLockInfo(nodeId: string): LockInfo | undefined { return this.collab.getLock(nodeId); }
 
-  getLockTooltip(nodeId: string): string {
-    const lock = this.collab.getLock(nodeId);
-    if (!lock) return '';
-    if (this.collab.isLockedByMe(nodeId)) return 'Verrouillé par moi';
-    const dt = new Date(lock.lockedAt);
-    const hhmm = dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    return `Verrouillé par ${lock.lockedByName} depuis ${hhmm}`;
+  otherEditorsCount(nodeId: string): number {
+    return this.collab.getOtherEditors(nodeId).length;
   }
 
-  async toggleLock(node: FileNode) {
-    this.closeContextMenu();
-    if (!this.projetId) return;
-    try {
-      if (this.collab.isLockedByMe(node.id)) {
-        await this.collab.unlockNode(this.projetId, node.id);
-      } else if (!this.collab.isLockedByOther(node.id)) {
-        await this.collab.lockNode(this.projetId, node.id);
-      }
-    } catch (e: any) {
-      const msg = e?.error?.error || 'Erreur lors du verrouillage';
-      console.warn('[Sidebar] lock error:', msg);
-    }
+  getLockTooltip(nodeId: string): string {
+    return this.collab.getOtherEditors(nodeId)
+      .map(l => `${l.lockedByName} depuis ${new Date(l.lockedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`)
+      .join(', ');
   }
 
   ngOnChanges(changes: SimpleChanges) {

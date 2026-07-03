@@ -1,0 +1,31 @@
+* **Horizon temporel et date de démarrage envisagée :**
+  * ( ) Court terme (lancement des recherches sous 3 mois, ouverture d'ici 1 an)
+  * ( ) Moyen terme (lancement sous 6-12 mois, ouverture d'ici 2 ans)
+  * ( ) Autre horizon ou date précise : ______
+* **Étapes et jalons clés prioritaires pour ce cadrage :**
+  * [ ] Recherche et sélection du bien immobilier
+  * [ ] Établissement du business plan et recherche de financements
+  * [ ] Conception des travaux de rénovation/aménagement
+  * [ ] Démarches réglementaires et administratives (urbanisme, ERP, déclaration mairie)
+  * [ ] Lancement commercial et marketing
+* **Budget global estimé (acquisition et travaux compris) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Budget non défini à ce stade / recherche d'une étude de faisabilité
+* **Principales contraintes réglementaires et de ressources identifiées :**
+  * [ ] Changement d'usage / règles d'urbanisme locales (PLU)
+  * [ ] Accessibilité et sécurité incendie (normes ERP si capacité > 15 personnes ou 5 chambres)
+  * [ ] Travaux à réaliser soi-même (ressources limitées) ou par des artisans
+  * [ ] Emprunt bancaire à obtenir (apport personnel limité)
+  * [ ] Autre contrainte : ______
+* **Critères de succès mesurables de votre projet :**
+  * [ ] Taux d'occupation cible (ex : > 50% sur l'année)
+  * [ ] Rentabilité nette ou chiffre d'affaires annuel minimum visé
+  * [ ] Capacité d'accueil minimale (nombre de chambres ou de personnes)
+  * [ ] Note moyenne minimale sur les plateformes de réservation (ex : > 9/10)
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Refus de financement bancaire
+  * [ ] Dépassement du budget ou des délais de travaux
+  * [ ] Difficultés à obtenir les autorisations d'urbanisme
+  * [ ] Concurrence locale forte ou manque d'attractivité de la zone géographique

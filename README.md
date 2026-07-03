@@ -185,3 +185,6 @@ Un fichier `sync-from-base.bat` est présent à la racine de chaque child. Il :
 ```
 .\sync-from-base.bat
 ```
+
+
+claude --dangerously-skip-permissions

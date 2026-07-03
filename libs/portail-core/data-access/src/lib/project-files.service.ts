@@ -134,6 +134,26 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.put<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { content, folderId: folderId ?? null, publish, checkpoint }, { headers }));
   }
 
+  /** Liste légère (sans contenu) des brouillons locaux de l'utilisateur courant sur ce projet. */
+  listDrafts(projectName: string): Promise<Array<{ nodeId: string; folderId: string | null; updatedAt: string }>> {
+    return firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/api/file-projects/${projectName}/drafts`, { headers: this.h() }));
+  }
+
+  /** Brouillon local complet (contenu) de l'utilisateur courant pour ce fichier, s'il existe. */
+  getDraft(projectName: string, fileId: string): Promise<{ exists: boolean; content?: string; folderId?: string | null; baseVersionId?: string | null; updatedAt?: string }> {
+    return firstValueFrom(this.http.get<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/draft`, { headers: this.h() }));
+  }
+
+  /** Écrit/écrase le brouillon local de l'utilisateur courant — jamais partagé tant que non validé. */
+  saveDraft(projectName: string, fileId: string, content: string, folderId?: string | null, baseVersionId?: string | null): Promise<{ success: boolean }> {
+    return firstValueFrom(this.http.put<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/draft`, { content, folderId: folderId ?? null, baseVersionId: baseVersionId ?? null }, { headers: this.h() }));
+  }
+
+  /** Supprime le brouillon local (après validation réussie ou annulation explicite). */
+  deleteDraft(projectName: string, fileId: string): Promise<{ success: boolean }> {
+    return firstValueFrom(this.http.delete<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/draft`, { headers: this.h() }));
+  }
+
   getVersions(projectName: string, fileId: string, limit = 50, offset = 0): Promise<{ versions: ContentVersionMeta[] }> {
     return firstValueFrom(this.http.get<{ versions: ContentVersionMeta[] }>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/versions`, { headers: this.h(), params: { limit, offset } }));
   }

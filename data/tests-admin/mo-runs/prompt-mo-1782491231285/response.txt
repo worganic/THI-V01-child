@@ -1,0 +1,140 @@
+# Programme de Consolidation en Mathématiques : Algèbre et Arithmétique (Lycée)
+
+Ce programme d'un mois a pour objectif de consolider les bases en algèbre, arithmétique et calculs pour les élèves de niveau Lycée (de la Seconde à la Terminale).
+
+## Plan de travail et Calendrier
+
+Voici l'organisation du plan de travail sur 4 semaines.
+
+```ARRAY: Planification Hebdomadaire
+| Semaine | Thème Principal | Objectifs d'Apprentissage |
+|---|---|---|
+| Semaine 1 | Calcul littéral et équations | Maîtriser le développement, la factorisation et la résolution d'équations du 1er et 2nd degré. |
+| Semaine 2 | Arithmétique de base | Comprendre la divisibilité, les nombres premiers, et les notions de PGCD/PPCM. |
+| Semaine 3 | Inéquations et variations | Étudier le signe d'expressions algébriques et résoudre des inéquations. |
+| Semaine 4 | Initiation aux suites | Comprendre les suites arithmétiques et géométriques de base. |
+```
+
+Voici le suivi des tâches sous forme de Kanban :
+
+```TRELLO: Suivi de la Formation
+### À faire
+- [ ] Semaine 1 : Calcul littéral `[high]`
+  Étudier le cours sur le développement et la factorisation, puis faire les exercices.
+- [ ] Semaine 2 : Arithmétique `[medium]`
+  Revoir les critères de divisibilité et les nombres premiers.
+- [ ] Semaine 3 : Inéquations `[high]`
+  Travailler le tableau de signes et les inéquations produit/quotient.
+- [ ] Semaine 4 : Suites numériques `[low]`
+  Découvrir les formules de récurrence et les expressions explicites.
+### En cours
+### Terminé
+```
+
+---
+
+## Cours et Exercices
+
+### Semaine 1 : Calcul littéral et Équations
+
+#### Résumé de Cours
+- **Développement** : Transformer un produit en somme.
+  - Formule de base : a(b + c) = ab + ac
+  - Double distributivité : (a + b)(c + d) = ac + ad + bc + bd
+  - Identités remarquables :
+    - (a + b)² = a² + 2ab + b²
+    - (a - b)² = a² - 2ab + b²
+    - (a - b)(a + b) = a² - b²
+- **Factorisation** : Transformer une somme en produit. Trouver un facteur commun ou utiliser une identité remarquable.
+- **Équations du second degré** : ax² + bx + c = 0.
+  - Calcul du discriminant : Delta = b² - 4ac.
+  - Si Delta > 0 : deux solutions x1 = (-b - racine(Delta)) / 2a et x2 = (-b + racine(Delta)) / 2a.
+  - Si Delta = 0 : une solution unique x0 = -b / 2a.
+  - Si Delta < 0 : pas de solution réelle.
+
+#### Exercices d'application
+1. Développer l'expression A(x) = (2x - 3)² - (x + 1)(x - 5).
+2. Factoriser l'expression B(x) = 9x² - 12x + 4.
+3. Résoudre dans R l'équation : 2x² - 5x + 2 = 0.
+
+#### Corrections
+1. A(x) = (4x² - 12x + 9) - (x² - 5x + x - 5) = 4x² - 12x + 9 - x² + 4x + 5 = 3x² - 8x + 14.
+2. B(x) = (3x)² - 2*(3x)*2 + 2² = (3x - 2)².
+3. Delta = (-5)² - 4*2*2 = 25 - 16 = 9. Delta > 0, deux solutions : x1 = (5 - 3)/4 = 1/2 et x2 = (5 + 3)/4 = 2. Les solutions sont {1/2; 2}.
+
+---
+
+### Semaine 2 : Arithmétique
+
+#### Résumé de Cours
+- **Divisibilité** : un entier a est divisible par b s'il existe un entier k tel que a = kb.
+- **Nombres premiers** : Un entier naturel qui a exactement deux diviseurs distincts : 1 et lui-même. Exemples : 2, 3, 5, 7, 11, 13, 17, 19...
+- **Décomposition en facteurs premiers** : Tout entier supérieur ou égal à 2 se décompose de manière unique en un produit de puissances de nombres premiers.
+- **PGCD (Plus Grand Commun Diviseur)** : Le plus grand entier qui divise deux nombres simultanément.
+
+#### Exercices d'application
+1. Décomposer en produits de facteurs premiers les nombres 120 et 84.
+2. En déduire leur PGCD.
+3. Le nombre 143 est-il premier ?
+
+#### Corrections
+1. 120 = 2³ * 3 * 5 et 84 = 2² * 3 * 7.
+2. Le PGCD est le produit des facteurs premiers communs munis de leur plus petit exposant : PGCD(120, 84) = 2² * 3 = 12.
+3. racine(143) vaut environ 11,9. On teste la divisibilité par les nombres premiers inférieurs à 11 : 2, 3, 5, 7, 11. On constate que 143 = 11 * 13. Donc 143 n'est pas premier.
+
+---
+
+### Semaine 3 : Inéquations et variations
+
+#### Résumé de Cours
+- **Tableau de signes** :
+  - Pour une expression de type ax + b (avec a non nul) : s'annule en -b/a. Signe de a à droite de la valeur d'annulation, signe opposé à gauche.
+- **Inéquations produit et quotient** : Se résolvent à l'aide d'un tableau de signes en appliquant la règle des signes pour chaque facteur. Attention aux valeurs interdites (dénominateur nul).
+
+#### Exercices d'application
+1. Résoudre dans R l'inéquation : (3x - 6)(2 - x) >= 0.
+2. Résoudre dans R l'inéquation : (2x + 1) / (x - 3) < 0.
+
+#### Corrections
+1. 3x - 6 = 0 <=> x = 2 (signe + pour x > 2). 2 - x = 0 <=> x = 2 (signe - pour x > 2). Le produit est négatif partout sauf en x = 2 où il s'annule. L'ensemble des solutions de (3x - 6)(2 - x) >= 0 est S = {2}.
+2. Valeur interdite : x = 3. 2x + 1 s'annule en -1/2. Le quotient est négatif entre les deux racines : S = ]-1/2 ; 3[.
+
+---
+
+### Semaine 4 : Suites numériques
+
+#### Résumé de Cours
+- **Suite arithmétique** : U(n+1) = U(n) + r. Formule explicite : U(n) = U(0) + n*r.
+- **Suite géométrique** : U(n+1) = U(n) * q. Formule explicite : U(n) = U(0) * qⁿ.
+
+#### Exercices d'application
+1. Soit U une suite arithmétique de premier terme U(0) = 5 et de raison r = -3. Calculer U(10).
+2. Soit V une suite géométrique de premier terme V(0) = 2 et de raison q = 3. Calculer V(4).
+
+#### Corrections
+1. U(10) = U(0) + 10*r = 5 + 10*(-3) = 5 - 30 = -25.
+2. V(4) = V(0) * q⁴ = 2 * 3⁴ = 2 * 81 = 162.
+
+---
+
+## Formulaire d'Évaluation de Fin de Module
+
+```FORM: Quiz de Validation
+* **Question 1 : Quelle est la factorisation de x² - 9 ?**
+  * [ ] (x - 3)²
+  * [ ] (x - 3)(x + 3)
+  * [ ] (x + 3)²
+* **Question 2 : Parmi les nombres suivants, lequel est premier ?**
+  * [ ] 15
+  * [ ] 21
+  * [ ] 23
+  * [ ] 27
+* **Question 3 : Quelle est la solution de l'équation 3x + 9 = 0 ?**
+  * [ ] x = 3
+  * [ ] x = -3
+  * [ ] x = -9
+* **Question 4 : Si U(n) est une suite géométrique de premier terme U(0) = 3 et de raison q = 2, que vaut U(3) ?**
+  * [ ] 9
+  * [ ] 18
+  * [ ] 24
+```

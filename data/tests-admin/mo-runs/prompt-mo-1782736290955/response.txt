@@ -1,0 +1,194 @@
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-06 | Géométrie plane et trigonométrie | Maîtriser les vecteurs et la trigonométrie | À faire |
+| Séance 2 | 2026-07-13 | Produit scalaire dans le plan | Appliquer le produit scalaire aux calculs d'angles | À faire |
+| Séance 3 | 2026-07-20 | Géométrie dans l'espace : Vecteurs, droites et plans | Représenter des droites et plans dans l'espace | À faire |
+| Séance 4 | 2026-07-27 | Géométrie dans l'espace : Orthogonalité | Déterminer des équations cartésiennes et distances | À faire |
+```
+
+```AGENDA: Séances
+2026-07-06 | 14:00-16:00 | Séance 1 — 2026-07-06 : Géométrie plane et trigonométrie | Rappels sur les vecteurs, coordonnées, trigonométrie et produit scalaire de base.
+2026-07-13 | 14:00-16:00 | Séance 2 — 2026-07-13 : Produit scalaire dans le plan | Démonstrations, équations cartésiennes de droites et de cercles.
+2026-07-20 | 14:00-16:00 | Séance 3 — 2026-07-20 : Géométrie dans l'espace : Vecteurs, droites et plans | Vecteurs de l'espace, coplanarité, représentations paramétriques.
+2026-07-27 | 14:00-16:00 | Séance 4 — 2026-07-27 : Géométrie dans l'espace : Orthogonalité et équations cartésiennes | Produit scalaire, vecteur normal, équation de plan, distances.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-06 | | 20 | =C2/D2*100 | =AVG(C2:C5) |
+| Séance 2 | 2026-07-13 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-20 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-27 | | 20 | =C5/D5*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Suivi de l'avancement
+### À faire
+- [ ] Séance 1 : Géométrie plane et trigonométrie `[medium]`
+- [ ] Séance 2 : Produit scalaire dans le plan `[medium]`
+- [ ] Séance 3 : Géométrie dans l'espace : Vecteurs, droites et plans `[medium]`
+- [ ] Séance 4 : Géométrie dans l'espace : Orthogonalité et équations cartésiennes `[medium]`
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-07-06 : Géométrie plane et trigonométrie
+
+### I. Rappels de cours et concepts fondamentaux
+
+#### 1. Vecteurs et Coordonnées
+Dans un repère orthonormé $(O; \vec{i}, \vec{j})$ du plan, soient deux points $A(x_A; y_A)$ et $B(x_B; y_B)$ :
+- Le vecteur $\vec{AB}$ a pour coordonnées : $\vec{AB} \begin{pmatrix} x_B - x_A \\ y_B - y_A \end{pmatrix}$.
+- La distance $AB$ est donnée par la formule : $AB = \sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}$.
+- Les coordonnées du milieu $I$ du segment $[AB]$ sont : $I \left( \frac{x_A + x_B}{2} ; \frac{y_A + y_B}{2} \right)$.
+
+#### 2. Trigonométrie plane
+Pour tout nombre réel $x$, le point $M$ associé à $x$ sur le cercle trigonométrique a pour coordonnées $(\cos(x); \sin(x))$.
+- Relation fondamentale : $\cos^2(x) + \sin^2(x) = 1$.
+- Valeurs remarquables à connaître par cœur :
+  - $\cos(0) = 1$, $\sin(0) = 0$
+  - $\cos(\frac{\pi}{6}) = \frac{\sqrt{3}}{2}$, $\sin(\frac{\pi}{6}) = \frac{1}{2}$
+  - $\cos(\frac{\pi}{4}) = \frac{\sqrt{2}}{2}$, $\sin(\frac{\pi}{4}) = \frac{\sqrt{2}}{2}$
+  - $\cos(\frac{\pi}{3}) = \frac{1}{2}$, $\sin(\frac{\pi}{3}) = \frac{\sqrt{3}}{2}$
+  - $\cos(\frac{\pi}{2}) = 0$, $\sin(\frac{\pi}{2}) = 1$
+
+### II. Méthodologie et rigueur de rédaction
+- **Déclarer le repère** : Avant d'utiliser des coordonnées, commencez toujours votre rédaction par : « Travaillons dans le repère orthonormé $(O; \vec{i}, \vec{j})$ du plan. »
+- **Différencier vecteur et longueur** : Ne confondez pas l'expression du vecteur $\vec{AB}$ (qui est un objet géométrique défini par sa direction, son sens et sa norme) et la longueur $AB$ (qui est un nombre réel positif). Évitez absolument d'écrire $\vec{AB} = \sqrt{x^2+y^2}$ ; écrivez $\|\vec{AB}\| = AB = \sqrt{x^2+y^2}$.
+
+```FORM: QCM Séance 1
+* **Question 1 : Soient A(2; -3) et B(-1; 5) dans un repère orthonormé. Quelles sont les coordonnées du vecteur AB ?**
+  * ( ) (-3; 8)
+  * ( ) (3; -8)
+  * ( ) (-1; 2)
+* **Question 2 : Quelle est la valeur exacte de cos(pi/3) ?**
+  * ( ) 1/2
+  * ( ) sqrt(3)/2
+  * ( ) sqrt(2)/2
+* **Question 3 : Si sin(x) = 3/5 et x appartient à [0; pi/2], quelle est la valeur de cos(x) ?**
+  * ( ) 4/5
+  * ( ) -4/5
+  * ( ) 16/25
+* **Question 4 : Deux vecteurs u(x; y) et v(x'; y') sont colinéaires si et seulement si :**
+  * ( ) xy' - yx' = 0
+  * ( ) xx' + yy' = 0
+  * ( ) xy' + yx' = 0
+```
+
+## Séance 2 — 2026-07-13 : Produit scalaire dans le plan
+
+### I. Rappels de cours et concepts fondamentaux
+
+#### 1. Définitions du produit scalaire
+Le produit scalaire de deux vecteurs $\vec{u}$ et $\vec{v}$ est le nombre réel noté $\vec{u} \cdot \vec{v}$ défini par :
+- **Formule géométrique** : $\vec{u} \cdot \vec{v} = \|\vec{u}\| \times \|\vec{v}\| \times \cos(\vec{u}, \vec{v})$.
+- **Formule analytique** (dans un repère orthonormé) : Si $\vec{u}(x; y)$ et $\vec{v}(x'; y')$, alors $\vec{u} \cdot \vec{v} = xx' + yy'$.
+- **Formule avec projeté orthogonal** : Si $H$ est le projeté orthogonal de $C$ sur la droite $(AB)$, alors $\vec{AB} \cdot \vec{AC} = \vec{AB} \cdot \vec{AH}$.
+  - $\vec{AB} \cdot \vec{AH} = AB \times AH$ si $\vec{AB}$ et $\vec{AH}$ sont de même sens.
+  - $\vec{AB} \cdot \vec{AH} = - AB \times AH$ si $\vec{AB}$ et $\vec{AH}$ sont de sens contraires.
+
+#### 2. Orthogonalité et équations cartésiennes
+- Deux vecteurs $\vec{u}$ et $\vec{v}$ sont orthogonaux si et seulement si $\vec{u} \cdot \vec{v} = 0$.
+- Une droite $(D)$ passant par $A$ et de vecteur normal $\vec{n}(a; b)$ est l'ensemble des points $M(x; y)$ tels que $\vec{AM} \cdot \vec{n} = 0$. Elle admet pour équation cartésienne $ax + by + c = 0$.
+
+### II. Méthodologie et rigueur de rédaction
+- **Justification de perpendicularité** : Pour démontrer que deux droites $(AB)$ et $(CD)$ sont perpendiculaires :
+  1. Calculez les coordonnées des vecteurs $\vec{AB}$ et $\vec{CD}$.
+  2. Calculez leur produit scalaire en précisant le repère orthonormé utilisé.
+  3. Rédigez ainsi : « Comme le produit scalaire $\vec{AB} \cdot \vec{CD}$ est égal à 0, les vecteurs $\vec{AB}$ et $\vec{CD}$ sont orthogonaux. Par conséquent, les droites $(AB)$ et $(CD)$ sont perpendiculaires. »
+
+```FORM: QCM Séance 2
+* **Question 1 : Soient les vecteurs u(3; -2) et v(4; 6) dans un repère orthonormé. Quel est le produit scalaire u.v ?**
+  * ( ) 0
+  * ( ) 24
+  * ( ) -12
+* **Question 2 : Si deux vecteurs non nuls ont un produit scalaire égal à 0, alors :**
+  * ( ) Ils sont orthogonaux
+  * ( ) Ils sont colinéaires
+  * ( ) Ils sont égaux
+* **Question 3 : Soient A(1; 2), B(4; 6) et C(5; -1). Le triangle ABC est-il rectangle en A ?**
+  * ( ) Oui, car le produit scalaire AB.AC est égal à 0
+  * ( ) Non, car le produit scalaire AB.AC est égal à 12
+  * ( ) Non, car le produit scalaire AB.AC est égal à -12
+* **Question 4 : Quelle est l'équation cartésienne du cercle de centre Omega(2; -1) et de rayon R = 3 ?**
+  * ( ) (x-2)^2 + (y+1)^2 = 9
+  * ( ) (x+2)^2 + (y-1)^2 = 9
+  * ( ) (x-2)^2 + (y+1)^2 = 3
+```
+
+## Séance 3 — 2026-07-20 : Géométrie dans l'espace : Vecteurs, droites et plans
+
+### I. Rappels de cours et concepts fondamentaux
+
+#### 1. Vecteurs de l'espace et coplanarité
+- Trois vecteurs $\vec{u}$, $\vec{v}$ et $\vec{w}$ de l'espace sont coplanaires si et seulement si on peut trouver deux réels $a$ et $b$ tels que $\vec{w} = a\vec{u} + b\vec{v}$ (avec $\vec{u}$ et $\vec{v}$ non colinéaires). Géométriquement, cela signifie que leurs représentants peuvent être tracés dans un même plan.
+
+#### 2. Représentations paramétriques
+- **Droite dans l'espace** : La droite $(D)$ passant par $A(x_A; y_A; z_A)$ et de vecteur directeur $\vec{u}(a; b; c)$ est définie par le système d'équations paramétriques :
+  $$\begin{cases} x = x_A + t a \\ y = y_A + t b \\ z = z_A + t c \end{cases} \quad (t \in \mathbb{R})$$
+- **Plan dans l'espace** : Le plan $(P)$ passant par $A(x_A; y_A; z_A)$ et de vecteurs directeurs non colinéaires $\vec{u}(a; b; c)$ et $\vec{v}(a'; b'; c')$ est défini par le système :
+  $$\begin{cases} x = x_A + t a + t' a' \\ y = y_A + t b + t' b' \\ z = z_A + t c + t' c' \end{cases} \quad (t, t' \in \mathbb{R})$$
+
+### II. Méthodologie et rigueur de rédaction
+- **Spécifier le domaine des paramètres** : Lors de l'écriture d'une représentation paramétrique, mentionnez impérativement le domaine des paramètres. Écrivez toujours $\quad (t \in \mathbb{R})$ à droite du système.
+- **Étudier l'intersection de deux droites** : Pour montrer que deux droites $(D_1)$ et $(D_2)$ ne sont pas coplanaires :
+  1. Montrez d'abord que leurs vecteurs directeurs ne sont pas colinéaires (les droites ne sont pas parallèles).
+  2. Résolvez le système formé par leurs représentations paramétriques (en utilisant deux variables de paramètre distinctes, par exemple $t$ et $s$).
+  3. Concluez : « Le système n'admettant aucune solution, les droites n'ont pas de point d'intersection. N'étant ni parallèles ni sécantes, elles sont non coplanaires. »
+
+```FORM: QCM Séance 3
+* **Question 1 : Une droite est dirigée par le vecteur u(2; -1; 3) et passe par le point A(1; 0; -2). Quelle est sa représentation paramétrique ?**
+  * ( ) x = 1 + 2t, y = -t, z = -2 + 3t (t réel)
+  * ( ) x = 2 + t, y = -1, z = 3 - 2t (t réel)
+  * ( ) x = 1 - 2t, y = t, z = -2 - 3t (t réel)
+* **Question 2 : Soient les vecteurs u(1; 2; -1), v(0; 1; 3) et w(2; 5; 1) dans un repère de l'espace. Les vecteurs u, v et w sont-ils coplanaires ?**
+  * ( ) Oui, car w = 2u + v
+  * ( ) Non, car le système w = a*u + b*v n'a pas de solution
+  * ( ) Oui, car w = u + 3v
+* **Question 3 : Dans l'espace, deux droites qui n'ont aucun point commun sont nécessairement parallèles.**
+  * ( ) Faux, elles peuvent également être non coplanaires
+  * ( ) Vrai, c'est la définition de droites parallèles dans l'espace
+  * ( ) Faux, elles sont nécessairement confondues
+```
+
+## Séance 4 — 2026-07-27 : Géométrie dans l'espace : Orthogonalité et équations cartésiennes
+
+### I. Rappels de cours et concepts fondamentaux
+
+#### 1. Produit scalaire et orthogonalité dans l'espace
+Dans un repère orthonormé de l'espace, le produit scalaire des vecteurs $\vec{u}(x; y; z)$ et $\vec{v}(x'; y'; z')$ est :
+$$\vec{u} \cdot \vec{v} = xx' + yy' + zz'$$
+- Une droite $(D)$ de vecteur directeur $\vec{u}$ est orthogonale à un plan $(P)$ si et seulement si $\vec{u}$ est orthogonal à deux vecteurs directeurs non colinéaires de $(P)$. Cela équivaut à dire que $\vec{u}$ est colinéaire à un vecteur normal à $(P)$.
+
+#### 2. Équation cartésienne d'un plan
+Tout plan $(P)$ de vecteur normal $\vec{n}(a; b; c)$ admet une équation cartésienne de la forme :
+$$ax + by + cz + d = 0 \quad (\text{avec } (a,b,c) \neq (0,0,0))$$
+Réciproquement, tout ensemble de points vérifiant une telle équation est un plan de vecteur normal $\vec{n}(a; b; c)$.
+
+### II. Méthodologie et rigueur de rédaction
+- **Détermination de l'équation cartésienne d'un plan** : Pour obtenir l'équation cartésienne du plan $(P)$ passant par $A$ et de vecteur normal $\vec{n}(a; b; c)$ :
+  1. Énoncez que le vecteur normal donne directement les coefficients $a$, $b$ et $c$ de l'équation : $(P) : ax + by + cz + d = 0$.
+  2. Rédigez ainsi pour trouver $d$ : « Or, le point $A(x_A; y_A; z_A)$ appartient au plan $(P)$, donc ses coordonnées vérifient l'équation : $a x_A + b y_A + c z_A + d = 0$. »
+  3. Résolvez pour trouver $d$, puis réécrivez l'équation finale complète.
+
+```FORM: QCM Séance 4
+* **Question 1 : Soit le plan (P) d'équation 2x - y + 3z - 5 = 0. Quel est un vecteur normal à ce plan ?**
+  * ( ) n(2; -1; 3)
+  * ( ) n(2; 1; 3)
+  * ( ) n(-2; 1; 3)
+* **Question 2 : Le point A(1; 3; 2) appartient-il au plan (P) d'équation x + 2y - z - 5 = 0 ?**
+  * ( ) Oui, car 1 + 2(3) - 2 - 5 = 0
+  * ( ) Non, car 1 + 2(3) - 2 - 5 != 0
+  * ( ) Oui, car 1 + 3 + 2 - 5 = 1
+* **Question 3 : Soient deux plans d'équations x - y + z - 1 = 0 et 2x + y - z + 3 = 0. Ces plans sont-ils orthogonaux ?**
+  * ( ) Non, car le produit scalaire de leurs vecteurs normaux est égal à 0
+  * ( ) Oui, car le produit scalaire de leurs vecteurs normaux est égal à 0
+  * ( ) Non, car le produit scalaire de leurs vecteurs normaux est égal à -2
+```

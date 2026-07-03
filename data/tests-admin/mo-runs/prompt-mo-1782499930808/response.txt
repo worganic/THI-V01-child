@@ -1,0 +1,38 @@
+* **Quel est le statut d'avancement actuel de votre projet d'achat ?**
+  * ( ) Recherche du bien en cours (critères de sélection, visites)
+  * ( ) Bien immobilier déjà identifié (compromis de vente en vue ou signé)
+  * ( ) Offre d'achat acceptée, en phase de montage financier
+  * ( ) Autre : ______
+
+* **Quels types de documents souhaitez-vous générer en priorité ?**
+  * [ ] Grille de visite et d'évaluation technique des biens immobiliers
+  * [ ] Modèle d'offre d'achat formelle rédigée
+  * [ ] Modèle de business plan et prévisionnel financier pour maison d'hôte
+  * [ ] Dossier de présentation du projet pour solliciter un prêt bancaire
+  * [ ] Checklist des diagnostics obligatoires et des vérifications d'urbanisme
+  * [ ] Guide des démarches administratives et réglementaires (ERP, déclarations mairie)
+  * [ ] Autre : ______
+
+* **Quelle est la taille et la capacité d'accueil ciblées pour la maison d'hôte ?**
+  * ( ) Petite structure (1 à 3 chambres d'hôtes, activité secondaire)
+  * ( ) Capacité maximale réglementaire (jusqu'à 5 chambres et 15 personnes)
+  * ( ) Structure mixte (chambres d'hôtes et gîtes/meublés de tourisme sur le même domaine)
+  * ( ) Autre : ______
+
+* **Quelles sont les modalités de financement prévues pour ce projet d'achat et de création ?**
+  * [ ] Apport personnel substantiel
+  * [ ] Emprunt bancaire classique à solliciter
+  * [ ] Prêts aidés ou subventions (Région, Gîtes de France, etc.)
+  * [ ] Financement participatif ou associés
+  * [ ] Autre : ______
+
+* **Le projet d'achat nécessite-t-il des travaux de rénovation ou de mise aux normes importants ?**
+  * ( ) Oui, travaux structurels ou de mise aux normes ERP (sécurité incendie, accessibilité)
+  * ( ) Non, uniquement des travaux de décoration ou de rafraîchissement
+  * ( ) Non déterminé pour le moment
+
+* **Sous quel format souhaitez-vous recevoir ces documents ?**
+  * [ ] Documents texte éditables (Word / Markdown)
+  * [ ] Tableaux de calcul et modèles financiers éditables (Excel / Google Sheets)
+  * [ ] Guides méthodologiques et listes de contrôle prêtes à l'emploi
+  * [ ] Autre : ______

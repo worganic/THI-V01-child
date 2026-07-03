@@ -1,0 +1,5 @@
+@@TEST_RESULT@@{"itemId":"2-3-1","status":"ok","note":"Appels API /api/version/check et /api/admin/deployments fonctionnels avec token de sécurité."}
+@@TEST_RESULT@@{"itemId":"2-3-2","status":"ok","note":"Affichage des informations de statut, type commit (FIX/AME/MRG), scopes de couleurs, et features correct."}
+@@TEST_RESULT@@{"itemId":"2-3-3","status":"ok","note":"Bouton retour avec icône arrow_back fonctionnel vers /admin?tab=deploiement."}
+@@TEST_RESULT@@{"itemId":"2-3-4","status":"ok","note":"Spinner de chargement, bannières de statut (jaune/rouge) et gestion des erreurs opérationnels."}
+@@TEST_RESULT@@{"itemId":"2-3-5","status":"ok","note":"Rafraîchissement manuel réinitialisant l'état de chargement et d'erreur conforme."}

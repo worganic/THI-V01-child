@@ -1,0 +1,12 @@
+@@TEST_RESULT@@{"itemId":"2-5-2-11-1","status":"ok","note":"Création d'instance en BDD, insertion de bloc et émission megaOutilCreated OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-2","status":"ko","note":"Le panneau n'est visible qu'en mode structure, pas dans les modes Code (edit) et Preview (visu)"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-3","status":"ok","note":"Sélection, double-clic/F2 pour édition, Enter/Tab/Shift+Tab, Escape pour annuler et PATCH + SSE fonctionnels"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-11","status":"ok","note":"Affichage stylisé HTML, styles inline et formules, dark mode et réactivité via le cache OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-4","status":"ok","note":"Formules SUM/AVG/etc. et arithmétique, mode construction interactif, surlignage bleu et ré-édition OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-5","status":"ok","note":"Ajout/suppression via boutons, en-têtes et menu contextuel, avec limite minimale à 1x1 respectée OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-6","status":"ok","note":"Redimensionnement par drag handle sur en-têtes (col/row), minimum 40px, persistance PUT OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-7","status":"ok","note":"Styles (cellule/ligne/colonne), stopPropagation pour color picker, et persistance JSON MySQL OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-10","status":"ok","note":"Copier/Couper/Coller via menu contextuel et raccourcis Ctrl+C/X/V (si sélectionné et non en édition) OK"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-12","status":"ko","note":"La sync grille->code écrit une table Markdown (sans styles/dimensions) au lieu de A1:valeur|style"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-8","status":"ko","note":"Le délimiteur réel dans le code est un fence ```ARRAY et le fichier s'appelle array-NOM.md"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-9","status":"ok","note":"Abonnement arrayUpdate$ SSE pour recharger la grille et broadcastToProject opérationnels"}

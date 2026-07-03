@@ -1,0 +1,280 @@
+{
+  "projectName": "Interview utilisateur",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-06-25T03:51:46.000Z",
+  "updatedAt": "2026-06-28T19:40:06.543Z",
+  "structure": [
+    {
+      "id": "040ae082-8158-4d74-ab03-695ab7abbda5",
+      "type": "folder",
+      "name": "Cours de maths",
+      "path": "edition/cours-de-maths",
+      "order": 1,
+      "children": [
+        {
+          "id": "7301401e-ecb6-4285-9799-3ba50dba02ed",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/cours-de-maths/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text",
+          "fileVersion": "811c9dc5"
+        },
+        {
+          "id": "4169e429-f79a-4d98-8b0a-1b64026a003d",
+          "type": "folder",
+          "name": "Pitch de la typo du projet",
+          "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet",
+          "order": 1,
+          "children": [
+            {
+              "id": "cca9cfa0-d0bf-472f-9a11-6909f204df05",
+              "type": "folder",
+              "name": "Le problème majeur du marché actuel Opportunité",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite",
+              "order": 1,
+              "children": [
+                {
+                  "id": "5d8036c6-4b95-4993-8f49-4b055f975886",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                },
+                {
+                  "id": "021e6169-662c-4c9c-a98e-d9a2198f4072",
+                  "type": "folder",
+                  "name": "Etape 0 : ajout d'un cours",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-0-ajout-dun-cours",
+                  "order": 1,
+                  "children": [
+                    {
+                      "id": "b293ab6e-8a67-4587-9491-aa539aad972e",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-0-ajout-dun-cours/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "811c9dc5"
+                    },
+                    {
+                      "id": "81d82fc3-5570-4424-ab93-811bfe80dcba",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-0-ajout-dun-cours/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "811c9dc5"
+                    }
+                  ]
+                },
+                {
+                  "id": "157f635e-0014-48c5-b9a2-b908ee93ebb2",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                },
+                {
+                  "id": "cf505a3b-8793-4686-8d5d-e79a43f3e806",
+                  "type": "folder",
+                  "name": "Étape 1 : Le Diagnostic initial dynamique",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-1-le-diagnostic-initial-dynamique",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "a0bb98d0-532e-4198-b441-37d6e9e3b8c7",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-1-le-diagnostic-initial-dynamique/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "811c9dc5"
+                    },
+                    {
+                      "id": "859f92e3-ca60-45aa-bc65-202ec066bdc3",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-1-le-diagnostic-initial-dynamique/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "811c9dc5"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "d7b462b6-b92e-4dfc-8b32-d912a647a41b",
+              "type": "folder",
+              "name": "Étape 1 : Le Diagnostic initial dynamique",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 1 : Le Diagnostic initial dynamique",
+              "order": 2,
+              "children": [
+                {
+                  "id": "2a54b430-b4ff-4c45-9848-f271411bfe3d",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 1 : Le Diagnostic initial dynamique/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                },
+                {
+                  "id": "cf9029a2-eb2e-48ab-9b75-6fdeefc5a817",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 1 : Le Diagnostic initial dynamique/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                }
+              ]
+            },
+            {
+              "id": "7a5bceb1-60c0-4c30-9a53-078fa0b314a2",
+              "type": "folder",
+              "name": "Étape 2 : L'Apprentissage par \"Maïeutique\" (Méthode Socratique)",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/etape-2-lapprentissage-par-maieutique-methode-socratique",
+              "order": 3,
+              "children": [
+                {
+                  "id": "8dfd19ad-da64-422e-a36c-bad5e9833e13",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/etape-2-lapprentissage-par-maieutique-methode-socratique/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                },
+                {
+                  "id": "4e057ffc-0dcd-4c9b-9a14-422df56e8cf6",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/etape-2-lapprentissage-par-maieutique-methode-socratique/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                }
+              ]
+            },
+            {
+              "id": "9643e214-e2a3-4187-b8b7-d906a6a5bfd4",
+              "type": "folder",
+              "name": "Étape 3 : Le \"Contrôle Anti-Illusion\" (Évaluation continue)",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 3 : Le \"Contrôle Anti-Illusion\" (Évaluation continue)",
+              "order": 4,
+              "children": [
+                {
+                  "id": "5218feac-4cdf-417b-8054-6296d6659345",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 3 : Le \"Contrôle Anti-Illusion\" (Évaluation continue)/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                },
+                {
+                  "id": "969af8d4-0969-4a10-9584-efadf35d026b",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 3 : Le \"Contrôle Anti-Illusion\" (Évaluation continue)/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                }
+              ]
+            },
+            {
+              "id": "30734a0b-086b-4cf6-95e8-bd6381565c2e",
+              "type": "folder",
+              "name": "Étape 4 : Le Moteur de Relance Proactif (Répétition Espacée)",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 4 : Le Moteur de Relance Proactif (Répétition Espacée)",
+              "order": 5,
+              "children": [
+                {
+                  "id": "be407ef0-58dc-4287-9960-b9616d8c7d2e",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 4 : Le Moteur de Relance Proactif (Répétition Espacée)/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                },
+                {
+                  "id": "6bc3dab5-d711-4e23-9db8-b9a485e6fcbf",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 4 : Le Moteur de Relance Proactif (Répétition Espacée)/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "811c9dc5"
+                }
+              ]
+            },
+            {
+              "id": "7b5aba1f-0f09-4467-b866-10035c2311cc",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/contenu.md",
+              "order": 1,
+              "content": "",
+              "fileType": "text",
+              "fileVersion": "811c9dc5"
+            },
+            {
+              "id": "762294b0-d832-45f8-af3d-4b417a16c258",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/contenu-css.md",
+              "order": 2,
+              "content": "",
+              "fileType": "text",
+              "fileVersion": "811c9dc5"
+            }
+          ]
+        },
+        {
+          "id": "5cce07ca-d911-41d2-b600-0d2cdea9916a",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/cours-de-maths/contenu-css.md",
+          "order": 2,
+          "content": "",
+          "fileType": "text",
+          "fileVersion": "811c9dc5"
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "a370a2e2-0010-49ba-a93b-d5b6d56828e7",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "040ae082-8158-4d74-ab03-695ab7abbda5"
+      ],
+      "createdAt": "2026-06-25T03:51:46.000Z"
+    }
+  ]
+}
