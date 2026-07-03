@@ -1,0 +1,45 @@
+* **Niveau scolaire de l'élève :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Matière ou domaine spécifique des mathématiques à travailler :**
+  * [ ] Algèbre et Arithmétique
+  * [ ] Géométrie
+  * [ ] Analyse et Fonctions
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Niveau de départ et objectif visé :**
+  * ( ) Difficultés / Remise à niveau -> Acquérir la moyenne et les bases
+  * ( ) Niveau moyen -> Consolider les acquis et progresser
+  * ( ) Bon niveau -> Se perfectionner et viser l'excellence
+  * ( ) Préparation d'un examen spécifique (Brevet, Bac, Concours) : ______
+
+* **Durée de l'accompagnement et date de début souhaitée :**
+  * ( ) Stage intensif (1 à 2 semaines)
+  * ( ) Suivi régulier sur un trimestre
+  * ( ) Accompagnement sur toute l'année scolaire
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 à 3 fois par semaine
+  * ( ) Quotidien (stage)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation privilégiées :**
+  * [ ] QCM et quiz rapides
+  * [ ] Devoirs à la maison notés sur 20
+  * [ ] Auto-évaluation par l'élève
+  * [ ] Exercices d'application sans note
+  * [ ] Autre : ______
+
+* **Format attendu pour les cours et les exercices :**
+  * [ ] Fiches de cours très synthétiques
+  * [ ] Explications de cours détaillées avec exemples
+  * [ ] Exercices d'application directe (niveau facile à moyen)
+  * [ ] Problèmes complexes et sujets d'examen
+  * [ ] Autre : ______

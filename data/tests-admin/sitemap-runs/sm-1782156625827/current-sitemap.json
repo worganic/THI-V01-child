@@ -1,0 +1,1001 @@
+{
+  "nodes": [
+    {
+      "id": "el-landing-logo",
+      "label": "Logo",
+      "url": "/",
+      "port": 4202,
+      "kind": "public",
+      "groupId": "sec-landing-header",
+      "elType": "link",
+      "x": -149,
+      "y": -93,
+      "w": 136,
+      "h": 30,
+      "components": [
+        "LandingComponent"
+      ],
+      "description": "Logo / retour accueil."
+    },
+    {
+      "id": "el-landing-login",
+      "label": "Connexion",
+      "url": "/",
+      "port": 4202,
+      "kind": "public",
+      "groupId": "sec-landing-header",
+      "elType": "link",
+      "x": -2,
+      "y": -92,
+      "w": 148,
+      "h": 30,
+      "components": [
+        "LandingComponent"
+      ],
+      "description": "Lien de connexion → app connectée."
+    },
+    {
+      "id": "el-landing-pitch",
+      "label": "Présentation",
+      "url": "embed",
+      "port": 4202,
+      "kind": "public",
+      "groupId": "sec-landing-content",
+      "elType": "widget",
+      "x": -152,
+      "y": 26,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "LandingComponent"
+      ],
+      "description": "Bloc de présentation."
+    },
+    {
+      "id": "el-landing-cta",
+      "label": "CTA Inscription",
+      "url": "embed",
+      "port": 4202,
+      "kind": "public",
+      "groupId": "sec-landing-content",
+      "elType": "button",
+      "x": -152,
+      "y": 68,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "LandingComponent"
+      ],
+      "description": "Bouton d'appel à l'action."
+    },
+    {
+      "id": "el-landing-legal",
+      "label": "Liens légaux",
+      "url": "embed",
+      "port": 4202,
+      "kind": "public",
+      "groupId": "sec-landing-footer",
+      "elType": "link",
+      "x": -152,
+      "y": 162,
+      "w": 296,
+      "h": 28,
+      "components": [
+        "LandingComponent"
+      ]
+    },
+    {
+      "id": "el-doc-nav-docs",
+      "label": "Lien Documents",
+      "url": "/documents",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "elType": "link",
+      "x": 362,
+      "y": -200,
+      "w": 260,
+      "h": 30,
+      "components": [
+        "NavComponent"
+      ]
+    },
+    {
+      "id": "el-doc-nav-admin",
+      "label": "Lien Admin",
+      "url": "/admin",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-doc-menu",
+      "elType": "link",
+      "x": 362,
+      "y": -239,
+      "w": 260,
+      "h": 30,
+      "components": [
+        "NavComponent"
+      ],
+      "description": "Entrée de menu Admin → page Admin."
+    },
+    {
+      "id": "el-doc-list",
+      "label": "Liste documents",
+      "url": "embed",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-content",
+      "elType": "widget",
+      "x": 374,
+      "y": 206,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "DocumentsComponent"
+      ]
+    },
+    {
+      "id": "el-doc-add",
+      "label": "Ajouter un document",
+      "url": "embed",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-content",
+      "elType": "button",
+      "x": 374,
+      "y": 248,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "DocumentsComponent"
+      ]
+    },
+    {
+      "id": "el-w-tchat",
+      "label": "TchatIA",
+      "url": "embed",
+      "port": 4202,
+      "kind": "widget",
+      "groupId": "sec-widgets",
+      "elType": "widget",
+      "x": -157,
+      "y": 481,
+      "w": 296,
+      "h": 28,
+      "components": [
+        "TchatIaComponent"
+      ],
+      "cahierPaths": [
+        "connecte/outils/tchat-ia"
+      ]
+    },
+    {
+      "id": "el-w-tickets",
+      "label": "Tickets",
+      "url": "embed",
+      "port": 4202,
+      "kind": "widget",
+      "groupId": "sec-widgets",
+      "elType": "widget",
+      "x": -157,
+      "y": 513,
+      "w": 296,
+      "h": 28,
+      "components": [
+        "TicketWidgetComponent"
+      ],
+      "cahierPaths": [
+        "connecte/outils/tickets"
+      ]
+    },
+    {
+      "id": "el-w-cahier",
+      "label": "Cahier de recette",
+      "url": "embed",
+      "port": 4202,
+      "kind": "widget",
+      "groupId": "sec-widgets",
+      "elType": "widget",
+      "x": -157,
+      "y": 545,
+      "w": 296,
+      "h": 28,
+      "components": [
+        "CahierRecetteComponent"
+      ],
+      "cahierPaths": [
+        "connecte/outils/cahier-recette"
+      ]
+    },
+    {
+      "id": "el-adm-tab-users",
+      "label": "Onglet Utilisateurs",
+      "url": "/admin/users",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "x": 977,
+      "y": -220,
+      "w": 210,
+      "h": 26,
+      "components": [
+        "AdminComponent"
+      ]
+    },
+    {
+      "id": "el-adm-tab-tests",
+      "label": "Onglet Tests",
+      "url": "/admin/tests/cahier",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "elType": "link",
+      "x": 977,
+      "y": -176,
+      "w": 210,
+      "h": 26,
+      "components": [
+        "AdminComponent"
+      ]
+    },
+    {
+      "id": "el-adm-users-table",
+      "label": "Table utilisateurs",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-users",
+      "elType": "widget",
+      "x": 1405,
+      "y": -237,
+      "w": 316,
+      "h": 28,
+      "components": [
+        "AdminUsersComponent"
+      ],
+      "cahierPaths": [
+        "connecte/admin/utilisateurs"
+      ]
+    },
+    {
+      "id": "el-adm-users-form",
+      "label": "Création utilisateur",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-users",
+      "elType": "form",
+      "x": 1405,
+      "y": -203,
+      "w": 316,
+      "h": 26,
+      "components": [
+        "AdminUsersComponent"
+      ],
+      "cahierPaths": [
+        "connecte/admin/utilisateurs"
+      ]
+    },
+    {
+      "id": "el-adm-tests-cahier",
+      "label": "Cahier de recette",
+      "url": "/admin/tests/cahier",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "link",
+      "x": 1400,
+      "y": -97,
+      "w": 316,
+      "h": 26,
+      "components": [
+        "AdminTestsComponent"
+      ],
+      "cahierPaths": [
+        "connecte/admin/tests"
+      ]
+    },
+    {
+      "id": "el-adm-tests-sitemap",
+      "label": "Site Map",
+      "url": "/admin/tests/sitemap",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "link",
+      "x": 1400,
+      "y": -65,
+      "w": 316,
+      "h": 26,
+      "components": [
+        "AdminTestsComponent"
+      ],
+      "cahierPaths": [
+        "connecte/admin/tests"
+      ]
+    },
+    {
+      "id": "el-adm-tests-run",
+      "label": "Lancer un test",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "button",
+      "x": 1400,
+      "y": -33,
+      "w": 316,
+      "h": 26,
+      "components": [
+        "AdminTestsComponent"
+      ],
+      "cahierPaths": [
+        "connecte/admin/tests"
+      ]
+    },
+    {
+      "id": "el-adm-config-form",
+      "label": "Formulaire config",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-config",
+      "elType": "form",
+      "x": 1399,
+      "y": 70,
+      "w": 316,
+      "h": 30,
+      "components": [
+        "ConfigComponent"
+      ],
+      "cahierPaths": [
+        "connecte/admin/config"
+      ]
+    },
+    {
+      "id": "el-proj-grid",
+      "label": "Grille des projets",
+      "url": "embed",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-proj-content",
+      "elType": "widget",
+      "x": 979,
+      "y": 432,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "ProjetsComponent"
+      ],
+      "cahierPaths": [
+        "connecte/projets/accueil"
+      ]
+    },
+    {
+      "id": "el-proj-create",
+      "label": "Créer un projet",
+      "url": "embed",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-proj-content",
+      "elType": "button",
+      "x": 979,
+      "y": 472,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "ProjetsComponent"
+      ],
+      "cahierPaths": [
+        "connecte/projets/accueil"
+      ]
+    },
+    {
+      "id": "el-proj-open",
+      "label": "Ouvrir un projet",
+      "url": "/projets/:id",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-proj-content",
+      "elType": "link",
+      "x": 979,
+      "y": 512,
+      "w": 296,
+      "h": 32,
+      "components": [
+        "ProjetsComponent"
+      ]
+    },
+    {
+      "id": "el-ed-toolbar",
+      "label": "Barre d'outils",
+      "url": "embed",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-ed-toolbar",
+      "elType": "widget",
+      "x": 1524,
+      "y": 429,
+      "w": 336,
+      "h": 24,
+      "components": [
+        "ProjetToolbarComponent"
+      ],
+      "cahierPaths": [
+        "connecte/projets/editor/toolbar"
+      ]
+    },
+    {
+      "id": "el-ed-tree",
+      "label": "Arborescence",
+      "url": "embed",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-ed-sidebar",
+      "elType": "widget",
+      "x": 1524,
+      "y": 520,
+      "w": 146,
+      "h": 26,
+      "components": [
+        "ProjetSidebarComponent"
+      ],
+      "cahierPaths": [
+        "connecte/projets/editor/sidebar"
+      ]
+    },
+    {
+      "id": "el-ed-editor",
+      "label": "Éditeur de code",
+      "url": "embed",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-ed-code",
+      "elType": "widget",
+      "x": 1706,
+      "y": 518,
+      "w": 154,
+      "h": 26,
+      "components": [
+        "ProjetEditorZoneComponent"
+      ],
+      "cahierPaths": [
+        "connecte/projets/editor/zone-code"
+      ]
+    },
+    {
+      "id": "el-ed-chat",
+      "label": "Chat IA",
+      "url": "embed",
+      "port": 4203,
+      "kind": "projets",
+      "groupId": "sec-ed-chat",
+      "elType": "widget",
+      "x": 1521,
+      "y": 663,
+      "w": 336,
+      "h": 26,
+      "components": [
+        "ProjetConversationComponent"
+      ],
+      "cahierPaths": [
+        "connecte/projets/editor/zone5-conversation"
+      ]
+    },
+    {
+      "id": "el-mqplrlo5-wjbg",
+      "label": "Lien Projets",
+      "url": "/projets",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "x": 362,
+      "y": -161,
+      "w": 260,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "NavComponent"
+      ],
+      "description": "Lien Projets du menu de navigation (NavComponent).",
+      "cahierPaths": [
+        "connecte/projets/accueil"
+      ]
+    },
+    {
+      "id": "el-mqplrlo5-tmkk",
+      "label": "Lien Historique",
+      "url": "/wo-action-history",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "x": 362,
+      "y": -123,
+      "w": 260,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "NavComponent"
+      ],
+      "description": "Lien Historique du menu de navigation (NavComponent).",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-256z",
+      "label": "Onglet Projets",
+      "url": "/admin/projets",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": -142,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet d'administration des projets.",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-0hbc",
+      "label": "Onglet Déploiement",
+      "url": "/admin/deploiement",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": -104,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet d'administration des déploiements.",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-pj86",
+      "label": "Onglet Config",
+      "url": "/admin/config",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": -66,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet de configuration globale.",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-akj2",
+      "label": "Onglet Thème",
+      "url": "/admin/theme",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": -28,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet de personnalisation graphique.",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-bqll",
+      "label": "Onglet Méga-outils",
+      "url": "/admin/mega-outils",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": 10,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet d'administration des méga-outils.",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-ykj8",
+      "label": "Onglet Mémo",
+      "url": "/admin/memo",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": 48,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet Mémo pour l'aide et la documentation.",
+      "cahierPaths": []
+    },
+    {
+      "id": "el-mqplyz8s-kfpo",
+      "label": "Onglet Outils",
+      "url": "/admin/tools",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tabs",
+      "x": 977,
+      "y": 86,
+      "w": 210,
+      "h": 30,
+      "elType": "link",
+      "components": [
+        "AdminComponent"
+      ],
+      "description": "Onglet de gestion des outils.",
+      "cahierPaths": []
+    }
+  ],
+  "groups": [
+    {
+      "id": "pg-landing",
+      "label": "Landing",
+      "role": "page",
+      "url": "/",
+      "component": "LandingComponent",
+      "description": "Page d'accueil publique — présentation et connexion.",
+      "x": -184,
+      "y": -166,
+      "w": 360,
+      "h": 430,
+      "stroke": "#0ea5e9",
+      "fill": "#0ea5e90d"
+    },
+    {
+      "id": "sec-landing-header",
+      "label": "Header",
+      "role": "section",
+      "sectionType": "header",
+      "component": "LandingComponent",
+      "x": -164,
+      "y": -116,
+      "w": 320,
+      "h": 96,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-landing-content",
+      "label": "Contenu",
+      "role": "section",
+      "sectionType": "content",
+      "component": "LandingComponent",
+      "x": -164,
+      "y": -12,
+      "w": 320,
+      "h": 128,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-landing-footer",
+      "label": "Footer",
+      "role": "section",
+      "sectionType": "footer",
+      "x": -164,
+      "y": 124,
+      "w": 320,
+      "h": 78,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "pg-documents",
+      "label": "Documents",
+      "role": "page",
+      "url": "/documents",
+      "component": "DocumentsComponent",
+      "description": "Gestion des documents de l’utilisateur connecté.",
+      "x": 335,
+      "y": -301,
+      "w": 418,
+      "h": 238,
+      "stroke": "#6366f1",
+      "fill": "#6366f10d"
+    },
+    {
+      "id": "sec-doc-menu",
+      "label": "Menu",
+      "role": "section",
+      "sectionType": "menu",
+      "component": "NavComponent",
+      "x": 350,
+      "y": -258,
+      "w": 355,
+      "h": 178,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-doc-content",
+      "label": "Contenu",
+      "role": "section",
+      "sectionType": "content",
+      "component": "DocumentsComponent",
+      "x": 362,
+      "y": 166,
+      "w": 320,
+      "h": 146,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "pg-widgets",
+      "label": "Outils embarqués",
+      "role": "page",
+      "url": "embed",
+      "description": "Widgets flottants embarquables (visibilité pilotée par Admin › Outils).",
+      "x": -189,
+      "y": 391,
+      "w": 382,
+      "h": 415,
+      "stroke": "#8b5cf6",
+      "fill": "#8b5cf60d"
+    },
+    {
+      "id": "sec-widgets",
+      "label": "Widgets",
+      "role": "section",
+      "sectionType": "content",
+      "x": -169,
+      "y": 441,
+      "w": 330,
+      "h": 342,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "pg-admin",
+      "label": "Admin",
+      "role": "page",
+      "url": "/admin",
+      "component": "AdminComponent",
+      "description": "Panneau d'administration à onglets (réservé admin).",
+      "x": 945,
+      "y": -300,
+      "w": 816,
+      "h": 586,
+      "stroke": "#f59e0b",
+      "fill": "#f59e0b12"
+    },
+    {
+      "id": "sec-adm-tabs",
+      "label": "Onglets",
+      "role": "section",
+      "sectionType": "menu",
+      "component": "AdminTabsRegistryService",
+      "x": 965,
+      "y": -250,
+      "w": 249,
+      "h": 376,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-adm-users",
+      "label": "Utilisateurs",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminUsersComponent",
+      "x": 1393,
+      "y": -279,
+      "w": 340,
+      "h": 110,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-adm-tests",
+      "label": "Tests",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminTestsComponent",
+      "x": 1388,
+      "y": -137,
+      "w": 340,
+      "h": 150,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-adm-config",
+      "label": "Config",
+      "role": "section",
+      "sectionType": "content",
+      "component": "ConfigComponent",
+      "x": 1389,
+      "y": 43,
+      "w": 340,
+      "h": 92,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "pg-projets",
+      "label": "Liste des projets",
+      "role": "page",
+      "url": "/projets",
+      "component": "ProjetsComponent",
+      "description": "Accueil de l’app Projets (port 4203) — grille, création, ouverture.",
+      "x": 947,
+      "y": 344,
+      "w": 365,
+      "h": 260,
+      "stroke": "#10b981",
+      "fill": "#10b9810d"
+    },
+    {
+      "id": "sec-proj-content",
+      "label": "Contenu",
+      "role": "section",
+      "sectionType": "content",
+      "component": "ProjetsComponent",
+      "x": 967,
+      "y": 394,
+      "w": 320,
+      "h": 180,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "pg-editor",
+      "label": "Éditeur de projet",
+      "role": "page",
+      "url": "/projets/:id",
+      "component": "ProjetEditorComponent",
+      "description": "Éditeur HTML/CSS/JS avec IA (toolbar, sidebar, code, preview, conversation).",
+      "x": 1492,
+      "y": 343,
+      "w": 405,
+      "h": 375,
+      "stroke": "#10b981",
+      "fill": "#10b9810d"
+    },
+    {
+      "id": "sec-ed-toolbar",
+      "label": "Toolbar",
+      "role": "section",
+      "sectionType": "header",
+      "component": "ProjetToolbarComponent",
+      "x": 1512,
+      "y": 393,
+      "w": 360,
+      "h": 64,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-ed-sidebar",
+      "label": "Sidebar",
+      "role": "section",
+      "sectionType": "aside",
+      "component": "ProjetSidebarComponent",
+      "x": 1512,
+      "y": 480,
+      "w": 172,
+      "h": 120,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-ed-code",
+      "label": "Zone Code",
+      "role": "section",
+      "sectionType": "content",
+      "component": "ProjetEditorZoneComponent",
+      "x": 1694,
+      "y": 478,
+      "w": 178,
+      "h": 122,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "sec-ed-chat",
+      "label": "Conversation",
+      "role": "section",
+      "sectionType": "content",
+      "component": "ProjetConversationComponent",
+      "x": 1509,
+      "y": 625,
+      "w": 360,
+      "h": 70,
+      "stroke": "#7c8aa0",
+      "fill": "#7c8aa00f"
+    },
+    {
+      "id": "grp-mqpkeelq",
+      "label": "Connecté",
+      "role": "zone",
+      "x": 290,
+      "y": -331,
+      "w": 1812,
+      "h": 1141,
+      "stroke": "#10b981",
+      "fill": "#10b9810a"
+    },
+    {
+      "id": "grp-mqplsjzq",
+      "label": "Documents",
+      "role": "zone",
+      "x": 330,
+      "y": 115,
+      "w": 407,
+      "h": 241,
+      "stroke": "#ec4899",
+      "fill": "#ec48990a"
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-login",
+      "from": "el-landing-login",
+      "to": "group:pg-documents",
+      "label": "connexion",
+      "type": "auth"
+    },
+    {
+      "id": "e-nav-admin",
+      "from": "el-doc-nav-admin",
+      "to": "group:pg-admin",
+      "label": "ouvre",
+      "type": "nav"
+    },
+    {
+      "id": "e-tab-users",
+      "from": "el-adm-tab-users",
+      "to": "group:sec-adm-users",
+      "label": "affiche",
+      "type": "relation"
+    },
+    {
+      "id": "e-tab-tests",
+      "from": "el-adm-tab-tests",
+      "to": "group:sec-adm-tests",
+      "label": "affiche",
+      "type": "relation"
+    },
+    {
+      "id": "e-open-proj",
+      "from": "el-proj-open",
+      "to": "group:pg-editor",
+      "label": "ouvre",
+      "type": "nav"
+    },
+    {
+      "id": "e-cross-proj",
+      "from": "group:pg-documents",
+      "to": "group:pg-projets",
+      "label": "contenu",
+      "type": "cross-app"
+    },
+    {
+      "id": "edge-mqpltc2l",
+      "from": "el-doc-nav-docs",
+      "to": "group:grp-mqplsjzq",
+      "type": "nav",
+      "label": ""
+    }
+  ]
+}

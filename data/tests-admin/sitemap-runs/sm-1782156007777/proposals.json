@@ -1,0 +1,69 @@
+[
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "id": "el-doc-nav-projets",
+      "label": "Lien Projets",
+      "url": "/projets",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "elType": "link",
+      "components": [
+        "NavComponent"
+      ],
+      "description": "Lien Projets du menu de navigation (NavComponent).",
+      "cahierPaths": [
+        "connecte/projets/accueil"
+      ]
+    },
+    "reason": "Ajout du lien Projets présent dans le code réel de NavComponent (via nav.json)"
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "id": "el-doc-nav-history",
+      "label": "Lien Historique",
+      "url": "/wo-action-history",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "elType": "link",
+      "components": [
+        "NavComponent"
+      ],
+      "description": "Lien Historique du menu de navigation (NavComponent)."
+    },
+    "reason": "Ajout du lien Historique présent dans le code réel de NavComponent (actif si configuré)"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "id": "e-nav-documents",
+      "from": "el-doc-nav-docs",
+      "to": "group:pg-documents",
+      "type": "nav",
+      "label": "ouvre"
+    },
+    "reason": "Liaison de navigation du menu vers la page Documents"
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "id": "e-nav-projets",
+      "from": "el-doc-nav-projets",
+      "to": "group:pg-projets",
+      "type": "cross-app",
+      "label": "ouvre"
+    },
+    "reason": "Liaison de navigation cross-app du menu vers l'application Projets"
+  }
+]

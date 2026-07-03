@@ -15,6 +15,8 @@ export type { DiffPair };
 export class ProjetDiffComponent implements OnChanges {
   @Input() entry: CollabHistoryEntry | null = null;
   @Input() currentContent: string | null = null;
+  @Input() leftLabel = 'Avant';
+  @Input() rightLabel = 'Après';
   @Output() close = new EventEmitter<void>();
   @Output() applyContent = new EventEmitter<string>();
 

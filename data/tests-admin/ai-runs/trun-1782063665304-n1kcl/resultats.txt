@@ -1,0 +1,8 @@
+@@TEST_RESULT@@{"itemId":"2-5-2-12-1","status":"ok","note":"Creation de section standard en fin de zone active conforme."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-2","status":"ok","note":"Scission de section au curseur avec sauvegarde immediate et perte de dirty OK."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-3","status":"ok","note":"Creation de sous-section depuis structure avec bridage H4 et insertion correctes."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-4","status":"ok","note":"Promotion/retrogradation de niveau avec normalisation en cascade et blocages OK."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-5","status":"ok","note":"Suppression de titre avec fusion, destruction en BDD et gestion du focus OK."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-6","status":"ok","note":"Renommage direct avec preservation du marqueur SID et mise a jour BDD OK."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-7","status":"ok","note":"Filtrage contextuel des titres du Slash Menu selon le niveau courant OK."}
+@@TEST_RESULT@@{"itemId":"2-5-2-12-8","status":"ok","note":"Controles du TitleCreateDialog (backdrop, focus, error, escape/cancel) OK."}

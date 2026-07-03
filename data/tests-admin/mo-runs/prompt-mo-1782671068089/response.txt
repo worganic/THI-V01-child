@@ -1,0 +1,24 @@
+* **Format attendu pour le livrable ou l'outil d'atelier P.A.R.S :**
+  * ( ) Un document de cadrage textuel et un guide méthodologique en Markdown
+  * ( ) Une application web interactive ou maquette (HTML/JS)
+  * ( ) Autre : ______
+
+* **Horizon temporel et date de démarrage de l'atelier :**
+  * ( ) Lancement immédiat (dans les jours à venir)
+  * ( ) Lancement planifié à moyen terme (1 à 3 mois)
+  * ( ) Autre : ______
+
+* **Contraintes principales de mise en œuvre :**
+  * [ ] Intégration technique limitée (pas de backend complexe, stockage local ou Markdown)
+  * [ ] Temps disponible réduit pour le Business Owner (sessions de moins de 10 minutes)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables pour l'étape de Récolte (R) :**
+  * [ ] Quantité minimale d'unités de sens qualifiées (ex : plus de 10 idées/émotions)
+  * [ ] Taux de validation par le Business Owner (ex : plus de 80% des propositions validées)
+  * [ ] Autre : ______
+
+* **Risques ou blocages principaux identifiés pour l'écriture libre :**
+  * [ ] Auto-censure et correction automatique malgré les consignes
+  * [ ] Difficulté à démarrer l'écriture (syndrome de la page blanche)
+  * [ ] Autre : ______

@@ -39,6 +39,25 @@ export class ConfigService {
   cliIaEnabled   = signal<boolean>(true);
   apiKeysEnabled = signal<boolean>(true);
 
+  // Synchronisation FTP des projets — désactivée par défaut (stand-by), réglage
+  // global BDD (platform_settings), modification réservée aux administrateurs.
+  ftpSyncEnabled = signal<boolean>(false);
+
+  loadPlatformSettings() {
+    this.http.get<{ ftpSyncEnabled: boolean }>(`${this.dataApiUrl}/api/admin/platform-settings`).subscribe({
+      next: settings => this.ftpSyncEnabled.set(!!settings.ftpSyncEnabled),
+      error: () => console.warn('[ConfigService] Cannot load platform settings')
+    });
+  }
+
+  setFtpSyncEnabled(val: boolean) {
+    this.http.put<{ success: boolean; ftpSyncEnabled: boolean }>(`${this.dataApiUrl}/api/admin/platform-settings`, { ftpSyncEnabled: val })
+      .subscribe({
+        next: res => this.ftpSyncEnabled.set(!!res.ftpSyncEnabled),
+        error: () => console.warn('[ConfigService] Failed to save ftpSyncEnabled')
+      });
+  }
+
   setTicketsEnabled(val: boolean)       { this.ticketsEnabled.set(val); }
   setRecetteWidgetEnabled(val: boolean) { this.recetteWidgetEnabled.set(val); }
   setTchatIaEnabled(val: boolean)       { this.tchatIaEnabled.set(val); }
@@ -88,6 +107,7 @@ export class ConfigService {
   constructor(private http: HttpClient) {
     this.loadCliConfig();
     this.refreshModels();
+    this.loadPlatformSettings();
   }
 
   loadCliConfig() {

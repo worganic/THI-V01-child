@@ -1,0 +1,25 @@
+* **État d'avancement du projet de maison d'hôtes :**
+  * ( ) En phase d'idéation (pas encore de bien identifié)
+  * ( ) Bien identifié (compromis de vente en cours ou signé)
+  * ( ) Autre : ______
+
+* **Durée du prévisionnel financier requis par l'établissement :**
+  * ( ) Sur 3 ans (standard)
+  * ( ) Sur 5 ans
+  * ( ) Autre : ______
+
+* **Format du livrable final :**
+  * [ ] Document de présentation textuel (Word/PDF)
+  * [ ] Présentation synthétique pour le rendez-vous (PowerPoint/PDF)
+  * [ ] Modèle de calcul financier (Excel)
+  * [ ] Autre : ______
+
+* **Type de dossier et niveau de détail attendus :**
+  * [ ] Présentation simplifiée (Executive Summary et chiffres clés)
+  * [ ] Dossier complet (Détail du projet, étude de marché locale, prévisionnels détaillés)
+  * [ ] Autre : ______
+
+* **Profil et attentes des destinataires du dossier :**
+  * [ ] Conseillers bancaires traditionnels
+  * [ ] Investisseurs ou associés potentiels
+  * [ ] Autre : ______

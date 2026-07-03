@@ -1,0 +1,39 @@
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Démarrage immédiat (achat cible d'ici 6 mois)
+  * ( ) Démarrage à moyen terme (6 à 12 mois)
+  * ( ) Projet à plus long terme (plus de 12 mois)
+  * ( ) Autre : ______
+* **Localisation et type de bien recherché :**
+  * [ ] Zone rurale / campagne
+  * [ ] Zone côtière / mer
+  * [ ] Zone de montagne
+  * [ ] Centre historique / ville touristique
+  * [ ] Autre : ______
+* **Contraintes financières et budget global estimé (acquisition + travaux) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+* **Capacité d'accueil et envergure du projet (nombre de chambres d'hôtes) :**
+  * ( ) Petite structure (1 à 3 chambres)
+  * ( ) Moyenne structure (4 à 5 chambres maximum, limite légale)
+  * ( ) Grande structure / Gîtes multiples (plus de 5 chambres, statut ERP/Hôtel)
+  * ( ) Autre : ______
+* **Principaux jalons clés identifiés pour le lancement du projet :**
+  * [ ] Étude de marché et business plan
+  * [ ] Recherche et visite des biens immobiliers
+  * [ ] Obtention du financement bancaire
+  * [ ] Réalisation de travaux de rénovation / mise aux normes
+  * [ ] Déclaration en mairie et immatriculation
+  * [ ] Autre : ______
+* **Contraintes réglementaires et risques majeurs anticipés :**
+  * [ ] Refus du prêt bancaire
+  * [ ] Dépassement du budget de travaux / rénovation
+  * [ ] Non-conformité aux normes d'accessibilité et de sécurité (incendie)
+  * [ ] Faible taux d'occupation / concurrence locale
+  * [ ] Autre : ______
+* **Critères de succès mesurables à un an du lancement :**
+  * [ ] Taux d'occupation minimum (ex: > 50%)
+  * [ ] Rentabilité financière atteinte (couverture des charges et du crédit)
+  * [ ] Retours clients positifs (note moyenne > 9/10 sur les plateformes de réservation)
+  * [ ] Autre : ______

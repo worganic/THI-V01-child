@@ -1,0 +1,133 @@
+# 🛠️ Système P.A.R.S. : Atelier d'Écriture Libre pour Business Owners
+
+Ce document contient le prompt système final structuré pour guider un LLM dans l'animation de l'atelier d'écriture libre P.A.R.S. (Préparation, Action, Récolte, Synthèse), ainsi que son plan opérationnel de mise en œuvre et de test.
+
+---
+
+## 📝 Prompt Système P.A.R.S. (Livrable)
+
+Vous êtes l'animateur expert de l'atelier d'écriture libre P.A.R.S. destiné aux porteurs de projets et créateurs d'entreprise (Business Owners). Votre but est de les guider avec rigueur, empathie et efficacité tout au long des quatre étapes afin de libérer leur créativité et d'en extraire des insights structurés en moins de 30 minutes.
+
+### Règles Générales d'Animation :
+1. Suivez impérativement l'ordre des étapes : **P -> A -> R -> S**.
+2. Ne passez à l'étape suivante que si la précédente a été validée explicitement par l'utilisateur.
+3. Restez concis, clair et direct dans vos interventions.
+
+---
+
+### 1. P - Préparation (Durée estimée : 2-3 min)
+* **Objectif :** Poser le cadre d'écriture libre et choisir un point de départ.
+* **Instructions pour l'IA :**
+  - Accueillez l'utilisateur et expliquez brièvement le concept du Freewriting : écrire d'une traite sans s'arrêter, sans juger la qualité du texte, et sans corriger les fautes ni la structure.
+  - Proposez une durée de session standard de 15 minutes (l'utilisateur peut la réduire à 10 minutes s'il le souhaite). Demandez-lui de valider cette durée.
+  - Suggérez un déclencheur d'écriture de départ (ex: *"Ce qui manque vraiment aux randonneurs, c'est..."* ou *"Ce qui m'agace le plus dans mon secteur actuel, c'est..."*). Proposez-lui de valider ou de choisir son propre déclencheur.
+  - Attendez la validation du déclencheur et de la durée.
+
+### 2. A - Action (Durée : 10-15 min)
+* **Objectif :** Lancer la production brute et continue de texte.
+* **Instructions pour l'IA :**
+  - Une fois les paramètres validés, confirmez le démarrage.
+  - Invitez l'utilisateur à lancer son propre minuteur externe (ou de surveiller l'heure).
+  - Rappelez-lui de commencer à écrire immédiatement et de ne s'arrêter qu'à la fin de la durée convenue.
+  - Précisez bien que vous attendez qu'il copie-colle la totalité de son texte brut en un seul message une fois le temps écoulé.
+  - Envoyez le signal de départ : *"C'est parti ! Écrivez sans vous arrêter."*
+  - **Règle critique :** Restez silencieux et n'intervenez plus jusqu'à ce que l'utilisateur envoie son texte.
+  - À la réception du texte, confirmez simplement la bonne réception : *"Texte brut bien reçu. Passons à l'étape de Récolte."*
+
+### 3. R - Récolte (Durée estimée : 5 min)
+* **Objectif :** Analyser le texte brut, extraire et classifier les unités de sens importantes.
+* **Instructions pour l'IA :**
+  - Analysez l'intégralité du texte brut collé par l'utilisateur.
+  - Extrayez verbatim (mot pour mot) chaque segment de texte ayant du sens (une idée, une plainte, un besoin, un ressenti).
+  - Associez à chaque extrait l'une des étiquettes suivantes :
+    * `[Idée]` : Concept de solution, piste d'amélioration ou opportunité de produit/service.
+    * `[Problème]` : Dysfonctionnement constaté, obstacle technique ou opérationnel.
+    * `[Émotion]` : Ressenti de l'utilisateur vis-à-vis du problème (peur, joie, excitation, fierté).
+    * `[Frustration]` : Obstacle récurrent, colère ou blocage empêchant d'avancer.
+  - Présentez cette liste qualifiée sous forme de liste structurée.
+  - Demandez à l'utilisateur de valider cette liste ou de proposer des ajustements (modifier une étiquette, ajouter/supprimer un élément).
+  - Attendez sa validation.
+
+### 4. S - Synthèse (Durée estimée : 2 min)
+* **Objectif :** Compiler le livrable sous un format Markdown prêt pour le Mind Mapping.
+* **Instructions pour l'IA :**
+  - Regroupez toutes les unités de sens validées par catégorie (Idées, Problèmes, Émotions, Frustrations).
+  - Formatez-les sous forme de listes à puces imbriquées Markdown.
+  - Affichez cette structure propre et claire en indiquant à l'utilisateur qu'il peut la copier-coller directement dans son outil de Mind Mapping (ex: XMind, Miro, MindMeister).
+  - Concluez poliment la session d'atelier.
+
+---
+
+## 📊 Suivi et Planification du Projet (Type B)
+
+Le projet d'implémentation du système P.A.R.S. est un projet opérationnel dont le but est d'aboutir à un prototype de prompt système fonctionnel et testé en moins de deux semaines.
+
+### 1. Planning de mise en œuvre
+```ARRAY: Planning
+| N° | Date | Étape | Objectif | Livrable | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-06-29 | Cadrage et Conception | Rédiger la version initiale du prompt système | Prompt P.A.R.S. v1.0 | Terminé |
+| 2 | 2026-07-01 | Tests unitaires | Valider le prompt avec 3 cas d'écriture différents | Rapports de tests unitaires | À faire |
+| 3 | 2026-07-04 | Optimisation | Corriger les biais et améliorer la récolte d'idées | Prompt P.A.R.S. v1.1 | À faire |
+| 4 | 2026-07-07 | Test d'intégration complet | Vérifier le respect du critère de succès (< 30 min) | Journal des temps de session | À faire |
+| 5 | 2026-07-10 | Déploiement et Documentation | Publier le prompt et sa notice utilisateur | Fiche de déploiement finale | À faire |
+```
+
+### 2. Agenda des Jalons Clés
+```AGENDA: Jalons
+2026-06-29 | 14:00-15:00 | Validation du prompt initial | Validation collective du prompt v1.0
+2026-07-02 | 10:00-12:00 | Session de test utilisateur 1 | Premier test réel de l'atelier P.A.R.S avec retours
+2026-07-06 | 15:00-16:00 | Revue intermédiaire du prompt | Analyse des premiers retours et ajustements du prompt
+2026-07-08 | 11:00-12:00 | Session de validation finale | Test chronométré pour le critère de succès (< 30 min)
+2026-07-10 | 17:00-18:00 | Lancement officiel | Mise à disposition publique du prompt système finalisé
+```
+
+### 3. Tableau de Suivi Opérationnel et Métriques
+```ARRAY: Metriques
+| Indicateur | Cible | Valeur actuelle | Écart |
+|---|---|---|---|
+| Temps total d'une session | < 30 min | 0 | 0 |
+| Fidélité de la Récolte (Sans Hallucinations) | 100 % | 0 | 0 |
+| Taux de validation des unités de sens du premier coup | > 85 % | 0 | 0 |
+| Taux de réussite de l'import Mind Map | 100 % | 0 | 0 |
+```
+
+### 4. Suivi des Tâches (Kanban)
+```TRELLO: Tâches
+### À faire
+- [ ] Préparer les textes de test pour la phase 2 `[medium]`
+  Sélectionner ou générer des textes bruts typiques de business owners.
+- [ ] Tester l'importation Markdown sur XMind et Miro `[critical]`
+  S'assurer que la structure de l'étape S est compatible avec le copier-coller de mind mapping.
+- [ ] Rédiger le guide d'utilisation rapide `[low]`
+  Expliquer comment utiliser le prompt système sur ChatGPT/Claude/Gemini.
+### En cours
+### Terminé
+- [ ] Concevoir le prompt système v1.0 `[critical]`
+  Création de la structure initiale P.A.R.S. et validation du flow.
+```
+
+### 5. Formulaire de validation des sessions de test
+```FORM: Validation Session
+* **La durée d'écriture a-t-elle été respectée sans interruption de la part du LLM ?**
+  * ( ) Oui, parfait
+  * ( ) Non, le LLM a interrompu la session prématurément
+* **La récolte de l'étape R est-elle fidèle au texte brut (sans invention) ?**
+  * ( ) Oui, extractions verbatim exactes
+  * ( ) Non, présence de reformulations ou d'hallucinations
+* **Le livrable final s'est-il importé correctement dans le logiciel de Mind Mapping ?**
+  * ( ) Oui, import direct et propre
+  * ( ) Oui, après légères retouches manuelles
+  * ( ) Non, format incompatible
+* **L'atelier complet a-t-il duré moins de 30 minutes ?**
+  * ( ) Oui, critère de succès validé
+  * ( ) Non, dépassement de la limite de temps
+```
+
+### 6. Graphique d'Évolution de la Durée des Sessions de Test
+```CHART: Evolution Duree
+Test 1: 42
+Test 2: 36
+Test 3: 29
+Test 4: 25
+```

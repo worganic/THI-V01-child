@@ -4,7 +4,7 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict } from '@worganic/portail-core/data-access';
 import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
@@ -224,9 +224,41 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     return false;
   }
 
-  /** Section active verrouillée par un autre utilisateur (cadenas rouge) → lecture seule totale. */
+  /** Présence douce : un autre utilisateur édite aussi la section active — n'empêche plus
+   *  la frappe (les 2 utilisateurs peuvent éditer en même temps), sert uniquement à afficher
+   *  une alerte non bloquante ; la fusion éventuelle se fait via le bouton Synchro. */
   get isActiveSectionLockedByOther(): boolean {
     return this.isFolderLockedByOther(this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null));
+  }
+
+  /** Nom(s) des autres utilisateurs dont la présence est détectée sur la section active (pour l'alerte). */
+  get activeSectionOtherEditorName(): string {
+    const folderId = this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null);
+    if (!folderId) return 'Un autre utilisateur';
+    const others = this.collab.getOtherEditors(folderId);
+    if (!others.length) return 'Un autre utilisateur';
+    return others.map(l => l.lockedByName).join(', ');
+  }
+
+  /** Tooltip détaillé (nom + heure de début) de chaque autre éditeur présent sur la section active. */
+  get activeSectionOtherEditorsTooltip(): string {
+    const folderId = this.resolveActiveFolderId(this.focusedHandle?.id ?? this.activeNodeId ?? null);
+    if (!folderId) return '';
+    return this.collab.getOtherEditors(folderId)
+      .map(l => `${l.lockedByName} depuis ${new Date(l.lockedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`)
+      .join(', ');
+  }
+
+  /** Noms des autres éditeurs présents sur un nœud donné (mode Édition/visu, par section). */
+  otherEditorsNames(nodeId: string): string {
+    return this.collab.getOtherEditors(nodeId).map(l => l.lockedByName).join(', ');
+  }
+
+  /** Tooltip détaillé (nom + heure de début) des autres éditeurs présents sur un nœud donné. */
+  otherEditorsTooltip(nodeId: string): string {
+    return this.collab.getOtherEditors(nodeId)
+      .map(l => `${l.lockedByName} depuis ${new Date(l.lockedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`)
+      .join(', ');
   }
 
   /** True si la section d'une instance Trello est verrouillée par un autre utilisateur. */
@@ -249,6 +281,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
   @Output() editSource = new EventEmitter<string>();
+  // Conflit détecté lors d'une publication (baseVersionId périmé) — le parent seul connaît
+  // conflictState/<app-projet-diff>, on lui délègue l'affichage de l'écran de fusion.
+  @Output() saveConflict = new EventEmitter<{
+    fileId: string; folderId?: string; baseVersionId: string | null;
+    mineContent: string; serverContent: string; serverAuthorName: string; serverCreatedAt: string;
+  }>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
@@ -481,6 +519,22 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Popup de création de titre (création atomique d'un dossier + heading + SID)
   titleDialog: { level: number; prefilled: string; parentFolderId: string | null; parentLabel: string; insertLine: number } | null = null;
   titleDialogBusy = false;
+  // Popup de prévisualisation du collage markdown (recalage des niveaux avant insertion)
+  pastePreview: {
+    mode: 'code' | 'visu';
+    strategy: 'relevel' | 'wrap'; // choix utilisateur : recaler les niveaux, ou créer une section intermédiaire
+    proposed: string;          // texte recalé (éditable avant collage) — stratégie 'relevel'
+    wrapTitle: string;         // titre de la section intermédiaire proposée (éditable) — stratégie 'wrap'
+    wrapProposed: string;      // texte final si 'wrap' est choisi (recalculé si wrapTitle change)
+    parentLevel: number;       // niveau de la section cible (0 = racine)
+    desiredTop: number;        // niveau du plus haut titre après recalage
+    shift: number;             // décalage appliqué (peut être négatif)
+    code?: { start: number; end: number };
+    visu?: { sectionId: string };
+  } | null = null;
+  // Texte brut collé (avant recalage/wrap) — conservé pour recalculer wrapProposed en live
+  // quand l'utilisateur édite le titre de la section intermédiaire proposée.
+  private lastPasteRawText = '';
   visuInsertMenu: { sectionId: string; top: number; left: number } | null = null;
   activeVisuSectionId: string | null = null;
   editingVisuSectionId = signal<string | null>(null);
@@ -1372,7 +1426,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
               mc = mc.replace(/```PROMPT: ([^\n]+)\n[\s\S]*?\n```/g, (m: string, nm: string) =>
                 promptFileSlugs.includes(this.slugify(this.splitFenceHeader(nm.trim()).name)) ? '' : m);
             }
-            textContent += mc.trimEnd() + '\n';
+            // Ligne vide intentionnelle en fin de fichier (préservée par parseContent, voir
+            // hasTrailingBlankLine) : sans ce garde, le .trimEnd() ci-dessous l'efface à chaque
+            // reconstruction du document (changement de mode, rechargement), avant même que
+            // parseContent ne la revoie — la boucle silencieuse effaçait la ligne vide malgré
+            // le fix côté parseContent.
+            const mcHasTrailingBlankLine = /\n[ \t]*\n[ \t]*$/.test(mc);
+            textContent += mc.trimEnd() + (mcHasTrailingBlankLine ? '\n\n' : '\n');
           }
         } else {
           // Fichier Trello (trello-NOM / trello / legacy "TL: NOM") → injecter le bloc ```TRELLO: NOM
@@ -3413,7 +3473,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   /** Retire les marqueurs de mise en forme (Markdown inline + balises span/u/b/i) de la sélection. */
   codeClearFormat() {
-    if (this.isActiveSectionLockedByOther) return;
     const ta = this.textareaRef?.nativeElement;
     if (!ta) return;
     this.pushCodeUndoSnapshot();
@@ -3592,14 +3651,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     let hasMyLock = this.collab.isLockedByMe(handle.id);
     if (!hasMyLock && me) {
       // Vérifier si un verrou granulaire (fichier/bloc) appartenant à moi existe pour cette section
-      for (const [nodeId, lock] of allLocks) {
-        if (lock.lockedById === me.id && nodeId !== handle.id) {
-          // Vérifier si ce nodeId est un enfant de la section (fichier ou bloc dans ce dossier)
-          const parent = this.findParentFolder(nodeId, this.files);
-          if (parent?.id === handle.id) {
-            hasMyLock = true;
-            this.activeEntityLocks.add(nodeId);
-          }
+      for (const [nodeId, locksArr] of allLocks) {
+        if (nodeId === handle.id || !locksArr.some(l => l.lockedById === me.id)) continue;
+        // Vérifier si ce nodeId est un enfant de la section (fichier ou bloc dans ce dossier)
+        const parent = this.findParentFolder(nodeId, this.files);
+        if (parent?.id === handle.id) {
+          hasMyLock = true;
+          this.activeEntityLocks.add(nodeId);
         }
       }
     }
@@ -3720,11 +3778,12 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return this.collab.localPendingSections().has(hId) && !this.structEntityLocks.has(hId);
   }
 
-  // Barre Annuler/Partager mode Code — réservée aux projets avec sauvegarde externe.
+  // Barre Annuler/Partager mode Code — tout projet, avec ou sans sauvegarde externe, doit
+  // pouvoir valider ses brouillons vers la BDD partagée.
   // En mode focus : selon hasPendingCode (curseur dans l'entité verrouillée).
   // En vue document (pas de focus) : dès qu'une entité est verrouillée par l'édition courante.
   get showCodePublishBar(): boolean {
-    if (!this.backupType || this.mode !== 'edit') return false;
+    if (this.mode !== 'edit') return false;
     if (this.focusedHandle) return this.hasPendingCode;
     return this.activeEntityLocks.size > 0;
   }
@@ -3732,7 +3791,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   // Barre Annuler/Partager persistante en modes Structure et Preview quand des modifications
   // Code non publiées existent (section verrouillée en attente d'un Partager ou Annuler).
   get showCrossModePendingBar(): boolean {
-    if (!this.backupType || this.mode === 'edit') return false;
+    if (this.mode === 'edit') return false;
     const pending = this.collab.localPendingSections();
     if (pending.size === 0) return false;
     for (const id of pending) {
@@ -4054,50 +4113,46 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.cursorEntityId.set(entity?.id ?? this.focusedHandle?.id ?? null);
     if (entity) {
       this.modifiedEntities.set(entity.id, entity.folderId);
-      // État de partage/verrou : uniquement pour les projets avec sauvegarde externe.
-      // Les projets locaux s'auto-sauvegardent sans étape de publication → pas de pending/lock.
-      if (this.backupType) {
-        // Marquer uniquement l'entité précise comme pending + verrouiller
-        // → le dossier parent n'apparaît PAS comme verrouillé dans la zone 3
-        if (!this.activeEntityLocks.has(entity.id)) {
-          this.activeEntityLocks.add(entity.id);
-          this.collab.addLocalPending(entity.id);
-          if (this.projectName) this.collab.lockNode(this.projectName, entity.id).catch(() => {});
-        }
-        // Affichage live grisé dans le panneau historique tant que le save n'est pas fait
-        const isBlock = entity.id.includes('##');
-        const node = isBlock ? null : this.findNode(entity.id, this.files);
-        const label = isBlock
-          ? `Modification — ${this.blockKindLabel(entity.id)}`
-          : `Modification de texte — «${node?.name || entity.id}»`;
-        this.collab.upsertPending({
-          entityId: entity.id,
-          label,
-          username: this.authSvc.currentUser()?.username || 'Vous',
-          timestamp: new Date().toISOString(),
-          state: 'editing'
-        });
+      // État de partage/présence : tout projet (avec ou sans sauvegarde externe) doit pouvoir
+      // être partagé et validé — le brouillon local + la présence s'appliquent uniformément.
+      // Marquer uniquement l'entité précise comme pending + verrouiller
+      // → le dossier parent n'apparaît PAS comme verrouillé dans la zone 3
+      if (!this.activeEntityLocks.has(entity.id)) {
+        this.activeEntityLocks.add(entity.id);
+        this.collab.addLocalPending(entity.id);
+        if (this.projectName) this.collab.lockNode(this.projectName, entity.id).catch(() => {});
       }
+      // Affichage live grisé dans le panneau historique tant que le save n'est pas fait
+      const isBlock = entity.id.includes('##');
+      const node = isBlock ? null : this.findNode(entity.id, this.files);
+      const label = isBlock
+        ? `Modification — ${this.blockKindLabel(entity.id)}`
+        : `Modification de texte — «${node?.name || entity.id}»`;
+      this.collab.upsertPending({
+        entityId: entity.id,
+        label,
+        username: this.authSvc.currentUser()?.username || 'Vous',
+        timestamp: new Date().toISOString(),
+        state: 'editing'
+      });
     } else if (this.focusedHandle) {
       // Fichier direct (pas de ## Section header) : getCursorEntity retourne null
       // → fallback sur focusedHandle.id qui est le fileId lui-même
       const hId = this.focusedHandle.id;
       this.modifiedEntities.set(hId, hId);
-      if (this.backupType) {
-        if (!this.activeEntityLocks.has(hId)) {
-          this.activeEntityLocks.add(hId);
-          this.collab.addLocalPending(hId);
-          if (this.projectName) this.collab.lockNode(this.projectName, hId).catch(() => {});
-        }
-        const node = this.findNode(hId, this.files);
-        this.collab.upsertPending({
-          entityId: hId,
-          label: `Modification de texte — «${node?.name || hId}»`,
-          username: this.authSvc.currentUser()?.username || 'Vous',
-          timestamp: new Date().toISOString(),
-          state: 'editing'
-        });
+      if (!this.activeEntityLocks.has(hId)) {
+        this.activeEntityLocks.add(hId);
+        this.collab.addLocalPending(hId);
+        if (this.projectName) this.collab.lockNode(this.projectName, hId).catch(() => {});
       }
+      const node = this.findNode(hId, this.files);
+      this.collab.upsertPending({
+        entityId: hId,
+        label: `Modification de texte — «${node?.name || hId}»`,
+        username: this.authSvc.currentUser()?.username || 'Vous',
+        timestamp: new Date().toISOString(),
+        state: 'editing'
+      });
     }
   }
 
@@ -4522,6 +4577,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.saveTimeout = setTimeout(() => this.saveAll(), 2000);
   }
 
+  // Persiste toujours en brouillon local (jamais de version BDD) — voir
+  // ProjetEditorComponent.onSectionsChange/processSectionsChange. Seul le bouton
+  // explicite "Enregistrer et partager" crée une version BDD (mode 'commit').
   private saveAll() {
     if (this.unifiedContent === this.lastSavedContent) {
       if (this.localDirty) {
@@ -5064,8 +5122,18 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     for (let i = 0; i < matches.length; i++) {
       const current = matches[i];
       const contentEnd = i + 1 < matches.length ? matches[i + 1].index : text.length;
-      let rawContent = text.substring(current.contentStart, contentEnd).trimEnd();
-      
+      const contentSubstr = text.substring(current.contentStart, contentEnd);
+      let rawContent = contentSubstr.trimEnd();
+      // Ligne(s) vide(s) intentionnelle(s) juste après le titre ou juste avant le titre suivant :
+      // contentStart pointe juste après le \n de fin de ligne du heading, donc un \n de tête ici
+      // représente une VRAIE ligne vide voulue par l'utilisateur (pas un artefact de parsing) —
+      // idem en fin de section avant le prochain titre. À préserver telle quelle dans le contenu
+      // enregistré, sinon elle disparaît silencieusement (perdue à chaque save, visible seulement
+      // au changement de mode qui reconstruit l'affichage depuis le contenu sauvegardé). Cappé à
+      // une seule ligne vide de chaque côté (cohérent avec la normalisation \n{3,} utilisée ailleurs).
+      const hasLeadingBlankLine = rawContent.startsWith('\n');
+      const hasTrailingBlankLine = /\n[ \t]*\n[ \t]*$/.test(contentSubstr);
+
       const parentPath: string[] = [];
       let targetLevel = current.level - 1;
       for (let k = i - 1; k >= 0 && targetLevel > 0; k--) {
@@ -5176,6 +5244,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       // Les marqueurs {{IMG:id}} autonomes (hors blocs doc) sont conservés inline dans mainContent
       // pour préserver leur position exacte dans le texte (ex: entre deux paragraphes)
       let mainContent = rawContent.replace(blockRegex, '').replace(trelloFenceRe, '').replace(arrayFenceRe, '').replace(promptFenceRe, '').trim();
+      // Réinjecte la/les ligne(s) vide(s) voulue(s) en tête et/ou en fin (effacées par le .trim() ci-dessus).
+      if (hasLeadingBlankLine && mainContent) mainContent = '\n' + mainContent;
+      if (hasTrailingBlankLine && mainContent) mainContent = mainContent + '\n';
 
       // Déterminer la position du mainFile (contenu.md)
       if (mainFile) {
@@ -6655,7 +6726,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   insertAt(before: string, after = '') {
-    if (this.isActiveSectionLockedByOther) return;
     const ta = this.textareaRef?.nativeElement;
     if (ta) this.pushCodeUndoSnapshot();
 
@@ -6742,28 +6812,36 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   // ── Collage de markdown pré-formaté (re-leveling des titres) ───────────────
+  /** Détecte une ligne de titre markdown, tolérante à l'absence d'espace après les `#`
+   *  (ex: `#1. Titre` aussi bien que `## Titre`). Retourne { level, text } ou null.
+   *  Exige du contenu non vide après les `#` (un `###` seul n'est pas un titre). */
+  private parseHeadingLine(line: string): { level: number; text: string } | null {
+    const m = /^(#{1,6})(?!#)[ \t]*(\S.*?)[ \t]*$/.exec(line);
+    return m ? { level: m[1].length, text: m[2] } : null;
+  }
+
   /** Recale tous les titres markdown pour que le plus haut devienne `desiredTopLevel`.
-   *  Gère les deux sens (descendre/monter), respecte les blocs ``` et plafonne à 6. */
+   *  Gère les deux sens (descendre/monter), respecte les blocs ```, plafonne à 6 et
+   *  NORMALISE l'espace après les `#` (sinon `parseContent` ne crée pas le sous-menu). */
   private relevelMarkdownHeadings(md: string, desiredTopLevel: number): string {
     const src = md.split('\n');
     let inFence = false, minLevel = 99;
     for (const l of src) {
       if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
       if (inFence) continue;
-      const m = /^(#{1,6}) /.exec(l);
-      if (m) minLevel = Math.min(minLevel, m[1].length);
+      const h = this.parseHeadingLine(l);
+      if (h) minLevel = Math.min(minLevel, h.level);
     }
     if (minLevel === 99) return md;                 // aucun titre
     const delta = desiredTopLevel - minLevel;
-    if (delta === 0) return md;
     inFence = false;
     return src.map(l => {
       if (/^```/.test(l.trim())) { inFence = !inFence; return l; }
       if (inFence) return l;
-      const m = /^(#{1,6})( .*)$/.exec(l);
-      if (!m) return l;
-      const nl = Math.min(Math.max(m[1].length + delta, 1), 6);
-      return '#'.repeat(nl) + m[2];
+      const h = this.parseHeadingLine(l);
+      if (!h) return l;
+      const nl = Math.min(Math.max(h.level + delta, 1), 6);
+      return '#'.repeat(nl) + ' ' + h.text;         // espace normalisé → titre valide
     }).join('\n');
   }
 
@@ -6782,21 +6860,77 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return level;
   }
 
-  /** Collage Mode Code : si le presse-papier contient des titres markdown, les recaler sous
-   *  le dossier où se trouve le curseur (le plus haut titre → niveau du dossier + 1) avant
-   *  insertion. Empêche un H1 collé de casser la hiérarchie et de perdre le texte. */
+  /** Alternative au recalage direct : englobe le texte collé sous un nouveau titre
+   *  intermédiaire (un niveau au-dessus du parent), ses propres titres étant recalés
+   *  un niveau plus bas que ce nouveau titre. S'il n'y a aucun titre dans le texte collé,
+   *  le nouveau titre est simplement suivi du texte brut (rien à recaler). */
+  private wrapMarkdownInIntermediateSection(md: string, parentLevel: number, title: string): string {
+    const wrapLevel = Math.min(parentLevel + 1, 6);
+    const heading = '#'.repeat(wrapLevel) + ' ' + (title.trim() || 'Nouvelle section');
+    if (this.minMarkdownHeadingLevel(md) === 0) {
+      return `${heading}\n\n${md}`;
+    }
+    const desiredTop = Math.min(wrapLevel + 1, 6);
+    const releveled = this.relevelMarkdownHeadings(md, desiredTop);
+    return `${heading}\n\n${releveled}`;
+  }
+
+  /** Recalcule pastePreview.wrapProposed après édition du titre de la section intermédiaire. */
+  updatePastePreviewWrapTitle(title: string) {
+    const p = this.pastePreview;
+    if (!p) return;
+    p.wrapTitle = title;
+    p.wrapProposed = this.wrapMarkdownInIntermediateSection(this.lastPasteRawText, p.parentLevel, title);
+  }
+
+  /** Niveau du plus haut titre markdown d'un texte (fence-aware). 0 si aucun titre. */
+  private minMarkdownHeadingLevel(md: string): number {
+    let inFence = false, min = 99;
+    for (const l of md.split('\n')) {
+      if (/^```/.test(l.trim())) { inFence = !inFence; continue; }
+      if (inFence) continue;
+      const h = this.parseHeadingLine(l);
+      if (h) min = Math.min(min, h.level);
+    }
+    return min === 99 ? 0 : min;
+  }
+
+  /** Collage Mode Code : si le presse-papier contient des titres markdown, recaler le plus haut
+   *  titre sous le dossier où se trouve le curseur (niveau du dossier + 1) puis OUVRIR le popup
+   *  de prévisualisation. L'insertion réelle se fait à la validation (confirmPastePreview). */
   onTextareaPaste(ev: ClipboardEvent) {
-    if (this.isActiveSectionLockedByOther) return;
-    const text = ev.clipboardData?.getData('text/plain');
-    if (!text || !/^#{1,6}\s/m.test(text)) return;   // pas de titres → collage natif
+    const raw = ev.clipboardData?.getData('text/plain');
+    // Normaliser les fins de ligne CRLF/CR → LF : sinon `.` (regex JS) ne matche pas le `\r`
+    // final de chaque ligne et parseHeadingLine ne détecte plus aucun titre (copie Windows/Word).
+    const text = raw?.replace(/\r\n?/g, '\n');
+    if (!text || !/^#{1,6}(?!#)[ \t]*\S/m.test(text)) return;   // pas de titres → collage natif
     const ta = this.textareaRef?.nativeElement;
     if (!ta) return;
+    ev.preventDefault();
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
     const parentLevel = this.sectionLevelBeforeOffset(start);
     const desiredTop = Math.min(parentLevel + 1, 6);
     const releveled = this.relevelMarkdownHeadings(text, desiredTop);
-    ev.preventDefault();
+    this.lastPasteRawText = text;
+    const wrapTitle = 'Nouvelle section';
+    this.pastePreview = {
+      mode: 'code',
+      strategy: 'relevel',
+      proposed: releveled,
+      wrapTitle,
+      wrapProposed: this.wrapMarkdownInIntermediateSection(text, parentLevel, wrapTitle),
+      parentLevel,
+      desiredTop,
+      shift: desiredTop - this.minMarkdownHeadingLevel(text),
+      code: { start, end }
+    };
+  }
+
+  /** Insertion effective en Mode Code (après validation du popup). */
+  private applyCodePaste(start: number, end: number, releveled: string) {
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
     this.pushCodeUndoSnapshot();
     const newVal = ta.value.substring(0, start) + releveled + ta.value.substring(end);
     this.unifiedContent = newVal;
@@ -6811,17 +6945,33 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     });
   }
 
-  /** Collage Mode Édition (visu) : si le presse-papier contient des titres markdown, les recaler
-   *  sous la section cible (niveau + 1) et les insérer dans unifiedContent → les sous-menus se
-   *  créent automatiquement. Sans titres, on laisse le collage natif (texte riche). */
+  /** Collage Mode Édition (visu) : recaler les titres sous la section cible (niveau + 1) puis
+   *  OUVRIR le popup de prévisualisation. L'insertion réelle se fait à la validation. */
   onVisuSectionPaste(sectionId: string, level: number, ev: ClipboardEvent) {
-    if (this.collab.isLockedByOther(sectionId)) return;
-    const text = ev.clipboardData?.getData('text/plain');
-    if (!text || !/^#{1,6}\s/m.test(text)) return;   // pas de titres → collage natif
+    const raw = ev.clipboardData?.getData('text/plain');
+    // Normaliser les fins de ligne CRLF/CR → LF (voir onTextareaPaste).
+    const text = raw?.replace(/\r\n?/g, '\n');
+    if (!text || !/^#{1,6}(?!#)[ \t]*\S/m.test(text)) return;   // pas de titres → collage natif
     ev.preventDefault();
     const desiredTop = Math.min(level + 1, 6);
     const releveled = this.relevelMarkdownHeadings(text, desiredTop);
+    this.lastPasteRawText = text;
+    const wrapTitle = 'Nouvelle section';
+    this.pastePreview = {
+      mode: 'visu',
+      strategy: 'relevel',
+      proposed: releveled,
+      wrapTitle,
+      wrapProposed: this.wrapMarkdownInIntermediateSection(text, level, wrapTitle),
+      parentLevel: level,
+      desiredTop,
+      shift: desiredTop - this.minMarkdownHeadingLevel(text),
+      visu: { sectionId }
+    };
+  }
 
+  /** Insertion effective en Mode Édition (après validation du popup). */
+  private applyVisuPaste(sectionId: string, releveled: string) {
     // Insérer à la fin du contenu DIRECT de la section (avant ses sous-sections enfants),
     // même logique que insertAt (branche pendingMoFolderId) → placement correct par parseContent.
     const range = this.sectionRanges.find(r => r.folderId === sectionId);
@@ -6840,6 +6990,25 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.forceVisuReinject = true;   // structure modifiée (nouvelles sous-sections) → re-render complet
     this.buildVisuSections();
     this.scheduleSave();
+  }
+
+  /** Valide le popup de collage : insère le texte recalé ou englobé (selon la stratégie
+   *  choisie, éventuellement édité) puis ferme. Aucune insertion tant que non validé ici. */
+  confirmPastePreview() {
+    const p = this.pastePreview;
+    if (!p) return;
+    const content = p.strategy === 'wrap' ? p.wrapProposed : p.proposed;
+    if (p.mode === 'code' && p.code) {
+      this.applyCodePaste(p.code.start, p.code.end, content);
+    } else if (p.mode === 'visu' && p.visu) {
+      this.applyVisuPaste(p.visu.sectionId, content);
+    }
+    this.pastePreview = null;
+  }
+
+  /** Annule le collage : rien n'est inséré. */
+  cancelPastePreview() {
+    this.pastePreview = null;
   }
 
   // ── Image upload ───────────────────────────────────────────
@@ -6925,8 +7094,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.localDirty = true;
       this.dirtyChange.emit(true);
       // Activer la barre "Modifications en cours" pour la section focusée (mode edit)
-      // — uniquement pour les projets avec sauvegarde externe.
-      if (this.backupType && this.focusedHandle && !this.collab.isLocalPending(this.focusedHandle.id)) {
+      // — tout projet, avec ou sans sauvegarde externe.
+      if (this.focusedHandle && !this.collab.isLocalPending(this.focusedHandle.id)) {
         if (!this.codeSectionSnapshots.has(this.focusedHandle.id)) {
           this.codeSectionSnapshots.set(this.focusedHandle.id, snapshotBeforeImageSave);
         }
@@ -7086,7 +7255,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     // n'est pas encore effective : l'utilisateur doit cliquer "Partager".
     this.localDirty = true;
     this.dirtyChange.emit(true);
-    if (this.backupType && this.focusedHandle && !this.collab.isLocalPending(this.focusedHandle.id)) {
+    if (this.focusedHandle && !this.collab.isLocalPending(this.focusedHandle.id)) {
       if (!this.codeSectionSnapshots.has(this.focusedHandle.id)) {
         this.codeSectionSnapshots.set(this.focusedHandle.id, snapshotBeforeDelete);
       }
@@ -7647,7 +7816,14 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const calloutRes = this.processCallouts(contentMd);
     contentMd = calloutRes.md;
 
+    // Lignes vides intentionnelles → paragraphe marqueur avant marked.parse(), sinon marked
+    // collapse tout écart (1 ligne vide ou 5) en un simple espacement de paragraphe standard,
+    // invisible et indistinguable de « aucune ligne vide ». Round-trip : <p><br></p> ci-dessous
+    // redevient exactement '\n' via htmlSectionToMarkdown (case 'p' vide).
+    contentMd = this.explicitizeBlankLinesForVisu(contentMd);
+
     let html = marked.parse(contentMd, { async: false }) as string;
+    html = html.replace(/<p>\s*\{\{VISU-BLANK\}\}\s*<\/p>/g, '<p><br></p>');
 
     // Les tables dans un contenteditable se corrompent — on les isole en non-éditable
     html = html.replace(/<table>([\s\S]*?)<\/table>/gi,
@@ -7666,6 +7842,24 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       html = html.replace(new RegExp(`<p>\\s*${mk.token}\\s*</p>`, 'g'), mk.html).replace(mk.token, mk.html);
     }
     return html;
+  }
+
+  /** Remplace chaque ligne vide (hors blocs ``` fence) par un paragraphe marqueur isolé, pour
+   *  que marked.parse() lui attribue son propre <p> — sinon N lignes vides consécutives sont
+   *  indistinguables d'une seule pour marked (simple séparateur de paragraphe, pas du contenu). */
+  private explicitizeBlankLinesForVisu(md: string): string {
+    const lines = md.split('\n');
+    let inFence = false;
+    const out: string[] = [];
+    for (const line of lines) {
+      if (/^```/.test(line.trim())) { inFence = !inFence; out.push(line); continue; }
+      if (!inFence && line.trim() === '') {
+        out.push('', '{{VISU-BLANK}}', '');
+        continue;
+      }
+      out.push(line);
+    }
+    return out.join('\n');
   }
 
   private renderArrayVisuHtml(grid: ArrayGrid): string {
@@ -7746,20 +7940,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   // ── Visu edit : événements section ─────────────────────────
   onVisuSectionFocus(sectionId: string) {
-    // Refuser le focus si la section est verrouillée par un autre user
-    if (this.collab.isLockedByOther(sectionId)) {
-      const idx = this.visuSections.findIndex(vs => vs.sectionId === sectionId);
-      const el = idx >= 0 ? this.visuSectionEls.get(idx)?.nativeElement : null;
-      el?.blur();
-      return;
-    }
+    // Présence douce : la section peut être éditée même si un autre utilisateur y est aussi
+    // (badge "Édité par X" affiché dans le template) — le focus n'est plus bloqué.
     this.activeVisuSectionId = sectionId;
     this.suppressScrollOnNextActiveChange = true;
     this.nodeActive.emit(sectionId);
-    // Projets locaux : pas d'étape de partage → édition libre, auto-sauvegarde au blur,
-    // sans verrou ni état "en cours d'édition".
-    if (!this.backupType) return;
-    // Acquérir le lock et noter qu'on édite cette section
+    // Acquérir le lock et noter qu'on édite cette section — tout projet, avec ou sans
+    // sauvegarde externe, doit pouvoir être validé et partagé.
     if (this.projectName && this.editingVisuSectionId() !== sectionId) {
       // Capturer le snapshot original uniquement si pas déjà capturé (évite l'écrasement au retour sur une section dirty)
       const vs = this.visuSections.find(v => v.sectionId === sectionId);
@@ -7807,11 +7994,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       try {
         await this.writeSectionStyled(snapshot.fileId, sectionId, newMd, true);
       } catch (e: any) {
-        console.warn('[Publish] erreur lors de la publication:', e);
-        const msg = e?.error?.pushFailed
-          ? 'Sauvegardé localement — synchronisation GitHub échouée'
-          : 'Erreur lors du partage des modifications';
-        this.showPublishErrorToast(msg);
+        if (!e?.conflictHandled) {
+          console.warn('[Publish] erreur lors de la publication:', e);
+          const msg = e?.error?.pushFailed
+            ? 'Sauvegardé localement — synchronisation GitHub échouée'
+            : 'Erreur lors du partage des modifications';
+          this.showPublishErrorToast(msg);
+        }
         this.isPublishing.set(false);
         return;
       }
@@ -8070,8 +8259,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
           undoable: false
         }).catch(() => {});
       } catch (e: any) {
-        console.warn('[PublishCode cross-mode] erreur:', e);
-        this.showPublishErrorToast(this.buildPublishErrorMsg(e));
+        if (!e?.conflictHandled) {
+          console.warn('[PublishCode cross-mode] erreur:', e);
+          this.showPublishErrorToast(this.buildPublishErrorMsg(e));
+        }
       } finally {
         this.isPublishing.set(false);
       }
@@ -8156,8 +8347,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         undoable: false
       }).catch(() => {});
     } catch (e: any) {
-      console.warn('[PublishCode] erreur:', e);
-      this.showPublishErrorToast(this.buildPublishErrorMsg(e));
+      if (!e?.conflictHandled) {
+        console.warn('[PublishCode] erreur:', e);
+        this.showPublishErrorToast(this.buildPublishErrorMsg(e));
+      }
     } finally {
       this.isPublishing.set(false);
     }
@@ -8244,8 +8437,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         undoable: false
       }).catch(() => {});
     } catch (e: any) {
-      console.warn('[PublishSection] erreur:', e);
-      this.showPublishErrorToast(this.buildPublishErrorMsg(e));
+      if (!e?.conflictHandled) {
+        console.warn('[PublishSection] erreur:', e);
+        this.showPublishErrorToast(this.buildPublishErrorMsg(e));
+      }
     } finally {
       this.isPublishing.set(false);
     }
@@ -8328,12 +8523,31 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.cursorEntityId.set(null);
   }
 
-  // Écrit une section en double fichier lors d'un « Partager » : clean → fichier principal,
+  // Écrit une section en double fichier lors d'un « Enregistrer et partager » : clean →
+  // fichier principal (version BDD immuable, avec détection de conflit via baseVersionId),
   // styled → jumeau *-css.md (créé si absent). Conserve l'invariant contenu.md propre.
   private async writeSectionStyled(fileId: string, folderId: string | null | undefined, styledRaw: string, publish: boolean): Promise<void> {
     const styled = normalizeStyledMarkdown(styledRaw);
     const clean = stripStyleMarkdown(styled, this.cleanImgResolver);
-    await this.svc.updateFile(this.projectName, fileId, clean, folderId ?? undefined, publish);
+    const baseVersionId = this.findNode(fileId, this.files)?.fileVersion ?? null;
+    try {
+      await this.svc.updateFile(this.projectName, fileId, clean, folderId ?? undefined, publish, undefined, baseVersionId ?? undefined, true);
+    } catch (err: any) {
+      if (err?.status === 409 && err?.error?.error === 'conflict') {
+        const c = err.error as SaveConflict;
+        this.saveConflict.emit({
+          fileId, folderId: folderId ?? undefined,
+          baseVersionId: c.base?.versionId ?? null,
+          mineContent: clean,
+          serverContent: c.server.content,
+          serverAuthorName: c.server.authorName,
+          serverCreatedAt: c.server.createdAt
+        });
+        throw Object.assign(new Error('Conflit de sauvegarde — écran de fusion ouvert'), { conflictHandled: true });
+      }
+      throw err;
+    }
+    this.svc.deleteDraft(this.projectName, fileId).catch(() => {});
     const folder = folderId ? this.findNode(folderId, this.files) : null;
     const children = folder?.children || [];
     const mainNode = children.find(c => c.id === fileId);
@@ -8341,6 +8555,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const twin = children.find(c => c.type === 'file' && c.name === twinName);
     if (twin) {
       await this.svc.updateFile(this.projectName, twin.id, styled, folderId ?? undefined, publish);
+      this.svc.deleteDraft(this.projectName, twin.id).catch(() => {});
     } else if (folderId) {
       const base = twinName.replace(/\.md$/i, '');
       await this.svc.createFile(this.projectName, { name: base, parentId: folderId, content: styled }).catch(() => {});
@@ -8369,20 +8584,18 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   onVisuSectionInput(sectionId: string) {
     this.dirtyVisuSectionIds.add(sectionId);
-    // État de partage/pending : uniquement pour les projets avec sauvegarde externe.
-    if (this.backupType) {
-      this.collab.addLocalPending(sectionId);
-      // Afficher une entrée grisée dans le panneau historique dès la première frappe
-      if (!this.collab.pending().some(e => e.entityId === sectionId)) {
-        const node = this.findNode(sectionId, this.files);
-        this.collab.upsertPending({
-          entityId: sectionId,
-          label: `Modification visu — «${node?.name || sectionId}»`,
-          username: this.authSvc.currentUser()?.username || 'Vous',
-          timestamp: new Date().toISOString(),
-          state: 'editing'
-        });
-      }
+    // État de partage/pending : tout projet, avec ou sans sauvegarde externe.
+    this.collab.addLocalPending(sectionId);
+    // Afficher une entrée grisée dans le panneau historique dès la première frappe
+    if (!this.collab.pending().some(e => e.entityId === sectionId)) {
+      const node = this.findNode(sectionId, this.files);
+      this.collab.upsertPending({
+        entityId: sectionId,
+        label: `Modification visu — «${node?.name || sectionId}»`,
+        username: this.authSvc.currentUser()?.username || 'Vous',
+        timestamp: new Date().toISOString(),
+        state: 'editing'
+      });
     }
     if (!this.localDirty) {
       this.localDirty = true;
@@ -8531,7 +8744,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.unifiedContent = lines.join('\n');
     const ta = this.textareaRef?.nativeElement;
     if (ta) ta.value = this.unifiedContent;
-    if (this.backupType) this.onVisuSectionInput(sectionId);
+    this.onVisuSectionInput(sectionId);
     this.recomputeAll();
     this.scheduleSave();
     // Forcer le re-render (le bloc a été inséré dans le markdown, pas dans le DOM)
@@ -8882,7 +9095,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   /** Ouvre le popup depuis la barre de style du mode Édition. */
   openTitleDialogFromVisu(level: number) {
     this.visuDropdown = null;
-    if (this.isActiveSectionLockedByOther) return;
     const sel = window.getSelection();
     const prefilled = (sel?.toString() || '').trim().replace(/\s+/g, ' ').slice(0, 120);
     // Point de coupe au curseur : la nouvelle section démarre à la ligne du curseur
@@ -9130,7 +9342,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const content = node.closest('.visu-sec-content') as HTMLElement | null;
     const sectionId = content?.getAttribute('data-section-id');
     if (!sectionId) return;
-    if (this.backupType) this.onVisuSectionInput(sectionId);
+    this.onVisuSectionInput(sectionId);
     this.commitVisuSection(sectionId);
     this.saveAll();
   }
@@ -9148,7 +9360,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const activeId = this.getActiveVisuSectionId();
     if (activeId) {
       this.dirtyVisuSectionIds.add(activeId);
-      if (this.backupType) this.onVisuSectionInput(activeId);
+      this.onVisuSectionInput(activeId);
     }
   }
 
@@ -9482,15 +9694,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.dirtyVisuSectionIds.add(sectionId);
       this.localDirty = true;
       this.dirtyChange.emit(true);
-      if (this.backupType) {
-        if (!this.visuSectionLockSnapshot.has(sectionId)) {
-          const vs = this.visuSections.find(v => v.sectionId === sectionId);
-          if (vs) this.visuSectionLockSnapshot.set(sectionId, vs.markdownBefore);
-        }
-        if (!this.editingVisuSectionId()) this.editingVisuSectionId.set(sectionId);
-        this.collab.addLocalPending(sectionId);
-        if (this.projectName) this.collab.lockNode(this.projectName, sectionId).catch(() => {});
+      if (!this.visuSectionLockSnapshot.has(sectionId)) {
+        const vs = this.visuSections.find(v => v.sectionId === sectionId);
+        if (vs) this.visuSectionLockSnapshot.set(sectionId, vs.markdownBefore);
       }
+      if (!this.editingVisuSectionId()) this.editingVisuSectionId.set(sectionId);
+      this.collab.addLocalPending(sectionId);
+      if (this.projectName) this.collab.lockNode(this.projectName, sectionId).catch(() => {});
     } catch (e: any) {
       this.imageUploadError = e?.error?.error || 'Erreur lors de l\'upload.';
     }
@@ -9521,12 +9731,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       if (this.pendingLocalImages.some(n => n.id === img.id)) continue;
       // Déjà programmée / en cours de suppression → ne pas retraiter
       if (this.recentlyDeletedImageIds.has(img.id) || this.pendingVisuDeletions.has(img.id)) continue;
-      // Cohérence avec deleteImageUnified : sur un projet backup, la suppression physique
-      // est différée au Partager (le contenu publié référence encore l'image) ; sinon immédiate.
+      // Cohérence avec deleteImageUnified : la suppression physique est différée jusqu'à
+      // "Enregistrer et partager" (le contenu partagé référence encore l'image jusque-là),
+      // pour tout projet — aucune suppression ne doit échapper à la validation explicite.
       this.recentlyDeletedImageIds.add(img.id);
       const sectionId = this.findParentFolder(img.id, this.files)?.id ?? null;
       const node = this.findNode(img.id, this.files);
-      if (this.backupType && sectionId && node) {
+      if (sectionId && node) {
         this.pendingVisuDeletions.set(img.id, { node, sectionId });
       } else {
         this.svc.deleteFile(this.projectName, img.id).then(() => this.refresh.emit()).catch(() => {});
@@ -9601,15 +9812,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         this.dirtyVisuSectionIds.add(sectionId);
         this.localDirty = true;
         this.dirtyChange.emit(true);
-        if (this.backupType) {
-          if (!this.visuSectionLockSnapshot.has(sectionId)) {
-            const vs = this.visuSections.find(v => v.sectionId === sectionId);
-            if (vs) this.visuSectionLockSnapshot.set(sectionId, vs.markdownBefore);
-          }
-          if (!this.editingVisuSectionId()) this.editingVisuSectionId.set(sectionId);
-          this.collab.addLocalPending(sectionId);
-          if (this.projectName) this.collab.lockNode(this.projectName, sectionId).catch(() => {});
+        if (!this.visuSectionLockSnapshot.has(sectionId)) {
+          const vs = this.visuSections.find(v => v.sectionId === sectionId);
+          if (vs) this.visuSectionLockSnapshot.set(sectionId, vs.markdownBefore);
         }
+        if (!this.editingVisuSectionId()) this.editingVisuSectionId.set(sectionId);
+        this.collab.addLocalPending(sectionId);
+        if (this.projectName) this.collab.lockNode(this.projectName, sectionId).catch(() => {});
       }
       setTimeout(() => this.initVisuSectionHtml(), 80);
     }
@@ -9623,10 +9832,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const refRe = new RegExp('\\{\\{IMG:' + imgId + '\\b', 'i');
     const stillUsed = refRe.test(this.unifiedContent) || (!!this.fullContentBackup && refRe.test(this.fullContentBackup));
     if (stillUsed || !this.projectName) return;
-    // Projet backup : la modif n'est qu'« en attente ». Différer la suppression
-    // physique au Partager (annulable via Annuler) pour ne pas orpheliner le
-    // marqueur encore publié. Sinon, suppression immédiate.
-    if (this.backupType && sectionId && imgNode) {
+    // La modif n'est qu'« en attente ». Différer la suppression physique au clic sur
+    // "Enregistrer et partager" (annulable via Annuler) pour ne pas orpheliner le
+    // marqueur encore partagé — pour tout projet.
+    if (sectionId && imgNode) {
       this.pendingVisuDeletions.set(imgId, { node: imgNode, sectionId });
     } else {
       this.svc.deleteFile(this.projectName, imgId).then(() => this.refresh.emit()).catch(() => {});
@@ -10172,11 +10381,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       }
     }
 
-    // État de partage/verrou : uniquement pour les projets avec sauvegarde externe.
-    if (!this.backupType) return;
+    // État de partage/présence : tout projet, avec ou sans sauvegarde externe.
     if (this.structEntityLocks.has(entityId)) return;
-    // Vérifier que l'entité n'est pas verrouillée par un autre user
-    if (this.collab.isLockedByOther(entityId)) return;
+    // Présence douce : la présence d'un autre utilisateur n'empêche plus d'éditer.
     this.structEntityLocks.add(entityId);
     this.collab.addLocalPending(entityId);
     if (this.projectName) this.collab.lockNode(this.projectName, entityId).catch(() => {});
@@ -10209,10 +10416,12 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.structFocusedEntityId.set(null);
       this.showPublishToast();
     } catch (e: any) {
-      const msg = e?.error?.pushFailed
-        ? 'Sauvegardé localement — synchronisation GitHub échouée'
-        : 'Erreur lors du partage des modifications';
-      this.showPublishErrorToast(msg);
+      if (!e?.conflictHandled) {
+        const msg = e?.error?.pushFailed
+          ? 'Sauvegardé localement — synchronisation GitHub échouée'
+          : 'Erreur lors du partage des modifications';
+        this.showPublishErrorToast(msg);
+      }
     } finally {
       this.isPublishing.set(false);
     }

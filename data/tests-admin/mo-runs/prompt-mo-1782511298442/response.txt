@@ -1,0 +1,35 @@
+* **Date de démarrage et horizon temporel du projet (achat et ouverture) :**
+  * ( ) Court terme (lancement d'ici 6 mois)
+  * ( ) Moyen terme (lancement d'ici 1 à 2 ans)
+  * ( ) Long terme (lancement d'ici plus de 2 ans)
+  * ( ) Autre : ______
+
+* **Enveloppe budgétaire globale envisagée (achat + travaux + fonds de roulement) :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Critères de succès ou de rentabilité mesurables :**
+  * [ ] Taux d'occupation annuel (ex: > 50%)
+  * [ ] Rentabilité financière rapide (moins de 3 ans)
+  * [ ] Complément de revenu / Projet de vie (rentabilité secondaire)
+  * [ ] Autre : ______
+
+* **Principaux risques ou points de blocage anticipés :**
+  * [ ] Réglementation (ERP, autorisations d'urbanisme)
+  * [ ] Financement (obtention d'un prêt professionnel)
+  * [ ] Gestion des travaux (retards, surcoûts)
+  * [ ] Autre : ______
+
+* **Localisation et type de bien recherché :**
+  * [ ] Zone rurale / Campagne
+  * [ ] Littoral / Bord de mer
+  * [ ] Zone touristique de montagne / Historique
+  * [ ] Autre : ______
+
+* **Niveau de travaux envisagé sur le bien acheté :**
+  * ( ) Prêt à l'emploi (juste de la décoration/rafraîchissement)
+  * ( ) Rénovation partielle (aménagement des chambres d'hôtes uniquement)
+  * ( ) Rénovation totale (gros œuvre, réhabilitation complète)
+  * ( ) Autre : ______

@@ -1,0 +1,39 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (CP, CE1, CE2, CM1, CM2)
+  * ( ) Collège (6ème, 5ème, 4ème, 3ème)
+  * ( ) Lycée (Seconde, Première, Terminale)
+  * ( ) Supérieur / Université
+  * ( ) Autre : ______
+* **Domaine ou matière spécifique des mathématiques à travailler :**
+  * [ ] Algèbre & Arithmétique
+  * [ ] Analyse & Fonctions
+  * [ ] Géométrie
+  * [ ] Probabilités & Statistiques
+  * [ ] Autre : ______
+* **Durée totale du projet et date de début souhaitée :**
+  * ( ) Durée de 1 mois (début rapide)
+  * ( ) Durée de 3 mois (trimestre)
+  * ( ) Durée de 6 mois à 1 an (année scolaire complète)
+  * ( ) Autre durée et date de début : ______
+* **Fréquence et durée des séances de travail :**
+  * ( ) 1 séance par semaine (1h par séance)
+  * ( ) 2 à 3 séances par semaine (1h à 1h30 par séance)
+  * ( ) Travail quotidien (30 min par jour)
+  * ( ) Autre rythme : ______
+* **Niveau de départ estimé et objectif mesurable à atteindre :**
+  * ( ) Niveau en difficulté scolaire -> Objectif : Remise à niveau et obtention de la moyenne
+  * ( ) Niveau moyen -> Objectif : Consolidation et perfectionnement (viser 14-16/20)
+  * ( ) Bon niveau -> Objectif : Excellence, préparation aux concours ou classe prépa
+  * ( ) Précisions sur l'objectif : ______
+* **Modalités d'évaluation souhaitées :**
+  * [ ] Notes sur /20
+  * [ ] Questionnaires à choix multiples (QCM)
+  * [ ] Exercices pratiques et résolution de problèmes
+  * [ ] Auto-évaluation guidée
+  * [ ] Autre : ______
+* **Points prioritaires ou difficultés connues à travailler en priorité :**
+  * [ ] Compréhension du cours et des définitions théoriques
+  * [ ] Méthodologie et rédaction des démonstrations
+  * [ ] Calcul mental et calcul littéral
+  * [ ] Gestion du stress lors des contrôles
+  * [ ] Autre : ______

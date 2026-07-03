@@ -1,0 +1,43 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Enseignement supérieur / Université
+  * ( ) Autre : ______
+
+* **Matière et thématiques mathématiques à travailler en priorité :**
+  * [ ] Algèbre et Arithmétique
+  * [ ] Géométrie
+  * [ ] Fonctions et Analyse
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Niveau de départ estimé et objectif mesurable visé :**
+  * ( ) Grand débutant (reprendre les bases) -> Vise la moyenne (10/20)
+  * ( ) Niveau moyen (lacunes ciblées) -> Vise une mention ou perfectionnement (14/20)
+  * ( ) Bon niveau -> Vise l'excellence ou un concours (18+/20)
+  * ( ) Autre : ______
+
+* **Durée globale de la formation et date de début souhaitée :**
+  * ( ) Intensif (1 à 2 semaines) - Début immédiat
+  * ( ) Trimestriel (3 mois) - Début le : ______
+  * ( ) Annuel (année scolaire complète) - Début le : ______
+  * ( ) Autre : ______
+
+* **Fréquence des séances de travail :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 à 3 séances par semaine
+  * ( ) Quotidienne (tous les jours)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation souhaitées pour mesurer la progression :**
+  * [ ] QCM réguliers en ligne
+  * [ ] Devoirs sur table notés sur 20
+  * [ ] Auto-évaluation et fiches de suivi autonome
+  * [ ] Autre : ______
+
+* **Format attendu pour le plan de travail, cours et exercices :**
+  * [ ] Fiches de cours synthétiques + Exercices d'application directe
+  * [ ] Plan de travail hebdomadaire détaillé pas-à-pas
+  * [ ] Exercices corrigés de difficulté progressive (facile, moyen, difficile)
+  * [ ] Autre : ______

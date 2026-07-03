@@ -1,0 +1,101 @@
+# Projet d'Acquisition Immobilière - Création d'une Maison d'Hôtes
+
+## 📋 Présentation du Projet
+Ce document regroupe les outils de pilotage, de planification et de suivi pour l'achat d'un bien immobilier destiné à être transformé en maison d'hôtes. Il couvre les étapes de définition du besoin, de recherche, d'analyse financière, d'acquisition et de lancement des travaux.
+
+## 📊 Outils de Pilotage Opérationnel
+
+### 1. Planning Global du Projet
+Ce tableau définit les grandes étapes de l'acquisition et de la préparation, de la recherche du bien à la signature de l'acte authentique.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-05 | Cadrage | Définir le cahier des charges et valider la capacité d'emprunt | Porteur de projet, Banquier | Terminé |
+| 2 | 2026-07-15 | Recherche | Visites de biens immobiliers potentiels | Porteur de projet, Agents immobiliers | En cours |
+| 3 | 2026-08-15 | Analyse | Sélection du bien et étude de marché locale | Porteur de projet | À faire |
+| 4 | 2026-09-01 | Financement | Montage du dossier de prêt et business plan | Courtier, Banquier | À faire |
+| 5 | 2026-09-15 | Négociation | Formulation de l'offre d'achat et signature du compromis | Notaire, Vendeur | À faire |
+| 6 | 2026-12-15 | Acquisition | Signature de l'acte authentique de vente | Notaire, Banquier | À faire |
+```
+
+### 2. Agenda des Jalons Clés
+Ce calendrier répertorie les dates limites et événements majeurs à ne pas manquer.
+
+```AGENDA: Jalons
+2026-07-10 | 14:00-16:00 | Validation de la capacité de financement | Rendez-vous avec la banque pour valider l'enveloppe budgétaire globale.
+2026-07-20 | 09:00-18:00 | Première session de visites groupées | Visites de 3 propriétés présélectionnées dans la région cible.
+2026-08-30 | 18:00-19:00 | Date limite de dépôt de l'offre d'achat | Échéance fixée pour formaliser l'offre sur le bien retenu.
+2026-09-30 | 10:00-12:00 | Signature du compromis de vente | Signature officielle du compromis chez le notaire.
+2026-11-15 | 18:00-19:00 | Obtention de l'accord de prêt bancaire | Date limite pour l'obtention de l'offre de prêt définitive.
+2026-12-15 | 14:00-16:00 | Signature de l'acte de vente authentique | Clôture de l'achat et remise des clés.
+```
+
+### 3. Suivi Financier et Prévisionnel
+Ce tableau permet de suivre l'estimation budgétaire pour l'achat et les premiers aménagements.
+
+```ARRAY: Suivi budget
+| Poste | Budget prévu | Dépensé | Restant |
+|---|---|---|---|
+| Acquisition du bien | 450000 | 0 | =B2-C2 |
+| Frais de notaire | 36000 | 0 | =B3-C3 |
+| Travaux de rénovation | 80000 | 0 | =B4-C4 |
+| Mobilier et décoration | 25000 | 0 | =B5-C5 |
+| Frais annexes (communication, création structure) | 9000 | 0 | =B6-C6 |
+| Total | =SUM(B2:B6) | =SUM(C2:C6) | =SUM(D2:D6) |
+```
+
+### 4. Graphique du Budget
+Ce graphique montre le budget prévu par type de poste pour identifier les investissements majeurs.
+
+```CHART: Budget
+source: Suivi budget | col: Budget prévu
+```
+
+### 5. Suivi des Actions - Trello
+Ce tableau Kanban permet d'organiser les tâches quotidiennes et de suivre leur avancement.
+
+```TRELLO: Avancement
+### À faire
+- [ ] Rédiger la description de la clientèle cible `[low]`
+  Définir les profils types (familles, couples, randonneurs, etc.)
+- [ ] Estimer les tarifs des nuitées `[medium]`
+  Analyser la concurrence locale sur Airbnb et Booking
+- [ ] Contacter le service urbanisme de la mairie `[high]`
+  Vérifier les règles locales (PLU) et les autorisations requises pour une activité de chambres d'hôtes
+### En cours
+- [ ] Sélectionner les agences immobilières de la région `[medium]`
+  Prendre contact et envoyer le cahier des charges
+- [ ] Constituer le dossier administratif de financement `[high]`
+  Rassembler les 3 derniers bilans, avis d'imposition et justificatifs d'apport
+### Terminé
+- [ ] Établir le cahier des charges du bien idéal `[medium]`
+  Critères définis : minimum 5 chambres, extérieur, bon état structurel
+```
+
+### 6. Validation Critère d'Achat (Formulaire)
+Ce formulaire aide à valider la conformité d'un bien visité par rapport aux besoins du projet avant de formuler une offre d'achat.
+
+```FORM: Validation
+* **Le bien répond-il aux critères géographiques et d'accessibilité ?**
+  * ( ) Oui, parfait emplacement (calme, accessible, proche attractions)
+  * ( ) Moyennement (quelques nuisances ou accès difficile en hiver)
+  * ( ) Non, à exclure
+* **Quel est l'état technique général du bâtiment (toiture, gros œuvre) ?**
+  * ( ) Excellent état, aucun gros œuvre à prévoir
+  * ( ) Bon état général, rafraîchissement nécessaire
+  * ( ) Gros travaux structurels à prévoir (toiture, assainissement non conforme)
+* **La disposition permet-elle de créer au moins 4 à 5 chambres d'hôtes indépendantes ?**
+  * ( ) Oui, la configuration actuelle s'y prête directement
+  * ( ) Oui, mais moyennant des travaux de redistribution des pièces
+  * ( ) Non, la structure ne permet pas d'avoir suffisamment de chambres indépendantes
+* **La capacité financière estimée est-elle respectée ?**
+  * ( ) Oui, le prix est en dessous ou égal au budget max
+  * ( ) Limite, nécessite une négociation serrée
+  * ( ) Hors budget
+* **Y a-t-il un espace extérieur exploitable (jardin, terrasse, piscine) ?**
+  * [ ] Grand jardin arboré
+  * [ ] Piscine ou possibilité d'en construire une
+  * [ ] Terrasse exploitable pour les petits-déjeuners
+  * [ ] Aucun espace extérieur
+```

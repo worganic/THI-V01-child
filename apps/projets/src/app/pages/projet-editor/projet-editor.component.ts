@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { environment } from '../../../environments/environment';
+import { runtimeEnv } from '../../runtime-env';
 import { Subscription } from 'rxjs';
 import { ProjectService, Project } from '@worganic/portail-core/data-access';
 import { ProjectFilesService, FileNode, FtpNodeSyncStatus, Outil, AgendaEvent } from '@worganic/portail-core/data-access';
@@ -10,7 +10,7 @@ import { ConfigService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { LayoutService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
-import { ProjetCollabService, CollabHistoryEntry } from '@worganic/portail-core/data-access';
+import { ProjetCollabService, CollabHistoryEntry, VersionSavedEvent } from '@worganic/portail-core/data-access';
 
 import { WorgMiniHeaderComponent } from '@worganic/shared/ui';
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
@@ -56,7 +56,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   @ViewChild(EditionOutilComponent) editionOutil?: EditionOutilComponent;
   @ViewChild(ProjetSidebarComponent) sidebar?: ProjetSidebarComponent;
 
-  readonly portailUrl = environment.portailUrl;
+  readonly portailUrl = runtimeEnv.portailUrl;
 
   project = signal<Project | null>(null);
   files = signal<FileNode[]>([]);
@@ -115,7 +115,60 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   onEditSource(source: string) { this.pendingEditSource = source; }
   dragDropError = signal<string | null>(null);
   private dragDropErrorTimer: ReturnType<typeof setTimeout> | null = null;
-  conflictState = signal<{ fileId: string; folderId?: string; myContent: string; serverContent: string; updatedAt?: number } | null>(null);
+  conflictState = signal<{
+    fileId: string; folderId?: string;
+    baseVersionId: string | null;
+    mineContent: string;
+    serverContent: string; serverAuthorName: string; serverCreatedAt: string;
+  } | null>(null);
+
+  // Checkpoints BDD créés par d'AUTRES utilisateurs, en attente de synchro manuelle
+  // (bouton "Synchro" — ouvre le même écran de fusion qu'un conflit, sans attendre un 409).
+  newerVersions = signal<Map<string, VersionSavedEvent>>(new Map());
+
+  readonly activeSectionNewerVersion = computed<VersionSavedEvent | null>(() => {
+    const activeId = this.activeNodeId();
+    if (!activeId) return null;
+    for (const evt of this.newerVersions().values()) {
+      if (evt.folderId === activeId || evt.nodeId === activeId) return evt;
+    }
+    return null;
+  });
+
+  async onSyncClick(): Promise<void> {
+    const evt = this.activeSectionNewerVersion();
+    if (!evt) return;
+    const fileNode = this.findFileById(evt.nodeId, this.files());
+    if (!fileNode) return;
+    try {
+      const versionData = await this.projectFilesService.getVersionContent(this.projectFolderName, evt.nodeId, evt.versionId);
+      this.conflictState.set({
+        fileId: evt.nodeId,
+        folderId: evt.folderId ?? undefined,
+        baseVersionId: fileNode.fileVersion ?? null,
+        mineContent: fileNode.content ?? '',
+        serverContent: versionData.content,
+        serverAuthorName: versionData.author_name,
+        serverCreatedAt: versionData.created_at
+      });
+      this.newerVersions.update(m => { const n = new Map(m); n.delete(evt.nodeId); return n; });
+    } catch (e) {
+      console.error('[Synchro] Récupération de la version échouée:', e);
+    }
+  }
+
+  // Objet "entrée d'historique" synthétique pour réutiliser <app-projet-diff> (3 panneaux
+  // Actuel/Avant/Après + cherry-pick ligne à ligne) sur un conflit de sauvegarde multi-user.
+  readonly conflictDiffEntry = computed<CollabHistoryEntry | null>(() => {
+    const c = this.conflictState();
+    if (!c) return null;
+    return {
+      id: 'conflict', timestamp: c.serverCreatedAt, section: '', actionType: 'conflict',
+      label: 'Conflit de sauvegarde', entityType: 'file', entityId: c.fileId, entityLabel: '',
+      userId: null, username: c.serverAuthorName, undone: false,
+      beforeState: { content: c.serverContent }, afterState: { content: c.mineContent }
+    };
+  });
   aiEditService = inject(ProjetAiEditService);
   private megaOutilsService = inject(MegaOutilsService);
   hasPendingEdit = computed(() => !!this.aiEditService.pendingEdit());
@@ -155,6 +208,19 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   // - Dossier sélectionné → folder + descendants + blocs inline appartenant à ces folders
   // - contenu.md sélectionné → traité comme le dossier parent
   // - Fichier additionnel → uniquement lui-même
+  // Fichier de contenu principal (contenu.md) de la section active — pour la zone
+  // Historique, groupe "Versions de cette section".
+  readonly activeContentFileId = computed<string | null>(() => {
+    const id = this.activeNodeId();
+    if (!id || id.includes('##')) return null;
+    const folder = this.findFolderById(id, this.files());
+    if (folder) {
+      const contentFile = (folder.children || []).find(c => c.type === 'file' && c.name === 'contenu.md');
+      return contentFile?.id ?? null;
+    }
+    return this.findFileById(id, this.files())?.id ?? null;
+  });
+
   readonly activeHistoryIds = computed<Set<string> | null>(() => {
     const id = this.activeNodeId();
     if (!id) return null;
@@ -204,13 +270,13 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   // Met à jour le contenu d'un fichier dans le signal `files` sans recharger depuis le serveur.
   // Cela garde le signal synchronisé avec ce qui est sur disque, pour que si l'éditeur est
   // démonté/remonté (ex: ouverture du diff), il reconstruise depuis le contenu à jour.
-  private patchFileContent(fileId: string, content: string) {
+  private patchFileContent(fileId: string, content: string, versionId?: string) {
     const patch = (nodes: FileNode[]): { changed: boolean; nodes: FileNode[] } => {
       let changed = false;
       const out = nodes.map(n => {
         if (n.id === fileId && n.type === 'file') {
           changed = true;
-          return { ...n, content };
+          return { ...n, content, ...(versionId ? { fileVersion: versionId } : {}) };
         }
         if (n.children) {
           const sub = patch(n.children);
@@ -485,6 +551,11 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       this.collab.sectionPublished$.subscribe(() => {
         this.autoPullAndRefresh();
       }),
+      // Un autre user a checkpointé une nouvelle version — mémorise-la pour proposer
+      // le bouton "Synchro" sans attendre un conflit 409 au prochain enregistrement.
+      this.collab.versionSaved$.subscribe(evt => {
+        this.newerVersions.update(m => { const n = new Map(m); n.set(evt.nodeId, evt); return n; });
+      }),
       this.collab.ftpFolderSynced$.subscribe(({ folderId, status, totalChecked, totalFiles }) => {
         this.nodeSyncStatus.update(m => new Map(m).set(folderId, status));
         this.ftpSyncProgress.set({ checked: totalChecked, total: totalFiles || this.ftpSyncProgress().total });
@@ -541,6 +612,12 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     try {
       const res = await this.projectFilesService.getFiles(this.projectFolderName);
       const sorted = this.sortNodesByOrder(res.files || []);
+      // Réinjecte les brouillons locaux non partagés de l'utilisateur courant PAR-DESSUS le
+      // contenu BDD, AVANT de publier le signal `files` — jamais après coup : un `this.files.set()`
+      // intermédiaire ne contenant que le contenu BDD (sans le brouillon) serait capté par la zone
+      // d'édition (ngOnChanges) dès qu'un changement structurel est en cours (ex: ajout d'un titre
+      // pendant la frappe) et effacerait visuellement le texte non encore validé.
+      await this.mergeLocalDraftsIntoTree(sorted);
       this.files.set(sorted);
       // Calcule la map des images imbriquées dès le chargement (sinon la sidebar
       // affiche les images au top level tant que sectionsChange n'a pas été émis)
@@ -561,6 +638,29 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     }
     // Charger les mega-outils instances
     await this.loadMegaOutilInstances();
+  }
+
+  /** Patche `nodes` (mutation en place) avec le contenu des brouillons locaux de l'utilisateur
+   *  courant sur ce projet, et marque les sections concernées comme "modification locale non
+   *  partagée" (badge). Appelé avant chaque publication du signal `files` pour rester atomique. */
+  private async mergeLocalDraftsIntoTree(nodes: FileNode[]): Promise<void> {
+    try {
+      const drafts = await this.projectFilesService.listDrafts(this.projectFolderName);
+      if (!drafts.length) return;
+      for (const d of drafts) {
+        try {
+          const full = await this.projectFilesService.getDraft(this.projectFolderName, d.nodeId);
+          if (!full.exists) continue;
+          const node = this.findFileById(d.nodeId, nodes);
+          if (node) node.content = full.content ?? '';
+          this.collab.addLocalPending(d.folderId ?? d.nodeId);
+        } catch (e) {
+          console.warn('[EDITOR] Chargement brouillon échoué pour', d.nodeId, e);
+        }
+      }
+    } catch (e) {
+      console.warn('[EDITOR] listDrafts error:', e);
+    }
   }
 
   private computeNestedImagesMap(nodes: FileNode[]): Record<string, string[]> {
@@ -839,6 +939,9 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     if (this.activeMegaOutil()?.id === id) this.activeMegaOutil.set(null);
   }
 
+  // Émission normale de l'éditeur (toute frappe) : n'alimente jamais projet_content_version,
+  // seulement le brouillon local de l'utilisateur courant. Voir writeSectionStyled (zone
+  // d'édition) pour le seul chemin qui crée une vraie version BDD (bouton "Enregistrer et partager").
   async onSectionsChange(sections: SectionInfo[]) {
     // Recalculer la map des images imbriquées dans des blocs documents
     const newMap: Record<string, string[]> = {};
@@ -858,11 +961,10 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.isSaving = true;
     this.pendingSections = null;
 
-    const editSource = this.pendingEditSource;
     this.pendingEditSource = 'user-editing';
 
     try {
-      await this.processSectionsChange(sections, editSource);
+      await this.processSectionsChange(sections);
     } finally {
       this.isSaving = false;
       // Appliquer les patches SSE reçus pendant le cycle de sauvegarde
@@ -1004,7 +1106,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     } catch (e) { console.warn('[Editor] track delete failed:', e); }
   }
 
-  private async processSectionsChange(sections: SectionInfo[], editSource = 'user-editing') {
+  private async processSectionsChange(sections: SectionInfo[]) {
     let currentFiles = this.files();
     // Snapshot of file contents BEFORE this save batch — used to compute diffs for tracking
     const oldContentMap = this.buildOldContentMap(currentFiles);
@@ -1357,6 +1459,9 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
       // 5. Save content (main content and additional files) MUST be done BEFORE loadFiles()
       // to ensure the server has the latest text when ngOnChanges rebuilds the document.
+      // N'écrit jamais projet_content_version, seulement le brouillon local de l'utilisateur —
+      // aucun conflit possible ici (zone de travail privée). La version BDD partagée n'est créée
+      // que par le bouton explicite "Enregistrer et partager" (voir writeSectionStyled côté zone).
       for (const s of resolved) {
         if (s.fileId) {
           // Système double fichier : contenu.md = Markdown propre (strip), contenu-css.md = stylisé
@@ -1366,28 +1471,11 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           const oldContent = oldContentMap.get(s.fileId) ?? '';
           if (oldContent !== clean) {
             const fileNode2 = this.findFileById(s.fileId, this.files());
-            const fileVersion = fileNode2?.fileVersion;
-            try {
-              await this.projectFilesService.updateFile(this.projectFolderName, s.fileId, clean, s.folderId ?? undefined, false, editSource, fileVersion);
-              this.patchFileContent(s.fileId, clean);
-              const fileNode = { id: s.fileId, name: 'contenu.md', type: 'file' as const, path: '', order: 0 };
-              this.trackContentUpdate(fileNode, s.folderName, oldContent, clean);
-            } catch (err: any) {
-              if (err?.status === 409 && err?.error?.serverContent !== undefined) {
-                this.conflictState.set({
-                  fileId: s.fileId,
-                  folderId: s.folderId ?? undefined,
-                  myContent: clean,
-                  serverContent: err.error.serverContent,
-                  updatedAt: err.error.serverUpdatedAt
-                });
-                return; // Arrêter le cycle de sauvegarde
-              }
-              throw err;
-            }
+            const baseVersionId = fileNode2?.fileVersion ?? null;
+            await this.projectFilesService.saveDraft(this.projectFolderName, s.fileId, clean, s.folderId ?? null, baseVersionId).catch(e => console.warn('[EDITOR] Sauvegarde brouillon échouée:', e.message));
+            this.patchFileContent(s.fileId, clean);
+            this.collab.addLocalPending(s.folderId ?? s.fileId);
           }
-          // Jumeau stylisé
-          await this.saveCssTwin(s.folderId ?? null, s.fileId, styled);
         }
 
         // Save additional files
@@ -1396,10 +1484,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             if (af.fileId) {
               const oldContent = oldContentMap.get(af.fileId) ?? '';
               if (oldContent !== af.content) {
-                await this.projectFilesService.updateFile(this.projectFolderName, af.fileId, af.content, undefined, false, editSource);
+                await this.projectFilesService.saveDraft(this.projectFolderName, af.fileId, af.content, s.folderId ?? null).catch(e => console.warn('[EDITOR] Sauvegarde brouillon (fichier additionnel) échouée:', e.message));
                 this.patchFileContent(af.fileId, af.content);
-                const fileNode = { id: af.fileId, name: af.name, type: 'file' as const, path: '', order: 0 };
-                this.trackContentUpdate(fileNode, `${s.folderName} › ${af.name}`, oldContent, af.content);
               }
             } else {
               try {
@@ -1446,11 +1532,15 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       let additionalFileOrphanDeleted = false;
       if (hasStructural) {
         const freshFiles = this.files();
+        // IDs des instances Méga-Outils encore vivantes (DB). Sert à protéger les fichiers
+        // prompt-/trello-/array- d'une suppression accidentelle par drift de parsing :
+        // un MO n'est supprimé que via le flux explicite (qui supprime d'abord l'instance DB).
+        const liveInstanceIds = new Set(this.megaOutilInstances().map(i => i.id));
         for (const s of resolved) {
           if (!s.folderId) continue;
           const freshFolder = this.findFolderById(s.folderId, freshFiles);
           if (!freshFolder || !freshFolder.children) continue;
-          
+
           const existingFiles = freshFolder.children.filter(c => c.type === 'file');
           for (const ef of existingFiles) {
             if (ef.name === 'contenu.md') continue;
@@ -1458,6 +1548,26 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             if (this.projectFilesService.isImageFile(ef.name)) continue;
             const stillExists = s.additionalFiles.some(af => this.slugify(af.name) === this.slugify(ef.name.replace(/\.md$/, '')));
             if (!stillExists) {
+              // GARDE MÉGA-OUTIL : si le fichier porte un {{MOID:id}} dont l'instance est encore
+              // vivante en DB, c'est un drift de parsing (ex: renommage mal détecté), PAS une
+              // suppression voulue → on protège le fichier. La synchro ne doit jamais supprimer
+              // un prompt/trello/array dont l'instance existe encore.
+              const moidMatch = /\{\{MOID:([a-zA-Z0-9-]+)\}\}/.exec(ef.content || '');
+              const isMoFile = /^(prompt|trello|array)-/i.test(ef.name);
+              if (moidMatch && liveInstanceIds.has(moidMatch[1])) {
+                console.warn(`[EDITOR] Suppression bloquée : fichier MO "${ef.name}" (MOID ${moidMatch[1]}) — instance encore vivante. Drift de parsing protégé.`);
+                continue;
+              }
+              if (isMoFile && !moidMatch) {
+                // Fichier MO sans MOID lisible (legacy) : par prudence, ne pas supprimer si une
+                // instance du même nom existe encore.
+                const baseName = ef.name.replace(/^(prompt|trello|array)-/i, '').replace(/\.md$/, '');
+                const hasLiveByName = this.megaOutilInstances().some(i => this.slugify(i.name) === this.slugify(baseName));
+                if (hasLiveByName) {
+                  console.warn(`[EDITOR] Suppression bloquée : fichier MO legacy "${ef.name}" — instance homonyme vivante. Protégé.`);
+                  continue;
+                }
+              }
               console.log(`[EDITOR] Deleting orphaned additional file ${ef.name} from ${freshFolder.name}...`);
               await this.projectFilesService.deleteFile(this.projectFolderName, ef.id).catch(e => console.error(e));
               additionalFileOrphanDeleted = true;
@@ -1934,14 +2044,31 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.aiEditService.cancelEdit();
   }
 
-  async resolveConflict(choice: 'mine' | 'server'): Promise<void> {
+  // Choix rapide (tout garder d'un côté) — pour le cas simple où aucune fusion ligne à ligne n'est nécessaire.
+  async resolveConflictQuick(choice: 'mine' | 'server'): Promise<void> {
     const conflict = this.conflictState();
     if (!conflict) return;
-    const content = choice === 'mine' ? conflict.myContent : conflict.serverContent;
+    await this.applyConflictResolution(choice === 'mine' ? conflict.mineContent : conflict.serverContent);
+  }
+
+  // Fusion ligne à ligne via <app-projet-diff> (bouton Synchro / résolution de conflit).
+  onConflictDiffApply(mergedContent: string): void {
+    this.applyConflictResolution(mergedContent);
+  }
+
+  private async applyConflictResolution(mergedContent: string): Promise<void> {
+    const conflict = this.conflictState();
+    if (!conflict) return;
     try {
-      await this.projectFilesService.updateFile(this.projectFolderName, conflict.fileId, content, conflict.folderId, false, 'conflict-resolution');
-      this.patchFileContent(conflict.fileId, content);
-      await this.loadFiles();
+      const result = await this.projectFilesService.resolveConflict(this.projectFolderName, conflict.fileId, {
+        baseVersionId: conflict.baseVersionId,
+        folderId: conflict.folderId,
+        mineContent: conflict.mineContent,
+        mergedContent
+      });
+      this.patchFileContent(conflict.fileId, mergedContent, result.versionId);
+      this.collab.removeLocalPending(conflict.folderId ?? conflict.fileId);
+      await this.projectFilesService.deleteDraft(this.projectFolderName, conflict.fileId).catch(() => {});
     } catch (e) {
       console.error('[Conflict] Résolution échouée:', e);
     } finally {

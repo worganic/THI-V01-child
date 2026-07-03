@@ -1,0 +1,40 @@
+* **Horizon temporel et date de démarrage prévus :**
+  * ( ) Court terme (lancement sous 6 mois)
+  * ( ) Moyen terme (lancement sous 6 à 18 mois)
+  * ( ) Long terme (lancement à plus de 18 mois)
+  * ( ) Autre : ______
+
+* **Jalons clés et étapes prioritaires du projet :**
+  * [ ] Recherche et acquisition du bien immobilier
+  * [ ] Réalisation des travaux de rénovation et d'aménagement
+  * [ ] Démarches administratives et conformité ERP
+  * [ ] Création de la structure juridique et business plan
+  * [ ] Campagne de communication et ouverture des réservations
+  * [ ] Autre : ______
+
+* **Budget global estimé pour l'acquisition et les travaux :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Contraintes principales du projet :**
+  * [ ] Réglementation stricte (urbanisme, ERP, sécurité incendie)
+  * [ ] Ressources financières limitées (apport personnel faible)
+  * [ ] Compétences requises pour les travaux de rénovation
+  * [ ] Contraintes de temps (saisonnalité pour l'ouverture)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables à l'issue de la première année :**
+  * [ ] Taux d'occupation supérieur à 40%
+  * [ ] Chiffre d'affaires minimal de ______ € atteint
+  * [ ] Rentabilité permettant l'autofinancement des charges et du crédit
+  * [ ] Obtention d'un label touristique (Gîtes de France, Clévacances...)
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Refus du prêt bancaire
+  * [ ] Retards importants sur le chantier de rénovation
+  * [ ] Concurrence locale saturée
+  * [ ] Difficultés à capter la clientèle cible
+  * [ ] Autre : ______

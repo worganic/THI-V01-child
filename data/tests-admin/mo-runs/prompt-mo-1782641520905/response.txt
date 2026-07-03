@@ -1,0 +1,96 @@
+# 🏡 Projet d'Achat de Bien Immobilier pour Maison d'Hôtes
+
+Ce document constitue le dossier de pilotage opérationnel pour l'acquisition et l'aménagement d'une maison d'hôtes. Il s'appuie sur le budget et le plan de financement initialement identifiés.
+
+## 📊 Plan de Financement et Budget Initial
+
+Ce tableau reprend les données financières de départ pour le lancement de l'activité, basées sur l'apport disponible et les subventions ou aides obtenues.
+
+```ARRAY: Mon Tableau
+| Poste de Financement | Budget Estimé (k€) | Dépenses Engagées (k€) |
+|---|---|---|
+| Apport personnel validé | 44 | 0 |
+| Subventions et aides locales | 5 | 2 |
+| Total Financement Direct | =B2+B3 | =C2+C3 |
+```
+
+```CHART: Évolution du Budget
+source: Mon Tableau | col: Budget Estimé (k€)
+```
+
+## 📅 Planification Opérationnelle du Projet
+
+Le calendrier suivant présente les étapes clés indispensables pour mener à bien l'acquisition immobilière et le démarrage de l'exploitation.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions Clés | Responsable | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-02 | Cadrage | Finalisation des critères de recherche et budget | Porteur de projet | Terminé |
+| 2 | 2026-07-15 | Recherche | Visites ciblées et sélection du bien | Porteur de projet | En cours |
+| 3 | 2026-08-10 | Offre | Rédaction et présentation de l'offre d'achat | Notaire | À faire |
+| 4 | 2026-09-01 | Compromis | Signature du compromis de vente | Notaire | À faire |
+| 5 | 2026-10-15 | Prêt | Dépôt et négociation du dossier de financement | Banque | À faire |
+| 6 | 2026-12-01 | Signature | Acte authentique de vente et remise des clés | Notaire | À faire |
+| 7 | 2026-12-15 | Travaux | Lancement de la mise aux normes et décoration | Artisans | À faire |
+```
+
+Voici l'agenda des jalons contractuels et des réunions stratégiques à ne pas manquer :
+
+```AGENDA: Jalons
+2026-07-05 | 10:00-12:00 | Réunion Cadrage Financier | Validation définitive de l'enveloppe avec le courtier
+2026-07-20 | 09:00-18:00 | Journée de visites | Visites de 3 propriétés présélectionnées dans la zone cible
+2026-09-01 | 14:00-15:30 | Signature Compromis | Signature officielle à l'étude notariale
+2026-10-30 | 10:00-11:30 | Obtention Accord Prêt | Date limite pour l'obtention de l'offre de prêt bancaire
+2026-12-01 | 11:00-12:30 | Signature Acte Authentique | Remise des clés et transfert de propriété
+```
+
+## 📋 Suivi des Actions (Kanban)
+
+Toutes les tâches à réaliser sont organisées et suivies dans le tableau ci-dessous afin de garantir le respect des délais.
+
+```TRELLO: Suivi de l'Avancement
+### À faire
+- [ ] Préparer le dossier bancaire complet `[high]`
+  Inclure le business plan prévisionnel et l'étude de marché locale.
+- [ ] Consulter des artisans pour devis comparatifs `[medium]`
+  Demander des estimations pour les travaux d'électricité et de plomberie.
+- [ ] Rédiger le règlement intérieur de la future maison d'hôtes `[low]`
+  Définir les conditions d'accueil, horaires d'arrivée et de départ.
+
+### En cours
+- [ ] Effectuer les visites des propriétés sélectionnées `[critical]`
+  Analyser la structure du bâtiment et le potentiel d'aménagement des chambres.
+- [ ] Consulter le Plan Local d'Urbanisme (PLU) `[medium]`
+  Vérifier les règles pour d'éventuelles extensions ou parkings clients.
+
+### Terminé
+- [ ] Établir le budget prévisionnel de départ `[high]`
+  Simulation bancaire réalisée avec un apport personnel de 44 k€.
+```
+
+## 📝 Formulaire de Décision pour l'Achat du Bien
+
+Ce questionnaire doit être rempli après chaque visite afin de déterminer de manière objective s'il convient de formuler une offre d'achat.
+
+```FORM: Évaluation de Propriété
+* **1. Le nombre de chambres potentielles est-il conforme au projet (minimum 4 chambres d'hôtes) ?**
+  * ( ) Oui, directement exploitable
+  * ( ) Oui, moyennant des travaux d'aménagement intérieur
+  * ( ) Non, espace insuffisant pour l'activité visée
+* **2. L'emplacement présente-t-il une attractivité touristique forte ?**
+  * ( ) Excellente (proche d'un grand site touristique ou axe majeur)
+  * ( ) Moyenne (secteur calme mais accessible)
+  * ( ) Insuffisante (trop éloigné des points d'intérêt)
+* **3. Quel est l'état général du gros œuvre et de la toiture ?**
+  * [ ] Très bon état, aucun travaux structurels à prévoir
+  * [ ] Travaux de rénovation énergétique nécessaires (isolation, chauffage)
+  * [ ] Travaux importants de toiture ou de maçonnerie à prévoir
+* **4. Le bien dispose-t-il d'un espace extérieur exploitable pour les clients (jardin, terrasse, piscine) ?**
+  * ( ) Oui, grand jardin avec terrasse aménagée
+  * ( ) Oui, petit espace extérieur à aménager
+  * ( ) Non, aucun espace extérieur disponible
+* **5. Décision proposée à l'issue de la visite :**
+  * ( ) Faire une offre d'achat au prix ou négociée
+  * ( ) Planifier une contre-visite technique avec un expert ou un artisan
+  * ( ) Ne pas donner suite (le bien ne correspond pas aux critères clés)
+```

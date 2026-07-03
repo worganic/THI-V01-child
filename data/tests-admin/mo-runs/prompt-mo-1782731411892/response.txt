@@ -1,0 +1,37 @@
+* **Horizon temporel et date de démarrage envisagée :**
+  * ( ) Démarrage immédiat (moins de 3 mois)
+  * ( ) Démarrage à moyen terme (3 à 6 mois)
+  * ( ) Démarrage à long terme (plus de 6 mois)
+  * ( ) Autre : ______
+
+* **Jalons clés du projet prioritaires :**
+  * [ ] Recherche et acquisition du bien immobilier
+  * [ ] Rédaction du business plan et recherche de financements
+  * [ ] Travaux de rénovation et mise aux normes (sécurité, accessibilité)
+  * [ ] Démarches administratives et choix du statut juridique/fiscal
+  * [ ] Lancement de la stratégie de communication et commercialisation
+
+* **Contraintes principales du projet :**
+  * [ ] Capacité de financement et budget de travaux incertain
+  * [ ] Réglementations (normes ERP, urbanisme, plan local d'urbanisme)
+  * [ ] Calendrier contraint par la saison touristique
+  * [ ] Ressources de gestion (travail en solo, besoin d'embauche)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables définis :**
+  * [ ] Taux d'occupation cible (ex: > 60% la première année)
+  * [ ] Seuil de rentabilité financière atteint sous 12 ou 24 mois
+  * [ ] E-réputation et notes d'évaluation minimales sur les plateformes de réservation
+  * [ ] Autre : ______
+
+* **Risques ou blocages anticipés :**
+  * [ ] Refus de financement bancaire
+  * [ ] Retards ou surcoûts dans les travaux de rénovation
+  * [ ] Contraintes d'urbanisme ou refus de permis de construire/déclaration préalable
+  * [ ] Concurrence locale saturée ou baisse de l'attractivité de la zone géographique
+
+* **Format souhaité pour les livrables opérationnels :**
+  * ( ) Modèles de documents types et guides juridiques/comptables
+  * ( ) Business plan et outil de simulation financière clé en main
+  * ( ) Plan d'action détaillé (rétroplanning) sous forme de feuille de route
+  * ( ) Pack complet regroupant tous ces documents

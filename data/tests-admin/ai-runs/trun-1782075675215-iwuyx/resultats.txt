@@ -1,0 +1,12 @@
+@@TEST_RESULT@@{"itemId":"2-5-2-11-1","status":"ok","note":"Création d'instance Array opérationnelle via popup et API BDD"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-2","status":"ko","note":"Panneau visible uniquement en Structure (pas Code/Preview) et filtré par marqueurs au lieu de folderId"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-3","status":"ok","note":"Sélection, double-clic/F2 pour édition, Enter/Tab/Shift-Tab, Escape pour annuler et PATCH + SSE fonctionnels"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-11","status":"ko","note":"Réactivité défaillante : onArrayGridChanged ne déclenche pas buildVisuSections() pour mettre à jour la vue Preview"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-4","status":"ok","note":"Formules complètes (SUM/AVG/COUNT/MAX/MIN, références relatives, mode construction interactif, coloration en bleu)"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-5","status":"ok","note":"Ajout/suppression de lignes et colonnes via boutons/menu et API, avec minimum requis de 1x1 respecté"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-6","status":"ok","note":"Redimensionnement des lignes/colonnes par drag handles, respectant le minimum de 40px et mis à jour via API PUT"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-7","status":"ok","note":"Styles de cellules/lignes/colonnes opérationnels avec stopPropagation sur le menu contextuel pour le color picker"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-10","status":"ok","note":"Copier/Couper/Coller fonctionnel via menu contextuel et raccourcis Ctrl+C/X/V hors mode édition"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-12","status":"ko","note":"serializeArrayGrid() produit du Markdown table simple sans styles ni config de dimensions cols/rows"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-8","status":"ko","note":"Le fichier s'appelle array-NOM au lieu de array, et le bloc utilise ```ARRAY: NOM au lieu de 'array"}
+@@TEST_RESULT@@{"itemId":"2-5-2-11-9","status":"ok","note":"Abonnement arrayUpdate$ SSE pour recharger la grille et broadcastToProject opérationnels"}

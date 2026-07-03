@@ -15,12 +15,13 @@ Accès : utilisateur connecté
 
 ---
 
-## `2-5-1-2` — Affichage de la grille
+## `2-5-1-2` — [modification] Affichage de la grille
 
 - **Carte projet** : titre, date création/MàJ (`JJ/MM/AAAA HH:MM`), statut (Brouillon/Publié), badge backup
 - **Badges backup** : GitHub (violet), GitLab (orange), FTP (cyan), Google Drive (vert)
 - **Warning GitHub offline** : badge rouge si `backupType=github` et GitHub injoignable
-- **Menu actions** : clic bouton actions → Modifier | Copier | Ouvrir dossier | Supprimer
+- **Badge partagé** : badge indigo "Partagé" si le projet est partagé avec l'utilisateur connecté (`_sharedWithMe`)
+- **Menu actions** : clic bouton actions → Modifier | Copier | Ouvrir dossier | Partager (masqué si projet partagé, pas propriétaire) | Supprimer
 
 ---
 
@@ -88,6 +89,17 @@ Accès : utilisateur connecté
 - **Clic sur une carte** : navigate `/projets/{id}`
 - **Clic sur le titre** : idem
 - **Double-clic sur titre en mode édition** : mode édition inline
+
+---
+
+## `2-5-1-11` — [modification] Partage d'un projet avec un autre utilisateur
+
+- **Déclenchement** : clic icône "share" dans la barre d'actions (visible uniquement pour le propriétaire du projet)
+- **Popup** : champ email + bouton ajouter, liste des utilisateurs avec qui le projet est partagé
+- **Ajout** : POST `/api/frank/projects/{id}/shares` avec `{ email }` → recherche l'utilisateur par email (erreur si introuvable ou si c'est le propriétaire)
+- **Retrait** : clic croix sur une ligne → DELETE `/api/frank/projects/{id}/shares/{userId}`
+- **Effet** : l'utilisateur partagé voit le projet dans sa propre liste "Mes Projets" (badge "Partagé") et peut l'ouvrir/l'éditer, mais ne peut pas le partager ni le supprimer
+- **Fermeture** : croix en haut à droite de la popup
 
 ---
 

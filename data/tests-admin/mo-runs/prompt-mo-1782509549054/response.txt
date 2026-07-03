@@ -1,0 +1,37 @@
+* **Budget global estimé pour l'acquisition et les travaux :**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Zone géographique ciblée :**
+  * [ ] Campagne / Nature
+  * [ ] Mer / Littoral
+  * [ ] Montagne
+  * [ ] Ville / Zone historique
+  * [ ] Autre : ______
+
+* **Capacité d'accueil visée (nombre de chambres d'hôtes) :**
+  * ( ) 1 à 3 chambres
+  * ( ) 4 à 5 chambres (limite légale en France)
+  * ( ) Plus de 5 chambres
+  * ( ) Autre : ______
+
+* **Type de bien recherché :**
+  * [ ] Propriété ancienne avec cachet à rénover
+  * [ ] Bien habitable immédiatement sans gros travaux
+  * [ ] Domaine avec plusieurs bâtiments
+  * [ ] Autre : ______
+
+* **Services additionnels envisagés :**
+  * [ ] Table d'hôtes (restauration)
+  * [ ] Espace bien-être (piscine, spa)
+  * [ ] Activités / Événements (séminaires)
+  * [ ] Aucun (hébergement seul)
+  * [ ] Autre : ______
+
+* **Délai souhaité pour l'ouverture de la maison d'hôte :**
+  * ( ) Moins de 6 mois
+  * ( ) 6 à 12 mois
+  * ( ) 1 à 2 ans
+  * ( ) Autre : ______

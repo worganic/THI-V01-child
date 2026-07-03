@@ -1,0 +1,45 @@
+* **Niveau scolaire de l'élève :**
+  * ( ) Primaire
+  * ( ) Collège
+  * ( ) Lycée
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Matière ou thématique spécifique de mathématiques à travailler :**
+  * [ ] Algèbre, Calcul et Arithmétique
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Analyse, Suites et Fonctions
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Objectif mesurable de ce programme d'apprentissage :**
+  * [ ] Remise à niveau et consolidation des bases
+  * [ ] Préparation à un examen ou concours (Brevet, Bac...)
+  * [ ] Perfectionnement et approfondissement (viser l'excellence)
+  * [ ] Autre : ______
+
+* **Durée totale du programme et date de début :**
+  * ( ) Court terme / Intensif (1 à 4 semaines) - Début : ______
+  * ( ) Moyen terme (1 à 3 mois) - Début : ______
+  * ( ) Long terme (toute l'année scolaire) - Début : ______
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 à 3 fois par semaine
+  * ( ) Quotidienne
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation pour mesurer la progression :**
+  * [ ] Évaluations notées sur 20
+  * [ ] Quiz et QCM réguliers
+  * [ ] Exercices d'auto-évaluation
+  * [ ] Sujets d'examen blancs
+  * [ ] Autre : ______
+
+* **Points prioritaires à travailler en priorité :**
+  * [ ] Compréhension et mémorisation des cours et formules
+  * [ ] Application directe (exercices types)
+  * [ ] Résolution de problèmes complexes et raisonnement
+  * [ ] Méthodologie et rigueur de rédaction
+  * [ ] Autre : ______

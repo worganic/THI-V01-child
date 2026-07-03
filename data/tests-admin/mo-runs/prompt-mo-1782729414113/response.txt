@@ -1,0 +1,29 @@
+* **Quel est le format du livrable final attendu pour implémenter l'atelier P.A.R.S ?**
+  * ( ) Un prompt système unique (system prompt) pour guider l'atelier de bout en bout
+  * ( ) Un script interactif autonome (ex: Python ou JavaScript) pour exécuter l'atelier
+  * ( ) Un document de cadrage méthodologique statique
+  * ( ) Autre : ______
+
+* **Quel est l'horizon temporel visé pour la mise en œuvre ou le premier test de cet atelier ?**
+  * ( ) Immédiat (dans les prochains jours)
+  * ( ) À court terme (1 à 2 semaines)
+  * ( ) À moyen terme (1 mois et plus)
+  * ( ) Autre : ______
+
+* **Quelles sont les contraintes techniques ou ressources principales à respecter pour cet outil ?**
+  * [ ] Fonctionnement entièrement hors-ligne (pas d'API tierce)
+  * [ ] Intégration à un environnement de développement existant (ex: markdown dans IDE)
+  * [ ] Pas de dépendances externes complexes (HTML/JS vanille, pas de framework)
+  * [ ] Autre : ______
+
+* **Quels sont les critères de succès mesurables pour cet atelier ?**
+  * [ ] Génération automatique d'un rapport de synthèse structuré au format Markdown compatible mind map
+  * [ ] Extraction et classification automatique et précise des unités de sens (Idée, Problème, Émotion...)
+  * [ ] Simplicité d'utilisation pour le Business Owner (zéro friction technique)
+  * [ ] Autre : ______
+
+* **Quels sont les risques ou blocages principaux identifiés pour le Business Owner pendant la session d'écriture ?**
+  * [ ] Difficulté à respecter la consigne de non-censure (tendance à corriger le texte en écrivant)
+  * [ ] Syndrome de la page blanche (besoin de suggestions de déclencheurs d'écriture)
+  * [ ] Perte ou troncature du texte brut lors du copier-coller
+  * [ ] Autre : ______

@@ -1,0 +1,102 @@
+# Guide d'Achat Immobilier pour la Création d'une Maison d'Hôtes
+
+Ce document constitue le livrable complet pour vous accompagner pas à pas dans l'acquisition de votre futur bien immobilier destiné à être exploité en maison d'hôtes. Il intègre tous les outils nécessaires au suivi de votre projet, de la définition de votre budget jusqu'au lancement commercial.
+
+## 1. Plan de formation et d'accompagnement
+
+Pour réussir ce projet complexe, nous avons structuré un parcours d'accompagnement sur 8 séances clés.
+
+```ARRAY: Planning
+| Date | Thème | Objectif | Exercice | Statut |
+|------|-------|----------|----------|--------|
+| 2026-06-26 | Projet & Budget | Valider la capacité d'emprunt et le concept | Exercices Projet et Budget | En cours |
+| 2026-07-03 | Recherche & Visites | Sélectionner et évaluer les biens potentiels | Grille de visite | À faire |
+| 2026-07-10 | Viabilité & ERP | Analyser le potentiel commercial et les normes | Exercices Viabilite ERP | À faire |
+| 2026-07-17 | Offre & Négociation | Formuler une offre d'achat stratégique | Rédaction offre | À faire |
+| 2026-07-24 | Compromis & Financement | Sécuriser l'avant-contrat et monter le prêt | Montage dossier prêt | À faire |
+| 2026-07-31 | Urbanisme & Travaux | Préparer les autorisations de travaux | Plan de travaux | À faire |
+| 2026-08-07 | Acte authentique | Signer l'acte de vente final | Préparation signature | À faire |
+| 2026-08-14 | Commercialisation | Lancer la stratégie de communication | Plan marketing | À faire |
+```
+
+## 2. Agenda des séances d'accompagnement
+
+Retrouvez ci-dessous le calendrier détaillé des séances de travail individuel.
+
+```AGENDA: Seances
+2026-06-26 | 14:00-16:00 | Séance 1 : Projet & Budget | Définir le positionnement et le budget de départ
+2026-07-03 | 14:00-16:00 | Séance 2 : Recherche & Visites | Identifier et visiter des biens adaptés aux ERP
+2026-07-10 | 14:00-16:00 | Séance 3 : Viabilité & ERP | Valider l'étude de marché et la sécurité incendie
+2026-07-17 | 14:00-16:00 | Séance 4 : Offre & Négociation | Structurer l'offre d'achat écrite
+2026-07-24 | 14:00-16:00 | Séance 5 : Compromis & Financement | Négocier les clauses suspensives du compromis
+2026-07-31 | 14:00-16:00 | Séance 6 : Urbanisme & Travaux | Déclarations de travaux et accessibilité handicapés
+2026-08-07 | 14:00-16:00 | Séance 7 : Acte authentique | Clôture de la vente chez le notaire
+2026-08-14 | 14:00-16:00 | Séance 8 : Commercialisation | Création des canaux de réservation et site web
+```
+
+## 3. Exercices d'évaluation des compétences
+
+Validez vos acquis à chaque étape clé grâce à ces questionnaires interactifs.
+
+```FORM: Exercices Projet et Budget
+* **Quelle est votre capacité d'apport personnel minimum recommandée pour un projet de maison d'hôte ?**
+  * ( ) 5% du projet global
+  * ( ) 10% du projet global
+  * ( ) 20% à 30% du projet global pour couvrir le besoin en fonds de roulement et les frais annexes
+  * ( ) Aucune importance, les banques financent à 110%
+* **Quel statut juridique est le plus adapté pour une double activité d'hébergement et de table d'hôtes ?**
+  * [ ] SARL / EURL
+  * [ ] Micro-entreprise (avec plafonds de chiffre d'affaires)
+  * [ ] SASU / SAS
+* **Comment calculez-vous le chiffre d'affaires prévisionnel annuel ?**
+  * ( ) Nombre de chambres x Prix moyen de la nuitée x Taux d'occupation estimé x 365 jours
+  * ( ) Estimation libre selon les envies
+```
+
+```FORM: Exercices Viabilite ERP
+* **À partir de quelle capacité d'accueil en chambres d'hôtes le bien est-il classifié comme ERP (Établissement Recevant du Public) ?**
+  * ( ) Plus de 5 chambres et 15 personnes
+  * ( ) Plus de 10 chambres
+  * ( ) Toutes les maisons d'hôtes sont des ERP
+* **Quelle norme d'accessibilité est obligatoire pour une maison d'hôte de moins de 5 chambres ?**
+  * ( ) Accessibilité PMR sur toutes les chambres
+  * ( ) Aucune obligation d'accessibilité PMR (sauf si création de locaux neufs par changement de destination)
+  * ( ) Ascenseur obligatoire
+```
+
+## 4. Suivi de votre progression et des notes
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|--------|------|------|-----|---|---------|
+| Séance 1 | 2026-06-26 | | 20 | =C2/D2*100 | |
+| Séance 2 | 2026-07-03 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-10 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-17 | | 20 | =C5/D5*100 | |
+| Séance 5 | 2026-07-24 | | 20 | =C6/D6*100 | |
+| Séance 6 | 2026-07-31 | | 20 | =C7/D7*100 | |
+| Séance 7 | 2026-08-07 | | 20 | =C8/D8*100 | |
+| Séance 8 | 2026-08-14 | | 20 | =C9/D9*100 | =AVG(C2:C9) |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+## 5. Gestion des tâches et avancement opérationnel
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer les visites de biens `[high]`
+  Rechercher des annonces cibles et contacter les agences immobilières
+- [ ] Rédiger l'étude de marché locale `[medium]`
+  Analyser la concurrence dans un rayon de 20 km
+- [ ] Monter le prévisionnel financier `[critical]`
+  Détailler les coûts des travaux et d'acquisition
+### En cours
+- [ ] Valider la capacité de financement `[critical]`
+  Contacter le courtier ou la banque avec les premiers chiffres du projet
+### Terminé
+- [ ] Définir le cahier des charges de la maison d'hôte `[low]`
+  Nombre de chambres, localisation, extérieur requis
+```

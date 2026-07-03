@@ -1,0 +1,38 @@
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Démarrage immédiat (achat et ouverture sous 6 mois)
+  * ( ) Projet à moyen terme (6 à 12 mois)
+  * ( ) Projet à long terme (plus de 12 mois)
+  * ( ) Autre : ______
+
+* **Jalons clés indispensables à formaliser dans le cadrage :**
+  * [ ] Étude de marché locale et positionnement commercial
+  * [ ] Business plan financier (compte de résultat prévisionnel, plan de financement)
+  * [ ] Cahier des charges du bien immobilier (surface, nombre de chambres, critères techniques)
+  * [ ] Planification des travaux et des démarches administratives (ERP, accessibilité)
+  * [ ] Autre : ______
+
+* **Contraintes principales à intégrer en priorité :**
+  * [ ] Budget d'acquisition et enveloppe travaux stricte
+  * [ ] Réglementation ERP (Établissement Recevant du Public) et normes de sécurité
+  * [ ] Ressources humaines (gestion en couple, recours à des salariés externes)
+  * [ ] Contraintes d'urbanisme (PLU, bâtiments historiques)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables pour ce projet :**
+  * [ ] Taux d'occupation annuel minimum visé
+  * [ ] Seuil de rentabilité (point mort) atteint en année 1 ou 2
+  * [ ] Revenu moyen par chambre disponible (RevPAR) défini
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Refus de financement bancaire
+  * [ ] Retards ou surcoûts importants sur les travaux de rénovation
+  * [ ] Concurrence forte ou saisonnalité trop marquée
+  * [ ] Contraintes d'autorisation administrative (changement d'usage)
+  * [ ] Autre : ______
+
+* **Type de prestation et modèle d'exploitation visés :**
+  * [ ] Chambres d'hôtes simples avec petit-déjeuner
+  * [ ] Offre combinée (chambres d'hôtes, gîtes et table d'hôtes)
+  * [ ] Prestations haut de gamme (espace bien-être, séminaires, événements)
+  * [ ] Autre : ______

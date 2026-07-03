@@ -315,11 +315,29 @@ async function downloadFiles({ server, username, password, port, directory }, fi
 }
 
 /**
+ * Bascule globale (Admin) : la synchro FTP est en stand-by par défaut. Un projet
+ * dont backup_type='ftp' est traité comme "pas de backup FTP" tant que ce réglage
+ * n'est pas explicitement réactivé — rien n'est modifié en BDD, juste ignoré.
+ * Défaut sûr (false) si la table/réglage est absent ou la requête échoue.
+ */
+async function isFtpGloballyEnabled(pool) {
+    try {
+        const [rows] = await pool.query('SELECT value FROM platform_settings WHERE key_name = ?', ['ftpSyncEnabled']);
+        if (!rows.length) return false;
+        try { return JSON.parse(rows[0].value) === true; } catch { return false; }
+    } catch (e) {
+        return false;
+    }
+}
+
+/**
  * Récupère la config FTP d'un projet depuis frank_projects.
  * projectName = UUID du projet (= nom du dossier local).
- * Retourne null si le projet n'a pas de backup_type 'ftp'.
+ * Retourne null si le projet n'a pas de backup_type 'ftp' OU si la synchro FTP
+ * est désactivée globalement (Admin).
  */
 async function getFtpConfig(pool, projectName) {
+    if (!(await isFtpGloballyEnabled(pool))) return null;
     const [rows] = await pool.query(
         'SELECT backup_type, backup_server, backup_username, backup_password, backup_port, backup_directory FROM frank_projects WHERE id = ?',
         [projectName]
@@ -329,11 +347,14 @@ async function getFtpConfig(pool, projectName) {
 }
 
 /**
- * Retourne le backup_type d'un projet depuis frank_projects.
+ * Retourne le backup_type d'un projet depuis frank_projects. Renvoie null si
+ * le type stocké est 'ftp' mais que la synchro FTP est désactivée globalement.
  */
 async function getBackupType(pool, projectName) {
     const [rows] = await pool.query('SELECT backup_type FROM frank_projects WHERE id = ?', [projectName]);
-    return rows[0]?.backup_type || null;
+    const type = rows[0]?.backup_type || null;
+    if (type === 'ftp' && !(await isFtpGloballyEnabled(pool))) return null;
+    return type;
 }
 
 /**
@@ -407,4 +428,4 @@ async function syncFolderFilesFromFtp(ftpCfg, projectName, folderNode, localBase
     return { folderId: folderNode.id, status, downloaded, checked: expectedFiles.length, errors };
 }
 
-module.exports = { testConnection, listRemoteFiles, uploadFile, uploadFiles, downloadFile, downloadFiles, syncFromFtp, buildExpectedFromStructure, getFtpConfig, getBackupType, syncFolderFilesFromFtp };
+module.exports = { testConnection, listRemoteFiles, uploadFile, uploadFiles, downloadFile, downloadFiles, syncFromFtp, buildExpectedFromStructure, getFtpConfig, getBackupType, syncFolderFilesFromFtp, isFtpGloballyEnabled };

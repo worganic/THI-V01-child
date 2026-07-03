@@ -1,0 +1,15 @@
+===NOTE=== 2/3
+===CORRECTION===
+* **Question 1** : ✅
+  * Bonne réponse : g(x) = 5x
+  * Explication : Une fonction linéaire est de la forme f(x) = ax. Ici, g(x) = 5x correspond bien à cette définition avec un coefficient a = 5.
+
+* **Question 2** : ✅
+  * Bonne réponse : -3
+  * Explication : La représentation graphique d'une fonction linéaire f(x) = ax est une droite de pente (ou coefficient directeur) a. Pour f(x) = -3x, la pente est donc de -3.
+
+* **Question 3** : ❌
+  * Bonne réponse : 5
+  * Explication : Pour trouver le coefficient a, il faut diviser l'image par son antécédent, soit a = f(4) / 4 = 20 / 4 = 5. Tu as calculé le rapport inverse (4 / 20 = 0,2).
+
+C'est un travail très encourageant avec une bonne maîtrise visuelle et conceptuelle des fonctions linéaires. Sois simplement vigilant à bien diviser l'image par l'antécédent pour calculer le coefficient.

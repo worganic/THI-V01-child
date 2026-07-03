@@ -1,4 +1,4 @@
-<div class="landing-root" (keydown)="onKeydown($event)" tabindex="0">
+<div class="landing-root">
 
   <!-- ─── ANIMATED BACKGROUND ─── -->
   <div class="bg-layer" aria-hidden="true">
@@ -237,7 +237,6 @@ LOGIN MODAL
 @if (showLoginModal) {
   <div
     class="modal-overlay"
-    (click)="onOverlayClick($event)"
     role="dialog" aria-modal="true" aria-label="Connexion">
     <div class="modal-box">
       <!-- Header -->
@@ -312,7 +311,6 @@ LOGIN MODAL
     @if (showRegisterModal) {
       <div
         class="modal-overlay"
-        (click)="onOverlayClick($event)"
         role="dialog" aria-modal="true" aria-label="Inscription">
         <div class="modal-box">
           <!-- Header -->

@@ -1,0 +1,89 @@
+# Dossier de Présentation Bancaire : Projet de Maison d'Hôtes
+
+Ce dossier a été conçu pour structurer et présenter votre projet d'acquisition et de création d'une maison d'hôtes auprès des établissements bancaires. Il démontre la viabilité économique, le positionnement stratégique et la maîtrise opérationnelle du projet.
+
+## 1. Synthèse du Projet (Executive Summary)
+
+Le projet consiste en l'acquisition d'une bâtisse de caractère située dans une zone à fort potentiel touristique, afin de l'aménager en maison d'hôtes de charme offrant 4 chambres d'hôtes et une table d'hôtes axée sur les produits du terroir. 
+
+L'objectif financier est de solliciter un emprunt de 450 000 € venant compléter un apport personnel solide, afin de couvrir l'acquisition, les frais annexes et les premiers investissements d'aménagement.
+
+## 2. Le Positionnement Stratégique et l'Offre
+
+La maison d'hôtes se positionnera sur un segment moyen/haut de gamme. L'offre combinera :
+- Des nuitées avec petit-déjeuner inclus dans des chambres décorées avec soin.
+- Une table d'hôtes disponible 3 fois par semaine sur réservation.
+- Des prestations bien-être optionnelles (accès spa/jacuzzi extérieur).
+
+## 3. Plan de Financement et Prévisions Économiques
+
+Voici la structure financière initiale du projet pour valider le besoin de financement, suivie de l'estimation de l'activité sur les trois premières années.
+
+```ARRAY: Plan Financement
+| Besoin / Ressource | Montant (€) | Catégorie |
+|--------------------|-------------|-----------|
+| Acquisition du bien immobilier | 450000 | Besoin |
+| Frais de mutation (Notaire) | 36000 | Besoin |
+| Travaux de rénovation / normes | 80000 | Besoin |
+| Aménagement et décoration | 25000 | Besoin |
+| Trésorerie de démarrage | 15000 | Besoin |
+| Apport personnel mobilisé | 156000 | Ressource |
+| Emprunt bancaire sollicité | 450000 | Ressource |
+```
+
+```ARRAY: Prévisions Activité
+| Indicateur Financier | Année 1 | Année 2 | Année 3 |
+|----------------------|---------|---------|---------|
+| Taux d'occupation moyen | 45% | 55% | 60% |
+| Chiffre d'Affaires Hébergement | 54200 | 69200 | 78800 |
+| Chiffre d'Affaires Restauration | 12000 | 16000 | 18000 |
+| Charges d'exploitation globales | 28000 | 32000 | 34000 |
+| Excédent Brut d'Exploitation (EBE) | 38200 | 53200 | 62800 |
+```
+
+## 4. Feuille de Route Opérationnelle (Plan d'Action)
+
+Pour assurer une ouverture à la date prévue, les tâches et étapes clés sont suivies de près.
+
+```TRELLO: Suivi de Projet
+### À faire
+- [ ] Finaliser les devis d'aménagement `[high]`
+  Obtenir les devis fermes des artisans pour la mise en conformité sécurité et accessibilité.
+- [ ] Valider l'immatriculation juridique `[medium]`
+  Choix final du statut fiscal et dépôt des projets de statuts (SARL de famille ou EI).
+- [ ] Créer l'identité visuelle et le site web `[low]`
+  Développement de la charte graphique et pré-réservation du nom de domaine.
+### En cours
+- [ ] Négocier le compromis de vente `[critical]`
+  Intégration de la clause suspensive d'obtention du prêt bancaire d'un montant de 450 000 €.
+- [ ] Déposer le dossier de subvention `[medium]`
+  Demande d'aide au conseil régional pour le développement touristique rural.
+### Terminé
+- [ ] Réaliser l'étude de marché locale `[high]`
+  Analyse de la concurrence directe (gîtes et hôtels) et validation du prix moyen de la nuitée.
+- [ ] Consolider l'apport personnel `[critical]`
+  Déblocage et regroupement des fonds propres sur un compte d'attente dédié.
+```
+
+## 5. Préparation à l'Entretien Bancaire
+
+Ce questionnaire permet d'auto-évaluer votre niveau de préparation avant de rencontrer les banques et de structurer vos réponses aux objections fréquentes.
+
+```FORM: Entretien Banque
+* **Quelle est la solidité de votre apport personnel par rapport à l'investissement global ?**
+  * [ ] Supérieur à 30% (Très favorable pour la banque)
+  * [ ] Compris entre 20% et 30% (Standard et rassurant)
+  * [ ] Inférieur à 20% (Nécessitera des garanties complémentaires solides)
+* **Quel est l'état de préparation technique des travaux envisagés ?**
+  * [ ] Tous les devis sont signés ou chiffrés précisément par des professionnels RGE
+  * [ ] Les travaux sont estimés globalement sans devis détaillés
+  * [ ] Pas de travaux significatifs prévus à court terme
+* **Comment justifiez-vous la viabilité commerciale de votre taux d'occupation prévisionnel ?**
+  * [ ] Par des données statistiques régionales et l'avis de l'office de tourisme local
+  * [ ] Par comparaison simple avec des concurrents directs du secteur
+  * [ ] Il s'agit d'une estimation théorique basée sur notre objectif de revenus
+* **Avez-vous prévu une solution de repli ou une activité secondaire en cas de démarrage plus lent que prévu ?**
+  * [ ] Oui, maintien d'une activité professionnelle à temps partiel ou télétravail
+  * [ ] Oui, revenus locatifs indépendants de la maison d'hôtes
+  * [ ] Non, dépendance totale et immédiate des revenus de la maison d'hôtes
+```

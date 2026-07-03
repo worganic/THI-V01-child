@@ -111,3 +111,15 @@
 - Rappel des étapes post-installation : Actualiser le statut, cocher Provider actif, sélectionner les modèles, Sauvegarder
 - Fermeture explicite du popup via le bouton ✕, le bouton "J'ai compris" (closeCliHelp) — pas de fermeture au clic sur le backdrop
 - **Composants:** `apps/portail/src/app/pages/user/config/config.component.ts`, `apps/portail/src/app/pages/user/config/config.component.html`
+
+---
+
+## `2-2-10` — [modification] Synchronisation FTP des projets (admin uniquement)
+
+- **Visibilité** : toggle affiché uniquement si `auth.currentUser()?.role === 'admin'` (`isAdmin`), y compris en mode standalone `/config` (pas seulement dans l'onglet Admin)
+- **Réglage global BDD** : table `platform_settings` (clé `ftpSyncEnabled`), en stand-by (`false`) par défaut — aucune donnée existante modifiée, juste ignorée côté synchro tant que désactivé
+- **Chargement** : `ConfigService.loadPlatformSettings()` → GET `/api/admin/platform-settings` (accessible à tout user connecté, pour que les autres écrans — ex. Admin › Projets — puissent masquer l'option FTP)
+- **Modification** : `toggleFtpSync()` → `ConfigService.setFtpSyncEnabled()` → PUT `/api/admin/platform-settings` (403 si non-admin côté serveur, garde-fou même si le toggle n'était pas censé être visible)
+- **Effet** : tant que désactivé, `ftpService.getBackupType()`/`getFtpConfig()` traitent tout projet `backup_type='ftp'` comme sans sauvegarde configurée (fallback git/local automatique) — l'option "FTP" est grisée dans le panneau de sauvegarde projet (voir `connecte/admin/projets` › `2-1-6-6`), et les routes `ftp-sync`/`ftp-sync-background`/`initial-backup-push` répondent proprement sans tenter de connexion FTP
+- **Traçabilité** : chaque bascule est enregistrée dans l'historique d'actions (`section: 'admin/config'`, `entityId: 'ftpSyncEnabled'`)
+- **Composants:** `apps/portail/src/app/pages/user/config/config.component.ts`, `apps/portail/src/app/pages/user/config/config.component.html`, `libs/portail-core/data-access/src/lib/config.service.ts`, `server/server-data.js`, `server/modules/ftp-service.js`

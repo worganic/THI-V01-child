@@ -55,10 +55,11 @@ Données : via `ProjetCollabService`, temps réel WebSocket
 
 ---
 
-## `2-5-2-8-9` — Annulation d'une modification (undo simple)
+## `2-5-2-8-9` — [modification] Annulation d'une modification (undo simple)
 
 - **Déclenchement** : bouton `undo` (icône `undo`) visible au hover sur les entrées `undoable && !undone`
 - **Action** : `undoEntry(entry)` → `woHistory.undo(id)` → POST `/api/wo-action-history/:id/undo`
+- **Détection de conflit** : le serveur lit la dernière version BDD (`projet_content_version`) du fichier avant l'undo et transmet son `versionId` en `x-base-version-id` au self-call `PUT` qui rejoue l'ancien contenu — si quelqu'un d'autre a checkpointé entre-temps, l'undo échoue proprement (409, message clair) au lieu d'écraser silencieusement une sauvegarde plus récente
 - **Réponse serveur** : `{ restored: { nodeId, content } }` → émis via `(restored)` au parent → patch `files` + incrément `restoreToken` → reconstruction de la zone éditeur (mode focus préservé)
 - **Grisage** : événement SSE `entries_undone` (vérité serveur) → la collab marque l'entrée `undone` → grisée + boutons retirés. Survit aux rechargements (`undoable`/`undone` renvoyés par la route de chargement)
 - **Nouvelle entrée** : le serveur crée et diffuse (SSE `history`) une entrée "Annulation : ..." elle-même `undoable` (réapplique l'`afterState`) → permet d'annuler l'annulation
@@ -96,6 +97,18 @@ Données : via `ProjetCollabService`, temps réel WebSocket
 - **Cherry-pick** : clic `←` ou `→` copie la ligne dans la copie de travail (`workingLines[]`), badge bleu sur la ligne modifiée
 - **Réinitialiser** : restaure `workingLines` depuis `currentContent`
 - **Appliquer dans l'éditeur** : `emit(workingLines.join('\n'))` → parent patch `files` + `restoreToken` + `updateFile` serveur + entrée "Fusion manuelle" dans l'historique (`undoable: true`)
+
+---
+
+## `2-5-2-8-13` — [modification] Versions de cette section (checkpoints BDD immuables)
+
+- **Composant** : `ProjetHistoryComponent`, groupe collapsible "Versions de cette section" en haut du panneau (au-dessus de la timeline d'actions), alimenté par `activeFileId` (fichier `contenu.md` de la section active, résolu par `ProjetEditorComponent.activeContentFileId`)
+- **Différence avec la timeline d'actions** : ce groupe liste les vraies versions de contenu (`projet_content_version`, jamais effacées) plutôt que le log d'audit `wo_action_history` — chaque checkpoint/publication/restauration/fusion de conflit y apparaît
+- **Chargement** : `GET /api/file-projects/:name/files/:id/versions` (métadonnées seulement — auteur, date, origine), rechargé à chaque changement de section active
+- **Origines affichées** : Sauvegarde (`checkpoint`), Publication (`publish`), Restauration (`restore`), Fusion de conflit (`merge`), Tentative en conflit (`conflict-mine`), Version initiale (`migration-bootstrap`), Synchronisation Git (`pull`)
+- **Clic sur une version** : `GET .../versions/:versionId` (contenu complet) + contenu de la version de base (`base_version_id`) si disponible → ouvre `ProjetDiffComponent` (réutilise `entryClick`, même mécanisme que la timeline d'actions)
+- **Restaurer** : bouton visible au hover → `POST .../restore {versionId}` → insère une **nouvelle** version BDD avec l'ancien contenu (jamais de suppression/réécriture d'historique) → émet `(restored)` au parent comme un undo classique
+- **Composants:** `projet-history.component.ts`, `projet-history.component.html`, `projet-editor.component.ts`, `project-files.service.ts`, `server/server-data.js`
 
 ---
 

@@ -1,0 +1,47 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (du CP au CM2)
+  * ( ) Collège (de la 6ème à la 3ème)
+  * ( ) Lycée (de la 2nde à la Terminale)
+  * ( ) Enseignement supérieur / Université
+  * ( ) Autre : ______
+
+* **Matière ou domaine spécifique des mathématiques à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations, suites...)
+  * [ ] Géométrie (plane, dans l'espace, trigonométrie...)
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique et Spécialité Maths
+  * [ ] Autre : ______
+
+* **Niveau de départ estimé et objectif mesurable visé :**
+  * [ ] Difficultés importantes (objectif : remise à niveau / moyenne de classe)
+  * [ ] Niveau moyen (objectif : perfectionnement / mention)
+  * [ ] Bon niveau (objectif : préparation à un concours / classe prépa)
+  * [ ] Autre objectif précis : ______
+
+* **Durée globale de l'accompagnement et date de début :**
+  * ( ) Moins d'un mois (début immédiat)
+  * ( ) 1 à 3 mois (début sous 1 semaine)
+  * ( ) Un trimestre ou semestre (début le : ______ )
+  * ( ) Toute l'année scolaire (début en : ______ )
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 séances par semaine
+  * ( ) Plus de 2 séances par semaine (soutien intensif)
+  * ( ) Rythme libre / à la demande
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation préférées pour mesurer la progression :**
+  * [ ] QCM réguliers en ligne ou sur papier
+  * [ ] Devoirs sur table notés sur 20
+  * [ ] Auto-évaluation guidée par fiche de compétences
+  * [ ] Exercices pratiques d'application directe sans note
+  * [ ] Autre : ______
+
+* **Points prioritaires ou difficultés majeures à travailler en premier :**
+  * [ ] Méthodologie et rigueur de rédaction
+  * [ ] Apprentissage et compréhension des formules de cours
+  * [ ] Vitesse de résolution et gestion du stress en examen
+  * [ ] Résolution de problèmes complexes / ouverts
+  * [ ] Autre : ______

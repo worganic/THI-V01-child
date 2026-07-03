@@ -1,0 +1,90 @@
+# Projet de création d'une maison d'hôtes - Acquisition immobilière
+
+Ce document présente le plan d'action, le budget prévisionnel, les jalons clés et le questionnaire d'évaluation pour l'acquisition d'un bien immobilier destiné à être converti en maison d'hôtes.
+
+## 1. Tableau Kanban de l'avancement
+
+Voici les tâches prioritaires à réaliser pour mener à bien le projet de recherche et d'acquisition.
+
+```TRELLO: Avancement du Projet
+### À faire
+- [ ] Recherche de biens cibles `[high]`
+  Prospection d'annonces et contact d'agences dans les zones ciblées.
+- [ ] Validation du Plan de Financement `[critical]`
+  Dossier de prêt bancaire à finaliser avec le courtier.
+- [ ] Établissement du business plan d'exploitation `[medium]`
+  Estimation du chiffre d'affaires prévisionnel et des charges d'exploitation.
+
+### En cours
+- [ ] Définition des critères d'achat `[high]`
+  Cahier des charges de la propriété (nombre de chambres, terrain, travaux).
+
+### Terminé
+- [ ] Étude de marché locale `[medium]`
+  Analyse de la concurrence et de la demande touristique dans la région.
+```
+
+## 2. Planning des étapes clés
+
+Ce tableau présente le planning détaillé de la phase d'acquisition sur les 6 prochains mois.
+
+```ARRAY: Planning d'Acquisition
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Recherche | Prospection et visites de biens | Porteur de projet, Agents immobiliers | En cours |
+| 2 | 2026-08-15 | Sélection | Choix du bien et contre-visite technique | Porteur de projet, Artisan/Architecte | À faire |
+| 3 | 2026-09-01 | Négociation | Offre d'achat et négociation du prix | Porteur de projet, Vendeur | À faire |
+| 4 | 2026-09-15 | Compromis | Signature du compromis de vente | Notaire, Acheteur, Vendeur | À faire |
+| 5 | 2026-11-15 | Financement | Obtention de l'accord de prêt bancaire | Banque, Courtier, Acheteur | À faire |
+| 6 | 2026-12-15 | Vente finale | Signature de l'acte authentique de vente | Notaire, Acheteur, Vendeur | À faire |
+```
+
+## 3. Budget prévisionnel d'acquisition
+
+Suivi financier des dépenses liées à l'achat du bien immobilier.
+
+```ARRAY: Budget d'Acquisition
+| Poste de dépense | Budget prévu | Montant dépensé | Solde restant |
+|---|---|---|---|
+| Prix d'achat du bien | 450000 | 0 | =B2-C2 |
+| Frais de notaire | 36000 | 0 | =B3-C3 |
+| Honoraires d'agence | 20000 | 0 | =B4-C4 |
+| Travaux de rénovation | 80000 | 0 | =B5-C5 |
+| Ameublement et déco | 25000 | 0 | =B6-C6 |
+| Frais de garantie et dossier | 4000 | 1000 | =B7-C7 |
+| Total | =SUM(B2:B7) | =SUM(C2:C7) | =SUM(D2:D7) |
+```
+
+## 4. Jalons et réunions clés (Agenda)
+
+Dates importantes de la phase d'achat à ne pas manquer.
+
+```AGENDA: Jalons de l'Achat
+2026-07-15 | 10:00-12:00 | Point financier initial | Validation de l'enveloppe budgétaire avec le courtier
+2026-08-30 | 14:00-16:00 | Visite technique | Évaluation des travaux à réaliser par un artisan
+2026-09-15 | 11:00-12:30 | Signature Compromis | Signature du compromis de vente chez le notaire
+2026-11-15 | 09:00-10:00 | Date limite Offre de Prêt | Obtention et renvoi de l'offre de prêt bancaire acceptée
+2026-12-15 | 14:00-16:00 | Signature Acte de Vente | Signature de l'acte authentique et remise des clés
+```
+
+## 5. Formulaire de validation d'un bien cible
+
+Ce formulaire permet de valider si une propriété visitée répond aux critères indispensables d'une maison d'hôtes.
+
+```FORM: Validation du Bien Immobilier
+* **Localisation et accessibilité :**
+  * ( ) Très bonne (proche autoroute, gare, sites touristiques)
+  * ( ) Moyenne (quelques contraintes d'accès)
+  * ( ) Insuffisante (trop isolée pour une clientèle de passage)
+
+* **Capacité d'accueil potentielle (chambres d'hôtes) :**
+  * [ ] Possibilité de créer au moins 4 à 5 chambres indépendantes avec salles d'eau privatives
+  * [ ] Présence d'un espace de vie commun (salle des petits-déjeuners/salon)
+  * [ ] Espace extérieur exploitable (jardin, terrasse, piscine)
+  * [ ] Logement privatif indépendant pour les propriétaires
+
+* **Aspects techniques et réglementaires :**
+  * ( ) Conforme ou travaux mineurs (électricité, isolation, plomberie OK)
+  * ( ) Rénovation lourde requise (structure, toiture, assainissement à refaire)
+  * ( ) Réglementation d'urbanisme validée (PLU compatible avec l'activité)
+```

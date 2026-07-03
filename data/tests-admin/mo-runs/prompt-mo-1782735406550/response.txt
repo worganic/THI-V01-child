@@ -1,0 +1,43 @@
+* **Horizon temporel et date de démarrage visée pour l'achat ou l'ouverture :**
+  * ( ) Court terme (lancement de la recherche sous 3 mois, ouverture d'ici 1 an)
+  * ( ) Moyen terme (lancement sous 6 à 12 mois, ouverture d'ici 2 ans)
+  * ( ) Autre : ______
+
+* **Quel est le budget global estimé pour l'acquisition et les travaux ?**
+  * ( ) Moins de 300 000 €
+  * ( ) Entre 300 000 € et 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Quels sont les jalons clés ou étapes prioritaires à formaliser ?**
+  * [ ] Étude de marché et business plan
+  * [ ] Recherche et sélection du bien immobilier
+  * [ ] Montage financier et demande de prêt
+  * [ ] Conception des travaux de rénovation et mise aux normes ERP
+  * [ ] Stratégie de communication et pré-commercialisation
+
+* **Quelles sont les contraintes réglementaires et techniques majeures anticipées ?**
+  * [ ] Classement ERP (Établissement Recevant du Public) et sécurité incendie
+  * [ ] Accessibilité PMR (Personnes à Mobilité Réduite)
+  * [ ] Autorisations d'urbanisme (changement d'usage, permis de construire, déclaration préalable)
+  * [ ] Statut fiscal et juridique (LMNP/LMP, SARL de famille, SAS...)
+
+* **Quels critères de succès mesurables définissez-vous pour la première année d'exploitation ?**
+  * [ ] Taux d'occupation minimum (ex: 40%, 50%, ...)
+  * [ ] Chiffre d'affaires annuel cible : ______ €
+  * [ ] Seuil de rentabilité (point mort) atteint sous : ______ mois
+  * [ ] Rentabilité nette sur investissement supérieure à : ______ %
+
+* **Quels sont les principaux risques ou blocages identifiés pour ce projet ?**
+  * [ ] Refus de financement bancaire ou dépassement de budget travaux
+  * [ ] Retards de chantiers ou problèmes d'autorisations administratives
+  * [ ] Difficultés de recrutement ou de gestion opérationnelle (si externalisée)
+  * [ ] Faible attractivité de la zone géographique choisie
+  * [ ] Autre : ______
+
+* **Quels documents précis attendez-vous à l'issue de ce cadrage ?**
+  * [ ] Business plan complet et prévisionnel financier
+  * [ ] Cahier des charges pour la recherche du bien
+  * [ ] Rétroplanning détaillé du projet (de la recherche à l'ouverture)
+  * [ ] Synthèse sur la fiscalité et les statuts juridiques adaptés
+  * [ ] Grille d'évaluation des biens visités

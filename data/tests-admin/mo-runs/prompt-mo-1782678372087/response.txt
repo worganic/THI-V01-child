@@ -1,0 +1,35 @@
+* **Format du livrable final attendu :**
+  * ( ) Un prompt d'assistant / chatbot structuré pour exécuter l'atelier
+  * ( ) Une application web interactive (HTML / CSS / JS)
+  * ( ) Un script d'automatisation ou une API
+  * ( ) Autre : ______
+
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Démarrage immédiat avec finalisation sous 1 à 2 semaines
+  * ( ) Démarrage planifié à moyen terme (1 mois et plus)
+  * ( ) Autre : ______
+
+* **Étapes ou jalons clés du projet :**
+  * [ ] Phase de cadrage et validation du concept
+  * [ ] Développement d'un prototype ou MVP
+  * [ ] Phase de test avec des business owners
+  * [ ] Déploiement final et mise en production
+  * [ ] Autre : ______
+
+* **Contraintes principales (technique, budget, ressources) :**
+  * [ ] Contraintes techniques d'intégration (ex: Markdown, JSON, API)
+  * [ ] Ressources humaines ou temps limité pour le développement
+  * [ ] Budget limité pour l'usage d'API de grands modèles de langage (LLM)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables :**
+  * [ ] Justesse de l'extraction et qualification des unités de sens par l'IA
+  * [ ] Fluidité de l'expérience utilisateur et respect des temps de session
+  * [ ] Taux d'utilisation et d'engagement des business owners lors des ateliers
+  * [ ] Autre : ______
+
+* **Risques ou blocages anticipés :**
+  * [ ] Résistance ou blocage des utilisateurs face à l'exercice d'écriture libre
+  * [ ] Difficulté à classifier des textes très décousus ou informels
+  * [ ] Perte de données en cours de session (absence de sauvegarde automatique)
+  * [ ] Autre : ______

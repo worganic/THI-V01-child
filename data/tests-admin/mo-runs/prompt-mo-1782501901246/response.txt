@@ -1,0 +1,138 @@
+# Programme de Formation Personnalisé en Mathématiques
+
+Bienvenue dans votre espace de formation individuelle. Ce programme est conçu pour s'adapter à votre niveau et à vos objectifs spécifiques afin de consolider vos bases, surmonter vos difficultés et vous mener vers la réussite.
+
+---
+
+## 1. Recueil du Profil et des Besoins
+Afin de personnaliser au mieux le contenu des séances, veuillez remplir ce court questionnaire de diagnostic initial.
+
+```FORM: Profil
+* **Quel est votre niveau scolaire actuel ?**
+  * ( ) Collège - 6ème / 5ème
+  * ( ) Collège - 4ème / 3ème
+  * ( ) Lycée - Seconde
+  * ( ) Lycée - Première / Terminale
+  * ( ) Enseignement supérieur / Autre
+* **Quelle matière ou thématique de mathématiques souhaitez-vous travailler en priorité ?**
+  * [ ] Algèbre (calcul littéral, équations)
+  * [ ] Analyse (fonctions, suites, dérivation)
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+* **Quel est votre objectif principal pour cette formation ?**
+  * ( ) Consolidation des bases et soutien scolaire
+  * ( ) Perfectionnement et approfondissement
+  * ( ) Préparation à un examen (Brevet, Bac, Concours)
+```
+
+---
+
+## 2. Plan de Travail et des Cours
+Ce plan de travail initial se concentre sur les fondamentaux de l'algèbre et des fonctions, deux piliers majeurs de la réussite en mathématiques au collège et au lycée. Il sera ajusté dès réception de votre profil.
+
+### Séance 1 : Diagnostic & Bases du Calcul Littéral
+- **Cours :** Rappels sur le développement (distributivité simple et double, identités remarquables) et la factorisation d'expressions algébriques.
+- **Objectifs :** Repérer les automatismes de calcul, simplifier des expressions complexes et identifier les erreurs récurrentes (règles des signes, priorités opératoires).
+
+### Séance 2 : Résolution d'Équations et Modélisation
+- **Cours :** Résolution d'équations du premier degré (ax + b = c), équations-produits nuls, et introduction aux inéquations.
+- **Objectifs :** Traduire un problème concret sous forme d'équation et appliquer une méthode rigoureuse de résolution étape par étape.
+
+### Séance 3 : Introduction et Analyse de Fonctions
+- **Cours :** Définitions d'une fonction, calcul d'images et de antécédents, lecture graphique et tableaux de variations.
+- **Objectifs :** Faire le lien entre expression algébrique et représentation graphique, interpréter des données réelles modélisées par des fonctions.
+
+### Séance 4 : Bilan Final et Remédiation
+- **Cours :** Synthèse transversale combinant modélisation par des fonctions et résolution d'équations.
+- **Objectifs :** Mesurer les progrès accomplis, valider l'acquisition des compétences clés et définir des pistes de travail en autonomie.
+
+---
+
+## 3. Dispositif de Planification et Suivi
+
+### Planning des séances
+Voici le calendrier prévisionnel de vos sessions d'accompagnement.
+
+```ARRAY: Planning
+| Date | Thème | Objectif | Exercice | Statut |
+|-----------|-----------|-----------|-----------|-----------|
+| 2026-07-01 | Séance 1 : Évaluation diagnostique | Repérer les acquis et lacunes | Formulaire de profil | À faire |
+| 2026-07-08 | Séance 2 : Équations & Inéquations | Maîtriser la résolution algébrique | Fiche Équations | À faire |
+| 2026-07-15 | Séance 3 : Généralités sur les fonctions | Interpréter graphiquement une fonction | Étude de fonctions | À faire |
+| 2026-07-22 | Séance 4 : Bilan final | Valider les compétences acquises | Évaluation finale | À faire |
+```
+
+### Agenda des événements
+Retrouvez les créneaux exacts de vos séances en direct.
+
+```AGENDA: Séances
+2026-07-01 | 14:00-16:00 | Séance 1 : Diagnostique | Rappels d'algèbre et évaluation diagnostique
+2026-07-08 | 14:00-16:00 | Séance 2 : Équations | Résolution d'équations et inéquations du premier degré
+2026-07-15 | 14:00-16:00 | Séance 3 : Fonctions | Modélisation graphique et étude de fonctions
+2026-07-22 | 14:00-16:00 | Séance 4 : Bilan | Évaluation de synthèse et remédiation finale
+```
+
+---
+
+## 4. Exercices d'Évaluation (Thème : Équations)
+Voici une première série d'exercices pour valider vos compétences sur le grand thème des équations.
+
+```FORM: Exercices Equations
+* **Question 1 : Quelle est la solution de l'équation 3x - 5 = 7 ?**
+  * ( ) x = 2
+  * ( ) x = 4
+  * ( ) x = -4
+  * ( ) x = 12
+* **Question 2 : Développez l'expression A = (2x - 3)(x + 4). Quelle est l'expression correcte ?**
+  * ( ) A = 2x² - 12
+  * ( ) A = 2x² + 5x - 12
+  * ( ) A = 2x² - 5x - 12
+* **Question 3 : Résolvez l'inéquation 2x + 3 < 7. Quelle est l'affirmation vraie ?**
+  * ( ) Les solutions sont tous les nombres x strictement inférieurs à 2.
+  * ( ) Les solutions sont tous les nombres x strictement supérieurs à 2.
+  * ( ) L'inéquation n'a pas de solution réelle.
+* **Question 4 : Un rectangle a une longueur x et une largeur de 3 cm de moins que sa longueur. Si son périmètre est de 26 cm, quelle équation permet de trouver x ?**
+  * ( ) x + x - 3 = 26
+  * ( ) 2(x + x - 3) = 26
+  * ( ) x(x - 3) = 26
+```
+
+---
+
+## 5. Suivi des Performances et Progression
+
+### Tableau de suivi des notes
+Ce tableau sera mis à jour à la fin de chaque séance pour mesurer vos résultats.
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|-----------|-----------|-----------|-----------|-----------|-----------|
+| Séance 1 | 2026-07-01 | | 20 | =C2/D2*100 | |
+| Séance 2 | 2026-07-08 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-15 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-22 | | 20 | =C5/D5*100 | |
+| Moyenne | | =AVG(C2:C5) | | | |
+```
+
+### Graphique de progression
+Ce graphique illustrera l'évolution de vos notes au fil des séances.
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+---
+
+## 6. Suivi des Tâches et de l'Avancement
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparation du matériel de cours `[low]`
+  Rassembler les fiches de cours sur les équations et fonctions.
+- [ ] Remplir le formulaire de profil `[high]`
+  Compléter les informations sur le niveau et la matière.
+### En cours
+- [ ] Séance 1 : Évaluation diagnostique `[critical]`
+  Effectuer le premier point avec l'enseignant le 1er juillet.
+### Terminé
+```

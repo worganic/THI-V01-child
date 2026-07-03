@@ -47,6 +47,7 @@ import {
       (fileSave)="fileSave.emit($event)"
       (editSource)="editSource.emit($event)"
       (sectionsChange)="sectionsChange.emit($event)"
+      (saveConflict)="saveConflict.emit($event)"
       (nodeActive)="nodeActive.emit($event)"
       (dragDrop)="dragDrop.emit($event)"
       (dirtyChange)="dirtyChange.emit($event)"
@@ -94,6 +95,10 @@ export class EditionOutilComponent {
   @Output() fileSave = new EventEmitter<FileSaveEvent>();
   @Output() editSource = new EventEmitter<string>();
   @Output() sectionsChange = new EventEmitter<SectionInfo[]>();
+  @Output() saveConflict = new EventEmitter<{
+    fileId: string; folderId?: string; baseVersionId: string | null;
+    mineContent: string; serverContent: string; serverAuthorName: string; serverCreatedAt: string;
+  }>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();

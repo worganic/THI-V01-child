@@ -35,28 +35,73 @@ const PROJECT_ROOT = path.dirname(BASE_DIR);
 const CONFIG_DIR = path.join(BASE_DIR, 'config');
 const LOG_EDITION_FILE = path.join(BASE_DIR, 'log-edition.txt');
 
-// ── Versions de fichiers (ETag léger pour détection de conflit multi-user) ──
-// Map<"projectName/fileId", { hash: string, updatedAt: number }>
-const fileVersions = new Map();
+// ── Versions de contenu de fichiers de projet (source de vérité BDD) ────────
+// Historique immuable : jamais d'UPDATE/DELETE sur projet_content_version,
+// toute correction (restauration, fusion) insère une nouvelle ligne.
+// Aucun checkpoint automatique : chaque appel à la route de sauvegarde est
+// désormais un acte volontaire de l'utilisateur (bouton "Enregistrer et
+// partager"), les frappes intermédiaires ne passent que par le brouillon
+// local (voir projet_local_draft plus bas).
 
-/** Calcule un hash rapide d'un contenu texte (FNV-1a 32 bits → hex string). */
-function contentHash(str) {
-    let h = 0x811c9dc5;
-    for (let i = 0; i < str.length; i++) {
-        h ^= str.charCodeAt(i);
-        h = (h * 0x01000193) >>> 0;
+function sha256Hex(str) {
+    return crypto.createHash('sha256').update(str || '').digest('hex');
+}
+
+/** Insère une nouvelle version immuable. `dbConnOrPool` peut être le pool ou une connexion de transaction. */
+async function insertContentVersion(dbConnOrPool, { projectId, nodeId, filePath, content, baseVersionId, mergedFromVersionId, origin, authorId, authorName }) {
+    const versionId = crypto.randomUUID();
+    const hash = sha256Hex(content || '');
+    await dbConnOrPool.query(
+        `INSERT INTO projet_content_version
+         (version_id, project_id, node_id, file_path, content, content_hash, base_version_id, merged_from_version_id, origin, author_id, author_name)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+        [versionId, projectId, nodeId, filePath || null, content || '', hash, baseVersionId || null, mergedFromVersionId || null, origin || 'checkpoint', authorId || null, authorName || '']
+    );
+    return { versionId, contentHash: hash };
+}
+
+/** Dernière version connue d'un noeud (ou null si aucune version encore). */
+async function getLatestVersion(dbConnOrPool, projectId, nodeId) {
+    const [rows] = await dbConnOrPool.query(
+        `SELECT version_id, content, content_hash, author_id, author_name, created_at
+         FROM projet_content_version WHERE project_id = ? AND node_id = ? ORDER BY id DESC LIMIT 1`,
+        [projectId, nodeId]
+    );
+    return rows[0] || null;
+}
+
+// ── Réglages plateforme (clé/valeur, MySQL) ─────────────────────────────────
+async function getPlatformSetting(key, defaultValue) {
+    try {
+        const [rows] = await pool.query('SELECT value FROM platform_settings WHERE key_name = ?', [key]);
+        if (!rows.length) return defaultValue;
+        try { return JSON.parse(rows[0].value); } catch { return rows[0].value; }
+    } catch (e) {
+        console.warn('[SETTINGS] getPlatformSetting error:', e.message);
+        return defaultValue;
     }
-    return h.toString(16).padStart(8, '0');
 }
 
-function getFileVersion(project, fileId) {
-    return fileVersions.get(`${project}/${fileId}`) || null;
+async function setPlatformSetting(key, value) {
+    await pool.query(
+        'INSERT INTO platform_settings (key_name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)',
+        [key, JSON.stringify(value)]
+    );
 }
 
-function setFileVersion(project, fileId, content) {
-    const hash = contentHash(content || '');
-    fileVersions.set(`${project}/${fileId}`, { hash, updatedAt: Date.now() });
-    return hash;
+/** Dernière version de chaque noeud d'un projet, en une requête (évite le N+1 sur attachContent). */
+async function getLatestVersionsMap(projectId) {
+    const [rows] = await pool.query(
+        `SELECT pcv.node_id, pcv.version_id, pcv.content, pcv.content_hash, pcv.author_name, pcv.created_at
+         FROM projet_content_version pcv
+         INNER JOIN (
+             SELECT node_id, MAX(id) AS max_id FROM projet_content_version WHERE project_id = ? GROUP BY node_id
+         ) latest ON pcv.node_id = latest.node_id AND pcv.id = latest.max_id`,
+        [projectId]
+    );
+    const map = new Map();
+    for (const r of rows) map.set(r.node_id, r);
+    return map;
 }
 
 // ── Logging édition ─────────────────────────────────────────────────────────
@@ -178,7 +223,7 @@ app.use(cors({
         // 'https://app.worganic.com'
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Call', 'x-edition-source', 'x-file-version']
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Internal-Call', 'x-edition-source', 'x-file-version', 'x-base-version-id']
 }));
 
 app.use(express.json({ limit: '50mb' }));
@@ -2870,24 +2915,27 @@ app.post('/api/wo-action-history/:id/undo', async (req, res) => {
             return res.status(400).json({ error: "Aucune action d'annulation définie" });
         }
 
-        // Lire le contenu actuel du fichier AVANT d'exécuter l'undo
-        // → capturé comme afterState du tracking, peu importe la profondeur de la chaîne
+        // Lire la dernière version BDD du fichier AVANT d'exécuter l'undo (source de
+        // vérité — le disque n'est qu'une sauvegarde passive) → sert à la fois de
+        // afterState pour le tracking ET de base de comparaison pour la détection
+        // de conflit sur le self-call PUT ci-dessous (empêche l'undo d'écraser
+        // silencieusement une sauvegarde plus récente d'un autre utilisateur).
         let currentFileContent = null;
+        let currentFileVersionId = null;
+        let isFileContentUndo = false;
         if (undoAction.endpoint?.includes('/api/file-projects/') && undoAction.payload?.content != null) {
+            isFileContentUndo = true;
             try {
                 const parts = undoAction.endpoint.split('/');
                 const projectNameForRead = parts[3];
                 const fileIdForRead = parts[5];
-                const configForRead = await getProjectConfig(projectNameForRead);
-                const itemForRead = configForRead ? findNodeById(configForRead.structure, fileIdForRead) : null;
-                if (itemForRead?.path) {
-                    const fullPath = safeProjectPath(projectNameForRead, itemForRead.path);
-                    if (fullPath && fs.existsSync(fullPath)) {
-                        currentFileContent = fs.readFileSync(fullPath, 'utf8');
-                    }
+                const latestForRead = await getLatestVersion(pool, projectNameForRead, fileIdForRead);
+                if (latestForRead) {
+                    currentFileContent = latestForRead.content;
+                    currentFileVersionId = latestForRead.version_id;
                 }
             } catch (e) {
-                console.warn('[WO_ACTION_HISTORY] Could not read current file before undo:', e.message);
+                console.warn('[WO_ACTION_HISTORY] Could not read current version before undo:', e.message);
             }
         }
 
@@ -2899,14 +2947,22 @@ app.post('/api/wo-action-history/:id/undo', async (req, res) => {
                 'Content-Type': 'application/json',
                 'X-Internal-Call': '1',
                 ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
-                ...(req.headers.cookie ? { Cookie: req.headers.cookie } : {})
+                ...(req.headers.cookie ? { Cookie: req.headers.cookie } : {}),
+                ...(isFileContentUndo && currentFileVersionId ? { 'x-base-version-id': currentFileVersionId } : {})
             }
         };
         if (undoAction.payload && ['PUT', 'POST', 'PATCH'].includes(undoAction.method)) {
-            fetchOptions.body = JSON.stringify(undoAction.payload);
+            fetchOptions.body = JSON.stringify(isFileContentUndo ? { ...undoAction.payload, checkpoint: true } : undoAction.payload);
         }
 
         const undoRes = await fetch(selfUrl, fetchOptions);
+        if (undoRes.status === 409) {
+            const conflictData = await undoRes.json().catch(() => ({}));
+            return res.status(409).json({
+                error: 'Ce fichier a été modifié par un autre utilisateur depuis — annulation impossible sans risquer d\'écraser sa modification',
+                conflict: conflictData
+            });
+        }
         if (!undoRes.ok && undoRes.status !== 404) {
             const errData = await undoRes.json().catch(() => ({}));
             return res.status(undoRes.status).json({ error: errData.error || "Erreur lors de l'annulation" });
@@ -4374,6 +4430,7 @@ function frankRowToObj(r) {
         status: r.status, userId: r.user_id,
         linkedDocId: r.linked_doc_id || null,
         _ownerUsername: r.owner_username || null,
+        _sharedWithMe: !!r._sharedWithMe,
         createdAt: r.created_at, updatedAt: r.updated_at,
         iaInstructions: r.ia_instructions || null,
         backupType: r.backup_type || null,
@@ -4388,23 +4445,33 @@ function frankRowToObj(r) {
     };
 }
 
-// GET /api/frank/projects — liste (admin: tous, user: les siens)
+// Vérifie si un user a accès à un projet frank (propriétaire, partagé, ou admin)
+async function frankUserHasAccess(projectRow, user) {
+    if (user.role === 'admin' || projectRow.user_id === user.id) return true;
+    const [shares] = await pool.query(
+        'SELECT 1 FROM frank_project_shares WHERE project_id = ? AND user_id = ? LIMIT 1',
+        [projectRow.id, user.id]
+    );
+    return shares.length > 0;
+}
+
+// GET /api/frank/projects — liste (admin: tous, user: les siens + ceux partagés avec lui)
 app.get('/api/frank/projects', async (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     try {
         let query, params;
         if (user.role === 'admin') {
-            query = `SELECT fp.*, u.username AS owner_username FROM frank_projects fp
+            query = `SELECT fp.*, u.username AS owner_username, 0 AS _sharedWithMe FROM frank_projects fp
                      LEFT JOIN users u ON fp.user_id = u.id
                      ORDER BY COALESCE(fp.updated_at, fp.created_at) DESC`;
             params = [];
         } else {
-            query = `SELECT fp.*, u.username AS owner_username FROM frank_projects fp
+            query = `SELECT fp.*, u.username AS owner_username, (fp.user_id != ?) AS _sharedWithMe FROM frank_projects fp
                      LEFT JOIN users u ON fp.user_id = u.id
-                     WHERE fp.user_id = ?
+                     WHERE fp.user_id = ? OR fp.id IN (SELECT project_id FROM frank_project_shares WHERE user_id = ?)
                      ORDER BY COALESCE(fp.updated_at, fp.created_at) DESC`;
-            params = [user.id];
+            params = [user.id, user.id, user.id];
         }
         const [rows] = await pool.query(query, params);
         res.json(rows.map(frankRowToObj));
@@ -4425,11 +4492,80 @@ app.get('/api/frank/projects/:id', async (req, res) => {
             [req.params.id]
         );
         if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
-        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+        if (!(await frankUserHasAccess(rows[0], user)))
             return res.status(403).json({ error: 'Accès refusé' });
         res.json(frankRowToObj(rows[0]));
     } catch (e) {
         console.error('[FRANK] Get error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// GET /api/frank/projects/:id/shares — liste des users avec qui le projet est partagé
+app.get('/api/frank/projects/:id/shares', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query('SELECT user_id FROM frank_projects WHERE id = ?', [req.params.id]);
+        if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
+        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+            return res.status(403).json({ error: 'Accès refusé' });
+        const [shares] = await pool.query(
+            `SELECT s.user_id AS id, u.username, u.email FROM frank_project_shares s
+             JOIN users u ON u.id = s.user_id WHERE s.project_id = ? ORDER BY u.username`,
+            [req.params.id]
+        );
+        res.json(shares);
+    } catch (e) {
+        console.error('[FRANK] List shares error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// POST /api/frank/projects/:id/shares — partager avec un user (par email)
+app.post('/api/frank/projects/:id/shares', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { email } = req.body || {};
+    if (!email) return res.status(400).json({ error: 'email requis' });
+    try {
+        const [rows] = await pool.query('SELECT user_id FROM frank_projects WHERE id = ?', [req.params.id]);
+        if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
+        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+            return res.status(403).json({ error: 'Accès refusé' });
+
+        const [targetRows] = await pool.query('SELECT id, username, email FROM users WHERE email = ?', [email]);
+        const target = targetRows[0];
+        if (!target) return res.status(404).json({ error: 'Utilisateur introuvable avec cet email' });
+        if (target.id === rows[0].user_id) return res.status(400).json({ error: 'Impossible de partager avec le propriétaire du projet' });
+
+        await pool.query(
+            'INSERT IGNORE INTO frank_project_shares (project_id, user_id) VALUES (?, ?)',
+            [req.params.id, target.id]
+        );
+        res.json({ success: true, user: { id: target.id, username: target.username, email: target.email } });
+    } catch (e) {
+        console.error('[FRANK] Share error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// DELETE /api/frank/projects/:id/shares/:userId — retirer le partage
+app.delete('/api/frank/projects/:id/shares/:userId', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query('SELECT user_id FROM frank_projects WHERE id = ?', [req.params.id]);
+        if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
+        if (user.role !== 'admin' && rows[0].user_id !== user.id)
+            return res.status(403).json({ error: 'Accès refusé' });
+        await pool.query(
+            'DELETE FROM frank_project_shares WHERE project_id = ? AND user_id = ?',
+            [req.params.id, req.params.userId]
+        );
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[FRANK] Unshare error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
@@ -4473,7 +4609,7 @@ app.put('/api/frank/projects/:id', async (req, res) => {
         const [rows] = await pool.query('SELECT * FROM frank_projects WHERE id = ?', [req.params.id]);
         if (!rows[0]) return res.status(404).json({ error: 'Projet non trouvé' });
         const p = rows[0];
-        if (user.role !== 'admin' && p.user_id !== user.id)
+        if (!(await frankUserHasAccess(p, user)))
             return res.status(403).json({ error: 'Accès refusé' });
         const { title, description, status, iaInstructions, backupType, backupServer, backupUsername, backupPassword, backupPort, backupDirectory, backupOwnerType, backupRepoName, backupVisibility } = req.body;
         const updatedAt = new Date().toISOString();
@@ -4918,6 +5054,14 @@ function findNodeById(items, id) {
     return null;
 }
 
+function findNodeByPath(items, targetPath) {
+    for (const item of items) {
+        if (item.path === targetPath) return item;
+        if (item.children) { const f = findNodeByPath(item.children, targetPath); if (f) return f; }
+    }
+    return null;
+}
+
 function removeNodeById(items, id) {
     const idx = items.findIndex(i => i.id === id);
     if (idx !== -1) { items.splice(idx, 1); return true; }
@@ -4931,26 +5075,49 @@ function isImageFile(name) {
     return /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(name);
 }
 
-function attachContent(projectName, items) {
+// Lit le contenu des fichiers depuis la BDD (source de vérité). Si un noeud n'a
+// encore aucune version (projet créé avant cette migration), bascule transparente :
+// lit le disque et insère une version `migration-bootstrap` pour les prochains appels.
+async function attachContent(projectName, items, versionsMap) {
+    if (!versionsMap) versionsMap = await getLatestVersionsMap(projectName);
     const sortedItems = [...items].sort((a, b) => (a.order || 0) - (b.order || 0));
-    return sortedItems.map(item => {
+    const results = [];
+    for (const item of sortedItems) {
         const result = { ...item };
         if (item.type === 'file') {
             if (isImageFile(item.name)) {
                 result.content = '';
                 result.fileType = 'image';
             } else {
-                const full = path.join(PROJECTS_DIR, projectName, item.path);
-                result.content = fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : '';
+                const versionRow = versionsMap.get(item.id);
+                if (versionRow) {
+                    result.content = versionRow.content;
+                    result.fileVersion = versionRow.version_id;
+                } else {
+                    const full = path.join(PROJECTS_DIR, projectName, item.path);
+                    const diskContent = fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : '';
+                    result.content = diskContent;
+                    try {
+                        const bootstrapped = await insertContentVersion(pool, {
+                            projectId: projectName, nodeId: item.id, filePath: item.path,
+                            content: diskContent, baseVersionId: null, mergedFromVersionId: null,
+                            origin: 'migration-bootstrap', authorId: null, authorName: ''
+                        });
+                        result.fileVersion = bootstrapped.versionId;
+                    } catch (e) {
+                        console.error('[VERSION] bootstrap error:', e.message);
+                        result.fileVersion = null;
+                    }
+                }
                 result.fileType = 'text';
-                // Initialiser/mettre à jour la version en mémoire et la retourner au client
-                result.fileVersion = setFileVersion(projectName, item.id, result.content);
             }
-            if (item.children) result.children = attachContent(projectName, item.children);
-            return result;
+            if (item.children) result.children = await attachContent(projectName, item.children, versionsMap);
+        } else {
+            result.children = await attachContent(projectName, item.children || [], versionsMap);
         }
-        return { ...item, children: attachContent(projectName, item.children || []) };
-    });
+        results.push(result);
+    }
+    return results;
 }
 
 function safeProjectPath(projectName, filePath) {
@@ -5332,7 +5499,7 @@ app.get('/api/file-projects/:name/files', async (req, res) => {
     if (!config) return res.status(404).json({ error: 'Projet non trouvé' });
     try {
         const localExists = fs.existsSync(path.join(PROJECTS_DIR, req.params.name));
-        const files = localExists ? attachContent(req.params.name, config.structure || []) : (config.structure || []);
+        const files = localExists ? await attachContent(req.params.name, config.structure || []) : (config.structure || []);
         res.json({ success: true, project: config.projectName, gitRemoteUrl: config.gitRemoteUrl || null, localExists, files });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -5367,9 +5534,15 @@ app.post('/api/file-projects/:name/files', async (req, res) => {
         const existing = parentItems.find(i => i.name.toLowerCase() === fileName.toLowerCase());
         if (existing) {
             if (existing.type !== 'file') return res.status(409).json({ error: 'Un dossier porte déjà ce nom' });
-            // Si c'est le même fichier, on met juste à jour le contenu
+            // Écriture disque best-effort uniquement — pas de checkpoint BDD automatique ici
+            // (la validation explicite via "Enregistrer et partager" reste seule responsable des
+            // versions BDD ; sinon un checkpoint prématuré avec un contenu encore incomplet
+            // écraserait visuellement le brouillon en cours au prochain rechargement structurel).
             const full = safeProjectPath(req.params.name, existing.path);
-            if (full) fs.writeFileSync(full, content || '', 'utf8');
+            if (full) {
+                try { fs.mkdirSync(path.dirname(full), { recursive: true }); fs.writeFileSync(full, content || '', 'utf8'); }
+                catch (diskErr) { console.warn('[BACKUP] écriture disque échouée (create dedup):', diskErr.message); }
+            }
             return res.status(200).json({ ...existing, content: content || '' });
         }
 
@@ -5379,16 +5552,21 @@ app.post('/api/file-projects/:name/files', async (req, res) => {
         fs.writeFileSync(full, content || '', 'utf8');
         const newFile = { id: crypto.randomUUID(), type: 'file', name: fileName, path: filePath, order: parentItems.length + 1 };
         parentItems.push(newFile);
+        // Pas de checkpoint BDD automatique à la création : attachContent() bootstrape depuis le
+        // disque (origin migration-bootstrap) à la première lecture si aucune version n'existe
+        // encore, et le vrai checkpoint n'est créé qu'au clic explicite "Enregistrer et partager".
 
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `create_file ${fileName}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit create_file:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `create_file ${fileName}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit create_file:', gitErr.message));
         res.status(201).json({ ...newFile, content: content || '' });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 // PUT /api/projects/:name/files/:id
+// Source de vérité = BDD (projet_content_version, immuable). Le disque
+// (data/projets/<name>/...) n'est plus qu'une sauvegarde passive best-effort —
+// aucun git checkout/branche n'a plus lieu sur ce chemin de sauvegarde live.
 app.put('/api/file-projects/:name/files/:id', async (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
@@ -5397,65 +5575,74 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
     const item = findNodeById(config.structure, req.params.id);
     if (!item || item.type !== 'file') return res.status(404).json({ error: 'Fichier non trouvé' });
 
-    // Vérification du lock : si la section est verrouillée par un autre user → 423
-    try {
-        const lockNodeIds = [req.params.id];
-        if (req.body.folderId) lockNodeIds.push(req.body.folderId);
-        const placeholders = lockNodeIds.map(() => '?').join(',');
-        const [locks] = await pool.query(
-            `SELECT * FROM projet_section_lock WHERE node_id IN (${placeholders}) AND projet_id = ?`,
-            [...lockNodeIds, req.params.name]
-        );
-        const blockedLock = locks.find(l => l.locked_by_id !== user.id);
-        if (blockedLock) {
-            return res.status(423).json({
-                error: 'Section verrouillée',
-                lockedBy: blockedLock.locked_by_name,
-                lockedAt: blockedLock.locked_at
-            });
-        }
-    } catch (e) {
-        console.error('[LOCK] check error on file update:', e.message);
-        // Fail-safe : si la DB est inaccessible, bloquer l'écriture pour éviter les conflits silencieux
-        return res.status(503).json({ error: 'Verrou non vérifiable — réessayez dans quelques secondes' });
-    }
-
     try {
         const full = safeProjectPath(req.params.name, item.path);
         if (!full) return res.status(400).json({ error: 'Chemin invalide' });
-        fs.mkdirSync(path.dirname(full), { recursive: true });
         const content = req.body.content ?? '';
         const folderId = req.body.folderId || null;
         const publish = req.body.publish === true;
-        const editionSource = req.headers['x-edition-source'] || (publish ? 'publish' : 'auto-save');
-
-        // Lire l'ancien contenu pour le diff AVANT d'écraser
-        let oldContent = '';
-        try { oldContent = fs.existsSync(full) ? fs.readFileSync(full, 'utf8') : ''; } catch (_) {}
-
-        // Détection de conflit ETag (x-file-version header envoyé par le client)
-        const clientVersion = req.headers['x-file-version'];
-        if (clientVersion) {
-            const serverVersion = getFileVersion(req.params.name, req.params.id);
-            if (serverVersion && serverVersion.hash !== clientVersion) {
-                // Un autre utilisateur a modifié ce fichier depuis le dernier chargement
-                return res.status(409).json({
-                    error: 'conflict',
-                    message: 'Ce fichier a été modifié par un autre utilisateur',
-                    serverContent: oldContent,
-                    serverVersion: serverVersion.hash,
-                    serverUpdatedAt: serverVersion.updatedAt
-                });
-            }
+        const editionSource = req.headers['x-edition-source'] || (publish ? 'publish' : 'manual-save');
+        const baseVersionId = req.headers['x-base-version-id'] || req.headers['x-file-version'] || null;
+        if (req.headers['x-file-version'] && !req.headers['x-base-version-id']) {
+            console.warn('[VERSION] header x-file-version obsolète reçu — le client doit migrer vers x-base-version-id');
         }
 
-        fs.writeFileSync(full, content, 'utf8');
-        // Mettre à jour la version après écriture
-        setFileVersion(req.params.name, req.params.id, content);
+        // Sauvegarde disque best-effort : jamais bloquant, jamais source de vérité.
+        try {
+            fs.mkdirSync(path.dirname(full), { recursive: true });
+            fs.writeFileSync(full, content, 'utf8');
+        } catch (diskErr) {
+            console.warn('[BACKUP] écriture disque échouée (non bloquant):', diskErr.message);
+        }
 
-        // Logger la modification (seulement si le contenu a changé)
-        if (oldContent !== content) {
-            const diff = computeEditionDiff(oldContent, content);
+        const latestBeforeSave = await getLatestVersion(pool, req.params.name, req.params.id);
+
+        // Transaction + détection de conflit réelle contre la BDD. Cette route n'est
+        // plus appelée que sur une action volontaire de l'utilisateur (Enregistrer et
+        // partager, ou création initiale du fichier) — chaque appel est un checkpoint.
+        const conn = await pool.getConnection();
+        let versionId = null;
+        try {
+            await conn.beginTransaction();
+            const [rows] = await conn.query(
+                `SELECT version_id, content, author_name, created_at FROM projet_content_version
+                 WHERE project_id = ? AND node_id = ? ORDER BY id DESC LIMIT 1 FOR UPDATE`,
+                [req.params.name, req.params.id]
+            );
+            const currentLatest = rows[0] || null;
+            if (currentLatest && baseVersionId && currentLatest.version_id !== baseVersionId) {
+                await conn.rollback();
+                conn.release();
+                return res.status(409).json({
+                    error: 'conflict',
+                    message: 'Ce fichier a été modifié par un autre utilisateur depuis votre dernière synchronisation',
+                    base: { versionId: baseVersionId },
+                    server: {
+                        versionId: currentLatest.version_id,
+                        content: currentLatest.content,
+                        authorName: currentLatest.author_name,
+                        createdAt: currentLatest.created_at
+                    },
+                    mine: { content }
+                });
+            }
+            const inserted = await insertContentVersion(conn, {
+                projectId: req.params.name, nodeId: req.params.id, filePath: item.path,
+                content, baseVersionId: baseVersionId || (currentLatest?.version_id ?? null),
+                mergedFromVersionId: null,
+                origin: publish ? 'publish' : 'checkpoint',
+                authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
+            });
+            await conn.commit();
+            versionId = inserted.versionId;
+        } finally {
+            conn.release();
+        }
+
+        // Logger la modification (best-effort, texte lisible pour debug humain)
+        const oldContentForLog = latestBeforeSave?.content ?? '';
+        if (oldContentForLog !== content) {
+            const diff = computeEditionDiff(oldContentForLog, content);
             logEdition({
                 event: 'SAVE',
                 project: req.params.name,
@@ -5463,33 +5650,41 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                 source: editionSource,
                 file: item.path,
                 fileId: req.params.id,
-                size: oldContent.length,
+                size: oldContentForLog.length,
                 newSize: content.length,
-                oldLines: oldContent.split('\n').length,
+                oldLines: oldContentForLog.split('\n').length,
                 newLines: content.split('\n').length,
                 diff,
             });
         }
         await saveProjectConfig(req.params.name, config);
 
-        // Git ou FTP : commit / upload selon le backend du projet
+        broadcastToProject(req.params.name, 'version_saved', {
+            nodeId: req.params.id,
+            folderId,
+            versionId,
+            authorId: user.id,
+            authorName: user.username || user.email || 'Utilisateur',
+            timestamp: new Date().toISOString(),
+            origin: publish ? 'publish' : 'checkpoint'
+        });
+
+        // Git/FTP : uniquement sur publication explicite ("Partager"). Plus aucun
+        // commit/checkout silencieux sur l'autosave — le contenu de référence est en BDD.
         const projetPath = path.join(PROJECTS_DIR, req.params.name);
-        const gitNodeId = folderId || req.params.id;
         let publishCommitHash = null;
         let publishResult = null;
         let ftpPublishResult = null;
 
-        // Vérifier le backend de stockage
-        let backupType = null;
-        try {
-            backupType = await ftpService.getBackupType(pool, req.params.name);
-        } catch (e) {
-            console.warn('[file PUT] backup_type lookup error:', e.message);
-        }
+        if (publish) {
+            let backupType = null;
+            try {
+                backupType = await ftpService.getBackupType(pool, req.params.name);
+            } catch (e) {
+                console.warn('[file PUT] backup_type lookup error:', e.message);
+            }
 
-        if (backupType === 'ftp') {
-            // Backend FTP : upload uniquement du fichier modifié
-            if (publish) {
+            if (backupType === 'ftp') {
                 try {
                     const ftpConfig = await ftpService.getFtpConfig(pool, req.params.name);
                     if (ftpConfig) {
@@ -5512,35 +5707,25 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                         pushFailed: true
                     });
                 }
-            }
-        } else {
-            // Backend Git (GitHub par défaut)
-            try {
-                if (projetGit.isRepo(projetPath)) {
-                    if (publish) {
+            } else {
+                try {
+                    if (projetGit.isRepo(projetPath)) {
                         // Garantir le remote GitHub : crée le repo + remote si manquant
                         // (cas projet créé avant activation GitHub), rafraîchit l'URL sinon.
                         await ensureGithubRemoteForProject(req.params.name, config);
-                        // Commit du contenu final puis merge wip → main
-                        publishResult = projetGit.publishWip(projetPath, user.id, gitNodeId, {
-                            username: user.username || user.email || 'user',
-                            sectionName: item.name || req.params.id,
-                            filePath: item.path
+                        publishResult = await projetGit.publishContent(projetPath, {
+                            filePath: item.path,
+                            content,
+                            message: `pub: ${user.username || user.email || 'user'} - ${item.name || req.params.id}`,
+                            username: user.username || user.email || 'user'
                         });
                         publishCommitHash = publishResult?.commitHash || null;
-                    } else {
-                        // Auto-save : commit silencieux sur la branche wip
-                        projetGit.commitFile(projetPath, item.path, `wip: auto-save ${item.name || req.params.id}`);
                     }
+                } catch (gitErr) {
+                    console.warn('[ProjetGit] publishContent échoué:', gitErr.message);
                 }
-            } catch (gitErr) {
-                console.warn('[ProjetGit] commit sur file PUT échoué:', gitErr.message);
             }
-        }
 
-        // Broadcast SSE seulement si publication explicite
-        // (même si push GitHub échoué — le contenu est sauvé localement et visible aux co-éditeurs)
-        if (publish) {
             broadcastToProject(req.params.name, 'content_update', {
                 nodeId: req.params.id,
                 folderId,
@@ -5549,7 +5734,6 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                 updatedByName: user.username || user.email || 'Utilisateur',
                 timestamp: new Date().toISOString()
             });
-            // Logger la diffusion SSE aux autres utilisateurs
             logEdition({
                 event: 'SYNC-BROADCAST',
                 project: req.params.name,
@@ -5563,7 +5747,6 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                 newLines: content.split('\n').length,
                 note: `Contenu diffusé via SSE content_update → ${folderId || 'root'}`,
             });
-            // Nouvel événement métier : signale aux autres users qu'une section a été partagée
             broadcastToProject(req.params.name, 'section_published', {
                 nodeId: req.params.id,
                 folderId,
@@ -5575,28 +5758,238 @@ app.put('/api/file-projects/:name/files/:id', async (req, res) => {
                 commitHash: publishCommitHash,
                 timestamp: new Date().toISOString()
             });
-            // Libérer le lock automatiquement au moment de la publication
+            // Libérer uniquement la présence de l'auteur de la publication — un autre
+            // utilisateur peut encore être en train d'éditer la même section en local.
             const unlockId = folderId || req.params.id;
             try {
-                await pool.query('DELETE FROM projet_section_lock WHERE node_id = ? AND projet_id = ?', [unlockId, req.params.name]);
-                broadcastToProject(req.params.name, 'unlock', { nodeId: unlockId, projetId: req.params.name });
+                await pool.query('DELETE FROM projet_section_lock WHERE node_id = ? AND projet_id = ? AND locked_by_id = ?', [unlockId, req.params.name, user.id]);
+                broadcastToProject(req.params.name, 'unlock', { nodeId: unlockId, projetId: req.params.name, userId: user.id });
+                await broadcastPresence(req.params.name, unlockId);
             } catch (e2) {
                 console.error('[LOCK] unlock on publish error:', e2.message);
             }
+
+            if (backupType !== 'ftp' && publishResult?.pushFailed) {
+                return res.status(502).json({
+                    error: 'Modifications sauvegardées localement mais non synchronisées avec GitHub',
+                    localSaved: true,
+                    pushFailed: true,
+                    commitHash: publishCommitHash,
+                    versionId
+                });
+            }
         }
 
-        // Push GitHub échoué → HTTP 502 pour bloquer le toast succès côté client
-        // (la sauvegarde locale et le broadcast SSE ont eu lieu normalement)
-        if (publish && backupType !== 'ftp' && publishResult?.pushFailed) {
-            return res.status(502).json({
-                error: 'Modifications sauvegardées localement mais non synchronisées avec GitHub',
-                localSaved: true,
-                pushFailed: true,
-                commitHash: publishCommitHash
-            });
-        }
+        res.json({ success: true, checkpointed: true, versionId, commitHash: publishCommitHash, ftpUploaded: ftpPublishResult?.uploaded ?? null });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
 
-        res.json({ success: true, commitHash: publishCommitHash, ftpUploaded: ftpPublishResult?.uploaded ?? null });
+// ── Brouillon local par utilisateur (jamais partagé, jamais dans projet_content_version) ──
+
+// GET /api/file-projects/:name/drafts — liste légère des brouillons de l'utilisateur courant sur ce projet
+app.get('/api/file-projects/:name/drafts', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT node_id, folder_id, updated_at FROM projet_local_draft WHERE project_id = ? AND user_id = ?`,
+            [req.params.name, user.id]
+        );
+        res.json(rows.map(r => ({ nodeId: r.node_id, folderId: r.folder_id, updatedAt: r.updated_at })));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/file-projects/:name/files/:id/draft — contenu complet du brouillon de l'utilisateur courant
+app.get('/api/file-projects/:name/files/:id/draft', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT folder_id, content, base_version_id, updated_at FROM projet_local_draft
+             WHERE project_id = ? AND node_id = ? AND user_id = ?`,
+            [req.params.name, req.params.id, user.id]
+        );
+        if (!rows.length) return res.json({ exists: false });
+        const r = rows[0];
+        res.json({ exists: true, folderId: r.folder_id, content: r.content, baseVersionId: r.base_version_id, updatedAt: r.updated_at });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// PUT /api/file-projects/:name/files/:id/draft — écrit/écrase le brouillon de l'utilisateur courant.
+// N'écrit jamais projet_content_version ni le disque : c'est une zone de travail
+// strictement privée, indépendante de la publication et de la structure config.json.
+app.put('/api/file-projects/:name/files/:id/draft', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const content = req.body.content ?? '';
+        const folderId = req.body.folderId || null;
+        const baseVersionId = req.body.baseVersionId || null;
+        await pool.query(
+            `INSERT INTO projet_local_draft (project_id, node_id, user_id, folder_id, content, base_version_id)
+             VALUES (?,?,?,?,?,?)
+             ON DUPLICATE KEY UPDATE folder_id = VALUES(folder_id), content = VALUES(content),
+                 base_version_id = VALUES(base_version_id), updated_at = CURRENT_TIMESTAMP(3)`,
+            [req.params.name, req.params.id, user.id, folderId, content, baseVersionId]
+        );
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/file-projects/:name/files/:id/draft — supprime le brouillon de l'utilisateur courant
+// (après validation réussie via "Enregistrer et partager", ou annulation explicite).
+app.delete('/api/file-projects/:name/files/:id/draft', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        await pool.query(
+            `DELETE FROM projet_local_draft WHERE project_id = ? AND node_id = ? AND user_id = ?`,
+            [req.params.name, req.params.id, user.id]
+        );
+        res.json({ success: true });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Versions de contenu (zone Historique + fusion de conflit) ──────────────
+
+// GET /api/file-projects/:name/files/:id/versions?limit=&offset= — liste paginée sans le contenu complet
+app.get('/api/file-projects/:name/files/:id/versions', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const limit = Math.min(parseInt(req.query.limit, 10) || 50, 200);
+    const offset = Math.max(parseInt(req.query.offset, 10) || 0, 0);
+    try {
+        const [rows] = await pool.query(
+            `SELECT version_id, author_id, author_name, origin, content_hash, base_version_id, merged_from_version_id, created_at
+             FROM projet_content_version WHERE project_id = ? AND node_id = ?
+             ORDER BY id DESC LIMIT ? OFFSET ?`,
+            [req.params.name, req.params.id, limit, offset]
+        );
+        res.json({ versions: rows });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/file-projects/:name/files/:id/versions/:versionId — contenu complet d'une version
+app.get('/api/file-projects/:name/files/:id/versions/:versionId', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT version_id, content, author_id, author_name, origin, base_version_id, merged_from_version_id, created_at
+             FROM projet_content_version WHERE project_id = ? AND node_id = ? AND version_id = ? LIMIT 1`,
+            [req.params.name, req.params.id, req.params.versionId]
+        );
+        if (!rows[0]) return res.status(404).json({ error: 'Version introuvable' });
+        res.json(rows[0]);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /api/file-projects/:name/files/:id/restore — {versionId, folderId}
+// Ne supprime jamais rien : restaurer insère une NOUVELLE version avec l'ancien contenu.
+app.post('/api/file-projects/:name/files/:id/restore', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const config = await getProjectConfig(req.params.name);
+    if (!config) return res.status(404).json({ error: 'Projet non trouvé' });
+    const item = findNodeById(config.structure, req.params.id);
+    if (!item || item.type !== 'file') return res.status(404).json({ error: 'Fichier non trouvé' });
+    const { versionId, folderId } = req.body || {};
+    if (!versionId) return res.status(400).json({ error: 'versionId requis' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT content FROM projet_content_version WHERE project_id = ? AND node_id = ? AND version_id = ? LIMIT 1`,
+            [req.params.name, req.params.id, versionId]
+        );
+        if (!rows[0]) return res.status(404).json({ error: 'Version à restaurer introuvable' });
+        const latest = await getLatestVersion(pool, req.params.name, req.params.id);
+        const inserted = await insertContentVersion(pool, {
+            projectId: req.params.name, nodeId: req.params.id, filePath: item.path,
+            content: rows[0].content, baseVersionId: latest?.version_id ?? null, mergedFromVersionId: versionId,
+            origin: 'restore', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
+        });
+
+        try {
+            const full = safeProjectPath(req.params.name, item.path);
+            if (full) { fs.mkdirSync(path.dirname(full), { recursive: true }); fs.writeFileSync(full, rows[0].content, 'utf8'); }
+        } catch (diskErr) { console.warn('[BACKUP] écriture disque échouée (restore):', diskErr.message); }
+
+        broadcastToProject(req.params.name, 'version_saved', {
+            nodeId: req.params.id, folderId: folderId || null, versionId: inserted.versionId,
+            authorId: user.id, authorName: user.username || user.email || 'Utilisateur',
+            timestamp: new Date().toISOString(), origin: 'restore'
+        });
+        res.json({ success: true, versionId: inserted.versionId, content: rows[0].content });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /api/file-projects/:name/files/:id/resolve-conflict — {baseVersionId, folderId, mineContent, mergedContent}
+// Insère 2 versions : la tentative écartée (préservée dans l'historique) puis la fusion retenue.
+app.post('/api/file-projects/:name/files/:id/resolve-conflict', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const config = await getProjectConfig(req.params.name);
+    if (!config) return res.status(404).json({ error: 'Projet non trouvé' });
+    const item = findNodeById(config.structure, req.params.id);
+    if (!item || item.type !== 'file') return res.status(404).json({ error: 'Fichier non trouvé' });
+    const { baseVersionId, folderId, mineContent, mergedContent } = req.body || {};
+    if (mergedContent == null) return res.status(400).json({ error: 'mergedContent requis' });
+    try {
+        const latest = await getLatestVersion(pool, req.params.name, req.params.id);
+
+        const conflictMine = await insertContentVersion(pool, {
+            projectId: req.params.name, nodeId: req.params.id, filePath: item.path,
+            content: mineContent ?? '', baseVersionId: baseVersionId || null, mergedFromVersionId: null,
+            origin: 'conflict-mine', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
+        });
+
+        const merged = await insertContentVersion(pool, {
+            projectId: req.params.name, nodeId: req.params.id, filePath: item.path,
+            content: mergedContent, baseVersionId: latest?.version_id ?? null, mergedFromVersionId: conflictMine.versionId,
+            origin: 'merge', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
+        });
+
+        try {
+            const full = safeProjectPath(req.params.name, item.path);
+            if (full) { fs.mkdirSync(path.dirname(full), { recursive: true }); fs.writeFileSync(full, mergedContent, 'utf8'); }
+        } catch (diskErr) { console.warn('[BACKUP] écriture disque échouée (resolve-conflict):', diskErr.message); }
+
+        broadcastToProject(req.params.name, 'version_saved', {
+            nodeId: req.params.id, folderId: folderId || null, versionId: merged.versionId,
+            authorId: user.id, authorName: user.username || user.email || 'Utilisateur',
+            timestamp: new Date().toISOString(), origin: 'merge'
+        });
+        broadcastToProject(req.params.name, 'content_update', {
+            nodeId: req.params.id, folderId: folderId || null, content: mergedContent,
+            updatedBy: user.id, updatedByName: user.username || user.email || 'Utilisateur',
+            timestamp: new Date().toISOString()
+        });
+
+        res.json({ success: true, versionId: merged.versionId, conflictMineVersionId: conflictMine.versionId });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Réglages plateforme (Admin) ─────────────────────────────────────────────
+
+// GET /api/admin/platform-settings — lecture ouverte à tout user connecté
+// (nécessaire pour masquer côté UI les options FTP si désactivées globalement)
+app.get('/api/admin/platform-settings', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const ftpSyncEnabled = await getPlatformSetting('ftpSyncEnabled', false);
+        res.json({ ftpSyncEnabled });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// PUT /api/admin/platform-settings — modification réservée aux administrateurs
+app.put('/api/admin/platform-settings', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    if (user.role !== 'admin') return res.status(403).json({ error: 'Réservé aux administrateurs' });
+    try {
+        const { ftpSyncEnabled } = req.body || {};
+        if (ftpSyncEnabled !== undefined) await setPlatformSetting('ftpSyncEnabled', Boolean(ftpSyncEnabled));
+        res.json({ success: true, ftpSyncEnabled: await getPlatformSetting('ftpSyncEnabled', false) });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -5675,9 +6068,8 @@ app.patch('/api/file-projects/:name/files/:id', async (req, res) => {
         if (fs.existsSync(oldFull)) fs.renameSync(oldFull, newFull);
         item.name = newName; item.path = newPath;
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `rename_file ${newName}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit rename_file:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `rename_file ${newName}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit rename_file:', gitErr.message));
         broadcastToProject(req.params.name, 'structure_update', { operation: 'rename_file', payload: item, updatedBy: user.id });
         res.json(item);
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -5701,8 +6093,9 @@ app.delete('/api/file-projects/:name/files/:id', async (req, res) => {
             if ((await ftpService.getBackupType(pool, req.params.name).catch(() => null)) !== 'ftp') {
                 await ensureGithubRemoteForProject(req.params.name, config);
             }
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `delete_file ${deletedName}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit delete_file:', gitErr.message); }
+        } catch (gitErr) { console.warn('[ProjetGit] ensureGithubRemoteForProject (delete_file):', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `delete_file ${deletedName}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit delete_file:', gitErr.message));
         broadcastToProject(req.params.name, 'structure_update', { operation: 'delete_file', payload: { id: req.params.id }, updatedBy: user.id });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -5744,12 +6137,18 @@ app.post('/api/file-projects/:name/folders', async (req, res) => {
         if (!full) return res.status(400).json({ error: 'Chemin invalide' });
         fs.mkdirSync(full, { recursive: true });
         const contentPath = `${folderPath}/contenu.md`;
-        fs.writeFileSync(safeProjectPath(req.params.name, contentPath), '', 'utf8');
+        const contentFileId = crypto.randomUUID();
+        try { fs.writeFileSync(safeProjectPath(req.params.name, contentPath), '', 'utf8'); }
+        catch (diskErr) { console.warn('[BACKUP] écriture disque échouée (create folder contenu.md):', diskErr.message); }
         const newFolder = {
             id: crypto.randomUUID(), type: 'folder', name, path: folderPath, order: parentItems.length + 1,
-            children: [{ id: crypto.randomUUID(), type: 'file', name: 'contenu.md', path: contentPath, order: 1 }]
+            children: [{ id: contentFileId, type: 'file', name: 'contenu.md', path: contentPath, order: 1 }]
         };
         parentItems.push(newFolder);
+        // Pas de checkpoint BDD automatique à la création : attachContent() bootstrape depuis le
+        // disque (contenu vide, origin migration-bootstrap) à la première lecture si nécessaire —
+        // sinon ce checkpoint vide prématuré écraserait visuellement le brouillon local au premier
+        // rechargement structurel qui suit (ex: ajout d'un titre pendant la frappe).
 
         // Si dossier racine avec outilSlug → ajouter à rootFolderIds de l'outil correspondant
         if (!parentId && outilSlug) {
@@ -5760,9 +6159,8 @@ app.post('/api/file-projects/:name/folders', async (req, res) => {
         }
 
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `create_folder ${name}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit create_folder:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `create_folder ${name}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit create_folder:', gitErr.message));
         broadcastToProject(req.params.name, 'structure_update', { operation: 'create_folder', payload: { ...newFolder, parentId: parentId || null }, updatedBy: user.id });
         res.status(201).json(newFolder);
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -5801,9 +6199,8 @@ app.patch('/api/file-projects/:name/folders/:id', async (req, res) => {
         updateNodePaths(item, oldPath, newPath);
         item.name = name;
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `rename_folder ${name}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit rename_folder:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `rename_folder ${name}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit rename_folder:', gitErr.message));
         broadcastToProject(req.params.name, 'structure_update', { operation: 'rename_folder', payload: { id: req.params.id, name, oldPath, newPath }, updatedBy: user.id });
         res.json(item);
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -5823,9 +6220,8 @@ app.delete('/api/file-projects/:name/folders/:id', async (req, res) => {
         const deletedName = item.name;
         removeNodeById(config.structure, req.params.id);
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `delete_folder ${deletedName}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit delete_folder:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `delete_folder ${deletedName}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit delete_folder:', gitErr.message));
         broadcastToProject(req.params.name, 'structure_update', { operation: 'delete_folder', payload: { id: req.params.id }, updatedBy: user.id });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -5840,9 +6236,8 @@ app.put('/api/file-projects/:name/structure', async (req, res) => {
     try {
         config.structure = req.body.structure;
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), 'reorder');
-        } catch (gitErr) { console.warn('[ProjetGit] commit reorder:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), 'reorder')
+            .catch(gitErr => console.warn('[ProjetGit] commit reorder:', gitErr.message));
         broadcastToProject(req.params.name, 'structure_update', { operation: 'reorder', payload: { structure: req.body.structure }, updatedBy: user.id });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
@@ -5890,9 +6285,8 @@ app.post('/api/file-projects/:name/move-file', async (req, res) => {
             config.structure.push(item);
         }
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `move_file ${item.name}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit move_file:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `move_file ${item.name}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit move_file:', gitErr.message));
         res.json({ success: true, item });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -5943,8 +6337,9 @@ app.post('/api/file-projects/:name/upload-image', async (req, res) => {
             if ((await ftpService.getBackupType(pool, req.params.name).catch(() => null)) !== 'ftp') {
                 await ensureGithubRemoteForProject(req.params.name, config);
             }
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `upload_image ${uniqueName}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit upload_image:', gitErr.message); }
+        } catch (gitErr) { console.warn('[ProjetGit] ensureGithubRemoteForProject (upload_image):', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `upload_image ${uniqueName}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit upload_image:', gitErr.message));
         // Notifier les autres users connectés pour déclencher leur auto-pull
         broadcastToProject(req.params.name, 'structure_update', { operation: 'upload_image', payload: newNode, updatedBy: user.id });
         res.status(201).json(newNode);
@@ -6057,9 +6452,8 @@ app.post('/api/file-projects/:name/move-folder', async (req, res) => {
         targetItems.push(folder);
 
         await saveProjectConfig(req.params.name, config);
-        try {
-            projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `move_folder ${folder.name}`);
-        } catch (gitErr) { console.warn('[ProjetGit] commit move_folder:', gitErr.message); }
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `move_folder ${folder.name}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit move_folder:', gitErr.message));
 
         // Notifier les autres collaborateurs du changement de structure
         const sessionUser = getSessionUser(req);
@@ -6232,7 +6626,7 @@ app.get('/api/file-projects/:name/sync-status', (req, res) => {
 // POST /api/file-projects/:name/pull
 //   Effectue git pull --ff-only sur main. Retourne le nombre de commits récupérés
 //   et la liste des fichiers modifiés (utile pour invalider le cache Angular).
-app.post('/api/file-projects/:name/pull', (req, res) => {
+app.post('/api/file-projects/:name/pull', async (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     const projetPath = path.join(PROJECTS_DIR, req.params.name);
@@ -6243,6 +6637,27 @@ app.post('/api/file-projects/:name/pull', (req, res) => {
             return res.status(409).json({ error: result.error || 'Pull impossible', ...result });
         }
         if (result.success && result.newCommits > 0) {
+            // Re-synchroniser la BDD (source de vérité) avec les fichiers modifiés par le pull GitHub,
+            // sinon la prochaine lecture attachContent() écraserait le contenu tout juste tiré (stale DB).
+            try {
+                const config = await getProjectConfig(req.params.name);
+                for (const relPath of result.changedFiles || []) {
+                    const node = findNodeByPath(config?.structure || [], relPath);
+                    if (!node || node.type !== 'file') continue;
+                    const full = safeProjectPath(req.params.name, relPath);
+                    if (!full || !fs.existsSync(full)) continue;
+                    const pulledContent = fs.readFileSync(full, 'utf8');
+                    const latest = await getLatestVersion(pool, req.params.name, node.id);
+                    if (latest && latest.content === pulledContent) continue;
+                    await insertContentVersion(pool, {
+                        projectId: req.params.name, nodeId: node.id, filePath: relPath,
+                        content: pulledContent, baseVersionId: latest?.version_id ?? null, mergedFromVersionId: null,
+                        origin: 'pull', authorId: user.id, authorName: user.username || user.email || 'Utilisateur'
+                    });
+                }
+            } catch (syncErr) {
+                console.warn('[VERSION] resync post-pull échoué:', syncErr.message);
+            }
             // Notifier les autres clients qu'une sync a eu lieu (utile pour multi-onglets)
             broadcastToProject(req.params.name, 'project_synced', {
                 pulledBy: { userId: user.id, username: user.username || user.email },
@@ -6707,6 +7122,9 @@ app.post('/api/file-projects/:name/initial-backup-push', async (req, res) => {
         const backupType = proj.backup_type;
 
         if (backupType === 'ftp') {
+            if (!(await ftpService.isFtpGloballyEnabled(pool))) {
+                return res.status(400).json({ error: 'La synchronisation FTP est désactivée (Admin → Config)' });
+            }
             const ftpConfig = await ftpService.getFtpConfig(pool, projectName);
             if (!ftpConfig) return res.status(400).json({ error: 'Config FTP introuvable' });
             // Tester la connexion
@@ -7522,43 +7940,12 @@ app.get('/api/health/db', async (req, res) => {
 // WO Action History
 // ============================================================
 
-app.get('/api/wo-action-history', async (req, res) => {
-    try {
-        const { section, userId, entityType, entityId, contextKey, contextValue, undoableOnly, limit, offset } = req.query;
-        let sql = 'SELECT * FROM wo_action_history WHERE 1=1';
-        const params = [];
-
-        if (section)      { sql += ' AND section = ?';      params.push(section); }
-        if (userId)       { sql += ' AND user_id = ?';      params.push(userId); }
-        if (entityType)   { sql += ' AND entity_type = ?';  params.push(entityType); }
-        if (entityId)     { sql += ' AND entity_id = ?';    params.push(entityId); }
-        if (undoableOnly === 'true') { sql += ' AND undoable = 1'; }
-
-        if (contextKey && contextValue) {
-            sql += ' AND JSON_UNQUOTE(JSON_EXTRACT(context, ?)) = ?';
-            params.push(`$.${contextKey}`, contextValue);
-        }
-
-        sql += ' ORDER BY timestamp DESC';
-        if (limit)  { sql += ' LIMIT ?';  params.push(Number(limit)); }
-        if (offset) { sql += ' OFFSET ?'; params.push(Number(offset)); }
-
-        const [rows] = await pool.query(sql, params);
-        const entries = rows.map(r => ({
-            id: r.id, timestamp: r.timestamp, section: r.section, subsection: r.subsection,
-            actionType: r.action_type, label: r.label, entityType: r.entity_type,
-            entityId: r.entity_id, entityLabel: r.entity_label,
-            beforeState: r.before_state, afterState: r.after_state,
-            userId: r.user_id, username: r.username, context: r.context,
-            undoable: !!r.undoable, undone: !!r.undone, undoneAt: r.undone_at,
-            undoneBy: r.undone_by, undoAction: r.undo_action, meta: r.meta
-        }));
-        res.json(entries);
-    } catch (e) {
-        console.error('[WO_ACTION_HISTORY] Get error:', e);
-        res.status(500).json({ error: 'Erreur serveur' });
-    }
-});
+// Note : GET /api/wo-action-history, POST /api/wo-action-history,
+// POST /api/wo-action-history/:id/undo et DELETE /api/wo-action-history sont
+// déjà déclarées plus haut dans ce fichier (lignes ~2743-3260) — Express
+// dispatchant vers la première route déclarée, un doublon mort de ces 4 routes
+// a été retiré ici. Seule GET /api/wo-action-history/:id est unique à cet
+// emplacement (utilisée par ProjetCollabService.fetchEntry()) et conservée.
 
 // GET /api/wo-action-history/:id — entrée complète (avec before/after state)
 app.get('/api/wo-action-history/:id', async (req, res) => {
@@ -7577,133 +7964,6 @@ app.get('/api/wo-action-history/:id', async (req, res) => {
         });
     } catch (e) {
         console.error('[WO_ACTION_HISTORY] Get by id error:', e);
-        res.status(500).json({ error: 'Erreur serveur' });
-    }
-});
-
-app.post('/api/wo-action-history', async (req, res) => {
-    const { section, subsection, actionType, label, entityType, entityId, entityLabel,
-            beforeState, afterState, userId, username, context, undoable, undoAction, meta } = req.body;
-    if (!section || !actionType || !label) {
-        return res.status(400).json({ error: 'section, actionType et label sont requis' });
-    }
-    const conn = await pool.getConnection();
-    try {
-        await conn.beginTransaction();
-        // SELECT FOR UPDATE sérialise les insertions concurrentes et évite les doublons d'ID
-        const [maxRows] = await conn.query('SELECT MAX(CAST(SUBSTRING(id, 5) AS UNSIGNED)) AS maxNum FROM wo_action_history FOR UPDATE');
-        const maxNum = maxRows[0].maxNum || 0;
-        const nextNum = (maxNum + 1).toString().padStart(Math.max(3, String(maxNum + 1).length), '0');
-        const id = `wah-${nextNum}`;
-        const now = new Date();
-
-        await conn.query(
-            `INSERT INTO wo_action_history
-             (id, timestamp, section, subsection, action_type, label, entity_type, entity_id, entity_label,
-              before_state, after_state, user_id, username, context, undoable, undone, undo_action, meta)
-             VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)`,
-            [id, now, section, subsection || '', actionType, label,
-             entityType || '', entityId || '', entityLabel || '',
-             beforeState ? JSON.stringify(beforeState) : null,
-             afterState  ? JSON.stringify(afterState)  : null,
-             userId || null, username || '',
-             context    ? JSON.stringify(context)    : null,
-             undoable ? 1 : 0,
-             undoAction ? JSON.stringify(undoAction) : null,
-             meta       ? JSON.stringify(meta)       : null]
-        );
-        await conn.commit();
-
-        const entry = {
-            id, timestamp: now.toISOString(), section, subsection: subsection || '',
-            actionType, label, entityType: entityType || '', entityId: entityId || '',
-            entityLabel: entityLabel || '', beforeState, afterState,
-            userId: userId || null, username: username || '',
-            context, undoable: !!undoable, undone: false, undoAction, meta
-        };
-
-        // Notifier les clients SSE si l'entrée est liée à un projet
-        const projectId = context?.projectId;
-        if (projectId && section && section.startsWith('projets/')) {
-            broadcastToProject(projectId, 'history', {
-                id: entry.id,
-                timestamp: entry.timestamp,
-                section: entry.section,
-                actionType: entry.actionType,
-                label: entry.label,
-                entityType: entry.entityType,
-                entityId: entry.entityId,
-                entityLabel: entry.entityLabel,
-                userId: entry.userId,
-                username: entry.username,
-                undone: false,
-                beforeState: entry.beforeState,
-                afterState: entry.afterState,
-                context: entry.context
-            });
-        }
-
-        res.status(201).json(entry);
-    } catch (e) {
-        await conn.rollback().catch(() => {});
-        console.error('[WO_ACTION_HISTORY] Create error:', e);
-        res.status(500).json({ error: 'Erreur serveur' });
-    } finally {
-        conn.release();
-    }
-});
-
-app.post('/api/wo-action-history/:id/undo', async (req, res) => {
-    try {
-        const [rows] = await pool.query('SELECT * FROM wo_action_history WHERE id = ?', [req.params.id]);
-        if (!rows[0]) return res.status(404).json({ error: 'Action introuvable' });
-
-        const entry = rows[0];
-        if (!entry.undoable)  return res.status(400).json({ error: "Cette action n'est pas réversible" });
-        if (entry.undone)     return res.status(400).json({ error: 'Cette action a déjà été annulée' });
-
-        const undoAction = entry.undo_action;
-        if (undoAction) {
-            const { endpoint, method, payload } = typeof undoAction === 'string' ? JSON.parse(undoAction) : undoAction;
-            const baseUrl = `http://localhost:${process.env.PORT || 3001}`;
-            const headers = {
-                'Content-Type': 'application/json',
-                ...(req.headers.authorization ? { Authorization: req.headers.authorization } : {}),
-                ...(req.headers.cookie ? { Cookie: req.headers.cookie } : {})
-            };
-            const fetchOptions = { method, headers };
-            if (payload && ['PUT', 'POST', 'PATCH'].includes(method)) {
-                fetchOptions.body = JSON.stringify(payload);
-            }
-            const undoRes = await fetch(`${baseUrl}${endpoint}`, fetchOptions);
-            if (!undoRes.ok && undoRes.status !== 404) {
-                const errData = await undoRes.json().catch(() => ({}));
-                return res.status(undoRes.status).json({ error: errData.error || "Erreur lors de l'annulation" });
-            }
-        }
-
-        const undoneAt = new Date();
-        const undoneBy = req.body?.undoneBy || '';
-        await pool.query(
-            'UPDATE wo_action_history SET undone = 1, undone_at = ?, undone_by = ? WHERE id = ?',
-            [undoneAt, undoneBy, req.params.id]
-        );
-
-        console.log(`[WO_ACTION_HISTORY] Undo: ${req.params.id} — ${entry.label} by ${undoneBy}`);
-        res.json({ success: true, undoneAt: undoneAt.toISOString(), undoneBy });
-    } catch (e) {
-        console.error('[WO_ACTION_HISTORY] Undo error:', e);
-        res.status(500).json({ error: "Erreur lors de l'annulation" });
-    }
-});
-
-app.delete('/api/wo-action-history', async (req, res) => {
-    try {
-        await pool.query('DELETE FROM wo_action_history');
-        console.log('[WO_ACTION_HISTORY] History cleared');
-        res.json({ success: true });
-    } catch (e) {
-        console.error('[WO_ACTION_HISTORY] Clear error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
@@ -7821,43 +8081,38 @@ app.get('/api/collab/:projetId/locks', async (req, res) => {
     }
 });
 
+/** Rediffuse l'état complet des présences actives sur un nœud (0..n utilisateurs). */
+async function broadcastPresence(projetId, nodeId) {
+    const [rows] = await pool.query('SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]);
+    broadcastToProject(projetId, 'presence', {
+        nodeId,
+        projetId,
+        users: rows.map(r => ({
+            nodeId: r.node_id, projetId: r.projet_id,
+            lockedById: r.locked_by_id, lockedByName: r.locked_by_name, lockedAt: r.locked_at
+        }))
+    });
+}
+
 // POST /api/collab/:projetId/nodes/:nodeId/lock
+// Registre de présence multi-utilisateurs : n'a aucun rôle bloquant (plusieurs users
+// peuvent éditer la même section en même temps, chacun avec son propre brouillon
+// local). Sert uniquement à afficher qui édite quoi et depuis quand côté client.
+// Un balayage TTL (voir plus bas) nettoie les entrées périmées (onglet fermé/crashé).
 app.post('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
     const { projetId, nodeId } = req.params;
     const { userId, userName } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId requis' });
     try {
-        const [existing] = await pool.query(
-            'SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]
-        );
-        if (existing.length > 0 && existing[0].locked_by_id !== userId) {
-            return res.status(409).json({
-                error: 'Section déjà verrouillée',
-                lockedBy: existing[0].locked_by_name,
-                lockedAt: existing[0].locked_at
-            });
-        }
         await pool.query(
             `INSERT INTO projet_section_lock (node_id, projet_id, locked_by_id, locked_by_name)
              VALUES (?, ?, ?, ?)
-             ON DUPLICATE KEY UPDATE locked_by_id=VALUES(locked_by_id),
-             locked_by_name=VALUES(locked_by_name), locked_at=NOW()`,
+             ON DUPLICATE KEY UPDATE locked_by_name=VALUES(locked_by_name), locked_at=NOW()`,
             [nodeId, projetId, userId, userName || 'Utilisateur']
         );
         const lock = { nodeId, projetId, lockedById: userId, lockedByName: userName || 'Utilisateur', lockedAt: new Date().toISOString() };
-        // Git : créer/reprendre la branche wip pour cette édition
-        try {
-            const projetPath = path.join(PROJECTS_DIR, projetId);
-            if (fs.existsSync(projetPath)) {
-                projetGit.createWipBranch(projetPath, userId, nodeId, {
-                    authorName: userName || 'Worganic',
-                    authorEmail: 'worganic@local'
-                });
-            }
-        } catch (gitErr) {
-            console.warn('[ProjetGit] createWipBranch sur lock échoué:', gitErr.message);
-        }
         broadcastToProject(projetId, 'lock', lock);
+        await broadcastPresence(projetId, nodeId);
         res.json(lock);
     } catch (e) {
         console.error('[COLLAB] lock error:', e);
@@ -7870,29 +8125,56 @@ app.delete('/api/collab/:projetId/nodes/:nodeId/lock', async (req, res) => {
     const { projetId, nodeId } = req.params;
     const userId = req.query.userId;
     try {
-        const [existing] = await pool.query('SELECT * FROM projet_section_lock WHERE node_id = ?', [nodeId]);
-        if (existing.length === 0) return res.json({ success: true });
-        if (userId && existing[0].locked_by_id !== userId) {
-            return res.status(403).json({ error: 'Vous ne pouvez pas déverrouiller cette section' });
-        }
-        const lockOwnerId = existing[0].locked_by_id;
-        await pool.query('DELETE FROM projet_section_lock WHERE node_id = ?', [nodeId]);
-        // Git : supprimer la branche wip orpheline (annulation sans partage)
-        try {
-            const projetPath = path.join(PROJECTS_DIR, projetId);
-            if (projetGit.isRepo(projetPath)) {
-                projetGit.discardWip(projetPath, lockOwnerId, nodeId);
-            }
-        } catch (gitErr) {
-            console.warn('[ProjetGit] discardWip sur unlock échoué:', gitErr.message);
-        }
-        broadcastToProject(projetId, 'unlock', { nodeId, projetId });
+        if (!userId) return res.status(400).json({ error: 'userId requis' });
+        await pool.query('DELETE FROM projet_section_lock WHERE node_id = ? AND locked_by_id = ?', [nodeId, userId]);
+        broadcastToProject(projetId, 'unlock', { nodeId, projetId, userId });
+        await broadcastPresence(projetId, nodeId);
         res.json({ success: true });
     } catch (e) {
         console.error('[COLLAB] unlock error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
+
+// Balayage périodique : libère les présences périmées (onglet fermé sans
+// déverrouillage explicite, crash navigateur) après 5 minutes d'inactivité.
+setInterval(async () => {
+    try {
+        const [stale] = await pool.query(
+            'SELECT node_id, projet_id, locked_by_id FROM projet_section_lock WHERE locked_at < (NOW() - INTERVAL 5 MINUTE)'
+        );
+        if (!stale.length) return;
+        await pool.query('DELETE FROM projet_section_lock WHERE locked_at < (NOW() - INTERVAL 5 MINUTE)');
+        const seenNodes = new Set();
+        for (const row of stale) {
+            broadcastToProject(row.projet_id, 'unlock', { nodeId: row.node_id, projetId: row.projet_id, userId: row.locked_by_id });
+            const key = `${row.projet_id}::${row.node_id}`;
+            if (!seenNodes.has(key)) {
+                seenNodes.add(key);
+                await broadcastPresence(row.projet_id, row.node_id);
+            }
+        }
+        console.log(`[PRESENCE] ${stale.length} présence(s) périmée(s) nettoyée(s)`);
+    } catch (e) {
+        console.warn('[PRESENCE] TTL sweep error:', e.message);
+    }
+}, 60 * 1000);
+
+// Balayage périodique (best-effort) : purge les brouillons locaux abandonnés
+// depuis longtemps (utilisateur parti sans jamais valider ni annuler). TTL
+// large car un brouillon peut légitimement rester ouvert plusieurs jours.
+setInterval(async () => {
+    try {
+        const [result] = await pool.query(
+            'DELETE FROM projet_local_draft WHERE updated_at < (NOW() - INTERVAL 30 DAY)'
+        );
+        if (result.affectedRows) {
+            console.log(`[DRAFT] ${result.affectedRows} brouillon(s) local(aux) abandonné(s) nettoyé(s)`);
+        }
+    } catch (e) {
+        console.warn('[DRAFT] TTL sweep error:', e.message);
+    }
+}, 60 * 60 * 1000);
 
 // ============================================================
 // Admin Tests — Sessions de tests manuels sur fonctions.md
@@ -11676,10 +11958,83 @@ app.listen(PORT, async () => {
             locked_by_id   VARCHAR(128)  NOT NULL,
             locked_by_name VARCHAR(128)  NOT NULL DEFAULT '',
             locked_at      DATETIME      DEFAULT CURRENT_TIMESTAMP,
-            PRIMARY KEY (node_id),
+            PRIMARY KEY (node_id, locked_by_id),
             INDEX idx_psl_projet (projet_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] projet_section_lock init error:', e.message));
+
+    // Migration : anciennes installations où la PK était sur node_id seul (un seul
+    // éditeur connu par section). Passage à une PK composite pour supporter plusieurs
+    // présences simultanées sur le même nœud. Idempotent — no-op si déjà migré.
+    await pool.query(`
+        ALTER TABLE projet_section_lock DROP PRIMARY KEY, ADD PRIMARY KEY (node_id, locked_by_id)
+    `).catch(() => { /* déjà migré, ou PK déjà composite */ });
+
+    // Historique immuable du contenu des fichiers de projet (source de vérité,
+    // remplace fileVersions en mémoire + les écrasements disque à l'aveugle).
+    // Jamais d'UPDATE/DELETE sur cette table — toute correction insère une nouvelle ligne.
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS projet_content_version (
+            id                     BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            version_id             VARCHAR(36)   NOT NULL UNIQUE,
+            project_id             VARCHAR(255)  NOT NULL,
+            node_id                VARCHAR(64)   NOT NULL,
+            file_path               VARCHAR(500)  DEFAULT NULL,
+            content                LONGTEXT      NOT NULL,
+            content_hash           CHAR(64)      NOT NULL,
+            base_version_id        VARCHAR(36)   DEFAULT NULL,
+            merged_from_version_id VARCHAR(36)   DEFAULT NULL,
+            origin                 VARCHAR(24)   NOT NULL DEFAULT 'checkpoint',
+            author_id              VARCHAR(64)   DEFAULT NULL,
+            author_name            VARCHAR(255)  DEFAULT '',
+            created_at             DATETIME(3)   NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+            INDEX idx_pcv_node_latest (project_id, node_id, id DESC),
+            INDEX idx_pcv_base (base_version_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch(e => console.error('[DB] projet_content_version init error:', e.message));
+
+    // Brouillon local par utilisateur : contenu tapé mais pas encore validé via
+    // "Enregistrer et partager". N'alimente jamais projet_content_version — sert
+    // uniquement de zone de travail privée par (projet, nœud, utilisateur), pour
+    // que deux utilisateurs puissent éditer la même section sans s'écraser.
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS projet_local_draft (
+            project_id       VARCHAR(255) NOT NULL,
+            node_id          VARCHAR(64)  NOT NULL,
+            user_id          VARCHAR(64)  NOT NULL,
+            folder_id        VARCHAR(64)  DEFAULT NULL,
+            content          LONGTEXT     NOT NULL,
+            base_version_id  VARCHAR(36)  DEFAULT NULL,
+            updated_at       DATETIME(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+            PRIMARY KEY (project_id, node_id, user_id),
+            INDEX idx_pld_project (project_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch(e => console.error('[DB] projet_local_draft init error:', e.message));
+
+    // Réglages plateforme (clé/valeur) — ex. activation globale de la synchro FTP.
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS platform_settings (
+            key_name   VARCHAR(64) PRIMARY KEY,
+            value      TEXT        NOT NULL,
+            updated_at DATETIME    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] platform_settings init error:', e.message));
+
+    // Migration one-shot : nettoyer les branches wip/* laissées par l'ancien
+    // mécanisme de checkout live (le contenu de référence vit désormais en BDD).
+    try {
+        if (fs.existsSync(PROJECTS_DIR)) {
+            const projectDirs = fs.readdirSync(PROJECTS_DIR, { withFileTypes: true }).filter(d => d.isDirectory());
+            let totalCleaned = 0;
+            for (const d of projectDirs) {
+                const projetPath = path.join(PROJECTS_DIR, d.name);
+                if (!projetGit.isRepo(projetPath)) continue;
+                const result = projetGit.cleanupOrphanWipBranches(projetPath);
+                if (result.success) totalCleaned += result.cleaned || 0;
+            }
+            if (totalCleaned) console.log(`[MIGRATION] ${totalCleaned} branche(s) git wip orpheline(s) nettoyée(s)`);
+        }
+    } catch (e) { console.warn('[MIGRATION] wip branches cleanup:', e.message); }
 
     // F6 — Commentaires inline par section
     await pool.query(`
@@ -11696,6 +12051,18 @@ app.listen(PORT, async () => {
             INDEX idx_pc_folder  (project_id, folder_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] project_comments init error:', e.message));
+
+    // Partage d'un projet "Mes Projets" (frank_projects) avec d'autres users
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS frank_project_shares (
+            project_id  CHAR(36)     NOT NULL,
+            user_id     CHAR(36)     NOT NULL,
+            created_at  DATETIME     DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY (project_id, user_id),
+            FOREIGN KEY (project_id) REFERENCES frank_projects(id) ON DELETE CASCADE,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch(e => console.error('[DB] frank_project_shares init error:', e.message));
 
     // Métadonnées et structure des file-projects (source de vérité partagée entre children)
     await pool.query(`

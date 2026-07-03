@@ -1,0 +1,66 @@
+## Diagnostic et Orientation Scolaire
+
+Afin de personnaliser au mieux votre accompagnement en mathématiques, veuillez remplir ce court questionnaire de positionnement.
+
+```FORM: Positionnement
+* **Quel est votre niveau scolaire actuel ?**
+  * [ ] Collège (6ème - 3ème)
+  * [ ] Lycée (Seconde - Terminale)
+  * [ ] Enseignement supérieur / Post-bac
+
+* **Quelle est la matière ou le thème principal à travailler ?**
+  * [ ] Algèbre & Arithmétique
+  * [ ] Géométrie & Trigonométrie
+  * [ ] Analyse & Fonctions
+  * [ ] Probabilités & Statistiques
+```
+
+## Plan de Travail Personnalisé
+
+Voici le planning type proposé pour structurer votre progression et valider chaque étape de votre apprentissage.
+
+```TRELLO: Plan de formation
+### À faire
+- [ ] Évaluation diagnostique initiale `[high]`
+  Passer le test de positionnement pour identifier les lacunes.
+- [ ] Chapitre 1 : Rappels de cours et notions de base `[medium]`
+  Lire les fiches de cours et visionner les vidéos explicatives.
+- [ ] Chapitre 2 : Approfondissement et applications directes `[medium]`
+  Faire les premiers exercices d'application.
+### En cours
+- [ ] Sessions de tutorat individuel `[critical]`
+  Clarifier les points de blocage avec le formateur.
+### Terminé
+- [ ] Constitution du dossier d'inscription `[low]`
+  Finalisation des démarches administratives.
+```
+
+## Programme des Cours et Exercices
+
+Ce tableau présente la répartition des modules de cours, les objectifs associés et les exercices recommandés pour chaque chapitre.
+
+```ARRAY: Programme
+| Module | Objectifs Pédagogiques | Exercices d'application | Durée Estimée |
+|-----------|-----------|-----------|-----------|
+| **Module 1 : Bases** | Maîtriser les calculs de fractions et puissances | Exercices d'entraînement 1 à 5 | 2 heures |
+| **Module 2 : Fonctions** | Étudier les variations et représenter graphiquement | Exercices d'analyse 6 à 10 | 4 heures |
+| **Module 3 : Probabilités** | Comprendre les variables aléatoires et arbres | Problèmes de synthèse 11 à 15 | 3 heures |
+```
+
+## Exercices de Validation des Acquis
+
+Veuillez répondre à ces questions pour valider votre compréhension des premières notions clés.
+
+```FORM: Evaluation
+* **Quelle est la valeur de x pour l'équation 3x - 7 = 5 ?**
+  * [ ] x = 2
+  * [ ] x = 4
+  * [ ] x = -4
+  * [ ] x = 12
+
+* **Quelle est la dérivée de la fonction f(x) = x² + 3x ?**
+  * [ ] f'(x) = 2x
+  * [ ] f'(x) = 2x + 3
+  * [ ] f'(x) = x + 3
+  * [ ] f'(x) = 3x²
+```

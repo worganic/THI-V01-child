@@ -42,3 +42,11 @@
 - Sélection d'un doc → son contenu est chargé dans la textarea
 - L'utilisateur peut modifier le contenu avant de sauvegarder
 - Fermeture du picker après sélection
+
+## `2-1-6-6` — [modification] Panneau de sauvegarde projet (backup)
+
+- Ouverture depuis le bouton sauvegarde (icône cloud) sur la ligne du projet
+- Sélection du type : Aucun / GitHub / GitLab / FTP / Google Drive
+- Champs communs (serveur/owner, mot de passe/token) + champs FTP spécifiques (utilisateur, port, répertoire) et bouton "Tester la connexion FTP"
+- **Option FTP conditionnée au réglage global** (`connecte/config` › `2-2-10`) : l'option "FTP" du select est désactivée (libellé "FTP (désactivé — Config)") tant que la synchronisation FTP n'est pas réactivée dans Admin › Config. Un projet déjà configuré en FTP affiche un avertissement ambre indiquant qu'il est traité comme sans sauvegarde tant que le réglage global reste éteint (aucune donnée du projet n'est modifiée, juste ignorée côté synchro).
+- **Composants:** `admin-projets.component.ts`, `admin-projets.component.html`, `libs/portail-core/data-access/src/lib/config.service.ts`, `server/server-data.js`, `server/modules/ftp-service.js`

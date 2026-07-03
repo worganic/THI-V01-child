@@ -1,0 +1,112 @@
+# PROGRAMME D'ACCOMPAGNEMENT ET DE FORMATION EN MATHÉMATIQUES
+
+## 1. FORMULAIRE DE CADRAGE INITIAL (À renseigner par l'élève / les parents)
+
+Ce questionnaire permet d'adapter précisément le contenu pédagogique au profil de l'apprenant.
+
+*   **Nom / Prénom de l'élève :** [À compléter]
+*   **Niveau scolaire actuel :**
+    *   [ ] Collège (6ème, 5ème, 4ème, 3ème) - Préciser : ______
+    *   [ ] Lycée (Seconde, Première Générale/Technologique, Terminale) - Préciser : ______
+    *   [ ] Supérieur / Autre - Préciser : ______
+*   **Matière / Chapitre spécifique à travailler :**
+    *   *Exemples : Fonctions numériques, Géométrie dans l'espace, Probabilités, Trigonométrie, Calcul littéral...*
+    *   Votre choix : __________________________________________________
+*   **Objectif principal :**
+    *   [ ] Rattrapage / Remise à niveau (combler des lacunes)
+    *   [ ] Consolidation / Entraînement régulier
+    *   [ ] Perfectionnement / Préparation à un examen (Brevet, Baccalauréat, Concours)
+*   **Difficultés identifiées :**
+    *   [ ] Compréhension du cours
+    *   [ ] Apprentissage des formules/théorèmes
+    *   [ ] Application des méthodes (résolution d'exercices)
+    *   [ ] Gestion du temps / Rédaction
+
+---
+
+## 2. EXEMPLE DE PLAN DE TRAVAIL TYPE (Durée : 4 semaines)
+*Thématique d'illustration : Les Fonctions Affines (Niveau 3ème / Seconde)*
+
+| Étape | Objectif | Contenu & Activités | Outils & Supports |
+| :--- | :--- | :--- | :--- |
+| **Semaine 1** | **Bases & Vocabulaire** | - Définition d'une fonction affine ($f(x) = ax + b$).<br>- Distinction entre fonction linéaire et affine.<br>- Détermination de l'image et de l'antécédent par le calcul. | Fiche de cours + Exercices d'application directe. |
+| **Semaine 2** | **Représentation Graphique** | - Tracer une droite représentative.<br>- Lecture graphique du coefficient directeur ($a$) et de l'ordonnée à l'origine ($b$).<br>- Déterminer l'expression d'une fonction graphiquement. | Papier millimétré / Logiciel GeoGebra + Exercices de tracé. |
+| **Semaine 3** | **Modélisation & Problèmes** | - Déterminer l'expression algébrique à partir de deux points.<br>- Résoudre des problèmes concrets (comparaison de tarifs, modélisation de situations réelles). | Problèmes de synthèse et d'analyse. |
+| **Semaine 4** | **Bilan & Évaluation** | - Synthèse de cours (carte mentale).<br>- Évaluation en temps limité.<br>- Correction détaillée et remédiation des erreurs restantes. | Sujet d'examen blanc / Fiche d'auto-évaluation. |
+
+---
+
+## 3. SUPPORT DE COURS : LES FONCTIONS AFFINES
+
+### A. Définitions et Propriétés
+Une **fonction affine** est une machine mathématique qui, à tout nombre réel $x$, associe le nombre $f(x)$ défini par :
+$$f(x) = ax + b$$
+Où :
+*   $a$ est le **coefficient directeur** (il détermine la pente de la droite).
+*   $b$ est l'**ordonnée à l'origine** (le point d'intersection de la droite avec l'axe des ordonnées).
+
+*Cas particuliers :*
+*   Si $b = 0$, alors $f(x) = ax$. La fonction est **linéaire** (sa droite passe par l'origine).
+*   Si $a = 0$, alors $f(x) = b$. La fonction est **constante** (la droite est horizontale).
+
+### B. Représentation graphique
+La représentation graphique d'une fonction affine est toujours une **droite**.
+*   Pour tracer cette droite, il suffit de trouver les coordonnées de **deux points** en choisissant des valeurs arbitraires pour $x$ et en calculant leur image.
+
+*Exemple :* Soit $f(x) = 2x - 3$.
+*   Pour $x = 0$ : $f(0) = 2 \times 0 - 3 = -3$. Point $A(0 ; -3)$.
+*   Pour $x = 2$ : $f(2) = 2 \times 2 - 3 = 1$. Point $B(2 ; 1)$.
+En reliant les points $A$ et $B$, on obtient la droite représentative de $f$.
+
+---
+
+## 4. FICHE D'EXERCICES ET CORRIGÉS
+
+### Exercice 1 : Application Directe (Calculs d'images et d'antécédents)
+Soit la fonction affine définie par $g(x) = -3x + 5$.
+1.  Calculer l'image de $4$ par la fonction $g$.
+2.  Calculer l'image de $-2$ par la fonction $g$.
+3.  Déterminer l'antécédent de $-10$ par la fonction $g$.
+
+### Exercice 2 : Modélisation (Problème de la vie courante)
+Une entreprise de location de vélos propose le tarif suivant : un forfait fixe de 10 € puis 2 € par heure de location.
+1.  Exprimer le prix total $P(x)$ payé en fonction du nombre d'heures $x$ de location.
+2.  De quel type de fonction s'agit-il ? Préciser ses coefficients.
+3.  Combien paiera un client pour une location de 4 heures ?
+4.  Si un client a payé 26 €, pendant combien d'heures a-t-il loué le vélo ?
+
+---
+
+### CORRIGÉS DÉTAILLÉS
+
+#### Corrigé de l'Exercice 1 :
+1.  **Image de 4 :**
+    $$g(4) = -3 \times 4 + 5 = -12 + 5 = -7$$
+    *L'image de 4 par $g$ est $-7$.*
+2.  **Image de -2 :**
+    $$g(-2) = -3 \times (-2) + 5 = 6 + 5 = 11$$
+    *L'image de -2 par $g$ est $11$.*
+3.  **Antécédent de -10 :**
+    On cherche $x$ tel que $g(x) = -10$ :
+    $$-3x + 5 = -10$$
+    $$-3x = -10 - 5$$
+    $$-3x = -15$$
+    $$x = \frac{-15}{-3} = 5$$
+    *L'antécédent de -10 par $g$ est $5$.*
+
+#### Corrigé de l'Exercice 2 :
+1.  **Expression du prix :**
+    Le prix se compose du forfait fixe (10) et de la partie variable ($2 \times x$).
+    $$P(x) = 2x + 10$$
+2.  **Type de fonction :**
+    $P(x)$ est sous la forme $ax + b$ avec $a = 2$ et $b = 10$. C'est donc une **fonction affine**.
+3.  **Calcul pour 4 heures :**
+    $$P(4) = 2 \times 4 + 10 = 8 + 10 = 18$$
+    *Le client paiera 18 € pour 4 heures.*
+4.  **Recherche de la durée pour 26 € :**
+    On résout $P(x) = 26$ :
+    $$2x + 10 = 26$$
+    $$2x = 26 - 10$$
+    $$2x = 16$$
+    $$x = 8$$
+    *Le vélo a été loué pendant 8 heures.*

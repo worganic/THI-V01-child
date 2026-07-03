@@ -1,0 +1,162 @@
+[
+  {
+    "id": "2-5-2-3-1",
+    "section": "Navigation",
+    "tasks": "- Retour : clic sur le bouton de retour de la toolbar appelle goBack() et navigue vers l'historique précédent via Location.back\n- Retour Portail : le mini-header supérieur (worg-mini-header) fournit un lien retour direct vers le portail (environment.portailUrl)\n- Home : clic sur le logo (icône rocket) redirige vers la route /home du portail\n- Projets : clic sur le lien \"Projets\" dans le fil d'Ariane redirige vers la route /projets\n- Breadcrumb : affichage du fil d'Ariane \"Projets > {nom projet}\" avec le nom du projet non éditable dans la toolbar",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-toolbar/projet-toolbar.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-toolbar/projet-toolbar.component.html",
+      "apps/projets/src/app/pages/projet-editor/projet-editor.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-2",
+    "section": "Indicateurs de statut de sauvegarde",
+    "tasks": "- Statut \"Sauvegardé\" (idle/saved) : badge vert avec icône check_circle affiché en bas de l'éditeur\n- Statut \"Non sauvegardé\" (dirty) : badge orange cliquable avec icône save affiché en bas de l'éditeur\n- Statut \"Sauvegarde…\" (saving) : message jaune avec icône animate-spin progress_activity affiché en bas de l'éditeur\n- Statut \"Erreur\" (error) : message rouge avec icône error affiché en bas de l'éditeur\n- Clic sur \"Non sauvegardé\" : déclenche forceSave() qui déplie les sections (unfoldAll()) et effectue une sauvegarde immédiate (saveAll())",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-3",
+    "section": "Badges de backup et état de synchronisation",
+    "tasks": "- Backup FTP - Inactif (idle) : affichage du badge cyan simple \"FTP\" en bas de l'éditeur\n- Backup FTP - En cours (syncing) : affichage du badge bleu animé \"Sync FTP X/Y\" avec progression en pourcentage et spinner tournant\n- Backup FTP - Terminé (done) : affichage du badge cyan \"FTP à jour\" avec icône dns\n- Backup FTP - Erreur (error) : affichage du badge rouge \"FTP — erreur sync\" avec icône dns\n- Backup GitHub : affichage du badge violet \"GitHub\" avec icône code si configuré\n- Backup GitLab : affichage du badge orange \"GitLab\" avec icône merge si configuré\n- Backup Google Drive : affichage du badge vert \"Drive\" avec icône add_to_drive si configuré\n- Aucun backup : pas de badge affiché",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-4",
+    "section": "Onglets de mode d'édition",
+    "tasks": "- Mode Code : clic sur l'onglet \"Code\" (<> Code) passe au mode 'edit' affichant la zone textarea Markdown\n- Mode Structure : clic sur l'onglet \"Structure\" (arborescence) passe au mode 'structure' affichant la structure hiérarchique\n- Mode Edition : clic sur l'onglet \"Edition\" (mode WYSIWYG) passe au mode 'visu' affichant le contenu HTML éditable en ligne\n- Onglet actif : l'onglet correspondant au mode courant est mis en surbrillance avec la classe ed-mode-tab--active\n- Toggle de vue (Mode Code) : bouton \"Markdown propre / Avec style\" à droite de la barre d'onglets permet de basculer la vue et d'activer showCssInCode()",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-5",
+    "section": "Barre de formatage (mode Code, vue stylisée)",
+    "tasks": "- Affichage conditionnel : la barre de formatage est visible uniquement en mode Code lorsque showCssInCode() est activé\n- Style de base : boutons Gras (**texte**), Italique (*texte*), Souligné (<u>texte</u>), Barré (~~texte~~) insèrent les marqueurs correspondants au curseur\n- Menu Titres : menu déroulant permet d'insérer un paragraphe ou des titres de niveau H1 à H4 (\\n# à \\n####)\n- Listes et blockquote : boutons insèrent les marqueurs de liste à puces (-), liste ordonnée (1.), cases à cocher (- [ ]), citation (>), ou bloc de code (```)\n- Lien et Image : boutons insèrent un lien markdown via popup codeLink() et ouvrent le téléversement d'image via triggerImageUpload()\n- Mise en forme HTML : boutons insèrent les balises HTML d'alignement style=\"text-align:...\", de taille style=\"font-size:...\", de couleur style=\"color:...\" ou surlignage style=\"background:...\"\n- Effacer la mise en forme : bouton codeClearFormat() nettoie les marqueurs Markdown/HTML de la sélection\n- Extras Code (droite) : boutons pour insérer un bloc de code vide, un tableau markdown 2x2, ou un séparateur horizontal (---)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-11",
+    "section": "Ouverture du dossier local de section",
+    "tasks": "- Visibilité : bouton \"Dossier\" visible dans tous les modes à droite de la barre d'onglets de l'éditeur\n- Clic bouton : appelle openSectionFolder() qui identifie la section active (ou ancre courante) et appelle le service ProjectFilesService\n- Requête API : envoi d'une requête POST /api/file-projects/:name/open-folder avec le folderId résolu par safeProjectPath\n- Ouverture OS : le serveur ouvre le dossier dans l'explorateur natif (explorer.exe / open / xdg-open)\n- Gestion d'erreur : retour du code HTTP 404 avec message d'erreur si la section n'est pas clonée localement",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-5-2-3-6",
+    "section": "Bandeau de modifications en attente (Collaboration)",
+    "tasks": "- Modifications Code (mode Code) : si showCodePublishBar ou showCrossModePendingBar est vrai, affiche une alerte statique signalant les modifications en cours sans bouton d'action\n- Modifications Structure (mode Structure) : si structureHasPending() est vrai, affiche une alerte avec les boutons \"Annuler\" et \"Partager mes modifications\"\n- Clic Annuler Structure : restaure l'état structurel précédent via cancelStructureEdit()\n- Clic Partager Structure : publie les changements de structure au serveur via publishStructureEdit() et broadcast SSE\n- Mode Preview : aucun bandeau n'est affiché (les actions d'annulation ou de partage de modifications de preview sont déportées sur la sidebar)",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-7",
+    "section": "Indicateurs d'état et surcouches visuelles",
+    "tasks": "- Surbrillance mode actif : onglet correspondant surligné en haut\n- Indicateurs de sauvegarde en bas de page : badge vert (Saved), badge orange (Dirty), badge jaune avec spinner (Saving), rouge (Error)\n- Indicateurs FTP en bas de page : bleu animé (Syncing), cyan (Done), rouge (Error), cyan simple (Idle)\n- Bandeau pending : fond bleu/violet pour modifications locales en attente en bas de l'éditeur\n- Overlay de publication : écran de blocage flou avec spinner jaune progress_activity lors de la publication/téléversement d'image",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-8",
+    "section": "Barre Mega-outils",
+    "tasks": "- Onglets de types de Mega-outils : affichage de trois boutons interactifs pour Trello (bleu), Mockup (violet) et Tableau (lime, qui correspond à Array)\n- Compteur d'instances : affiche le nombre d'instances actives pour chaque type de Mega-outil à côté de leur nom\n- Liste d'instances : cliquer sur un type de Mega-outil affiche horizontalement la liste scrollable des instances de ce type\n- Sélection d'instance : clic sur une instance de Mega-outil émet megaOutilSelect et navigue vers la section ou fichier où elle est intégrée (trelloNavigate)\n- Clic \"Nouveau\" : ouvre la popup de création pour le type d'outil sélectionné (Trello, Tableau ou Mockup)\n- Clic \"Liaison\" (Mockup uniquement) : ouvre la popup permettant d'associer un Mockup existant à la section courante\n- Interrupteur \"Sync auto\" (Trello uniquement) : active/désactive la synchronisation automatique des cartes de colonne Trello dans le code markdown",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-9",
+    "section": "Menus déroulants de la barre de formatage (mode Preview)",
+    "tasks": "- Style de bloc : menu déroulant (icône title) propose Paragraphe (applyVisuFormat avec formatBlock et P) et les titres H1 à H4\n- Couleur de texte : menu déroulant Swatch (lettre A soulignée) propose la palette de couleurs pastilles (foreColor)\n- Surlignage : menu déroulant Swatch (icône highlighter) propose la palette de couleurs de fond pastilles (hiliteColor)\n- Comportement d'ouverture/fermeture : ouverture via mousedown avec preventDefault pour conserver la sélection de texte courante, fermeture au clic extérieur",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "id": "2-5-2-3-10",
+    "section": "Création de section au point de coupe du curseur",
+    "tasks": "- Déclenchement : en mode Preview (Edition), sélectionner H1 à H4 dans le style de bloc ou via slash command ouvre le dialogue de création de titre\n- Calcul du point de coupe : computeVisuCursorInsertLine() identifie le bloc sous le curseur et calcule la ligne d'insertion exacte dans le contenu direct\n- Dialogue worg-title-create-dialog : affiche le titre prérempli (texte sélectionné) et le parent de section calculé selon la hiérarchie du niveau\n- Insertion : confirmation du dialogue appelle createTitleSection() qui insère un heading markdown avec le niveau (ex: ### Titre) à la ligne d'insertion\n- Réorganisation parent : le parent exécute processSectionsChange, crée le dossier physique, réorganise l'ordre et re-parente les sous-sections",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "section": "Création de Mega-outil via popup",
+    "tasks": "- Nouveau Trello : clic sur \"Nouveau\" en mode Trello ouvre showTrelloPopup, saisie du nom, création et insertion du marqueur [trello:nom]\n- Nouveau Tableau (Array) : clic sur \"Nouveau\" en mode Tableau ouvre showArrayPopup, saisie du nom, création et insertion du marqueur de tableau\n- Nouveau Mockup : clic sur \"Nouveau\" en mode Mockup ouvre showMockupPopup, validation du nom unique, création et insertion du marqueur {{MOCKUP:id}}\n- Liaison Mockup : clic sur \"Liaison\" ouvre la popup de sélection des mockups du projet, clic sur un mockup existant insère sa liaison\n- Validation des formulaires : vérification de la non-vacuité du nom et gestion d'erreurs d'unicité (ex: mockupNameError)",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "section": "Import et insertion de fichiers d'images",
+    "tasks": "- Déclenchement : clic sur le bouton image de la barre de formatage appelle triggerImageUpload(), mémorisant le dossier actif et activant l'input file caché\n- Validation fichier : vérification du format (jpeg, png, gif, webp, svg, bmp) et de la taille maximale autorisée (1 Mo) avec message imageUploadError si invalide\n- Import serveur : envoi du fichier au serveur via le service uploadImage et ajout du nœud d'image à allImages\n- Insertion automatique : insère le marqueur {{IMG:nodeId}} à l'emplacement du curseur dans le document unifié\n- Historique & sauvegarde : enregistrement de l'action dans l'historique d'annulation (woHistory.track), exécution immédiate de saveAll() et passage en état localDirty = true",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "libs/portail-core/data-access/src/lib/project-files.service.ts"
+    ]
+  },
+  {
+    "section": "Sécurité FTP - Avertissement de désynchronisation",
+    "tasks": "- Condition : si isActiveSectionUnsynced est vrai (la section active est en cours de synchronisation avec le serveur FTP distant)\n- Affichage : affiche une bannière d'information bleue en haut de la zone d'édition \"Synchronisation FTP en cours — lecture seule jusqu'à la mise à jour\"\n- Blocage de saisie : les zones d'éditions du corps de section et les boutons d'action d'édition/formatage sont verrouillés",
+    "priority": "bloquant",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "section": "Menu contextuel et modification des liens hypertextes (mode Preview)",
+    "tasks": "- Détection : le focus ou le clic sur un lien hypertexte dans une section éditable en mode Preview ouvre le menu flottant visuLinkMenu\n- Actions du menu : propose de suivre le lien dans un nouvel onglet, de modifier le lien, ou de le supprimer\n- Popup d'édition : modifier le lien ouvre showLinkEditPopup, permet de saisir la nouvelle URL et met à jour l'attribut href du lien sur validation\n- Suppression de lien : l'action supprimer retire la balise lien <a> tout en conservant son contenu textuel brut",
+    "priority": "critique",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html"
+    ]
+  },
+  {
+    "section": "Raccourcis clavier par commande Slash (mode Preview)",
+    "tasks": "- Détection de saisie : en mode Preview, taper le caractère \"/\" dans un élément de texte éditable déclenche detectVisuSlash()\n- Menu de suggestions : affiche à la position du curseur le menu d'insertion flottant worg-slash-command-menu\n- Filtrage de commandes : la liste des commandes suggérées est dynamiquement filtrée selon la saisie de l'utilisateur (visuSlash.query)\n- Sélection au clavier : flèches Haut/Bas pour naviguer entre les commandes, Échap pour fermer, Entrée pour valider\n- Insertion et nettoyage : la validation supprime automatiquement le \"/\" saisi et insère le bloc ou le formatage correspondant (ex: note info, tableau 2x2, mockup, trello, citation)",
+    "priority": "mineur",
+    "components": [
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+      "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+      "apps/projets/src/app/pages/projet-editor/components/slash-command-menu/slash-command-menu.component.ts"
+    ]
+  }
+]

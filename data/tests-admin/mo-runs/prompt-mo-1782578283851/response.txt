@@ -1,0 +1,42 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire / Collège (6ème - 3ème)
+  * ( ) Lycée (Seconde - Terminale)
+  * ( ) Enseignement supérieur / Université
+  * ( ) Autre : ______
+
+* **Matière ou domaine spécifique des mathématiques à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations...)
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique et Spécialité Maths
+  * [ ] Autre : ______
+
+* **Niveau de départ et objectif mesurable visé :**
+  * ( ) Niveau en difficulté : Objectif de remise à niveau et obtention de la moyenne (10/20)
+  * ( ) Niveau moyen : Objectif de perfectionnement et consolidation des bases (12-14/20)
+  * ( ) Niveau solide : Objectif d'excellence, mention ou préparation aux concours / prépa (16+/20)
+  * ( ) Autre objectif : ______
+
+* **Points prioritaires à travailler en priorité :**
+  * [ ] Compréhension du cours et des définitions
+  * [ ] Application directe des méthodes et techniques de calcul
+  * [ ] Résolution de problèmes complexes et démonstrations
+  * [ ] Rigueur de rédaction et méthodologie d'examen
+
+* **Durée de l'accompagnement et date de début souhaitée :**
+  * ( ) Démarrage immédiat pour une durée de moins d'un mois (intensif)
+  * ( ) Démarrage rapide pour un trimestre
+  * ( ) Accompagnement sur toute l'année scolaire
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 séances par semaine
+  * ( ) Plus de 2 séances par semaine (stage intensif)
+  * ( ) Autre rythme : ______
+
+* **Modalités d'évaluation souhaitées pour mesurer la progression :**
+  * [ ] QCM rapides et auto-évaluation en fin de chapitre
+  * [ ] Exercices notés sur 20 avec correction détaillée
+  * [ ] Examens blancs en temps limité
+  * [ ] Aucun contrôle formel, uniquement un suivi de la compréhension

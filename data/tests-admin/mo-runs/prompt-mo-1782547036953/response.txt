@@ -1,0 +1,37 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire
+  * ( ) Collège
+  * ( ) Lycée
+  * ( ) Supérieur / Université
+  * ( ) Autre : ______
+
+* **Domaines ou chapitres des mathématiques à cibler en priorité :**
+  * [ ] Algèbre (équations, fonctions, calcul littéral)
+  * [ ] Géométrie (théorèmes, trigonométrie, vecteurs)
+  * [ ] Probabilités et Statistiques
+  * [ ] Analyse (dérivées, intégrales, suites)
+  * [ ] Autre : ______
+
+* **Niveau de départ estimé et objectif visé :**
+  * ( ) Difficultés majeures (Objectif : acquérir les bases)
+  * ( ) Niveau moyen (Objectif : consolider et viser > 12/20)
+  * ( ) Bon niveau (Objectif : viser l'excellence / prépa)
+  * ( ) Autre : ______
+
+* **Durée du programme et date de début :**
+  * ( ) Intensif (1 à 2 semaines) - Début immédiat
+  * ( ) Régulier (1 à 3 mois) - Début sous une semaine
+  * ( ) Annuel / Trimestriel - Début : ______
+  * ( ) Autre : ______
+
+* **Fréquence des séances :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 à 3 séances par semaine
+  * ( ) Quotidien (révisions intensives)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation :**
+  * [ ] Notes sur 20 (évaluation classique)
+  * [ ] QCM / Quiz rapides
+  * [ ] Auto-évaluation guidée
+  * [ ] Autre : ______

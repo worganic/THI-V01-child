@@ -660,9 +660,31 @@ app.post('/execute-prompt', (req, res) => {
             }
         }, 2000);
 
+        // Watchdog : timeout max dur. agy n'écrit pas sur stdout (sortie fichier), donc on ne peut
+        // pas se fier à l'inactivité stdout → on borne la durée totale. Si le CLI hang et ne ferme
+        // jamais le process, on le tue et on termine le flux SSE pour débloquer le client.
+        const MAX_EXEC_MS = parseInt(process.env.AI_EXEC_TIMEOUT_MS || '', 10) || 5 * 60 * 1000; // 5 min
+        let execTimeout = null;
+
         const cleanup = () => {
             clearInterval(heartbeatInterval);
+            if (execTimeout) { clearTimeout(execTimeout); execTimeout = null; }
             runningProcesses.delete(stepId);
+        };
+
+        const armTimeout = (proc, label) => {
+            execTimeout = setTimeout(() => {
+                console.warn(`[EXECUTOR] ${label} timeout après ${MAX_EXEC_MS}ms (step ${stepId}) — kill du process.`);
+                try { proc.kill('SIGTERM'); } catch {}
+                // Laisser 3s au SIGTERM, sinon SIGKILL
+                setTimeout(() => { try { proc.kill('SIGKILL'); } catch {} }, 3000);
+                cleanup();
+                if (!res.writableEnded) {
+                    sseWrite(res, 'error', `[Timeout] ${label} n'a pas répondu en ${Math.round(MAX_EXEC_MS / 1000)}s — process arrêté. Réessaie ou change de modèle/provider.\n`);
+                    sseWrite(res, 'end', `${label} timeout`, { code: 124 });
+                    res.end();
+                }
+            }, MAX_EXEC_MS);
         };
 
         // Antigravity (agy) execution
@@ -683,6 +705,7 @@ app.post('/execute-prompt', (req, res) => {
 
             console.log(`[EXECUTOR] Antigravity (agy) process spawned (PID: ${agyProcess.pid})`);
             runningProcesses.set(stepId, { process: agyProcess, startTime: Date.now() });
+            armTimeout(agyProcess, 'Antigravity');
 
             agyProcess.stdout?.on('data', (data) => {
                 sseWrite(res, 'stdout', data.toString());
@@ -725,6 +748,7 @@ app.post('/execute-prompt', (req, res) => {
         }
 
         runningProcesses.set(stepId, { process: claude, startTime: Date.now() });
+        armTimeout(claude, 'Claude');
 
         claude.stdout?.on('data', (data) => {
             const output = data.toString();

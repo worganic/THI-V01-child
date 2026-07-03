@@ -1,0 +1,211 @@
+# Programme de Consolidation en Analyse Mathématique (Terminale Spé Maths)
+
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-07-06 | Suites numériques | Maîtriser le raisonnement par récurrence et les limites de suites | À faire |
+| Séance 2 | 2026-07-13 | Limites de fonctions et continuité | Comprendre la continuité et appliquer le théorème des valeurs intermédiaires | À faire |
+| Séance 3 | 2026-07-20 | Dérivation et convexité | Étudier le sens de variation, les points d'inflexion et la convexité | À faire |
+| Séance 4 | 2026-07-27 | Fonction logarithme népérien | Connaître les propriétés algébriques et analytiques de ln(x) | À faire |
+| Séance 5 | 2026-08-03 | Intégration et primitives | Calculer des aires et utiliser les primitives | À faire |
+| Séance 6 | 2026-08-10 | Synthèse et méthodologie | Acquérir de la rigueur sur des sujets de type Baccalauréat | À faire |
+```
+
+```AGENDA: Séances
+2026-07-06 | 14:00-15:30 | Séance 1 — 2026-07-06 : Suites numériques | Rappels sur les limites et la récurrence.
+2026-07-13 | 14:00-15:30 | Séance 2 — 2026-07-13 : Limites de fonctions et continuité | Limites aux bornes et théorème des valeurs intermédiaires.
+2026-07-20 | 14:00-15:30 | Séance 3 — 2026-07-20 : Dérivation et convexité | Dérivées secondes, tangentes et convexité.
+2026-07-27 | 14:00-15:30 | Séance 4 — 2026-07-27 : Fonction logarithme népérien | Résolution d'équations/inéquations et limites de croissance comparée.
+2026-08-03 | 14:00-15:30 | Séance 5 — 2026-08-03 : Intégration et primitives | Calcul d'intégrales par primitives et propriétés de linéarité.
+2026-08-10 | 14:00-15:30 | Séance 6 — 2026-08-10 : Synthèse et méthodologie | Rigueur de la rédaction et correction de problèmes types.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 | 2026-07-06 | | 20 | =C2/D2*100 | =AVG(C2:C7) |
+| Séance 2 | 2026-07-13 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-20 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-27 | | 20 | =C5/D5*100 | |
+| Séance 5 | 2026-08-03 | | 20 | =C6/D6*100 | |
+| Séance 6 | 2026-08-10 | | 20 | =C7/D7*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Séance 1 — 2026-07-06 : Suites numériques `[medium]`
+  Assimiler la rigueur de la rédaction d'une récurrence (initialisation, hérédité, conclusion).
+- [ ] Séance 2 — 2026-07-13 : Limites de fonctions et continuité `[medium]`
+  Rédiger proprement le théorème des valeurs intermédiaires (TVI).
+- [ ] Séance 3 — 2026-07-20 : Dérivation et convexité `[medium]`
+  Étudier le signe de la dérivée seconde pour trouver les points d'inflexion.
+- [ ] Séance 4 — 2026-07-27 : Fonction logarithme népérien `[medium]`
+  Appliquer les croissances comparées.
+- [ ] Séance 5 — 2026-08-03 : Intégration et primitives `[high]`
+  Pratiquer le calcul d'aires délimitées par des courbes.
+- [ ] Séance 6 — 2026-08-10 : Synthèse et méthodologie `[critical]`
+  Traiter un sujet complet du Bac.
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-07-06 : Suites numériques
+
+### Contenu du cours
+Le raisonnement par récurrence permet de démontrer qu'une propriété P(n) est vraie pour tout entier n supérieur ou égal à n_0. Il se déroule en trois étapes indispensables :
+1. **Initialisation** : On vérifie que la propriété est vraie au rang initial n_0.
+2. **Hérédité** : On suppose que la propriété est vraie pour un entier k quelconque (k supérieur ou égal à n_0) et on démontre qu'elle reste vraie au rang k+1.
+3. **Conclusion** : On rappelle que la propriété est initialisée et héréditaire, donc vraie pour tout n supérieur ou égal à n_0.
+
+**Limites de suites** : Une suite (u_n) peut converger vers un réel L, diverger vers plus l'infini ou moins l'infini, ou ne pas avoir de limite.
+- **Théorème de comparaison** : Si u_n est supérieur ou égal à v_n à partir d'un certain rang et la limite de v_n est plus l'infini, alors la limite de u_n est plus l'infini.
+- **Théorème des gendarmes** : Si v_n est inférieur ou égal à u_n qui est inférieur ou égal à w_n, et si les suites v_n et w_n convergent vers la même limite L, alors la suite u_n converge aussi vers L.
+
+```FORM: QCM Séance 1
+* **Question 1 : Dans un raisonnement par récurrence, que suppose-t-on lors de l'étape d'hérédité ?**
+  * ( ) Que la propriété est vraie pour tout entier n
+  * ( ) Que la propriété est vraie pour un entier fixé k
+  * ( ) Que la propriété est fausse au rang k+1
+* **Question 2 : Si pour tout n supérieur ou égal à 0, u_n est supérieur ou égal à 2^n, quelle est la limite de u_n ?**
+  * ( ) 0
+  * ( ) 1
+  * ( ) Plus l'infini
+* **Question 3 : Soit la suite définie par u_{n+1} = 0,5 u_n + 3 et u_0 = 10. Quelle équation permet de conjecturer la limite L de cette suite en supposant qu'elle converge ?**
+  * ( ) L = 0,5 L + 3
+  * ( ) L = 10
+  * ( ) L = 3 / 0,5
+```
+
+## Séance 2 — 2026-07-13 : Limites de fonctions et continuité
+
+### Contenu du cours
+**Limites de fonctions** : On étudie le comportement d'une fonction aux bornes de son ensemble de définition (en plus ou moins l'infini, ou en un réel a).
+- **Formes indéterminées (FI)** : « 0/0 », « infini/infini », « 0 x infini », « +infini - infini ». On lève l'indétermination par factorisation du terme prépondérant, quantité conjuguée ou croissances comparées.
+- **Continuité** : Une fonction f est continue en a si la limite de f(x) quand x tend vers a est égale à f(a). Graphiquement, sa courbe représentative peut se tracer sans lever le crayon.
+- **Théorème des valeurs intermédiaires (TVI)** : Si f est continue et strictement monotone sur un intervalle [a; b], alors pour tout réel k compris entre f(a) et f(b), l'équation f(x) = k admet une unique solution dans [a; b].
+
+```FORM: QCM Séance 2
+* **Question 1 : Quelle situation représente une forme indéterminée pour les limites ?**
+  * ( ) Plus l'infini plus plus l'infini
+  * ( ) Plus l'infini divisé par plus l'infini
+  * ( ) Un réel non nul divisé par 0
+* **Question 2 : Quelles sont les conditions requises pour appliquer le corollaire du TVI afin de prouver l'existence d'une UNIQUE solution à f(x) = k sur un intervalle donné ?**
+  * [ ] La fonction doit être continue.
+  * [ ] La fonction doit être strictement monotone.
+  * [ ] La fonction doit être positive.
+* **Question 3 : Si la limite de f(x) quand x tend vers plus l'infini est égale à 2, quelle est l'interprétation graphique de ce résultat ?**
+  * ( ) La courbe admet une asymptote verticale d'équation x = 2
+  * ( ) La courbe admet une asymptote horizontale d'équation y = 2
+  * ( ) La courbe admet une asymptote oblique d'équation y = 2x
+```
+
+## Séance 3 — 2026-07-20 : Dérivation et convexité
+
+### Contenu du cours
+**Rappels de dérivation** : Le nombre dérivé f'(a) est le coefficient directeur de la tangente à la courbe en a. L'équation de cette tangente est : y = f'(a)(x - a) + f(a).
+**Convexité** :
+- Une fonction f est **convexe** sur un intervalle I si sa courbe est située au-dessus de ses tangentes. Cela équivaut à f' croissante ou f'' supérieure ou égale à 0.
+- Une fonction f est **concave** sur I si sa courbe est située en dessous de ses tangentes. Cela équivaut à f' décroissante ou f'' inférieure ou égale à 0.
+- Un **point d'inflexion** est un point de la courbe où la convexité change (la courbe traverse sa tangente). Il correspond à l'annulation et au changement de signe de la dérivée seconde f''.
+
+```FORM: QCM Séance 3
+* **Question 1 : Si la dérivée seconde f'' est strictement positive sur un intervalle I, la fonction f est :**
+  * ( ) Croissante
+  * ( ) Convexe
+  * ( ) Concave
+* **Question 2 : Comment repère-t-on graphiquement un point d'inflexion ?**
+  * ( ) C'est l'endroit où la courbe coupe l'axe des ordonnées
+  * ( ) C'est l'endroit où la courbe traverse sa tangente
+  * ( ) C'est le maximum de la fonction
+* **Question 3 : Quelle est l'équation correcte de la tangente à la courbe de f au point d'abscisse a ?**
+  * ( ) y = f'(a)(x - a) + f(a)
+  * ( ) y = f(a)(x - a) + f'(a)
+  * ( ) y = f'(a)x + f(a)
+```
+
+## Séance 4 — 2026-07-27 : Fonction logarithme népérien
+
+### Contenu du cours
+La fonction logarithme népérien, notée ln, est définie sur ]0; +infini[ comme la fonction réciproque de la fonction exponentielle.
+- **Propriétés algébriques** : Pour tous réels a > 0 et b > 0 :
+  - ln(a x b) = ln(a) + ln(b)
+  - ln(a/b) = ln(a) - ln(b)
+  - ln(a^n) = n ln(a) (pour n entier relatif)
+  - ln(racine(a)) = 0,5 ln(a)
+- **Propriétés analytiques** :
+  - La fonction ln est continue et strictement croissante sur ]0; +infini[.
+  - ln(1) = 0 et ln(e) = 1.
+  - Dérivée : Pour tout x > 0, ln'(x) = 1/x. Plus généralement, si u est une fonction strictement positive, (ln(u))' = u'/u.
+  - Limites : Limite de ln(x) en 0+ est moins l'infini, et en plus l'infini est plus l'infini.
+  - Croissances comparées : Limite de ln(x)/x en plus l'infini est 0, et limite de x ln(x) en 0+ est 0.
+
+```FORM: QCM Séance 4
+* **Question 1 : Quelle est l'expression simplifiée de ln(8) - ln(2) ?**
+  * ( ) ln(6)
+  * ( ) ln(4)
+  * ( ) 2 ln(2)
+* **Question 2 : Quel est l'ensemble de définition de la fonction f définie par f(x) = ln(2x - 4) ?**
+  * ( ) L'ensemble des réels R
+  * ( ) ]0; +infini[
+  * ( ) ]2; +infini[
+* **Question 3 : Quelle est la dérivée de la fonction f définie sur ]0; +infini[ par f(x) = ln(x^2 + 1) ?**
+  * ( ) f'(x) = 1 / (x^2 + 1)
+  * ( ) f'(x) = 2x / (x^2 + 1)
+  * ( ) f'(x) = 2 / x
+```
+
+## Séance 5 — 2026-08-03 : Intégration et primitives
+
+### Contenu du cours
+**Primitives** : Soit f une fonction continue sur un intervalle I. Une primitive de f sur I est une fonction F dérivable sur I telle que F'(x) = f(x).
+- Toute fonction continue sur un intervalle admet des primitives. Elles sont définies à une constante réelle près.
+
+**Intégrale** : Soit f continue sur [a; b] et F une primitive de f.
+L'intégrale de a à b de f(x) dx est égale à F(b) - F(a).
+- **Interprétation géométrique** : Si f est positive ou nulle sur [a; b], l'intégrale de a à b de f(x) dx représente l'aire (en unités d'aire) du domaine délimité par la courbe de f, l'axe des abscisses et les droites verticales d'équations x = a et x = b.
+- **Propriétés** : Linéarité, relation de Chasles, positivité et conservation de l'ordre.
+
+```FORM: QCM Séance 5
+* **Question 1 : Quelle est la primitive F de la fonction f(x) = 3x^2 - 2x + 1 sur R qui s'annule en 0 ?**
+  * ( ) F(x) = x^3 - x^2 + x
+  * ( ) F(x) = x^3 - x^2 + x + 5
+  * ( ) F(x) = 6x - 2
+* **Question 2 : Que vaut l'intégrale de 1 à e de 1/x dx ?**
+  * ( ) 0
+  * ( ) 1
+  * ( ) e
+* **Question 3 : D'après la relation de Chasles, à quoi est égale la somme de l'intégrale de 1 à 3 de f(x)dx et de l'intégrale de 3 à 5 de f(x)dx ?**
+  * ( ) L'intégrale de 1 à 5 de f(x)dx
+  * ( ) L'intégrale de 4 à 8 de f(x)dx
+  * ( ) L'intégrale de 1 à 3 de f(x)dx
+```
+
+## Séance 6 — 2026-08-10 : Synthèse et méthodologie
+
+### Contenu du cours
+Pour réussir les exercices de synthèse de type Baccalauréat en Analyse, la rigueur de rédaction est primordiale :
+1. **Justifier l'ensemble de définition et la dérivabilité** avant de dériver une fonction.
+2. **Soigner les tableaux de variations** : inclure les limites aux bornes, les valeurs remarquables et justifier le signe de la dérivée par des inéquations ou des factorisations.
+3. **Citer précisément les théorèmes** : pour le TVI (Théorème des Valeurs Intermédiaires), préciser que la fonction est continue et strictement monotone sur l'intervalle d'étude, et montrer que la valeur cible appartient bien à l'intervalle image.
+4. **Rédiger soigneusement les limites** en justifiant chaque étape (limite d'un produit, d'un quotient, composition de limites).
+
+```FORM: QCM Séance 6
+* **Question 1 : Quel élément est INDISPENSABLE dans un tableau de variations complet pour une fonction définie sur ]0; +infini[ ?**
+  * ( ) Les calculs détaillés des dérivées
+  * ( ) Les limites de la fonction en 0+ et en plus l'infini
+  * ( ) La formule de la tangente en 1
+* **Question 2 : Pour justifier la limite de f(x) = e^(-x) ln(x) en plus l'infini, quelle méthode utilise-t-on ?**
+  * ( ) La composition des limites et le produit des limites après levée d'indétermination
+  * ( ) L'application directe car il n'y a pas d'indétermination
+  * ( ) Le théorème des gendarmes uniquement
+* **Question 3 : Quelle est la meilleure manière d'introduire la dérivée d'une fonction composée comme g(x) = ln(u(x)) sur un intervalle I ?**
+  * ( ) Écrire directement la dérivée sans mentionner u(x)
+  * ( ) Justifier d'abord que u est dérivable et strictement positive sur I
+  * ( ) Dériver par rapport à u puis multiplier par 100
+```

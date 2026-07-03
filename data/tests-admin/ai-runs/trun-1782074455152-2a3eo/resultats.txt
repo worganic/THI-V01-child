@@ -1,0 +1,16 @@
+@@TEST_RESULT@@{"itemId":"2-5-2-3-1","status":"ok","note":"Navigation conforme : goBack Location.back, goHome, goProjets et fil d'Ariane non éditable."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-2","status":"ok","note":"Statuts de sauvegarde OK (Sauvegardé, Non sauvegardé, Sauvegarde..., Erreur) et forceSave()."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-3","status":"ok","note":"Badges de backup conformes : FTP (idle/syncing/done/error), GitHub, GitLab et Drive."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-4","status":"ok","note":"Onglets Code, Structure, Edition et CSS toggle conformes."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-5","status":"ok","note":"Barre de formatage (mode Code avec style) avec actions Markdown et HTML inline fonctionnelle."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-11","status":"ok","note":"Bouton Dossier fonctionnel : appelle openSectionFolder et POST /open-folder (exécute explorer/open)."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-6","status":"ok","note":"Bandeaux pending pour Code et Structure conformes avec annulation et partage."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-7","status":"ok","note":"Indicateurs visuels et overlay de publication/upload conformes."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-8","status":"ok","note":"Barre Mega-outils (Trello, Mockup, Array) fonctionnelle avec compteur et navigation."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-9","status":"ok","note":"Menus déroulants (Style, Couleur, Surlignage) en mode Preview conformes avec preventDefault."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-10","status":"ok","note":"Création de section au curseur fonctionnelle via computeVisuCursorInsertLine et createTitleSection."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-12","status":"ok","note":"Création Trello, Tableau, Mockup et liaison mockup fonctionnelles via popups de configuration."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-13","status":"ok","note":"Import d'image fonctionnel avec validation, upload, insertion de marqueur, saveAll et historique."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-14","status":"ok","note":"Sécurité FTP de désynchronisation conforme : bannière lecture seule et blocage de saisie."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-15","status":"ok","note":"Menu contextuel de lien hypertexte (suivre, modifier, supprimer) en mode Preview fonctionnel."}
+@@TEST_RESULT@@{"itemId":"2-5-2-3-16","status":"ok","note":"Raccourcis clavier commande Slash (/) en mode Preview fonctionnels (détection, suggestions, filtrage, insertion)."}

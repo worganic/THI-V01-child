@@ -1,0 +1,34 @@
+* **Quel est le format attendu pour le livrable final de l'atelier P.A.R.S. ?**
+  * ( ) Un prompt système structuré pour un LLM (comme ChatGPT/Gemini)
+  * ( ) Un script ou une application web interactive autonome (HTML/JS)
+  * ( ) Un template de document (Notion, Markdown, Google Docs)
+  * ( ) Autre : ______
+
+* **Quel est l'horizon temporel et la date de démarrage visée pour le déploiement ou l'utilisation de cet atelier ?**
+  * ( ) Démarrage immédiat (moins d'une semaine)
+  * ( ) Démarrage à moyen terme (1 à 4 semaines)
+  * ( ) Autre : ______
+
+* **Quels sont les jalons clés ou étapes prioritaires pour la mise en place de ce projet ?**
+  * [ ] Prototypage et test du flux P.A.R.S.
+  * [ ] Intégration dans une plateforme existante
+  * [ ] Rédaction des guides utilisateurs et des exemples
+  * [ ] Autre : ______
+
+* **Quelles sont les contraintes techniques ou de ressources principales pour ce projet ?**
+  * [ ] Limitation technique (pas de base de données, exécution locale uniquement)
+  * [ ] Contraintes de temps de développement
+  * [ ] Budget ou licences d'outils tiers
+  * [ ] Autre : ______
+
+* **Quels sont les critères de succès mesurables pour valider le bon fonctionnement de cet atelier ?**
+  * [ ] Taux de complétion de l'atelier par les utilisateurs
+  * [ ] Qualité et pertinence des idées qualifiées extraites lors de la récolte
+  * [ ] Facilité d'importation du rapport final dans un outil de Mind Mapping
+  * [ ] Autre : ______
+
+* **Quels sont les risques ou blocages majeurs anticipés dans l'exécution de cet atelier ?**
+  * [ ] Syndrome de la page blanche ou blocage de l'utilisateur lors de la phase d'écriture libre
+  * [ ] Hallucination du système lors de l'extraction des unités de sens verbatim
+  * [ ] Perte de connexion ou de données en cours de session de 15 minutes
+  * [ ] Autre : ______

@@ -1,0 +1,151 @@
+# 📚 Accompagnement en Mathématiques - Algèbre et Arithmétique (Lycée)
+
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 — 2026-06-29 : Bases de l'algèbre et calcul littéral | 2026-06-29 | Bases de l'algèbre et calcul littéral | Maîtriser le développement, la factorisation et les identités remarquables | À faire |
+| Séance 2 — 2026-07-06 : Arithmétique et divisibilité | 2026-07-06 | Arithmétique et divisibilité | Comprendre la notion de divisibilité, les nombres premiers et leur décomposition | À faire |
+| Séance 3 — 2026-07-13 : Équations et inéquations | 2026-07-13 | Équations et inéquations | Savoir résoudre des équations et des inéquations du premier degré | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 14:00-16:00 | Séance 1 — 2026-06-29 : Bases de l'algèbre et calcul littéral | Révision du calcul littéral, développement, factorisation et identités remarquables.
+2026-07-06 | 14:00-16:00 | Séance 2 — 2026-07-06 : Arithmétique et divisibilité | Diviseurs, multiples, nombres premiers et critères de divisibilité.
+2026-07-13 | 14:00-16:00 | Séance 3 — 2026-07-13 : Équations et inéquations | Résolution d'équations, inéquations du premier degré et signes de fonctions affines.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 — 2026-06-29 : Bases de l'algèbre et calcul littéral | 2026-06-29 | | 20 | =C2/D2*100 | =AVG(C2:C4) |
+| Séance 2 — 2026-07-06 : Arithmétique et divisibilité | 2026-07-06 | | 20 | =C3/D3*100 | |
+| Séance 3 — 2026-07-13 : Équations et inéquations | 2026-07-13 | | 20 | =C4/D4*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Préparer la séance 1 `[medium]`
+  Bases de l'algèbre et calcul littéral
+- [ ] Préparer la séance 2 `[medium]`
+  Arithmétique et divisibilité
+- [ ] Préparer la séance 3 `[medium]`
+  Équations et inéquations
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-06-29 : Bases de l'algèbre et calcul littéral
+
+### Fiche de cours synthétique
+Le calcul littéral consiste à faire des calculs en utilisant des lettres pour représenter des nombres inconnus ou variables.
+
+#### 1. Développer (transformer un produit en somme)
+- **Simple distributivité :** a(b + c) = ab + ac
+- **Double distributivité :** (a + b)(c + d) = ac + ad + bc + bd
+
+#### 2. Les Identités Remarquables (à connaître par cœur)
+- (a + b)² = a² + 2ab + b²
+- (a - b)² = a² - 2ab + b²
+- (a - b)(a + b) = a² - b²
+
+#### 3. Factoriser (transformer une somme en produit)
+Factoriser consiste à chercher un facteur commun ou à utiliser une identité remarquable dans le sens inverse.
+- *Exemple facteur commun :* 3x² + 6x = 3x(x + 2)
+- *Exemple identité remarquable :* x² - 9 = (x - 3)(x + 3)
+
+### Exercices de validation
+```FORM: QCM Séance 1
+* **Question 1 : Quelle est la forme développée et réduite de (2x - 3)² ?**
+  * ( ) 4x² - 9
+  * ( ) 4x² - 12x + 9
+  * ( ) 4x² + 12x + 9
+* **Question 2 : Quelle est la factorisation de 9x² - 16 ?**
+  * ( ) (3x - 4)²
+  * ( ) (3x - 4)(3x + 4)
+  * ( ) (9x - 16)(9x + 16)
+* **Question 3 : Quelle est l'expression factorisée de x² - 6x + 9 ?**
+  * ( ) (x - 3)²
+  * ( ) (x + 3)²
+  * ( ) (x - 3)(x + 3)
+```
+
+## Séance 2 — 2026-07-06 : Arithmétique et divisibilité
+
+### Fiche de cours synthétique
+L'arithmétique est l'étude des nombres entiers et de leurs propriétés de divisibilité.
+
+#### 1. Diviseurs et Multiples
+Soient a et b deux entiers. On dit que a divise b (ou que b est un multiple de a) s'il existe un entier k tel que b = a * k.
+
+#### 2. Critères de divisibilité simples
+- Par **2** : se termine par 0, 2, 4, 6 ou 8.
+- Par **3** ou **9** : la somme de ses chiffres est un multiple de 3 ou 9.
+- Par **5** : se termine par 0 ou 5.
+- Par **10** : se termine par 0.
+
+#### 3. Nombres Premiers
+Un nombre entier est premier s'il possède exactement deux diviseurs distincts : 1 et lui-même.
+- *Exemples :* 2, 3, 5, 7, 11, 13, 17, 19, 23, 29...
+- **Théorème fondamental :** Tout nombre entier supérieur ou égal à 2 peut se décomposer de façon unique en un produit de facteurs premiers.
+- *Exemple :* 120 = 2³ * 3 * 5.
+
+### Exercices de validation
+```FORM: QCM Séance 2
+* **Question 1 : Parmi les nombres suivants, lequel est un nombre premier ?**
+  * ( ) 15
+  * ( ) 21
+  * ( ) 29
+* **Question 2 : Quelle est la décomposition en produit de facteurs premiers de 60 ?**
+  * ( ) 2 * 3 * 10
+  * ( ) 2² * 3 * 5
+  * ( ) 4 * 3 * 5
+* **Question 3 : Un nombre est divisible par 9 si :**
+  * ( ) Son chiffre des unités est 9
+  * ( ) La somme de ses chiffres est un multiple de 9
+  * ( ) Il se termine par 3, 6 ou 9
+```
+
+## Séance 3 — 2026-07-13 : Équations et inéquations
+
+### Fiche de cours synthétique
+Résoudre une équation ou une inéquation consiste à trouver toutes les valeurs de l'inconnue (généralement x) qui rendent l'affirmation vraie.
+
+#### 1. Équations du premier degré
+On isole l'inconnue x d'un côté de l'égalité.
+- *Exemple :*
+  3x - 5 = 7
+  3x = 7 + 5
+  3x = 12
+  x = 4
+
+#### 2. Inéquations du premier degré
+La méthode est similaire à celle des équations, mais attention : si on multiplie ou divise par un nombre négatif, on doit changer le sens de l'inégalité.
+- *Exemple :*
+  -2x > 6
+  x < 6 / (-2) (changement de sens car division par un nombre négatif)
+  x < -3
+
+#### 3. Signe de ax + b
+L'expression s'annule pour x = -b/a. Elle est du signe de a pour les valeurs supérieures à cette racine.
+
+### Exercices de validation
+```FORM: QCM Séance 3
+* **Question 1 : Quelle est la solution de l'équation 3x - 5 = 7 ?**
+  * ( ) x = 4
+  * ( ) x = 2/3
+  * ( ) x = 12
+* **Question 2 : Quelles sont les solutions de l'inéquation -2x > 6 ?**
+  * ( ) x > -3
+  * ( ) x < -3
+  * ( ) x < 3
+* **Question 3 : Quelle est la valeur de x pour laquelle l'expression 2x - 8 s'annule ?**
+  * ( ) x = -4
+  * ( ) x = 4
+  * ( ) x = 8
+```

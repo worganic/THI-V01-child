@@ -1,0 +1,516 @@
+[
+  {
+    "op": "add",
+    "kind": "group",
+    "id": null,
+    "data": {
+      "label": "Projets",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminProjetsComponent",
+      "description": "Gestion des projets et configurations d'IA/sauvegarde."
+    },
+    "reason": "Section d'administration des projets associée à son onglet."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": null,
+    "data": {
+      "label": "Déploiement",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminDeploymentsComponent",
+      "description": "Gestion et historique des déploiements et statut Git."
+    },
+    "reason": "Section d'administration des déploiements associée à son onglet."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": null,
+    "data": {
+      "label": "Thème",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminThemeComponent",
+      "description": "Personnalisation graphique globale (couleurs, polices, cartes)."
+    },
+    "reason": "Section de personnalisation du thème associée à son onglet."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": null,
+    "data": {
+      "label": "Méga-outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMegaOutilsComponent",
+      "description": "Configuration et gestion des méga-outils partagés comme Trello."
+    },
+    "reason": "Section de gestion des méga-outils associée à son onglet."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": null,
+    "data": {
+      "label": "Mémo",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminMemoComponent",
+      "description": "Commandes Claude Code, raccourcis et documentation de développement."
+    },
+    "reason": "Section d'aide et documentation associée à son onglet."
+  },
+  {
+    "op": "add",
+    "kind": "group",
+    "id": null,
+    "data": {
+      "label": "Outils",
+      "role": "section",
+      "sectionType": "content",
+      "component": "AdminToolsComponent",
+      "description": "Gestion de la visibilité des outils et des widgets flottants."
+    },
+    "reason": "Section de gestion des outils externes associée à son onglet."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-256z",
+      "to": "group:sec-adm-projets",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet Projets et sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-0hbc",
+      "to": "group:sec-adm-deploiement",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet Déploiement et sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-pj86",
+      "to": "group:sec-adm-config",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet de configuration globale et sa section."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-akj2",
+      "to": "group:sec-adm-theme",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet Thème et sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-bqll",
+      "to": "group:sec-adm-mega-outils",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet Méga-outils et sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-ykj8",
+      "to": "group:sec-adm-memo",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet Mémo et sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "edge",
+    "id": null,
+    "data": {
+      "from": "el-mqplyz8s-kfpo",
+      "to": "group:sec-adm-tools",
+      "type": "relation",
+      "label": "affiche"
+    },
+    "reason": "Lien de relation entre l'onglet Outils et sa section de contenu."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Exécution",
+      "url": "/admin/tests/execution",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "link",
+      "components": ["AdminTestsComponent"],
+      "description": "Sous-onglet d'exécution des tests du cahier de recette."
+    },
+    "reason": "Sous-onglet d'exécution rajouté dans le composant Tests."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Résultats",
+      "url": "/admin/tests/resultats",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "link",
+      "components": ["AdminTestsComponent"],
+      "description": "Sous-onglet affichant les résultats de tests."
+    },
+    "reason": "Sous-onglet Résultats rajouté dans le composant Tests."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Historique",
+      "url": "/admin/tests/historique",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "link",
+      "components": ["AdminTestsComponent"],
+      "description": "Sous-onglet listant l'historique des sessions de tests terminées."
+    },
+    "reason": "Sous-onglet Historique rajouté dans le composant Tests."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Bouton Nouvelle section",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "button",
+      "components": ["AdminTestsComponent"],
+      "description": "Bouton pour créer une nouvelle section de test."
+    },
+    "reason": "Bouton Nouvelle section rajouté dans la barre d'onglets Tests."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Créer section",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "form",
+      "components": ["AdminTestsComponent"],
+      "description": "Formulaire d'ajout d'une section au cahier de recette."
+    },
+    "reason": "Formulaire (modal) de création de section rajouté."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire de génération de tests IA",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tests",
+      "elType": "form",
+      "components": ["AdminTestsComponent"],
+      "description": "Formulaire de configuration des consignes de génération par IA."
+    },
+    "reason": "Formulaire (modal) de génération automatique de fonctions."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Modifier utilisateur",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-users",
+      "elType": "form",
+      "components": ["AdminUsersComponent"],
+      "description": "Formulaire de modification d'un utilisateur existant."
+    },
+    "reason": "Formulaire d'édition (modal) présent dans la section Utilisateurs."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Sous-onglet Projets",
+      "url": "/admin/projets/projets",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-projets",
+      "elType": "link",
+      "components": ["AdminProjetsComponent"],
+      "description": "Sous-onglet affichant la grille de gestion des projets."
+    },
+    "reason": "Sous-onglet projets dans la section Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Sous-onglet Instructions IA",
+      "url": "/admin/projets/ia-instructions",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-projets",
+      "elType": "link",
+      "components": ["AdminProjetsComponent"],
+      "description": "Sous-onglet affichant et appliquant des instructions IA globales."
+    },
+    "reason": "Sous-onglet Instructions IA dans la section Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Grille de gestion des projets",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-projets",
+      "elType": "widget",
+      "components": ["AdminProjetsComponent"],
+      "description": "Tableau listant tous les projets et proposant des actions d'édition, de suppression ou de configuration IA/FTP."
+    },
+    "reason": "Widget listant les projets dans la section Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire d'édition de projet",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-projets",
+      "elType": "form",
+      "components": ["AdminProjetsComponent"],
+      "description": "Formulaire d'édition (modal) des propriétés de base d'un projet."
+    },
+    "reason": "Formulaire d'édition (modal) dans la section Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire configuration IA",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-projets",
+      "elType": "form",
+      "components": ["AdminProjetsComponent"],
+      "description": "Formulaire d'édition (modal) des instructions et paramètres d'IA spécifiques à un projet."
+    },
+    "reason": "Formulaire de configuration IA (modal) dans la section Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire configuration sauvegarde",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-projets",
+      "elType": "form",
+      "components": ["AdminProjetsComponent"],
+      "description": "Formulaire de paramétrage FTP (modal) pour les sauvegardes de projet."
+    },
+    "reason": "Formulaire de configuration de sauvegarde FTP (modal) dans la section Projets."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Liste des déploiements",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-deploiement",
+      "elType": "widget",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Tableau listant les versions déployées avec détails techniques."
+    },
+    "reason": "Widget listant les déploiements dans la section Déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Formulaire de déploiement",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-deploiement",
+      "elType": "form",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Formulaire permettant d'enregistrer manuellement un nouveau déploiement."
+    },
+    "reason": "Formulaire d'enregistrement de déploiement dans la section Déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "État Git local",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-deploiement",
+      "elType": "widget",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Widget montrant la branche actuelle et le statut de synchronisation avec le dépôt Git."
+    },
+    "reason": "Widget de statut Git dans la section Déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Bouton de migration",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-deploiement",
+      "elType": "button",
+      "components": ["AdminDeploymentsComponent"],
+      "description": "Bouton pour déclencher la migration des versions de la base de données."
+    },
+    "reason": "Bouton de migration des versions dans la section Déploiement."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Réglages du thème",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-theme",
+      "elType": "form",
+      "components": ["AdminThemeComponent"],
+      "description": "Formulaire de personnalisation des styles de cartes, des polices, des titres et des couleurs globales."
+    },
+    "reason": "Formulaire de configuration visuelle du thème dans la section Thème."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Widget Trello d'administration",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-mega-outils",
+      "elType": "widget",
+      "components": ["AdminMegaOutilsComponent", "TrelloAdminComponent"],
+      "description": "Interface d'administration pour la gestion des tableaux Trello."
+    },
+    "reason": "Widget d'administration de Trello dans la section Méga-outils."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Ouvrir dans l'éditeur",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-mega-outils",
+      "elType": "link",
+      "components": ["AdminMegaOutilsComponent"],
+      "description": "Lien pour naviguer vers l'éditeur de projet en ouvrant le tableau Trello sélectionné."
+    },
+    "reason": "Lien d'ouverture d'un méga-outil dans la section Méga-outils."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Contenu de documentation",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-memo",
+      "elType": "widget",
+      "components": ["AdminMemoComponent"],
+      "description": "Sections accordéons listant les commandes Claude Code, les méga-outils et les raccourcis."
+    },
+    "reason": "Widget d'aide et documentation dans la section Mémo."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Configuration des outils externes",
+      "url": "embed",
+      "port": 4202,
+      "kind": "admin",
+      "groupId": "sec-adm-tools",
+      "elType": "widget",
+      "components": ["AdminToolsComponent", "WoToolsAdminComponent"],
+      "description": "Interface pour activer/désactiver les widgets flottants (tchat, tickets, cahier de recette)."
+    },
+    "reason": "Widget de visibilité des outils dans la section Outils."
+  }
+]

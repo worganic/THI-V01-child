@@ -1,0 +1,36 @@
+* **Horizon temporel et date de démarrage envisagée :**
+  * ( ) Court terme (lancement dans les 6 mois)
+  * ( ) Moyen terme (lancement d'ici 1 à 2 ans)
+  * ( ) Long terme (plus de 2 ans)
+  * ( ) Autre : ______
+
+* **Contraintes financières principales (budget global pour l'acquisition et les travaux) :**
+  * ( ) Moins de 300 000 €
+  * ( ) De 300 000 € à 600 000 €
+  * ( ) Plus de 600 000 €
+  * ( ) Autre : ______
+
+* **Contraintes réglementaires et administratives prioritaires :**
+  * [ ] Changement de destination du bâtiment et règles d'urbanisme (PLU)
+  * [ ] Normes de sécurité incendie (ERP) et accessibilité (PMR)
+  * [ ] Fiscalité (LMNP, LMP, para-hôtellerie)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables à court terme :**
+  * [ ] Taux d'occupation minimum (ex : > 50% la première année)
+  * [ ] Rentabilité nette ou seuil de rentabilité atteint dès l'année 1
+  * [ ] Retours clients positifs (note moyenne > 9/10 ou 4.5/5)
+  * [ ] Autre : ______
+
+* **Principaux risques ou blocages anticipés :**
+  * [ ] Refus de financement bancaire ou apport personnel insuffisant
+  * [ ] Dépassement de budget ou retard des travaux de rénovation
+  * [ ] Manque de visibilité et difficultés à attirer les premiers clients
+  * [ ] Autre : ______
+
+* **Étapes ou jalons clés du projet sur lesquels se concentrer en priorité :**
+  * [ ] Étude de marché, business plan et recherche de financement
+  * [ ] Recherche du bien, négociation et signature de l'acte
+  * [ ] Phase de travaux, aménagement et décoration
+  * [ ] Lancement commercial et marketing
+  * [ ] Autre : ______

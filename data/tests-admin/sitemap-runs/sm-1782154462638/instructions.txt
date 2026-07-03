@@ -1,0 +1,2 @@
+Mets à jour UNIQUEMENT la zone « Menu » de la Site Map pour refléter l'état réel de l'application : ajoute les pages/onglets/composants manquants de cette zone, corrige les éléments obsolètes et signale ceux à supprimer. Analyse le code (routes, composants, onglets) et l'historique. Ne touche à aucune autre zone.
+Il manque par exemple le menu projet

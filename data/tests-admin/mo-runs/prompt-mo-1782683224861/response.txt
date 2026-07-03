@@ -1,0 +1,33 @@
+* **Horizon temporel et date de démarrage du projet d'atelier :**
+  * ( ) Court terme (lancement sous 1 mois)
+  * ( ) Moyen terme (lancement d'ici 3 à 6 mois)
+  * ( ) Autre : ______
+
+* **Format attendu pour le livrable d'accompagnement de cet atelier :**
+  * ( ) Guide méthodologique textuel (Markdown/PDF)
+  * ( ) Script ou prompt structuré pour un assistant IA (ex: chatbot)
+  * ( ) Formulaire interactif ou application web
+  * ( ) Autre : ______
+
+* **Contraintes principales pour le déploiement de la méthode :**
+  * [ ] Outils technologiques limités pour le mind mapping
+  * [ ] Temps restreint des participants (sessions courtes)
+  * [ ] Difficulté à maintenir l'écriture continue sans censure
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables du livrable :**
+  * [ ] Taux d'adoption de la méthode par les utilisateurs
+  * [ ] Nombre moyen d'idées qualifiées et exploitables extraites
+  * [ ] Fluidité et rapidité du passage de l'écriture à la synthèse
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs identifiés :**
+  * [ ] Difficulté de qualification automatisée des unités de sens (étape R)
+  * [ ] Blocage ou syndrome de la page blanche au démarrage (étape P)
+  * [ ] Manque de clarté du livrable final pour les outils de mind mapping
+  * [ ] Autre : ______
+
+* **Public cible prioritaire pour cet atelier :**
+  * ( ) Business owners et entrepreneurs individuels uniquement
+  * ( ) Équipes et collaborateurs (usage collaboratif)
+  * ( ) Autre : ______

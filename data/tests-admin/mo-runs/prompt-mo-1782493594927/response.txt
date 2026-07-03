@@ -1,0 +1,97 @@
+# Dossier de Présentation Bancaire : Projet de Création de Maison d'Hôtes
+
+Ce dossier a été conçu pour structurer et valoriser votre demande de financement auprès des établissements bancaires. Il présente les aspects stratégiques, financiers et opérationnels indispensables pour démontrer la viabilité de votre projet d'acquisition et de transformation immobilière en maison d'hôtes.
+
+## 1. Synthèse du Projet
+
+Ce projet vise l'acquisition d'une propriété de caractère afin de l'exploiter en tant que maison d'hôtes de charme. L'objectif est de proposer une offre d'hébergement haut de gamme combinant nuitées, petits-déjeuners gourmands et prestations complémentaires (table d'hôtes, espace bien-être, activités locales).
+
+### Profil des Porteurs de Projet
+- **Compétences clés :** Gestion de projet, accueil client, compétences culinaires et gestion financière.
+- **Motivation :** Reconversion professionnelle ou développement d'une activité touristique pérenne dans une région à fort potentiel.
+
+## 2. Le Projet Immobilier et Programme de Travaux
+
+L'acquisition concerne un bien immobilier offrant un fort potentiel d'aménagement. Les travaux prévus visent à optimiser l'espace pour maximiser la capacité d'accueil tout en garantissant l'intimité et le confort des voyageurs.
+
+### Détails du Bien
+- **Localisation :** Zone touristique attractive (proximité de pôles d'intérêt, accès routiers/ferroviaires).
+- **Configuration :** Bâtisse principale comprenant une partie privative pour les exploitants et plusieurs chambres indépendantes avec salles d'eau privatives.
+
+```ARRAY: Plan de financement initial
+| Besoins | Montant (€) | Ressources | Montant (€) |
+|---|---|---|---|
+| Achat immobilier (frais d'agence inclus) | 350000 | Apport personnel | 120000 |
+| Frais de notaire | 28000 | Prêt bancaire sollicité | 310000 |
+| Travaux de rénovation et décoration | 45000 | | |
+| Équipements et mobilier | 20000 | | |
+| Trésorerie de départ (besoin en fonds de roulement) | 7000 | | |
+| **Total des Besoins** | **450000** | **Total des Ressources** | **450000** |
+```
+
+## 3. Analyse de Marché et Positionnement
+
+Le positionnement retenu cible une clientèle de tourisme et d'affaires à la recherche d'une expérience authentique, personnalisée et supérieure aux standards de l'hôtellerie classique.
+
+### Segments cibles
+- Couples en séjour romantique ou de déconnexion.
+- Touristes étrangers à la recherche de patrimoine et de terroir.
+- Professionnels en déplacement (formule soirée étape).
+
+## 4. Plan de Lancement et Organisation Opérationnelle
+
+Un calendrier précis a été établi pour sécuriser les étapes clés avant l'ouverture officielle de l'établissement.
+
+```TRELLO: Plan d'action de lancement
+### À faire
+- [ ] Finalisation du compromis de vente `[high]`
+  Signature définitive chez le notaire et transmission des pièces justificatives.
+- [ ] Devis définitifs des artisans `[critical]`
+  Obtenir 3 devis comparatifs pour les travaux de rénovation énergétique et d'aménagement.
+- [ ] Campagne de communication de pré-lancement `[medium]`
+  Création du site web, référencement local (Google Business Profile) et réseaux sociaux.
+### En cours
+- [ ] Demande de prêt bancaire `[critical]`
+  Dépôt du dossier de financement final dans 3 établissements bancaires.
+- [ ] Dépôt de la déclaration préalable en mairie `[high]`
+  Dossier d'urbanisme pour le changement d'usage ou de destination partiel de la bâtisse.
+### Terminé
+- [ ] Étude de marché et business plan `[high]`
+  Validation de la viabilité économique, étude de la concurrence et du positionnement tarifaire.
+```
+
+## 5. Prévisions d'Exploitation et Rentabilité
+
+Les hypothèses de chiffre d'affaires reposent sur un taux d'occupation progressif et des tarifs cohérents avec les prestations proposées sur le marché local.
+
+```ARRAY: Prévisions financières sur 3 ans
+| Indicateurs | Année 1 | Année 2 | Année 3 |
+|---|---|---|---|
+| Nombre de chambres exploitées | 4 | 4 | 5 |
+| Taux d'occupation moyen (%) | 45% | 55% | 62% |
+| Prix moyen de la nuitée (€) | 110 | 115 | 120 |
+| Chiffre d'affaires estimé (€) | 72270 | 92345 | 135780 |
+| Charges d'exploitation (€) | 28900 | 33200 | 42500 |
+| Excédent Brut d'Exploitation (EBE) (€) | 43370 | 59145 | 93280 |
+| Annuités du prêt sollicité (€) | 24000 | 24000 | 24000 |
+| Trésorerie nette disponible (€) | 19370 | 35145 | 69280 |
+```
+
+## 6. Auto-évaluation de la Viabilité du Projet
+
+Pour s'assurer de la robustesse du projet face aux exigences des banquiers, les porteurs de projet doivent valider les critères de préparation suivants.
+
+```FORM: Auto-évaluation de préparation
+* **Quel est votre niveau d'apport personnel par rapport au coût total du projet ?**
+  * [ ] Inférieur à 10% (Risque élevé de refus)
+  * [ ] Entre 10% et 25% (Dossier standard)
+  * [ ] Supérieur à 25% (Excellente couverture du risque)
+* **Avez-vous déjà réalisé des devis d'artisans pour les travaux prévus ?**
+  * [ ] Non, ce sont des estimations globales
+  * [ ] Oui, des devis oraux ou partiels
+  * [ ] Oui, des devis écrits et définitifs par des professionnels assurés
+* **Quelle est votre expérience dans le domaine du tourisme ou de l'accueil ?**
+  * [ ] Aucune expérience directe ou indirecte
+  * [ ] Expérience indirecte (commerce, gestion, communication)
+  * [ ] Expérience directe ou formation spécifique en hôtellerie/restauration
+```

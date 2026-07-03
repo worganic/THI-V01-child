@@ -1,0 +1,177 @@
+## 📊 Bilan général et suivi du cours
+
+Ce tableau de bord vous permet de configurer votre profil et de suivre l'avancement de votre apprentissage en mathématiques.
+
+```FORM: Profil de l'élève
+* **Quel est votre niveau scolaire actuel ?**
+  * ( ) Collège - Classe de Troisième
+  * ( ) Lycée - Classe de Seconde
+  * ( ) Lycée - Classe de Première
+  * ( ) Lycée - Classe de Terminale
+* **Quelle matière ou domaine des mathématiques souhaitez-vous travailler ?**
+  * ( ) Géométrie & Trigonométrie
+  * ( ) Algèbre & Fonctions
+  * ( ) Probabilités & Statistiques
+  * ( ) Analyse & Calcul
+```
+
+### Plan de travail et planification
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-06-29 | Théorème de Pythagore et Trigonométrie | Calculer des longueurs et des angles dans un triangle rectangle | À faire |
+| Séance 2 | 2026-07-06 | Fonctions linéaires et affines | Modéliser et représenter graphiquement des fonctions | À faire |
+| Séance 3 | 2026-07-13 | Probabilités simples | Calculer des probabilités d'événements élémentaires | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 14:00-16:00 | Séance 1 — 2026-06-29 : Théorème de Pythagore et Trigonométrie | Découverte théorique, exemples d'applications et QCM d'évaluation.
+2026-07-06 | 14:00-16:00 | Séance 2 — 2026-07-06 : Fonctions linéaires et affines | Tracé de droites, étude de coefficients directeurs et QCM d'évaluation.
+2026-07-13 | 14:00-16:00 | Séance 3 — 2026-07-13 : Probabilités simples | Concepts d'événements aléatoires, équiprobabilité et QCM d'évaluation.
+```
+
+### Suivi des évaluations et progression
+
+```ARRAY: Suivi des notes
+| Séance | Date | Thème | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|---|
+| Séance 1 | 2026-06-29 | Théorème de Pythagore | | 20 | =D2/E2*100 | =AVG(D2:D4) |
+| Séance 2 | 2026-07-06 | Fonctions | | 20 | =D3/E3*100 | |
+| Séance 3 | 2026-07-13 | Probabilités | | 20 | =D4/E4*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement du cours
+### À faire
+- [ ] Réaliser le cours et le QCM de la Séance 1 `[medium]`
+- [ ] Réaliser le cours et le QCM de la Séance 2 `[medium]`
+- [ ] Réaliser le cours et le QCM de la Séance 3 `[medium]`
+### En cours
+### Terminé
+```
+
+---
+
+## Séance 1 — 2026-06-29 : Théorème de Pythagore et Trigonométrie
+
+### I. Le théorème de Pythagore
+
+Dans un triangle rectangle, le carré de la longueur de l'hypoténuse est égal à la somme des carrés des longueurs des deux autres côtés.
+* Si le triangle $ABC$ est rectangle en $A$, alors l'hypoténuse est le côté $[BC]$.
+* On a la relation : $BC^2 = AB^2 + AC^2$.
+
+### II. Réciproque du théorème de Pythagore
+
+Si dans un triangle $ABC$, on a $BC^2 = AB^2 + AC^2$, alors le triangle $ABC$ est rectangle en $A$.
+Cette réciproque sert à démontrer qu'un triangle est rectangle lorsqu'on connaît les longueurs de ses trois côtés.
+
+### III. Trigonométrie dans le triangle rectangle
+
+La trigonométrie relie les mesures des angles et les longueurs des côtés dans un triangle rectangle :
+* **Cosinus** : $\cos(\theta) = \frac{\text{Côté Adjacent}}{\text{Hypoténuse}}$
+* **Sinus** : $\sin(\theta) = \frac{\text{Côté Opposé}}{\text{Hypoténuse}}$
+* **Tangente** : $\tan(\theta) = \frac{\text{Côté Opposé}}{\text{Côté Adjacent}}$
+
+*Moyen mnémotechnique : SOH CAH TOA.*
+
+### IV. Exercices d'application (QCM)
+
+```FORM: QCM Séance 1
+* **Question 1 : Si un triangle ABC est rectangle en A avec AB = 3 cm et AC = 4 cm, combien mesure l'hypoténuse BC ?**
+  * ( ) 5 cm
+  * ( ) 7 cm
+  * ( ) 25 cm
+* **Question 2 : Dans un triangle DEF rectangle en D, quel rapport définit le cosinus de l'angle E ?**
+  * ( ) DF / EF
+  * ( ) DE / EF
+  * ( ) DE / DF
+* **Question 3 : Un triangle GHI a pour côtés GH = 6 cm, GI = 8 cm et HI = 10 cm. Ce triangle est-il rectangle ?**
+  * ( ) Oui
+  * ( ) Non
+  * ( ) On ne peut pas le déterminer
+```
+
+---
+
+## Séance 2 — 2026-07-06 : Fonctions linéaires et affines
+
+### I. Fonctions linéaires
+
+Une fonction linéaire $f$ traduit une situation de proportionnalité. Elle associe à tout nombre $x$ le nombre $a \times x$, noté $ax$.
+* Formule : $f(x) = ax$.
+* $a$ est appelé le coefficient directeur de la fonction.
+* Sa représentation graphique est une droite qui passe par l'origine du repère $(0,0)$.
+
+### II. Fonctions affines
+
+Une fonction affine $f$ associe à tout nombre $x$ le nombre $ax + b$.
+* Formule : $f(x) = ax + b$.
+* $a$ est le coefficient directeur de la droite représentative.
+* $b$ est l'ordonnée à l'origine (l'endroit où la droite coupe l'axe des ordonnées).
+* Sa représentation graphique est une droite.
+
+### III. Déterminer et tracer une fonction affine
+
+1. Repérer l'ordonnée à l'origine $b$ et placer le point $(0, b)$.
+2. Calculer l'image d'un autre nombre (par exemple $f(1) = a + b$) pour obtenir un deuxième point $(1, a+b)$.
+3. Tracer la droite qui passe par ces deux points.
+
+### IV. Exercices d'application (QCM)
+
+```FORM: QCM Séance 2
+* **Question 1 : Parmi les expressions suivantes, laquelle définit une fonction linéaire ?**
+  * ( ) f(x) = 3x + 2
+  * ( ) f(x) = 5x
+  * ( ) f(x) = x²
+* **Question 2 : Soit la fonction affine f(x) = -2x + 4. Quelle est son ordonnée à l'origine ?**
+  * ( ) -2
+  * ( ) 4
+  * ( ) 0
+* **Question 3 : Si le coefficient directeur d'une fonction affine g(x) = ax + b est strictement négatif (a < 0), quel est le sens de variation de la fonction g ?**
+  * ( ) Elle est strictement croissante
+  * ( ) Elle est strictement décroissante
+  * ( ) Elle est constante
+```
+
+---
+
+## Séance 3 — 2026-07-13 : Probabilités simples
+
+### I. Vocabulaire des probabilités
+
+* **Expérience aléatoire** : Expérience dont on ne peut pas prévoir le résultat avec certitude.
+* **Issue** : Un résultat possible d'une expérience aléatoire.
+* **Événement** : Un ensemble composé d'une ou plusieurs issues.
+
+### II. Calcul d'une probabilité dans une situation d'équiprobabilité
+
+Quand toutes les issues ont la même chance de se produire (équiprobabilité), la probabilité d'un événement $A$ se calcule par :
+$$P(A) = \frac{\text{Nombre d'issues favorables à l'événement } A}{\text{Nombre total d'issues possibles}}$$
+
+### III. Propriétés fondamentales
+
+1. La probabilité d'un événement est toujours comprise entre $0$ et $1$.
+2. La probabilité d'un événement impossible est égale à $0$.
+3. La probabilité d'un événement certain est égale à $1$.
+4. La somme des probabilités de toutes les issues possibles est toujours égale à $1$.
+
+### IV. Exercices d'application (QCM)
+
+```FORM: QCM Séance 3
+* **Question 1 : On lance un dé équilibré à 6 faces. Quelle est la probabilité d'obtenir un nombre pair ?**
+  * ( ) 1/6
+  * ( ) 1/2
+  * ( ) 1/3
+* **Question 2 : On tire une carte au hasard dans un jeu de 32 cartes. Quelle est la probabilité de tirer un cœur ?**
+  * ( ) 1/4
+  * ( ) 1/8
+  * ( ) 1/2
+* **Question 3 : Si la probabilité qu'un événement se réalise est de 0,15, quelle est la probabilité de l'événement contraire ?**
+  * ( ) 0,15
+  * ( ) 0,85
+  * ( ) 1,00
+```

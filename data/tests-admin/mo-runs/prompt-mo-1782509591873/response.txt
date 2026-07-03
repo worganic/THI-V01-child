@@ -1,0 +1,85 @@
+# Projet d'Acquisition et Création de Maison d'Hôtes
+
+Ce document rassemble tous les outils de planification, d'évaluation et de suivi indispensables pour structurer, financer et réaliser votre projet d'achat immobilier dans l'objectif d'ouvrir une maison d'hôtes.
+
+## 1. Planning de la formation et des séances d'accompagnement
+
+```ARRAY: Planning
+| Date | Thème | Objectif | Exercice | Statut |
+|-----------|-----------|-----------|-----------|-----------|
+| 2026-07-01 | Définition du projet et budget | Établir le cahier des charges précis du bien et estimer l'enveloppe financière globale | Exercices Projet et Budget | À faire |
+| 2026-07-15 | Recherche du bien et visites | Définir les critères géographiques et analyser techniquement les biens visités | Grille de visite | À faire |
+| 2026-08-01 | Business plan et viabilité | Modéliser le prévisionnel financier et estimer le seuil de rentabilité | Exercices Viabilité financière | À faire |
+| 2026-09-01 | Réglementation et cadre légal | Choisir le statut juridique adapté et étudier les normes de sécurité ERP | QCM Réglementation | À faire |
+| 2026-10-01 | Commercialisation et marketing | Définir la grille tarifaire, l'identité de marque et les canaux de distribution | Plan marketing | À faire |
+```
+
+## 2. Agenda des séances d'accompagnement
+
+```AGENDA: Séances
+2026-07-01 | 09:00-11:00 | Définition du projet et budget | Analyse du marché, ciblage de la clientèle et validation de la capacité d'emprunt.
+2026-07-15 | 09:00-11:00 | Recherche du bien et visites | Méthodes de prospection immobilière, visites sur le terrain et étude des diagnostics techniques.
+2026-08-01 | 09:00-11:00 | Business plan et viabilité | Simulation des charges d'exploitation, prévision des taux d'occupation et préparation du dossier bancaire.
+2026-09-01 | 09:00-11:00 | Réglementation et cadre légal | Réglementation des chambres d'hôtes, déclaration en mairie, normes incendie et d'accessibilité.
+2026-10-01 | 09:00-11:00 | Commercialisation et marketing | Stratégie tarifaire, création de site web, outils de réservation (PMS) et partenariats locaux.
+```
+
+## 3. Exercices par thème
+
+```FORM: Exercices Projet et Budget
+* **Question 1 : Quel est le montant estimé de votre apport personnel disponible pour ce projet ?**
+  * ( ) Moins de 50 000 €
+  * ( ) Entre 50 000 € et 150 000 €
+  * ( ) Plus de 150 000 €
+* **Question 2 : Quelles prestations complémentaires envisagez-vous de proposer pour diversifier vos revenus ?**
+  * [ ] Table d'hôtes
+  * [ ] Espace bien-être (jacuzzi, spa, sauna)
+  * [ ] Activités de loisir (location de vélos, visites guidées)
+  * [ ] Vente de produits locaux / Boutique
+* **Question 3 : Rédigez en quelques lignes votre positionnement commercial (ex: familial, insolite, haut de gamme...) :**
+```
+
+```FORM: Exercices Viabilité financière
+* **Question 1 : Sur quel taux d'occupation annuel moyen se basent vos hypothèses financières prudentes ?**
+  * ( ) Moins de 30 %
+  * ( ) Entre 30 % et 45 %
+  * ( ) Plus de 45 %
+* **Question 2 : Avez-vous budgétisé une enveloppe de secours pour les imprévus lors des travaux de rénovation ?**
+  * ( ) Oui, représentant au moins 10% du coût des travaux
+  * ( ) Oui, mais moins de 10% du coût des travaux
+  * ( ) Non, aucune enveloppe d'imprévus n'est prévue
+```
+
+## 4. Suivi des notes et évaluations
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|-----------|-----------|-----------|-----------|-----------|-----------|
+| Séance 1 | 2026-07-01 | | 20 | =C2/D2*100 | =AVG(C2:C6) |
+| Séance 2 | 2026-07-15 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-08-01 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-09-01 | | 20 | =C5/D5*100 | |
+| Séance 5 | 2026-10-01 | | 20 | =C6/D6*100 | |
+```
+
+## 5. Progression de la préparation
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+## 6. Suivi de l'avancement des tâches opérationnelles
+
+```TRELLO: Avancement
+### À faire
+- [ ] Rédiger le cahier des charges de la recherche immobilière `[high]`
+  Définir la surface minimale, le nombre de chambres et l'emplacement ciblé.
+- [ ] Prendre contact avec des agents immobiliers de la région `[medium]`
+  Transmettre le cahier des charges et planifier les premières visites de biens.
+- [ ] Préparer les pièces justificatives pour le dossier bancaire `[critical]`
+  Réunir les bilans personnels, justificatifs d'apport et business plan préliminaire.
+### En cours
+- [ ] Réaliser l'étude de marché locale `[critical]`
+  Analyser l'offre concurrente directe et indirecte sur la zone géographique visée.
+### Terminé
+```

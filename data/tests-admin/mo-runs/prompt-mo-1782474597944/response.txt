@@ -1,0 +1,102 @@
+# DIAGNOSTIC ET PROGRAMME DE FORMATION PERSONNALISÉ EN MATHÉMATIQUES
+
+## 1. FORMULAIRE D'ÉVALUATION INITIALE
+
+### Profil de l'élève
+- **Nom / Prénom :** [À compléter]
+- **Niveau Scolaire :**
+  - [ ] Primaire (CP, CE1, CE2, CM1, CM2)
+  - [ ] Collège (6ème, 5ème, 4ème, 3ème)
+  - [ ] Lycée (Seconde, Première, Terminale - Spécialité ou Option)
+  - [ ] Enseignement Supérieur (Classe Préparatoire, Licence, etc.)
+  - [ ] Autre / Reconversion : [À préciser]
+
+### Matière / Thématiques à travailler
+*Cochez la ou les thématiques prioritaires :*
+- [ ] **Arithmétique & Algèbre** (Nombres, calcul littéral, équations, fonctions, suites...)
+- [ ] **Géométrie & Trigonométrie** (Figures planes, géométrie dans l'espace, vecteurs, trigonométrie...)
+- [ ] **Probabilités & Statistiques** (Dénombrement, lois de probabilité, traitement de données...)
+- [ ] **Analyse** (Dérivées, intégrales, limites, équations différentielles...)
+- [ ] **Algorithmique & Programmation** (Python, logique...)
+
+### Objectifs de l'accompagnement
+- [ ] Remise à niveau / Consolidation des bases
+- [ ] Préparation à un examen (Brevet, Baccalauréat, Concours)
+- [ ] Perfectionnement et approfondissement (Objectif mention / classe prépa)
+- [ ] Aide aux devoirs et suivi régulier
+
+---
+
+## 2. PLAN DE TRAVAIL TYPE (Exemple sur 4 semaines)
+*Ce plan est adaptable selon les réponses au formulaire ci-dessus.*
+
+### Semaine 1 : Évaluation diagnostique et consolidation des bases
+* **Objectif :** Identifier les lacunes prioritaires et réviser les fondamentaux.
+* **Activités :**
+  * Test de positionnement (calcul mental, résolution de problèmes simples).
+  * Reprise des règles fondamentales (priorités opératoires, fractions, développement/factorisation).
+* **Volume horaire conseillé :** 2 heures de cours + 1 heure d'entraînement autonome.
+
+### Semaine 2 : Acquisition des concepts clés
+* **Objectif :** Maîtriser le cœur du chapitre choisi (ex: les fonctions ou la géométrie).
+* **Activités :**
+  * Cours théorique illustré d'exemples pas à pas.
+  * Exercices d'application directe pour valider la compréhension immédiate.
+* **Volume horaire conseillé :** 2 heures de cours + 2 heures d'exercices.
+
+### Semaine 3 : Approfondissement et résolution de problèmes complexes
+* **Objectif :** Développer l'autonomie face à des énoncés non guidés.
+* **Activités :**
+  * Étude de cas et problèmes à tâches complexes.
+  * Apprentissage des méthodes de rédaction et de rigueur mathématique.
+* **Volume horaire conseillé :** 1h30 de cours + 2h30 de recherche personnelle.
+
+### Semaine 4 : Évaluation et bilan de fin de cycle
+* **Objectif :** Valider les acquis du module et préparer l'autonomie future.
+* **Activités :**
+  * Épreuve blanche en temps limité.
+  * Correction détaillée interactive et définition des perspectives d'apprentissage.
+* **Volume horaire conseillé :** 1 heure d'évaluation + 1 heure de correction et bilan.
+
+---
+
+## 3. SUPPORT DE COURS TYPE (Exemple : Équations du 1er degré)
+
+### Introduction théorique
+Une équation est une égalité contenant une ou plusieurs inconnues (souvent notée x). Résoudre une équation consiste à trouver la ou les valeurs de x pour lesquelles l'égalité est vraie.
+
+### Règle d'or de l'Algèbre
+Pour maintenir l'égalité, toute opération (addition, soustraction, multiplication, division par un nombre non nul) effectuée sur un membre de l'équation doit obligatoirement être effectuée sur l'autre membre.
+
+### Méthode de résolution pas à pas
+Résoudre l'équation : 3x - 5 = 7
+1. **Isoler le terme en x :** On ajoute 5 des deux côtés.
+   3x - 5 + 5 = 7 + 5
+   3x = 12
+2. **Trouver la valeur de x :** On divise par 3 des deux côtés.
+   (3x) / 3 = 12 / 3
+   x = 4
+3. **Conclusion / Vérification :** La solution est 4. (Vérification : 3 * 4 - 5 = 12 - 5 = 7, c'est correct).
+
+---
+
+## 4. CAHIER D'EXERCICES ET D'APPLICATIONS
+
+### Exercices d'application directe (Niveau Facile)
+*Résoudre les équations suivantes :*
+1. x + 8 = 15
+2. 5x = 30
+3. 2x - 3 = 9
+
+### Exercices de réflexion et de modélisation (Niveau Moyen)
+* **Problème :** Pierre achète 3 livres identiques et un cahier à 4€. Il paie en tout 25€.
+  1. Écrire une équation traduisant cette situation en posant x le prix d'un livre.
+  2. Résoudre cette équation pour trouver le prix d'un livre.
+
+### Exercice de dépassement (Niveau Difficile)
+*Résoudre l'équation suivante en faisant attention aux étapes de développement :*
+3(2x - 1) - 4(x + 2) = 5
+
+---
+## 5. SUIVI ET CORRIGÉS
+*(Un livret de corrigés détaillés et commentés est fourni à l'enseignant ou au tuteur pour guider l'élève dans son auto-correction.)*

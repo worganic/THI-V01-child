@@ -7,6 +7,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@worganic/portail-core/data-access';
 import { environment } from '../../../../environments/environment';
 
 const API = environment.apiDataUrl;
@@ -57,6 +58,24 @@ export class ConfigComponent implements OnInit, OnDestroy {
   get apiKeysEnabled(): boolean { return this.configService.apiKeysEnabled(); }
   toggleApiKeys() { this.configService.apiKeysEnabled.set(!this.apiKeysEnabled); }
 
+  // Synchronisation FTP des projets — réglage global, réservé aux administrateurs.
+  // En stand-by par défaut : les fichiers locaux ne servent plus que de sauvegarde
+  // passive, tout enregistrement/partage passe par la BDD (versions immuables).
+  get isAdmin(): boolean { return this.auth.currentUser()?.role === 'admin'; }
+  get ftpSyncEnabled(): boolean { return this.configService.ftpSyncEnabled(); }
+  toggleFtpSync() {
+    if (!this.isAdmin) return;
+    const before = this.ftpSyncEnabled;
+    this.configService.setFtpSyncEnabled(!before);
+    this.woHistory.track({
+      section: 'admin/config', actionType: 'toggle',
+      label: `${!before ? 'Activation' : 'Désactivation'} de la synchronisation FTP`,
+      entityType: 'setting', entityId: 'ftpSyncEnabled', entityLabel: 'Synchronisation FTP',
+      beforeState: { enabled: before }, afterState: { enabled: !before },
+      undoable: false
+    }).catch(() => {});
+  }
+
   // API Keys form
   geminiKey = '';
   geminiKeyActive = false;
@@ -93,7 +112,7 @@ export class ConfigComponent implements OnInit, OnDestroy {
   private cliConfigLoaded = false;
   private cliStatusLoaded = false;
 
-  constructor(private http: HttpClient, private configService: ConfigService, private woHistory: WoActionHistoryService) {}
+  constructor(private http: HttpClient, private configService: ConfigService, private woHistory: WoActionHistoryService, private auth: AuthService) {}
 
   ngOnInit() {
     this.initTheme();

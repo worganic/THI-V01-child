@@ -1,0 +1,101 @@
+# Programme de Formation Personnalisé en Mathématiques
+
+En tant qu'expert en formation en mathématiques, voici le dispositif d'apprentissage conçu pour vous accompagner. Afin de personnaliser au mieux ce programme, merci de commencer par compléter le formulaire de cadrage ci-dessous.
+
+## 1. Cadrage du profil de l'apprenant
+
+```FORM: Cadrage
+* **Quel est votre niveau scolaire actuel ?**
+  * ( ) Collège - 6ème / 5ème
+  * ( ) Collège - 4ème / 3ème (Préparation Brevet)
+  * ( ) Lycée - Seconde
+  * ( ) Lycée - Première / Terminale (Spécialité Mathématiques)
+* **Quel est l'axe prioritaire de travail ?**
+  * ( ) Algèbre et fonctions (équations, variations...)
+  * ( ) Géométrie (théorèmes, trigonométrie, vecteurs...)
+  * ( ) Probabilités et statistiques
+  * ( ) Analyse et suites numériques (niveau Lycée)
+```
+
+---
+
+## 2. Plan de travail et séances de cours
+
+Ce plan de travail prévisionnel est basé sur un rythme de révisions hebdomadaires (exemple basé sur le programme de 3ème / Seconde). Il sera ajusté dès que vous aurez soumis vos choix dans le formulaire de cadrage.
+
+```ARRAY: Planning
+| Date | Thème | Objectif | Exercice | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| 2026-07-02 | Équations & Inéquations | Résoudre des équations du 1er degré et des problèmes simples | Exercices de base | À faire |
+| 2026-07-09 | Fonctions linéaires et affines | Comprendre la modélisation graphique et le coefficient directeur | Représentation graphique | À faire |
+| 2026-07-16 | Théorème de Thalès et réciproque | Calculer des longueurs et démontrer que des droites sont parallèles | Exercices de géométrie | À faire |
+| 2026-07-23 | Probabilités simples | Calculer des probabilités à une ou deux épreuves | Tirages aléatoires | À faire |
+```
+
+---
+
+## 3. Agenda des séances de formation
+
+```AGENDA: Séances
+2026-07-02 | 14:00-15:30 | Séance 1 : Équations & Inéquations | Cours théorique et résolution d'équations simples.
+2026-07-09 | 14:00-15:30 | Séance 2 : Fonctions linéaires et affines | Applications concrètes et modélisations.
+2026-07-16 | 14:00-15:30 | Séance 3 : Théorème de Thalès | Démontrer des parallélismes et calculer des distances.
+2026-07-23 | 14:00-15:30 | Séance 4 : Probabilités | Modéliser des situations d'incertitude.
+```
+
+---
+
+## 4. Exercices de validation des acquis
+
+Voici un premier QCM d'auto-évaluation pour tester vos connaissances de base sur le premier grand thème.
+
+```FORM: Quiz Algebre
+* **Quelle est la solution de l'équation 3x - 5 = 7 ?**
+  * ( ) x = 2
+  * ( ) x = 4
+  * ( ) x = -4
+* **Si f(x) = -2x + 3, quelle est l'image de 4 par la fonction f ?**
+  * ( ) -5
+  * ( ) 5
+  * ( ) -11
+* **Quelle est la réciproque ou l'énoncé correct du théorème de Thalès ?**
+  * [ ] Il permet de prouver qu'un triangle est rectangle
+  * [ ] Il permet de calculer des rapports de longueurs dans des configurations de droites parallèles
+```
+
+---
+
+## 5. Suivi des résultats et évaluation
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-02 | 14 | 20 | =C2/D2*100 | =AVG(C2:C5) |
+| Séance 2 | 2026-07-09 | 16 | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-16 | 12 | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-23 | 18 | 20 | =C5/D5*100 | |
+```
+
+---
+
+## 6. Analyse de la progression
+
+Le graphique ci-dessous illustre l'évolution de vos notes sur 20 au fil des séances pour mesurer votre progression.
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+---
+
+## 7. Tableau de bord de l'avancement des tâches
+
+```TRELLO: Tâches de formation
+### À faire
+- [ ] Valider le formulaire de cadrage `[high]`
+  Permet de définir le niveau scolaire et la matière précise pour personnaliser l'ensemble des cours.
+- [ ] Préparer la séance 1 `[medium]`
+  Lire le résumé de cours sur les équations.
+### En cours
+### Terminé
+```

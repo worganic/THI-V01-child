@@ -245,9 +245,15 @@
               <option value="">— Aucun —</option>
               <option value="github">GitHub</option>
               <option value="gitlab">GitLab</option>
-              <option value="ftp">FTP</option>
+              <option value="ftp" [disabled]="!configService.ftpSyncEnabled()">FTP{{ configService.ftpSyncEnabled() ? '' : ' (désactivé — Config)' }}</option>
               <option value="googledrive">Google Drive</option>
             </select>
+            @if (!configService.ftpSyncEnabled() && backupType === 'ftp') {
+              <p class="text-[11px] text-amber-500 mt-1.5 flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs">warning</span>
+                La synchronisation FTP est désactivée globalement (Admin → Config) — ce projet est traité comme sans sauvegarde tant qu'elle n'est pas réactivée.
+              </p>
+            }
           </div>
 
           @if (backupType) {

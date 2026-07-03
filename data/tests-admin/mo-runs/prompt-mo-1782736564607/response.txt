@@ -1,0 +1,43 @@
+* **Niveau scolaire de l'apprenant :**
+  * ( ) Primaire (Du CP au CM2)
+  * ( ) Collège (De la 6ème à la 3ème)
+  * ( ) Lycée (De la 2nde à la Terminale)
+  * ( ) Enseignement supérieur / Université
+  * ( ) Autre : ______
+
+* **Sous-discipline ou thématiques spécifiques en Mathématiques :**
+  * [ ] Algèbre et Arithmétique
+  * [ ] Analyse (Fonctions, Limites, Dérivées, Intégrales)
+  * [ ] Géométrie (Plane, Espace, Vectorielle)
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Durée globale du programme de formation et date de début souhaitée :**
+  * ( ) Court terme (1 à 4 semaines) - Début : ______
+  * ( ) Moyen terme (1 à 3 mois) - Début : ______
+  * ( ) Long terme (Année scolaire complète / plus de 3 mois) - Début : ______
+
+* **Fréquence et durée estimée des séances de travail :**
+  * ( ) 1 séance par semaine (de ______ heure(s))
+  * ( ) 2 à 3 séances par semaine (de ______ heure(s))
+  * ( ) Quotidien / Intensif (de ______ heure(s) par jour)
+  * ( ) Autre : ______
+
+* **Niveau actuel estimé de l'apprenant et objectif mesurable visé :**
+  * ( ) Difficultés importantes (Objectif : Remise à niveau et obtention de la moyenne)
+  * ( ) Niveau moyen (Objectif : Consolidation et obtention d'une note de ______ / 20)
+  * ( ) Bon niveau (Objectif : Perfectionnement et préparation aux concours / note supérieure à ______ / 20)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation préférées pour mesurer les progrès :**
+  * [ ] QCM réguliers en ligne
+  * [ ] Devoirs sur table notés sur 20
+  * [ ] Auto-évaluation et fiches de suivi de compétences
+  * [ ] Exercices pratiques d'application avec correction détaillée
+
+* **Points ou compétences prioritaires à travailler en priorité :**
+  * [ ] Compréhension du cours et des définitions théoriques
+  * [ ] Méthodologie de résolution des exercices
+  * [ ] Rigueur de la rédaction et des démonstrations
+  * [ ] Gestion du temps lors des examens
+  * [ ] Autre : ______

@@ -93,3 +93,13 @@ data/projets/conversations/
 # Config GitHub (contient le PAT) — ne JAMAIS commiter
 data/config/github.json
 .angular
+
+# Python
+__pycache__/
+
+# Outil de test local (dépendances + artefacts générés)
+test-agent-suite/node_modules/
+test-agent-suite/playwright-report/
+test-agent-suite/test-results/
+test-agent-suite/package-lock.json
+launcher.log

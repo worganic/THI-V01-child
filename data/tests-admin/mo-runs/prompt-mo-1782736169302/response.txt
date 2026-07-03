@@ -1,0 +1,228 @@
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-06-29 | Second degré, équations et inéquations | Maîtriser le discriminant et la rédaction d'un tableau de signes | À faire |
+| Séance 2 | 2026-07-06 | Généralités sur les fonctions et dérivation | Comprendre le taux de variation et rédiger l'équation d'une tangente | À faire |
+| Séance 3 | 2026-07-13 | Suites numériques | Démonstration par récurrence et limites | À faire |
+| Séance 4 | 2026-07-20 | Fonction exponentielle et logarithme | Manipuler les relations fonctionnelles et limites de référence | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 14:00-16:00 | Séance 1 — 2026-06-29 : Second degré, équations et inéquations | Remédiation algèbre et rigueur de rédaction
+2026-07-06 | 14:00-16:00 | Séance 2 — 2026-07-06 : Généralités sur les fonctions et dérivation | Calculs de dérivées et démonstration du taux d'accroissement
+2026-07-13 | 14:00-16:00 | Séance 3 — 2026-07-13 : Suites numériques | Formalisme logique et récurrence pas à pas
+2026-07-20 | 14:00-16:00 | Séance 4 — 2026-07-20 : Fonction exponentielle et logarithme | Études complètes et comportement asymptotique
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 | 2026-06-29 | | 20 | =C2/D2*100 | =AVG(C2:C5) |
+| Séance 2 | 2026-07-06 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-13 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-20 | | 20 | =C5/D5*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Assimiler la rédaction de la récurrence de la Séance 3 `[high]`
+- [ ] Compléter le QCM de la Séance 4 `[medium]`
+### En cours
+- [ ] Travailler la rigueur des tableaux de signes de la Séance 1 `[critical]`
+### Terminé
+```
+
+## Séance 1 — 2026-06-29 : Second degré, équations et inéquations
+
+### Contenu du cours
+
+Dans cette séance, nous retravaillons les bases de l'algèbre polynomiale du second degré. La rigueur de rédaction est primordiale pour éviter les erreurs classiques et obtenir tous les points aux examens.
+
+#### 1. Forme canonique et discriminant
+Soit une fonction polynôme du second degré définie sur $\mathbb{R}$ par $f(x) = ax^2 + bx + c$ où $a \neq 0$.
+* **Forme canonique :** $f(x) = a\left(x - \alpha\right)^2 + \beta$ avec $\alpha = -\frac{b}{2a}$ et $\beta = f(\alpha) = -\frac{b^2 - 4ac}{4a}$.
+* **Discriminant :** On note $\Delta = b^2 - 4ac$.
+
+#### 2. Résolution d'équations $ax^2 + bx + c = 0$
+* Si $\Delta > 0$ : Deux solutions réelles distinctes :
+  $$x_1 = \frac{-b - \sqrt{\Delta}}{2a} \quad \text{et} \quad x_2 = \frac{-b + \sqrt{\Delta}}{2a}$$
+* Si $\Delta = 0$ : Une solution réelle unique (dite double) :
+  $$x_0 = -\frac{b}{2a}$$
+* Si $\Delta < 0$ : Aucune solution réelle.
+
+#### 3. Factorisation et signe (Rigueur de rédaction)
+* **Si $\Delta > 0$ :** Le polynôme se factorise sous la forme $a(x - x_1)(x - x_2)$. Il est du signe de $a$ à l'extérieur des racines et du signe de $-a$ entre les racines.
+* **Si $\Delta = 0$ :** Le polynôme se factorise sous la forme $a(x - x_0)^2$. Il est du signe de $a$ partout sauf en $x_0$ où il s'annule.
+* **Si $\Delta < 0$ :** Pas de factorisation réelle. Le polynôme est strictement du signe de $a$ sur $\mathbb{R}$.
+
+**Exemple de rédaction type à reproduire :**
+*Énoncé : Résoudre dans $\mathbb{R}$ l'inéquation $-2x^2 + 5x - 3 \geq 0$.*
+* **Étape 1 : Identifications des coefficients.** On pose $a = -2$, $b = 5$ et $c = -3$. On a $a \neq 0$, il s'agit d'un trinôme du second degré.
+* **Étape 2 : Calcul du discriminant.** $\Delta = b^2 - 4ac = 5^2 - 4(-2)(-3) = 25 - 24 = 1$.
+* **Étape 3 : Analyse du signe du discriminant.** Comme $\Delta > 0$, le trinôme admet deux racines réelles distinctes :
+  $x_1 = \frac{-5 - \sqrt{1}}{2(-2)} = \frac{-6}{-4} = \frac{3}{2}$ et $x_2 = \frac{-5 + \sqrt{1}}{2(-2)} = \frac{-4}{-4} = 1$.
+* **Étape 4 : Tableau de signes.** Comme $a = -2 < 0$, le trinôme est du signe de $a$ (négatif) à l'extérieur des racines et du signe opposé (positif) entre les racines.
+  On dresse le tableau et on conclut : $S = [1 ; \frac{3}{2}]$.
+
+```FORM: QCM Séance 1
+* **Question 1 : Quelles sont les solutions de l'équation $3x^2 - 6x + 3 = 0$ ?**
+  * ( ) $x_1 = 1$ et $x_2 = -1$
+  * ( ) Solution unique $x_0 = 1$
+  * ( ) Aucune solution réelle
+* **Question 2 : Soit le trinôme $P(x) = -x^2 + 3x - 4$. Quel est son signe sur $\mathbb{R}$ ?**
+  * ( ) Strictement positif car $\Delta < 0$
+  * ( ) Strictement négatif car $\Delta < 0$ et $a < 0$
+  * ( ) Change de signe car il possède deux racines réelles
+* **Question 3 : La forme canonique de $f(x) = 2x^2 - 8x + 6$ est :**
+  * ( ) $2(x - 2)^2 - 2$
+  * ( ) $2(x - 4)^2 + 6$
+  * ( ) $2(x + 2)^2 - 2$
+* **Question 4 : Pour quelles valeurs de $x$ l'inéquation $x^2 - 4x > 0$ est-elle vérifiée ?**
+  * ( ) $x \in ]0 ; 4[$
+  * ( ) $x \in ]-\infty ; 0[ \cup ]4 ; +\infty[$
+  * ( ) $x \in [0 ; 4]$
+```
+
+## Séance 2 — 2026-07-06 : Généralités sur les fonctions et dérivation
+
+### Contenu du cours
+
+Cette séance est dédiée à l'étude locale et globale des fonctions numériques à l'aide de la dérivation. La rigueur dans l'application des formules et la justification de la dérivabilité sont attendues.
+
+#### 1. Nombre dérivé et taux de variation
+Le taux de variation d'une fonction $f$ entre $a$ et $a+h$ ($h \neq 0$) est défini par :
+$$\tau(h) = \frac{f(a+h) - f(a)}{h}$$
+La fonction $f$ est dérivable en $a$ si la limite quand $h$ tend vers 0 de $\tau(h)$ existe et est un nombre réel fini, noté $f'(a)$ :
+$$f'(a) = \lim_{h \to 0} \frac{f(a+h) - f(a)}{h}$$
+
+#### 2. Équation de la tangente
+La tangente à la courbe représentative de $f$ au point d'abscisse $a$ a pour équation :
+$$y = f'(a)(x - a) + f(a)$$
+
+#### 3. Dérivées usuelles et opérations
+* $(x^n)' = n x^{n-1}$
+* $(\frac{1}{x})' = -\frac{1}{x^2}$
+* $(\sqrt{x})' = \frac{1}{2\sqrt{x}}$ (sur $]0 ; +\infty[$)
+* Opérations : $(uv)' = u'v + uv'$ et $(\frac{u}{v})' = \frac{u'v - uv'}{v^2}$
+
+**Règle de rédaction pour l'étude des variations :**
+Pour étudier les variations d'une fonction $f$ sur un intervalle $I$ :
+1. Justifier que $f$ est dérivable sur $I$ comme somme, produit ou quotient de fonctions dérivables.
+2. Calculer l'expression de la fonction dérivée $f'(x)$.
+3. Étudier le **signe** de $f'(x)$ en détaillant la résolution de l'inéquation $f'(x) \geq 0$ ou via un tableau de signes.
+4. Dresser le tableau de variations de $f$ en y incluant les limites aux bornes ou les valeurs exactes des images.
+
+```FORM: QCM Séance 2
+* **Question 1 : Soit $f(x) = x^3 - 3x^2 + 2$. Quelle est sa dérivée $f'(x)$ ?**
+  * ( ) $f'(x) = 3x^2 - 6x$
+  * ( ) $f'(x) = 3x^2 - 6x + 2$
+  * ( ) $f'(x) = 3x - 6$
+* **Question 2 : Quelle est l'équation de la tangente à la courbe de $f(x) = x^2$ au point d'abscisse $a = 2$ ?**
+  * ( ) $y = 4x - 4$
+  * ( ) $y = 2x$
+  * ( ) $y = 4x + 4$
+* **Question 3 : Si $f'(x) < 0$ sur un intervalle $I$, alors la fonction $f$ est :**
+  * ( ) Strictement décroissante sur $I$
+  * ( ) Strictement croissante sur $I$
+  * ( ) Constante sur $I$
+* **Question 4 : Soit $f(x) = \frac{2x+1}{x-1}$ définie sur $]1 ; +\infty[$. Sa dérivée est :**
+  * ( ) $f'(x) = \frac{-3}{(x-1)^2}$
+  * ( ) $f'(x) = \frac{3}{(x-1)^2}$
+  * ( ) $f'(x) = \frac{2}{(x-1)^2}$
+```
+
+## Séance 3 — 2026-07-13 : Suites numériques
+
+### Contenu du cours
+
+Les suites numériques permettent d'étudier des processus discrets. L'accent est mis ici sur la démonstration par récurrence, un outil fondamental exigeant une rédaction impeccable.
+
+#### 1. Généralités et modes de génération
+Une suite $(u_n)$ peut être définie de manière explicite : $u_n = f(n)$, ou par récurrence : $u_{n+1} = g(u_n)$ avec un premier terme $u_0$.
+
+#### 2. Suites arithmétiques et géométriques
+* **Arithmétique :** $u_{n+1} = u_n + r$. Formule explicite : $u_n = u_0 + nr$. Somme : $S = \text{nombre de termes} \times \frac{\text{premier} + \text{dernier}}{2}$.
+* **Géométrique :** $u_{n+1} = q \times u_n$. Formule explicite : $u_n = u_0 \times q^n$. Somme ($q \neq 1$) : $S = \text{premier terme} \times \frac{1 - q^{\text{nombre de termes}}}{1 - q}$.
+
+#### 3. Démonstration par récurrence (Rigueur absolue de rédaction)
+Pour démontrer qu'une propriété $P(n)$ est vraie pour tout entier $n \geq n_0$ :
+1. **Initialisation :** On vérifie que $P(n_0)$ est vraie.
+2. **Hérédité :** On suppose que la propriété $P(k)$ est vraie pour un certain entier $k \geq n_0$ (hypothèse de récurrence). On montre alors que $P(k+1)$ est vraie.
+3. **Conclusion :** On rappelle que la propriété est initialisée et héréditaire, donc qu'elle est vraie pour tout entier $n \geq n_0$.
+
+*Note de rédaction :* Ne jamais écrire "Supposons que pour tout $n$, $P(n)$ est vraie" car c'est ce que l'on veut démontrer ! Il faut écrire : "Soit $k$ un entier supérieur ou égal à $n_0$. Supposons $P(k)$ vraie."
+
+```FORM: QCM Séance 3
+* **Question 1 : Soit $(u_n)$ une suite géométrique de premier terme $u_0 = 3$ et de raison $q = 2$. Quelle est l'expression de $u_n$ ?**
+  * ( ) $u_n = 3 + 2n$
+  * ( ) $u_n = 3 \times 2^n$
+  * ( ) $u_n = 2 \times 3^n$
+* **Question 2 : La somme $S = 1 + 2 + 3 + ... + n$ est égale à :**
+  * ( ) $\frac{n(n+1)}{2}$
+  * ( ) $\frac{n(n-1)}{2}$
+  * ( ) $n^2$
+* **Question 3 : Dans une démonstration par récurrence, que fait-on lors de la phase d'hérédité ?**
+  * ( ) On vérifie que la propriété est vraie au premier rang
+  * ( ) On suppose la propriété vraie à un rang $k$ et on montre qu'elle est vraie au rang $k+1$
+  * ( ) On en déduit directement la limite de la suite
+* **Question 4 : Si une suite est croissante et majorée, alors :**
+  * ( ) Elle diverge vers $+\infty$
+  * ( ) Elle est convergente
+  * ( ) Elle est constante
+```
+
+## Séance 4 — 2026-07-20 : Fonction exponentielle et logarithme
+
+### Contenu du cours
+
+Nous terminons ce programme intensif par l'étude des fonctions transcendantes incontournables du lycée.
+
+#### 1. La fonction exponentielle
+La fonction exponentielle, notée $\exp$ ou $x \mapsto e^x$, est l'unique fonction dérivable sur $\mathbb{R}$ telle que :
+$$f'(x) = f(x) \quad \text{et} \quad f(0) = 1$$
+* **Propriétés algébriques :** $e^{a+b} = e^a \times e^b$, $e^{-a} = \frac{1}{e^a}$, $e^{a-b} = \frac{e^a}{e^b}$, $(e^a)^n = e^{na}$.
+* **Limites de référence :** $\lim_{x \to +\infty} e^x = +\infty$, $\lim_{x \to -\infty} e^x = 0$.
+* **Croissances comparées :** $\lim_{x \to +\infty} \frac{e^x}{x} = +\infty$.
+
+#### 2. La fonction logarithme népérien
+La fonction logarithme népérien, notée $\ln$, est la fonction réciproque de la fonction exponentielle. Elle est définie sur $]0 ; +\infty[$.
+* $y = \ln(x) \iff x = e^y$.
+* **Propriétés algébriques :** $\ln(ab) = \ln(a) + \ln(b)$, $\ln(\frac{1}{a}) = -\ln(a)$, $\ln(a^n) = n\ln(a)$.
+* **Dérivée :** $(\ln(x))' = \frac{1}{x}$.
+* **Limites de référence :** $\lim_{x \to 0^+} \ln(x) = -\infty$, $\lim_{x \to +\infty} \ln(x) = +\infty$.
+
+**Exemple de rédaction pour résoudre des équations :**
+*Énoncé : Résoudre dans $\mathbb{R}$ l'équation $e^{2x} - 3e^x + 2 = 0$.*
+* On effectue un changement de variable en posant $X = e^x$. Puisque $e^x > 0$, on doit chercher des solutions $X > 0$.
+* L'équation devient $X^2 - 3X + 2 = 0$.
+* On calcule le discriminant : $\Delta = 9 - 8 = 1$. Les racines sont $X_1 = \frac{3-1}{2} = 1$ et $X_2 = \frac{3+1}{2} = 2$.
+* Comme $X_1 > 0$ et $X_2 > 0$, les deux solutions sont acceptables.
+* On revient à la variable $x$ :
+  $e^x = 1 \iff x = \ln(1) = 0$.
+  $e^x = 2 \iff x = \ln(2)$.
+* L'ensemble des solutions de l'équation initiale est $S = \{0 ; \ln(2)\}$.
+
+```FORM: QCM Séance 4
+* **Question 1 : Simplifier l'expression $A = \frac{e^{3x} \times e^{-x}}{e^x}$.**
+  * ( ) $A = e^{x}$
+  * ( ) $A = e^{3x}$
+  * ( ) $A = e^{2x}$
+* **Question 2 : Quel est l'ensemble de définition de la fonction $f(x) = \ln(x - 2)$ ?**
+  * ( ) $\mathbb{R}$
+  * ( ) $]2 ; +\infty[$
+  * ( ) $]0 ; +\infty[$
+* **Question 3 : Quelle est la limite en $+\infty$ de la fonction $f(x) = e^{-x} + 2$ ?**
+  * ( ) $2$
+  * ( ) $+\infty$
+  * ( ) $-\infty$
+* **Question 4 : Résoudre l'équation $\ln(x) = 1$ sur $]0 ; +\infty[$ :**
+  * ( ) $x = 0$
+  * ( ) $x = e$
+  * ( ) $x = 10$
+```

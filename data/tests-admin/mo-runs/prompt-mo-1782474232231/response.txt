@@ -1,0 +1,100 @@
+# Programme de Formation Personnalisé en Mathématiques
+
+En tant qu'expert en formation en mathématiques, voici le document d'évaluation et de planification conçu pour structurer votre apprentissage. Ce document comprend un formulaire de diagnostic initial, un modèle de plan de travail, ainsi qu'une structure type de cours et d'exercices.
+
+---
+
+## 1. Formulaire de Diagnostic Initial (À compléter)
+
+Pour adapter précisément le contenu, veuillez renseigner les informations suivantes :
+
+### A. Profil de l'Élève
+*   **Niveau scolaire actuel :**
+    *   [ ] Primaire (CM1 / CM2)
+    *   [ ] Collège (6ème / 5ème / 4ème / 3ème)
+    *   [ ] Lycée (Seconde / Première / Terminale)
+    *   [ ] Enseignement supérieur / Classes préparatoires
+    *   [ ] Autre : ________________
+
+*   **Objectif principal :**
+    *   [ ] Remise à niveau / Consolidation des bases
+    *   [ ] Perfectionnement / Augmentation de la moyenne
+    *   [ ] Préparation à un examen (Brevet, Baccalauréat, Concours)
+    *   [ ] Aide aux devoirs régulière
+
+### B. Matière et Chapitres à Travailler
+*   **Domaine mathématique ciblé :**
+    *   [ ] Algèbre (Équations, calcul littéral, fonctions...)
+    *   [ ] Géométrie (Théorèmes de Pythagore/Thalès, géométrie dans l'espace...)
+    *   [ ] Analyse (Suites, dérivation, limites, intégration...)
+    *   [ ] Probabilités et Statistiques
+    *   [ ] Arithmétique
+*   **Chapitre(s) spécifique(s) à aborder en priorité :**
+    *   *Exemple : Les équations du second degré, les fractions, la trigonométrie...*
+    *   Réponse : ___________________________
+
+---
+
+## 2. Modèle de Plan de Travail (Exemple : Bloc de 4 semaines)
+
+Une fois le diagnostic posé, voici la structure de travail recommandée pour assimiler efficacement un chapitre complexe.
+
+| Semaine | Objectif Théorique | Pratique & Exercices | Évaluation & Feedback |
+| :--- | :--- | :--- | :--- |
+| **Semaine 1** | Acquisition des concepts clés et définitions de base. | Exercices d'application directe du cours (très simples). | Auto-évaluation (Quiz de 10 min). |
+| **Semaine 2** | Compréhension des mécanismes et des méthodes de résolution. | Exercices de difficulté moyenne et variations. | Fiche de synthèse (carte mentale) à rédiger. |
+| **Semaine 3** | Approfondissement et croisement des notions. | Problèmes de synthèse et situations concrètes. | Devoir surveillé blanc (durée réelle). |
+| **Semaine 4** | Consolidation, révision et correction des erreurs. | Analyse détaillée des erreurs de la semaine 3 + exercices ciblés. | Bilan final et validation du chapitre. |
+
+---
+
+## 3. Structure de Cours Type (Exemple : Les Équations du Second Degré)
+
+*Ce cours sert d'illustration de la méthodologie d'apprentissage proposée.*
+
+### A. Introduction et Définition
+Une équation du second degré est de la forme :
+$$ax^2 + bx + c = 0$$
+où $a$, $b$, et $c$ sont des réels connus, avec $a \neq 0$.
+
+### B. La Méthode du Discriminant ($\Delta$)
+Pour résoudre cette équation dans $\mathbb{R}$, on calcule le discriminant :
+$$\Delta = b^2 - 4ac$$
+
+Trois cas se présentent alors :
+1.  **Si $\Delta < 0$ :** L'équation n'admet aucune solution réelle.
+2.  **Si $\Delta = 0$ :** L'équation admet une unique solution réelle double :
+    $$x_0 = -\frac{b}{2a}$$
+3.  **Si $\Delta > 0$ :** L'équation admet deux solutions réelles distinctes :
+    $$x_1 = -\frac{b - \sqrt{\Delta}}{2a} \quad \text{et} \quad x_2 = -\frac{b + \sqrt{\Delta}}{2a}$$
+
+---
+
+## 4. Exercices d'Application & Corrigés
+
+### Exercice 1 : Application Directe (Niveau Lycée)
+Résoudre dans $\mathbb{R}$ l'équation suivante :
+$$2x^2 - 5x + 3 = 0$$
+
+#### Corrigé de l'Exercice 1 :
+1.  **Identification des coefficients :** $a = 2$, $b = -5$, $c = 3$.
+2.  **Calcul du discriminant :**
+    $$\Delta = (-5)^2 - 4 \times 2 \times 3 = 25 - 24 = 1$$
+3.  **Analyse du résultat :** $\Delta > 0$, il y a deux solutions distinctes.
+    $$x_1 = -\frac{-5 - \sqrt{1}}{2 \times 2} = \frac{5 - 1}{4} = 1$$
+    $$x_2 = -\frac{-5 + \sqrt{1}}{2 \times 2} = \frac{5 + 1}{4} = \frac{6}{4} = 1.5$$
+4.  **Ensemble des solutions :** $S = \{1 ; 1.5\}$.
+
+### Exercice 2 : Problème Concret (Optimisation)
+Un artisan produit des pièces. Le coût de production de $x$ centaines de pièces est modélisé par la fonction :
+$$C(x) = x^2 - 4x + 10$$
+Pour quelle quantité de pièces produites le coût est-il minimal ? Quel est ce coût minimal ?
+
+#### Corrigé de l'Exercice 2 :
+1.  **Analyse de la fonction :** $C(x)$ est une fonction polynôme du second degré avec $a = 1 > 0$. Elle admet donc un minimum.
+2.  **Calcul du sommet de la parabole ($\alpha$) :**
+    $$\alpha = -\frac{b}{2a} = -\frac{-4}{2 \times 1} = 2$$
+    Le coût est donc minimal pour 2 centaines de pièces (soit 200 pièces).
+3.  **Calcul du coût minimal ($\beta$) :**
+    $$\beta = C(2) = 2^2 - 4(2) + 10 = 4 - 8 + 10 = 6$$
+    Le coût minimal est de 6 centaines d'euros (soit 600 €).

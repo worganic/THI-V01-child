@@ -155,7 +155,7 @@ export class ProjetAiEditService {
   async acceptEdit(projectName: string): Promise<void> {
     const edit = this.pendingEdit();
     if (!edit) return;
-    await this.projectFilesService.updateFile(projectName, edit.fileId, edit.proposedContent);
+    await this.projectFilesService.updateFile(projectName, edit.fileId, edit.proposedContent, undefined, false, 'ai-edit-accept', undefined, true);
     this.pendingEdit.set(null);
   }
 

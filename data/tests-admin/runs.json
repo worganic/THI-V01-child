@@ -1,0 +1,736 @@
+{
+  "runs": [
+    {
+      "id": "trun-1781996633277-8nbgk",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-20T23:03:53.277Z",
+      "status": "completed",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-flash",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-5-2-11-1",
+          "status": "ok",
+          "note": "Création d'instance en BDD, insertion de bloc et émission megaOutilCreated OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-2",
+          "status": "ko",
+          "note": "Le panneau n'est visible qu'en mode structure, pas dans les modes Code (edit) et Preview (visu)",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-3",
+          "status": "ok",
+          "note": "Sélection, double-clic/F2 pour édition, Enter/Tab/Shift+Tab, Escape pour annuler et PATCH + SSE fonctionnels",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-11",
+          "status": "ok",
+          "note": "Affichage stylisé HTML, styles inline et formules, dark mode et réactivité via le cache OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-4",
+          "status": "ok",
+          "note": "Formules SUM/AVG/etc. et arithmétique, mode construction interactif, surlignage bleu et ré-édition OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-5",
+          "status": "ok",
+          "note": "Ajout/suppression via boutons, en-têtes et menu contextuel, avec limite minimale à 1x1 respectée OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-6",
+          "status": "ok",
+          "note": "Redimensionnement par drag handle sur en-têtes (col/row), minimum 40px, persistance PUT OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-7",
+          "status": "ok",
+          "note": "Styles (cellule/ligne/colonne), stopPropagation pour color picker, et persistance JSON MySQL OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-10",
+          "status": "ok",
+          "note": "Copier/Couper/Coller via menu contextuel et raccourcis Ctrl+C/X/V (si sélectionné et non en édition) OK",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-12",
+          "status": "ko",
+          "note": "La sync grille->code écrit une table Markdown (sans styles/dimensions) au lieu de A1:valeur|style",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-8",
+          "status": "ko",
+          "note": "Le délimiteur réel dans le code est un fence ```ARRAY et le fichier s'appelle array-NOM.md",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        },
+        {
+          "itemId": "2-5-2-11-9",
+          "status": "ok",
+          "note": "Abonnement arrayUpdate$ SSE pour recharger la grille et broadcastToProject opérationnels",
+          "testedAt": "2026-06-20T23:06:28.651Z"
+        }
+      ],
+      "completedAt": "2026-06-20T23:06:28.651Z"
+    },
+    {
+      "id": "trun-1782046508290-s2k3n",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-21T12:55:08.290Z",
+      "status": "completed",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-3-1",
+          "status": "ok",
+          "note": "Appels API /api/version/check et /api/admin/deployments fonctionnels avec token de sécurité.",
+          "testedAt": "2026-06-21T13:06:22.480Z"
+        },
+        {
+          "itemId": "2-3-2",
+          "status": "ok",
+          "note": "Affichage des informations de statut, type commit (FIX/AME/MRG), scopes de couleurs, et features correct.",
+          "testedAt": "2026-06-21T13:06:22.480Z"
+        },
+        {
+          "itemId": "2-3-3",
+          "status": "ok",
+          "note": "Bouton retour avec icône arrow_back fonctionnel vers /admin?tab=deploiement.",
+          "testedAt": "2026-06-21T13:06:22.480Z"
+        },
+        {
+          "itemId": "2-3-4",
+          "status": "ok",
+          "note": "Spinner de chargement, bannières de statut (jaune/rouge) et gestion des erreurs opérationnels.",
+          "testedAt": "2026-06-21T13:06:22.480Z"
+        },
+        {
+          "itemId": "2-3-5",
+          "status": "ok",
+          "note": "Rafraîchissement manuel réinitialisant l'état de chargement et d'erreur conforme.",
+          "testedAt": "2026-06-21T13:06:22.480Z"
+        }
+      ],
+      "completedAt": "2026-06-21T13:06:22.480Z"
+    },
+    {
+      "id": "trun-1782059848483-b9ada",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-21T16:37:28.483Z",
+      "status": "completed",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-5-2-4-1",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-2",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-3",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-4",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-5",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-6",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-7",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-8",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-9",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-10",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-11",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-12",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-15",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-14",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-16",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-17",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-13",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-18",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-19",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        },
+        {
+          "itemId": "2-5-2-4-20",
+          "status": "pending",
+          "folderId": "2-5-2-4",
+          "testedAt": "2026-06-21T16:46:23.693Z"
+        }
+      ],
+      "completedAt": "2026-06-21T16:46:23.693Z"
+    },
+    {
+      "id": "trun-1782063665304-n1kcl",
+      "name": "Testé le bon fonctionnement des tests",
+      "tester": "admin",
+      "startedAt": "2026-06-21T17:41:05.304Z",
+      "status": "completed",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-5-2-12-1",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Creation de section standard en fin de zone active conforme.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-2",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Scission de section au curseur avec sauvegarde immediate et perte de dirty OK.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-3",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Creation de sous-section depuis structure avec bridage H4 et insertion correctes.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-4",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Promotion/retrogradation de niveau avec normalisation en cascade et blocages OK.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-5",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Suppression de titre avec fusion, destruction en BDD et gestion du focus OK.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-6",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Renommage direct avec preservation du marqueur SID et mise a jour BDD OK.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-7",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Filtrage contextuel des titres du Slash Menu selon le niveau courant OK.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        },
+        {
+          "itemId": "2-5-2-12-8",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Controles du TitleCreateDialog (backdrop, focus, error, escape/cancel) OK.",
+          "testedAt": "2026-06-21T17:42:35.804Z"
+        }
+      ],
+      "completedAt": "2026-06-21T17:42:35.804Z"
+    },
+    {
+      "id": "trun-1782074455152-2a3eo",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-21T20:40:55.152Z",
+      "status": "completed",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-5-2-3-1",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Navigation conforme : goBack Location.back, goHome, goProjets et fil d'Ariane non éditable.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-2",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Statuts de sauvegarde OK (Sauvegardé, Non sauvegardé, Sauvegarde..., Erreur) et forceSave().",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-3",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Badges de backup conformes : FTP (idle/syncing/done/error), GitHub, GitLab et Drive.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-4",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Onglets Code, Structure, Edition et CSS toggle conformes.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-5",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Barre de formatage (mode Code avec style) avec actions Markdown et HTML inline fonctionnelle.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-11",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Bouton Dossier fonctionnel : appelle openSectionFolder et POST /open-folder (exécute explorer/open).",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-6",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Bandeaux pending pour Code et Structure conformes avec annulation et partage.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-7",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Indicateurs visuels et overlay de publication/upload conformes.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-8",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Barre Mega-outils (Trello, Mockup, Array) fonctionnelle avec compteur et navigation.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-9",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Menus déroulants (Style, Couleur, Surlignage) en mode Preview conformes avec preventDefault.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-10",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Création de section au curseur fonctionnelle via computeVisuCursorInsertLine et createTitleSection.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-12",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Création Trello, Tableau, Mockup et liaison mockup fonctionnelles via popups de configuration.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-13",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Import d'image fonctionnel avec validation, upload, insertion de marqueur, saveAll et historique.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-14",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Sécurité FTP de désynchronisation conforme : bannière lecture seule et blocage de saisie.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-15",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Menu contextuel de lien hypertexte (suivre, modifier, supprimer) en mode Preview fonctionnel.",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        },
+        {
+          "itemId": "2-5-2-3-16",
+          "status": "ok",
+          "folderId": "2-5-2-3",
+          "note": "Raccourcis clavier commande Slash (/) en mode Preview fonctionnels (détection, suggestions, filtrage, insertion).",
+          "testedAt": "2026-06-21T20:48:07.525Z"
+        }
+      ],
+      "completedAt": "2026-06-21T20:48:07.526Z"
+    },
+    {
+      "id": "trun-1782075675215-iwuyx",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-21T21:01:15.215Z",
+      "status": "in_progress",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "running",
+      "prompt": null,
+      "results": [
+        {
+          "itemId": "2-5-2-11-1",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Création d'instance Array opérationnelle via popup et API BDD",
+          "testedAt": "2026-06-21T21:01:45.391Z"
+        },
+        {
+          "itemId": "2-5-2-11-2",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "Panneau visible uniquement en Structure (pas Code/Preview) et filtré par marqueurs au lieu de folderId",
+          "testedAt": "2026-06-21T21:01:52.917Z"
+        },
+        {
+          "itemId": "2-5-2-11-3",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Sélection, double-clic/F2 pour édition, Enter/Tab/Shift-Tab, Escape pour annuler et PATCH + SSE fonctionnels",
+          "testedAt": "2026-06-21T21:02:06.475Z"
+        },
+        {
+          "itemId": "2-5-2-11-11",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "Réactivité défaillante : onArrayGridChanged ne déclenche pas buildVisuSections() pour mettre à jour la vue Preview",
+          "testedAt": "2026-06-21T21:02:20.037Z"
+        },
+        {
+          "itemId": "2-5-2-11-4",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Formules complètes (SUM/AVG/COUNT/MAX/MIN, références relatives, mode construction interactif, coloration en bleu)",
+          "testedAt": "2026-06-21T21:02:30.585Z"
+        },
+        {
+          "itemId": "2-5-2-11-5",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Ajout/suppression de lignes et colonnes via boutons/menu et API, avec minimum requis de 1x1 respecté",
+          "testedAt": "2026-06-21T21:02:35.118Z"
+        },
+        {
+          "itemId": "2-5-2-11-6",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Redimensionnement des lignes/colonnes par drag handles, respectant le minimum de 40px et mis à jour via API PUT",
+          "testedAt": "2026-06-21T21:02:38.132Z"
+        },
+        {
+          "itemId": "2-5-2-11-7",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Styles de cellules/lignes/colonnes opérationnels avec stopPropagation sur le menu contextuel pour le color picker",
+          "testedAt": "2026-06-21T21:02:41.147Z"
+        },
+        {
+          "itemId": "2-5-2-11-10",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Copier/Couper/Coller fonctionnel via menu contextuel et raccourcis Ctrl+C/X/V hors mode édition",
+          "testedAt": "2026-06-21T21:02:45.681Z"
+        },
+        {
+          "itemId": "2-5-2-11-12",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "serializeArrayGrid() produit du Markdown table simple sans styles ni config de dimensions cols/rows",
+          "testedAt": "2026-06-21T21:02:59.235Z"
+        },
+        {
+          "itemId": "2-5-2-11-8",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "Le fichier s'appelle array-NOM au lieu de array, et le bloc utilise ```ARRAY: NOM au lieu de 'array",
+          "testedAt": "2026-06-21T21:03:05.269Z"
+        },
+        {
+          "itemId": "2-5-2-11-9",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Abonnement arrayUpdate$ SSE pour recharger la grille et broadcastToProject opérationnels",
+          "testedAt": "2026-06-21T21:03:12.804Z"
+        }
+      ]
+    },
+    {
+      "id": "trun-1782075976331-pfra8",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-21T21:06:16.331Z",
+      "status": "in_progress",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-5-2-11-1",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Création d'instance en BDD, insertion de bloc et émission megaOutilCreated OK",
+          "testedAt": "2026-06-21T21:07:31.773Z"
+        },
+        {
+          "itemId": "2-5-2-11-2",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "Le panneau n'est visible qu'en mode structure, pas dans les modes Code (edit) et Preview (visu)",
+          "testedAt": "2026-06-21T21:07:31.775Z"
+        },
+        {
+          "itemId": "2-5-2-11-3",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Edition inline, validation par touches, persistance PATCH et broadcast SSE OK",
+          "testedAt": "2026-06-21T21:07:31.777Z"
+        },
+        {
+          "itemId": "2-5-2-11-11",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "Réactivité défaillante : onArrayGridChanged ne déclenche pas buildVisuSections() pour mettre à jour la vue Preview",
+          "testedAt": "2026-06-21T21:07:31.780Z"
+        },
+        {
+          "itemId": "2-5-2-11-4",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Formules SUM/AVG/etc. et arithmétique, mode construction interactif, surlignage bleu et ré-édition OK",
+          "testedAt": "2026-06-21T21:07:31.782Z"
+        },
+        {
+          "itemId": "2-5-2-11-5",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Ajout/suppression via boutons, en-têtes et menu contextuel, avec limite minimale à 1x1 respectée OK",
+          "testedAt": "2026-06-21T21:07:31.784Z"
+        },
+        {
+          "itemId": "2-5-2-11-6",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Redimensionnement par drag handle sur en-têtes (col/row), minimum 40px, persistance PUT OK",
+          "testedAt": "2026-06-21T21:07:31.786Z"
+        },
+        {
+          "itemId": "2-5-2-11-7",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Styles (cellule/ligne/colonne), stopPropagation pour color picker, et persistance JSON MySQL OK",
+          "testedAt": "2026-06-21T21:07:31.789Z"
+        },
+        {
+          "itemId": "2-5-2-11-10",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Copier/Couper/Coller via menu contextuel et raccourcis Ctrl+C/X/V (si sélectionné et non en édition) OK",
+          "testedAt": "2026-06-21T21:07:31.792Z"
+        },
+        {
+          "itemId": "2-5-2-11-12",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "La sync grille->code écrit une table Markdown (sans styles/dimensions) au lieu de A1:valeur|style",
+          "testedAt": "2026-06-21T21:07:31.795Z"
+        },
+        {
+          "itemId": "2-5-2-11-8",
+          "status": "ko",
+          "folderId": "2-5-2-11",
+          "note": "Le délimiteur réel dans le code est un fence ```ARRAY et le fichier s'appelle array-NOM.md",
+          "testedAt": "2026-06-21T21:07:31.797Z"
+        },
+        {
+          "itemId": "2-5-2-11-9",
+          "status": "ok",
+          "folderId": "2-5-2-11",
+          "note": "Abonnement arrayUpdate$ SSE pour recharger la grille et broadcast to project opérationnels",
+          "testedAt": "2026-06-21T21:07:31.800Z"
+        }
+      ]
+    },
+    {
+      "id": "trun-1782328546023-hmd33",
+      "name": null,
+      "tester": "admin",
+      "startedAt": "2026-06-24T19:15:46.023Z",
+      "status": "completed",
+      "mode": "ai",
+      "aiProvider": "antigravity",
+      "aiModel": "gemini-3-pro",
+      "aiState": "done",
+      "prompt": "Tu es un testeur QA. L'application Worganic est ouverte et CONNECTÉE dans le navigateur (onglet piloté via l'extension Browser MCP). Utilise les outils du navigateur pour tester réellement chaque fonctionnalité listée d'après ses tâches, puis renvoie l'état de chaque test au fur et à mesure (un résultat par fonction, sans attendre la fin).",
+      "results": [
+        {
+          "itemId": "2-5-2-12-1",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Création standard en fin de zone avec SID et création du dossier BDD.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-2",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Scission au curseur, sauvegarde automatique immédiate et reset dirty de la section donneuse.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-3",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Création depuis arborescence bridée à H4, parent correct affiché.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-4",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Promotion/rétrogradation avec préservation SID et normalisation/re-parentage en cascade.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-5",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Suppression/fusion avec remontée du texte, destruction dossier BDD et gestion du focus.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-6",
+          "status": "ko",
+          "folderId": "2-5-2-12",
+          "note": "Titre non éditable par contenteditable en mode Visu, uniquement via Structure (input) ou Code.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-7",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Slash Menu filtré selon le niveau de la section courante.",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        },
+        {
+          "itemId": "2-5-2-12-8",
+          "status": "ok",
+          "folderId": "2-5-2-12",
+          "note": "Validation TitleCreateDialog (focus auto, erreur si vide, pas de fermeture au backdrop, Escape/Cancel).",
+          "testedAt": "2026-06-24T19:18:25.220Z"
+        }
+      ],
+      "completedAt": "2026-06-24T19:18:25.220Z"
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+================================================================================
+CONCEVOIR UN PARCOURS DE RÉUSSITE EN MATHÉMATIQUES : DOCUMENT DE CADRAGE
+================================================================================
+
+En tant qu'expert en formation en mathématiques, je vous propose ce document complet de cadrage et de diagnostic, conçu pour structurer l'apprentissage et maximiser la progression de l'élève.
+
+Ce document est divisé en quatre parties :
+1. Formulaire de diagnostic initial (Niveau et besoins)
+2. Plan de travail et méthodologie
+3. Structure d'un cours type (Exemple : Les fonctions affines)
+4. Exercices d'application et d'approfondissement
+
+---
+
+### PARTIE 1 : FORMULAIRE DE DIAGNOSTIC INITIAL
+
+Ce questionnaire permet d'identifier précisément le profil de l'élève afin d'adapter le plan de travail.
+
+#### A. Informations Générales
+1. Quel est le niveau scolaire de l'élève ?
+   [ ] Primaire (CM1 / CM2)
+   [ ] Collège (6ème / 5ème / 4ème / 3ème)
+   [ ] Lycée (Seconde / Première Spécialité / Terminale Spécialité / Terminale Option Maths Complémentaires ou Expertes)
+   [ ] Enseignement Supérieur (Classe Préparatoire, Licence, BUT, etc.)
+
+2. Quelle est la matière ou le domaine spécifique à travailler ?
+   [ ] Algèbre et Analyse (Équations, fonctions, suites, limites, dérivation, intégration)
+   [ ] Géométrie (Géométrie plane, géométrie dans l'espace, vecteurs, trigonométrie)
+   [ ] Probabilités et Statistiques (Dénombrement, lois de probabilités, statistiques descriptives)
+   [ ] Algorithmique et Programmation (Python, logique mathématique)
+
+#### B. Évaluation des Besoins et du Profil
+3. Quels sont les objectifs principaux de cette formation ?
+   [ ] Remise à niveau / Consolidation des bases
+   [ ] Préparation à un examen (Brevet, Baccalauréat, Concours)
+   [ ] Perfectionnement / Approfondissement (Viser l'excellence ou une poursuite d'études scientifiques)
+   [ ] Aide aux devoirs et suivi régulier
+
+4. Quelles sont les principales difficultés identifiées chez l'élève ? (Plusieurs choix possibles)
+   [ ] Compréhension des concepts théoriques et des définitions
+   [ ] Apprentissage et mémorisation des formules
+   [ ] Méthodologie, rédaction et rigueur scientifique
+   [ ] Gestion du temps et du stress lors des évaluations
+   [ ] Calcul mental et automatismes numériques
+
+---
+
+### PARTIE 2 : PLAN DE TRAVAIL TYPE (SUR 4 SEMAINES)
+
+Une fois le niveau et le chapitre définis, voici la structure méthodologique appliquée pour chaque notion :
+
+| Étape | Objectif | Activités | Durée estimée |
+| :--- | :--- | :--- | :--- |
+| **Semaine 1 : Diagnostic & Bases** | Identifier les lacunes et poser les définitions clés. | - Test de positionnement (calculs de base).<br>- Fiche de cours synthétique.<br>- Exercices d'application directe. | 2 heures |
+| **Semaine 2 : Méthodes & Rigueur** | Maîtriser les techniques de résolution standard et la rédaction. | - Analyse de résolutions types commentées.<br>- Exercices d'entraînement guidés.<br>- Point sur les erreurs fréquentes. | 2 heures |
+| **Semaine 3 : Autonomie** | Développer la rapidité et la capacité à modéliser. | - Exercices d'application sans aide visuelle.<br>- Problèmes contextualisés (tâches complexes). | 2.5 heures |
+| **Semaine 4 : Évaluation & Bilan** | Valider les acquis en conditions d'examen. | - Devoir surveillé blanc (temps limité).<br>- Correction détaillée et feedback personnalisé.<br>- Fiche bilan. | 2 heures |
+
+---
+
+### PARTIE 3 : COURS TYPE - LES FONCTIONS AFFINES (Niveau : 3ème / Seconde)
+
+*Cet exemple illustre notre approche pédagogique basée sur la clarté, l'illustration graphique et les points de vigilance.*
+
+#### 1. Définition
+Une **fonction affine** est une fonction définie sur $\mathbb{R}$ qui, à tout nombre $x$, associe le nombre $a x + b$, où $a$ et $b$ sont deux nombres réels fixés.
+On la note sous la forme :
+$$f(x) = ax + b$$
+
+*   **$a$** est appelé le **coefficient directeur** (ou pente). Il détermine l'inclinaison de la droite.
+*   **$b$** est appelé l'**ordonnée à l'origine**. C'est la valeur de $f(0)$, c'est-à-dire le point d'intersection de la droite avec l'axe des ordonnées.
+
+#### 2. Représentation graphique
+La représentation graphique d'une fonction affine est toujours une **droite**.
+*   Si $a > 0$, la fonction est **strictement croissante** (la droite "monte").
+*   Si $a < 0$, la fonction est **strictement décroissante** (la droite "descend").
+*   Si $a = 0$, la fonction est **constante** ($f(x) = b$). La droite est horizontale.
+
+#### 3. Propriété d'accroissement (Calcul du coefficient directeur)
+Si on connaît deux points $A(x_A; y_A)$ et $B(x_B; y_B)$ appartenant à la droite représentative de $f$, alors le coefficient directeur $a$ se calcule par la formule :
+$$a = \frac{y_B - y_A}{x_B - x_A} \quad (\text{avec } x_A \neq x_B)$$
+
+> [!IMPORTANT]
+> **Règle de rédaction :** Toujours préciser que les points ne possèdent pas la même abscisse ($x_A \neq x_B$) avant d'appliquer le quotient.
+
+---
+
+### PARTIE 4 : EXERCICES ET CORRIGÉS
+
+#### Exercice 1 : Application directe (Niveau Facile)
+Soit la fonction affine $f$ définie sur $\mathbb{R}$ par $f(x) = -3x + 2$.
+1. Déterminer l'ordonnée à l'origine et le coefficient directeur de $f$.
+2. Calculer l'image de $-4$ par la fonction $f$.
+3. Déterminer l'antécédent de $11$ par la fonction $f$.
+
+**Corrigé :**
+1. Le coefficient directeur est $a = -3$ et l'ordonnée à l'origine est $b = 2$.
+2. L'image de $-4$ est $f(-4) = -3 \times (-4) + 2 = 12 + 2 = 14$.
+3. Pour trouver l'antécédent de $11$, on résout l'équation $f(x) = 11$ :
+   $$-3x + 2 = 11 \iff -3x = 11 - 2 \iff -3x = 9 \iff x = \frac{9}{-3} = -3$$
+   L'antécédent de $11$ par $f$ est $-3$.
+
+#### Exercice 2 : Détermination par le calcul (Niveau Moyen)
+Déterminer la fonction affine $g(x) = ax + b$ telle que $g(2) = 5$ et $g(5) = 11$.
+
+**Corrigé :**
+1. **Calcul de $a$ :**
+   $$a = \frac{g(5) - g(2)}{5 - 2} = \frac{11 - 5}{3} = \frac{6}{3} = 2$$
+   Ainsi, $g(x) = 2x + b$.
+
+2. **Calcul de $b$ :**
+   On utilise la valeur $g(2) = 5$ :
+   $$2 \times 2 + b = 5 \iff 4 + b = 5 \iff b = 1$$
+   La fonction recherchée est donc : **$g(x) = 2x + 1$**.
+
+#### Exercice 3 : Problème concret de modélisation (Niveau Avancé)
+Une entreprise de location de voitures propose deux tarifs :
+*   **Tarif A :** Un abonnement fixe de 50 € par jour, puis 0,20 € par kilomètre parcouru.
+*   **Tarif B :** Pas d'abonnement, mais 0,45 € par kilomètre parcouru.
+
+1. Exprimer le prix payé avec chaque tarif en fonction du nombre de kilomètres $x$ parcourus sur une journée.
+2. Déterminer par le calcul à partir de combien de kilomètres le Tarif A devient plus avantageux que le Tarif B.
+
+**Corrigé :**
+1. Modélisation :
+   *   Tarif A : $P_A(x) = 0,20x + 50$
+   *   Tarif B : $P_B(x) = 0,45x$
+2. Résolution de l'inéquation $P_A(x) < P_B(x)$ :
+   $$0,20x + 50 < 0,45x \iff 50 < 0,45x - 0,20x \iff 50 < 0,25x \iff x > \frac{50}{0,25} \iff x > 200$$
+   Le Tarif A est plus avantageux à partir de 201 kilomètres parcourus.

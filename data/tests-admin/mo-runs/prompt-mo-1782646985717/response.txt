@@ -1,0 +1,148 @@
+# Accompagnement Pédagogique Personnalisé : Mathématiques 3ème
+
+Pour commencer, veuillez remplir ce court formulaire d'orientation afin de confirmer votre profil et d'ajuster les séances si nécessaire.
+
+```FORM: Diagnostic Initial
+* **Quel est votre niveau scolaire actuel ?**
+  * ( ) Troisième (3ème)
+  * ( ) Seconde (2nde)
+  * ( ) Première (1ère)
+  * ( ) Terminale
+* **Quelle est la matière principale à travailler ?**
+  * ( ) Mathématiques - Algèbre & Fonctions
+  * ( ) Mathématiques - Géométrie
+  * ( ) Mathématiques - Probabilités & Statistiques
+```
+
+## 📊 Bilan général et suivi du cours
+
+Ce tableau de bord vous permet de suivre le déroulement de votre formation et vos résultats aux différentes évaluations.
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|---|---|---|---|---|
+| Séance 1 | 2026-07-01 | Notion de fonction | Comprendre les notions d'image et d'antécédent | À faire |
+| Séance 2 | 2026-07-08 | Fonctions linéaires | Représenter et utiliser une fonction linéaire | À faire |
+| Séance 3 | 2026-07-15 | Fonctions affines | Représenter et utiliser une fonction affine | À faire |
+```
+
+```AGENDA: Séances
+2026-07-01 | 14:00-16:00 | Séance 1 — 2026-07-01 : Notion de fonction | Découverte des notions fondamentales de fonction, image et antécédent.
+2026-07-08 | 14:00-16:00 | Séance 2 — 2026-07-08 : Fonctions linéaires | Modélisation de la proportionnalité et étude du coefficient linéaire.
+2026-07-15 | 14:00-16:00 | Séance 3 — 2026-07-15 : Fonctions affines | Représentation graphique et calcul du coefficient directeur.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|---|---|---|---|---|---|
+| Séance 1 | 2026-07-01 | | 20 | =C2/D2*100 | =AVG(C2:C4) |
+| Séance 2 | 2026-07-08 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-15 | | 20 | =C4/D4*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Compléter le formulaire de diagnostic initial `[medium]`
+- [ ] Valider le QCM de la Séance 1 `[high]`
+- [ ] Valider le QCM de la Séance 2 `[high]`
+- [ ] Valider le QCM de la Séance 3 `[high]`
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-07-01 : Notion de fonction
+
+### 📝 Contenu du cours
+
+Une fonction est un procédé qui, à un nombre donné, associe un unique autre nombre.
+Si on appelle cette fonction $f$, et qu'elle associe au nombre $x$ le nombre $y$, on note :
+$$f : x \mapsto y \quad \text{ou} \quad f(x) = y$$
+
+- **Image** : $y$ est l'image de $x$ par la fonction $f$. On calcule l'image en remplaçant $x$ par sa valeur dans l'expression de la fonction.
+- **Antécédent** : $x$ est un antécédent de $y$ par la fonction $f$. Trouver un antécédent revient à résoudre l'équation $f(x) = y$. Un nombre peut avoir plusieurs antécédents, ou aucun.
+
+*Exemple* : Soit la fonction $f(x) = 2x + 3$.
+- L'image de $5$ est $f(5) = 2 \times 5 + 3 = 13$.
+- Un antécédent de $9$ est la valeur de $x$ telle que $2x + 3 = 9$, soit $2x = 6$, donc $x = 3$.
+
+### ✍️ Exercices d'application
+
+```FORM: QCM Séance 1
+* **Question 1 : Soit la fonction f définie par f(x) = 3x - 2. Quelle est l'image de 4 par f ?**
+  * ( ) 10
+  * ( ) 12
+  * ( ) 14
+* **Question 2 : Soit la fonction g définie par g(x) = x² + 1. Quel est l'antécédent positif de 10 par g ?**
+  * ( ) 3
+  * ( ) 9
+  * ( ) 5
+* **Question 3 : Si f(2) = 7, alors :**
+  * ( ) 2 est l'image de 7 par f
+  * ( ) 7 est l'image de 2 par f
+  * ( ) 7 est l'antécédent de 2 par f
+```
+
+## Séance 2 — 2026-07-08 : Fonctions linéaires
+
+### 📝 Contenu du cours
+
+Une fonction linéaire modélise une situation de proportionnalité. Elle s'écrit sous la forme :
+$$f(x) = ax$$
+où $a$ est un nombre fixe appelé **coefficient** de la fonction linéaire.
+
+- **Représentation graphique** : La représentation graphique d'une fonction linéaire dans un repère est une **droite qui passe par l'origine** du repère (le point de coordonnées $(0;0)$).
+- Le coefficient $a$ correspond à la pente de cette droite. Si $a > 0$, la fonction est croissante. Si $a < 0$, la fonction est décroissante.
+
+*Exemple* : Une fonction linéaire de coefficient $-1,5$ s'écrit $f(x) = -1,5x$. Son image pour $x=2$ est $-3$.
+
+### ✍️ Exercices d'application
+
+```FORM: QCM Séance 2
+* **Question 1 : Parmi les fonctions suivantes, laquelle est linéaire ?**
+  * ( ) f(x) = 2x + 1
+  * ( ) g(x) = 5x
+  * ( ) h(x) = x²
+* **Question 2 : Soit la fonction linéaire f(x) = -3x. Quelle est la pente de sa représentation graphique ?**
+  * ( ) 3
+  * ( ) -3
+  * ( ) 0
+* **Question 3 : Si f est une fonction linéaire telle que f(4) = 20, quel est son coefficient ?**
+  * ( ) 5
+  * ( ) 0.2
+  * ( ) 80
+```
+
+## Séance 3 — 2026-07-15 : Fonctions affines
+
+### 📝 Contenu du cours
+
+Une fonction affine décrit une situation où il y a une partie proportionnelle et une partie fixe. Elle s'écrit sous la forme :
+$$f(x) = ax + b$$
+où $a$ et $b$ sont deux nombres fixes.
+
+- **Coefficient directeur** : $a$ est le coefficient directeur de la droite représentant $f$. Il indique la pente.
+- **Ordonnée à l'origine** : $b$ est l'ordonnée à l'origine. C'est l'ordonnée du point d'intersection de la droite avec l'axe des ordonnées (le point $(0;b)$).
+- **Représentation graphique** : La représentation graphique d'une fonction affine est une **droite** qui ne passe pas nécessairement par l'origine (sauf si $b = 0$, auquel cas c'est aussi une fonction linéaire).
+
+*Exemple* : Pour $f(x) = 2x - 4$, le coefficient directeur est $2$ et l'ordonnée à l'origine est $-4$.
+
+### ✍️ Exercices d'application
+
+```FORM: QCM Séance 3
+* **Question 1 : Soit la fonction affine f(x) = -2x + 5. Quelle est son ordonnée à l'origine ?**
+  * ( ) -2
+  * ( ) 5
+  * ( ) 0
+* **Question 2 : Quelle est la nature de la fonction h(x) = 4 ?**
+  * ( ) C'est une fonction linéaire
+  * ( ) C'est une fonction affine constante
+  * ( ) Ce n'est pas une fonction
+* **Question 3 : Soit la fonction f(x) = 3x - 1. Par quel point passe sa représentation graphique ?**
+  * ( ) A(0 ; -1)
+  * ( ) B(1 ; 3)
+  * ( ) C(2 ; 4)
+```

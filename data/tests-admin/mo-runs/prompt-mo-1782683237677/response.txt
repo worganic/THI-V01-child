@@ -1,0 +1,30 @@
+* **Quel est le format final attendu pour la mise en œuvre de cet atelier P.A.R.S ?**
+  * ( ) Un prompt système structuré pour un assistant IA
+  * ( ) Une application web interactive (HTML/CSS/JS)
+  * ( ) Un document de guidage textuel (PDF / Markdown)
+  * ( ) Autre : ______
+* **Quel est le public visé par cet atelier d'écriture ?**
+  * [ ] Business owners et entrepreneurs
+  * [ ] Créateurs de contenu et rédacteurs
+  * [ ] Facilitateurs et coachs d'entreprise
+  * [ ] Autre : ______
+* **Quel est l'horizon temporel ou la date de démarrage prévue pour l'utilisation de cet outil ?**
+  * ( ) Immédiat
+  * ( ) Dans les prochaines semaines
+  * ( ) Dans plus d'un mois
+  * ( ) Autre : ______
+* **Quelles sont les contraintes principales à respecter pour ce projet (budget, réglementation, ressources) ?**
+  * [ ] Budget limité pour le développement ou l'hébergement
+  * [ ] Accessibilité et simplicité d'utilisation sur mobile
+  * [ ] Confidentialité stricte des textes bruts saisis
+  * [ ] Autre : ______
+* **Quels sont les critères de succès mesurables pour ce projet ?**
+  * [ ] Taux de complétion de l'atelier par les utilisateurs
+  * [ ] Qualité et pertinence de la récolte automatique des unités de sens
+  * [ ] Facilité d'exportation de la synthèse Markdown finale
+  * [ ] Autre : ______
+* **Quels risques ou blocages anticipez-vous lors du déroulement de l'atelier ?**
+  * [ ] Difficulté de l'utilisateur à écrire en continu sans se corriger
+  * [ ] Limites du LLM dans la catégorisation pertinente des unités de sens (émotion, frustration, idée)
+  * [ ] Manque d'engagement de l'utilisateur sur une session de 15 minutes
+  * [ ] Autre : ______

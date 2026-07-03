@@ -1,0 +1,23 @@
+* **Format attendu pour le livrable final :**
+  * [ ] Document de spécifications fonctionnelles et techniques
+  * [ ] Prompt structuré ou instructions système pour un agent IA
+  * [ ] Prototype fonctionnel interactif (application web / page HTML)
+  * [ ] Autre : ______
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Immédiat (réalisation et mise en service sous 48h)
+  * ( ) Court terme (d'ici 1 à 2 semaines)
+  * ( ) Moyen/long terme (1 mois ou plus)
+* **Principales contraintes de réalisation :**
+  * [ ] Techniques (intégration API IA spécifique, stockage des données)
+  * [ ] Ressources (absence de développeurs, budget limité)
+  * [ ] Sécurité et confidentialité (données personnelles ou professionnelles sensibles)
+  * [ ] Autre : ______
+* **Critères de succès mesurables pour cet atelier :**
+  * ( ) Fluidité du parcours utilisateur et respect strict du minuteur
+  * ( ) Qualité et pertinence de la récolte et de la qualification des idées par l'IA
+  * ( ) Autre : ______
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Syndrome de la page blanche de l'utilisateur (besoin de prompts d'inspiration)
+  * [ ] Complexité d'analyse de textes trop décousus par l'IA
+  * [ ] Perte de la session d'écriture en cas d'interruption ou de déconnexion
+  * [ ] Autre : ______

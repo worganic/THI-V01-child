@@ -1,0 +1,42 @@
+* **Niveau scolaire actuel de l'apprenant :**
+  * ( ) Primaire
+  * ( ) Collège
+  * ( ) Lycée
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Matière ou domaine spécifique des mathématiques à travailler :**
+  * [ ] Algèbre (équations, polynômes...)
+  * [ ] Analyse (fonctions, limites, dérivées, intégrales...)
+  * [ ] Géométrie
+  * [ ] Probabilités et statistiques
+  * [ ] Autre : ______
+
+* **Objectif principal et niveau de départ :**
+  * ( ) Remise à niveau (reprendre les bases fragiles)
+  * ( ) Consolidation et perfectionnement (viser l'excellence)
+  * ( ) Préparation à un examen ou concours (Brevet, Bac, etc.)
+  * ( ) Autre : ______
+
+* **Date de début et durée globale de la formation :**
+  * ( ) Démarrage immédiat pour une durée de : ______
+  * ( ) Démarrage à une date précise (______ ) pour une durée de : ______
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 séances ou plus par semaine
+  * ( ) Rythme quotidien (stage intensif)
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation privilégiées :**
+  * [ ] Devoirs surveillés classiques notés sur 20
+  * [ ] Questionnaires à choix multiples (QCM) d'auto-évaluation
+  * [ ] Bilans oraux ou fiches de synthèse
+  * [ ] Autre : ______
+
+* **Points prioritaires à intégrer dans le plan de travail, les cours et les exercices :**
+  * [ ] Méthodologie et rigueur de rédaction
+  * [ ] Résolution de problèmes complexes
+  * [ ] Rappels de cours et automatismes
+  * [ ] Autre : ______

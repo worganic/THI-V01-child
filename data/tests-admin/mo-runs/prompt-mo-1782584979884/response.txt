@@ -1,0 +1,37 @@
+* **Niveau scolaire et matière à travailler :**
+  * ( ) Primaire / Mathématiques
+  * ( ) Collège / Mathématiques
+  * ( ) Lycée / Mathématiques
+  * ( ) Enseignement supérieur / Mathématiques
+  * ( ) Autre : ______
+
+* **Durée de la formation et date de début souhaitée :**
+  * ( ) 1 mois (Début le : ______)
+  * ( ) 3 mois (Début le : ______)
+  * ( ) Tout au long de l'année scolaire (Début le : ______)
+  * ( ) Autre durée : ______
+
+* **Fréquence des séances de travail :**
+  * ( ) 1 fois par semaine
+  * ( ) 2 fois par semaine
+  * ( ) Quotidien (jours ouvrés)
+  * ( ) Autre fréquence : ______
+
+* **Objectif mesurable de la formation :**
+  * [ ] Remise à niveau / Consolidation des bases
+  * [ ] Préparation à un examen (Brevet, Bac, Concours)
+  * [ ] Perfectionnement / Passage en classe supérieure
+  * [ ] Autre objectif : ______
+
+* **Points prioritaires à travailler :**
+  * [ ] Algèbre et Calculs
+  * [ ] Géométrie
+  * [ ] Fonctions et Analyse
+  * [ ] Probabilités et Statistiques
+  * [ ] Autre : ______
+
+* **Modalités d'évaluation privilégiées :**
+  * [ ] QCM réguliers
+  * [ ] Devoirs surveillés notés sur 20
+  * [ ] Auto-évaluation et bilans de compétences
+  * [ ] Autre : ______

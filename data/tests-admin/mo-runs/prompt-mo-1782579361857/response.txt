@@ -1,0 +1,36 @@
+* **Niveau scolaire ciblé :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+* **Thématiques ou matières mathématiques spécifiques à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations, suites...)
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Arithmétique
+  * [ ] Autre : ______
+* **Durée du programme et date de démarrage :**
+  * ( ) Court terme (1 à 4 semaines de révisions) - Début : ______
+  * ( ) Moyen terme (1 à 3 mois de soutien régulier) - Début : ______
+  * ( ) Long terme (semestre ou année complète) - Début : ______
+* **Fréquence des séances de travail :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 à 3 séances par semaine
+  * ( ) Quotidien (stage de vacances)
+  * ( ) Autre : ______
+* **Niveau de départ et objectif visé :**
+  * ( ) Niveau en difficulté (moyenne < 8/20) - Objectif : Moyenne à 10-12/20
+  * ( ) Niveau moyen (moyenne 10-12/20) - Objectif : Moyenne à 14-16/20
+  * ( ) Niveau solide (moyenne > 14/20) - Objectif : Excellence ou préparation de concours
+  * ( ) Autre : ______
+* **Modalités d'évaluation souhaitées :**
+  * [ ] QCM de révision rapide en fin de séance
+  * [ ] Évaluations notées sur /20 à intervalles réguliers
+  * [ ] Fiches d'auto-évaluation de fin de chapitre
+  * [ ] Autre : ______
+* **Difficultés prioritaires ou points d'attention :**
+  * [ ] Compréhension du cours et mémorisation des formules
+  * [ ] Méthodologie, rigueur de rédaction et démonstrations
+  * [ ] Gestion du temps et du stress lors des contrôles
+  * [ ] Résolution de problèmes ouverts

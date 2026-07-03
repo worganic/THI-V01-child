@@ -1,0 +1,293 @@
+## 📊 Bilan général et suivi du cours
+
+Voici le tableau de bord global de la formation de remise à niveau en mathématiques (Algèbre et Arithmétique) pour le niveau Lycée.
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+|-----------|------------|-----------------------------------------|---------------------------------------------------------|------------|
+| Séance 1 | 2026-07-06 | Équations et inéquations | Résoudre des équations et inéquations du premier degré | À faire |
+| Séance 2 | 2026-07-13 | Fonctions polynômes du second degré | Maîtriser le discriminant et la factorisation | À faire |
+| Séance 3 | 2026-07-20 | Arithmétique - Divisibilité et congruences | Comprendre la division euclidienne et les congruences | À faire |
+| Séance 4 | 2026-07-27 | Arithmétique - Nombres premiers | Appliquer le théorème de Gauss et décomposer en facteurs | À faire |
+```
+
+```AGENDA: Séances
+2026-07-06 | 14:00-16:00 | Séance 1 — 2026-07-06 : Équations et inéquations | Session sur les bases de l'algèbre et la manipulation des inégalités.
+2026-07-13 | 14:00-16:00 | Séance 2 — 2026-07-13 : Fonctions polynômes du second degré | Session sur l'étude des trinômes et l'application du discriminant.
+2026-07-20 | 14:00-16:00 | Séance 3 — 2026-07-20 : Arithmétique - Divisibilité et congruences | Session sur l'arithmétique de base et les calculs modulaires.
+2026-07-27 | 14:00-16:00 | Séance 4 — 2026-07-27 : Arithmétique - Nombres premiers | Session de synthèse sur la décomposition en facteurs premiers et les théorèmes fondamentaux.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+|-----------|------------|------|-----|---|---------|
+| Séance 1 | 2026-07-06 | | 10 | =C2/D2*100 | =AVG(C2:C5) |
+| Séance 2 | 2026-07-13 | | 10 | =C3/D3*100 | |
+| Séance 3 | 2026-07-20 | | 10 | =C4/D4*100 | |
+| Séance 4 | 2026-07-27 | | 10 | =C5/D5*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Suivi de la formation
+### À faire
+- [ ] Assimiler le cours de la séance 1 `[medium]`
+- [ ] Compléter le QCM de la séance 1 `[high]`
+- [ ] Assimiler le cours de la séance 2 `[medium]`
+- [ ] Compléter le QCM de la séance 2 `[high]`
+- [ ] Assimiler le cours de la séance 3 `[medium]`
+- [ ] Compléter le QCM de la séance 3 `[high]`
+- [ ] Assimiler le cours de la séance 4 `[medium]`
+- [ ] Compléter le QCM de la séance 4 `[high]`
+### En cours
+### Terminé
+```
+
+---
+
+## Séance 1 — 2026-07-06 : Équations et inéquations
+
+### 1. Cours théorique : Les bases de l'Algèbre
+
+Dans cette séance, nous retravaillons les bases fondamentales de la résolution d'équations et d'inéquations du premier degré. L'objectif est de sécuriser les manipulations algébriques de base pour regagner en confiance.
+
+#### A. Les équations du premier degré
+Une équation du premier degré à une inconnue $x$ est une égalité qui peut s'écrire sous la forme :
+$$ax + b = 0$$ (où $a$ et $b$ sont des nombres réels, avec $a \neq 0$).
+
+Pour résoudre cette équation, on cherche à isoler l'inconnue $x$ d'un côté de l'égalité en appliquant des opérations symétriques :
+1. On regroupe les termes contenant $x$ d'un côté, et les constantes de l'autre.
+2. Si on ajoute ou soustrait un même nombre aux deux membres d'une égalité, on obtient une égalité équivalente.
+3. Si on multiplie ou divise par un même nombre non nul les deux membres d'une égalité, on obtient une égalité équivalente.
+
+**Exemple pas à pas :**
+Résoudre l'équation : $3x - 7 = 5$
+* On ajoute $7$ de chaque côté :
+  $$3x = 5 + 7$$
+  $$3x = 12$$
+* On divise par $3$ de chaque côté :
+  $$x = \frac{12}{3}$$
+  $$x = 4$$
+La solution est unique : $S = \{4\}$.
+
+#### B. Les inéquations du premier degré
+Une inéquation du premier degré se présente sous la forme $ax + b \ge 0$, $ax + b < 0$, etc.
+La méthode de résolution est similaire à celle des équations, à une **règle fondamentale près** :
+
+> [!IMPORTANT]
+> **Règle d'or des inéquations :**
+> Quand on multiplie ou que l'on divise les deux membres d'une inéquation par un **nombre négatif**, on doit obligatoirement **changer le sens du symbole d'inégalité** (par exemple, $>$ devient $<$, et $\le$ devient $\ge$).
+
+**Exemple pas à pas :**
+Résoudre l'inéquation : $-2x + 5 \ge 11$
+* On soustrait $5$ de chaque côté :
+  $$-2x \ge 11 - 5$$
+  $$-2x \ge 6$$
+* On divise par $-2$ (attention, $-2$ est négatif, donc le sens change !) :
+  $$x \le \frac{6}{-2}$$
+  $$x \le -3$$
+L'ensemble des solutions est l'intervalle : $S = ]-\infty ; -3]$.
+
+---
+
+### 2. Évaluation : QCM de validation
+
+Remplissez ce formulaire pour évaluer votre compréhension de la Séance 1.
+
+```FORM: QCM Séance 1
+* **Question 1 : Quelle est la solution de l'équation 4x - 8 = 12 ?**
+  * ( ) x = 1
+  * ( ) x = 5
+  * ( ) x = -5
+* **Question 2 : Quelle est la solution de l'inéquation -3x > 9 ?**
+  * ( ) x > -3
+  * ( ) x < -3
+  * ( ) x < 3
+* **Question 3 : Si x représente un nombre réel, résoudre l'inéquation 2x + 3 <= 7 revient à écrire :**
+  * ( ) x <= 2
+  * ( ) x >= 2
+  * ( ) x <= -2
+* **Question 4 : Parmi les valeurs suivantes, lesquelles sont des solutions de l'inéquation 5 - 2x >= 1 ?**
+  * [ ] x = 1
+  * [ ] x = 2
+  * [ ] x = 3
+```
+
+---
+
+## Séance 2 — 2026-07-13 : Fonctions polynômes du second degré
+
+### 1. Cours théorique : Le second degré et le discriminant
+
+Cette séance aborde une notion clé du programme de Première : l'étude des fonctions polynômes du second degré et la résolution d'équations de la forme $ax^2 + bx + c = 0$.
+
+#### A. Définition et forme développée
+Une fonction polynôme du second degré est une fonction $f$ définie sur $\mathbb{R}$ par :
+$$f(x) = ax^2 + bx + c$$
+où $a$, $b$ et $c$ sont des réels donnés avec $a \neq 0$.
+
+#### B. Résolution de l'équation $ax^2 + bx + c = 0$
+Pour résoudre cette équation, on utilise un outil mathématique appelé le **discriminant**, noté $\Delta$ (Delta) :
+$$\Delta = b^2 - 4ac$$
+
+Trois cas se présentent alors selon le signe de $\Delta$ :
+1. **Si $\Delta < 0$ :** L'équation n'admet aucune solution réelle.
+2. **Si $\Delta = 0$ :** L'équation admet une unique solution réelle (dite racine double) :
+   $$x_0 = -\frac{b}{2a}$$
+3. **Si $\Delta > 0$ :** L'équation admet deux solutions réelles distinctes :
+   $$x_1 = \frac{-b - \sqrt{\Delta}}{2a} \quad \text{et} \quad x_2 = \frac{-b + \sqrt{\Delta}}{2a}$$
+
+**Exemple d'application :**
+Résoudre dans $\mathbb{R}$ l'équation : $x^2 - 5x + 6 = 0$
+Ici, $a = 1$, $b = -5$, $c = 6$.
+* Calcul du discriminant :
+  $$\Delta = (-5)^2 - 4 \times 1 \times 6 = 25 - 24 = 1$$
+* Comme $\Delta > 0$, il y a deux solutions :
+  $$x_1 = \frac{-(-5) - \sqrt{1}}{2 \times 1} = \frac{5 - 1}{2} = 2$$
+  $$x_2 = \frac{-(-5) + \sqrt{1}}{2 \times 1} = \frac{5 + 1}{2} = 3$$
+Les solutions sont $S = \{2 ; 3\}$.
+
+#### C. Signe du polynôme
+Le signe de $ax^2 + bx + c$ dépend du signe de $a$ et de la valeur de $\Delta$ :
+* Si $\Delta < 0$, le polynôme est toujours du signe de $a$ pour tout réel $x$.
+* Si $\Delta = 0$, le polynôme est du signe de $a$ partout sauf en $x_0$ où il s'annule.
+* Si $\Delta > 0$, le polynôme est du signe de $a$ "à l'extérieur des racines" (c'est-à-dire pour $x < x_1$ ou $x > x_2$) et du signe opposé de $a$ "entre les racines".
+
+---
+
+### 2. Évaluation : QCM de validation
+
+```FORM: QCM Séance 2
+* **Question 1 : Quelle est la valeur du discriminant Delta pour le polynôme 2x^2 - 3x - 2 ?**
+  * ( ) Delta = -7
+  * ( ) Delta = 25
+  * ( ) Delta = 7
+* **Question 2 : Si le discriminant d'une équation du second degré est nul (Delta = 0), combien de solutions réelles possède-t-elle ?**
+  * ( ) 0
+  * ( ) 1 (racine double)
+  * ( ) 2
+* **Question 3 : Soit le polynôme f(x) = -x^2 + 4x - 5 de discriminant Delta = -4. Quel est le signe de f(x) sur R ?**
+  * ( ) Toujours strictement positif
+  * ( ) Toujours strictement négatif
+  * ( ) Change de signe autour de x = 2
+* **Question 4 : Quelles sont les racines du polynôme x^2 - 9 ?**
+  * [ ] x = 3
+  * [ ] x = -3
+  * [ ] x = 0
+```
+
+---
+
+## Séance 3 — 2026-07-20 : Divisibilité et congruences
+
+### 1. Cours théorique : Arithmétique moderne
+
+Nous entrons ici dans la branche de l'arithmétique (niveau Terminale spécialité). L'objectif est de formaliser la notion de division et d'introduire l'outil puissant des congruences.
+
+#### A. Divisibilité dans $\mathbb{Z}$
+Soit $a$ et $b$ deux entiers relatifs. On dit que $b$ divise $a$ (ou que $a$ est un multiple de $b$) s'il existe un entier relatif $k$ tel que :
+$$a = k \times b$$
+On note alors $b \mid a$.
+
+#### B. Division euclidienne
+Pour tout entier $a$ et tout entier naturel non nul $b$, il existe un unique couple d'entiers $(q, r)$ tel que :
+$$a = b \times q + r \quad \text{avec} \quad 0 \le r < b$$
+* $q$ est appelé le quotient.
+* $r$ est appelé le reste.
+
+> [!IMPORTANT]
+> Le reste $r$ doit toujours être strictement inférieur au diviseur $b$ et supérieur ou égal à 0.
+
+#### C. Les congruences modulo $n$
+Soit $n$ un entier naturel supérieur ou égal à 2. Deux entiers $a$ et $b$ sont dits congrus modulo $n$ s'ils ont le même reste dans la division euclidienne par $n$.
+On note :
+$$a \equiv b \pmod n \quad (\text{ou } a \equiv b \ [n])$$
+Cela équivaut à dire que la différence $a - b$ est un multiple de $n$ (c'est-à-dire $n \mid (a - b)$).
+
+**Propriétés fondamentales :**
+Les congruences sont compatibles avec l'addition et la multiplication. Si $a \equiv b \ [n]$ et $c \equiv d \ [n]$, alors :
+* $a + c \equiv b + d \ [n]$
+* $a \times c \equiv b \times d \ [n]$
+* $a^k \equiv b^k \ [n]$ pour tout entier naturel $k$.
+
+**Exemple d'application :**
+Trouver le reste de la division euclidienne de $3^{4}$ par 5.
+* On sait que $3^2 = 9$.
+* Or, $9 = 5 \times 1 + 4$, donc $9 \equiv 4 \equiv -1 \pmod 5$.
+* Par conséquent, $3^4 = (3^2)^2 \equiv (-1)^2 \equiv 1 \pmod 5$.
+Le reste recherché est donc $1$.
+
+---
+
+### 2. Évaluation : QCM de validation
+
+```FORM: QCM Séance 3
+* **Question 1 : Dans la division euclidienne de -13 par 5, quels sont le quotient q et le reste r ?**
+  * ( ) q = -2 et r = -3
+  * ( ) q = -3 et r = 2
+  * ( ) q = -2 et r = 3
+* **Question 2 : Si a = 12 [7], à quelle valeur plus simple a est-il aussi congrue modulo 7 ?**
+  * ( ) a = 5 [7]
+  * ( ) a = 2 [7]
+  * ( ) a = 0 [7]
+* **Question 3 : Soit x un entier tel que x = 2 [5]. Parmi les affirmations suivantes, lesquelles sont vraies ?**
+  * [ ] 3x = 1 [5]
+  * [ ] x^2 = 4 [5]
+  * [ ] x + 3 = 0 [5]
+* **Question 4 : Si a = b [n], cela signifie obligatoirement que :**
+  * ( ) n divise (a - b)
+  * ( ) a divise n
+  * ( ) b est un multiple de a
+```
+
+---
+
+## Séance 4 — 2026-07-27 : Nombres premiers
+
+### 1. Cours théorique : Théorèmes fondamentaux de l'arithmétique
+
+Cette dernière séance consolide la notion de nombre premier et aborde les théorèmes classiques sur la divisibilité.
+
+#### A. Définition et Décomposition
+* Un entier naturel $p \ge 2$ est dit **premier** s'il possède exactement deux diviseurs positifs : 1 et lui-même.
+  (Exemples : 2, 3, 5, 7, 11, 13, 17, 19, 23...). Attention, 1 n'est pas un nombre premier.
+* **Théorème fondamental de l'arithmétique :** Tout entier naturel $n \ge 2$ se décompose de manière unique (à l'ordre des facteurs près) en un produit de facteurs premiers.
+
+**Exemple :**
+$$120 = 2^3 \times 3 \times 5$$
+
+#### B. Nombres premiers entre eux
+Deux entiers $a$ et $b$ sont dits premiers entre eux si leur plus grand commun diviseur (PGCD) est égal à 1. C'est-à-dire qu'ils n'ont aucun diviseur commun autre que 1 (et -1).
+
+#### C. Théorème de Gauss
+> [!NOTE]
+> **Énoncé du Théorème de Gauss :**
+> Soient $a$, $b$ et $c$ trois entiers relatifs non nuls.
+> Si $a$ divise le produit $bc$, et si $a$ et $b$ sont premiers entre eux, alors $a$ divise $c$.
+
+*Exemple d'utilisation :* Si $3$ divise $2x$ (avec $x$ entier), comme $3$ et $2$ sont premiers entre eux, alors d'après le théorème de Gauss, $3$ divise $x$.
+
+---
+
+### 2. Évaluation : QCM de validation
+
+```FORM: QCM Séance 4
+* **Question 1 : Quel est le plus petit nombre premier ?**
+  * ( ) 1
+  * ( ) 2
+  * ( ) 3
+* **Question 2 : Quelle est la décomposition en produit de facteurs premiers du nombre 90 ?**
+  * ( ) 2 * 3^2 * 5
+  * ( ) 9 * 10
+  * ( ) 2^2 * 3 * 5
+* **Question 3 : Les nombres 14 et 25 sont-ils premiers entre eux ?**
+  * ( ) Oui, car PGCD(14, 25) = 1
+  * ( ) Non, car ils ne sont pas des nombres premiers
+  * ( ) Non, car ils sont tous les deux pairs
+* **Question 4 : Si un nombre entier n est divisible par 2 et par 3, sachant que 2 et 3 sont premiers entre eux, alors n est divisible par :**
+  * ( ) 5
+  * ( ) 6
+  * ( ) 9
+```

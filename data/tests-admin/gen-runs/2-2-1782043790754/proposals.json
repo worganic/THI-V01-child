@@ -1,0 +1,82 @@
+[
+  {
+    "id": "2-2-1",
+    "section": "Thème",
+    "tasks": "- Changement de thème au clic sur le bouton : cycle entre dark, light et pink (toggleTheme)\n- Persistance du thème sélectionné dans le localStorage\n- Application immédiate de la classe CSS correspondante sur l'élément <html> (dark ou dark+pink)\n- Changement d'icône dynamique sur le bouton en fonction du thème (dark_mode, light_mode, favorite)",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html"
+    ]
+  },
+  {
+    "id": "2-2-2",
+    "section": "Clés API",
+    "tasks": "- Affichage/masquage de la section des clés au clic sur le toggle d'activation globale (toggleApiKeys)\n- Saisie de la clé API Gemini et activation via sa checkbox dédiée\n- Affichage/masquage en clair de la clé API Gemini en cliquant sur le bouton de visibilité\n- Saisie de la clé API Claude et activation via sa checkbox dédiée\n- Affichage/masquage en clair de la clé API Claude en cliquant sur le bouton de visibilité\n- Chargement initial des clés et de leur état d'activation via GET /api/config/keys\n- Persistance des clés lors de la sauvegarde manuelle via POST /api/config/keys au format imbriqué { gemini: { key, active }, claude: { key, active } }",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-2-3",
+    "section": "Configuration CLI IA",
+    "tasks": "- Affichage/masquage de la section des outils CLI au clic sur son toggle global (toggleCliIa)\n- Activation/désactivation d'un fournisseur CLI (Antigravity ou Claude) via sa checkbox dédiée (toggleProvider)\n- Activation de tous les modèles d'un fournisseur CLI par défaut lors de son activation\n- Désactivation automatique et décochage de tous les modèles d'un fournisseur CLI s'il est désactivé\n- Activation/désactivation individuelle des modèles disponibles pour chaque fournisseur (toggleModel)\n- Tri automatique des modèles d'un fournisseur par coût total décroissant (sortModelsByCost)\n- Affichage d'un badge indiquant la source des modèles disponibles : \"API\" (direct) ou \"Fallback\" (statique)\n- Récupération rapide de l'état d'installation via GET /api/cli-check-only?force=true\n- Récupération complète des versions installées, dates de dernière mise à jour et modèles via GET /api/cli-status\n- Affichage d'un spinner de chargement individuel par fournisseur lors des vérifications\n- Affichage d'une alerte bloquante si le serveur executor sur le port 3002 n'est pas disponible, avec bouton pour réessayer (loadCliStatus)\n- Sauvegarde automatique immédiate de la configuration lors du basculement d'un fournisseur ou d'un modèle (saveKeys)",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html",
+      "libs/portail-core/data-access/src/lib/config.service.ts",
+      "electron/executor/server-executor.js"
+    ]
+  },
+  {
+    "id": "2-2-4",
+    "section": "Outils externes (activation/désactivation)",
+    "tasks": "- Affichage/masquage de la zone IA dans le header de l'application via son toggle dédié (toggleHeaderIa)\n- Activation/désactivation de l'Historique des actions dans la navigation principale via son toggle dédié (toggleWoActionHistoryNav)\n- Enregistrement immédiat dans l'historique d'actions (tracking de l'action toggle pour 'woActionHistoryNav')\n- Sauvegarde et propagation de l'état de l'historique de navigation via le signal global configService.saveNavItems\n- Chargement initial et envoi des configurations des outils secondaires (tickets, recette, tchat, actions) lors de la sauvegarde manuelle",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html",
+      "libs/portail-core/data-access/src/lib/config.service.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-2-5",
+    "section": "Mise à jour des coûts modèles (admin)",
+    "tasks": "- Déclenchement de la mise à jour des coûts par fournisseur au clic sur le bouton \"Mettre à jour les coûts\" via POST /api/admin/update-models-costs\n- Rechargement automatique de l'état local du CLI concerné après mise à jour des coûts (loadCliStatus)\n- Affichage des coûts en tokens d'entrée (In) et de sortie (Out) en dollars par million de tokens pour chaque modèle\n- Affichage de la date et heure de dernière mise à jour des coûts formatée au format local français (formatDate)",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-2-6",
+    "section": "Sauvegarde",
+    "tasks": "- Sauvegarde automatique en arrière-plan sur les actions rapides de toggles de CLI (saveKeys avec isAutoSave = true)\n- Déclenchement d'une sauvegarde manuelle complète de tous les champs via le bouton \"Sauvegarder\" (saveKeys)\n- Transition d'états de sauvegarde gérée par la variable saveStatus (idle -> saving -> success ou error)\n- Désactivation du bouton de sauvegarde et affichage d'un spinner pendant l'enregistrement\n- Affichage d'un badge de confirmation vert avec message personnalisé pendant 3 secondes après un succès, puis retour à l'état initial (idle)\n- Affichage d'un message d'erreur rouge pendant 3 secondes en cas d'échec de la requête\n- Propagation immédiate des modifications aux signaux de configService en local pour réactivité UI\n- Mise à jour conjointe de la configuration utilisateur en BDD (table users) et du fichier global conf.json pour la version et outils activés",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html",
+      "libs/portail-core/data-access/src/lib/config.service.ts",
+      "server/server-data.js"
+    ]
+  },
+  {
+    "id": "2-2-7",
+    "section": "États",
+    "tasks": "- État de chargement initial : spinners affichés pour chaque fournisseur CLI tant que le chargement n'est pas terminé (cliConfigLoaded/cliStatusLoaded)\n- État section clés masquée : les champs de clé API ne sont pas rendus si apiKeysEnabled est désactivé\n- État section CLI masquée : toute la section de configuration des CLI n'est pas rendue si cliIaEnabled est désactivé\n- État fournisseur inactif : badge du statut d'installation affiché en grisé et modèles affichés avec opacité réduite (40%) si non installé\n- État modèle désactivé : case à cocher non cochée pour les modèles exclus de la visibilité du header\n- État serveur executor indisponible : bandeau d'alerte rouge avec message d'Electron non démarré et bouton Réessayer\n- État sauvegarde en cours : bouton \"Sauvegarder\" désactivé avec spinner\n- État sauvegarde OK : badge vert de confirmation avec message de succès visible pendant 3 secondes\n- État erreur sauvegarde : badge rouge avec message d'erreur visible pendant 3 secondes",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html"
+    ]
+  },
+  {
+    "section": "Version de l'application",
+    "tasks": "- Affichage de la version courante de l'application chargée depuis conf.json (via GET /api/config/keys)\n- Modification de la version via le champ de saisie de texte dédié dans la section Général\n- Persistance du numéro de version dans le fichier conf.json global lors d'une sauvegarde manuelle (POST /api/config/keys)",
+    "components": [
+      "apps/portail/src/app/pages/user/config/config.component.ts",
+      "apps/portail/src/app/pages/user/config/config.component.html",
+      "server/server-data.js"
+    ]
+  }
+]

@@ -1,0 +1,118 @@
+# 📚 Programme de Formation Personnalisé en Mathématiques
+
+Ce programme est conçu pour s'adapter à votre niveau et à vos objectifs spécifiques en mathématiques. La première séance servira de diagnostic pour identifier précisément vos besoins.
+
+## 📊 Bilan général et suivi du cours
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-06-29 | Évaluation diagnostique | Définir le niveau et les objectifs | À faire |
+| Séance 2 | 2026-07-06 | Algèbre et équations | Maîtriser la résolution d'équations simples | À faire |
+| Séance 3 | 2026-07-13 | Fonctions et modélisation | Comprendre et appliquer les notions de fonctions | À faire |
+```
+
+```AGENDA: Séances
+2026-06-29 | 10:00-11:30 | Séance 1 — 2026-06-29 : Évaluation diagnostique | Séance d'évaluation diagnostique pour définir le niveau et les objectifs.
+2026-07-06 | 10:00-11:30 | Séance 2 — 2026-07-06 : Algèbre et équations | Cours et exercices sur les équations du premier degré.
+2026-07-13 | 10:00-11:30 | Séance 3 — 2026-07-13 : Fonctions et modélisation | Cours et exercices sur les fonctions linéaires et affines.
+```
+
+```ARRAY: Suivi des notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-06-29 | | 20 | =C2/D2*100 | =AVG(C2:C4) |
+| Séance 2 | 2026-07-06 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-13 | | 20 | =C4/D4*100 | |
+```
+
+```CHART: Progression des notes
+source: Suivi des notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Répondre au questionnaire de diagnostic de la Séance 1 `[high]`
+- [ ] Revoir les bases des fractions et priorités opératoires `[medium]`
+### En cours
+### Terminé
+```
+
+## Séance 1 — 2026-06-29 : Évaluation diagnostique
+
+Cette première séance a pour but de faire le point sur vos connaissances actuelles en mathématiques, de cibler vos difficultés et de déterminer la matière ou les chapitres à travailler en priorité.
+
+### Contenu pédagogique
+- **Objectif** : Identifier le niveau scolaire et les thèmes à travailler.
+- **Méthodologie** : Analyse des réponses au formulaire ci-dessous et discussion lors de notre première rencontre.
+
+```FORM: QCM Séance 1
+* **Question 1 : Quel est votre niveau scolaire actuel ?**
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (Seconde à Terminale)
+  * ( ) Supérieur / Autre
+* **Question 2 : Quelle est la matière ou le domaine des mathématiques que vous souhaitez travailler en priorité ?**
+  * ( ) Algèbre (calcul, équations, identités remarquables)
+  * ( ) Analyse et Fonctions (études de fonctions, dérivées, limites)
+  * ( ) Géométrie (théorèmes, vecteurs, trigonométrie)
+  * ( ) Probabilités et Statistiques
+* **Question 3 : Résoudre l'équation simple : 2x + 5 = 15. Quelle est la valeur de x ?**
+  * ( ) x = 5
+  * ( ) x = 10
+  * ( ) x = 7.5
+* **Question 4 : Quelle est l'expression développée de (x + 3)^2 ?**
+  * ( ) x^2 + 9
+  * ( ) x^2 + 6x + 9
+  * ( ) x^2 + 3x + 9
+```
+
+## Séance 2 — 2026-07-06 : Algèbre et équations
+
+L'algèbre est le fondement de la résolution de problèmes en mathématiques. Cette séance aborde les méthodes systématiques pour résoudre des équations du premier degré.
+
+### Contenu pédagogique
+1. **Équations du premier degré** : Une équation est une égalité contenant une inconnue (souvent notée x). Résoudre l'équation consiste à trouver la valeur de x qui rend l'égalité vraie.
+2. **Règle de transposition** :
+   - Si on ajoute ou soustrait un même nombre aux deux membres d'une égalité, on obtient une autre égalité.
+   - Si on multiplie ou divise par un même nombre non nul les deux membres d'une égalité, on obtient une autre égalité.
+3. **Exemple** :
+   $3x - 7 = 8 \implies 3x = 8 + 7 \implies 3x = 15 \implies x = \frac{15}{3} = 5$.
+
+```FORM: QCM Séance 2
+* **Question 1 : Quelle est la solution de l'équation 3x - 7 = 8 ?**
+  * ( ) x = 5
+  * ( ) x = 3
+  * ( ) x = -5
+* **Question 2 : Si 4x + 2 = 2x + 10, alors x est égal à :**
+  * ( ) x = 4
+  * ( ) x = 6
+  * ( ) x = 2
+* **Question 3 : Factoriser l'expression x^2 - 16 :**
+  * ( ) (x - 4)^2
+  * ( ) (x - 4)(x + 4)
+  * ( ) (x - 8)(x + 8)
+```
+
+## Séance 3 — 2026-07-13 : Fonctions et modélisation
+
+Cette séance introduit la notion de fonction, essentielle pour modéliser des phénomènes physiques, économiques ou géométriques.
+
+### Contenu pédagogique
+1. **Définition** : Une fonction $f$ est un procédé qui, à un nombre $x$, associe un unique nombre noté $f(x)$ (appelé image de $x$). On dit que $x$ est un antécédent de $f(x)$.
+2. **Fonctions linéaires** : De la forme $f(x) = ax$. Elles modélisent des situations de proportionnalité. Leur représentation graphique est une droite passant par l'origine.
+3. **Fonctions affines** : De la forme $f(x) = ax + b$. Leur représentation graphique est une droite.
+
+```FORM: QCM Séance 3
+* **Question 1 : Soit la fonction f(x) = 2x - 3. Quelle est l'image de 4 par f ?**
+  * ( ) 5
+  * ( ) 8
+  * ( ) 11
+* **Question 2 : Quel est l'antécédent de 7 par la fonction f(x) = 2x - 3 ?**
+  * ( ) 5
+  * ( ) 2
+  * ( ) 7
+* **Question 3 : La représentation graphique d'une fonction linéaire est :**
+  * ( ) Une droite qui passe par l'origine
+  * ( ) Une courbe quelconque
+  * ( ) Une droite qui ne passe pas par l'origine
+```

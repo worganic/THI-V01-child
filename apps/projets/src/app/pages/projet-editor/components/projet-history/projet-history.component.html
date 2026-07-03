@@ -1,5 +1,54 @@
 <div class="h-full flex flex-col bg-white dark:bg-[#0f0f17] relative">
 
+  <!-- Versions de contenu (checkpoints BDD immuables) de la section active -->
+  @if (activeFileId) {
+    <div class="flex-shrink-0 border-b border-light-border dark:border-white/8">
+      <button type="button"
+              (click)="versionsExpanded.set(!versionsExpanded())"
+              class="w-full flex items-center gap-2 px-3 py-2 group cursor-pointer">
+        <span class="material-symbols-outlined text-[13px] text-light-text-muted dark:text-white/30 group-hover:text-white/60 transition-colors">
+          {{ versionsExpanded() ? 'expand_more' : 'chevron_right' }}
+        </span>
+        <span class="text-[9px] font-bold uppercase tracking-wider text-light-text-muted dark:text-white/40">
+          Versions de cette section
+          @if (versions().length > 0) { <span class="ml-1 opacity-50 normal-case">({{ versions().length }})</span> }
+        </span>
+        @if (versionsLoading()) {
+          <span class="material-symbols-outlined text-[12px] text-white/30 animate-spin ml-auto">progress_activity</span>
+        }
+      </button>
+
+      @if (versionsExpanded()) {
+        <div class="px-2 pb-2 max-h-[220px] overflow-y-auto">
+          @if (versions().length === 0 && !versionsLoading()) {
+            <p class="text-[10px] text-white/30 px-2 py-1">Aucune version enregistrée pour cette section.</p>
+          }
+          @for (v of versions(); track v.version_id) {
+            <div class="flex items-center gap-2 py-1 px-1.5 rounded-lg hover:bg-indigo-400/5 cursor-pointer group/version"
+                 (click)="onVersionClick(v)">
+              <span class="material-symbols-outlined text-[13px] text-indigo-400/70 flex-shrink-0">history_edu</span>
+              <div class="flex-1 min-w-0">
+                <p class="text-[10px] text-light-text dark:text-white/70 truncate">{{ originLabel(v.origin) }}</p>
+                <p class="text-[9px] text-white/30 truncate">{{ v.author_name || 'Système' }} · {{ formatTime(v.created_at) }}</p>
+              </div>
+              <button type="button"
+                      class="flex-shrink-0 px-1.5 py-0.5 rounded text-[9px] font-semibold bg-white/5 hover:bg-indigo-500/20 text-white/40 hover:text-indigo-300 opacity-0 group-hover/version:opacity-100 transition-all disabled:opacity-40"
+                      [disabled]="restoringVersionId() !== null"
+                      title="Restaurer cette version (crée une nouvelle version, rien n'est perdu)"
+                      (click)="restoreVersionClick(v, $event)">
+                @if (restoringVersionId() === v.version_id) {
+                  <span class="material-symbols-outlined text-[11px] animate-spin">progress_activity</span>
+                } @else {
+                  Restaurer
+                }
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
   <!-- Timeline -->
   <div class="flex-1 overflow-y-auto min-h-0 px-3 py-2">
 

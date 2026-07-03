@@ -1,0 +1,43 @@
+* **Niveau scolaire actuel de l'élève :**
+  * ( ) Primaire
+  * ( ) Collège
+  * ( ) Lycée
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Domaine mathématique spécifique à travailler :**
+  * [ ] Algèbre et arithmétique
+  * [ ] Analyse (fonctions, suites, limites...)
+  * [ ] Géométrie
+  * [ ] Probabilités et statistiques
+  * [ ] Autre : ______
+
+* **Niveau de départ et objectif de progression mesurable :**
+  * ( ) Remise à niveau (passer de difficultés à la moyenne)
+  * ( ) Perfectionnement (passer d'un niveau moyen à un très bon niveau)
+  * ( ) Excellence (viser les concours ou les mentions très bien)
+  * ( ) Autre : ______
+
+* **Durée de la formation et date de début :**
+  * ( ) Court terme (stage intensif de 1 à 2 semaines)
+  * ( ) Moyen terme (1 à 3 mois)
+  * ( ) Long terme (toute l'année scolaire)
+  * ( ) Autre : ______
+
+* **Fréquence souhaitée des séances de travail :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 à 3 séances par semaine
+  * ( ) Séances quotidiennes
+  * ( ) Autre : ______
+
+* **Modalités d'évaluation des acquis :**
+  * [ ] QCM rapides de fin de séance
+  * [ ] Devoirs écrits types examens (notés sur /20)
+  * [ ] Auto-évaluation et suivi de compétences
+  * [ ] Aucun test formel, évaluation uniquement en continu
+
+* **Points prioritaires à travailler :**
+  * [ ] Apprentissage et restitution du cours
+  * [ ] Rigueur et rédaction mathématique
+  * [ ] Rapidité d'exécution et calcul mental
+  * [ ] Autonomie et méthodologie face aux problèmes de recherche

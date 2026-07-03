@@ -154,13 +154,4 @@ export class LandingComponent implements OnInit, OnDestroy {
     }
   }
 
-  onOverlayClick(event: MouseEvent) {
-    if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
-      this.closeModals();
-    }
-  }
-
-  onKeydown(event: KeyboardEvent) {
-    if (event.key === 'Escape') this.closeModals();
-  }
 }

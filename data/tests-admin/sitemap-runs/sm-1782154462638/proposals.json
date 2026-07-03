@@ -1,0 +1,34 @@
+[
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Lien Projets",
+      "url": "/projets",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "elType": "link",
+      "components": ["NavComponent"],
+      "description": "Entrée de menu Projets → app Projets (port 4203)."
+    },
+    "reason": "Lien de navigation Projets détecté dans nav.json et géré par NavComponent."
+  },
+  {
+    "op": "add",
+    "kind": "node",
+    "id": null,
+    "data": {
+      "label": "Lien Historique",
+      "url": "/wo-action-history",
+      "port": 4202,
+      "kind": "protected",
+      "groupId": "sec-doc-menu",
+      "elType": "link",
+      "components": ["NavComponent"],
+      "description": "Entrée de menu Historique pour visualiser les actions utilisateurs."
+    },
+    "reason": "Lien de navigation Historique présent dans nav.component.html géré sous condition d'activation."
+  }
+]

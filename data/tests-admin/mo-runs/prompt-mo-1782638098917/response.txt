@@ -1,0 +1,107 @@
+# Projet d'Acquisition Immobilière pour Maison d'Hôtes
+
+Ce document centralise le pilotage opérationnel pour l'achat d'un bien immobilier et sa transformation en maison d'hôtes.
+
+## 📊 Tableau de bord et planification
+
+### Planning opérationnel
+Voici le planning des grandes étapes du projet, depuis la définition des critères jusqu'à la signature de l'acte authentique et le lancement des travaux.
+
+```ARRAY: Planning
+| N° | Date | Phase | Actions | Intervenants | Statut |
+|---|---|---|---|---|---|
+| 1 | 2026-07-01 | Préparation | Définition du cahier des charges et capacité d'emprunt | Porteur de projet, Banquier | Terminé |
+| 2 | 2026-07-15 | Recherche | Visites de biens et sélection | Porteur de projet, Agent immobilier | En cours |
+| 3 | 2026-09-01 | Négociation | Offre d'achat et négociation du prix | Porteur de projet, Vendeur | À faire |
+| 4 | 2026-09-15 | Compromis | Rédaction et signature du compromis de vente | Notaire, Porteurs de projet | À faire |
+| 5 | 2026-11-15 | Financement | Demande de prêt et obtention de l'accord de principe | Banquier, Courtier | À faire |
+| 6 | 2026-12-15 | Acte de vente | Signature de l'acte authentique de vente | Notaire, Vendeur, Acheteur | À faire |
+| 7 | 2027-01-15 | Travaux | Démarrage des travaux d'aménagement | Artisans, Architecte | À faire |
+```
+
+### Jalons clés et rendez-vous
+L'agenda ci-dessous récapitule les échéances majeures et réunions de suivi indispensables.
+
+```AGENDA: Jalons
+2026-07-05 | 10:00-12:00 | Rendez-vous banque | Validation de la capacité de financement maximale
+2026-07-20 | 14:00-17:00 | Visite groupée | Visite de 3 propriétés cibles dans la région
+2026-09-05 | 09:00-10:00 | Réunion Notaire | Conseils sur les clauses suspensives à insérer dans l'offre
+2026-09-18 | 11:00-12:30 | Signature Compromis | Signature du compromis de vente à l'étude notariale
+2026-11-20 | 15:00-16:00 | Dépôt Dossier Prêt | Remise des pièces finales pour la demande de crédit immobilier
+2026-12-18 | 10:00-12:00 | Signature Acte Authentique | Remise des clés et signature de l'acte authentique
+```
+
+### Suivi budgétaire prévisionnel (Acquisition)
+Ce tableau permet de suivre le budget alloué à l'acquisition par rapport aux dépenses réelles engagées.
+
+```ARRAY: Budget
+| Poste | Budget prévu | Dépensé | Restant |
+|---|---|---|---|
+| Prix d'achat du bien | 450000 | 0 | =B2-C2 |
+| Frais de notaire | 36000 | 0 | =B3-C3 |
+| Frais d'agence | 20000 | 0 | =B4-C4 |
+| Diagnostics et expertises | 2000 | 800 | =B5-C5 |
+| Travaux de rénovation | 80000 | 0 | =B6-C6 |
+| Ameublement & Déco | 25000 | 0 | =B7-C7 |
+| Communication & Lancement | 5000 | 0 | =B8-C8 |
+| TOTAL | =SUM(B2:B8) | =SUM(C2:C8) | =SUM(D2:D8) |
+```
+
+### Évolution de la consommation budgétaire
+Ce graphique représente les budgets prévus pour chaque grand poste de dépenses.
+
+```CHART: Budget prévu
+source: Budget | col: Budget prévu
+```
+
+## 📋 Tâches opérationnelles et avancement
+
+Le tableau Kanban ci-dessous détaille les actions immédiates et à moyen terme pour mener à bien l'acquisition.
+
+```TRELLO: Plan d'actions
+### À faire
+- [ ] Préparer le dossier de présentation du projet `[high]`
+  Rédiger le pré-business plan (clientèle cible, tarifs moyens, positionnement) à présenter aux banques et agents immobiliers.
+- [ ] Modéliser le prévisionnel d'exploitation `[medium]`
+  Établir les hypothèses de taux d'occupation et de charges pour valider la rentabilité future de la maison d'hôtes.
+- [ ] Obtenir des devis estimatifs pour les travaux `[medium]`
+  Faire visiter le bien sélectionné par un maître d'œuvre pour évaluer l'enveloppe de rénovation requise.
+
+### En cours
+- [ ] Réaliser les visites de biens immobiliers `[critical]`
+  Sélectionner et visiter des bâtisses disposant d'au moins 4 à 5 chambres potentielles et d'un espace extérieur.
+- [ ] Valider la capacité d'emprunt définitive `[high]`
+  Fournir les derniers justificatifs de revenus au courtier pour fixer l'enveloppe budgétaire globale.
+
+### Terminé
+- [ ] Définir le cahier des charges de la maison d'hôtes `[low]`
+  Détermination de la zone géographique, nombre de chambres minimum, présence d'extérieurs (jardin, piscine).
+```
+
+## ⚖️ Critères de choix et validations
+
+### Validation des critères d'achat
+Avant de formuler une offre d'achat sur un bien immobilier, ce formulaire doit être complété pour s'assurer que le bien répond aux prérequis de l'activité de maison d'hôtes.
+
+```FORM: Check-list d'achat
+* **1. Emplacement et attractivité touristique :**
+  * ( ) Excellente (proche d'un pôle d'intérêt majeur ou accès facile)
+  * ( ) Moyenne (nécessite une communication importante pour attirer du monde)
+  * ( ) Faible (rédhibitoire pour l'activité)
+* **2. Capacité d'accueil minimale (chambres) :**
+  * ( ) Moins de 3 chambres (non rentable ou insuffisant)
+  * ( ) 4 à 5 chambres d'hôtes (idéal pour la gestion en couple)
+  * ( ) Plus de 5 chambres d'hôtes (attention à la réglementation ERP)
+* **3. Conformité et travaux :**
+  * [ ] Pas de gros œuvre à prévoir (uniquement rafraîchissement)
+  * [ ] Gros œuvre et toiture en bon état
+  * [ ] Création de salles d'eau individuelles possible dans chaque chambre
+  * [ ] Sécurité incendie et normes d'accessibilité faciles à mettre en œuvre
+* **4. Espaces extérieurs et stationnement :**
+  * [ ] Parking privé pour les clients sur la propriété
+  * [ ] Jardin, terrasse ou espace de détente exploitable
+  * [ ] Possibilité d'installer une piscine ou un spa
+* **5. Viabilité financière :**
+  * ( ) Le prix d'achat permet de rester sous l'enveloppe de financement max
+  * ( ) Le prix d'achat nécessite un apport personnel ou un prêt complémentaire trop élevé
+```

@@ -1,0 +1,241 @@
+# Programme de Remise à Niveau en Analyse Mathématique (Lycée)
+
+Ce programme intensif sur deux semaines est conçu pour consolider vos bases en analyse (fonctions, suites, limites et dérivation) afin de remonter votre moyenne et aborder sereinement les évaluations du lycée.
+
+## 📊 Bilan général et suivi du cours
+
+Ce tableau de bord vous permet de planifier votre travail, de suivre vos séances et de visualiser vos progrès à travers les notes obtenues aux QCM.
+
+```ARRAY: Planning
+| Séance | Date | Thème | Objectif | Statut |
+| :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-01 | Généralités sur les fonctions | Maîtriser les ensembles de définition et les variations | À faire |
+| Séance 2 | 2026-07-03 | Dérivation et variations | Calculer une dérivée et dresser un tableau de variations | À faire |
+| Séance 3 | 2026-07-06 | Limites de fonctions | Déterminer des limites et identifier les asymptotes | À faire |
+| Séance 4 | 2026-07-08 | Suites numériques | Maîtriser les suites arithmétiques et géométriques | À faire |
+| Séance 5 | 2026-07-10 | Limites de suites | Déterminer la convergence d'une suite | À faire |
+| Séance 6 | 2026-07-13 | Synthèse et étude de fonctions | Combiner fonctions et suites dans un problème type bac | À faire |
+```
+
+```AGENDA: Seances
+2026-07-01 | 14:00-16:00 | Séance 1 — 2026-07-01 : Généralités sur les fonctions | Étude des ensembles de définition, des variations et lectures graphiques.
+2026-07-03 | 14:00-16:00 | Séance 2 — 2026-07-03 : Dérivation et sens de variation | Calcul de dérivées usuelles et application à l'étude des variations.
+2026-07-06 | 14:00-16:00 | Séance 3 — 2026-07-06 : Limites de fonctions | Limites infinies, asymptotes et formes indéterminées.
+2026-07-08 | 14:00-16:00 | Séance 4 — 2026-07-08 : Suites numériques - Généralités | Suites arithmétiques et géométriques, formules de récurrence et sommes.
+2026-07-10 | 14:00-16:00 | Séance 5 — 2026-07-10 : Limites de suites et convergence | Théorèmes de comparaison, convergence des suites géométriques.
+2026-07-13 | 14:00-16:00 | Séance 6 — 2026-07-13 : Synthèse et études de fonctions avec suites | Problèmes de synthèse mêlant suites, fonctions et modélisation.
+```
+
+```ARRAY: Notes
+| Séance | Date | Note | Max | % | Moyenne |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| Séance 1 | 2026-07-01 | | 20 | =C2/D2*100 | =AVG(C2:C7) |
+| Séance 2 | 2026-07-03 | | 20 | =C3/D3*100 | |
+| Séance 3 | 2026-07-06 | | 20 | =C4/D4*100 | |
+| Séance 4 | 2026-07-08 | | 20 | =C5/D5*100 | |
+| Séance 5 | 2026-07-10 | | 20 | =C6/D6*100 | |
+| Séance 6 | 2026-07-13 | | 20 | =C7/D7*100 | |
+```
+
+```CHART: Progression
+source: Notes | col: Note
+```
+
+```TRELLO: Avancement
+### À faire
+- [ ] Séance 1 : Généralités sur les fonctions `[medium]`
+  Revoir les notions d'ensemble de définition et de variations.
+- [ ] Séance 2 : Dérivation et variations `[high]`
+  Maîtriser les formules des dérivées usuelles.
+- [ ] Séance 3 : Limites de fonctions `[high]`
+  Comprendre le concept de limite et d'asymptote.
+- [ ] Séance 4 : Suites numériques - Généralités `[medium]`
+  Différencier suites arithmétiques et géométriques.
+- [ ] Séance 5 : Limites de suites et convergence `[high]`
+  Appliquer les théorèmes de comparaison.
+- [ ] Séance 6 : Synthèse et études de fonctions avec suites `[critical]`
+  S'entraîner sur un problème de synthèse.
+### En cours
+### Terminé
+```
+
+---
+
+## Séance 1 — 2026-07-01 : Généralités sur les fonctions
+
+### Contenu du cours
+1. Ensemble de définition : L'ensemble de définition d'une fonction f est l'ensemble des réels x pour lesquels f(x) existe. Deux cas classiques au lycée :
+   - Le dénominateur d'une fraction ne doit pas être nul.
+   - L'expression sous une racine carrée doit être supérieure ou égale à zéro.
+2. Image et antécédents :
+   - L'image de a par f est le nombre f(a).
+   - Les antécédents de b par f sont les solutions de l'équation f(x) = b.
+3. Variations :
+   - Une fonction f est croissante sur un intervalle I si, pour tous réels u et v de I tels que u <= v, on a f(u) <= f(v) (l'ordre est conservé).
+   - Une fonction f est décroissante sur I si, pour tous réels u et v de I tels que u <= v, on a f(u) >= f(v) (l'ordre est inversé).
+
+### QCM Séance 1
+
+```FORM: QCMS1
+* **Question 1 : Quel est l'ensemble de définition de la fonction f définie par f(x) = 1 / (x - 3) ?**
+  * ( ) R tout entier
+  * ( ) R privé de 3
+  * ( ) R privé de -3
+* **Question 2 : Si f(x) = x^2 - 4, quels sont les antécédents de 0 par f ?**
+  * ( ) Uniquement 2
+  * ( ) Uniquement -2
+  * [ ] 2
+  * [ ] -2
+* **Question 3 : Si pour u < v on a f(u) > f(v) sur un intervalle I, alors la fonction f est :**
+  * ( ) Croissante sur I
+  * ( ) Décroissante sur I
+  * ( ) Constante sur I
+```
+
+---
+
+## Séance 2 — 2026-07-03 : Dérivation et sens de variation
+
+### Contenu du cours
+1. Nombre dérivé : Le nombre dérivé d'une fonction f en un point a, noté f'(a), est la limite quand h tend vers 0 du taux d'accroissement [f(a+h) - f(a)] / h. Graphiquement, il correspond au coefficient directeur de la tangente à la courbe de f au point d'abscisse a. L'équation de la tangente est y = f'(a)(x - a) + f(a).
+2. Dérivées usuelles :
+   - La dérivée de x^n est n*x^(n-1) (pour n entier naturel).
+   - La dérivée de 1/x est -1/x^2.
+   - La dérivée de racine(x) est 1/(2*racine(x)).
+3. Lien dérivée-variation : Soit f une fonction dérivable sur un intervalle I.
+   - Si pour tout x de I, f'(x) > 0, alors f est strictement croissante sur I.
+   - Si pour tout x de I, f'(x) < 0, alors f est strictement décroissante sur I.
+   - Si pour tout x de I, f'(x) = 0, alors f est constante sur I.
+
+### QCM Séance 2
+
+```FORM: QCMS2
+* **Question 1 : Quelle est la dérivée de la fonction f(x) = 3x^2 - 5x + 2 ?**
+  * ( ) f'(x) = 6x
+  * ( ) f'(x) = 6x - 5
+  * ( ) f'(x) = 3x - 5
+* **Question 2 : Si f'(x) est négative sur l'intervalle [-2 ; 5], alors la fonction f est :**
+  * ( ) Croissante sur cet intervalle
+  * ( ) Décroissante sur cet intervalle
+  * ( ) Négative sur cet intervalle
+* **Question 3 : Quelle est l'équation de la tangente à la courbe de f au point d'abscisse a sachant que f(a) = 3 et f'(a) = -1 ?**
+  * ( ) y = -x + a + 3
+  * ( ) y = -(x - a) + 3
+  * ( ) y = -x - 3
+```
+
+---
+
+## Séance 3 — 2026-07-06 : Limites de fonctions
+
+### Contenu du cours
+1. Limites en l'infini :
+   - Si f(x) devient aussi grand que l'on veut quand x tend vers +infini, on dit que la limite de f en +infini est +infini.
+   - Si f(x) se rapproche d'un réel L quand x tend vers +infini, alors la droite d'équation y = L est une asymptote horizontale à la courbe en +infini.
+2. Limites en un point réel :
+   - Si f(x) devient infiniment grand (positif ou négatif) quand x se rapproche d'un réel a, alors la droite d'équation x = a est une asymptote verticale.
+3. Formes indéterminées (FI) : Les quatre formes indéterminées classiques sont "+infini - infini", "0 * infini", "0 / 0" et "infini / infini". Pour lever une indétermination en l'infini (pour un polynôme ou une fraction rationnelle), on factorise par le terme de plus haut degré.
+
+### QCM Séance 3
+
+```FORM: QCMS3
+* **Question 1 : Quelle est la limite en +infini de f(x) = (2x + 1) / (x - 3) ?**
+  * ( ) +infini
+  * ( ) 2
+  * ( ) 0
+* **Question 2 : Si la limite de f(x) en +infini est -4, quelle est l'équation de l'asymptote associée ?**
+  * ( ) x = -4
+  * ( ) y = -4
+  * ( ) y = -4x
+* **Question 3 : Quelle forme est une forme indéterminée ?**
+  * ( ) +infini + infini
+  * ( ) +infini * infini
+  * ( ) +infini - infini
+```
+
+---
+
+## Séance 4 — 2026-07-08 : Suites numériques - Généralités
+
+### Contenu du cours
+1. Définitions : Une suite u est une fonction définie sur l'ensemble des entiers naturels N. On peut définir une suite par une formule explicite (u_n = f(n)) ou par une relation de récurrence (u_{n+1} = f(u_n) avec u_0 donné).
+2. Suites arithmétiques : Une suite u est arithmétique s'il existe un réel r (la raison) tel que pour tout n, u_{n+1} = u_n + r.
+   - Terme général : u_n = u_0 + n*r.
+   - Somme des premiers termes : S = (nombre de termes) * (premier terme + dernier terme) / 2.
+3. Suites géométriques : Une suite u est géométrique s'il existe un réel q (la raison) tel que pour tout n, u_{n+1} = q * u_n.
+   - Terme général : u_n = u_0 * q^n.
+   - Somme des premiers termes (si q != 1) : S = u_0 * (1 - q^N) / (1 - q) (où N est le nombre de termes).
+
+### QCM Séance 4
+
+```FORM: QCMS4
+* **Question 1 : Soit u une suite arithmétique de premier terme u_0 = 3 et de raison r = 2. Que vaut u_5 ?**
+  * ( ) 10
+  * ( ) 13
+  * ( ) 15
+* **Question 2 : Soit v une suite géométrique de premier terme v_0 = 2 et de raison q = 3. Que vaut v_3 ?**
+  * ( ) 18
+  * ( ) 54
+  * ( ) 162
+* **Question 3 : La formule u_{n+1} = 2 * u_n - 3 définit une suite par :**
+  * ( ) Explicite
+  * ( ) Récurrence
+  * ( ) Somme
+```
+
+---
+
+## Séance 5 — 2026-07-10 : Limites de suites et convergence
+
+### Contenu du cours
+1. Convergence : Une suite u converge vers un réel L si les termes u_n deviennent aussi proches de L que l'on veut pour n assez grand. Si une suite ne converge pas, elle est dite divergente (elle peut tendre vers l'infini ou ne pas avoir de limite).
+2. Théorèmes de comparaison et des gendarmes :
+   - Si u_n <= v_n pour tout n, et si u_n tend vers +infini, alors v_n tend vers +infini.
+   - Théorème des gendarmes : Si u_n <= v_n <= w_n pour tout n, et si u_n et w_n convergent vers la même limite L, alors v_n converge aussi vers L.
+3. Limite d'une suite géométrique (q^n) :
+   - Si q > 1, la limite de q^n est +infini.
+   - Si -1 < q < 1, la limite de q^n est 0 (la suite converge).
+   - Si q <= -1, la suite q^n n'a pas de limite.
+
+### QCM Séance 5
+
+```FORM: QCMS5
+* **Question 1 : Quelle est la limite de la suite u_n = (0,5)^n quand n tend vers +infini ?**
+  * ( ) +infini
+  * ( ) 0
+  * ( ) 0,5
+* **Question 2 : Si pour tout n, u_n >= 2n^2 + 3, quelle est la limite de u_n ?**
+  * ( ) +infini
+  * ( ) 0
+  * ( ) On ne peut pas savoir
+* **Question 3 : Si une suite tend vers -infini, elle est :**
+  * ( ) Convergente
+  * ( ) Divergente
+  * ( ) Constante
+```
+
+---
+
+## Séance 6 — 2026-07-13 : Synthèse et études de fonctions avec suites
+
+### Contenu du cours
+1. Modélisation et suites mixtes : Dans de nombreux problèmes, on utilise une suite auxiliaire v_n = u_n - L pour étudier une suite u_n définie par récurrence. L'objectif est souvent de prouver que v_n est géométrique, d'en déduire son expression explicite, puis celle de u_n.
+2. Étude de fonction associée : Pour étudier le comportement d'une suite définie par u_{n+1} = f(u_n), on commence souvent par étudier les variations et les limites de la fonction f sur un intervalle donné.
+3. Théorème de la limite monotone : Toute suite croissante et majorée converge. Toute suite décroissante et minorée converge.
+
+### QCM Séance 6
+
+```FORM: QCMS6
+* **Question 1 : Si v_n = u_n - 4 est une suite géométrique de raison 0,8 et v_0 = 10, quelle est l'expression de u_n ?**
+  * ( ) u_n = 10 * 0,8^n - 4
+  * ( ) u_n = 10 * 0,8^n + 4
+  * ( ) u_n = 4 * 0,8^n + 10
+* **Question 2 : Si une suite u est décroissante et minorée par 2, alors :**
+  * ( ) Elle converge vers 2
+  * ( ) Elle converge vers une limite supérieure ou égale à 2
+  * ( ) Elle diverge vers -infini
+* **Question 3 : Si u_{n+1} = f(u_n) et f est croissante, et si u_1 > u_0, alors la suite u est :**
+  * ( ) Croissante
+  * ( ) Décroissante
+  * ( ) Non monotone
+```

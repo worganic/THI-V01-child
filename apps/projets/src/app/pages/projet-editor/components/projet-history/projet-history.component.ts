@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, injec
 import { CommonModule } from '@angular/common';
 import { ProjetCollabService, CollabHistoryEntry } from '@worganic/portail-core/data-access';
 import { AuthService, WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
+import { ProjectFilesService, ContentVersionMeta } from '@worganic/portail-core/data-access';
 
 export interface DisplayHistoryEntry extends CollabHistoryEntry {
   pendingState?: 'editing' | 'saving';
@@ -23,6 +24,9 @@ interface HistoryGroup {
 export class ProjetHistoryComponent implements OnChanges {
   @Input() projetId: string | null = null;
   @Input() activeIds: Set<string> | null = null;
+  // Fichier de contenu principal (contenu.md) de la section active — alimente le groupe
+  // "Versions de cette section" (navigation des checkpoints BDD immuables).
+  @Input() activeFileId: string | null = null;
   @Output() entryClick = new EventEmitter<CollabHistoryEntry>();
   // Émis après une annulation réussie → le parent recharge l'éditeur avec le contenu restauré
   @Output() restored = new EventEmitter<WoRestoredContent>();
@@ -30,7 +34,81 @@ export class ProjetHistoryComponent implements OnChanges {
   readonly collab = inject(ProjetCollabService);
   readonly auth = inject(AuthService);
   readonly woHistory = inject(WoActionHistoryService);
+  private readonly projectFilesService = inject(ProjectFilesService);
   loadingEntryId: string | null = null;
+
+  // ── Versions de contenu (checkpoints BDD immuables) ─────────────────────
+  readonly versions = signal<ContentVersionMeta[]>([]);
+  readonly versionsLoading = signal(false);
+  readonly versionsExpanded = signal(false);
+  readonly restoringVersionId = signal<string | null>(null);
+
+  private static readonly ORIGIN_LABELS: Record<string, string> = {
+    checkpoint: 'Sauvegarde', publish: 'Publication', restore: 'Restauration',
+    merge: 'Fusion de conflit', 'conflict-mine': 'Tentative en conflit',
+    'migration-bootstrap': 'Version initiale', pull: 'Synchronisation Git'
+  };
+
+  originLabel(origin: string): string {
+    return ProjetHistoryComponent.ORIGIN_LABELS[origin] || origin;
+  }
+
+  async loadVersions() {
+    if (!this.projetId || !this.activeFileId) { this.versions.set([]); return; }
+    this.versionsLoading.set(true);
+    try {
+      const res = await this.projectFilesService.getVersions(this.projetId, this.activeFileId, 30, 0);
+      this.versions.set(res.versions);
+    } catch (e) {
+      console.warn('[History] loadVersions error:', e);
+      this.versions.set([]);
+    } finally {
+      this.versionsLoading.set(false);
+    }
+  }
+
+  async onVersionClick(v: ContentVersionMeta) {
+    if (!this.projetId || !this.activeFileId) return;
+    this.loadingEntryId = v.version_id;
+    try {
+      const full = await this.projectFilesService.getVersionContent(this.projetId, this.activeFileId, v.version_id);
+      let beforeContent: string | undefined;
+      if (v.base_version_id) {
+        try {
+          const base = await this.projectFilesService.getVersionContent(this.projetId, this.activeFileId, v.base_version_id);
+          beforeContent = base.content;
+        } catch { /* version de base indisponible (ex: migration-bootstrap) */ }
+      }
+      const entry: CollabHistoryEntry = {
+        id: `version-${v.version_id}`, timestamp: v.created_at, section: 'projets/contenu',
+        actionType: 'update', label: this.originLabel(v.origin), entityType: 'content',
+        entityId: this.activeFileId, entityLabel: '', userId: v.author_id, username: v.author_name,
+        undone: false, undoable: false,
+        beforeState: { content: beforeContent },
+        afterState: { content: full.content }
+      };
+      this.entryClick.emit(entry);
+    } catch (e) {
+      console.warn('[History] onVersionClick error:', e);
+    } finally {
+      this.loadingEntryId = null;
+    }
+  }
+
+  async restoreVersionClick(v: ContentVersionMeta, event: Event) {
+    event.stopPropagation();
+    if (!this.projetId || !this.activeFileId || this.restoringVersionId()) return;
+    this.restoringVersionId.set(v.version_id);
+    try {
+      const res = await this.projectFilesService.restoreVersion(this.projetId, this.activeFileId, v.version_id);
+      this.restored.emit({ nodeId: this.activeFileId, folderId: null, content: res.content });
+      await this.loadVersions();
+    } catch (e) {
+      console.warn('[History] restoreVersionClick error:', e);
+    } finally {
+      this.restoringVersionId.set(null);
+    }
+  }
 
   // Undo
   readonly undoingId = signal<string | null>(null);
@@ -127,6 +205,9 @@ export class ProjetHistoryComponent implements OnChanges {
     }
     if (changes['activeIds']) {
       this._activeIds.set(this.activeIds);
+    }
+    if (changes['activeFileId'] || (changes['projetId'] && this.projetId)) {
+      this.loadVersions();
     }
   }
 

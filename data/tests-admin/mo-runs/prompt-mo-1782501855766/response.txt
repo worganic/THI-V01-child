@@ -1,0 +1,44 @@
+* **Niveau scolaire de l'élève :**
+  * ( ) Primaire (CP à CM2)
+  * ( ) Collège (6ème à 3ème)
+  * ( ) Lycée (2nde à Terminale)
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+
+* **Matière ou branche des mathématiques à travailler :**
+  * [ ] Algèbre et Analyse (fonctions, équations)
+  * [ ] Géométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Soutien scolaire global en mathématiques
+  * [ ] Autre : ______
+
+* **Durée totale du projet et date de début souhaitée :**
+  * ( ) Court terme / Intensif (1 à 4 semaines)
+  * ( ) Moyen terme (1 à 3 mois)
+  * ( ) Long terme (toute l'année scolaire)
+  * ( ) Autre (préciser la durée et la date de début) : ______
+
+* **Fréquence et durée des séances :**
+  * ( ) 1 séance par semaine (1h)
+  * ( ) 2 à 3 séances par semaine (1h par séance)
+  * ( ) Rythme quotidien autonome (plan de travail)
+  * ( ) Autre : ______
+
+* **Niveau de départ et objectif mesurable à atteindre :**
+  * [ ] Niveau très fragile (objectif : acquérir la moyenne)
+  * [ ] Niveau moyen (objectif : consolider les bases et atteindre 12-14/20)
+  * [ ] Bon niveau (objectif : excellence, préparation examen/concours)
+  * [ ] Autre : ______
+
+* **Modalités d'évaluation souhaitées :**
+  * [ ] Notes sur 20
+  * [ ] Questionnaires à choix multiples (QCM)
+  * [ ] Exercices pratiques et résolutions de problèmes
+  * [ ] Auto-évaluation guidée
+  * [ ] Autre : ______
+
+* **Points prioritaires ou difficultés connues à travailler en priorité :**
+  * [ ] Mémorisation et compréhension des notions de cours
+  * [ ] Rigueur de rédaction et méthode
+  * [ ] Autonomie face à un problème inédit
+  * [ ] Autre : ______

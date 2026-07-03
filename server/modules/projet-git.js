@@ -23,6 +23,18 @@ const DEFAULT_AUTHOR_NAME = 'Worganic';
 const DEFAULT_AUTHOR_EMAIL = 'worganic@local';
 const EXEC_TIMEOUT_MS = 30000;
 
+// Mutex par projet (projetPath) : sérialise toute opération qui touche le
+// dossier de travail partagé (publishContent, commitOnMain, pull/push) pour
+// qu'aucune de ces opérations ne s'exécute en parallèle sur le même projet.
+const projectLocks = new Map();
+
+function withProjectGitLock(projetPath, fn) {
+    const tail = projectLocks.get(projetPath) || Promise.resolve();
+    const result = tail.then(fn, fn);
+    projectLocks.set(projetPath, result.catch(() => {}));
+    return result;
+}
+
 function log(msg, ...args) {
     console.log(`[ProjetGit] ${msg}`, ...args);
 }
@@ -139,6 +151,43 @@ function getCurrentBranch(projetPath) {
 function branchExists(projetPath, branchName) {
     const r = execGit(`show-ref --verify --quiet refs/heads/${branchName}`, projetPath);
     return r.ok;
+}
+
+/** Liste les branches locales `wip/*` (utilisé par la migration one-shot au démarrage). */
+function listWipBranches(projetPath) {
+    if (!isRepo(projetPath)) return [];
+    const r = execGit(`for-each-ref --format=%(refname:short) refs/heads/wip`, projetPath);
+    if (!r.ok || !r.stdout) return [];
+    return r.stdout.split('\n').map(s => s.trim()).filter(Boolean);
+}
+
+/**
+ * Migration one-shot : le contenu de référence vit désormais en BDD, les
+ * branches wip/* d'une éventuelle session en cours au moment de la mise à
+ * jour n'ont plus d'utilité — checkout main + suppression de ces branches.
+ * Le contenu non publié qu'elles contenaient n'était par définition pas
+ * confirmé (jamais mergé sur main).
+ */
+function cleanupOrphanWipBranches(projetPath) {
+    const branches = listWipBranches(projetPath);
+    if (!branches.length) return { success: true, cleaned: 0 };
+
+    const cur = getCurrentBranch(projetPath);
+    if (cur !== 'main') {
+        const co = execGit('checkout main', projetPath);
+        if (!co.ok) {
+            warn('cleanupOrphanWipBranches: checkout main failed:', co.stderr);
+            return { success: false, error: co.stderr };
+        }
+    }
+    let cleaned = 0;
+    for (const branch of branches) {
+        const del = execGit(`branch -D "${branch}"`, projetPath);
+        if (del.ok) cleaned++;
+        else warn(`cleanupOrphanWipBranches: branch -D failed (${branch}):`, del.stderr);
+    }
+    if (cleaned) log(`cleanupOrphanWipBranches: ${cleaned} branche(s) wip supprimée(s) dans ${projetPath}`);
+    return { success: true, cleaned };
 }
 
 /**
@@ -296,7 +345,65 @@ function publishWip(projetPath, userId, nodeId, opts = {}) {
 }
 
 /**
+ * Publie le contenu de référence (BDD) d'un fichier : commit direct sur main,
+ * sans checkout de branche wip (le dossier de travail est partagé entre tous
+ * les utilisateurs concurrents du projet — plus aucune bascule de branche
+ * pendant l'édition live). Push si un remote est configuré.
+ */
+function publishContent(projetPath, { filePath, content, message, username } = {}) {
+    return withProjectGitLock(projetPath, () => {
+        const repoOk = ensureProjetRepo(projetPath);
+        if (!repoOk.success) return repoOk;
+
+        const cur = getCurrentBranch(projetPath);
+        if (cur !== 'main') {
+            const co = execGit('checkout main', projetPath);
+            if (!co.ok) {
+                warn('publishContent: checkout main failed:', co.stderr);
+                return { success: false, error: co.stderr };
+            }
+        }
+
+        // Matérialise le contenu de référence (BDD) sur disque juste avant de committer.
+        if (filePath) {
+            try {
+                const full = path.isAbsolute(filePath) ? filePath : path.join(projetPath, filePath);
+                fs.mkdirSync(path.dirname(full), { recursive: true });
+                fs.writeFileSync(full, content ?? '', 'utf8');
+            } catch (e) {
+                warn('publishContent: écriture disque échouée:', e.message);
+            }
+        }
+
+        const commitResult = commitFile(projetPath, filePath, message || `pub: ${username || 'user'}`);
+        if (!commitResult.success && !commitResult.empty) {
+            return { success: false, error: commitResult.error };
+        }
+
+        let pushedToRemote = false;
+        let pushError = null;
+        if (hasRemote(projetPath)) {
+            const pushed = pushMain(projetPath);
+            pushedToRemote = !!pushed.success;
+            if (!pushed.success) pushError = pushed.error || 'push failed';
+        }
+
+        log(`publishContent ${pushedToRemote ? 'OK' : (pushError ? 'push-failed' : 'local-only')}: ${filePath || '(structure)'}`);
+
+        return {
+            success: !pushError,
+            localSuccess: true,
+            pushFailed: !!pushError,
+            pushError: pushError || null,
+            commitHash: commitResult.hash || null,
+            pushedToRemote
+        };
+    });
+}
+
+/**
  * Annule la branche wip sans merge : checkout main + branch -D.
+ * @deprecated plus appelée depuis les routes live — conservée pour compatibilité.
  */
 function discardWip(projetPath, userId, nodeId) {
     if (!isRepo(projetPath)) return { success: false, error: 'not a repo' };
@@ -372,33 +479,25 @@ function propagateLatestCommitToMain(projetPath) {
 
 /**
  * Commit direct sur main (changements de structure : create folder, rename, etc.)
- * Si on est sur une branche wip, commit d'abord sur wip puis propage à main + push.
+ * Le dossier de travail n'est plus jamais basculé sur une branche wip pendant
+ * l'édition live : on est donc toujours censé être sur main. Garde-fou conservé
+ * par sécurité si un ancien processus avait laissé une branche wip active.
  */
 function commitOnMain(projetPath, message, filePath = null) {
-    if (!isRepo(projetPath)) return { success: false, error: 'not a repo' };
-    const cur = getCurrentBranch(projetPath);
-    if (cur && cur !== 'main') {
-        // Commit sur wip pour préserver l'historique de la branche de travail
-        const wipResult = commitFile(projetPath, filePath, `struct: ${message}`);
-        if (!wipResult.success && !wipResult.empty) {
-            warn(`commitOnMain: wip commit failed:`, wipResult.error);
-            return wipResult;
+    return withProjectGitLock(projetPath, () => {
+        if (!isRepo(projetPath)) return { success: false, error: 'not a repo' };
+        const cur = getCurrentBranch(projetPath);
+        if (cur && cur !== 'main') {
+            const co = execGit('checkout main', projetPath);
+            if (!co.ok) warn('commitOnMain: checkout main failed:', co.stderr);
         }
-        // Propager immédiatement à main + push (si commit non vide)
-        if (wipResult.success && !wipResult.empty) {
-            const prop = propagateLatestCommitToMain(projetPath);
-            if (!prop.success) warn('commitOnMain: propagation failed:', prop.error);
-            return { ...wipResult, pushedToRemote: prop.pushed === true };
+        const result = commitFile(projetPath, filePath, `struct: ${message}`);
+        if (result.success && !result.empty && hasRemote(projetPath)) {
+            const pushed = pushMain(projetPath);
+            if (!pushed.success) warn('commitOnMain: auto-push failed:', pushed.error);
         }
-        return wipResult;
-    }
-    const result = commitFile(projetPath, filePath, `struct: ${message}`);
-    // Auto-push si remote configuré et qu'un commit a bien été créé (pas empty)
-    if (result.success && !result.empty && hasRemote(projetPath)) {
-        const pushed = pushMain(projetPath);
-        if (!pushed.success) warn('commitOnMain: auto-push failed:', pushed.error);
-    }
-    return result;
+        return result;
+    });
 }
 
 function hasRemote(projetPath) {
@@ -552,10 +651,11 @@ module.exports = {
     ensureProjetRepo,
     getCurrentBranch,
     branchExists,
-    createWipBranch,
+    createWipBranch, // @deprecated non appelée depuis les routes live, conservée pour compatibilité
     commitFile,
-    publishWip,
-    discardWip,
+    publishContent,
+    publishWip, // @deprecated remplacée par publishContent
+    discardWip, // @deprecated non appelée depuis les routes live, conservée pour compatibilité
     commitOnMain,
     propagateLatestCommitToMain,
     pushMain,
@@ -563,5 +663,7 @@ module.exports = {
     hasRemote,
     getRemoteUrl,
     setRemote,
-    getSyncStatus
+    getSyncStatus,
+    listWipBranches,
+    cleanupOrphanWipBranches
 };

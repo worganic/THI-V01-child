@@ -1,0 +1,35 @@
+* **Horizon temporel et date de démarrage du projet :**
+  * ( ) Démarrage immédiat pour une livraison à très court terme (moins d'une semaine)
+  * ( ) Démarrage dans le mois pour un horizon à moyen terme (1 à 3 mois)
+  * ( ) Démarrage flexible ou à long terme (plus de 3 mois)
+
+* **Étapes ou jalons clés pour la mise en place de cet atelier :**
+  * [ ] Spécification des règles d'écriture et du timing (Préparation)
+  * [ ] Développement de la zone de saisie du texte brut (Action)
+  * [ ] Implémentation du moteur d'analyse et de qualification sémantique (Récolte)
+  * [ ] Formatage et génération du rapport final en Markdown (Synthèse)
+  * [ ] Autre : ______
+
+* **Contraintes principales pour la réalisation de l'outil :**
+  * [ ] Contraintes de ressources (développement par une seule personne)
+  * [ ] Contraintes techniques (compatibilité avec des outils de Mind Mapping spécifiques)
+  * [ ] Contraintes de confidentialité sur les textes bruts saisis
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables pour l'atelier P.A.R.S :**
+  * [ ] Taux d'extraction correcte des unités de sens (supérieur à 90%)
+  * [ ] Fluidité de l'expérience utilisateur et respect strict des durées de session
+  * [ ] Qualité esthétique et clarté du document Markdown généré en sortie
+  * [ ] Autre : ______
+
+* **Risques ou blocages majeurs anticipés :**
+  * [ ] Manque d'inspiration ou abandon de l'utilisateur durant les 15 minutes d'écriture
+  * [ ] Difficultés à catégoriser automatiquement les émotions, frustrations et idées du texte brut
+  * [ ] Perte de données en cas d'interruption accidentelle de la session
+  * [ ] Autre : ______
+
+* **Format attendu pour le livrable de l'atelier P.A.R.S :**
+  * ( ) Une application web interactive et responsive
+  * ( ) Un document d'accompagnement textuel (guide et fiches de travail)
+  * ( ) Un script ou outil en ligne de commande
+  * ( ) Autre : ______

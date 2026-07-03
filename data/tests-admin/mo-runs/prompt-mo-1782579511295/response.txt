@@ -1,0 +1,18 @@
+===NOTE=== 0/3
+===CORRECTION===
+* **Question 1** : ❌ Fausse.
+  * La réponse de l'élève était **7 cm**.
+  * La bonne réponse est **5 cm**.
+  * **Explication** : Tu as probablement additionné directement les longueurs 3 cm et 4 cm. Or, d'après le théorème de Pythagore, il faut calculer la somme des carrés des côtés de l'angle droit : BC² = AB² + AC² = 3² + 4² = 9 + 16 = 25. L'hypoténuse BC mesure donc la racine carrée de 25, soit 5 cm.
+
+* **Question 2** : ❌ Fausse.
+  * La réponse de l'élève était **DF / EF**.
+  * La bonne response est **DE / EF**.
+  * **Explication** : Le rapport DF / EF correspond au sinus de l'angle E (côté opposé / hypoténuse). Pour le cosinus, on utilise le côté adjacent divisé par l'hypoténuse, ce qui donne DE / EF.
+
+* **Question 3** : ❌ Fausse.
+  * La réponse de l'élève était **Non**.
+  * La bonne réponse est **Oui**.
+  * **Explication** : En testant l'égalité de Pythagore, on constate que le carré du plus grand côté est HI² = 10² = 100, et la somme des carrés des deux autres côtés est GH² + GI² = 6² + 8² = 36 + 64 = 100. L'égalité étant vérifiée, le triangle est donc bien rectangle en G d'après la réciproque du théorème.
+
+Ne te décourage pas ! Prends le temps de bien revoir le théorème de Pythagore et les définitions de trigonométrie (notamment la distinction entre côté adjacent et opposé), et tu réussiras sans problème la prochaine fois.

@@ -1,0 +1,36 @@
+* **Niveau scolaire de l'élève :**
+  * ( ) Primaire
+  * ( ) Collège
+  * ( ) Lycée
+  * ( ) Enseignement supérieur
+  * ( ) Autre : ______
+* **Thématiques prioritaires à travailler en mathématiques :**
+  * [ ] Algèbre et Calcul littéral
+  * [ ] Géométrie et Trigonométrie
+  * [ ] Probabilités et Statistiques
+  * [ ] Analyse et Fonctions
+  * [ ] Autre : ______
+* **Durée de l'accompagnement et date de début :**
+  * ( ) Stage intensif (1 à 2 semaines)
+  * ( ) Accompagnement trimestriel
+  * ( ) Accompagnement annuel
+  * ( ) Autre : ______
+* **Fréquence souhaitée des séances :**
+  * ( ) 1 séance par semaine
+  * ( ) 2 séances par semaine
+  * ( ) Plus de 2 séances par semaine
+  * ( ) Autre : ______
+* **Niveau de départ et objectif mesurable visé :**
+  * ( ) Niveau en difficulté (moyenne < 8/20) vers un objectif de passage (10/20)
+  * ( ) Niveau moyen (10-12/20) vers un objectif d'amélioration (14-16/20)
+  * ( ) Préparation ciblée pour un examen (Brevet, Bac, Concours)
+  * ( ) Autre : ______
+* **Modalités d'évaluation préférées :**
+  * [ ] Notes sur 20 (évaluation sommative)
+  * [ ] QCM et quiz rapides (évaluation formative)
+  * [ ] Auto-évaluation guidée
+  * [ ] Autre : ______
+* **Format et structure attendus pour le plan de travail, cours et exercices :**
+  * [ ] Plan de travail hebdomadaire avec fiches de cours synthétiques et exercices corrigés
+  * [ ] Parcours personnalisé par compétences avec cours détaillés et exercices de niveaux progressifs
+  * [ ] Autre : ______

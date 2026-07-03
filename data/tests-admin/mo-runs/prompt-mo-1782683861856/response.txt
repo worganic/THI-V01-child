@@ -1,0 +1,28 @@
+* **Format attendu pour le livrable final :**
+  * ( ) Un document texte explicatif (Markdown / PDF) décrivant le fonctionnement de l'atelier
+  * ( ) Un formulaire interactif ou page web (HTML/JS) permettant de réaliser l'atelier pas à pas
+  * ( ) Un prompt système optimisé pour un assistant IA afin qu'il anime l'atelier
+  * ( ) Autre : ______
+
+* **Horizon temporel et date de démarrage prévus pour l'atelier :**
+  * ( ) Démarrage immédiat (dès la livraison du document)
+  * ( ) Démarrage à court terme (dans les prochaines semaines)
+  * ( ) Autre : ______
+
+* **Contraintes principales de réalisation (technique, ressources) :**
+  * [ ] Aucune contrainte technique (simple document texte ou prompt standard)
+  * [ ] Intégration dans un outil spécifique (ex: Obsidian, Notion, Miro)
+  * [ ] Limitation technique (uniquement du Markdown statique)
+  * [ ] Autre : ______
+
+* **Critères de succès mesurables pour cette session d'idéation :**
+  * [ ] Nombre minimal d'unités de sens extraites (ex: au moins 10 idées/problèmes)
+  * [ ] Exhaustivité de la récolte (toutes les phrases du texte brut doivent être analysées)
+  * [ ] Clarté et structure du rapport Markdown final généré
+  * [ ] Autre : ______
+
+* **Risques ou blocages anticipés lors de la session d'écriture :**
+  * [ ] Le syndrome de la page blanche (difficulté à lancer le flux d'écriture)
+  * [ ] Dépassement du temps imparti (gestion du minuteur)
+  * [ ] Analyse trop complexe ou erronée des unités de sens par le système
+  * [ ] Autre : ______

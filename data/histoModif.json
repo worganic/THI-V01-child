@@ -1,6 +1,156 @@
 {
   "modifications": [
     {
+      "id": "mod-519",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "config",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "portail"
+      ],
+      "features": "portail:config,portail:admin-projets,server:ftp-service",
+      "title": "Option admin pour mettre en stand-by la synchronisation FTP des projets",
+      "description": "À la demande de l'utilisateur, le système de partage de fichiers via FTP est mis en stand-by : ajout d'un réglage global (table MySQL platform_settings, clé ftpSyncEnabled, désactivé par défaut) et d'un toggle réservé aux administrateurs dans la page Config (visible via auth.currentUser()?.role==='admin'). Gating centralisé côté serveur : ftpService.getBackupType()/getFtpConfig() traitent tout projet backup_type='ftp' comme sans sauvegarde configurée tant que le réglage global est désactivé (fallback git/local automatique, aucune donnée existante modifiée — réversible en réactivant le toggle). Toutes les routes qui dépendaient déjà de ces deux fonctions (PUT file, ftp-sync, ftp-sync-background, ensure-local, auto-sync) sont gated automatiquement ; le seul point qui lisait backup_type directement (initial-backup-push) a reçu une vérification explicite avec message clair. Côté Admin › Projets, l'option FTP du select de sauvegarde est désactivée et un avertissement ambre s'affiche si un projet existant est configuré en FTP pendant que le réglage global est éteint. Nouvelles routes GET/PUT /api/admin/platform-settings (lecture ouverte à tout user connecté pour permettre aux écrans de masquer l'option, écriture réservée aux admins).",
+      "files": [
+        "server/server-data.js",
+        "server/modules/ftp-service.js",
+        "libs/portail-core/data-access/src/lib/config.service.ts",
+        "apps/portail/src/app/pages/user/config/config.component.ts",
+        "apps/portail/src/app/pages/user/config/config.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-projets/admin-projets.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-projets/admin-projets.component.html",
+        "tests/fonctions/connecte/config/fonctions.md",
+        "tests/fonctions/connecte/admin/projets/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le système de partage de fichier ne me conviens pas et je voudrais le mettre en stand bye pour le moment. JE ne veux plus que le système enregistre et récupère les fichier via ftp, met une option dans l'admin pour activer ou non cette option. Les fichiers ne serviront que de sauvegarde local, tous les enregistrements et partage ce paseront via la bdd. met en place toutes ses options pour un objectif de stabilité.",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
+      "id": "mod-518",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
+      "features": "projets:editor-zone-code,projets:zone5-historique,server:collab,server:projet-git",
+      "title": "Sauvegarde collaborative : versions BDD immuables, fin des pertes de texte multi-user",
+      "description": "Refonte complète du système de sauvegarde de l'éditeur de projet suite à un signalement de perte de texte quand 2 utilisateurs travaillent sur le même document. Cause racine : data/projets/<id>/ était un seul dossier de travail git partagé par tous les utilisateurs, et verrouiller une section faisait un git checkout de branche wip sur ce dossier partagé, écrasant le contenu non commité d'un autre utilisateur éditant une autre section au même moment ; la détection de conflit existante (hash en mémoire process, jamais persistée) était par ailleurs ignorée par la plupart des chemins d'écriture. Nouvelle architecture : (1) nouvelle table MySQL projet_content_version (immuable, jamais UPDATE/DELETE) devient la source de vérité du contenu, avec checkpoint throttlé (45s ou moment significatif : blur, changement de section, publish) plutôt qu'une version par frappe ; (2) PUT /api/file-projects/:name/files/:id réécrit : écriture disque toujours en sauvegarde passive best-effort, détection de conflit réelle via transaction SELECT...FOR UPDATE + comparaison à la dernière version BDD (header x-base-version-id, remplace x-file-version en mémoire) ; (3) nouvelles routes GET .../versions, GET .../versions/:versionId, POST .../restore, POST .../resolve-conflict ; (4) verrou de section transformé en registre de présence non bloquant (upsert toujours, TTL 5min, heartbeat client ~20s) — 2 utilisateurs peuvent désormais éditer la même section en même temps, avec bannière d'alerte non bloquante au lieu d'un readonly total ; (5) découplage total de git de l'édition live : nouvelle fonction projetGit.publishContent() (commit direct sur main, mutex par projet, plus aucun checkout de branche wip), migration one-shot au boot qui nettoie les branches wip orphelines existantes ; (6) UI de fusion ligne à ligne réutilisant ProjetDiffComponent (labels configurables) pour résoudre un conflit ou via un nouveau bouton Synchro déclenché par SSE version_saved, sans attendre un 409 ; (7) zone Historique enrichie d'un groupe 'Versions de cette section' pour naviguer/restaurer les checkpoints BDD ; (8) nettoyage d'une route /api/wo-action-history dupliquée (dead code, Express ne matchant que la première définition) et fix undo pour qu'il détecte lui aussi un conflit réel avant d'écraser.",
+      "files": [
+        "server/server-data.js",
+        "server/modules/projet-git.js",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-diff/projet-diff.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-diff/projet-diff.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.html",
+        "apps/projets/src/app/pages/projet-editor/services/projet-ai-edit.service.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le système de sauvegarde dans le menu projet est encore instable, si un utilisateur ce connect et qu'il n'a pas certaine modification cela supprime ces données pour l'autre utilisateur, ce n'est pas normal, les textes ne doivent pas pouvoir disparaitre sans validation. 2 utilisateurs doivent pouvoir enregistré leur données sur le même document. Chaque données doit être enregistré dans la base de données sans pouvoir être effacer pour garder un historique. il faut pouvoir revenir en arrière dans la modification d'un texte (zone historique). Si 2 personnes travail sur le même document et la même section, une alerte doit être indiqué à l'utilisateur, en appuyant sur un bouton synchro cela devra mettre une interface permettant de choisir quel ligne, texte sera migré dans la version. Il faut donc pouvoir. Les textes doivent être sauvegardé dans les fichiers du dossier data/projets\\ mais uniquement en temps que sauvegarde, les fichiers ne doivent pas servir à la synchro juste de sauvegarde. On doit pouvoir travailler sur le même document à des moments identique. Propose moi des solutions afin d'obtenir un outils de gestion de document partageable et surtout stable.",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
+      "id": "mod-517",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail"
+      ],
+      "features": "portail:landing",
+      "title": "Fermeture des popups login/inscription uniquement via boutons explicites",
+      "description": "Sur la landing page non connectée, les popups Connexion et Inscription se fermaient au clic sur le backdrop (onOverlayClick) et à l'appui sur Échap (onKeydown sur le conteneur racine), ce qui contrevient à la règle du projet imposant une fermeture explicite (croix, Annuler ou validation). Suppression du binding (click)='onOverlayClick($event)' sur les deux .modal-overlay, suppression du binding (keydown)='onKeydown($event)' + tabindex sur .landing-root, et suppression des méthodes onOverlayClick/onKeydown désormais mortes dans landing.component.ts. Seule la croix ✕ (closeModals()) ferme les popups.",
+      "files": [
+        "apps/portail/src/app/pages/public/landing/landing.component.ts",
+        "apps/portail/src/app/pages/public/landing/landing.component.html",
+        "tests/fonctions/non-connecte/landing/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans la page d'accueil lorsque le popup de connexion est ouvert on ne doit pouvoir le fermer qu'avec les boutons (annuler/fermé ou se connecter) et pas en cliquant à coté du popup. Faire la même chose sur tous les popup de la page d'accueil non connecté",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
+      "id": "mod-516",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
+      "features": "projets:accueil,server:frank-projects",
+      "title": "Partage d'un projet (Mes Projets) avec un autre utilisateur",
+      "description": "Ajout d'une vraie fonctionnalité de partage sur le modèle de données actif 'Mes Projets' (table MySQL frank_projects, filtrée strictement par user_id) qui n'avait aucun mécanisme de partage jusqu'ici (l'ancienne route /api/projects/:id/share découverte précédemment appartenait à un modèle de données mort, plus utilisé par l'app). Nouvelle table frank_project_shares (project_id, user_id) créée au boot du serveur. Nouvelles routes : GET/POST /api/frank/projects/:id/shares (lister/ajouter par email) et DELETE /api/frank/projects/:id/shares/:userId. GET /api/frank/projects et GET /api/frank/projects/:id incluent désormais les projets partagés avec l'utilisateur (via frankUserHasAccess), avec le flag _sharedWithMe. PUT /api/frank/projects/:id autorise aussi les users partagés à éditer. Côté Angular : ProjectService (getShares/shareProject/unshareProject), bouton 'Partager' + popup (liste des partages, ajout par email, retrait) dans apps/projets/src/app/pages/projets, badge 'Partagé' sur les projets partagés avec moi.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/project.service.ts",
+        "apps/projets/src/app/pages/projets/projets.component.ts",
+        "apps/projets/src/app/pages/projets/projets.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l'application frankenstein comment je fait pour partager un projet (cours d'anglais) avec un autre user (blubsy) / lorsque je me connect sous blubsy je ne vois aucun projet alors que tu ma dit qu'il n'y avait aucune restriction pour voir tous les projet",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
+      "id": "mod-515",
+      "version": "B-0.318",
+      "date": "2026-07-01T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system",
+        "portail",
+        "projets"
+      ],
+      "features": "system:launcher,portail:runtime-config,projets:runtime-config",
+      "title": "Sélecteur d'instance dans le launcher (test multi-users, ports décalés)",
+      "description": "Ajout d'une popup au lancement de launcher_app.py permettant de choisir Instance 1 (ports par défaut) ou Instance 2 (+10 sur tous les ports : API 3011, Agent 3013, Portail 4212, Projets 4213), pour lancer 2 systèmes complets en parallèle et tester avec 2 users différents. Manager/MainWindow acceptent désormais une liste de services construite dynamiquement (build_services) au lieu du global SERVICES figé, avec injection des variables d'env PORT/AGENT_PORT pour les serveurs Node. Côté Angular, ajout de apps/portail/src/app/runtime-env.ts et apps/projets/src/app/runtime-env.ts qui décalent au runtime les URLs des services (API, executor, agent, app croisée) selon un offset persisté dans localStorage (clé port_offset), transmis via le query param ?portOffset= comme pour token/theme. app.config.ts, navigate-to-projets.ts, auth.guard.ts, app.ts et projet-editor.component.ts basculés sur runtimeEnv. L'app Electron (poste de dev, port 4202 en dur) n'est lancée que pour l'instance 1.",
+      "files": [
+        "launcher_app.py",
+        "apps/portail/src/app/runtime-env.ts",
+        "apps/portail/src/main.ts",
+        "apps/portail/src/app/app.config.ts",
+        "apps/portail/src/app/shared/utils/navigate-to-projets.ts",
+        "apps/projets/src/app/runtime-env.ts",
+        "apps/projets/src/main.ts",
+        "apps/projets/src/app/app.config.ts",
+        "apps/projets/src/app/auth.guard.ts",
+        "apps/projets/src/app/app.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l'application @launcher_app.py j'ai besoin de lancer 2 instances différentes de mon système afin de tester avec 2 users différents. Met en place un selector au lancement pour lancer l'ensemble des applications sur des ports différents",
+      "startedAt": "2026-07-01T00:00:00.000Z",
+      "completedAt": "2026-07-01T00:00:00.000Z"
+    },
+    {
       "id": "mod-514",
       "version": "B-0.316",
       "date": "2026-06-29T14:00:00.000Z",
@@ -13015,6 +13165,196 @@
       "prompt": "dans la zone admin/config/Intelligence Artificielle/Outils CLI (Antigravity CLI / Claude Code) ajoute un lien vers un popup qui explique precisement comment installe antigravity cli (AGY) et claude code pour qu'il fonctionne avec frankenstein",
       "startedAt": "2026-06-30T16:51:44.533002Z",
       "completedAt": "2026-06-30T16:51:44.533002Z"
+    },
+    {
+      "id": "mod-513",
+      "version": "B-0.318",
+      "date": "2026-06-30T17:41:13.953337Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-paste",
+      "title": "Collage markdown : popup de previsualisation du recalage des niveaux avant insertion",
+      "description": "Le collage de markdown pre-formate dans une section (Mode Code et Mode Edition/visu) ne s'insere plus automatiquement. Au collage (Ctrl+V) d'un texte contenant des titres markdown, onTextareaPaste/onVisuSectionPaste recalent toujours les niveaux (le plus haut titre -> niveau de la section cible + 1, ex: collage dans niveau 2 d'un texte commencant au niveau 1 -> decalage de +2) mais ouvrent desormais un popup de previsualisation (pastePreview) au lieu d'inserer directement. Le popup affiche la section cible, le niveau cible, le decalage applique et le texte recale dans une zone editable. L'utilisateur valide avec 'Coller' (confirmPastePreview -> applyCodePaste/applyVisuPaste) ou abandonne avec 'Annuler' (cancelPastePreview). Le texte de l'apercu est modifiable avant le collage. Sans titres markdown, collage natif inchange (pas de popup). Helper minMarkdownHeadingLevel ajoute pour calculer le decalage affiche.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "lorsque je copie du texte au format markdown dans une section qui a donc deja un niveau, il faut recuperer le code, mettre a niveau tous les niveaux du texte copie et ensuite le coller, exemple si je copie dans une section de niveau 2 et que le texte copie commence au niveau 1, il faut decaler tous les niveaux du texte copie de 2 niveau. + previsualisation avant collage (coller ou annuler), les deux modes, source markdown avec #",
+      "startedAt": "2026-06-30T17:41:13.953337Z",
+      "completedAt": "2026-06-30T17:41:13.953337Z"
+    },
+    {
+      "id": "mod-514",
+      "version": "B-0.318",
+      "date": "2026-06-30T18:55:46.535777Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-paste",
+      "title": "Collage markdown : titres sans espace (#1.) detectes/recales + normalisation espace",
+      "description": "Suite au collage avec popup, les titres ecrits sans espace apres les # (ex: '#1. P - Preparation') n'etaient pas reconnus comme titres (regex /^(#{1,6}) / exigeant un espace). Consequences : (1) le titre n'etait pas recale (restait a 1 #), (2) le plus haut niveau detecte etait fausse (## Objectif niveau 2 au lieu du # niveau 1) -> decalage +1 au lieu de +2. Fix : nouvelle detection parseHeadingLine tolerante a l'absence d'espace (/^(#{1,6})(?!#)[ \t]*(\\S.*?)[ \t]*$/) utilisee par relevelMarkdownHeadings, minMarkdownHeadingLevel et les deux gates onTextareaPaste/onVisuSectionPaste. En sortie, l'espace apres les # est normalise (### 1. P - Preparation) pour que parseContent cree bien le sous-menu. Le decalage delta=0 ne court-circuite plus la normalisation. Verifie : collage d'un doc commencant par '#1.' dans une section niveau 2 -> badge decalage +2, tous les titres recales et espaces.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-4-8",
+      "prompt": "le texte affiche apres un coller n'inclus pas la modifications des menus dans le texte markdown, le niveau est bien indique mais le texte n'a pas les niveau mis a jour",
+      "startedAt": "2026-06-30T18:55:46.535777Z",
+      "completedAt": "2026-06-30T18:55:46.535777Z"
+    },
+    {
+      "id": "mod-515",
+      "version": "B-0.318",
+      "date": "2026-07-02T18:42:04.331Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:statusline",
+      "title": "Statusline : affichage de l'effort du modele a cote du nom",
+      "description": "Ligne 1 de la statusline Claude Code (.claude/statusline.js) affiche desormais l'effort du modele selectionne (low/medium/high/max) a cote du nom du modele. Lecture par priorite : variable d'environnement CLAUDE_CODE_EFFORT_LEVEL, puis settings.local.json/settings.json du projet, puis settings.json global (~/.claude/settings.json, cle effortLevel).",
+      "files": [
+        ".claude/statusline.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "rajoute dans la première ligne de la statusline de claude code à coté du model, l'effort du model selectionné",
+      "startedAt": "2026-07-02T18:42:04.331Z",
+      "completedAt": "2026-07-02T18:42:04.331Z"
+    },
+    {
+      "id": "mod-516",
+      "version": "B-0.318",
+      "date": "2026-07-02T18:42:04.331Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "projets",
+        "libs",
+        "server",
+        "data"
+      ],
+      "features": "projets:editor-save,projets:editor-collab,projets:editor-zone-paste",
+      "title": "Sauvegarde 100% manuelle : brouillons locaux par user, presence multi-editeurs, fusion de conflit",
+      "description": "Refonte du systeme de sauvegarde de l'Outil Edition : suppression du checkpoint BDD automatique (throttle 45s + auto sur blur/changement de section/beforeunload/IA), remplace par un brouillon local par (projet, section, utilisateur) en base MySQL (nouvelle table projet_local_draft), jamais partage tant que l'utilisateur n'a pas clique sur Enregistrer et partager. Presence multi-editeurs simultanes sur une meme section : migration de projet_section_lock (PK node_id seul -> PK composite node_id+locked_by_id), nouvel evenement SSE presence, ProjetCollabService.locks passe de Map<string,LockInfo> a Map<string,LockInfo[]>, badges sidebar + indicateur dans la barre d'outils de la section active etendus au multi-utilisateurs (nom + heure de debut de chacun). Bouton Enregistrer et partager : writeSectionStyled (zone d'edition) transmet desormais systematiquement baseVersionId et gere le conflit 409 en emettant un event saveConflict vers le parent, qui reutilise tel quel l'ecran de fusion existant (ProjetDiffComponent/conflictState) - corrige une faille ou ce chemin de publication (mode Code/Visu/Structure/Section) ecrasait silencieusement la derniere version BDD sans jamais detecter de conflit. Le brouillon local est supprime apres validation reussie ou resolution de conflit. Popup de collage markdown existant (deja base sur validation utilisateur explicite) etendu : nouvelle option Creer une section intermediaire en plus du recalage de niveaux, avec titre editable et apercu live (wrapMarkdownInIntermediateSection), au choix de l'utilisateur avant toute insertion. Perimetre : texte des sections de l'Outil Edition uniquement ; les mega-outils (Trello/Tableau/Prompt-workflow) restent inchanges (BDD MySQL, sync temps reel existante).",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais stabilisé le système d'Edition de texte dans le menu projet. Je voudrais que tu enlève le système de sauvegarde et de synchro. [...] Propose moi un plan complet pour toutes les modification et amélioration",
+      "startedAt": "2026-07-02T18:42:04.331Z",
+      "completedAt": "2026-07-02T18:42:04.331Z"
+    },
+    {
+      "id": "mod-517",
+      "version": "B-0.318",
+      "date": "2026-07-02T19:46:29.332Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "server"
+      ],
+      "features": "projets:editor-save,projets:editor-collab",
+      "title": "Enregistrer et partager disponible pour TOUS les projets (plus seulement git/FTP) + fix CORS critique",
+      "description": "Suite a mod-516 : les projets SANS sauvegarde externe (backupType null) navaient aucun moyen de valider leurs brouillons locaux vers la BDD partagee, car toute lacquisition de presence/verrou (activeEntityLocks, collab.lockNode, badges pending) et laffichage du bouton Enregistrer et partager (showCodePublishBar, showCrossModePendingBar, structureHasPending) etaient conditionnes a backupType — un heritage de lancien modele ou seuls les projets avec sauvegarde externe avaient une etape de publication. Retire cette condition partout dans projet-editor-zone.component.ts/html (mode Code, Visu, Structure, upload/suppression dimage) : tout projet, partage ou non via frank_project_shares, peut desormais valider ses modifications. En testant ce flux en conditions reelles (navigateur), decouverte dun bug CORS pre-existant et independant de cette refonte : len-tete personnalise x-base-version-id (introduit par le commit 93b9334 pour la detection de conflit) netait pas dans la liste allowedHeaders de la configuration cors() du serveur, ce qui bloquait silencieusement (Failed to fetch cote navigateur, sans log serveur) TOUTE requete PUT de sauvegarde de contenu envoyee avec ce header — y compris depuis lancien systeme de checkpoint automatique. Corrige en ajoutant x-base-version-id aux allowedHeaders CORS. Valide de bout en bout en navigateur reel sur un projet sans backup : frappe -> brouillon local -> badge presence -> menu contextuel Enregistrer et partager -> version BDD immuable creee -> brouillon purge.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je ne comprend pas bien, tous les projets doivent pouvoir être partagé et ils doivent tous être enregistré en bdd, donc oui corrige maintenant",
+      "startedAt": "2026-07-02T19:46:29.332Z",
+      "completedAt": "2026-07-02T19:46:29.332Z"
+    },
+    {
+      "id": "mod-518",
+      "version": "B-0.318",
+      "date": "2026-07-02T20:23:45.388Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-parsing",
+      "title": "Ligne vide entre un titre et le texte effacee au changement de mode Code/Edition",
+      "description": "Dans parseContent() (extraction du contenu principal dune section a partir du texte unifie), le .trim() final sur mainContent supprimait la ligne vide intentionnelle juste apres le titre (contentStart pointe juste apres le retour a la ligne du heading, donc un \n de tete y represente une vraie ligne vide voulue par lutilisateur, pas un artefact de parsing). La perte netait visible quen changeant de mode (Code -> Edition -> Code), car le mode Code affiche le buffer tape tel quel tant quaucune reconstruction ne relit le contenu sauvegarde (deja tronque). Fix : capture hasLeadingBlankLine = rawContent.startsWith(\n) avant le trim, reinjection dun \n en tete de mainContent si vrai. Verifie au niveau donnees (brouillon local contient bien le \n de tete apres le fix).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque je met une ligne vide entre un titre et du texte et que je change de mode Code vers Edition et Edition vers Code la ligne vide disparait. Les lignes vide doivent être enregistré comme du texte et doivent être affiché comme une ligne vide dans le mode Edition",
+      "startedAt": "2026-07-02T20:23:45.388Z",
+      "completedAt": "2026-07-02T20:23:45.388Z"
+    },
+    {
+      "id": "mod-519",
+      "version": "B-0.318",
+      "date": "2026-07-02T20:43:43.383Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-parsing,projets:editor-zone-visu",
+      "title": "Ligne(s) vide(s) invisibles en mode Edition + perdues en fin de section lors de la reconstruction",
+      "description": "Complement du fix mod-518 : (1) buildDocSections (reconstruction du document lors dun changement de mode) tronquait aussi la ligne vide de fin via son propre .trimEnd() sur mainStyledContent, perdant linfo meme apres le fix de parseContent — ajout du meme garde (hasTrailingBlankLine) cote reconstruction. (2) parseContent ne preservait que la ligne vide en tete de section, pas celle en fin (avant le titre suivant) — ajout hasTrailingBlankLine symetrique. (3) Mode Edition : marked.parse() ne rend jamais visuellement une ligne vide (espacement de paragraphe standard, identique quel que soit le nombre de lignes vides source) — ajout dun pre-traitement explicitizeBlankLinesForVisu qui transforme chaque ligne vide en paragraphe marqueur isole avant marked.parse(), puis post-traitement en <p><br></p> (qui round-trip correctement vers un \n via htmlSectionToMarkdown). Verifie en navigateur reel : ligne vide visible en mode Edition, preservee au retour en mode Code.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans le mode code on voie 2 ligne vide après et test et une ligne avant dans le mode Edition on ne vois pas ces saut ligne ni avant ni après test",
+      "startedAt": "2026-07-02T20:43:43.383Z",
+      "completedAt": "2026-07-02T20:43:43.383Z"
+    },
+    {
+      "id": "mod-520",
+      "version": "B-0.318",
+      "date": "2026-07-03T14:45:25.379Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code",
+      "title": "Fix collage markdown : titres non recalés si presse-papier en fins de ligne CRLF",
+      "description": "Le popup de prévisualisation du collage markdown (re-leveling des titres) n'appliquait aucun décalage quand le texte du presse-papier utilisait des fins de ligne Windows (\r\n, ex: copié depuis Word ou un export). Cause : parseHeadingLine (regex JS, le '.' exclut '\r') ne détectait plus aucun titre sur des lignes se terminant par '\r' après split('\n'), donc relevelMarkdownHeadings retournait le texte tel quel alors que le badge de décalage affichait une valeur incohérente (calculée séparément). Reproduit en navigateur via un paste synthétique CRLF avant et après le fix. Correctif : normalisation \r\n?/\r → \n dès la lecture du presse-papier dans onTextareaPaste et onVisuSectionPaste, avant tout calcul de niveau/décalage.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "verifi le système d'import de texte ou l'affichage avec mise à jour des niveaux n'affiche pas les modifications à valider. Exemple je veux importé en dessous du niveau 1 les niveaux du texte importé devrait donc commencé à 2 et non à 1 comme c'est affiché ici",
+      "startedAt": "2026-07-03T14:45:25.379Z",
+      "completedAt": "2026-07-03T14:45:25.379Z"
     }
   ]
 }
