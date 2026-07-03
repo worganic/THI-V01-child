@@ -13210,6 +13210,151 @@
       "prompt": "le texte affiche apres un coller n'inclus pas la modifications des menus dans le texte markdown, le niveau est bien indique mais le texte n'a pas les niveau mis a jour",
       "startedAt": "2026-06-30T18:55:46.535777Z",
       "completedAt": "2026-06-30T18:55:46.535777Z"
+    },
+    {
+      "id": "mod-515",
+      "version": "B-0.318",
+      "date": "2026-07-02T18:42:04.331Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:statusline",
+      "title": "Statusline : affichage de l'effort du modele a cote du nom",
+      "description": "Ligne 1 de la statusline Claude Code (.claude/statusline.js) affiche desormais l'effort du modele selectionne (low/medium/high/max) a cote du nom du modele. Lecture par priorite : variable d'environnement CLAUDE_CODE_EFFORT_LEVEL, puis settings.local.json/settings.json du projet, puis settings.json global (~/.claude/settings.json, cle effortLevel).",
+      "files": [
+        ".claude/statusline.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "rajoute dans la première ligne de la statusline de claude code à coté du model, l'effort du model selectionné",
+      "startedAt": "2026-07-02T18:42:04.331Z",
+      "completedAt": "2026-07-02T18:42:04.331Z"
+    },
+    {
+      "id": "mod-516",
+      "version": "B-0.318",
+      "date": "2026-07-02T18:42:04.331Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "projets",
+        "libs",
+        "server",
+        "data"
+      ],
+      "features": "projets:editor-save,projets:editor-collab,projets:editor-zone-paste",
+      "title": "Sauvegarde 100% manuelle : brouillons locaux par user, presence multi-editeurs, fusion de conflit",
+      "description": "Refonte du systeme de sauvegarde de l'Outil Edition : suppression du checkpoint BDD automatique (throttle 45s + auto sur blur/changement de section/beforeunload/IA), remplace par un brouillon local par (projet, section, utilisateur) en base MySQL (nouvelle table projet_local_draft), jamais partage tant que l'utilisateur n'a pas clique sur Enregistrer et partager. Presence multi-editeurs simultanes sur une meme section : migration de projet_section_lock (PK node_id seul -> PK composite node_id+locked_by_id), nouvel evenement SSE presence, ProjetCollabService.locks passe de Map<string,LockInfo> a Map<string,LockInfo[]>, badges sidebar + indicateur dans la barre d'outils de la section active etendus au multi-utilisateurs (nom + heure de debut de chacun). Bouton Enregistrer et partager : writeSectionStyled (zone d'edition) transmet desormais systematiquement baseVersionId et gere le conflit 409 en emettant un event saveConflict vers le parent, qui reutilise tel quel l'ecran de fusion existant (ProjetDiffComponent/conflictState) - corrige une faille ou ce chemin de publication (mode Code/Visu/Structure/Section) ecrasait silencieusement la derniere version BDD sans jamais detecter de conflit. Le brouillon local est supprime apres validation reussie ou resolution de conflit. Popup de collage markdown existant (deja base sur validation utilisateur explicite) etendu : nouvelle option Creer une section intermediaire en plus du recalage de niveaux, avec titre editable et apercu live (wrapMarkdownInIntermediateSection), au choix de l'utilisateur avant toute insertion. Perimetre : texte des sections de l'Outil Edition uniquement ; les mega-outils (Trello/Tableau/Prompt-workflow) restent inchanges (BDD MySQL, sync temps reel existante).",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais stabilisé le système d'Edition de texte dans le menu projet. Je voudrais que tu enlève le système de sauvegarde et de synchro. [...] Propose moi un plan complet pour toutes les modification et amélioration",
+      "startedAt": "2026-07-02T18:42:04.331Z",
+      "completedAt": "2026-07-02T18:42:04.331Z"
+    },
+    {
+      "id": "mod-517",
+      "version": "B-0.318",
+      "date": "2026-07-02T19:46:29.332Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "server"
+      ],
+      "features": "projets:editor-save,projets:editor-collab",
+      "title": "Enregistrer et partager disponible pour TOUS les projets (plus seulement git/FTP) + fix CORS critique",
+      "description": "Suite a mod-516 : les projets SANS sauvegarde externe (backupType null) navaient aucun moyen de valider leurs brouillons locaux vers la BDD partagee, car toute lacquisition de presence/verrou (activeEntityLocks, collab.lockNode, badges pending) et laffichage du bouton Enregistrer et partager (showCodePublishBar, showCrossModePendingBar, structureHasPending) etaient conditionnes a backupType — un heritage de lancien modele ou seuls les projets avec sauvegarde externe avaient une etape de publication. Retire cette condition partout dans projet-editor-zone.component.ts/html (mode Code, Visu, Structure, upload/suppression dimage) : tout projet, partage ou non via frank_project_shares, peut desormais valider ses modifications. En testant ce flux en conditions reelles (navigateur), decouverte dun bug CORS pre-existant et independant de cette refonte : len-tete personnalise x-base-version-id (introduit par le commit 93b9334 pour la detection de conflit) netait pas dans la liste allowedHeaders de la configuration cors() du serveur, ce qui bloquait silencieusement (Failed to fetch cote navigateur, sans log serveur) TOUTE requete PUT de sauvegarde de contenu envoyee avec ce header — y compris depuis lancien systeme de checkpoint automatique. Corrige en ajoutant x-base-version-id aux allowedHeaders CORS. Valide de bout en bout en navigateur reel sur un projet sans backup : frappe -> brouillon local -> badge presence -> menu contextuel Enregistrer et partager -> version BDD immuable creee -> brouillon purge.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je ne comprend pas bien, tous les projets doivent pouvoir être partagé et ils doivent tous être enregistré en bdd, donc oui corrige maintenant",
+      "startedAt": "2026-07-02T19:46:29.332Z",
+      "completedAt": "2026-07-02T19:46:29.332Z"
+    },
+    {
+      "id": "mod-518",
+      "version": "B-0.318",
+      "date": "2026-07-02T20:23:45.388Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-parsing",
+      "title": "Ligne vide entre un titre et le texte effacee au changement de mode Code/Edition",
+      "description": "Dans parseContent() (extraction du contenu principal dune section a partir du texte unifie), le .trim() final sur mainContent supprimait la ligne vide intentionnelle juste apres le titre (contentStart pointe juste apres le retour a la ligne du heading, donc un \n de tete y represente une vraie ligne vide voulue par lutilisateur, pas un artefact de parsing). La perte netait visible quen changeant de mode (Code -> Edition -> Code), car le mode Code affiche le buffer tape tel quel tant quaucune reconstruction ne relit le contenu sauvegarde (deja tronque). Fix : capture hasLeadingBlankLine = rawContent.startsWith(\n) avant le trim, reinjection dun \n en tete de mainContent si vrai. Verifie au niveau donnees (brouillon local contient bien le \n de tete apres le fix).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque je met une ligne vide entre un titre et du texte et que je change de mode Code vers Edition et Edition vers Code la ligne vide disparait. Les lignes vide doivent être enregistré comme du texte et doivent être affiché comme une ligne vide dans le mode Edition",
+      "startedAt": "2026-07-02T20:23:45.388Z",
+      "completedAt": "2026-07-02T20:23:45.388Z"
+    },
+    {
+      "id": "mod-519",
+      "version": "B-0.318",
+      "date": "2026-07-02T20:43:43.383Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-parsing,projets:editor-zone-visu",
+      "title": "Ligne(s) vide(s) invisibles en mode Edition + perdues en fin de section lors de la reconstruction",
+      "description": "Complement du fix mod-518 : (1) buildDocSections (reconstruction du document lors dun changement de mode) tronquait aussi la ligne vide de fin via son propre .trimEnd() sur mainStyledContent, perdant linfo meme apres le fix de parseContent — ajout du meme garde (hasTrailingBlankLine) cote reconstruction. (2) parseContent ne preservait que la ligne vide en tete de section, pas celle en fin (avant le titre suivant) — ajout hasTrailingBlankLine symetrique. (3) Mode Edition : marked.parse() ne rend jamais visuellement une ligne vide (espacement de paragraphe standard, identique quel que soit le nombre de lignes vides source) — ajout dun pre-traitement explicitizeBlankLinesForVisu qui transforme chaque ligne vide en paragraphe marqueur isole avant marked.parse(), puis post-traitement en <p><br></p> (qui round-trip correctement vers un \n via htmlSectionToMarkdown). Verifie en navigateur reel : ligne vide visible en mode Edition, preservee au retour en mode Code.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans le mode code on voie 2 ligne vide après et test et une ligne avant dans le mode Edition on ne vois pas ces saut ligne ni avant ni après test",
+      "startedAt": "2026-07-02T20:43:43.383Z",
+      "completedAt": "2026-07-02T20:43:43.383Z"
+    },
+    {
+      "id": "mod-520",
+      "version": "B-0.318",
+      "date": "2026-07-03T14:45:25.379Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code",
+      "title": "Fix collage markdown : titres non recalés si presse-papier en fins de ligne CRLF",
+      "description": "Le popup de prévisualisation du collage markdown (re-leveling des titres) n'appliquait aucun décalage quand le texte du presse-papier utilisait des fins de ligne Windows (\r\n, ex: copié depuis Word ou un export). Cause : parseHeadingLine (regex JS, le '.' exclut '\r') ne détectait plus aucun titre sur des lignes se terminant par '\r' après split('\n'), donc relevelMarkdownHeadings retournait le texte tel quel alors que le badge de décalage affichait une valeur incohérente (calculée séparément). Reproduit en navigateur via un paste synthétique CRLF avant et après le fix. Correctif : normalisation \r\n?/\r → \n dès la lecture du presse-papier dans onTextareaPaste et onVisuSectionPaste, avant tout calcul de niveau/décalage.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "verifi le système d'import de texte ou l'affichage avec mise à jour des niveaux n'affiche pas les modifications à valider. Exemple je veux importé en dessous du niveau 1 les niveaux du texte importé devrait donc commencé à 2 et non à 1 comme c'est affiché ici",
+      "startedAt": "2026-07-03T14:45:25.379Z",
+      "completedAt": "2026-07-03T14:45:25.379Z"
     }
   ]
 }

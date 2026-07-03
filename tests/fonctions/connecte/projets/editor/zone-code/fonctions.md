@@ -272,22 +272,22 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-22` — [SYNC] Save auto 2 s — cohérence BDD après frappe
+## `2-5-2-4-22` — [modification] Save auto 2 s — brouillon local (jamais partagé)
 
 - **Précondition** : projet ouvert en mode Code, section existante avec contenu connu.
 - **Action** : taper du texte dans la textarea, attendre 2 s sans autre interaction.
-- **Résultat attendu** : `scheduleSave()` déclenche `saveAll()` → `sectionsChange` → `processSectionsChange` → PUT `/api/file-projects/:name/files/:id` → contenu identique côté serveur. Badge "Non sauvegardé" disparaît. Log `log-edition.txt` contient une entrée `SAVE | source:user-editing`.
-- **À vérifier** : la valeur de `contenu.md` en BDD correspond exactement à ce qui a été tapé (après normalisation CSS twin). Aucun caractère perdu.
-- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `project-files.service.ts`
+- **Résultat attendu** : `scheduleSave()` déclenche `saveAll()` → `sectionsChange` → `processSectionsChange` → `PUT /api/file-projects/:name/files/:id/draft` (table `projet_local_draft`, propre à l'utilisateur courant) — **aucune version BDD `projet_content_version` n'est créée**, aucun autre utilisateur ne voit ce texte. Badge "Non sauvegardé" disparaît (contenu bien en brouillon local), badge de présence ambre "modifications locales" apparaît côté sidebar pour les autres.
+- **À vérifier** : la valeur du brouillon (`GET .../files/:id/draft`) correspond exactement à ce qui a été tapé. Aucun caractère perdu. `projet_content_version` reste inchangée tant que "Enregistrer et partager" n'est pas cliqué.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `project-files.service.ts`, `server/server-data.js`
 
 ---
 
-## `2-5-2-4-23` — [SYNC] Save forcé Ctrl+S
+## `2-5-2-4-23` — [modification] Save forcé Ctrl+S (brouillon local)
 
 - **Précondition** : texte tapé, timer 2 s non encore écoulé (zone dirty).
 - **Action** : appuyer Ctrl+S.
-- **Résultat attendu** : `forceSave()` → `unfoldAll()` → `saveAll()` immédiat, sans attendre les 2 s. Badge disparaît. Contenu en BDD correspond à l'état au moment de Ctrl+S.
-- **À vérifier** : le timer scheduleSave existant est annulé (`clearTimeout`) pour éviter un double save. Log `SAVE | source:user-editing`.
+- **Résultat attendu** : `forceSave()` → `unfoldAll()` → `saveAll()` immédiat, sans attendre les 2 s. Badge disparaît. Contenu écrit en brouillon local (`.../draft`), pas en version BDD.
+- **À vérifier** : le timer scheduleSave existant est annulé (`clearTimeout`) pour éviter un double save. Le brouillon local correspond à l'état au moment de Ctrl+S.
 - **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`
 
 ---
@@ -433,14 +433,14 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-37` — [modification] [SYNC] Multi-users : édition simultanée même section — présence douce + checkpoint BDD
+## `2-5-2-4-37` — [modification] [SYNC] Multi-users : édition simultanée même section — brouillons locaux indépendants + présence
 
-- **Précondition** : user A et user B ont le même projet ouvert, même section active, textes différents localement. Aucun des deux n'est bloqué en lecture seule (verrou pessimiste supprimé).
-- **Action** : les deux tapent en même temps sur la même section. Chacun voit une bannière non bloquante "X édite aussi cette section" (Code) / badge "Édité par X" (Visu), issue du registre de présence `projet_section_lock` (upsert + heartbeat ~20s, plus aucun blocage HTTP 409 sur `POST /api/collab/:projetId/nodes/:nodeId/lock`).
-- **Résultat attendu** : la source de vérité du contenu est désormais `projet_content_version` (BDD, immuable) — plus aucun `git checkout` de branche `wip` sur le dossier de travail partagé pendant l'édition live (cause historique de pertes de texte). Chaque autosave écrit sur disque en sauvegarde passive (best-effort) systématiquement, mais ne crée une version BDD ("checkpoint") que si ≥45s se sont écoulées depuis le dernier checkpoint du fichier, ou si l'événement est significatif (blur, changement de section, publish — `forceCheckpoint`). Au premier checkpoint qui arrive après celui de l'autre utilisateur, le serveur détecte le conflit réel (comparaison `baseVersionId` vs dernière version BDD) → 409 → panneau de fusion (voir `2-5-2-4-40`).
-- **Règle absolue** : aucune perte silencieuse — toute tentative de sauvegarde en conflit (y compris la version écartée) est conservée dans `projet_content_version` avec `origin='conflict-mine'`, jamais supprimée.
-- **À vérifier** : après résolution du conflit (fusion ou choix rapide), les deux users voient le même contenu. La zone Historique (`2-5-2-8-13`) liste bien les versions `checkpoint`/`conflict-mine`/`merge` créées pendant le scénario.
-- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `server/server-data.js`, `server/modules/projet-git.js`
+- **Précondition** : user A et user B ont le même projet ouvert, même section active, textes différents localement. Aucun des deux n'est bloqué en lecture seule.
+- **Action** : les deux tapent en même temps sur la même section. Chacun a son propre brouillon local (table `projet_local_draft`, clé `project_id+node_id+user_id` — aucune écriture ne peut écraser celle de l'autre) et voit une bannière/badge de présence multi-utilisateurs "X édite aussi cette section" (Code) / "Édité par X" (Visu), issue du registre `projet_section_lock` (PK composite `node_id+locked_by_id`, upsert + heartbeat ~20s, event SSE `presence`).
+- **Résultat attendu** : la frappe n'écrit JAMAIS `projet_content_version` automatiquement — seul le brouillon local de chacun est mis à jour. Aucun conflit ne peut survenir tant qu'aucun des deux n'a cliqué "Enregistrer et partager". Au clic de l'un des deux, une vraie version BDD immuable est créée (comparaison `baseVersionId` vs dernière version BDD). Si l'autre clique ensuite avec un `baseVersionId` périmé → 409 → panneau de fusion (voir `2-5-2-4-40`).
+- **Règle absolue** : aucune perte silencieuse — toute tentative de sauvegarde en conflit (y compris la version écartée) est conservée dans `projet_content_version` avec `origin='conflict-mine'`, jamais supprimée. Le brouillon local n'est purgé qu'après validation réussie ou résolution de conflit.
+- **À vérifier** : après résolution du conflit (fusion ou choix rapide), les deux users voient le même contenu et leurs brouillons locaux respectifs ont été supprimés. La zone Historique (`2-5-2-8-13`) liste bien les versions `checkpoint`/`conflict-mine`/`merge` créées pendant le scénario.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `server/server-data.js`
 
 ---
 
@@ -468,8 +468,8 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ## `2-5-2-4-40` — [modification] [SYNC] Détection de conflit réel (HTTP 409, version BDD) + fusion ligne à ligne
 
-- **Précondition** : user A et user B ouvrent le même projet. User B modifie et checkpointe la section "Intro" (voir règle de checkpoint `2-5-2-4-37`). User A avait chargé le fichier avant le checkpoint de B.
-- **Action** : au prochain checkpoint de user A (45s, blur, changement de section ou publish), `PUT /files/:id` envoie `x-base-version-id: <versionId chargé>`. Le serveur compare (transaction `SELECT ... FOR UPDATE`) à la dernière version BDD réelle du fichier — elle a changé (B a checkpointé entre-temps).
+- **Précondition** : user A et user B ouvrent le même projet. User B modifie localement puis clique "Enregistrer et partager" sur la section "Intro" (voir `2-5-2-4-37`). User A avait chargé le fichier avant la validation de B et édite encore en brouillon local.
+- **Action** : quand user A clique à son tour "Enregistrer et partager", `PUT /files/:id` envoie `x-base-version-id: <versionId chargé au départ>`. Le serveur compare (transaction `SELECT ... FOR UPDATE`) à la dernière version BDD réelle du fichier — elle a changé (B a validé entre-temps).
 - **Résultat attendu** : serveur répond HTTP 409 avec `{ error:'conflict', base:{versionId}, server:{versionId, content, authorName, createdAt}, mine:{content} }` (aucune écriture BDD). Côté client : panneau ambre "Conflit — {auteur} a modifié ce fichier entre-temps" avec 2 boutons rapides ("Garder ma version" / "Utiliser la version du serveur") **et** en dessous une vue 3 panneaux (`ProjetDiffComponent` réutilisé, `leftLabel="Version serveur"` / `rightLabel="Ma version"`) permettant de composer une fusion ligne à ligne (`←`/`→` par ligne) avant de cliquer "Appliquer dans l'éditeur".
 - **Bouton Synchro** : dès qu'un checkpoint d'un autre utilisateur arrive (SSE `version_saved`) sur la section active, une bannière indigo "Synchro" apparaît **avant même** qu'un conflit ne survienne — cliquer dessus ouvre le même écran de fusion sans attendre un 409.
 - **Résolution** : `POST /files/:id/resolve-conflict {baseVersionId, folderId, mineContent, mergedContent}` insère 2 versions immuables (`origin:'conflict-mine'` = tentative écartée préservée, puis `origin:'merge'` = nouvelle tête) — jamais de perte, jamais d'écrasement silencieux.
@@ -518,13 +518,13 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 - **Précondition** : curseur dans un dossier de niveau 2 (Mode Code) ou section visu de niveau 2. Presse-papier = texte markdown commençant par `# Titre` (H1) avec sous-niveaux.
 - **Action** : coller (Ctrl+V) → `onTextareaPaste` (Code) ou `onVisuSectionPaste` (visu).
-- **Résultat attendu** : `relevelMarkdownHeadings` détecte le plus haut titre (H1) et décale tous les titres pour que le plus haut devienne niveau cible + 1 (ici niveau 3). Au lieu d'insérer directement, un **popup de prévisualisation** (`pastePreview`) s'ouvre : il affiche la section cible, le niveau cible, le décalage appliqué (ex: « +2 ») et le texte recalé dans une zone éditable. Décalage appliqué à tous, plafonné à 6, blocs ``` ignorés.
-- **Validation** : bouton « Coller » (`confirmPastePreview`) → insertion effective (`applyCodePaste` / `applyVisuPaste`), `parseContent` crée les sous-menus ; bouton « Annuler » (`cancelPastePreview`) → rien n'est inséré. Le texte de l'aperçu est modifiable avant de coller (collage du contenu éventuellement édité).
+- **Résultat attendu** : `relevelMarkdownHeadings` détecte le plus haut titre (H1) et décale tous les titres pour que le plus haut devienne niveau cible + 1 (ici niveau 3). Au lieu d'insérer directement, un **popup de prévisualisation** (`pastePreview`) s'ouvre avec **deux stratégies au choix** : « Recaler les niveaux de titres » (comportement décrit ci-dessus, par défaut) ou « Créer une section intermédiaire » (`wrapMarkdownInIntermediateSection`) — englobe le texte collé sous un nouveau titre intermédiaire (niveau cible + 1, titre éditable dans un champ dédié, aperçu recalculé en direct) sans toucher aux niveaux du texte importé au-delà de son propre recalage sous ce nouveau titre. Le popup affiche la section cible, le niveau cible, le décalage appliqué (ex: « +2 ») et le texte final dans une zone éditable.
+- **Validation** : bouton « Coller » (`confirmPastePreview`) → insertion effective de la stratégie choisie (`applyCodePaste` / `applyVisuPaste`), `parseContent` crée les sous-menus (y compris la nouvelle section intermédiaire le cas échéant) ; bouton « Annuler » (`cancelPastePreview`) → rien n'est inséré, quelle que soit la stratégie sélectionnée. Le texte de l'aperçu est modifiable avant de coller.
 - **Niveau cible** : Mode Code = niveau du dernier titre avant le curseur (fence-aware, `sectionLevelBeforeOffset`) ; Mode visu = `sec.level`, insertion en fin de contenu direct de la section (avant les enfants).
 - **Sans titres** : si le presse-papier ne contient aucun `^#{1,6}`, collage natif préservé (texte brut en Code, texte riche en visu) — pas de `preventDefault`, pas de popup.
 - **Titres sans espace** : la détection (`parseHeadingLine`) tolère les titres écrits sans espace après les `#` (ex: `#1. Préparation` autant que `## Objectif`). Ils sont comptés dans le calcul du plus haut niveau ET recalés. En sortie, l'espace est **normalisé** (`### 1. Préparation`) pour que `parseContent` crée bien le sous-menu.
-- **Résultat à redouter (bug corrigé)** : (1) sans re-leveling, un H1 collé dans un dossier niveau 2 devient un dossier racine → hiérarchie cassée → texte supprimé à la reconstruction ; (2) un titre `#1.` sans espace était ignoré → niveau le plus haut détecté faux (décalage +1 au lieu de +2) et titre non recalé.
-- **À vérifier** : coller un document multi-niveaux (y compris titres `#1.` sans espace) dans un dossier niveau 2 → le popup s'affiche avec le décalage +2, tous les titres recalés et espacés, « Coller » insère les titres en sous-sections (niveau 3+), le menu reflète la nouvelle arborescence, le texte est intégralement présent ; « Annuler » ne touche à rien.
+- **Résultat à redouter (bug corrigé)** : (1) sans re-leveling, un H1 collé dans un dossier niveau 2 devient un dossier racine → hiérarchie cassée → texte supprimé à la reconstruction ; (2) un titre `#1.` sans espace était ignoré → niveau le plus haut détecté faux (décalage +1 au lieu de +2) et titre non recalé ; (3) presse-papier avec fins de ligne Windows (`\r\n`, ex: copié depuis Word/un export) → `parseHeadingLine` ne matchait plus aucun titre (le `.` des regex JS exclut `\r`) → `relevelMarkdownHeadings` retournait le texte tel quel (aucun décalage visible dans l'aperçu) alors que le badge « décalage » affichait quand même une valeur incohérente. **Fix** : normalisation `\r\n?` → `\n` dès la lecture du presse-papier dans `onTextareaPaste`/`onVisuSectionPaste`, avant tout calcul.
+- **À vérifier** : coller un document multi-niveaux (y compris titres `#1.` sans espace, et avec fins de ligne `\r\n`) dans un dossier niveau 2 → le popup s'affiche avec le décalage +2, tous les titres recalés et espacés, « Coller » insère les titres en sous-sections (niveau 3+), le menu reflète la nouvelle arborescence, le texte est intégralement présent ; « Annuler » ne touche à rien.
 - **Composants:** `projet-editor-zone.component.ts`, `projet-editor-zone.component.html`
 
 ---
@@ -596,3 +596,14 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Résultat à redouter (bug corrigé)** : l'ancienne implémentation créait un dossier séparé par bloc via `createFolder`/`updateFile` ; les `updateFile` échouaient silencieusement (`.catch`) → **tous les dossiers vides** et dispersés au lieu d'un dossier unique.
 - **À vérifier** : exécuter un prompt « cours de maths » → un seul dossier « PR-Res … » avec Séance 1..N + Bilan remplis (pas de dossiers vides) ; les événements agenda et boards Trello/Array sont créés.
 - **Composants:** `projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-51` — [modification] Bouton unique "Enregistrer et partager" (validation manuelle, plus d'auto-checkpoint)
+
+- **Précondition** : au moins une section a des modifications locales non partagées (brouillon local, badge ambre).
+- **Action** : clic sur "Enregistrer et partager" (mode Code, Visu, Structure ou menu contextuel section de la sidebar — quatre points d'entrée, tous passent désormais par `writeSectionStyled` avec `baseVersionId` systématiquement transmis).
+- **Résultat attendu** : si aucune modification concurrente (baseVersionId à jour) → insertion directe d'une version BDD immuable (`projet_content_version`), déclenchement git/FTP si le projet est configuré (fusion des deux dans le même clic), brouillon local supprimé, badge ambre disparaît. Si une modification concurrente existe → 409 → écran de fusion (`2-5-2-4-40`), aucune perte.
+- **Résultat à redouter (bugs corrigés)** : (1) avant cette modification, les chemins de publication (Code/Visu/Structure/menu contextuel section) appelaient `updateFile` sans `baseVersionId` → aucune détection de conflit n'était jamais possible sur ce chemin, une publication pouvait écraser silencieusement la dernière version BDD d'un autre utilisateur ; (2) l'acquisition de présence/verrou (`activeEntityLocks`, `collab.lockNode`) et l'affichage du bouton étaient conditionnés à `backupType` (projets git/FTP uniquement) — un projet sans sauvegarde externe n'avait donc **aucun moyen** de valider ses brouillons vers la BDD partagée, même partagé avec un autre utilisateur ; retiré cette condition partout (mode Code/Visu/Structure, upload/suppression d'image) ; (3) l'en-tête `x-base-version-id` manquait dans la liste `allowedHeaders` de la config CORS serveur → toute requête PUT l'utilisant échouait silencieusement côté navigateur (`Failed to fetch`, invisible côté serveur) — corrigé.
+- **À vérifier** : publier une section depuis chacun des 4 points d'entrée avec un `baseVersionId` volontairement périmé (un autre user a validé entre-temps) → le panneau de conflit s'ouvre systématiquement, jamais d'écrasement silencieux. Vérifier aussi sur un projet **sans** git/FTP configuré : taper du texte → badge de présence + bouton "Enregistrer et partager" apparaissent dans le menu contextuel de la section → clic → version BDD créée, brouillon purgé.
+- **Composants:** `projet-editor-zone.component.ts`, `projet-editor.component.ts`, `projet-editor.component.html`, `projet-sidebar.component.html`, `server/server-data.js`
