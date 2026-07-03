@@ -1,12 +1,13 @@
 import { Component, Input, Output, EventEmitter, signal, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { MegaOutilsService, ProjetCollabService, PromptExecution } from '@worganic/portail-core/data-access';
 
 @Component({
   selector: 'app-prompt-board',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   template: `
     <div class="flex flex-col bg-light-background dark:bg-background rounded-lg border border-amber-500/20 overflow-hidden">
 
@@ -15,22 +16,20 @@ import { MegaOutilsService, ProjetCollabService, PromptExecution } from '@worgan
         <span class="material-symbols-outlined text-amber-400 text-lg">smart_toy</span>
         <span class="text-sm font-semibold text-light-text dark:text-white/90">{{ instanceName }}</span>
         @if (!readonly) {
-          @if (guided) {
-            <button class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/25 text-blue-400 flex items-center gap-1 hover:bg-blue-500/25 transition-colors"
-                    title="Mode guidé activé — cliquer pour désactiver"
-                    (click)="toggleGuided.emit(false)">
-              <span class="material-symbols-outlined text-[11px]">conversation</span>Guidé
-            </button>
-          } @else {
-            <button class="text-[10px] px-1.5 py-0.5 rounded border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 flex items-center gap-1 hover:text-blue-400 hover:border-blue-500/30 transition-colors"
-                    title="Activer le mode guidé (cadrage par formulaire)"
-                    (click)="toggleGuided.emit(true)">
-              <span class="material-symbols-outlined text-[11px]">conversation</span>Mode guidé
-            </button>
-          }
-        } @else if (guided) {
+          <select class="text-[10px] font-medium px-1.5 py-0.5 rounded border cursor-pointer bg-light-surface dark:bg-surface dark:[color-scheme:dark]"
+                  [ngClass]="mode === 'guided' ? 'border-blue-500/25 text-blue-400' : (mode === 'chat' ? 'border-emerald-500/25 text-emerald-400' : 'border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40')"
+                  [ngModel]="mode" (ngModelChange)="modeChange.emit($any($event))">
+            <option value="simple">Normal</option>
+            <option value="guided">Guidé</option>
+            <option value="chat">Tchat</option>
+          </select>
+        } @else if (mode === 'guided') {
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/25 text-blue-400 flex items-center gap-1">
             <span class="material-symbols-outlined text-[11px]">conversation</span>Guidé
+          </span>
+        } @else if (mode === 'chat') {
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[11px]">forum</span>Tchat
           </span>
         }
         @if (variables.length > 0) {
@@ -101,11 +100,11 @@ export class PromptBoardComponent implements OnInit, OnDestroy {
   @Input() variables: string[] = [];
   @Input() readonly = false;
   @Input() deletable = false;
-  @Input() guided = false;
+  @Input() mode: 'simple' | 'guided' | 'chat' = 'simple';
 
   @Output() execute = new EventEmitter<void>();
   @Output() deleteBoard = new EventEmitter<string>();
-  @Output() toggleGuided = new EventEmitter<boolean>();
+  @Output() modeChange = new EventEmitter<'simple' | 'guided' | 'chat'>();
 
   private megaSvc = inject(MegaOutilsService);
   private collabSvc = inject(ProjetCollabService);

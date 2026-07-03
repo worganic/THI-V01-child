@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal, computed, ViewChild, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { runtimeEnv } from '../../runtime-env';
@@ -77,6 +77,43 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   agendaEventToOpen = signal<{ event: AgendaEvent; token: number } | null>(null);
   zone5Tab = signal<'conversation' | 'history'>('conversation');
   zone5Collapsed = signal(false);
+
+  // ── Redimensionnement du volet Conversation/Historique (glisser-déposer sur la poignée) ──
+  private static readonly ZONE5_WIDTH_KEY = 'wo-zone5-width';
+  private static readonly ZONE5_WIDTH_MIN = 240;
+  private static readonly ZONE5_WIDTH_MAX = 640;
+  zone5Width = signal<number>(ProjetEditorComponent.loadZone5Width());
+  private zone5Resize: { startWidth: number; startX: number } | null = null;
+
+  private static loadZone5Width(): number {
+    try {
+      const raw = localStorage.getItem(ProjetEditorComponent.ZONE5_WIDTH_KEY);
+      const n = raw ? parseInt(raw, 10) : NaN;
+      if (!isNaN(n)) return Math.min(Math.max(n, ProjetEditorComponent.ZONE5_WIDTH_MIN), ProjetEditorComponent.ZONE5_WIDTH_MAX);
+    } catch { /* localStorage indisponible (navigation privée…) */ }
+    return 320; // équivalent Tailwind w-80
+  }
+
+  startZone5Resize(ev: MouseEvent) {
+    ev.preventDefault();
+    this.zone5Resize = { startWidth: this.zone5Width(), startX: ev.clientX };
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onZone5ResizeMove(ev: MouseEvent) {
+    if (!this.zone5Resize) return;
+    // Poignée à gauche du volet : glisser vers la gauche agrandit le volet.
+    const delta = this.zone5Resize.startX - ev.clientX;
+    const next = Math.min(Math.max(this.zone5Resize.startWidth + delta, ProjetEditorComponent.ZONE5_WIDTH_MIN), ProjetEditorComponent.ZONE5_WIDTH_MAX);
+    this.zone5Width.set(next);
+  }
+
+  @HostListener('document:mouseup')
+  onZone5ResizeEnd() {
+    if (!this.zone5Resize) return;
+    this.zone5Resize = null;
+    try { localStorage.setItem(ProjetEditorComponent.ZONE5_WIDTH_KEY, String(this.zone5Width())); } catch { /* ignore */ }
+  }
   // F6 — Drawer des commentaires de section
   commentsDrawer = signal<{ visible: boolean; folderId: string | null; folderName: string }>({
     visible: false, folderId: null, folderName: ''

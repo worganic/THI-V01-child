@@ -203,8 +203,14 @@
           </span>
         </div>
       } @else {
+        <!-- Poignée de redimensionnement du volet Conversation/Historique -->
+        <div class="w-1 flex-shrink-0 cursor-col-resize hover:bg-light-primary/40 dark:hover:bg-primary/40 active:bg-light-primary/60 dark:active:bg-primary/60 transition-colors"
+             title="Glisser pour redimensionner"
+             (mousedown)="startZone5Resize($event)"></div>
+
         <!-- Volet complet -->
-        <div class="w-80 flex-shrink-0 flex flex-col overflow-hidden border-l border-light-border dark:border-white/8 bg-white dark:bg-[#0f0f17]">
+        <div class="flex-shrink-0 flex flex-col overflow-hidden border-l border-light-border dark:border-white/8 bg-white dark:bg-[#0f0f17]"
+             [style.width.px]="zone5Width()">
 
           <!-- Onglets + bouton collapse -->
           <div class="flex-shrink-0 flex border-b border-light-border dark:border-white/8">

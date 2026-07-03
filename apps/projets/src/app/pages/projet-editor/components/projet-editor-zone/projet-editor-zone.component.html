@@ -341,15 +341,35 @@
             <span class="material-symbols-outlined text-[13px]">error</span>{{ promptNameError() }}
           </p>
         }
-        <label class="flex items-start gap-2 mt-3 mb-4 cursor-pointer">
-          <input type="checkbox" class="mt-0.5 w-4 h-4 accent-amber-500 cursor-pointer flex-shrink-0"
-                 [checked]="promptGuidedMode()"
-                 (change)="promptGuidedMode.set($any($event.target).checked)" />
-          <span class="text-[12px] text-light-text dark:text-white/70 leading-snug">
-            Mode guidé
-            <span class="block text-[10px] text-light-text-muted dark:text-white/40">L'IA pose d'abord des questions (formulaire de cadrage), puis génère le livrable en MegaOutils.</span>
-          </span>
-        </label>
+        <div class="flex flex-col gap-1.5 mt-3 mb-4">
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="radio" name="promptMode" class="mt-0.5 w-4 h-4 accent-amber-500 cursor-pointer flex-shrink-0"
+                   [checked]="promptMode() === 'simple'"
+                   (change)="promptMode.set('simple')" />
+            <span class="text-[12px] text-light-text dark:text-white/70 leading-snug">
+              Normal
+              <span class="block text-[10px] text-light-text-muted dark:text-white/40">Un aller-retour avec l'IA, le résultat est inséré directement dans le document.</span>
+            </span>
+          </label>
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="radio" name="promptMode" class="mt-0.5 w-4 h-4 accent-blue-500 cursor-pointer flex-shrink-0"
+                   [checked]="promptMode() === 'guided'"
+                   (change)="promptMode.set('guided')" />
+            <span class="text-[12px] text-light-text dark:text-white/70 leading-snug">
+              Mode guidé
+              <span class="block text-[10px] text-light-text-muted dark:text-white/40">L'IA pose d'abord des questions (formulaire de cadrage), puis génère le livrable en MegaOutils.</span>
+            </span>
+          </label>
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="radio" name="promptMode" class="mt-0.5 w-4 h-4 accent-emerald-500 cursor-pointer flex-shrink-0"
+                   [checked]="promptMode() === 'chat'"
+                   (change)="promptMode.set('chat')" />
+            <span class="text-[12px] text-light-text dark:text-white/70 leading-snug">
+              Mode tchat
+              <span class="block text-[10px] text-light-text-muted dark:text-white/40">Discussion libre avec l'IA ; tu copies ensuite la réponse voulue vers le document via le popup d'import.</span>
+            </span>
+          </label>
+        </div>
         <div class="flex gap-2">
           <button class="flex-1 text-xs px-3 py-2 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
                   [disabled]="promptCreating()"
@@ -484,6 +504,19 @@ Votre texte de prompt ici.
       [currentState]="activeWorkflowForExecution!.currentState"
       (materialize)="onWorkflowMaterialize($event)"
       (cancel)="showWorkflowPopup.set(false)" />
+  }
+
+  <!-- Popup mode tchat (conversation libre → copie manuelle vers le popup d'import) -->
+  @if (showChatPopup() && activeChatForExecution) {
+    <app-prompt-chat-popup
+      [instanceId]="activeChatForExecution!.instanceId"
+      [instanceName]="activeChatForExecution!.instanceName"
+      [userPrompt]="activeChatForExecution!.userPrompt"
+      [systemPrompt]="activeChatForExecution!.systemPrompt"
+      [variables]="activeChatForExecution!.variables"
+      [baseSystemPrompt]="promptBaseSystemPrompt"
+      (insertAsSection)="onChatInsertRequested($event)"
+      (cancel)="showChatPopup.set(false)" />
   }
 
   @if (showFormExecutePopup() && activeFormForExecution) {
@@ -1650,11 +1683,11 @@ Votre texte de prompt ici.
                 [systemPrompt]="promptSystemPromptForId(pid)"
                 [userPrompt]="promptUserPromptForId(pid)"
                 [variables]="promptVariablesForId(pid)"
-                [guided]="promptModeForId(pid) === 'guided'"
+                [mode]="promptModeForId(pid)"
                 [readonly]="false"
                 [deletable]="false"
                 (execute)="openPromptExecutePopup(pid)"
-                (toggleGuided)="setPromptGuided(pid, $event)" />
+                (modeChange)="setPromptMode(pid, $event)" />
               @if (getPromptResultForId(pid); as res) {
                 <div class="mt-2 p-3 rounded-lg border border-primary/30 bg-surface/60 text-sm">
                   <div class="flex items-center gap-1.5 mb-2 text-muted text-xs">
@@ -1851,11 +1884,11 @@ Votre texte de prompt ici.
                       [systemPrompt]="promptSystemPromptForId(board.inst!.id)"
                       [userPrompt]="promptUserPromptForId(board.inst!.id)"
                       [variables]="promptVariablesForId(board.inst!.id)"
-                      [guided]="promptModeForId(board.inst!.id) === 'guided'"
+                      [mode]="promptModeForId(board.inst!.id)"
                       [readonly]="false"
                       [deletable]="false"
                       (execute)="openPromptExecutePopup(board.inst!.id)"
-                      (toggleGuided)="setPromptGuided(board.inst!.id, $event)" />
+                      (modeChange)="setPromptMode(board.inst!.id, $event)" />
                     @if (getPromptResultForId(board.inst!.id); as res) {
                       <div class="mt-2 p-3 rounded-lg border border-primary/30 bg-surface/60 text-sm">
                         <div class="flex items-center gap-1.5 mb-2 text-muted text-xs">

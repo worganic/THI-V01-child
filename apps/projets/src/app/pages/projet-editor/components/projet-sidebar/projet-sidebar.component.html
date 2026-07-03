@@ -12,7 +12,7 @@
   </div>
 
   <!-- Arbre du projet -->
-  <div class="w-56 h-full flex flex-col bg-white dark:bg-[#0f0f17]">
+  <div class="h-full flex flex-col bg-white dark:bg-[#0f0f17]" [style.width.px]="treeWidth()">
     <div class="flex-1 min-h-0 overflow-y-auto py-2"
          (contextmenu)="onContextMenu($event, null)">
 
@@ -167,6 +167,11 @@
       </button>
     }
   </div>
+
+  <!-- Poignée de redimensionnement de l'arbre du projet -->
+  <div class="w-1 flex-shrink-0 cursor-col-resize hover:bg-light-primary/40 dark:hover:bg-primary/40 active:bg-light-primary/60 dark:active:bg-primary/60 transition-colors"
+       title="Glisser pour redimensionner"
+       (mousedown)="startTreeResize($event)"></div>
 
 </div>
 

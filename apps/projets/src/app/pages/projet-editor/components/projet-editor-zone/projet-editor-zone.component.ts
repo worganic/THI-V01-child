@@ -8,6 +8,7 @@ import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOu
 import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
+import { PromptChatPopupComponent } from '../prompt-chat-popup/prompt-chat-popup.component';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { ProjetCollabService } from '@worganic/portail-core/data-access';
@@ -183,7 +184,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, ChartBoardComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, PromptChatPopupComponent, ChartBoardComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -402,7 +403,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   promptName = '';
   promptNameError = signal<string | null>(null);
   promptCreating = signal(false);
-  promptGuidedMode = signal(false);
+  promptMode = signal<'simple' | 'guided' | 'chat'>('simple');
   contentPromptIds: string[] = [];
   promptPanelCollapsed = signal(false);
   // Section résolue par instance prompt (clé = instanceId) — pour l'affichage du nom de section dans la liste
@@ -418,6 +419,10 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   activeWorkflowForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; currentState: string } | null = null;
   workflowClarifyPrompt = '';
   workflowGeneratePrompt = '';
+
+  // Mode tchat (conversation libre multi-tours → copie manuelle vers l'édition via le popup d'import)
+  showChatPopup = signal(false);
+  activeChatForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; variables: string[]; folderId: string | null } | null = null;
 
   // ── Form MO ────────────────────────────────────────────────────────────────
   contentFormIds: string[] = [];
@@ -5660,9 +5665,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   /** Extrait systemPrompt, userPrompt et variables d'un bloc PROMPT. */
-  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[]; mode: 'guided' | 'simple' } {
-    const modeMatch = body.match(/^\s*MODE:\s*(guided|simple)\s*$/im);
-    const mode: 'guided' | 'simple' = modeMatch && /guided/i.test(modeMatch[1]) ? 'guided' : 'simple';
+  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[]; mode: 'guided' | 'simple' | 'chat' } {
+    const modeMatch = body.match(/^\s*MODE:\s*(guided|simple|chat)\s*$/im);
+    const modeRaw = modeMatch?.[1]?.toLowerCase();
+    const mode: 'guided' | 'simple' | 'chat' = modeRaw === 'guided' || modeRaw === 'chat' ? modeRaw : 'simple';
     const sepMatch = body.match(/^\s*---\s*$/m);
     let systemPrompt: string | null = null;
     let userPrompt = body;
@@ -5680,8 +5686,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return { systemPrompt, userPrompt, variables: varNames, mode };
   }
 
-  /** Mode d'exécution d'un prompt ('guided' = workflow cadrage→formulaire→génération). */
-  promptModeForId(id: string): 'guided' | 'simple' {
+  /** Mode d'exécution d'un prompt ('guided' = workflow cadrage→formulaire→génération, 'chat' = conversation libre). */
+  promptModeForId(id: string): 'guided' | 'simple' | 'chat' {
     return this.parsePromptFence(this.getPromptBodyById(id)).mode;
   }
 
@@ -5697,7 +5703,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
     this.promptName = 'Mon Prompt';
     this.promptNameError.set(null);
-    this.promptGuidedMode.set(false);
+    this.promptMode.set('simple');
     this.showPromptPopup.set(true);
   }
 
@@ -5721,7 +5727,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         outilId: this.activeOutilId || undefined,
         folderId,
       });
-      const modeLine = this.promptGuidedMode() ? 'MODE: guided\n' : '';
+      const mode = this.promptMode();
+      const modeLine = mode !== 'simple' ? `MODE: ${mode}\n` : '';
       this.insertAt(`\n\n\`\`\`PROMPT: ${name} {{MOID:${inst.id}}}\n${modeLine}SYSTEM: \n\n---\n\nVotre prompt ici.\n\`\`\`\n\n`, '');
       this.showPromptPopup.set(false);
       this.megaOutilCreated.emit(inst);
@@ -5744,6 +5751,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.openWorkflowPopup(instanceId, inst.name, parsed.userPrompt, parsed.systemPrompt);
       return;
     }
+    // Mode tchat → conversation libre au lieu de l'exécution simple
+    if (parsed.mode === 'chat') {
+      this.openChatPopup(instanceId, inst.name, parsed.userPrompt, parsed.systemPrompt, parsed.variables, inst.folderId ?? null);
+      return;
+    }
 
     this.activePromptForExecution = {
       instanceId,
@@ -5762,8 +5774,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.showPromptExecutePopup.set(true);
   }
 
-  /** Active/désactive le mode guidé d'un prompt en ajoutant/retirant la ligne MODE: guided. */
-  setPromptGuided(instanceId: string, guided: boolean) {
+  /** Change le mode d'exécution d'un prompt en ajoutant/retirant/remplaçant la ligne MODE: xxx. */
+  setPromptMode(instanceId: string, mode: 'simple' | 'guided' | 'chat') {
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return;
     const lines = this.unifiedContent.split('\n');
@@ -5776,9 +5788,14 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       if (t === '```' || t === '---' || /^===/.test(t)) break;
       if (/^MODE:\s*/i.test(t)) { modeIdx = i; break; }
     }
-    if (guided && modeIdx === -1) lines.splice(openLine + 1, 0, 'MODE: guided');
-    else if (!guided && modeIdx !== -1) lines.splice(modeIdx, 1);
-    else return;
+    if (mode === 'simple') {
+      if (modeIdx === -1) return;
+      lines.splice(modeIdx, 1);
+    } else if (modeIdx === -1) {
+      lines.splice(openLine + 1, 0, `MODE: ${mode}`);
+    } else {
+      lines[modeIdx] = `MODE: ${mode}`;
+    }
     this.unifiedContent = lines.join('\n');
     this.recomputeRanges();
     this.syncDocSectionsTextFromContent();
@@ -5803,6 +5820,48 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         this.promptBaseSystemPrompt = this.promptBaseSystemPrompt || '';
         this.showWorkflowPopup.set(true);
       });
+  }
+
+  private openChatPopup(instanceId: string, instanceName: string, userPrompt: string, systemPrompt: string | null, variables: string[], folderId: string | null) {
+    this.activeChatForExecution = { instanceId, instanceName, userPrompt, systemPrompt, variables, folderId };
+    if (this.promptBaseSystemPrompt === null) {
+      this.megaOutilsSvc.getPromptGlobalConfig()
+        .then(cfg => { this.promptBaseSystemPrompt = cfg.baseSystemPrompt || ''; })
+        .catch(() => { this.promptBaseSystemPrompt = ''; });
+    }
+    this.showChatPopup.set(true);
+  }
+
+  /** Reçoit la dernière réponse IA du tchat à insérer : ouvre le popup d'import (pastePreview)
+   *  ciblé sur le dossier du prompt, sans fermer le tchat (l'utilisateur peut y revenir ensuite). */
+  onChatInsertRequested(text: string) {
+    const chat = this.activeChatForExecution;
+    if (!chat || !text.trim()) return;
+    const sectionId = chat.folderId || '';
+    const level = chat.folderId ? (this.sectionRanges.find(r => r.folderId === chat.folderId)?.level ?? 1) : 0;
+    this.openPastePreviewForText(text, { mode: 'visu', sectionId, level });
+  }
+
+  /** Ouvre le popup de prévisualisation de collage (recalage des niveaux) pour un texte donné,
+   *  hors événement clipboard réel — même mécanique que onVisuSectionPaste/onTextareaPaste. */
+  private openPastePreviewForText(text: string, target: { mode: 'visu'; sectionId: string; level: number }) {
+    const normalized = text.replace(/\r\n?/g, '\n');
+    const parentLevel = target.level;
+    const desiredTop = Math.min(parentLevel + 1, 6);
+    const releveled = this.relevelMarkdownHeadings(normalized, desiredTop);
+    this.lastPasteRawText = normalized;
+    const wrapTitle = 'Nouvelle section';
+    this.pastePreview = {
+      mode: 'visu',
+      strategy: 'relevel',
+      proposed: releveled,
+      wrapTitle,
+      wrapProposed: this.wrapMarkdownInIntermediateSection(normalized, parentLevel, wrapTitle),
+      parentLevel,
+      desiredTop,
+      shift: desiredTop - this.minMarkdownHeadingLevel(normalized),
+      visu: { sectionId: target.sectionId },
+    };
   }
 
   /** Reçoit le livrable validé du workflow : insère le texte + crée les MO retenus. */
