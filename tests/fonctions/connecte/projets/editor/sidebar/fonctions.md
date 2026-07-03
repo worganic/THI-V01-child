@@ -230,3 +230,14 @@
 - Clic sur un événement : émet `agendaEventSelect({ outilId, event })` → le parent active l'outil agenda et ouvre l'événement (voir agenda `2-5-2-10-6`)
 - **Priorité:** majeure
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`
+
+---
+
+## `2-5-2-2-20` — Poignées de redimensionnement (arbre du projet + volet Conversation)
+
+- **Précondition** : éditeur de projet ouvert (n'importe quel mode).
+- **Action** : glisser la fine poignée verticale (`cursor-col-resize`) située (1) entre l'arbre de fichiers et la zone d'édition, ou (2) entre la zone d'édition et le volet Conversation/Historique (Zone 5).
+- **Résultat attendu** : la largeur du panneau suit le curseur en direct (`ProjetSidebarComponent.treeWidth` / `ProjetEditorComponent.zone5Width`, signaux liés en `[style.width.px]`, mis à jour via `@HostListener('document:mousemove')` pendant le drag). Bornes : arbre 180–480px (défaut 224px = `w-56`), volet Conversation 240–640px (défaut 320px = `w-80`). Le relâchement (`document:mouseup`) persiste la largeur dans `localStorage` (`wo-sidebar-tree-width` / `wo-zone5-width`) ; elle est restaurée telle quelle à la prochaine ouverture du projet (tant que le `localStorage` du navigateur n'est pas vidé).
+- **Résultat à redouter** : `localStorage` indisponible (navigation privée stricte) → lecture/écriture entourées d'un `try/catch` silencieux, la largeur retombe simplement sur la valeur par défaut sans erreur.
+- **À vérifier** : glisser chaque poignée dans les deux sens jusqu'aux bornes (180/480 pour l'arbre, 240/640 pour Conversation) → le panneau ne dépasse jamais ces limites. Recharger la page → les deux largeurs sont conservées. Volet Conversation réduit (`zone5Collapsed`) → sa poignée disparaît (pas de redimensionnement d'un volet invisible).
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`

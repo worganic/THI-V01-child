@@ -80,6 +80,42 @@ export class ProjetSidebarComponent implements OnChanges {
   private woHistory = inject(WoActionHistoryService);
   readonly collab = inject(ProjetCollabService);
 
+  // ── Redimensionnement de l'arbre du projet (glisser-déposer sur la poignée) ──────────────
+  private static readonly TREE_WIDTH_KEY = 'wo-sidebar-tree-width';
+  private static readonly TREE_WIDTH_MIN = 180;
+  private static readonly TREE_WIDTH_MAX = 480;
+  treeWidth = signal<number>(this.loadTreeWidth());
+  private treeResize: { startWidth: number; startX: number } | null = null;
+
+  private loadTreeWidth(): number {
+    try {
+      const raw = localStorage.getItem(ProjetSidebarComponent.TREE_WIDTH_KEY);
+      const n = raw ? parseInt(raw, 10) : NaN;
+      if (!isNaN(n)) return Math.min(Math.max(n, ProjetSidebarComponent.TREE_WIDTH_MIN), ProjetSidebarComponent.TREE_WIDTH_MAX);
+    } catch { /* localStorage indisponible (navigation privée…) */ }
+    return 224; // équivalent Tailwind w-56
+  }
+
+  startTreeResize(ev: MouseEvent) {
+    ev.preventDefault();
+    this.treeResize = { startWidth: this.treeWidth(), startX: ev.clientX };
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onTreeResizeMove(ev: MouseEvent) {
+    if (!this.treeResize) return;
+    const delta = ev.clientX - this.treeResize.startX;
+    const next = Math.min(Math.max(this.treeResize.startWidth + delta, ProjetSidebarComponent.TREE_WIDTH_MIN), ProjetSidebarComponent.TREE_WIDTH_MAX);
+    this.treeWidth.set(next);
+  }
+
+  @HostListener('document:mouseup')
+  onTreeResizeEnd() {
+    if (!this.treeResize) return;
+    this.treeResize = null;
+    try { localStorage.setItem(ProjetSidebarComponent.TREE_WIDTH_KEY, String(this.treeWidth())); } catch { /* ignore */ }
+  }
+
   constructor(private svc: ProjectFilesService, private elRef: ElementRef, private router: Router) {}
 
   onProjectSelect(): void {

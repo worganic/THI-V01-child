@@ -13355,6 +13355,78 @@
       "prompt": "verifi le système d'import de texte ou l'affichage avec mise à jour des niveaux n'affiche pas les modifications à valider. Exemple je veux importé en dessous du niveau 1 les niveaux du texte importé devrait donc commencé à 2 et non à 1 comme c'est affiché ici",
       "startedAt": "2026-07-03T14:45:25.379Z",
       "completedAt": "2026-07-03T14:45:25.379Z"
+    },
+    {
+      "id": "mod-521",
+      "version": "B-0.319",
+      "date": "2026-07-03T20:05:56.769Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:editor-zone-code,projets:mega-outils-prompt",
+      "title": "Nouveau mode Tchat pour les MO Prompt (conversation libre + import vers l'édition)",
+      "description": "Ajout d'un 3e mode d'exécution pour les MO Prompt, en plus de Normal et Guidé : le mode Tchat (ligne MODE: chat dans le fence PROMPT). Contrairement aux 2 autres modes, il ouvre une conversation libre multi-tours avec l'IA au lieu d'inserer automatiquement un resultat. Nouveau composant PromptChatPopupComponent (theme emeraude) : premier message envoye automatiquement au demarrage (avec ecran de remplissage des variables {{...}} si necessaire), puis composer libre pour repondre a l'IA. Chaque tour reenvoie tout l'historique de la conversation via AiExecuteService.startExecution() (meme mecanisme deja utilise par le workflow guide, pas de nouvelle route backend necessaire : l'endpoint /execute-chat-turn de l'executor existant a ete etudie mais ecarte car il ne fait pas non plus de vraie session CLI persistante et n'a aucun proxy server-data.js). Bouton \"Copier la derniere reponse -> Coller en edition\" qui reutilise le popup d'import existant (pastePreview, meme mecanisme que le collage de markdown externe) au lieu d'inserer automatiquement, via une nouvelle methode publique openPastePreviewForText(). Le popup tchat reste ouvert apres l'insertion. Le selecteur de mode dans prompt-board.component.ts est passe d'un simple toggle booleen (guided) a un select 3 valeurs (mode: simple/guided/chat). Teste de bout en bout dans le navigateur : creation, envoi/reponse, continuite du contexte sur 2 tours, bouton copier vers import, insertion, changement de mode.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-chat-popup/prompt-chat-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "à partir d'l'executionb d'un MO prompt on à le choix en le mode normal et le mode Guidé, je voudrais que tu rajoute un mode, le mode tchat, ce mode crait un popup qui permettra de communiqué directement avec l'IA selectionné et son model. Lorsque le tchat est lancer cela envois le prompt à l'IA et attend une réponse ensuite le système fonctionne comme un mode cli (claude ou AGY) si l'IA réponds l'utilisateur doit pouvoir lui répondre et on peux répondre et envoyé d'autre prompt dans le système de tchat. Un bouton doit permettre de copié la dernière réponse et de la coller dans le mode édition (avec le popup d'import.)",
+      "startedAt": "2026-07-03T20:05:56.769Z",
+      "completedAt": "2026-07-03T20:05:56.769Z"
+    },
+    {
+      "id": "mod-522",
+      "version": "B-0.319",
+      "date": "2026-07-03T20:13:36.033Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "libs"
+      ],
+      "features": "projets:mega-outils-prompt",
+      "title": "Fix design du select de mode dans le board Prompt (rendu natif clair non thémé)",
+      "description": "Le select de choix du mode (Normal/Guidé/Tchat) ajouté dans prompt-board.component.ts rendait avec le chrome natif clair du navigateur (boîte grise, non alignée sur le thème sombre) car il manquait la classe dark:[color-scheme:dark] (règle documentée dans CLAUDE.md pour tout <select> en dark mode) ainsi qu'un fond explicite. Ajout de bg-light-surface dark:bg-surface dark:[color-scheme:dark] sur le select : rendu cohérent avec le reste de l'interface (fond sombre, couleur par mode : gris=Normal, bleu=Guidé, émeraude=Tchat), vérifié dans le navigateur pour les 3 valeurs.",
+      "files": [
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le graphisme du select du popup n'a pas le bopn design",
+      "startedAt": "2026-07-03T20:13:36.033Z",
+      "completedAt": "2026-07-03T20:13:36.033Z"
+    },
+    {
+      "id": "mod-523",
+      "version": "B-0.319",
+      "date": "2026-07-03T20:34:15.793Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-sidebar,projets:editor-layout",
+      "title": "Poignées de redimensionnement : arbre du projet et volet Conversation",
+      "description": "Ajout de 2 poignées de redimensionnement (glisser-deposer, curseur col-resize) dans l'editeur de projet : (1) entre l'arbre de fichiers (sidebar) et la zone d'edition, (2) entre la zone d'edition et le volet Conversation/Historique (Zone 5). Implementation en HostListener document:mousemove/mouseup (meme pattern que array-board.component.ts, aucun composant/directive reutilisable n'existait dans le code pour ca), largeur pilotee par un signal lie en [style.width.px] : treeWidth (ProjetSidebarComponent, 180-480px, defaut 224px) et zone5Width (ProjetEditorComponent, 240-640px, defaut 320px). Persistance dans localStorage (wo-sidebar-tree-width / wo-zone5-width), lecture/ecriture protegees par try/catch (navigation privee). Teste dans le navigateur via des evenements souris simules avec precision pixel exacte (delta demande = delta obtenu), rendu visuel confirme par capture d'ecran, valeurs par defaut verifiees apres purge du localStorage.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais que tu rajoute une option pour deplacer la delimitation entre le menu et la zone d'edition la même chose pour la barre entre la zone d'edition et la zone de conversation",
+      "startedAt": "2026-07-03T20:34:15.793Z",
+      "completedAt": "2026-07-03T20:34:15.793Z"
     }
   ]
 }
