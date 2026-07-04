@@ -1,0 +1,7 @@
+{
+  "host": "193.203.168.175",
+  "user": "u995922796_worg",
+  "password": "REPLACE_ME",
+  "database": "u995922796_frankenstein",
+  "connect_timeout": 5
+}

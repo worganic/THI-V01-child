@@ -103,3 +103,8 @@ test-agent-suite/playwright-report/
 test-agent-suite/test-results/
 test-agent-suite/package-lock.json
 launcher.log
+
+# Monitor DB (sous-app de surveillance temps réel)
+/monitor/db_config.json
+/monitor.log
+/monitor/ui_state.json

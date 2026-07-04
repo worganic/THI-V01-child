@@ -13427,6 +13427,137 @@
       "prompt": "je voudrais que tu rajoute une option pour deplacer la delimitation entre le menu et la zone d'edition la même chose pour la barre entre la zone d'edition et la zone de conversation",
       "startedAt": "2026-07-03T20:34:15.793Z",
       "completedAt": "2026-07-03T20:34:15.793Z"
+    },
+    {
+      "id": "mod-524",
+      "version": "B-0.319",
+      "date": "2026-07-04T14:45:45.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:monitor-db",
+      "title": "Sous-app Monitor DB : surveillance BDD temps reel + stats/sante",
+      "description": "Nouvelle sous-application Python/PyQt6 (monitor_app.py + package monitor/), lancable depuis launcher_app.py comme un service de plus (carte 'Monitor DB', process separe, non demarre automatiquement au Start All). Panneau 1 : flux chronologique unique des INSERT/UPDATE/DELETE detectes par polling + diff de snapshot en memoire (aucun CDC/binlog disponible sur l'hebergement mutualise Hostinger), sur ~30 tables MySQL avec filtre par table/categorie (metier/collab/mega_outil/admin_test/audit), selection par defaut restreinte a la categorie metier. Panneau 2 : stats metier (users, projets, tickets, appels IA + taux d'erreur, derniers deploiements) et sante technique (statut API/Agent/Portail/Projets via ping de port, latence MySQL, connexions actives, sessions actives). Connexion MySQL dediee en lecture seule (garde-fou sur les requetes SELECT/SHOW uniquement), completement decouplee du pool Node (server/db.js) et de l'API : fonctionne meme si le serveur principal est down. Credentials dans monitor/db_config.json (gitignore, template .example fourni). Toutes les requetes de polling testees en lecture reelle contre la base de prod (aucune ecriture) ; une divergence de schema detectee et corrigee au passage (mega_outil_mockup_connections utilise reellement project_id, pas project_name comme dans le DDL source).",
+      "files": [
+        "monitor_app.py",
+        "requirements.txt",
+        "monitor/__init__.py",
+        "monitor/db_config.py",
+        "monitor/db_config.json.example",
+        "monitor/db_client.py",
+        "monitor/snapshot_engine.py",
+        "monitor/tables_registry.py",
+        "monitor/poll_worker.py",
+        "monitor/theme.py",
+        "monitor/ui/__init__.py",
+        "monitor/ui/main_window.py",
+        "monitor/ui/feed_panel.py",
+        "monitor/ui/table_filter_bar.py",
+        "monitor/ui/stats_panel.py",
+        "monitor/ui/stat_card.py",
+        "launcher_app.py",
+        ".gitignore"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais que tu rajoute une application qui fonctionne en parrallele (propose moi le bon language), cette application pourra etre lancer a partir de l'appli launcher_app.py. Cette application sera destine a affiche en temps reel certaine information de l'application principal : Affichage de la bdd en temps reel, affichage dans un seul panneau de tous les modifications apporte dans la bdd (insert, del, update). On doit pouvoir voir toutes les modifications en direct. Un autre panneau (meme appli) doit permettre de voir les stats : user, projet etc. Propose moi toutes informations qui me permettrais de controle le bon fonctionnement du site princiapl frankenstein. propose moi un plan precis pour la creation de cette sous appli. (puis) lance le dev dans une nouvelle branche 2026-07-04_surveillance",
+      "startedAt": "2026-07-04T14:00:00.000Z",
+      "completedAt": "2026-07-04T14:45:45.000Z"
+    },
+    {
+      "id": "mod-525",
+      "version": "B-0.319",
+      "date": "2026-07-04T16:50:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "system"
+      ],
+      "features": "system:monitor-db",
+      "title": "Monitor DB : filtre tables repliable + fix panneau stats invisible",
+      "description": "La liste des tables surveillees prenait toute la hauteur de la fenetre et ecrasait le panneau stats (bug de contrainte de hauteur du QScrollArea dans un QSplitter). Ajout d'une barre de bascule toujours visible dans FeedPanel (bouton Afficher/Masquer les tables surveillees) : repliee par defaut (flux en direct plein ecran), depliable a 50% de la hauteur via un QSplitter interne repliable. Corrige au passage un bug qui rendait le panneau stats invisible : mauvais objectName QSS (#statcard au lieu de #card) + le splitter laissait ce panneau s'ecraser au redimensionnement (ajout de setStretchFactor/setCollapsible).",
+      "files": [
+        "monitor/ui/main_window.py",
+        "monitor/ui/feed_panel.py",
+        "monitor/ui/table_filter_bar.py",
+        "monitor/ui/stat_card.py"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "il faudrait ameliore l'affichage de la liste des tables en cliquant sur un bouton le monitoring doit etre cache et on doit avoir la liste des tables qui doit prendre 50% et doit aussi pouvoir ce cache pour faire apparaitre que le monitoring en direct",
+      "startedAt": "2026-07-04T16:46:00.000Z",
+      "completedAt": "2026-07-04T16:50:00.000Z"
+    },
+    {
+      "id": "mod-526",
+      "version": "B-0.319",
+      "date": "2026-07-04T17:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:monitor-db",
+      "title": "Monitor DB : panneau stats plus grand par defaut + bouton accordeon",
+      "description": "Hauteur initiale du panneau Sante technique/Stats metier portee a 420px (au lieu de 300) et hauteur minimale garantie par StatCard (78px) pour eviter le chevauchement de texte constate au demarrage. Ajout d'un bouton accordeon (meme pattern que celui du flux) pour replier/deplier entierement le panneau stats.",
+      "files": [
+        "monitor/ui/main_window.py",
+        "monitor/ui/stat_card.py"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "au demarrage la zone du haut doit etre plus grande pour bien affiche les donnees (sante technique) et on doit rajoute un bouton accordeon comme la zone Affiche les tables surveille",
+      "startedAt": "2026-07-04T16:52:00.000Z",
+      "completedAt": "2026-07-04T17:00:00.000Z"
+    },
+    {
+      "id": "mod-527",
+      "version": "B-0.319",
+      "date": "2026-07-04T17:20:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:monitor-db",
+      "title": "Monitor DB : resolution projet/section/auteur pour le texte des sections",
+      "description": "projet_content_version passe en categorie metier (actif par defaut) avec apercu du contenu (LEFT(content,300) cote SQL). Ajout de monitor/project_structure.py qui resout le nom de section lisible depuis l'arborescence locale data/projets/<id>/config.json (le nom de section n'existe qu'en local, pas en BDD) et le titre du projet via un LEFT JOIN SQL vers frank_projects.title. Idem pour projet_local_draft (JOIN vers users pour le nom d'utilisateur). Ajout du mecanisme generique TableSpec.extra_joins/extra_columns dans tables_registry.py + qualification des colonnes ambigues (id/created_at/content/user_id presents a la fois dans la table et dans frank_projects apres jointure). Tables importantes (frank_projects, projet_content_version, projet_local_draft, pipeline_projects) affichees en gras et cochees par defaut dans le filtre, meme si leur categorie ne l'est pas.",
+      "files": [
+        "monitor/tables_registry.py",
+        "monitor/poll_worker.py",
+        "monitor/project_structure.py",
+        "monitor/ui/table_filter_bar.py",
+        "monitor/ui/feed_panel.py",
+        "monitor/ui/main_window.py"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "quelle est la table qui enregistre l'ensemble des textes des projets et la liste des projets (puis) lorsque je modifi un texte dans un projet exemple projet cours d'anglais je modifi la section test 2 et que je sauvegarde/partage, ou je peux voir la modif cans la bdd ? je veux pouvoir surveiller les textes enregistre dans la bdd (puis) peux tu mettre en gras les tables importante : frank_projects, projet_content_version, frank_projects.content, projet_local_draft, pipeline_projects et les mettres en coche par defaut",
+      "startedAt": "2026-07-04T17:03:00.000Z",
+      "completedAt": "2026-07-04T17:20:00.000Z"
+    },
+    {
+      "id": "mod-528",
+      "version": "B-0.319",
+      "date": "2026-07-04T17:40:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:monitor-db",
+      "title": "Monitor DB : colonnes Projet/Section/Auteur separees + colonnes redimensionnables",
+      "description": "Le flux affichait toutes les infos (projet, section, auteur, texte) concatenees dans une seule colonne Resume peu lisible. Ajout de 3 colonnes dediees (Projet, Section, Auteur) dans le QTableWidget du flux, peuplees via un mecanisme d'extracteurs par table (_extract_content_version, _extract_local_draft, fallback generique pour les autres tables). Toutes les colonnes (Heure, Table, Op, ID, Projet, Section, Auteur) passent en redimensionnement Interactive (glisser le bord de l'en-tete) avec largeurs initiales raisonnables ; l'ID long (cles composites CONCAT) est tronque a l'affichage avec la valeur complete disponible au survol.",
+      "files": [
+        "monitor/ui/feed_panel.py"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "peux tu separe dans des colonnes les donnees Resume afin de pouvoir les lires plus facilement (puis) on doit pouvoir modifie la taille des colonnes",
+      "startedAt": "2026-07-04T17:22:00.000Z",
+      "completedAt": "2026-07-04T17:40:00.000Z"
     }
   ]
 }
