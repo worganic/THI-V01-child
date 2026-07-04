@@ -1,7 +1,7 @@
 # Admin › Méga-outils — Fonctions métier
 
-Composants : `AdminMegaOutilsComponent` (portail) + `TrelloAdminComponent` (`@worganic/shared/ui`)
-Vue : gestion globale des méga-outils Trello, toutes instances tous projets confondus.
+Composants : `AdminMegaOutilsComponent` (portail) + `TrelloAdminComponent`, `MockupAdminComponent`, `ArrayAdminComponent`, `PromptAdminComponent` (`@worganic/shared/ui`)
+Vue : gestion globale des méga-outils (Trello, Mockup, Tableau, Prompt), toutes instances tous projets confondus. Form est listé pour information mais n'a pas d'instances partagées (voir `2-1-7-10`).
 
 ---
 
@@ -70,3 +70,39 @@ Vue : gestion globale des méga-outils Trello, toutes instances tous projets con
 - Côté éditeur projets, `recomputeTrelloSections()` résout la section réelle via la position du marqueur `{{TRELLO:id}}` puis appelle `updateInstance(id, { folderId })` si elle diffère du `folder_id` stocké
 - Endpoint `PATCH /api/mega-outils/instances/:id` accepte `name` et/ou `folderId` (UPDATE dynamique)
 - L'en-tête du `<app-trello-board>` affiche le nom de la section via l'`@Input() sectionName` (badge bleu, icône `tag`)
+
+---
+
+## `2-1-7-8` — [modification] Accordéon par type (Trello / Mockup / Tableau / Prompt / Form)
+
+- **Composant :** `AdminMegaOutilsComponent` (portail), liste `types: MoTypeDef[]` (id, label, description, icône, classes de couleur, `hasInstances`)
+- La liste « Types disponibles » est cliquable : chaque ligne est un bouton accordéon (signal `expanded`, un seul type ouvert à la fois — cliquer sur l'autre ferme le premier)
+- Replié par défaut à l'ouverture de la page (page courte) ; déplié, affiche en dessous le composant d'instances correspondant (`<app-trello-admin>`, `<app-mockup-admin>`, `<app-array-admin>` ou `<app-prompt-admin>` selon le type — sélection via `@switch (t.id)`), monté/démonté à chaque bascule (rechargement des données à chaque ouverture). Le type `form` affiche à la place une note explicative (voir `2-1-7-10`)
+- Chevron `expand_more`/`expand_less` reflète l'état
+
+---
+
+## `2-1-7-9` — [modification] Prompt : configuration des prompts en onglets par mode
+
+- **Composant :** `PromptAdminComponent` (`@worganic/shared/ui`), dans le panneau Prompt de l'accordéon `2-1-7-8`
+- Les 3 blocs de configuration (Prompt système de base, méta-prompts du Workflow guidé, format structuré du Mode tchat), auparavant empilés et toujours visibles, sont regroupés dans un accordéon « Configuration des prompts » (signal `configExpanded`, replié par défaut)
+- Une fois déplié : barre d'onglets par mode — **Base** / **Mode guidé** / **Mode tchat** (signal `activeConfigTab`), un seul panneau affiché à la fois
+- Chaque panneau garde ses actions Sauvegarder/Réinitialiser inchangées (voir `POST /api/mega-outils/prompt/config`, `DELETE .../workflow`, `DELETE .../chat`)
+
+---
+
+## `2-1-7-10` — [modification] Mockup, Tableau : listing des instances + Form (pas d'instances partagées)
+
+- **Mockup** (`MockupAdminComponent`, `getAllMockups()` → `GET /api/mega-outils/mockup/all`) et **Tableau** (`ArrayAdminComponent`, nouveau composant, `getAllArrayBoards()` → `GET /api/mega-outils/array/all`) suivent exactement le même patron que Trello (`2-1-7-1` à `2-1-7-6`) : en-tête instance avec badges menu/projet/section cliquables (lien vers l'éditeur), bouton « Ouvrir »/« Éditer » qui déplie le board embarqué (`<app-mockup-board>` / `<app-array-board>`, `deletable=false`), suppression avec confirmation inline.
+- **Form** n'a pas de section « Toutes les instances » : contrairement aux 4 autres types, un formulaire (cadrage du mode Guidé, question ouverte du mode Tchat) n'est **jamais persisté** comme ligne dans `mega_outil_instances` — `materializeMegaOutilsFromContent()` ignore explicitement `type === 'form'` (comme `chart`/`agenda`). Il vit uniquement dans le texte de la section qui l'a généré, il n'y a donc rien à lister depuis l'admin. Une note explicative remplace le listing.
+- **Composants:** `admin-mega-outils.component.ts`, `mockup-admin.component.ts`, `array-admin.component.ts`, `mega-outils.service.ts`, `server/server-data.js`
+
+---
+
+## `2-1-7-11` — [modification] Fix critique : résolution projet/section dans Prompt/Array/Mockup « Toutes les instances »
+
+- **Symptôme :** les sections « Toutes les instances » de Prompt et Tableau affichaient « Aucune instance » malgré des lignes réelles en base (ex. 5 Prompts, 1 Tableau dans des projets existants).
+- **Cause :** les endpoints `GET /api/mega-outils/{prompt,array}/all` (et le nouveau `/mockup/all` avant correction) faisaient un `LEFT JOIN frank_project_nodes f ON f.id = i.folder_id` — cette table **n'a jamais existé** (les sections/dossiers sont stockées en JSON dans `file_project_meta.structure`, pas dans une table SQL normalisée). La requête levait une erreur SQL (500), avalée silencieusement côté Angular (`catch { /* silencieux */ }` dans `reload()`) → liste vide sans aucun message d'erreur visible.
+- **Fix :** les 3 endpoints utilisent désormais le même patron que `/trello/all` (seul endpoint correct à l'origine) : `COALESCE(frank_projects.title, file_project_meta.display_name)` pour le nom de projet (jointure SQL directe), et `getProjectConfig(project_id)` + `findNodeById(cfg.structure, folder_id)` pour le nom de section (résolution JS depuis le JSON de structure, avec un cache par projet pour éviter de recharger la config à chaque ligne).
+- **À vérifier :** ouvrir Admin › Méga-outils, déplier Prompt et Tableau → les instances existantes apparaissent avec leur vrai nom de projet et de section, chaque badge section navigue bien vers la bonne section dans l'éditeur projets.
+- **Composants:** `server/server-data.js`

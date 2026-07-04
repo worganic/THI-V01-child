@@ -64,6 +64,10 @@ export class MegaOutilsService {
     return firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/api/mega-outils/instances/all`, { headers: this.h() }));
   }
 
+  getAllMockups(): Promise<{ instance: MegaOutilInstance; elements: MockupElement[]; projectName: string; folderName: string | null }[]> {
+    return firstValueFrom(this.http.get<any[]>(`${this.apiUrl}/api/mega-outils/mockup/all`, { headers: this.h() }));
+  }
+
   // ── Mockup diagram ─────────────────────────────────────────────────────────
 
   getMockupDiagram(projectName: string): Promise<{ connections: MockupConnection[]; positions: { instanceId: string; x: number; y: number }[] }> {
@@ -194,5 +198,26 @@ export class MegaOutilsService {
 
   resetWorkflowPrompts(): Promise<PromptGlobalConfig> {
     return firstValueFrom(this.http.delete<PromptGlobalConfig>(`${this.apiUrl}/api/mega-outils/prompt/config/workflow`, { headers: this.h() }));
+  }
+
+  resetChatStructuredPrompt(): Promise<{ chatStructuredPrompt: string }> {
+    return firstValueFrom(this.http.delete<{ chatStructuredPrompt: string }>(`${this.apiUrl}/api/mega-outils/prompt/config/chat`, { headers: this.h() }));
+  }
+
+  // ── Sessions de tchat (mode Tchat) ─────────────────────────────────────────
+  createChatSession(instanceId: string, provider: string, model: string | null): Promise<{ id: string }> {
+    return firstValueFrom(this.http.post<{ id: string }>(`${this.apiUrl}/api/mega-outils/prompt/${instanceId}/chat-session`, { provider, model }, { headers: this.h() }));
+  }
+
+  appendChatMessage(sessionId: string, role: string, text: string, seq: number): Promise<{ id: string }> {
+    return firstValueFrom(this.http.post<{ id: string }>(`${this.apiUrl}/api/mega-outils/prompt/chat-session/${sessionId}/message`, { role, text, seq }, { headers: this.h() }));
+  }
+
+  getChatSessions(instanceId: string): Promise<{ id: string; provider: string; model: string | null; createdAt: string; updatedAt: string }[]> {
+    return firstValueFrom(this.http.get<{ id: string; provider: string; model: string | null; createdAt: string; updatedAt: string }[]>(`${this.apiUrl}/api/mega-outils/prompt/${instanceId}/chat-sessions`, { headers: this.h() }));
+  }
+
+  getChatSessionMessages(sessionId: string): Promise<{ role: string; text: string }[]> {
+    return firstValueFrom(this.http.get<{ role: string; text: string }[]>(`${this.apiUrl}/api/mega-outils/prompt/chat-session/${sessionId}/messages`, { headers: this.h() }));
   }
 }

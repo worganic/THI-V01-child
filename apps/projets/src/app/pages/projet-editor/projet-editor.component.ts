@@ -1250,7 +1250,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
       // Si le chemin n'existe plus dans le texte, c'est un orphelin
       if (!sectionPaths.has(fp)) {
-          // On vérifie si un ancêtre est déjà orphelin (pour ne pas supprimer récursivement inutilement, 
+          // On vérifie si un ancêtre est déjà orphelin (pour ne pas supprimer récursivement inutilement,
           // bien que le serveur gère le rmSync -r)
           const parts = fp.split('/');
           const hasOrphanAncestor = parts.slice(0, -1).some((_, i) =>
@@ -1260,6 +1260,32 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             console.log('[EDITOR] Deletion detected:', folder.name, fp);
             toDelete.push(folder);
           }
+      }
+    }
+
+    // GARDE-FOU (incident du 2026-07-05 : suppression automatique de sections entières —
+    // "H1 new menu après 5.4b" et "save", 36 dossiers/65 fichiers — quand la reconciliation
+    // texte↔structure a détecté ces sections comme "orphelines" à partir d'un contenu
+    // partiel/obsolète). Un orphelin isolé (cas normal : suppression manuelle d'une petite
+    // section vide) ne déclenche jamais ce seuil ; un contenu tronqué/obsolète, si.
+    if (toDelete.length > 0) {
+      const countFolderTree = (folder: FileNode): number => {
+        let n = 1;
+        for (const c of folder.children || []) if (c.type === 'folder') n += countFolderTree(c);
+        return n;
+      };
+      const nodesToDelete = toDelete.reduce((sum, f) => sum + countFolderTree(f), 0);
+      const totalExisting = allFolderPaths.size;
+      const MAX_DELETE_RATIO = 0.3;
+      const MAX_DELETE_ABSOLUTE = 15;
+      if (totalExisting > 0 && (nodesToDelete > totalExisting * MAX_DELETE_RATIO || nodesToDelete > MAX_DELETE_ABSOLUTE)) {
+        console.error(
+          `[EDITOR] Garde-fou : suppression automatique bloquée — ${nodesToDelete} dossier(s) sur ${totalExisting} ` +
+          `auraient été supprimés comme "orphelins" (${toDelete.map(f => f.name).join(', ')}). ` +
+          `Ceci ressemble à un contenu partiel/obsolète plutôt qu'à une suppression volontaire de l'utilisateur — ` +
+          `abandon de la suppression pour cette sauvegarde (le reste des changements, s'il y en a, est appliqué normalement).`
+        );
+        toDelete.length = 0;
       }
     }
 

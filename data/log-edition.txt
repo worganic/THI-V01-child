@@ -3796,3 +3796,329 @@
   Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
 --------------------------------------------------------------------------------
 
+================================================================================
+[2026-07-04T15:09:25.150Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 46→70 (Δ+24) | Lines: 4→6 (Δ+2)
+  Change  : from line 3 (2 removed, 4 added)
+  REMOVED :
+    - [3] sfdfsdsd
+    - [4] ythyut yuyt uyuyt uytuy tuytuyt
+  ADDED   :
+    + [3] nouveau
+    + [4] 
+    + [5] Le chiffre que je viens de vous donner est 73.
+    + [6] <!-- -->
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:09:25.816Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 70→70 (Δ+0) | Lines: 0→6 (Δ+6)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:09:25.991Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 46→70 (Δ+24) | Lines: 4→6 (Δ+2)
+  Change  : from line 3 (2 removed, 4 added)
+  REMOVED :
+    - [3] sfdfsdsd
+    - [4] ythyut yuyt uyuyt uytuy tuytuyt
+  ADDED   :
+    + [3] nouveau
+    + [4] 
+    + [5] Le chiffre que je viens de vous donner est 73.
+    + [6] <!-- -->
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:09:26.572Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 70→70 (Δ+0) | Lines: 0→6 (Δ+6)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:37:17.162Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 78→66 (Δ-12) | Lines: 7→5 (Δ-2)
+  Change  : from line 2 (3 removed, 1 added)
+  REMOVED :
+    - [2] test
+    - [3] nouveau
+    - [4] gfdsdfs
+  ADDED   :
+    + [2] blaz bla
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:37:17.834Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 66→66 (Δ+0) | Lines: 0→5 (Δ+5)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:37:17.991Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 70→66 (Δ-4) | Lines: 6→5 (Δ-1)
+  Change  : from line 2 (2 removed, 1 added)
+  REMOVED :
+    - [2] test
+    - [3] nouveau
+  ADDED   :
+    + [2] blaz bla
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:37:18.562Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 66→66 (Δ+0) | Lines: 0→5 (Δ+5)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:44:27.359Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 66→65 (Δ-1) | Lines: 5→5 (Δ+0)
+  Change  : from line 2 (1 removed, 1 added)
+  REMOVED :
+    - [2] blaz bla
+  ADDED   :
+    + [2] test123
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:44:27.938Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 65→65 (Δ+0) | Lines: 0→5 (Δ+5)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:44:28.120Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 66→65 (Δ-1) | Lines: 5→5 (Δ+0)
+  Change  : from line 2 (1 removed, 1 added)
+  REMOVED :
+    - [2] blaz bla
+  ADDED   :
+    + [2] test123
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:44:28.745Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 65→65 (Δ+0) | Lines: 0→5 (Δ+5)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:56:56.077Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 65→68 (Δ+3) | Lines: 5→4 (Δ-1)
+  Change  : from line 1 (2 removed, 1 added)
+  REMOVED :
+    - [1] 
+    - [2] test123
+  ADDED   :
+    + [1] sdffsdsdfsd
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:56:56.692Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 68→68 (Δ+0) | Lines: 0→4 (Δ+4)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:56:56.845Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 65→68 (Δ+3) | Lines: 5→4 (Δ-1)
+  Change  : from line 1 (2 removed, 1 added)
+  REMOVED :
+    - [1] 
+    - [2] test123
+  ADDED   :
+    + [1] sdffsdsdfsd
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T15:56:57.414Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 68→68 (Δ+0) | Lines: 0→4 (Δ+4)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T18:18:59.869Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 68→4 (Δ-64) | Lines: 4→2 (Δ-2)
+  Change  : from line 1 (4 removed, 2 added)
+  REMOVED :
+    - [1] sdffsdsdfsd
+    - [2] 
+    - [3] Le chiffre que je viens de vous donner est 73.
+    - [4] <!-- -->
+  ADDED   :
+    + [1] 
+    + [2] ```
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T18:19:00.676Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 4→4 (Δ+0) | Lines: 0→2 (Δ+2)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T18:19:00.847Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 68→4 (Δ-64) | Lines: 4→2 (Δ-2)
+  Change  : from line 1 (4 removed, 2 added)
+  REMOVED :
+    - [1] sdffsdsdfsd
+    - [2] 
+    - [3] Le chiffre que je viens de vous donner est 73.
+    - [4] <!-- -->
+  ADDED   :
+    + [1] 
+    + [2] ```
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T18:19:01.465Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 4→4 (Δ+0) | Lines: 0→2 (Δ+2)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T18:57:53.049Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 4→4 (Δ+0) | Lines: 0→2 (Δ+2)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T18:57:53.601Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 4→4 (Δ+0) | Lines: 0→2 (Δ+2)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T19:15:15.509Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 4→0 (Δ-4) | Lines: 2→1 (Δ-1)
+  Change  : from line 2 (1 removed, 0 added)
+  REMOVED :
+    - [2] ```
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T19:15:16.193Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 0→0 (Δ+0) | Lines: 0→1 (Δ+1)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T19:15:16.360Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 4→0 (Δ-4) | Lines: 2→1 (Δ-1)
+  Change  : from line 2 (1 removed, 0 added)
+  REMOVED :
+    - [2] ```
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T19:15:17.056Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 0→0 (Δ+0) | Lines: 0→1 (Δ+1)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T20:19:57.420Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu.md (id:f4831d7c-86d0-4b30-bfc4-a640f5ee3aab)
+  Chars   : 0→0 (Δ+0) | Lines: 0→1 (Δ+1)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T20:19:57.930Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/test-2/contenu-css.md (id:e13e55c5-5616-481e-9bd7-0b434ebd3d04)
+  Chars   : 0→0 (Δ+0) | Lines: 0→1 (Δ+1)
+  Note    : Contenu diffusé via SSE content_update → c85e4a5d-1543-4e9e-a76b-ebd030ab9d56
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T22:03:04.521Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:manual-save
+  File    : edition/test-2/array-Profil professionnel final.md (id:14033785-4515-4c83-a1f1-c7b56bf06919)
+  Chars   : 405→449 (Δ+44) | Lines: 10→10 (Δ+0)
+  Change  : from line 1 (3 removed, 3 added)
+  REMOVED :
+    - [1] ```ARRAY: Profil professionnel final
+    - [2] | Critère | Informations saisies |
+    - [3] | :--- | :--- |
+  ADDED   :
+    + [1] ```ARRAY: Profil professionnel final {{MOID:a05621c8-0882-44ff-9acb-7f50804e9161}}
+    + [2] | Critère | Informations saisies |
+    + [3] | --- | --- |
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T22:47:16.457Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:manual-save
+  File    : save/inout/Pr - Ideation/array-Suivi des notes.md (id:e2734356-856b-4a46-a560-43eb2e9d5b34)
+  Chars   : 0→150 (Δ+150) | Lines: 1→8 (Δ+7)
+  Change  : from line 1 (1 removed, 8 added)
+  REMOVED :
+    - [1] 
+  ADDED   :
+    + [1] ```ARRAY: Suivi des notes {{MOID:c1341d29-3502-4b94-8bed-019380e65fdd}}
+    + [2] |  |  |  |
+    + [3] | --- | --- | --- |
+    + [4] |  |  |  |
+    + [5] |  |  |  |
+    + [6] |  |  |  |
+    + [7] |  |  |  |
+    + [8] ```
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T23:12:10.170Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu.md (id:b537066d-5eb4-4cbe-8518-60f1fd1bdc5c)
+  Chars   : 350→351 (Δ+1) | Lines: 6→7 (Δ+1)
+  Change  : from line 7 (0 removed, 1 added)
+  ADDED   :
+    + [7] 
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T23:12:10.710Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu.md (id:b537066d-5eb4-4cbe-8518-60f1fd1bdc5c)
+  Chars   : 351→351 (Δ+0) | Lines: 0→7 (Δ+7)
+  Note    : Contenu diffusé via SSE content_update → 36ebdd41-1238-4019-9f61-a30ebd78281e
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T23:12:10.867Z] SAVE | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish
+  File    : edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu-css.md (id:896dc048-a834-4621-8878-e41f47dd1fed)
+  Chars   : 350→351 (Δ+1) | Lines: 6→7 (Δ+1)
+  Change  : from line 7 (0 removed, 1 added)
+  ADDED   :
+    + [7] 
+--------------------------------------------------------------------------------
+
+================================================================================
+[2026-07-04T23:12:11.441Z] SYNC-BROADCAST | project:0475514d-ed29-407d-8cbf-f837232cac46 | user:admin | source:publish-broadcast
+  File    : edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu-css.md (id:896dc048-a834-4621-8878-e41f47dd1fed)
+  Chars   : 351→351 (Δ+0) | Lines: 0→7 (Δ+7)
+  Note    : Contenu diffusé via SSE content_update → 36ebdd41-1238-4019-9f61-a30ebd78281e
+--------------------------------------------------------------------------------
+

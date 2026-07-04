@@ -19,75 +19,144 @@ interface AdminPrompt {
   template: `
     <div>
 
-      <!-- Prompt de base global -->
-      <div class="mb-8 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
-        <div class="flex items-center gap-2 mb-3">
-          <span class="material-symbols-outlined text-amber-400 text-base">auto_awesome</span>
-          <h3 class="text-sm font-semibold text-light-text dark:text-white">Prompt système de base</h3>
-          <span class="text-[10px] text-light-text-muted dark:text-white/40 ml-1">— Ajouté automatiquement avant le prompt de chaque section</span>
-        </div>
-        <textarea
-          class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono"
-          placeholder="Ex: Tu es un expert en rédaction web pour PME francophones. Réponds toujours en français..."
-          [(ngModel)]="basePromptDraft"
-          rows="5"></textarea>
-        <div class="flex items-center gap-2 mt-2">
-          @if (basePromptSaved()) {
-            <span class="text-xs text-green-400 flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">check_circle</span>Sauvegardé
-            </span>
-          }
-          <span class="flex-1"></span>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors flex items-center gap-1.5"
-                  [disabled]="basePromptSaving()"
-                  (click)="saveBasePrompt()">
-            <span class="material-symbols-outlined text-sm">save</span>
-            {{ basePromptSaving() ? 'Sauvegarde…' : 'Sauvegarder' }}
-          </button>
-        </div>
-      </div>
+      <!-- Configuration des prompts (accordéon + onglets par mode) -->
+      <div class="mb-8 rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+        <button type="button"
+                class="w-full flex items-center gap-2 px-4 py-3 bg-light-surface dark:bg-surface hover:bg-light-border/30 dark:hover:bg-white/5 transition-colors text-left"
+                (click)="configExpanded.set(!configExpanded())">
+          <span class="material-symbols-outlined text-amber-400 text-base">tune</span>
+          <span class="text-sm font-semibold text-light-text dark:text-white flex-1">Configuration des prompts</span>
+          <span class="text-[10px] text-light-text-muted dark:text-white/40 hidden sm:inline">Base · Mode guidé · Mode tchat</span>
+          <span class="material-symbols-outlined text-light-text-muted dark:text-white/30">{{ configExpanded() ? 'expand_less' : 'expand_more' }}</span>
+        </button>
 
-      <!-- Workflow guidé : méta-prompts cadrage + génération -->
-      <div class="mb-8 rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
-        <div class="flex items-center gap-2 mb-1">
-          <span class="material-symbols-outlined text-blue-400 text-base">conversation</span>
-          <h3 class="text-sm font-semibold text-light-text dark:text-white">Workflow guidé (Mode guidé des prompts)</h3>
-        </div>
-        <p class="text-[11px] text-light-text-muted dark:text-white/40 mb-3">Méta-prompts utilisés quand un prompt est en « Mode guidé » : l'IA pose d'abord des questions (cadrage), puis produit le livrable (génération).</p>
+        @if (configExpanded()) {
+          <div class="border-t border-light-border dark:border-white/10 p-4">
 
-        <label class="block text-[11px] font-medium text-blue-300/80 mb-1">Prompt de cadrage (génère le formulaire de questions)</label>
-        <textarea
-          class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono mb-3"
-          [(ngModel)]="clarifyPromptDraft"
-          rows="6"></textarea>
+            <!-- Onglets par mode -->
+            <div class="flex items-center gap-1 mb-4 border-b border-light-border dark:border-white/10">
+              <button type="button"
+                      class="px-3 py-2 text-xs font-medium border-b-2 -mb-px transition-colors flex items-center gap-1.5"
+                      [ngClass]="activeConfigTab() === 'base' ? 'border-amber-400 text-amber-400' : 'border-transparent text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white/70'"
+                      (click)="activeConfigTab.set('base')">
+                <span class="material-symbols-outlined text-[14px]">auto_awesome</span>Base
+              </button>
+              <button type="button"
+                      class="px-3 py-2 text-xs font-medium border-b-2 -mb-px transition-colors flex items-center gap-1.5"
+                      [ngClass]="activeConfigTab() === 'guide' ? 'border-blue-400 text-blue-400' : 'border-transparent text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white/70'"
+                      (click)="activeConfigTab.set('guide')">
+                <span class="material-symbols-outlined text-[14px]">conversation</span>Mode guidé
+              </button>
+              <button type="button"
+                      class="px-3 py-2 text-xs font-medium border-b-2 -mb-px transition-colors flex items-center gap-1.5"
+                      [ngClass]="activeConfigTab() === 'chat' ? 'border-emerald-400 text-emerald-400' : 'border-transparent text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white/70'"
+                      (click)="activeConfigTab.set('chat')">
+                <span class="material-symbols-outlined text-[14px]">forum</span>Mode tchat
+              </button>
+            </div>
 
-        <label class="block text-[11px] font-medium text-blue-300/80 mb-1">Prompt de génération (produit le livrable + MegaOutils)</label>
-        <textarea
-          class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono"
-          [(ngModel)]="generatePromptDraft"
-          rows="6"></textarea>
+            <!-- Onglet Base -->
+            @if (activeConfigTab() === 'base') {
+              <div class="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+                <p class="text-[11px] text-light-text-muted dark:text-white/40 mb-3">Ajouté automatiquement avant le prompt de chaque section, quel que soit le mode (Normal, Guidé ou Tchat).</p>
+                <textarea
+                  class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono"
+                  placeholder="Ex: Tu es un expert en rédaction web pour PME francophones. Réponds toujours en français..."
+                  [(ngModel)]="basePromptDraft"
+                  rows="5"></textarea>
+                <div class="flex items-center gap-2 mt-2">
+                  @if (basePromptSaved()) {
+                    <span class="text-xs text-green-400 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">check_circle</span>Sauvegardé
+                    </span>
+                  }
+                  <span class="flex-1"></span>
+                  <button class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors flex items-center gap-1.5"
+                          [disabled]="basePromptSaving()"
+                          (click)="saveBasePrompt()">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    {{ basePromptSaving() ? 'Sauvegarde…' : 'Sauvegarder' }}
+                  </button>
+                </div>
+              </div>
+            }
 
-        <div class="flex items-center gap-2 mt-2">
-          @if (workflowPromptSaved()) {
-            <span class="text-xs text-green-400 flex items-center gap-1">
-              <span class="material-symbols-outlined text-sm">check_circle</span>Sauvegardé
-            </span>
-          }
-          <span class="flex-1"></span>
-          <button class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-orange-400 hover:border-orange-500/30 transition-colors flex items-center gap-1.5"
-                  [disabled]="workflowPromptSaving()"
-                  title="Supprimer les surcharges en BDD et revenir aux méta-prompts par défaut"
-                  (click)="resetWorkflowPrompts()">
-            <span class="material-symbols-outlined text-sm">restart_alt</span>
-            Réinitialiser
-          </button>
-          <button class="text-xs px-3 py-1.5 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 font-semibold hover:bg-blue-500/25 transition-colors flex items-center gap-1.5"
-                  [disabled]="workflowPromptSaving()"
-                  (click)="saveWorkflowPrompts()">
-            <span class="material-symbols-outlined text-sm">save</span>
-            {{ workflowPromptSaving() ? 'Sauvegarde…' : 'Sauvegarder' }}
-          </button>
-        </div>
+            <!-- Onglet Mode guidé -->
+            @if (activeConfigTab() === 'guide') {
+              <div class="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+                <p class="text-[11px] text-light-text-muted dark:text-white/40 mb-3">Méta-prompts utilisés quand un prompt est en « Mode guidé » : l'IA pose d'abord des questions (cadrage), puis produit le livrable (génération).</p>
+
+                <label class="block text-[11px] font-medium text-blue-300/80 mb-1">Prompt de cadrage (génère le formulaire de questions)</label>
+                <textarea
+                  class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono mb-3"
+                  [(ngModel)]="clarifyPromptDraft"
+                  rows="6"></textarea>
+
+                <label class="block text-[11px] font-medium text-blue-300/80 mb-1">Prompt de génération (produit le livrable + MegaOutils)</label>
+                <textarea
+                  class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono"
+                  [(ngModel)]="generatePromptDraft"
+                  rows="6"></textarea>
+
+                <div class="flex items-center gap-2 mt-2">
+                  @if (workflowPromptSaved()) {
+                    <span class="text-xs text-green-400 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">check_circle</span>Sauvegardé
+                    </span>
+                  }
+                  <span class="flex-1"></span>
+                  <button class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-orange-400 hover:border-orange-500/30 transition-colors flex items-center gap-1.5"
+                          [disabled]="workflowPromptSaving()"
+                          title="Supprimer les surcharges en BDD et revenir aux méta-prompts par défaut"
+                          (click)="resetWorkflowPrompts()">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span>
+                    Réinitialiser
+                  </button>
+                  <button class="text-xs px-3 py-1.5 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 font-semibold hover:bg-blue-500/25 transition-colors flex items-center gap-1.5"
+                          [disabled]="workflowPromptSaving()"
+                          (click)="saveWorkflowPrompts()">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    {{ workflowPromptSaving() ? 'Sauvegarde…' : 'Sauvegarder' }}
+                  </button>
+                </div>
+              </div>
+            }
+
+            <!-- Onglet Mode tchat -->
+            @if (activeConfigTab() === 'chat') {
+              <div class="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4">
+                <p class="text-[11px] text-light-text-muted dark:text-white/40 mb-3">
+                  Méta-prompt ajouté au tchat pour guider l'IA à structurer ses réponses (formulaires, tableaux, kanban, agenda, graphique) avec les mêmes syntaxes que le workflow guidé, reconnues et rendues sous forme d'éléments interactifs dans le tchat.
+                </p>
+                <textarea
+                  class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 resize-y min-h-[100px] font-mono"
+                  [(ngModel)]="chatStructuredPromptDraft"
+                  rows="8"></textarea>
+                <div class="flex items-center gap-2 mt-2">
+                  @if (chatPromptSaved()) {
+                    <span class="text-xs text-green-400 flex items-center gap-1">
+                      <span class="material-symbols-outlined text-sm">check_circle</span>Sauvegardé
+                    </span>
+                  }
+                  <span class="flex-1"></span>
+                  <button class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-orange-400 hover:border-orange-500/30 transition-colors flex items-center gap-1.5"
+                          [disabled]="chatPromptSaving()"
+                          title="Supprimer la surcharge en BDD et revenir au prompt par défaut"
+                          (click)="resetChatStructuredPrompt()">
+                    <span class="material-symbols-outlined text-sm">restart_alt</span>
+                    Réinitialiser
+                  </button>
+                  <button class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors flex items-center gap-1.5"
+                          [disabled]="chatPromptSaving()"
+                          (click)="saveChatStructuredPrompt()">
+                    <span class="material-symbols-outlined text-sm">save</span>
+                    {{ chatPromptSaving() ? 'Sauvegarde…' : 'Sauvegarder' }}
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        }
       </div>
 
       <div class="flex items-center gap-3 mb-6">
@@ -196,6 +265,10 @@ export class PromptAdminComponent implements OnInit {
   items = signal<AdminPrompt[]>([]);
   loading = signal(false);
   confirmDeleteId = signal<string | null>(null);
+
+  configExpanded = signal(false);
+  activeConfigTab = signal<'base' | 'guide' | 'chat'>('base');
+
   basePromptDraft = '';
   basePromptSaving = signal(false);
   basePromptSaved = signal(false);
@@ -204,6 +277,10 @@ export class PromptAdminComponent implements OnInit {
   generatePromptDraft = '';
   workflowPromptSaving = signal(false);
   workflowPromptSaved = signal(false);
+
+  chatStructuredPromptDraft = '';
+  chatPromptSaving = signal(false);
+  chatPromptSaved = signal(false);
 
   ngOnInit() {
     this.reload();
@@ -216,7 +293,32 @@ export class PromptAdminComponent implements OnInit {
       this.basePromptDraft = cfg.baseSystemPrompt || '';
       this.clarifyPromptDraft = cfg.workflowClarifyPrompt || '';
       this.generatePromptDraft = cfg.workflowGeneratePrompt || '';
+      this.chatStructuredPromptDraft = cfg.chatStructuredPrompt || '';
     } catch { /* silencieux */ }
+  }
+
+  async saveChatStructuredPrompt() {
+    this.chatPromptSaving.set(true);
+    this.chatPromptSaved.set(false);
+    try {
+      await this.megaSvc.savePromptGlobalConfig({ chatStructuredPrompt: this.chatStructuredPromptDraft });
+      this.chatPromptSaved.set(true);
+      setTimeout(() => this.chatPromptSaved.set(false), 2000);
+    } catch { /* silencieux */ } finally {
+      this.chatPromptSaving.set(false);
+    }
+  }
+
+  async resetChatStructuredPrompt() {
+    this.chatPromptSaving.set(true);
+    try {
+      const res = await this.megaSvc.resetChatStructuredPrompt();
+      this.chatStructuredPromptDraft = res.chatStructuredPrompt || '';
+      this.chatPromptSaved.set(true);
+      setTimeout(() => this.chatPromptSaved.set(false), 2000);
+    } catch { /* silencieux */ } finally {
+      this.chatPromptSaving.set(false);
+    }
   }
 
   async saveBasePrompt() {

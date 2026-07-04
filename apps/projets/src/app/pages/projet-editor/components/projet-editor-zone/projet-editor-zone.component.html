@@ -515,7 +515,10 @@ Votre texte de prompt ici.
       [systemPrompt]="activeChatForExecution!.systemPrompt"
       [variables]="activeChatForExecution!.variables"
       [baseSystemPrompt]="promptBaseSystemPrompt"
+      [chatStructuredPrompt]="promptChatStructuredPrompt"
+      [userName]="currentUserName()"
       (insertAsSection)="onChatInsertRequested($event)"
+      (materialize)="onChatMaterialize($event)"
       (cancel)="showChatPopup.set(false)" />
   }
 
@@ -1778,7 +1781,18 @@ Votre texte de prompt ici.
           @for (sec of filteredVisuSections; track sec.sectionId) {
             <div class="visu-section-wrap"
                  [class.visu-section-wrap--active]="activeVisuSectionId === sec.sectionId"
-                 [class.visu-section-wrap--locked]="collab.isLockedByOther(sec.sectionId)">
+                 [class.visu-section-wrap--locked]="collab.isLockedByOther(sec.sectionId)"
+                 [class.visu-section-wrap--folded]="visuFoldedIds().has(sec.sectionId)"
+                 [class.visu-section-wrap--hidden]="isVisuSectionHidden(sec.sectionId)">
+
+              <!-- Accordéon — replie le texte et toutes les sous-sections de celle-ci -->
+              <button type="button"
+                      class="visu-fold-btn"
+                      [class.visu-fold-btn--folded]="visuFoldedIds().has(sec.sectionId)"
+                      (click)="toggleVisuFold(sec.sectionId, $event)"
+                      [title]="visuFoldedIds().has(sec.sectionId) ? 'Déplier cette section' : 'Replier cette section et ses sous-sections'">
+                <span class="material-symbols-outlined">{{ visuFoldedIds().has(sec.sectionId) ? 'chevron_right' : 'expand_more' }}</span>
+              </button>
 
               <!-- Badge niveau (gouttière gauche, aligné en face du titre) -->
               <span class="visu-sec-level">H{{ sec.level }}</span>
@@ -1842,6 +1856,11 @@ Votre texte de prompt ici.
                   Synchronisation FTP en cours…
                 </div>
               }
+
+              <!-- Corps de la section (texte éditable + MO) — masqué en CSS (pas @if) quand la
+                   section est repliée : évite de démonter le contenteditable et l'app-*-board,
+                   qui sont pilotés de façon impérative (ViewChild / instanceId). -->
+              <div class="visu-sec-body" [class.visu-sec-body--folded]="visuFoldedIds().has(sec.sectionId)">
 
               <!-- Corps éditable (contenteditable) — reste éditable même si un autre user
                    est aussi présent sur cette section (badge d'alerte ci-dessus, non bloquant). -->
@@ -1947,6 +1966,8 @@ Votre texte de prompt ici.
                   </div>
                 }
               }
+
+              </div>
 
             </div>
           }

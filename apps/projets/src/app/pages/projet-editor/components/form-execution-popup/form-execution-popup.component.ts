@@ -49,7 +49,7 @@ import { FormQuestion, FormEntry } from '@worganic/portail-core/data-access';
                     </label>
                   </div>
                 }
-              } @else {
+              } @else if (q.type === 'radio') {
                 @for (opt of q.options; track opt.text; let oi = $index) {
                   <div class="mb-1.5">
                     <label class="flex items-start gap-2.5 cursor-pointer group">
@@ -71,6 +71,12 @@ import { FormQuestion, FormEntry } from '@worganic/portail-core/data-access';
                     </label>
                   </div>
                 }
+              } @else {
+                <textarea rows="2"
+                          class="w-full text-sm rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 px-3 py-2 outline-none focus:border-blue-500 dark:focus:border-blue-400 resize-none"
+                          placeholder="Votre réponse…"
+                          [value]="getText(qi)"
+                          (input)="setText(qi, $any($event.target).value)"></textarea>
               }
             </div>
           }
@@ -108,11 +114,13 @@ export class FormExecutionPopupComponent implements OnInit {
   checkboxAnswers = signal<boolean[][]>([]);
   radioAnswers = signal<number[]>([]);
   details = signal<string[][]>([]);
+  textAnswers = signal<string[]>([]);
 
   ngOnInit() {
     this.checkboxAnswers.set(this.questions.map(q => q.options.map(() => false)));
     this.radioAnswers.set(this.questions.map(() => -1));
     this.details.set(this.questions.map(q => q.options.map(() => '')));
+    this.textAnswers.set(this.questions.map(() => ''));
   }
 
   displayText(text: string): string {
@@ -146,11 +154,22 @@ export class FormExecutionPopupComponent implements OnInit {
     this.details.set(current);
   }
 
+  getText(qi: number): string {
+    return this.textAnswers()[qi] ?? '';
+  }
+
+  setText(qi: number, value: string) {
+    const current = [...this.textAnswers()];
+    current[qi] = value;
+    this.textAnswers.set(current);
+  }
+
   hasAnswers(): boolean {
     for (let qi = 0; qi < this.questions.length; qi++) {
       const q = this.questions[qi];
       if (q.type === 'checkbox' && this.checkboxAnswers()[qi]?.some(Boolean)) return true;
       if (q.type === 'radio' && this.radioAnswers()[qi] >= 0) return true;
+      if (q.type === 'text' && this.textAnswers()[qi]?.trim()) return true;
     }
     return false;
   }
@@ -171,13 +190,16 @@ export class FormExecutionPopupComponent implements OnInit {
           })
           .filter((v): v is string => v !== null);
         if (selected.length > 0) answers[q.label] = selected;
-      } else {
+      } else if (q.type === 'radio') {
         const oi = this.radioAnswers()[qi];
         if (oi >= 0) {
           const opt = q.options[oi];
           const detail = opt.hasDetail ? this.getDetail(qi, oi).trim() : '';
           answers[q.label] = detail ? opt.text.replace(/_{5,}/g, detail) : opt.text;
         }
+      } else {
+        const text = this.textAnswers()[qi]?.trim();
+        if (text) answers[q.label] = text;
       }
     }
     return { date: now, user: this.userName, answers };

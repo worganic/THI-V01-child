@@ -19,6 +19,7 @@ export * from './lib/theme.service';
 export * from './lib/wo-action-history.service';
 export * from './lib/mega-outils.models';
 export * from './lib/mega-outils.service';
+export * from './lib/mo-fence-parser.util';
 export * from './lib/tests-outil.models';
 export * from './lib/tests-outil.service';
 export * from './lib/agenda-outil.models';

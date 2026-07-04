@@ -1,16 +1,41 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 import { Subscription, interval } from 'rxjs';
-import { ConfigService, AiExecuteService, AiLogItem } from '@worganic/portail-core/data-access';
+import {
+  ConfigService, AiExecuteService, AiLogItem, FormQuestion, FormEntry, MaterializedMoPreview,
+  detectMoFences, parseChoiceForm, fenceBody, parseChartPoints, MegaOutilsService,
+} from '@worganic/portail-core/data-access';
+import { ChartBoardComponent } from '@worganic/shared/ui';
+import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 
 type ChatState = 'idle' | 'variable-fill' | 'chatting';
-interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; }
+interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; mos?: MaterializedMoPreview[]; }
 
 @Component({
   selector: 'app-prompt-chat-popup',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ChartBoardComponent, FormExecutionPopupComponent],
+  styles: [`
+    .chat-md :where(h1, h2, h3) { font-weight: 700; margin: 0.5em 0 0.25em; line-height: 1.3; }
+    .chat-md h1 { font-size: 1.05em; }
+    .chat-md h2 { font-size: 1em; }
+    .chat-md h3 { font-size: 0.95em; }
+    .chat-md p { margin: 0.35em 0; }
+    .chat-md ul, .chat-md ol { margin: 0.35em 0; padding-left: 1.3em; }
+    .chat-md li { margin: 0.15em 0; }
+    .chat-md strong { font-weight: 700; }
+    .chat-md em { font-style: italic; }
+    .chat-md hr { border: none; border-top: 1px solid currentColor; opacity: 0.15; margin: 0.6em 0; }
+    .chat-md code { font-family: 'Cascadia Code', monospace; font-size: 0.9em; background: rgba(128,128,128,0.15); border-radius: 3px; padding: 0.1em 0.3em; }
+    .chat-md pre { background: rgba(0,0,0,0.25); border-radius: 6px; padding: 0.6em 0.8em; overflow-x: auto; margin: 0.4em 0; }
+    .chat-md pre code { background: none; padding: 0; }
+    .chat-md blockquote { border-left: 2px solid currentColor; opacity: 0.85; padding-left: 0.7em; margin: 0.35em 0; }
+    .chat-md > *:first-child { margin-top: 0; }
+    .chat-md > *:last-child { margin-bottom: 0; }
+  `],
   template: `
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/60"></div>
@@ -35,22 +60,43 @@ interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; }
 
           <!-- Sélecteur IA/Modèle (idle) -->
           @if (state() === 'idle') {
-            <div class="grid grid-cols-2 gap-3">
-              <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">IA</label>
-                <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
-                        [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
-                  @for (p of providers(); track p.value) { <option [value]="p.value">{{ p.label }}</option> }
-                </select>
+            @if (resumableSession(); as rs) {
+              <div class="flex items-center gap-2 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2">
+                <span class="material-symbols-outlined text-emerald-400 text-base">history</span>
+                <span class="flex-1 text-[12px] text-light-text dark:text-white/75">Une conversation précédente est disponible ({{ formatSessionDate(rs.updatedAt) }}).</span>
+                <button class="text-[11px] px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/30 transition-colors"
+                        (click)="resumeSession(rs.id)">Reprendre</button>
               </div>
-              <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Modèle</label>
-                <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
-                        [ngModel]="activeModel()" (ngModelChange)="selectedModel.set($event)">
-                  @for (m of modelsForProvider(); track m.value) { <option [value]="m.value">{{ m.label || m.value }}</option> }
-                </select>
+            }
+            @if (providers().length === 0) {
+              <div class="flex items-center gap-2 rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background px-3 py-2.5 text-[12px] text-light-text-muted dark:text-white/40">
+                <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+                En attente de la liste des IA disponibles…
               </div>
-            </div>
+            } @else {
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">IA</label>
+                  <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
+                          [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
+                    @for (p of providers(); track p.value) { <option [value]="p.value">{{ p.label }}</option> }
+                  </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Modèle</label>
+                  <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
+                          [ngModel]="activeModel()" (ngModelChange)="selectedModel.set($event)">
+                    @for (m of modelsForProvider(); track m.value) { <option [value]="m.value">{{ m.label || m.value }}</option> }
+                  </select>
+                </div>
+              </div>
+            }
+            <label class="flex items-center gap-2 text-[11px] text-light-text-muted dark:text-white/50 cursor-pointer select-none w-fit"
+                   title="Désactive l'injection du prompt de base global et du format structuré du tchat configurés en admin — seul le SYSTEM: propre à cette section reste appliqué">
+              <input type="checkbox" class="w-3.5 h-3.5 accent-emerald-500 cursor-pointer"
+                     [ngModel]="useConfigPrompts()" (ngModelChange)="useConfigPrompts.set($event)" />
+              Utiliser les prompts de configuration (base + format structuré tchat)
+            </label>
             <div class="flex flex-col gap-1.5">
               <span class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Premier message</span>
               <div class="rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background p-3">
@@ -80,14 +126,38 @@ interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; }
           <!-- Conversation -->
           @if (state() === 'chatting') {
             <div class="flex flex-col gap-3">
-              @for (m of messages(); track $index) {
+              @for (m of messages(); track $index; let mi = $index) {
                 @if (m.role === 'user') {
                   <div class="self-end max-w-[85%] rounded-lg rounded-tr-sm border border-light-border dark:border-white/10 bg-light-background dark:bg-background px-3 py-2">
                     <p class="text-[13px] text-light-text dark:text-white/80 whitespace-pre-wrap">{{ m.text }}</p>
                   </div>
                 } @else if (m.role === 'ai') {
-                  <div class="self-start max-w-[85%] rounded-lg rounded-tl-sm border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
-                    <p class="text-[13px] text-light-text dark:text-white/80 whitespace-pre-wrap">{{ m.text }}</p>
+                  <div class="self-start max-w-[85%] flex flex-col gap-1.5">
+                    <div class="rounded-lg rounded-tl-sm border border-emerald-500/20 bg-emerald-500/5 px-3 py-2">
+                      <div class="chat-md text-[13px] text-light-text dark:text-white/80" [innerHTML]="renderedHtml(m)"></div>
+                    </div>
+                    @if (m.mos && m.mos.length > 0) {
+                      <div class="rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background p-2.5 flex flex-col gap-1.5">
+                        <span class="text-[10px] font-medium text-light-text-muted dark:text-white/40 uppercase tracking-wide">MegaOutils détectés</span>
+                        @for (mo of m.mos; track $index; let moi = $index) {
+                          <label class="flex items-center gap-2 px-1.5 py-1 rounded-md hover:bg-light-border dark:hover:bg-white/5 cursor-pointer">
+                            <input type="checkbox" class="w-3.5 h-3.5 accent-emerald-500 cursor-pointer flex-shrink-0"
+                                   [checked]="mo.selected" (change)="toggleMo(mi, moi, $any($event.target).checked)" />
+                            <span class="material-symbols-outlined text-[14px] flex-shrink-0"
+                                  [ngClass]="mo.type === 'trello' ? 'text-emerald-400' : (mo.type === 'array' ? 'text-sky-400' : (mo.type === 'chart' ? 'text-indigo-400' : (mo.type === 'agenda' ? 'text-amber-400' : 'text-blue-400')))">
+                              {{ mo.type === 'trello' ? 'view_kanban' : (mo.type === 'array' ? 'table' : (mo.type === 'chart' ? 'show_chart' : (mo.type === 'agenda' ? 'calendar_month' : 'assignment'))) }}
+                            </span>
+                            <span class="text-[12px] text-light-text dark:text-white/80 flex-1 truncate">{{ mo.name }}</span>
+                            <span class="text-[10px] text-light-text-muted dark:text-white/40">{{ mo.summary }}</span>
+                          </label>
+                          @if (mo.type === 'chart' && mo.selected) {
+                            <app-chart-board [title]="mo.name" [points]="chartPointsFor(mo)" />
+                          }
+                        }
+                        <button class="self-start text-[11px] px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors"
+                                (click)="materializeMo(mi)">Ajouter au projet</button>
+                      </div>
+                    }
                   </div>
                 } @else {
                   <div class="self-start max-w-[85%] rounded-lg border border-red-500/25 bg-red-500/5 px-3 py-2">
@@ -102,7 +172,7 @@ interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; }
                     L'IA écrit… {{ elapsedSeconds() }}s
                   </span>
                   @if (streamingText()) {
-                    <p class="text-[13px] text-light-text dark:text-white/80 whitespace-pre-wrap">{{ streamingText() }}</p>
+                    <div class="chat-md text-[13px] text-light-text dark:text-white/80" [innerHTML]="renderedStreamingHtml()"></div>
                   }
                 </div>
               }
@@ -157,6 +227,15 @@ interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; }
         </div>
       </div>
     </div>
+
+    @if (activeForm(); as af) {
+      <app-form-execution-popup
+        [formName]="'Répondre au formulaire'"
+        [questions]="af.questions"
+        [userName]="userName"
+        (submitted)="onChatFormSubmitted($event)"
+        (cancel)="dismissForm()" />
+    }
   `,
 })
 export class PromptChatPopupComponent implements OnInit, OnDestroy {
@@ -164,14 +243,26 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
   @Input() instanceName = 'Prompt';
   @Input() baseSystemPrompt: string | null = null;
   @Input() systemPrompt: string | null = null;
+  @Input() chatStructuredPrompt: string | null = null;
   @Input() userPrompt = '';
   @Input() variables: string[] = [];
+  @Input() userName = '';
 
   @Output() insertAsSection = new EventEmitter<string>();
+  @Output() materialize = new EventEmitter<{ deliverable: string; selectedMos: MaterializedMoPreview[] }>();
   @Output() cancel = new EventEmitter<void>();
 
   readonly execSvc = inject(AiExecuteService);
   private configSvc = inject(ConfigService);
+  private sanitizer = inject(DomSanitizer);
+  private megaSvc = inject(MegaOutilsService);
+
+  /** Session BDD de la conversation en cours (mega_outil_prompt_chat_sessions), créée
+   *  au premier message envoyé. Persistance best-effort, fire-and-forget (ne bloque
+   *  jamais l'UI ; en cas d'échec la conversation continue normalement en mémoire). */
+  private currentSessionId: string | null = null;
+  private nextSeq = 0;
+  resumableSession = signal<{ id: string; provider: string; model: string | null; createdAt: string; updatedAt: string } | null>(null);
 
   state = signal<ChatState>('idle');
   selectedProvider = signal('');
@@ -183,6 +274,9 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
   elapsedSeconds = signal(0);
   copied = signal(false);
   varValues: Record<string, string> = {};
+  /** Si désactivé, ignore le prompt de base global + le format structuré du tchat configurés
+   *  en admin — ne garde que le SYSTEM: propre à cette section. */
+  useConfigPrompts = signal(true);
 
   private timerSub: Subscription | null = null;
   private subs: Subscription[] = [];
@@ -218,6 +312,24 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
     return null;
   });
 
+  /** Index (dans messages()) du dernier formulaire fermé sans réponse, pour ne pas
+   *  le rouvrir tant qu'un nouveau message IA n'est pas arrivé. */
+  formDismissedIndex = signal<number | null>(null);
+
+  /** Formulaire à proposer en overlay : uniquement sur le DERNIER message IA, détecté
+   *  soit via une fence ```FORM:```, soit directement dans le texte libre (cas non fenser,
+   *  ex. questions ouvertes du type "Label" + "_____"). */
+  readonly activeForm = computed<{ msgIndex: number; questions: FormQuestion[] } | null>(() => {
+    const msgs = this.messages();
+    const lastIdx = msgs.length - 1;
+    if (lastIdx < 0 || msgs[lastIdx].role !== 'ai') return null;
+    if (this.formDismissedIndex() === lastIdx) return null;
+    const m = msgs[lastIdx];
+    const formMo = m.mos?.find(mo => mo.type === 'form');
+    const questions = formMo ? parseChoiceForm(fenceBody(formMo.fence)) : parseChoiceForm(m.text);
+    return questions.length > 0 ? { msgIndex: lastIdx, questions } : null;
+  });
+
   phaseLabel = computed(() => ({
     idle: 'prêt', 'variable-fill': 'variables', chatting: 'en discussion',
   } as Record<ChatState, string>)[this.state()]);
@@ -238,6 +350,12 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
       this.execSvc.done$.subscribe(full => this.onTurnDone(full)),
       this.execSvc.error$.subscribe(err => this.onTurnError(err)),
     );
+
+    if (this.instanceId) {
+      this.megaSvc.getChatSessions(this.instanceId)
+        .then(sessions => { if (sessions.length > 0) this.resumableSession.set(sessions[0]); })
+        .catch(() => {});
+    }
   }
 
   ngOnDestroy() {
@@ -265,7 +383,44 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
   private launch(resolvedFirstPrompt: string) {
     this.messages.set([{ role: 'user', text: resolvedFirstPrompt }]);
     this.state.set('chatting');
+    this.nextSeq = 0;
+    if (this.instanceId) {
+      this.megaSvc.createChatSession(this.instanceId, this.activeProvider(), this.activeModel() || null)
+        .then(res => {
+          this.currentSessionId = res.id;
+          this.persistMessage('user', resolvedFirstPrompt);
+        })
+        .catch(() => {});
+    }
     this.sendTurn(resolvedFirstPrompt);
+  }
+
+  /** Persistance best-effort d'un message (fire-and-forget, échec silencieux — la
+   *  conversation reste utilisable même si l'écriture BDD échoue). */
+  private persistMessage(role: 'user' | 'ai', text: string) {
+    if (!this.currentSessionId) return;
+    this.megaSvc.appendChatMessage(this.currentSessionId, role, text, this.nextSeq++).catch(() => {});
+  }
+
+  /** Reprend une conversation précédente : recharge les messages et redétecte les MO
+   *  des réponses IA (non persistés séparément, recalculés à l'identique depuis le texte). */
+  resumeSession(sessionId: string) {
+    this.megaSvc.getChatSessionMessages(sessionId).then(rows => {
+      this.currentSessionId = sessionId;
+      this.nextSeq = rows.length;
+      this.messages.set(rows.map(r => {
+        if (r.role === 'ai') {
+          const mos = detectMoFences(r.text);
+          return { role: 'ai' as const, text: r.text, mos: mos.length ? mos : undefined };
+        }
+        return { role: r.role as 'user' | 'error', text: r.text };
+      }));
+      this.state.set('chatting');
+    }).catch(() => {});
+  }
+
+  formatSessionDate(iso: string): string {
+    return new Date(iso).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
   }
 
   onComposerEnter(ev: Event) {
@@ -280,6 +435,7 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
     if (!text || this.sending()) return;
     this.composerText = '';
     this.messages.update(v => [...v, { role: 'user', text }]);
+    this.persistMessage('user', text);
     this.sendTurn(this.buildTranscriptText());
   }
 
@@ -290,7 +446,9 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
     this.elapsedSeconds.set(0);
     this.sending.set(true);
     this.startTimer();
-    const effectiveSystem = [this.baseSystemPrompt, this.systemPrompt].filter(Boolean).join('\n\n---\n\n') || null;
+    const effectiveSystem = this.useConfigPrompts()
+      ? ([this.baseSystemPrompt, this.systemPrompt, this.chatStructuredPrompt].filter(Boolean).join('\n\n---\n\n') || null)
+      : (this.systemPrompt || null);
     this.execSvc.startExecution(effectiveSystem, fullTranscriptOrFirst, this.activeProvider(), this.activeModel());
   }
 
@@ -305,7 +463,10 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
     this.stopTimer();
     this.sending.set(false);
     this.streamingText.set('');
-    this.messages.update(v => [...v, { role: 'ai', text: full.trim() }]);
+    const text = full.trim();
+    const mos = detectMoFences(text);
+    this.messages.update(v => [...v, { role: 'ai', text, mos: mos.length ? mos : undefined }]);
+    this.persistMessage('ai', text);
   }
 
   private onTurnError(err: string) {
@@ -321,6 +482,65 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
     this.insertAsSection.emit(last.text);
     this.copied.set(true);
     setTimeout(() => this.copied.set(false), 1500);
+  }
+
+  /** Retire les lignes de 5+ underscores seules (marqueur "champ libre" du formulaire,
+   *  voir parseChoiceForm) — sans ce nettoyage, marked() les interprète comme une
+   *  ligne de séparation (thematic break) et affiche un trait parasite sous la question. */
+  private stripFormBlankMarkers(text: string): string {
+    return text.replace(/^[ \t]*_{5,}[ \t]*$/gm, '');
+  }
+
+  /** Rendu markdown d'un message IA — les fences MO déjà extraites (barre "MegaOutils
+   *  détectés" sous la bulle) sont retirées du texte pour ne pas apparaître deux fois. */
+  renderedHtml(m: ChatMessage): SafeHtml {
+    let text = m.text;
+    for (const mo of m.mos ?? []) text = text.replace(mo.fence, '');
+    text = this.stripFormBlankMarkers(text);
+    text = text.replace(/\n{3,}/g, '\n\n').trim();
+    const html = marked.parse(text, { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  renderedStreamingHtml(): SafeHtml {
+    const html = marked.parse(this.stripFormBlankMarkers(this.streamingText()), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  chartPointsFor(mo: MaterializedMoPreview) {
+    return parseChartPoints(fenceBody(mo.fence));
+  }
+
+  toggleMo(msgIndex: number, moIndex: number, checked: boolean) {
+    this.messages.update(list => list.map((m, i) => {
+      if (i !== msgIndex || !m.mos) return m;
+      return { ...m, mos: m.mos.map((mo, j) => j === moIndex ? { ...mo, selected: checked } : mo) };
+    }));
+  }
+
+  /** Émet la matérialisation des MO cochés pour ce message, puis masque la barre
+   *  (le tchat reste ouvert — contrairement au mode Guidé qui se ferme après validation). */
+  materializeMo(msgIndex: number) {
+    const m = this.messages()[msgIndex];
+    const selected = m?.mos?.filter(mo => mo.selected) ?? [];
+    if (!selected.length) return;
+    this.materialize.emit({ deliverable: m.text, selectedMos: selected });
+    this.messages.update(list => list.map((mm, i) => i === msgIndex ? { ...mm, mos: undefined } : mm));
+  }
+
+  /** Formulaire validé : pré-remplit le composer pour relecture (pas d'envoi automatique),
+   *  l'utilisateur clique "Envoyer" lui-même. */
+  onChatFormSubmitted(entry: FormEntry) {
+    const active = this.activeForm();
+    if (active) this.formDismissedIndex.set(active.msgIndex);
+    this.composerText = Object.entries(entry.answers)
+      .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`)
+      .join('\n');
+  }
+
+  dismissForm() {
+    const active = this.activeForm();
+    if (active) this.formDismissedIndex.set(active.msgIndex);
   }
 
   private startTimer() {

@@ -1,27 +1,27 @@
 import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MegaOutilsService, MegaOutilInstance, MockupElement } from '@worganic/portail-core/data-access';
-import { MockupBoardComponent } from './mockup-board.component';
+import { MegaOutilsService, MegaOutilInstance, ArrayGrid } from '@worganic/portail-core/data-access';
+import { ArrayBoardComponent } from './array-board.component';
 
-interface AdminMockup {
+interface AdminArray {
   instance: MegaOutilInstance;
-  elements: MockupElement[];
+  grid: ArrayGrid | null;
   projectName: string;
   folderName: string | null;
 }
 
 @Component({
-  selector: 'app-mockup-admin',
+  selector: 'app-array-admin',
   standalone: true,
-  imports: [CommonModule, MockupBoardComponent],
+  imports: [CommonModule, ArrayBoardComponent],
   template: `
     <div>
       <div class="flex items-center gap-3 mb-6">
-        <div class="w-8 h-8 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-          <span class="material-symbols-outlined text-violet-400 text-base">design_services</span>
+        <div class="w-8 h-8 rounded-lg bg-lime-500/10 border border-lime-500/20 flex items-center justify-center">
+          <span class="material-symbols-outlined text-lime-400 text-base">table</span>
         </div>
         <div class="flex-1">
-          <h2 class="text-base font-semibold text-light-text dark:text-white">Mockup — Toutes les instances</h2>
+          <h2 class="text-base font-semibold text-light-text dark:text-white">Tableau — Toutes les instances</h2>
           <p class="text-xs text-light-text-muted dark:text-white/40">{{ items().length }} instance{{ items().length > 1 ? 's' : '' }} au total</p>
         </div>
         <button class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/20 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors flex items-center gap-1.5"
@@ -33,14 +33,14 @@ interface AdminMockup {
       @if (loading()) {
         <p class="text-sm text-light-text-muted dark:text-white/40">Chargement…</p>
       } @else if (!items().length) {
-        <p class="text-sm text-light-text-muted dark:text-white/40">Aucune instance Mockup.</p>
+        <p class="text-sm text-light-text-muted dark:text-white/40">Aucune instance Tableau.</p>
       } @else {
         <div class="flex flex-col gap-3">
           @for (item of items(); track item.instance.id) {
             <div class="rounded-xl border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface overflow-hidden">
 
               <div class="flex items-start gap-3 p-3">
-                <span class="material-symbols-outlined text-violet-400 text-base flex-shrink-0 mt-0.5">design_services</span>
+                <span class="material-symbols-outlined text-lime-400 text-base flex-shrink-0 mt-0.5">table</span>
                 <div class="flex-1 min-w-0">
                   <div class="text-sm font-medium text-light-text dark:text-white/85 truncate">{{ item.instance.name }}</div>
                   <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
@@ -49,14 +49,16 @@ interface AdminMockup {
                             (click)="openInEditor.emit({ projectId: item.instance.projectId })">
                       <span class="material-symbols-outlined text-[11px]">grid_view</span>projets
                     </button>
-                    <button type="button"
-                            class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-light-background dark:bg-background border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-primary dark:hover:text-primary hover:border-light-primary/40 dark:hover:border-primary/40 transition-colors"
-                            (click)="openInEditor.emit({ projectId: item.instance.projectId })">
-                      <span class="material-symbols-outlined text-[11px]">folder_special</span>{{ item.projectName }}
-                    </button>
+                    @if (item.projectName) {
+                      <button type="button"
+                              class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-light-background dark:bg-background border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-primary dark:hover:text-primary hover:border-light-primary/40 dark:hover:border-primary/40 transition-colors"
+                              (click)="openInEditor.emit({ projectId: item.instance.projectId })">
+                        <span class="material-symbols-outlined text-[11px]">folder_special</span>{{ item.projectName }}
+                      </button>
+                    }
                     @if (item.folderName) {
                       <button type="button"
-                              class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 hover:bg-violet-500/20 hover:border-violet-500/40 transition-colors"
+                              class="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full bg-lime-500/10 border border-lime-500/20 text-lime-400 hover:bg-lime-500/20 hover:border-lime-500/40 transition-colors"
                               (click)="openInEditor.emit({ projectId: item.instance.projectId, folderId: item.instance.folderId })">
                         <span class="material-symbols-outlined text-[11px]">tag</span>{{ item.folderName }}
                       </button>
@@ -65,9 +67,11 @@ interface AdminMockup {
                     }
                     <span class="text-[10px] text-light-text-muted dark:text-white/30">créé le {{ formatDate(item.instance.createdAt) }}</span>
                   </div>
-                  <div class="flex items-center gap-2 mt-2 text-[10px]">
-                    <span class="font-semibold text-light-text-muted dark:text-white/40">{{ item.elements.length }} élément{{ item.elements.length > 1 ? 's' : '' }}</span>
-                  </div>
+                  @if (item.grid) {
+                    <div class="flex items-center gap-2 mt-2 text-[10px]">
+                      <span class="font-semibold text-light-text-muted dark:text-white/40">{{ item.grid.rowCount }} ligne{{ item.grid.rowCount > 1 ? 's' : '' }} × {{ item.grid.colCount }} colonne{{ item.grid.colCount > 1 ? 's' : '' }}</span>
+                    </div>
+                  }
                 </div>
 
                 <div class="flex items-stretch gap-1.5 flex-shrink-0">
@@ -93,14 +97,14 @@ interface AdminMockup {
                   <button class="text-[11px] px-2 py-1 rounded-lg border border-light-border dark:border-white/20 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors flex items-center gap-1"
                           (click)="toggleExpand(item.instance.id)">
                     <span class="material-symbols-outlined text-sm">{{ expanded().has(item.instance.id) ? 'expand_less' : 'expand_more' }}</span>
-                    Éditer
+                    Ouvrir
                   </button>
                 </div>
               </div>
 
               @if (expanded().has(item.instance.id)) {
-                <div class="border-t border-light-border dark:border-white/10" style="height: 560px">
-                  <app-mockup-board
+                <div class="border-t border-light-border dark:border-white/10" style="height: 460px">
+                  <app-array-board
                     [instanceId]="item.instance.id"
                     [boardName]="item.instance.name"
                     [deletable]="false" />
@@ -113,12 +117,12 @@ interface AdminMockup {
     </div>
   `
 })
-export class MockupAdminComponent implements OnInit {
+export class ArrayAdminComponent implements OnInit {
   private svc = inject(MegaOutilsService);
 
   @Output() openInEditor = new EventEmitter<{ projectId: string; folderId?: string; outilId?: string }>();
 
-  items           = signal<AdminMockup[]>([]);
+  items           = signal<AdminArray[]>([]);
   loading         = signal(true);
   deleteConfirmId = signal<string | null>(null);
   expanded        = signal<Set<string>>(new Set());
@@ -128,7 +132,7 @@ export class MockupAdminComponent implements OnInit {
   async reload() {
     this.loading.set(true);
     try {
-      this.items.set(await this.svc.getAllMockups());
+      this.items.set(await this.svc.getAllArrayBoards());
     } finally {
       this.loading.set(false);
     }
