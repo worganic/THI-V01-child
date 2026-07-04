@@ -125,4 +125,12 @@ export class EditionOutilComponent {
   mergeTitleIntoPrevious(folderId: string): void {
     this.innerZone?.mergeTitleIntoPrevious(folderId);
   }
+
+  applyExternalContent(entityId: string, newText: string): boolean {
+    return this.innerZone?.applyExternalContent(entityId, newText) ?? false;
+  }
+
+  getEntityText(entityId: string): string | null {
+    return this.innerZone?.getEntityText(entityId) ?? null;
+  }
 }

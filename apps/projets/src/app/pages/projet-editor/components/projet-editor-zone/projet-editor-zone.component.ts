@@ -4413,6 +4413,91 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.saveAll();
   }
 
+  // Résout la plage de lignes (dans le document unifié courant) correspondant à un
+  // entityId — folderId pour le texte principal d'une section (voir
+  // getCursorEntity/flushContentModifications où entityId === folderId), fileId pour
+  // un fichier additionnel, ou id de bloc inline (contient '##').
+  private findEntityRange(entityId: string): { lineStart: number; lineEnd: number } | null {
+    const sr = this.sectionRanges.find(r => r.folderId === entityId);
+    if (sr) return { lineStart: sr.lineStart, lineEnd: sr.lineEnd };
+    const fr = this.fileRanges.find(r => r.fileId === entityId);
+    if (fr) return { lineStart: fr.lineStart, lineEnd: fr.lineEnd };
+    const ir = this.inlineBlockRanges.find(r => r.id === entityId);
+    if (ir) return { lineStart: ir.lineStart, lineEnd: ir.lineEnd };
+    return null;
+  }
+
+  // Texte actuellement affiché pour une entité (section/fichier/bloc), dans le même
+  // "format rendu" (heading + fichiers additionnels inclus pour une section) que
+  // beforeState/afterState des entrées d'historique — pour comparaison cohérente dans
+  // <app-projet-diff>. Ne fonctionne que si l'entité est dans la vue actuellement
+  // rendue (hors focus sur une AUTRE section, où unifiedContent ne couvre pas tout le
+  // document) ; à appeler avant que le composant ne soit démonté (voir
+  // ProjetEditorComponent.onHistoryEntryClick).
+  getEntityText(entityId: string): string | null {
+    if (this.focusedHandle && this.focusedHandle.id !== entityId) return null;
+    const range = this.findEntityRange(entityId);
+    if (!range) return null;
+    return this.unifiedContent.split('\n').slice(range.lineStart, range.lineEnd + 1).join('\n');
+  }
+
+  // Remplace le texte d'une section (ou d'un fichier additionnel) dans le document
+  // unifié à partir d'un entityId, puis déclenche le pipeline de sauvegarde normal
+  // (parseContent → écriture par fichier via saveAll/processSectionsChange). Utilisé
+  // par la fusion manuelle depuis l'Historique (<app-projet-diff>), qui ne connaît que
+  // le texte "rendu" d'une section (heading + fichiers additionnels inclus), pas le
+  // contenu par fichier — un simple patch du node par id serait incorrect (le heading
+  // + les autres fichiers seraient écrasés/dupliqués), d'où le passage par le même
+  // mécanisme que la frappe normale.
+  applyExternalContent(entityId: string, newText: string): boolean {
+    const range = this.findEntityRange(entityId);
+    if (!range) return false;
+
+    const wasFocused = this.focusedHandle != null;
+    const fullDoc = wasFocused ? this.fullContentBackup : this.unifiedContent;
+    const lines = fullDoc.split('\n');
+    lines.splice(range.lineStart, range.lineEnd - range.lineStart + 1, ...newText.split('\n'));
+    const newFullDoc = lines.join('\n');
+
+    if (wasFocused) {
+      this.fullContentBackup = newFullDoc;
+      this.unifiedContent = newFullDoc;
+      this.recomputeRanges();
+      const focusedId = this.focusedHandle!.id;
+      const focusedKind = this.focusedHandle!.kind;
+      let newRange: { lineStart: number; lineEnd: number } | null = null;
+      if (focusedKind === 'folder') {
+        const nr = this.sectionRanges.find(r => r.folderId === focusedId);
+        if (nr) newRange = { lineStart: nr.lineStart, lineEnd: nr.lineEnd };
+      } else if (focusedKind === 'file') {
+        const nr = this.fileRanges.find(r => r.fileId === focusedId);
+        if (nr) newRange = { lineStart: nr.lineStart, lineEnd: nr.lineEnd };
+      }
+      if (newRange) {
+        this.focusedLineStart = newRange.lineStart;
+        this.focusedOriginalLineCount = newRange.lineEnd - newRange.lineStart + 1;
+        this.unifiedContent = newFullDoc.split('\n').slice(newRange.lineStart, newRange.lineEnd + 1).join('\n');
+      } else {
+        this.focusedHandle = null;
+        this.fullContentBackup = '';
+        this.unifiedContent = newFullDoc;
+      }
+    } else {
+      this.unifiedContent = newFullDoc;
+    }
+
+    this.recomputeAll();
+    const ta = this.textareaRef?.nativeElement;
+    if (ta) ta.value = this.unifiedContent;
+
+    if (!this.localDirty) {
+      this.localDirty = true;
+      this.dirtyChange.emit(true);
+    }
+    this.forceSave();
+    return true;
+  }
+
   private updateSnapshotFromFiles() {
     const pendingFolderIds = new Set(this.modifiedEntities.values());
     const pendingEntityIds = new Set(this.modifiedEntities.keys());

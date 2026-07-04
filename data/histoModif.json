@@ -13558,6 +13558,121 @@
       "prompt": "peux tu separe dans des colonnes les donnees Resume afin de pouvoir les lires plus facilement (puis) on doit pouvoir modifie la taille des colonnes",
       "startedAt": "2026-07-04T17:22:00.000Z",
       "completedAt": "2026-07-04T17:40:00.000Z"
+    },
+    {
+      "id": "mod-529",
+      "version": "B-0.321",
+      "date": "2026-07-04T18:40:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone5-historique",
+      "title": "Fix : bouton Appliquer dans l'editeur (historique/diff) sans effet",
+      "description": "Le bouton 'Appliquer dans l'editeur' de la vue diff 3 panneaux (zone5-historique) ne modifiait rien de visible : ProjetEditorComponent.onTriDiffApply() patchait files/appelait updateFile() avec entry.entityId, mais pour le texte principal d'une section cet entityId est le folderId (voir getCursorEntity/flushContentModifications dans projet-editor-zone.component.ts, ou entityId === folderId), pas un fileId. Le patch/l'update visait donc un dossier, jamais lu par le rendu (qui lit le contenu du fichier contenu.md). Diagnostic confirme via le Monitor DB (aucune nouvelle ligne projet_content_version ni modification visible apres le clic, malgre l'appel serveur). Correction : nouvelle methode ProjetEditorZoneComponent.applyExternalContent(entityId, text) qui resout la bonne plage de lignes (sectionRanges/fileRanges) dans le document unifie, la remplace, puis declenche le pipeline de sauvegarde normal (saveAll -> brouillon local projet_local_draft, comme une frappe manuelle) au lieu de patcher un noeud directement -- respecte la regle produit : seul 'Enregistrer et partager' publie reellement en BDD partagee. Expose via EditionOutilComponent.applyExternalContent() (meme pattern que flushContentModifications/appendSection). onTriDiffApply() mis a jour pour l'utiliser ; undoable force a false sur l'entree d'historique 'Fusion manuelle' (un undoAction PUT sur un seul fichier serait incorrect si la section a des fichiers additionnels). onConflictDiffApply() non affecte (utilise deja un fileId reel via conflictState()). Build portail+projets verifie (aucune erreur TS).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai affiche l'historique et j'ai remis une ligne supprime et Appliquer dans l'editeur, mais je ne vois pas le texte ajoute (puis) oui verifi et corrige",
+      "startedAt": "2026-07-04T18:20:00.000Z",
+      "completedAt": "2026-07-04T18:40:00.000Z"
+    },
+    {
+      "id": "mod-530",
+      "version": "B-0.321",
+      "date": "2026-07-04T19:10:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone5-historique",
+      "title": "Fix : panneau Actuel vide dans le diff historique + timing ViewChild",
+      "description": "Suite au fix precedent (mod-529), deux bugs supplementaires lies a la meme cause racine (entry.entityId = folderId, pas fileId) : (1) le panneau 'Actuel' de la vue diff 3 panneaux etait toujours vide pour les entrees de texte principal de section, meme quand le fichier avait bien du contenu -- diffCurrentContent (computed) utilisait findFileById(entry.entityId, ...), qui ne trouve jamais une entite FOLDER ; (2) meme corrige, la resolution via le ViewChild EditionOutilComponent aurait echoue : <app-edition-outil> et <app-projet-diff> sont mutuellement exclusifs dans le template (@else if (diffEntry()) / @else if (!diffEntry() && ...)), donc des que diffEntry() devient non-null, editionOutil (ViewChild) n'est deja plus monte -- meme probleme potentiel pour onTriDiffApply() du fix precedent (le clic sur Appliquer arrive apres diffEntry.set(null) mais avant que la vue ait eu le temps de re-rendre). Corrections : diffCurrentContent devient un signal ecrit en snapshot AU CLIC (onHistoryEntryClick, avant diffEntry.set(entry), donc editionOutil encore monte) via une nouvelle methode getEntityText() (meme resolution de plage sectionRanges/fileRanges/inlineBlockRanges que applyExternalContent, factorisee dans findEntityRange()) ; onTriDiffApply() force desormais this.cdr.detectChanges() juste apres diffEntry.set(null) pour garantir que editionOutil soit re-attache avant d'appeler applyExternalContent(). Build portail+projets verifie (aucune erreur TS).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je veux voir une ancienne version, celle ci affiche bien avant apres mais je ne comprend pas l'affichage actuel qui a pourtant un meme texte qui n'est pas affiche",
+      "startedAt": "2026-07-04T18:50:00.000Z",
+      "completedAt": "2026-07-04T19:10:00.000Z"
+    },
+    {
+      "id": "mod-531",
+      "version": "B-0.321",
+      "date": "2026-07-04T21:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone5-historique",
+      "title": "Diff historique : alignement 3 colonnes + placeholders rouges",
+      "description": "La vue diff 3 panneaux (Actuel/Avant/Apres) de l'historique n'alignait pas les lignes identiques entre colonnes : le panneau Actuel etait rendu independamment (simple liste sequentielle), et chaque colonne avait son propre scroll independant, rendant la comparaison illisible des qu'une ligne etait ajoutee/supprimee quelque part. Nouvelle grille unifiee : monitor/... non concerne ici, cote projets ajout de compute-tri-diff.ts (computeTriDiff) qui aligne les 3 versions sur une grille de lignes commune en utilisant deux passes de l'algorithme LCS existant (computeLineDiff avant<->apres et apres<->actuel) fusionnees en utilisant 'apres' comme pivot commun. Une valeur null sur une colonne = la ligne n'existe pas dans cette version -> affichee en placeholder rouge italique '-- absente --' sans numero de ligne (au lieu de decaler les lignes suivantes vers le haut). Template refait en un seul scroll partage (grid-cols-3 par ligne) au lieu de 3 divs overflow-auto independants. ProjetDiffComponent reecrit pour travailler sur `rows: TriDiffRow[]` (indices stables) au lieu de diffPairs+workingLines separes ; cherry-pick (fleches </->) et Reinitialiser adaptes en consequence.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/utils/compute-tri-diff.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-diff/projet-diff.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-diff/projet-diff.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "l'affichage ne me convient pas, les textes identiques doivent etre alignes et si tu ajoute des lignes qui n'existe pas il faut les mettre en rouge pour indiquer qu'elle n'existe pas (et ne pas mettre les numeros de ligne)",
+      "startedAt": "2026-07-04T20:00:00.000Z",
+      "completedAt": "2026-07-04T21:20:00.000Z"
+    },
+    {
+      "id": "mod-532",
+      "version": "B-0.321",
+      "date": "2026-07-04T21:35:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone5-historique",
+      "title": "Fix critique : corruption de contenu via Appliquer dans l'editeur",
+      "description": "Bug decouvert en testant le fix precedent (mod-529/530) dans le navigateur : cliquer 'Appliquer dans l'editeur' depuis la vue diff melangeait le contenu de la section ciblee avec celui d'une AUTRE section du meme projet (ex. une ligne de la section '3.1 Authentification' du Cahier des Charges s'est retrouvee ecrite dans 'test 2'). Cause racine : <app-projet-diff> et <app-edition-outil> sont mutuellement exclusifs dans le template (@else if (diffEntry()) / @else if (!diffEntry() && ...)) -- onTriDiffApply() fait diffEntry.set(null) puis appelle editionOutil.applyExternalContent(), ce qui force un detectChanges() qui DETRUIT l'ancienne instance ProjetEditorZoneComponent (demontee pendant l'affichage du diff) et en RECREE une nouvelle -- cette nouvelle instance n'a pas encore le focus/l'etat de section correctement etabli au moment ou applyExternalContent() lit sectionRanges/unifiedContent, qui refletent alors le document entier non focus plutot que la section visee, d'ou le melange. Corrige en restructurant le template : app-edition-outil (et donc ProjetEditorZoneComponent) reste desormais monte en permanence, la vue diff s'affichant en overlay absolu par-dessus (div absolute inset-0 z-10) plutot qu'en remplacement exclusif -- editionOutil (ViewChild) ne devient donc plus jamais indisponible, et applyExternalContent() opere toujours sur la meme instance vivante avec son etat de focus intact. Suppression du detectChanges()/ChangeDetectorRef devenu inutile. ATTENTION : cette corruption a laisse une ligne parasite ('- Profil avec niveau selectionne et progression sauvegardee') dans le brouillon local de la section 'test 2' du projet 'cours d'anglais' pendant les tests -- a supprimer manuellement (non nettoye automatiquement, tentatives d'edition via automatisation navigateur peu fiables sur ce composant). Build portail+projets verifie.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "(decouvert en verifiant dans le navigateur le fix du bouton 'Appliquer dans l'editeur' demande precedemment)",
+      "startedAt": "2026-07-04T21:20:00.000Z",
+      "completedAt": "2026-07-04T21:35:00.000Z"
+    },
+    {
+      "id": "mod-533",
+      "version": "B-0.321",
+      "date": "2026-07-04T18:45:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:monitor-db",
+      "title": "Monitor DB : bouton pour effacer le flux de logs affiche",
+      "description": "Ajout d'un bouton 'Effacer les logs' dans la barre de bascule du FeedPanel (a cote du compteur de tables actives), qui vide instantanement le tableau du flux en direct (setRowCount(0)) sans affecter le polling en arriere-plan.",
+      "files": [
+        "monitor/ui/feed_panel.py"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l'outils de surveillance Monitoring DB ajoute un bouton pour supprime l'affichage des logs",
+      "startedAt": "2026-07-04T18:42:00.000Z",
+      "completedAt": "2026-07-04T18:45:00.000Z"
     }
   ]
 }

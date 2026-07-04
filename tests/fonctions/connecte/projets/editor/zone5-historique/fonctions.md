@@ -88,15 +88,18 @@ Données : via `ProjetCollabService`, temps réel WebSocket
 
 ---
 
-## `2-5-2-8-12` — Vue diff 3 panneaux avec sélection de lignes
+## `2-5-2-8-12` — [modification] Vue diff 3 panneaux alignés (Actuel/Avant/Après)
 
-- **Déclenchement** : clic sur une entrée `update` ou `ai-update` dans l'historique → `ProjetDiffComponent` s'affiche en remplacement de la zone éditeur
-- **Panneau Actuel (gauche)** : contenu en cours du fichier (`diffCurrentContent` computed depuis `files`), lignes modifiées surlignées en bleu
-- **Panneau Avant (milieu)** : `beforeState.content` de l'entrée d'historique, diff LCS vs afterState, bouton `←` au hover sur chaque ligne
-- **Panneau Après (droite)** : `afterState.content`, bouton `→` au hover sur chaque ligne
-- **Cherry-pick** : clic `←` ou `→` copie la ligne dans la copie de travail (`workingLines[]`), badge bleu sur la ligne modifiée
-- **Réinitialiser** : restaure `workingLines` depuis `currentContent`
-- **Appliquer dans l'éditeur** : `emit(workingLines.join('\n'))` → parent patch `files` + `restoreToken` + `updateFile` serveur + entrée "Fusion manuelle" dans l'historique (`undoable: true`)
+- **Déclenchement** : clic sur une entrée `update` ou `ai-update` dans l'historique → `ProjetDiffComponent` s'affiche **en overlay** par-dessus la zone éditeur (`app-edition-outil` reste monté en arrière-plan, voir Fix ci-dessous)
+- **Grille unifiée** : les 3 colonnes partagent un **seul scroll** et sont alignées ligne à ligne via `computeTriDiff()` (`utils/compute-tri-diff.ts`) — fusionne deux passes de `computeLineDiff` (avant↔après et après↔actuel) en utilisant "après" comme pivot commun. Une ligne absente d'une version s'affiche en placeholder rouge italique `— absente —`, **sans numéro de ligne**, plutôt que de décaler les lignes suivantes
+- **Panneau Actuel (gauche)** : contenu actuel de l'entité (section ou fichier), capturé en **snapshot au clic** sur l'entrée (`ProjetEditorComponent.onHistoryEntryClick()` → `EditionOutilComponent.getEntityText()` → `ProjetEditorZoneComponent.getEntityText()`, résolu via `sectionRanges`/`fileRanges`/`inlineBlockRanges` sur le document unifié courant) et stocké dans le signal `diffCurrentContent`, lignes modifiées surlignées en bleu
+- **Panneau Avant (milieu)** : `beforeState.content` de l'entrée d'historique, bouton `←` au hover sur chaque ligne présente
+- **Panneau Après (droite)** : `afterState.content`, bouton `→` au hover sur chaque ligne présente
+- **Cherry-pick** : clic `←` ou `→` copie la ligne dans `rows[i].current` (indices stables dans `TriDiffRow[]`, renumérotés via `renumberCurrent()`), badge bleu sur la ligne modifiée
+- **Réinitialiser** : restaure `rows[i].current` depuis le snapshot original (`originalCurrent[]`)
+- **Appliquer dans l'éditeur** : `emit(rows filtrées (current non-null) jointes par \n)` → `ProjetEditorComponent.onTriDiffApply()` → `EditionOutilComponent.applyExternalContent()` → `ProjetEditorZoneComponent.applyExternalContent()` remplace la plage de lignes de la section/fichier ciblé dans le document unifié puis déclenche le pipeline de sauvegarde normal (brouillon local `projet_local_draft`, comme une frappe manuelle — la publication reste un choix explicite via "Enregistrer et partager") + entrée "Fusion manuelle" dans l'historique (`undoable: false`, un simple PUT sur un seul fichier serait incorrect si la section a des fichiers additionnels)
+  - **Fix (2026-07-04)** : plusieurs bugs liés à `entry.entityId`, qui est le **folderId** pour le texte principal d'une section (pas un fileId, voir `getCursorEntity`/`flushContentModifications`) : (1) l'ancien "Appliquer dans l'éditeur" patchait `files`/appelait `updateFile` directement avec cet id, sans effet visible ; (2) le panneau "Actuel" était **toujours vide** pour ces entrées (`findFileById` ne trouve jamais un dossier) ; (3) **bug critique de corruption** : `<app-projet-diff>` et `<app-edition-outil>` étaient mutuellement exclusifs dans le template (`@else if (diffEntry())`) — `onTriDiffApply()` forçait un `detectChanges()` après `diffEntry.set(null)` pour réattacher le `ViewChild editionOutil`, ce qui **détruisait puis recréait** `ProjetEditorZoneComponent` ; la nouvelle instance n'avait pas encore le focus de section établi au moment où `applyExternalContent()` lisait `unifiedContent`/`sectionRanges`, qui reflétaient alors le document entier non focus → **mélange de contenu entre sections** (une ligne d'une autre section de "Cahier des Charges" écrite dans "test 2" lors des tests). Corrigé en gardant `app-edition-outil` **monté en permanence** (la vue diff s'affiche en overlay absolu `absolute inset-0 z-10` par-dessus, plus en remplacement exclusif) — `editionOutil` ne devient donc plus jamais indisponible, `detectChanges()`/`ChangeDetectorRef` retirés (devenus inutiles).
+- **Composants:** `projet-diff.component.ts`, `compute-tri-diff.ts`, `projet-editor.component.ts`, `projet-editor.component.html`, `projet-editor-zone.component.ts`, `edition-outil.component.ts`
 
 ---
 

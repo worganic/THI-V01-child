@@ -1,9 +1,9 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CollabHistoryEntry } from '@worganic/portail-core/data-access';
-import { DiffPair, computeLineDiff } from '../../utils/compute-line-diff';
+import { TriDiffRow, computeTriDiff } from '../../utils/compute-tri-diff';
 
-export type { DiffPair };
+export type { TriDiffRow };
 
 @Component({
   selector: 'app-projet-diff',
@@ -20,13 +20,17 @@ export class ProjetDiffComponent implements OnChanges {
   @Output() close = new EventEmitter<void>();
   @Output() applyContent = new EventEmitter<string>();
 
-  diffPairs: DiffPair[] = [];
+  // Grille unique alignant Actuel/Avant/Après ligne à ligne (une valeur `null` sur
+  // une colonne = la ligne n'existe pas dans cette version, affichée en placeholder
+  // plutôt que de décaler les lignes suivantes — voir computeTriDiff).
+  rows: TriDiffRow[] = [];
+  private originalCurrent: (string | null)[] = [];
   hasContent = false;
   leftLineCount = 0;
   rightLineCount = 0;
 
-  workingLines: string[] = [];
-  changedLineNums = new Set<number>();
+  // Indices (dans `rows`) modifiés via cherry-pick ←/→
+  changedRowIndices = new Set<number>();
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['entry'] || changes['currentContent']) this.buildDiff();
@@ -40,51 +44,53 @@ export class ProjetDiffComponent implements OnChanges {
     const before = (rawBefore as { content?: string } | null)?.content ?? null;
     const after  = (rawAfter  as { content?: string } | null)?.content ?? null;
     this.hasContent = before !== null || after !== null;
-    if (!this.hasContent) { this.diffPairs = []; return; }
+    if (!this.hasContent) { this.rows = []; return; }
     const bLines = (before ?? '').split('\n');
     const aLines = (after ?? '').split('\n');
-    this.diffPairs = computeLineDiff(bLines, aLines);
+    const cLines = (this.currentContent ?? '').split('\n');
+    this.rows = computeTriDiff(cLines, bLines, aLines);
+    this.originalCurrent = this.rows.map(r => r.current);
     this.leftLineCount = bLines.length;
     this.rightLineCount = aLines.length;
-    this.workingLines = (this.currentContent ?? '').split('\n');
-    this.changedLineNums = new Set();
+    this.changedRowIndices = new Set();
   }
 
-  applyBeforeLine(pair: DiffPair) {
-    if (pair.leftNum == null) return;
-    const idx = pair.leftNum - 1;
-    if (idx < 0) return;
-    if (this.workingLines.length <= idx) {
-      while (this.workingLines.length <= idx) this.workingLines.push('');
-    }
-    this.workingLines = [...this.workingLines];
-    this.workingLines[idx] = pair.left;
-    this.changedLineNums = new Set([...this.changedLineNums, pair.leftNum]);
+  applyBeforeLine(index: number) {
+    const row = this.rows[index];
+    if (!row || row.before === null) return;
+    row.current = row.before;
+    this.changedRowIndices = new Set([...this.changedRowIndices, index]);
+    this.renumberCurrent();
   }
 
-  applyAfterLine(pair: DiffPair) {
-    if (pair.rightNum == null) return;
-    const targetIdx = pair.leftNum != null ? pair.leftNum - 1 : pair.rightNum - 1;
-    if (targetIdx < 0) return;
-    if (this.workingLines.length <= targetIdx) {
-      while (this.workingLines.length <= targetIdx) this.workingLines.push('');
+  applyAfterLine(index: number) {
+    const row = this.rows[index];
+    if (!row || row.after === null) return;
+    row.current = row.after;
+    this.changedRowIndices = new Set([...this.changedRowIndices, index]);
+    this.renumberCurrent();
+  }
+
+  private renumberCurrent() {
+    let n = 1;
+    for (const row of this.rows) {
+      row.currentNum = row.current !== null ? n++ : null;
     }
-    this.workingLines = [...this.workingLines];
-    this.workingLines[targetIdx] = pair.right;
-    this.changedLineNums = new Set([...this.changedLineNums, targetIdx + 1]);
   }
 
   applyChanges() {
-    this.applyContent.emit(this.workingLines.join('\n'));
+    const text = this.rows.filter(r => r.current !== null).map(r => r.current as string).join('\n');
+    this.applyContent.emit(text);
   }
 
   resetChanges() {
-    this.workingLines = (this.currentContent ?? '').split('\n');
-    this.changedLineNums = new Set();
+    this.rows.forEach((row, i) => { row.current = this.originalCurrent[i]; });
+    this.renumberCurrent();
+    this.changedRowIndices = new Set();
   }
 
-  isLineChanged(lineNum: number): boolean {
-    return this.changedLineNums.has(lineNum);
+  isLineChanged(index: number): boolean {
+    return this.changedRowIndices.has(index);
   }
 
   formatTime(ts: string): string {
@@ -96,6 +102,6 @@ export class ProjetDiffComponent implements OnChanges {
     } catch { return ts; }
   }
 
-  get removedCount(): number { return this.diffPairs.filter(p => p.type === 'removed').length; }
-  get addedCount(): number { return this.diffPairs.filter(p => p.type === 'added').length; }
+  get removedCount(): number { return this.rows.filter(r => r.relation === 'removed').length; }
+  get addedCount(): number { return this.rows.filter(r => r.relation === 'added').length; }
 }
