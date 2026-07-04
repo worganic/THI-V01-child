@@ -99,6 +99,12 @@ def build_services(offset: int):
             'env': {},
             'color': '#a855f7',
         })
+        services.append({
+            'id': 'monitor', 'name': 'Monitor DB', 'port': None,
+            'cmd': f'{sys.executable} monitor_app.py',
+            'env': {},
+            'color': '#ec4899',
+        })
     return services
 
 
@@ -362,8 +368,10 @@ class Manager(QObject):
         self._daemon_retried.discard(svc_id)
         self.sig_status.emit(svc_id, False)
 
-    def start_all(self):
+    def start_all(self, exclude: set = frozenset()):
         for s in self.services:
+            if s['id'] in exclude:
+                continue
             threading.Thread(target=self.start, args=(s['id'],), daemon=True).start()
 
     def stop_all(self):
@@ -869,8 +877,10 @@ def main():
     window.show()
     log.info('Fenêtre principale affichée')
 
-    # Auto-start all services on launch
-    threading.Thread(target=manager.start_all, daemon=True).start()
+    # Auto-start all services on launch (Monitor DB exclu : usage occasionnel,
+    # démarrable manuellement via sa carte pour ne pas ouvrir une fenêtre en plus
+    # à chaque lancement du launcher).
+    threading.Thread(target=manager.start_all, kwargs={'exclude': {'monitor'}}, daemon=True).start()
 
     # Ouvre le portail dans le navigateur avec le portOffset pour propager
     # automatiquement les bons ports vers les URLs des services (API, agent, projets).
