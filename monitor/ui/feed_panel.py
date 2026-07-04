@@ -127,6 +127,17 @@ class FeedPanel(QWidget):
         tb_lay.addWidget(self.toggle_btn)
         tb_lay.addStretch()
 
+        self.clear_btn = QPushButton('🗑  Effacer les logs')
+        self.clear_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.clear_btn.setFont(QFont('Segoe UI', 9))
+        self.clear_btn.setStyleSheet(
+            f'QPushButton{{background:transparent;color:{theme.TEXT_MUTED};border:1px solid {theme.BORDER_CARD};'
+            f'border-radius:4px;padding:2px 10px}}'
+            f'QPushButton:hover{{color:{theme.COLOR_ERROR};border-color:{theme.COLOR_ERROR}}}'
+        )
+        self.clear_btn.clicked.connect(self._clear_logs)
+        tb_lay.addWidget(self.clear_btn)
+
         self.counter_lbl = QLabel('')
         self.counter_lbl.setFont(QFont('Segoe UI', 9))
         self.counter_lbl.setStyleSheet(f'color:{theme.TEXT_MUTED};background:transparent')
@@ -195,6 +206,9 @@ class FeedPanel(QWidget):
     def _on_filter_changed(self, names: set):
         self._active_tables = names
         self._update_counter()
+
+    def _clear_logs(self):
+        self.table.setRowCount(0)
 
     def _update_counter(self):
         active, total = self.filter_bar.counts()

@@ -211,13 +211,13 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   hasPendingEdit = computed(() => !!this.aiEditService.pendingEdit());
   hasFtpBackup = computed(() => this.project()?.backupType === 'ftp');
 
-  // Contenu actuel du fichier concerné par l'entrée d'historique ouverte dans le diff
-  readonly diffCurrentContent = computed<string | null>(() => {
-    const entry = this.diffEntry();
-    if (!entry?.entityId) return null;
-    const node = this.findFileById(entry.entityId, this.files());
-    return node?.content ?? null;
-  });
+  // Contenu actuel de l'entité (section ou fichier) concernée par l'entrée d'historique
+  // ouverte dans le diff. Capturé en snapshot au clic (voir onHistoryEntryClick) plutôt
+  // que recalculé en computed() : <app-edition-outil> (qui seul peut résoudre le texte
+  // "rendu" d'une section via getEntityText) et <app-projet-diff> sont mutuellement
+  // exclusifs dans le template (@else if (diffEntry())), donc son ViewChild n'est déjà
+  // plus disponible au moment où le diff s'affiche.
+  readonly diffCurrentContent = signal<string | null>(null);
 
   // Nom + icône du noeud actuellement sélectionné, affichés sous les onglets de la zone 5b
   readonly activeNodeInfo = computed<{ name: string; icon: string } | null>(() => {
@@ -1994,6 +1994,17 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   }
 
   onHistoryEntryClick(entry: CollabHistoryEntry) {
+    // Capturer le texte actuel AVANT de basculer la vue : entry.entityId est souvent le
+    // folderId d'une section (pas un fileId, voir getCursorEntity/flushContentModifications
+    // dans ProjetEditorZoneComponent) — seul editionOutil.getEntityText() sait résoudre le
+    // texte "rendu" correspondant (heading + fichiers additionnels inclus, comme
+    // beforeState/afterState). Une fois diffEntry non-null, <app-edition-outil> est démonté
+    // (remplacé par <app-projet-diff> dans le template) et son ViewChild n'est plus valide.
+    const entityId = entry.entityId != null ? String(entry.entityId) : null;
+    const current = entityId
+      ? (this.editionOutil?.getEntityText(entityId) ?? this.findFileById(entityId, this.files())?.content ?? null)
+      : null;
+    this.diffCurrentContent.set(current);
     this.diffEntry.set(entry);
   }
 
@@ -2014,34 +2025,39 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     const projectName = this.project()?.id;
     if (!projectName) return;
     const prevContent = this.diffCurrentContent();
-    // 1. Patch local + refresh éditeur
-    this.files.update(nodes => this.patchNodeContent(nodes, entry.entityId, content));
-    this.restoreToken.update(n => n + 1);
     this.diffEntry.set(null);
-    // 2. Persister sur le serveur
-    try {
-      await this.projectFilesService.updateFile(projectName, entry.entityId, content);
-      // 3. Tracking historique (annulable)
-      this.history.track({
-        section: 'projets/contenu',
-        actionType: 'update',
-        label: `Fusion manuelle — «${entry.entityLabel || entry.entityId}»`,
-        entityType: 'content',
-        entityId: entry.entityId,
-        entityLabel: entry.entityLabel,
-        beforeState: prevContent != null ? { content: prevContent } : undefined,
-        afterState: { content },
-        context: { projectId: projectName },
-        undoable: prevContent != null,
-        undoAction: prevContent != null ? {
-          endpoint: `/api/file-projects/${projectName}/files/${entry.entityId}`,
-          method: 'PUT',
-          payload: { content: prevContent }
-        } : undefined
-      }).catch(() => {});
-    } catch (e) {
-      console.error('[TriDiff] apply failed:', e);
+
+    // entry.entityId est le folderId pour le texte principal d'une section (voir
+    // getCursorEntity/flushContentModifications : entityId === folderId dans ce cas),
+    // pas forcément un fileId. patchNodeContent()/updateFile() sur cet id ne
+    // modifiaient donc rien de visible (le rendu lit le contenu du FICHIER
+    // "contenu.md", pas un champ "content" posé sur le dossier) : le bouton
+    // "Appliquer dans l'éditeur" semblait ne rien faire. On passe désormais par
+    // applyExternalContent, qui remplace le texte de la bonne plage dans le
+    // document unifié et déclenche le pipeline de sauvegarde normal (brouillon
+    // local, comme une frappe manuelle — la publication reste un choix explicite
+    // via "Enregistrer et partager").
+    const applied = this.editionOutil?.applyExternalContent(String(entry.entityId), content);
+    if (!applied) {
+      console.error('[TriDiff] apply failed: entité introuvable dans le document actuel', entry.entityId);
+      return;
     }
+
+    this.history.track({
+      section: 'projets/contenu',
+      actionType: 'update',
+      label: `Fusion manuelle — «${entry.entityLabel || entry.entityId}»`,
+      entityType: 'content',
+      entityId: entry.entityId,
+      entityLabel: entry.entityLabel,
+      beforeState: prevContent != null ? { content: prevContent } : undefined,
+      afterState: { content },
+      context: { projectId: projectName },
+      // Pas d'undoAction fiable ici : le texte fusionné peut recouvrir plusieurs
+      // fichiers (fichiers additionnels, images) au sein de la section, un simple
+      // PUT sur un seul fichier serait incorrect/incomplet.
+      undoable: false,
+    }).catch(() => {});
   }
 
   async onAcceptAiEdit() {

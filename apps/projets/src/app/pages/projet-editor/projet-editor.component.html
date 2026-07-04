@@ -100,7 +100,14 @@
             (applyContent)="onConflictDiffApply($event)"
             (close)="resolveConflictQuick('server')" />
         </div>
-      } @else if (!diffEntry() && !hasPendingEdit()) {
+      } @else if (!hasPendingEdit()) {
+        <!-- Wrapper toujours monté : la vue diff de l'historique s'affiche en overlay
+             par-dessus (plutôt qu'en remplacement exclusif) pour que
+             ProjetEditorZoneComponent (via app-edition-outil) reste vivant avec son état
+             (section focus, unifiedContent) intact — onTriDiffApply()/applyExternalContent()
+             en dépendent pour cibler la bonne section sans reconstruire le document à
+             l'aveugle. -->
+        <div class="relative flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden">
         @if (!activeOutil() || activeOutil()?.type === 'edition') {
           <app-edition-outil
               [files]="activeOutilFiles()"
@@ -159,12 +166,16 @@
               (navigateToSection)="onAgendaNavigateToSection($event)"
               (eventsChanged)="onAgendaEventsChanged()" />
         }
-      } @else if (diffEntry()) {
-        <app-projet-diff
-          [entry]="diffEntry()"
-          [currentContent]="diffCurrentContent()"
-          (close)="closeDiff()"
-          (applyContent)="onTriDiffApply($event)" />
+        @if (diffEntry()) {
+          <div class="absolute inset-0 z-10 flex flex-col overflow-hidden bg-white dark:bg-[#0f0f17]">
+            <app-projet-diff
+              [entry]="diffEntry()"
+              [currentContent]="diffCurrentContent()"
+              (close)="closeDiff()"
+              (applyContent)="onTriDiffApply($event)" />
+          </div>
+        }
+        </div>
       } @else if (aiEditService.pendingEdit(); as edit) {
         <!-- Barre flottante Accepter/Annuler -->
         <div class="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden relative">
