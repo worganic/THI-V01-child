@@ -4,7 +4,7 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict, fenceBody as sharedFenceBody } from '@worganic/portail-core/data-access';
 import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
@@ -15,7 +15,7 @@ import { ProjetCollabService } from '@worganic/portail-core/data-access';
 import { AuthService } from '@worganic/portail-core/data-access';
 import { ImagePropsPanelComponent, ImageProps } from '../image-props-panel/image-props-panel.component';
 import { SlashCommandMenuComponent, SlashCommand } from '../slash-command-menu/slash-command-menu.component';
-import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, FormBoardComponent, ChartBoardComponent } from '@worganic/shared/ui';
+import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, FormBoardComponent, ChartBoardComponent } from '@worganic/shared/ui';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -184,7 +184,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptAdminComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, PromptChatPopupComponent, ChartBoardComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, PromptChatPopupComponent, ChartBoardComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -423,6 +423,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Mode tchat (conversation libre multi-tours → copie manuelle vers l'édition via le popup d'import)
   showChatPopup = signal(false);
   activeChatForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; variables: string[]; folderId: string | null } | null = null;
+  // Vide = désactivé (le tchat reste 100% conversationnel libre tant que l'admin n'a rien configuré).
+  promptChatStructuredPrompt: string | null = null;
 
   // ── Form MO ────────────────────────────────────────────────────────────────
   contentFormIds: string[] = [];
@@ -618,6 +620,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Fold/collapse par section (mode Code)
   foldedContent = new Map<string, string>(); // sectionId → body content replaced
   sectionChevrons: { folderId: string; top: number; level: number }[] = [];
+  // Fold/collapse par section (mode Edition) — purement visuel (CSS), ne touche jamais
+  // unifiedContent ni ne déclenche de sauvegarde, contrairement au repliage du mode Code.
+  visuFoldedIds = signal<Set<string>>(new Set());
   // Blocs inline détectés (tableau, citation, code fence, liste)
   private inlineBlockRanges: InlineBlockRange[] = [];
   // Snapshot de texte des blocs inline avant modification (pour diff historique)
@@ -3562,6 +3567,37 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.recomputeAll();
   }
 
+  // ── Fold/collapse par section (mode Edition) ─────────────────────────────────
+  // Purement visuel : masque (CSS) le corps de la section repliée et la totalité de ses
+  // sous-sections, sans jamais modifier unifiedContent ni déclencher de sauvegarde.
+  toggleVisuFold(sectionId: string, ev?: MouseEvent) {
+    ev?.preventDefault();
+    ev?.stopPropagation();
+    this.visuFoldedIds.update(set => {
+      const next = new Set(set);
+      next.has(sectionId) ? next.delete(sectionId) : next.add(sectionId);
+      return next;
+    });
+  }
+
+  /** True si un ancêtre de cette section (dans filteredVisuSections) est replié — la section
+   *  entière (titre + corps + MO) doit alors être masquée. */
+  isVisuSectionHidden(sectionId: string): boolean {
+    const folded = this.visuFoldedIds();
+    if (folded.size === 0) return false;
+    const sections = this.filteredVisuSections;
+    const idx = sections.findIndex(s => s.sectionId === sectionId);
+    if (idx <= 0) return false;
+    let curLevel = sections[idx].level;
+    for (let i = idx - 1; i >= 0; i--) {
+      if (sections[i].level < curLevel) {
+        if (folded.has(sections[i].sectionId)) return true;
+        curLevel = sections[i].level;
+      }
+    }
+    return false;
+  }
+
   // ── Mode toggle ─────────────────────────────────────────────
   setMode(m: 'edit' | 'visu' | 'structure') {
     if (this.mode === m) return;
@@ -3574,6 +3610,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     } else if (this.mode === 'visu') {
       this.flushVisuSections();
       this.teardownVisuSelectionListener();
+      this.visuFoldedIds.set(new Set());
     } else if (this.mode === 'structure') {
       clearTimeout(this.structFlushTimeout);
       this.flushStructureNodes();
@@ -5909,10 +5946,16 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   private openChatPopup(instanceId: string, instanceName: string, userPrompt: string, systemPrompt: string | null, variables: string[], folderId: string | null) {
     this.activeChatForExecution = { instanceId, instanceName, userPrompt, systemPrompt, variables, folderId };
-    if (this.promptBaseSystemPrompt === null) {
+    if (this.promptBaseSystemPrompt === null || this.promptChatStructuredPrompt === null) {
       this.megaOutilsSvc.getPromptGlobalConfig()
-        .then(cfg => { this.promptBaseSystemPrompt = cfg.baseSystemPrompt || ''; })
-        .catch(() => { this.promptBaseSystemPrompt = ''; });
+        .then(cfg => {
+          this.promptBaseSystemPrompt = cfg.baseSystemPrompt || '';
+          this.promptChatStructuredPrompt = cfg.chatStructuredPrompt || '';
+        })
+        .catch(() => {
+          this.promptBaseSystemPrompt = '';
+          this.promptChatStructuredPrompt = '';
+        });
     }
     this.showChatPopup.set(true);
   }
@@ -5925,6 +5968,16 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const sectionId = chat.folderId || '';
     const level = chat.folderId ? (this.sectionRanges.find(r => r.folderId === chat.folderId)?.level ?? 1) : 0;
     this.openPastePreviewForText(text, { mode: 'visu', sectionId, level });
+  }
+
+  /** Reçoit les MegaOutils cochés depuis le tchat : réutilise directement le même
+   *  pipeline de matérialisation que le mode Guidé (onWorkflowMaterialize). Le tchat
+   *  reste ouvert (pas de fermeture automatique, contrairement au Guidé). */
+  async onChatMaterialize(payload: { deliverable: string; selectedMos: MaterializedMoPreview[] }) {
+    const chat = this.activeChatForExecution;
+    if (!chat) return;
+    const folderId = chat.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
+    await this.materializeMegaOutilsFromContent(payload.deliverable, payload.selectedMos, folderId, chat.instanceId);
   }
 
   /** Ouvre le popup de prévisualisation de collage (recalage des niveaux) pour un texte donné,
@@ -6005,7 +6058,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
           type: mo.type, name: mo.name, projectId: this.projectName,
           outilId: this.activeOutilId || undefined, folderId,
         });
-        const body = this.fenceBody(mo.fence);
+        const body = sharedFenceBody(mo.fence);
         if (mo.type === 'trello') {
           const cards = this.parseTrelloBodyCards(body);
           for (let i = 0; i < cards.length; i++) {
@@ -6230,12 +6283,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!events.length) return '';
     // Le commentaire HTML permet à deletePromptResult de retrouver le groupe par son ID
     return `<!-- agenda-group:${groupId} agenda-name:${groupName.replace(/>/g, '')} -->\n${events.join('\n')}`;
-  }
-
-  /** Corps d'un fence (entre la 1re et la dernière ligne ```). */
-  private fenceBody(fence: string): string {
-    const lines = fence.split('\n');
-    return lines.slice(1, lines.length - 1).join('\n');
   }
 
   /** Décale les titres markdown d'un contenu pour que le plus haut niveau passe juste sous

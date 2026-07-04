@@ -35,26 +35,33 @@ type PopupState = 'idle' | 'variable-fill' | 'running' | 'validating' | 'done';
 
           <!-- Sélecteur IA/Modèle (idle / variable-fill) -->
           @if (state() === 'idle' || state() === 'variable-fill') {
-            <div class="grid grid-cols-2 gap-3">
-              <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">IA</label>
-                <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
-                        [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
-                  @for (p of providers(); track p.value) {
-                    <option [value]="p.value">{{ p.label }}</option>
-                  }
-                </select>
+            @if (providers().length === 0) {
+              <div class="flex items-center gap-2 rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background px-3 py-2.5 text-[12px] text-light-text-muted dark:text-white/40">
+                <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+                En attente de la liste des IA disponibles…
               </div>
-              <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Modèle</label>
-                <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
-                        [ngModel]="activeModel()" (ngModelChange)="selectedModel.set($event)">
-                  @for (m of modelsForProvider(); track m.value) {
-                    <option [value]="m.value">{{ m.label || m.value }}</option>
-                  }
-                </select>
+            } @else {
+              <div class="grid grid-cols-2 gap-3">
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">IA</label>
+                  <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
+                          [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
+                    @for (p of providers(); track p.value) {
+                      <option [value]="p.value">{{ p.label }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Modèle</label>
+                  <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
+                          [ngModel]="activeModel()" (ngModelChange)="selectedModel.set($event)">
+                    @for (m of modelsForProvider(); track m.value) {
+                      <option [value]="m.value">{{ m.label || m.value }}</option>
+                    }
+                  </select>
+                </div>
               </div>
-            </div>
+            }
           }
 
           <!-- Prompt système de base (global admin) -->

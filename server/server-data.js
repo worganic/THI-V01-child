@@ -10481,6 +10481,44 @@ function mapMockupComment(r) {
     return { id: r.id, instanceId: r.instance_id, elementId: r.element_id, text: r.text, authorId: r.author_id || undefined, authorName: r.author_name || undefined, createdAt: r.created_at };
 }
 
+// GET /api/mega-outils/mockup/all
+app.get('/api/mega-outils/mockup/all', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [instances] = await pool.query(`
+            SELECT i.*, COALESCE(fp.title, fpm.display_name) AS project_name
+            FROM mega_outil_instances i
+            LEFT JOIN file_project_meta fpm ON fpm.id = i.project_id
+            LEFT JOIN frank_projects fp ON fp.id = i.project_id COLLATE utf8mb4_unicode_ci
+            WHERE i.type = 'mockup'
+            ORDER BY i.created_at DESC
+        `);
+        const result = [];
+        const configCache = new Map();
+        for (const r of instances) {
+            const [elements] = await pool.query('SELECT * FROM mega_outil_mockup_elements WHERE instance_id = ? ORDER BY created_at ASC', [r.id]);
+            let folderName = null;
+            try {
+                if (!configCache.has(r.project_id)) configCache.set(r.project_id, await getProjectConfig(r.project_id));
+                const cfg = configCache.get(r.project_id);
+                if (cfg && r.folder_id && cfg.structure) folderName = findNodeById(cfg.structure, r.folder_id)?.name || null;
+            } catch (_) {}
+            result.push({
+                instance: {
+                    id: r.id, type: r.type, name: r.name, projectId: r.project_id,
+                    outilId: r.outil_id || undefined, folderId: r.folder_id || undefined,
+                    createdAt: r.created_at, updatedAt: r.updated_at,
+                },
+                elements: elements.map(mapMockupElement),
+                projectName: r.project_name || r.project_id,
+                folderName,
+            });
+        }
+        res.json(result);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // GET /api/mega-outils/mockup/:instanceId/elements
 app.get('/api/mega-outils/mockup/:instanceId/elements', async (req, res) => {
     const user = getSessionUser(req);
@@ -10667,32 +10705,42 @@ app.get('/api/mega-outils/array/all', async (req, res) => {
     try {
         const [rows] = await pool.query(`
             SELECT i.*, g.cells, g.col_widths, g.row_heights, g.col_count, g.row_count, g.updated_at AS grid_updated_at,
-                   p.name AS project_name, f.name AS folder_name
+                   COALESCE(fp.title, fpm.display_name) AS project_name
             FROM mega_outil_instances i
             LEFT JOIN mega_outil_array_grids g ON g.instance_id = i.id
-            LEFT JOIN frank_projects p ON p.id = i.project_id
-            LEFT JOIN frank_project_nodes f ON f.id = i.folder_id
+            LEFT JOIN file_project_meta fpm ON fpm.id = i.project_id
+            LEFT JOIN frank_projects fp ON fp.id = i.project_id COLLATE utf8mb4_unicode_ci
             WHERE i.type = 'array'
             ORDER BY i.created_at DESC
         `);
-        const result = rows.map(r => ({
-            instance: {
-                id: r.id, type: r.type, name: r.name, projectId: r.project_id,
-                outilId: r.outil_id, folderId: r.folder_id,
-                createdAt: r.created_at, updatedAt: r.updated_at,
-            },
-            grid: r.cells ? {
-                instanceId: r.id,
-                cells: JSON.parse(r.cells),
-                colWidths: JSON.parse(r.col_widths || '[]'),
-                rowHeights: JSON.parse(r.row_heights || '[]'),
-                colCount: r.col_count || 3,
-                rowCount: r.row_count || 5,
-                updatedAt: r.grid_updated_at,
-            } : null,
-            projectName: r.project_name,
-            folderName: r.folder_name,
-        }));
+        const result = [];
+        const configCache = new Map();
+        for (const r of rows) {
+            let folderName = null;
+            try {
+                if (!configCache.has(r.project_id)) configCache.set(r.project_id, await getProjectConfig(r.project_id));
+                const cfg = configCache.get(r.project_id);
+                if (cfg && r.folder_id && cfg.structure) folderName = findNodeById(cfg.structure, r.folder_id)?.name || null;
+            } catch (_) {}
+            result.push({
+                instance: {
+                    id: r.id, type: r.type, name: r.name, projectId: r.project_id,
+                    outilId: r.outil_id, folderId: r.folder_id,
+                    createdAt: r.created_at, updatedAt: r.updated_at,
+                },
+                grid: r.cells ? {
+                    instanceId: r.id,
+                    cells: JSON.parse(r.cells),
+                    colWidths: JSON.parse(r.col_widths || '[]'),
+                    rowHeights: JSON.parse(r.row_heights || '[]'),
+                    colCount: r.col_count || 3,
+                    rowCount: r.row_count || 5,
+                    updatedAt: r.grid_updated_at,
+                } : null,
+                projectName: r.project_name || r.project_id,
+                folderName,
+            });
+        }
         res.json(result);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -10935,23 +10983,96 @@ app.get('/api/mega-outils/prompt/all', async (req, res) => {
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     try {
         const [rows] = await pool.query(`
-            SELECT i.*, p.name AS project_name, f.name AS folder_name
+            SELECT i.*, COALESCE(fp.title, fpm.display_name) AS project_name
             FROM mega_outil_instances i
-            LEFT JOIN frank_projects p ON p.id = i.project_id
-            LEFT JOIN frank_project_nodes f ON f.id = i.folder_id
+            LEFT JOIN file_project_meta fpm ON fpm.id = i.project_id
+            LEFT JOIN frank_projects fp ON fp.id = i.project_id COLLATE utf8mb4_unicode_ci
             WHERE i.type = 'prompt'
             ORDER BY i.created_at DESC
         `);
-        const result = rows.map(r => ({
-            instance: {
-                id: r.id, type: r.type, name: r.name, projectId: r.project_id,
-                outilId: r.outil_id, folderId: r.folder_id,
-                createdAt: r.created_at, updatedAt: r.updated_at,
-            },
-            projectName: r.project_name,
-            folderName: r.folder_name,
-        }));
+        const result = [];
+        const configCache = new Map();
+        for (const r of rows) {
+            let folderName = null;
+            try {
+                if (!configCache.has(r.project_id)) configCache.set(r.project_id, await getProjectConfig(r.project_id));
+                const cfg = configCache.get(r.project_id);
+                if (cfg && r.folder_id && cfg.structure) folderName = findNodeById(cfg.structure, r.folder_id)?.name || null;
+            } catch (_) {}
+            result.push({
+                instance: {
+                    id: r.id, type: r.type, name: r.name, projectId: r.project_id,
+                    outilId: r.outil_id, folderId: r.folder_id,
+                    createdAt: r.created_at, updatedAt: r.updated_at,
+                },
+                projectName: r.project_name || r.project_id,
+                folderName,
+            });
+        }
         res.json(result);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Sessions de tchat (mode Tchat du MO Prompt) ──────────────────────────────
+
+// POST /api/mega-outils/prompt/:instanceId/chat-session — crée une nouvelle session
+app.post('/api/mega-outils/prompt/:instanceId/chat-session', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { provider, model } = req.body || {};
+    const id = `mpcs-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    try {
+        await pool.query(
+            'INSERT INTO mega_outil_prompt_chat_sessions (id, instance_id, provider, model, created_by) VALUES (?,?,?,?,?)',
+            [id, req.params.instanceId, provider || 'claude', model || null, user.id]
+        );
+        res.json({ id });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /api/mega-outils/prompt/chat-session/:sessionId/message — ajoute un message
+app.post('/api/mega-outils/prompt/chat-session/:sessionId/message', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    const { role, text, seq } = req.body || {};
+    if (!role || text == null || seq == null) return res.status(400).json({ error: 'role, text, seq requis' });
+    const id = `mpcm-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    try {
+        await pool.query(
+            'INSERT INTO mega_outil_prompt_chat_messages (id, session_id, role, text, seq) VALUES (?,?,?,?,?)',
+            [id, req.params.sessionId, role, text, seq]
+        );
+        await pool.query('UPDATE mega_outil_prompt_chat_sessions SET updated_at = CURRENT_TIMESTAMP WHERE id = ?', [req.params.sessionId]);
+        res.json({ id });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/mega-outils/prompt/:instanceId/chat-sessions — liste des sessions (reprise)
+app.get('/api/mega-outils/prompt/:instanceId/chat-sessions', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            'SELECT id, provider, model, created_at, updated_at FROM mega_outil_prompt_chat_sessions WHERE instance_id = ? ORDER BY updated_at DESC LIMIT 20',
+            [req.params.instanceId]
+        );
+        res.json(rows.map(r => ({
+            id: r.id, provider: r.provider, model: r.model,
+            createdAt: r.created_at, updatedAt: r.updated_at,
+        })));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/mega-outils/prompt/chat-session/:sessionId/messages — messages d'une session (reprise)
+app.get('/api/mega-outils/prompt/chat-session/:sessionId/messages', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            'SELECT role, text FROM mega_outil_prompt_chat_messages WHERE session_id = ? ORDER BY seq ASC',
+            [req.params.sessionId]
+        );
+        res.json(rows.map(r => ({ role: r.role, text: r.text })));
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -11146,13 +11267,27 @@ ADAPTATION (si un [État actuel du projet] est fourni) :
 - TYPE B : identifie les étapes en retard ou bloquées → propose des ajustements du planning.
 - Ne recrée PAS les MegaOutils existants — propose UNIQUEMENT les ajustements nécessaires sur les éléments futurs non encore réalisés.`;
 
-// GET /api/mega-outils/prompt/config — Prompts globaux (base + cadrage + génération du workflow guidé)
+const DEFAULT_CHAT_STRUCTURED_PROMPT = `Tu discutes en mode conversationnel libre, mais l'application sait transformer certaines réponses en éléments interactifs (formulaire cliquable, tableau, kanban, agenda, graphique) SI tu utilises exactement les syntaxes ci-dessous. Applique-les systématiquement dès que la situation correspond — ne réponds jamais par de simples questions en texte libre ou une liste à puces quand l'une de ces syntaxes s'applique.
+
+- **Dès que tu poses une ou plusieurs questions à l'utilisateur** (recueil d'informations, profil, préférences, cadrage d'un besoin…), formate CHAQUE question ainsi, sans exception :
+    \`**Intitulé exact de la question ?**\`
+    \`_____\`
+  (le label en gras suivi, sur la ligne d'après, d'exactement une ligne de 5 underscores ou plus — rien d'autre sur cette ligne). Une ligne vide entre deux questions.
+  Si la question attend un choix parmi des options plutôt qu'une réponse libre, remplace la ligne d'underscores par une liste \`- [ ] Option\` (choix multiple) ou \`- ( ) Option\` (choix unique) — jamais de simple liste à puces \`-\` sans case.
+- Un tableau Kanban (tâches, avancement) : \`\`\`TRELLO: Nom\`\`\` avec les mêmes conventions que le mode Workflow guidé (colonnes \`### À faire/En cours/Terminé\`, cartes \`- [ ] Titre \`[priorité]\`\`).
+- Un tableau de données : \`\`\`ARRAY: Nom\`\`\` avec un tableau Markdown \`| Colonne | ... |\`.
+- Un agenda (événements datés) : \`\`\`AGENDA: Nom\`\`\` avec des lignes \`YYYY-MM-DD | HH:MM-HH:MM | Titre | Description\`.
+- Un graphique de progression : \`\`\`CHART: Titre\`\`\` avec des lignes \`Label: valeur\`.
+
+En dehors de ces cas précis, réponds normalement en texte libre et conversationnel.`;
+
+// GET /api/mega-outils/prompt/config — Prompts globaux (base + cadrage + génération du workflow guidé + tchat)
 app.get('/api/mega-outils/prompt/config', async (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     try {
         const [rows] = await pool.query(
-            "SELECT key_name, value FROM mega_outil_prompt_config WHERE key_name IN ('base_system_prompt', 'workflow_clarify_prompt', 'workflow_generate_prompt')"
+            "SELECT key_name, value FROM mega_outil_prompt_config WHERE key_name IN ('base_system_prompt', 'workflow_clarify_prompt', 'workflow_generate_prompt', 'chat_structured_prompt')"
         );
         const map = {};
         for (const r of rows) map[r.key_name] = r.value;
@@ -11160,6 +11295,7 @@ app.get('/api/mega-outils/prompt/config', async (req, res) => {
             baseSystemPrompt: map['base_system_prompt'] || '',
             workflowClarifyPrompt: map['workflow_clarify_prompt'] || DEFAULT_WORKFLOW_CLARIFY_PROMPT,
             workflowGeneratePrompt: map['workflow_generate_prompt'] || DEFAULT_WORKFLOW_GENERATE_PROMPT,
+            chatStructuredPrompt: map['chat_structured_prompt'] || DEFAULT_CHAT_STRUCTURED_PROMPT,
         });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -11168,11 +11304,12 @@ app.get('/api/mega-outils/prompt/config', async (req, res) => {
 app.put('/api/mega-outils/prompt/config', async (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
-    const { baseSystemPrompt, workflowClarifyPrompt, workflowGeneratePrompt } = req.body;
+    const { baseSystemPrompt, workflowClarifyPrompt, workflowGeneratePrompt, chatStructuredPrompt } = req.body;
     const upserts = [
         ['base_system_prompt', baseSystemPrompt],
         ['workflow_clarify_prompt', workflowClarifyPrompt],
         ['workflow_generate_prompt', workflowGeneratePrompt],
+        ['chat_structured_prompt', chatStructuredPrompt],
     ].filter(([, v]) => v !== undefined);
     try {
         for (const [key, value] of upserts) {
@@ -11194,6 +11331,16 @@ app.delete('/api/mega-outils/prompt/config/workflow', async (req, res) => {
             "DELETE FROM mega_outil_prompt_config WHERE key_name IN ('workflow_clarify_prompt', 'workflow_generate_prompt')"
         );
         res.json({ ok: true, workflowClarifyPrompt: DEFAULT_WORKFLOW_CLARIFY_PROMPT, workflowGeneratePrompt: DEFAULT_WORKFLOW_GENERATE_PROMPT });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/mega-outils/prompt/config/chat — Remet le prompt structuré du tchat à sa valeur par défaut
+app.delete('/api/mega-outils/prompt/config/chat', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        await pool.query("DELETE FROM mega_outil_prompt_config WHERE key_name = 'chat_structured_prompt'");
+        res.json({ ok: true, chatStructuredPrompt: DEFAULT_CHAT_STRUCTURED_PROMPT });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -11896,6 +12043,33 @@ app.listen(PORT, async () => {
             INDEX idx_mph_instance (instance_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
     `).catch(e => console.error('[DB] mega_outil_prompt_history init error:', e.message));
+
+    // Conversations du mode Tchat — table dédiée (distincte de mega_outil_prompt_history
+    // qui est un couple question/réponse unique, pas adaptée à une conversation multi-tours).
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS mega_outil_prompt_chat_sessions (
+            id           VARCHAR(64)  PRIMARY KEY,
+            instance_id  VARCHAR(64)  NOT NULL,
+            provider     VARCHAR(64)  DEFAULT 'claude',
+            model        VARCHAR(128) DEFAULT NULL,
+            created_by   VARCHAR(64)  DEFAULT NULL,
+            created_at   DATETIME     DEFAULT CURRENT_TIMESTAMP,
+            updated_at   DATETIME     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            INDEX idx_mpcs_instance (instance_id)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] mega_outil_prompt_chat_sessions init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS mega_outil_prompt_chat_messages (
+            id          VARCHAR(64)  PRIMARY KEY,
+            session_id  VARCHAR(64)  NOT NULL,
+            role        VARCHAR(16)  NOT NULL,
+            text        LONGTEXT     NOT NULL,
+            seq         INT          NOT NULL,
+            created_at  DATETIME     DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_mpcm_session (session_id, seq)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    `).catch(e => console.error('[DB] mega_outil_prompt_chat_messages init error:', e.message));
 
     await pool.query(`
         CREATE TABLE IF NOT EXISTS mega_outil_prompt_config (

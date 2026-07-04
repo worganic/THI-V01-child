@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal, comp
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription, interval } from 'rxjs';
-import { ConfigService, AiExecuteService, AiLogItem, FormQuestion, FormEntry, MaterializedMoPreview } from '@worganic/portail-core/data-access';
+import { ConfigService, AiExecuteService, AiLogItem, FormQuestion, FormEntry, MaterializedMoPreview, parseChoiceForm, detectMoFences } from '@worganic/portail-core/data-access';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 
 type WfState = 'idle' | 'clarifying' | 'form-fill' | 'generating' | 'preview' | 'done' | 'error';
@@ -47,22 +47,35 @@ interface TranscriptEntry { rawForm: string; answers: FormEntry; }
 
             <!-- Sélecteur IA/Modèle (idle) -->
             @if (state() === 'idle') {
-              <div class="grid grid-cols-2 gap-3">
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">IA</label>
-                  <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
-                          [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
-                    @for (p of providers(); track p.value) { <option [value]="p.value">{{ p.label }}</option> }
-                  </select>
+              @if (providers().length === 0) {
+                <div class="flex items-center gap-2 rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background px-3 py-2.5 text-[12px] text-light-text-muted dark:text-white/40">
+                  <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
+                  En attente de la liste des IA disponibles…
                 </div>
-                <div class="flex flex-col gap-1.5">
-                  <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Modèle</label>
-                  <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
-                          [ngModel]="activeModel()" (ngModelChange)="selectedModel.set($event)">
-                    @for (m of modelsForProvider(); track m.value) { <option [value]="m.value">{{ m.label || m.value }}</option> }
-                  </select>
+              } @else {
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">IA</label>
+                    <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
+                            [ngModel]="selectedProvider()" (ngModelChange)="onProviderChange($event)">
+                      @for (p of providers(); track p.value) { <option [value]="p.value">{{ p.label }}</option> }
+                    </select>
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <label class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Modèle</label>
+                    <select class="w-full rounded-lg border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-sm px-3 py-2 dark:[color-scheme:dark]"
+                            [ngModel]="activeModel()" (ngModelChange)="selectedModel.set($event)">
+                      @for (m of modelsForProvider(); track m.value) { <option [value]="m.value">{{ m.label || m.value }}</option> }
+                    </select>
+                  </div>
                 </div>
-              </div>
+              }
+              <label class="flex items-center gap-2 text-[11px] text-light-text-muted dark:text-white/50 cursor-pointer select-none w-fit"
+                     title="Désactive l'injection du prompt de base global et des méta-prompts de cadrage/génération configurés en admin — seul le SYSTEM: propre à cette section reste appliqué">
+                <input type="checkbox" class="w-3.5 h-3.5 accent-blue-500 cursor-pointer"
+                       [ngModel]="useConfigPrompts()" (ngModelChange)="useConfigPrompts.set($event)" />
+                Utiliser les prompts de configuration (base + méta-prompts du workflow guidé)
+              </label>
               <div class="flex flex-col gap-1.5">
                 <span class="text-[11px] font-medium text-light-text-muted dark:text-white/50 uppercase tracking-wide">Demande</span>
                 <div class="rounded-lg border border-light-border dark:border-white/10 bg-light-background dark:bg-background p-3">
@@ -248,6 +261,9 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
   selectedProvider = signal('');
   selectedModel = signal('');
   promptCopied = signal(false);
+  /** Si désactivé, ignore le prompt de base global + les méta-prompts de cadrage/génération
+   *  configurés en admin — ne garde que le SYSTEM: propre à cette section. */
+  useConfigPrompts = signal(true);
 
   private phase: 'clarify' | 'generate' = 'clarify';
   private timerSub: Subscription | null = null;
@@ -341,7 +357,7 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     if (this.phase === 'generate') { this.onGenerateDone(full); return; }
     // Phase cadrage : ===PRÊT=== → génération ; sinon parser un formulaire
     if (/===\s*PR[ÊE]T\s*===/i.test(full)) { this.startGenerate(); return; }
-    const questions = this.parseFormContent(full);
+    const questions = parseChoiceForm(full);
     if (questions.length > 0) {
       this.currentQuestions.set(questions);
       this.lastRawForm = full;
@@ -385,7 +401,7 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
 
   private onGenerateDone(full: string) {
     this.deliverable.set(full.trim());
-    this.moPreviews.set(this.detectMos(full));
+    this.moPreviews.set(detectMoFences(full));
     this.state.set('preview');
   }
 
@@ -417,6 +433,7 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
 
   // ── Helpers ────────────────────────────────────────────────────────────────
   private combineSystem(meta: string): string {
+    if (!this.useConfigPrompts()) return this.extraSystemPrompt || '';
     return [this.baseSystemPrompt, this.extraSystemPrompt, meta].filter(Boolean).join('\n\n---\n\n');
   }
 
@@ -448,56 +465,4 @@ export class PromptWorkflowPopupComponent implements OnInit, OnDestroy {
     this.subs.push(this.timerSub);
   }
   private stopTimer() { this.timerSub?.unsubscribe(); this.timerSub = null; }
-
-  /** Parse une sortie cadrage en questions de formulaire (même grammaire que l'éditeur). */
-  private parseFormContent(body: string): FormQuestion[] {
-    const questions: FormQuestion[] = [];
-    let current: FormQuestion | null = null;
-    for (const line of body.split('\n')) {
-      const q = line.match(/^\s*(?:[\*\-]\s+)?\*\*(.+?)\*\*\s*:?\s*$/);
-      if (q) { if (current) questions.push(current); current = { label: q[1].trim(), type: 'checkbox', options: [] }; continue; }
-      const c = line.match(/^\s*(?:[\*\-]\s+)?\[\s*\]\s+(.+)$/);
-      if (c && current) { current.type = 'checkbox'; current.options.push({ text: c[1].trim(), hasDetail: /_{5,}/.test(c[1]) }); continue; }
-      const r = line.match(/^\s*(?:[\*\-]\s+)?\(\s*\)\s+(.+)$/);
-      if (r && current) { current.type = 'radio'; current.options.push({ text: r[1].trim(), hasDetail: /_{5,}/.test(r[1]) }); }
-    }
-    if (current) questions.push(current);
-    return questions.filter(q => q.options.length > 0);
-  }
-
-  /** Détecte les fences TRELLO/ARRAY/FORM/CHART/AGENDA du livrable pour l'aperçu. */
-  private detectMos(deliverable: string): MaterializedMoPreview[] {
-    const out: MaterializedMoPreview[] = [];
-    const re = /```(TRELLO|ARRAY|FORM|CHART|AGENDA):[ \t]*([^\n]+)\n([\s\S]*?)\n```/g;
-    let m: RegExpExecArray | null;
-    while ((m = re.exec(deliverable)) !== null) {
-      const type = m[1].toLowerCase() as 'trello' | 'array' | 'form' | 'chart' | 'agenda';
-      const name = m[2].trim();
-      const body = m[3];
-      out.push({ type, name, summary: this.summarize(type, body), fence: m[0], selected: true });
-    }
-    return out;
-  }
-
-  private summarize(type: 'trello' | 'array' | 'form' | 'chart' | 'agenda', body: string): string {
-    if (type === 'trello') {
-      const n = (body.match(/^\s*-\s*\[[ x~!]?\]/gm) || []).length;
-      return `${n} carte${n > 1 ? 's' : ''}`;
-    }
-    if (type === 'array') {
-      const rows = (body.match(/^\s*\|.*\|\s*$/gm) || []).filter(l => !/^\s*\|[\s|:-]+\|\s*$/.test(l));
-      const cols = rows[0] ? rows[0].split('|').filter(c => c.trim() !== '').length : 0;
-      return `${Math.max(0, rows.length - 1)}×${cols}`;
-    }
-    if (type === 'chart') {
-      const pts = body.split('\n').filter(l => /^source:/i.test(l.trim()) ? false : /\S/.test(l)).length;
-      return pts > 0 ? `${pts} point${pts > 1 ? 's' : ''}` : 'live';
-    }
-    if (type === 'agenda') {
-      const n = body.split('\n').filter(l => /\d{4}-\d{2}-\d{2}/.test(l)).length;
-      return `${n} événement${n > 1 ? 's' : ''}`;
-    }
-    const q = (body.match(/^\s*[\*\-]\s+\*\*(.+?)\*\*\s*:?\s*$/gm) || []).length;
-    return `${q} question${q > 1 ? 's' : ''}`;
-  }
 }

@@ -177,7 +177,7 @@ export interface FormOption {
 
 export interface FormQuestion {
   label: string;
-  type: 'checkbox' | 'radio';
+  type: 'checkbox' | 'radio' | 'text';
   options: FormOption[];
 }
 
@@ -189,11 +189,13 @@ export interface FormEntry {
 
 // ── Prompt workflow guidé ────────────────────────────────────────────────────────
 
-/** Config globale des prompts (base + méta-prompts du workflow guidé). */
+/** Config globale des prompts (base + méta-prompts du workflow guidé + tchat). */
 export interface PromptGlobalConfig {
   baseSystemPrompt: string;
   workflowClarifyPrompt: string;
   workflowGeneratePrompt: string;
+  /** Guide l'IA vers le format reconnu (formulaires, tableaux, kanban...) en mode tchat. */
+  chatStructuredPrompt: string;
 }
 
 /** Point de données pour un graphique CHART. */

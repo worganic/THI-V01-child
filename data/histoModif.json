@@ -13673,6 +13673,208 @@
       "prompt": "dans l'outils de surveillance Monitoring DB ajoute un bouton pour supprime l'affichage des logs",
       "startedAt": "2026-07-04T18:42:00.000Z",
       "completedAt": "2026-07-04T18:45:00.000Z"
+    },
+    {
+      "id": "mod-534",
+      "version": "B-0.322",
+      "date": "2026-07-04T22:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "server"
+      ],
+      "features": "projets:editor-zone-code,projets:mo-prompt-tchat",
+      "title": "MO Prompt mode Tchat : rendu riche, formulaires interactifs, MO detectes, persistance",
+      "description": "Le mode Tchat du MO Prompt affichait les reponses IA en texte brut (aucun markdown interprete, formulaires ad hoc illisibles avec separateurs '=====' et blancs 'R :'). Decouverte : l'infrastructure necessaire existait deja en quasi-totalite mais uniquement cablee sur le mode Guide (PromptWorkflowPopupComponent) -- detection de fences TRELLO/ARRAY/FORM/CHART/AGENDA (detectMos), parsing de formulaire QCM (parseFormContent), rendu interactif (FormExecutionPopupComponent), marked deja utilise ailleurs pour le markdown. Travail : (1) extraction de ces fonctions pures vers libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts (detectMoFences, summarizeMoFence, parseChoiceForm, fenceBody, parseChartPoints), reutilisees par PromptWorkflowPopupComponent (refactor non-regressif, comportement identique) et par le nouveau code Tchat ; (2) extension de FormQuestion.type avec 'text' (question ouverte, ligne '_____' seule) pour couvrir le cas concret demande (formulaire de questions ouvertes, pas juste du QCM), FormExecutionPopupComponent rend un textarea pour ce type ; (3) PromptChatPopupComponent : rendu markdown des bulles IA (marked.parse + DomSanitizer, classe .chat-md), barre 'MegaOutils detectes' sous chaque bulle avec aperçu SVG immediat pour CHART (app-chart-board, deja 100% presentational) et bouton 'Ajouter au projet' qui reutilise directement materializeMegaOutilsFromContent() (meme pipeline que le Guide, zero duplication), overlay app-form-execution-popup automatique sur le dernier message IA quand un formulaire est detecte, reponses pre-remplies dans le composer (pas d'envoi automatique, relecture avant clic Envoyer) ; (4) prompt structure optionnel : nouveau bloc admin (Prompt > Mode tchat), vide par defaut (tchat 100% libre), cle chat_structured_prompt en base (table mega_outil_prompt_config), concatene en 3e position du system prompt si rempli ; (5) persistance de la conversation : nouvelles tables mega_outil_prompt_chat_sessions/_messages (distinctes de mega_outil_prompt_history qui est un couple question/reponse unique, pas adaptee a une conversation multi-tours), ecriture fire-and-forget a chaque message, banniere 'Reprendre' a la reouverture si une session existe pour l'instance. Teste en conditions reelles dans le navigateur (Chrome automatise) sur le projet 'cours d'anglais' > section 'test 2' > Prompt 'Test Tchat' : markdown rendu correctement en cours de streaming et une fois final, formulaire texte libre detecte et affiche en vrais textarea, reponses pre-remplies dans le composer puis envoyees et recues par l'IA au tour suivant, fermeture/reouverture du popup -> banniere Reprendre -> conversation integrale restauree a l'identique. Fix cosmetique au passage : les lignes '_____' (marqueur de champ libre) etaient rendues par marked comme un trait horizontal parasite (thematic break) -- stripFormBlankMarkers() les retire avant le rendu. Build portail+projets verifie (aucune erreur TS) a chaque etape.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "libs/portail-core/data-access/src/index.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-chat-popup/prompt-chat-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts",
+        "server/server-data.js",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "propose moi une solution pour le MO prompt : en mode tchat lorsque l'IA me renvois un formulaire comme par exemple : [image] il faut pouvoir designe en html un vrai formulaire ou le user peux repondre et la reponse renvoye a l'IA, idem si l'IA renvois des informations qui peuvent etre exploite ou transforme comme des evenements, agenda, trello, array, graphisme, il faut pouvoir affiche les reponses de l'IA de facon plus propre et design comme les MO. Propose moi un plan et des solution et si tu as d'autre idee pour ameliore le UX design. (puis, apres validation du plan) cela fonctionne bien -- implemente le plan complet (A+B+C)",
+      "startedAt": "2026-07-04T21:40:00.000Z",
+      "completedAt": "2026-07-04T22:30:00.000Z"
+    },
+    {
+      "id": "mod-535",
+      "version": "Br-0.001",
+      "date": "2026-07-04T22:50:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "server",
+        "libs",
+        "portail"
+      ],
+      "features": "portail:admin-mega-outils-prompt,projets:mo-prompt-tchat",
+      "title": "Prompt structure du mode Tchat actif par defaut (au lieu de vide)",
+      "description": "Suite a un test reel avec le prompt 'Pose moi des question afin d'etablir un profil professionnel.', l'IA produisait des titres en gras corrects mais des questions en phrases libres non reconnues par le parseur de formulaire (pas de '_____'/'- [ ]'/'- ( )') : aucun formulaire HTML ne s'affichait. Cause racine : DEFAULT_CHAT_STRUCTURED_PROMPT etait permissif ('quand c'est pertinent... ne force rien') ET le GET /api/mega-outils/prompt/config ne l'appliquait meme pas par defaut (chatStructuredPrompt: '' tant que l'admin n'avait rien configure), contrairement aux meta-prompts du workflow guide qui ont toujours un fallback non-vide. Fix : (1) reecriture de DEFAULT_CHAT_STRUCTURED_PROMPT en version directive ('formate CHAQUE question ainsi, sans exception'), avec un exemple concret par syntaxe (question/formulaire/trello/array/agenda/chart) ; (2) GET config : chatStructuredPrompt tombe desormais sur ce defaut si rien n'est configure en base (meme pattern que workflowClarifyPrompt/workflowGeneratePrompt) ; (3) suppression du champ devenu inutile chatStructuredPromptSuggestion (PromptGlobalConfig, endpoint GET, service Angular) ; (4) DELETE .../chat retourne maintenant le texte par defaut reactive (comme DELETE .../workflow) ; (5) bloc admin Prompt > Mode tchat restyle a l'identique du bloc Workflow guide (textarea toujours pre-remplie, boutons Reinitialiser/Sauvegarder, suppression du bouton 'Utiliser la suggestion' devenu redondant). Reteste en conditions reelles avec le prompt exact ayant revele le bug : l'IA utilise maintenant systematiquement le format reconnu (labels en gras + '( )'/'- [ ]'), le formulaire HTML interactif s'affiche automatiquement (2 champs texte, 1 QCM radio, 1 QCM checkbox), saisie testee et reponses correctement pre-remplies dans le composer pour relecture avant envoi. Build portail+projets verifie sans erreur.",
+      "files": [
+        "server/server-data.js",
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "comme on peux le voir sur l'image, les questions ne sont pas tranforme en questionnaire html. Il faudrais peut etre rajoute un prompt de base pour explique a l'IA comment doit ce presenter certaine reponse comme les questionnaires, array, trello, evenements etc. Il existe deja un systeme de prompt initial dans l'admin/ mega outils/prompt, il faudrait ameliore cette section pour mettre un prompt systeme de base pour chaque mode de prompt et ainsi cree un prompt initial pour le mode tchat qui permettra de guide l'IA pour sortir une reponse dans le bon format et ainsi affiche les donnees dans un format html utilisable par le user",
+      "startedAt": "2026-07-04T22:40:00.000Z",
+      "completedAt": "2026-07-04T22:50:00.000Z"
+    },
+    {
+      "id": "mod-536",
+      "version": "Br-0.002",
+      "date": "2026-07-04T23:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "projets"
+      ],
+      "features": "portail:admin-mega-outils,projets:mo-prompt-popups",
+      "title": "Admin Mega-outils en accordeon + onglets Prompt, attente IA et toggle prompts config",
+      "description": "Ergonomie de la page Admin > Mega-outils et des popups de lancement du MO Prompt. (1) admin-mega-outils.component.ts : les 2 types (Trello/Prompt) sous 'Types disponibles' sont devenus des boutons accordeon (signal expanded, un seul ouvert a la fois) au lieu d'afficher les 2 sections d'instances toujours deployees en dessous -- page bien plus courte par defaut, on ouvre seulement le type qu'on veut gerer. (2) prompt-admin.component.ts : les 3 blocs de config (Prompt de base, Workflow guide cadrage+generation, Mode tchat format structure), auparavant empiles et toujours visibles (~400px de texte de meta-prompts en permanence), sont regroupes dans un accordeon 'Configuration des prompts' (ferme par defaut) avec un systeme d'onglets par mode (Base / Mode guide / Mode tchat, signal activeConfigTab) : un seul panneau visible a la fois, memes actions Sauvegarder/Reinitialiser qu'avant. (3) Popups de lancement (prompt-execution-popup mode Normal, prompt-workflow-popup mode Guide, prompt-chat-popup mode Tchat) : quand la liste des IA n'est pas encore chargee (providers() vide, ConfigService.cliConfig().modelsList pas encore recu de l'executor), les 2 selects IA/Modele affichaient des dropdowns vides le temps du chargement -- remplace par un message d'attente 'En attente de la liste des IA disponibles...' avec spinner, les selects n'apparaissent qu'une fois au moins un provider disponible. (4) Nouveau toggle 'Utiliser les prompts de configuration' (signal useConfigPrompts, coche par defaut) dans les popups Guide et Tchat uniquement (le mode Normal n'a pas de meta-prompt de mode) : decoche, le prompt de base global ET le meta-prompt du mode (cadrage+generation pour Guide, format structure pour Tchat) ne sont plus injectes dans le system prompt envoye a l'IA -- seul le SYSTEM: propre a la section (ecrit directement dans le fence du Prompt) reste applique. Permet de tester un Prompt sans l'influence des prompts globaux configures en admin, sans avoir a les vider en base a chaque fois. Verifie en conditions reelles dans le navigateur (accordeon Trello/Prompt, onglets Base/Guide/Tchat affichant bien le contenu attendu -- dont le prompt tchat par defaut du mod-535 --, toggle visible et coche par defaut dans le popup Tchat du prompt 'questions'). Build portail+projets verifie sans erreur a chaque etape.",
+      "files": [
+        "apps/portail/src/app/pages/admin/tabs/admin-mega-outils/admin-mega-outils.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-chat-popup/prompt-chat-popup.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Ameliore l'affiche d'admin/mega outils [Image] avec des boutons accordeon pour afffiche les options de chaque mega outils et des onglets suivant les modes (MO Prompt) trouve d'autre amelioration pour une meilleur ergonomie. Dans le popup de lancement d'un MO prompt [Image] si il n'y a pas d'IA a selectionne ou de model (select vide) il faut mettre un message d'attente tans que l'IA n'est pas affiche. Rajoute aussi une option pour utilise ou non les prompts initiaux qui provienne de la config, pour le mode tchat mais aussi le mode guide.",
+      "startedAt": "2026-07-04T23:00:00.000Z",
+      "completedAt": "2026-07-04T23:30:00.000Z"
+    },
+    {
+      "id": "mod-537",
+      "version": "Br-0.003",
+      "date": "2026-07-04T23:55:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "server"
+      ],
+      "features": "portail:admin-mega-outils",
+      "title": "Admin Mega-outils : Mockup/Tableau ajoutes + fix critique listing instances Trello/Prompt/Array",
+      "description": "(1) Ajout des types Mega-outils manquants dans 'Types disponibles' de la page Admin > Mega-outils : Mockup et Tableau (Array) rejoignent Trello/Prompt, chacun avec sa propre section 'Toutes les instances' (MockupAdminComponent -- deja ecrit mais jamais cable ni exporte depuis @worganic/shared/ui, ArrayAdminComponent -- nouveau fichier cree sur le meme modele que TrelloAdminComponent). 'Form' est egalement liste (pour l'exhaustivite demandee) mais avec une note explicative au lieu d'un listing d'instances : contrairement a Trello/Mockup/Array/Prompt, un formulaire (mode Guide ou question ouverte du mode Tchat) n'est jamais persiste comme ligne dans mega_outil_instances (skip explicite dans materializeMegaOutilsFromContent : 'form'|'chart'|'agenda' => continue) -- il vit uniquement dans le texte du document de la section, rien a lister depuis l'admin. (2) BUG CRITIQUE decouvert en testant ce nouveau code : les sections 'Toutes les instances' de Prompt et Array (et donc aussi la nouvelle section Mockup, copiee sur le meme modele avant correction) affichaient 'Aucune instance' malgre des donnees reelles en base (5 prompts, 1 tableau) -- endpoints GET /api/mega-outils/{prompt,array,mockup}/all levaient une erreur SQL silencieuse (Table 'frank_project_nodes' doesn't exist -- cette table n'a jamais existe, les sections/dossiers sont stockees en JSON dans file_project_meta.structure, pas dans une table SQL normalisee) et le code Angular avalait l'erreur (catch silencieux) sans rien afficher a l'ecran. Seul /trello/all utilisait le bon pattern (deja en place). Fix : les 3 endpoints utilisent maintenant COALESCE(frank_projects.title, file_project_meta.display_name) pour le nom de projet et getProjectConfig()+findNodeById() (resolution JS depuis le JSON de structure, avec cache par projet) pour le nom de section -- identique au pattern de /trello/all. Verifie en conditions reelles : Prompt liste maintenant correctement 'questions', 'Test Tchat', 'Mon Prompt', 'Cours', 'ideation pr' avec leurs vrais projet/section, Tableau liste 'Mon Tableau' (FrankEnstein JunioR > A faire, 5x3), chaque badge section ouvre bien la bonne section dans l'editeur projets. Build portail+projets verifie sans erreur. Au passage (warnings de compilation remontes en cours de test) : retrait de l'import mort PromptAdminComponent dans ProjetEditorZoneComponent (jamais utilise dans son template, NG8113) et simplification d'un optional chaining redondant dans projet-editor.component.html (activeOutil()?.type -> activeOutil().type, narrowing deja prouve par le \"!activeOutil() ||\" precedent, NG8107) -- aucun rapport fonctionnel avec le reste du prompt, juste nettoyage de warnings decouverts en testant.",
+      "files": [
+        "apps/portail/src/app/pages/admin/tabs/admin-mega-outils/admin-mega-outils.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/mockup/mockup-admin.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/array/array-admin.component.ts",
+        "libs/shared/ui/src/index.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l'admin mega outils tu as 2 mega outils, ajoute les autres memes si il n'y a pas besoin de config, ensuite dans trello et prompt, tu as une zone, toutes les instances, cela devrait affiche toutes les sections de ces mega outils utilise dans les projet, exemple pour prompt tu as \"ideation pr\" \"Test tchat\" et \"questions\" il faut les liste et mettre un lien vers leur affichage dans les projets",
+      "startedAt": "2026-07-04T23:35:00.000Z",
+      "completedAt": "2026-07-04T23:55:00.000Z"
+    },
+    {
+      "id": "mod-538",
+      "version": "Br-0.004",
+      "date": "2026-07-05T00:20:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "data"
+      ],
+      "features": "projets:editor-order-sections",
+      "title": "cours d'anglais : ordre des sections racine desynchronise entre le menu et la vue Edition",
+      "description": "Sur le projet 'cours d'anglais', la vue Edition (mode visu) affichait les sections dans un ordre different de celui du menu lateral : 'test 2' apparaissait en premier dans le contenu assemble alors que le menu affichait 'H1 new menu apres 5.4b' en premier. Investigation : le rendu (mode Code ET mode Edition, via buildDocSections()/docSections/visuSections) est entierement reconstruit a partir de la structure (config.json / file_project_meta.structure), trie par le champ numerique 'order' de chaque noeud (pas par position dans le tableau) -- meme logique cote sidebar (sortedChildren() trie aussi par 'order'). Or les 3 sections racine avaient 'order' incoherent avec l'ordre visuellement attendu : test 2=1, H1 new menu=2, save=3 (au lieu de H1=1, save=2, test2=3), a la fois en MySQL (file_project_meta.structure) ET dans le config.json local (les deux backups etant synchronises, l'incoherence etait bien la source de verite persistee -- pas un probleme d'affichage/cache cote client). Cause racine non identifiee avec certitude (aucune fonction de reordonnancement drag-and-drop trouvee dans le code qui reassigne 'order' -- a surveiller si le probleme revient apres un futur reordonnancement manuel des sections). Fix applique : reassignation directe des valeurs 'order' des 3 noeuds racine (H1 new menu apres 5.4b=1, save=2, test 2=3) dans les deux sources (MySQL + config.json), sans toucher au reste de la structure ni au contenu des sections. Verifie en conditions reelles : rechargement du projet -> menu et vue Edition affichent maintenant H1 en premier, dans le meme ordre.",
+      "files": [
+        "data/projets/0475514d-ed29-407d-8cbf-f837232cac46/config.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai un probleme d'affichage des secteurs, l'affichage de la liste dans le menu ne corespond pas a l'affichage dans la zone d'edition, exemple le section H1 new menu apres 5.4b devrait etre en premier et pas apres la section test 2, il faut suivre le meme ordre que le menu",
+      "startedAt": "2026-07-05T00:05:00.000Z",
+      "completedAt": "2026-07-05T00:20:00.000Z"
+    },
+    {
+      "id": "mod-539",
+      "version": "Br-0.005",
+      "date": "2026-07-05T00:55:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "data"
+      ],
+      "features": "projets:editor-order-sections",
+      "title": "INCIDENT : suppression accidentelle de sections completes (H1 new menu, save) -- restaurees",
+      "description": "Suite au fix mod-538 (correction de l'ordre des sections), en verifiant le resultat dans le navigateur, les sections 'H1 new menu apres 5.4b' ET 'save' (avec tout leur sous-arbre : Ideation, Objectif, Instructions, Interaction, Exemple, In&Out, soit 36 dossiers / 65 fichiers) ont ete supprimees du projet -- deux fois de suite (une premiere fois apres avoir ouvert l'onglet Edition, une deuxieme fois apres un simple clic pour deplier 'save' dans la sidebar, qui a cette fois reperdu 'test 2'). Diagnostic via l'historique git du sous-module propre au projet (data/projets/<id>/.git) : les commits 'struct: delete_folder save' montrent que le serveur a recu un DELETE explicite sur le dossier 'save' (endpoint DELETE /api/file-projects/:name/folders/:id), déclenché cote client par le mecanisme de reconciliation structure/texte de ProjetEditorComponent (detection de dossiers 'orphelins' : un dossier de la structure dont le chemin n'est plus retrouve parmi les sections parsees depuis le texte courant est automatiquement supprime, sans confirmation). Hypothese la plus probable : ce parsing s'est execute sur un buffer de texte limite a la section alors active/focus ('test 2', visible en rouge dans la sidebar au moment du bug) au lieu du document complet, faisant apparaitre toutes les autres sections comme orphelines. Non confirme avec certitude -- necessite une investigation dediee du mecanisme processSectionsChange / detection d'orphelins dans projet-editor.component.ts avant de pouvoir corriger le bug lui-meme. RECUPERATION : le sous-module git du projet conservant un historique complet de chaque changement structurel, les sections H1 et save ont ete restaurees depuis le dernier commit sain (a9a9d9b, 2026-07-04 21:15) et test 2 depuis le commit juste avant la 2e perte (0112db7), puis fusionnees et re-ecrites dans config.json ET MySQL (file_project_meta.structure), avec un commit git de restauration explicite pour eviter toute perte future de cette recuperation. Etat final verifie (sans interaction navigateur, uniquement lecture directe fichier/BDD pour eviter un 3e declenchement) : les 3 sections racine sont presentes avec leur contenu complet, dans l'ordre H1=1, save=2, test 2=3.",
+      "files": [
+        "data/projets/0475514d-ed29-407d-8cbf-f837232cac46/config.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "tu as vire une section complete au lieu de corriger le probleme et d'afficher les titres dans le bonne ordre.",
+      "startedAt": "2026-07-05T00:35:00.000Z",
+      "completedAt": "2026-07-05T00:55:00.000Z"
+    },
+    {
+      "id": "mod-540",
+      "version": "Br-0.006",
+      "date": "2026-07-05T01:15:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-reconciliation",
+      "title": "Garde-fou contre la suppression automatique massive de sections (suite incident mod-539)",
+      "description": "Suite a l'incident mod-539 (suppression accidentelle de 'H1 new menu' et 'save', 36 dossiers/65 fichiers, par le mecanisme de reconciliation texte<->structure de ProjetEditorComponent.processSectionsChange qui supprime automatiquement, sans confirmation, tout dossier de la structure dont le chemin n'est plus retrouve parmi les sections parsees du texte courant), ajout d'un garde-fou avant l'execution des suppressions detectees. Cause precise non confirmee avec certitude (piste la plus probable : contenu partiel/obsolete lors de l'emission de sectionsChange, malgre les protections deja existantes pour le mode Focus dans ProjetEditorZoneComponent -- fullContentBackup semble correctement reconstruit dans les cas traces, le declencheur exact reste a isoler, probablement une course entre le rendu lourd de l'onglet Edition et une interaction utilisateur pendant ce rendu). Plutot que de corriger une cause encore incertaine au risque d'introduire une regression dans un mecanisme complexe a fort enjeu, ajout d'un filet de securite generique : si les dossiers detectes comme 'orphelins' representent plus de 30% de l'arborescence existante OU plus de 15 dossiers au total (sous-arbres inclus), la suppression est abandonnee pour cette sauvegarde et une erreur est loguee dans la console -- un vrai orphelin isole (cas normal : suppression manuelle d'une petite section vide par l'utilisateur) ne declenche jamais ce seuil. Recuperation des donnees perdues documentee separement (mod-539) via l'historique git propre a chaque projet (sous-module data/projets/<id>/.git, un commit par changement structurel) -- decouverte utile au passage : ce mecanisme de versionnement git par projet permet de retracer precisement l'origine de ce type d'incident (messages 'struct: delete_folder X', 'struct: create_folder X', etc.) et de restaurer un etat anterieur fiable. Build portail+projets verifie sans erreur. Non teste en conditions reelles dans le navigateur (volontairement, pour eviter tout risque de nouvel incident avant validation du garde-fou par relecture de code).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "tu as vire une section complete au lieu de corriger le probleme et d'afficher les titres dans le bonne ordre. (suite de l'incident, garde-fou ajoute de ma propre initiative apres restauration des donnees, en investiguant le mecanisme en cause)",
+      "startedAt": "2026-07-05T00:55:00.000Z",
+      "completedAt": "2026-07-05T01:15:00.000Z"
+    },
+    {
+      "id": "mod-541",
+      "version": "Br-0.007",
+      "date": "2026-07-05T01:35:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : accordeon pour replier une section et ses sous-sections",
+      "description": "Ajout d'une icone accordeon (chevron, gouttiere gauche, meme emplacement que le badge de niveau H1-H6) devant chaque section en mode Edition (visu). Un clic replie le texte + les MegaOutils de la section, ainsi que la totalite de ses sous-sections (masquees en entier, titre inclus) -- un clic sur une section deja repliee la redeplie. Etant donne l'incident tres recent (mod-539/mod-540, suppression accidentelle de sections via un mecanisme de reconciliation texte<->structure), attention particuliere portee a la surete de cette implementation : le repli est PUREMENT visuel (classe CSS display:none via [class.visu-section-wrap--hidden] / [class.visu-sec-body--folded]), sans jamais toucher unifiedContent ni declencher de sauvegarde -- contrairement au repliage deja existant du mode Code (foldedContent, qui remplace le corps par un marqueur {{FOLD:id:n}} directement dans le texte). Verification specifique avant implementation : une autre partie du composant (onVisuSectionBlur, publishVisuSection, etc.) indexe le QueryList visuSectionEls par position (visuSections.findIndex(...) puis visuSectionEls.get(idx)) -- masquer des sections via @if (destruction DOM) aurait desynchronise cet index et risque de reproduire une classe de bug similaire a l'incident recent (contenu applique a la mauvaise section). Solution retenue : chaque section reste toujours montee dans le DOM (y compris repliee), seul l'affichage change -- visuSectionEls conserve donc toujours la meme longueur et le meme ordre que visuSections. Nouveau signal visuFoldedIds (Set<string>, purement local, reinitialise a la sortie du mode Edition comme le repliage du mode Code) + methode isVisuSectionHidden() qui determine si une section est descendante d'un ancetre replie (parcours par niveau de filteredVisuSections). Build portail+projets verifie sans erreur. Non teste dans le navigateur a la demande de l'utilisateur (qui souhaite verifier lui-meme suite a l'incident precedent).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "ajoute dans le mode Edition devant chaque section un icone accordeon pour ferme tous les texte et menus a partir de celui selectionne et tous ceux en dessous.",
+      "startedAt": "2026-07-05T01:20:00.000Z",
+      "completedAt": "2026-07-05T01:35:00.000Z"
     }
   ]
 }
