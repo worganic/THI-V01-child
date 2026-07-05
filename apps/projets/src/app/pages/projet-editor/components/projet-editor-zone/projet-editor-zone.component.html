@@ -1476,11 +1476,9 @@ Votre texte de prompt ici.
 
     <!-- Mode Preview : éditable par section (contenteditable + toolbar flottante) -->
     @if (mode === 'visu') {
-      <div class="preview-wrap flex-1 min-h-0 overflow-y-auto" #visu
-           (click)="onVisuContainerClick($event)"
-           (keydown)="onVisuSectionKeydown($event)">
-
-        <!-- Barre de formatage permanente (haut de zone, mode Edition) -->
+        <!-- Barre de formatage permanente (haut de zone, mode Edition) — sœur du conteneur
+             défilant (et non plus un enfant sticky à l'intérieur) : l'ascenseur natif du
+             navigateur ne représente ainsi que la zone de contenu, jamais la barre. -->
         <div class="visu-format-toolbar visu-format-toolbar--docked">
             <div class="tb-zone tb-zone--history">
               <button (mousedown)="$event.preventDefault(); visuUndo()" title="Annuler (Ctrl+Z)"><span class="material-symbols-outlined" style="font-size:14px;line-height:1">undo</span></button>
@@ -1572,6 +1570,10 @@ Votre texte de prompt ici.
               </button>
             </div>
         </div>
+
+      <div class="preview-wrap flex-1 min-h-0 overflow-y-auto" #visu
+           (click)="onVisuContainerClick($event)"
+           (keydown)="onVisuSectionKeydown($event)">
 
         <!-- Slash command menu (« / ») en mode Edition -->
         <app-slash-command-menu #visuSlashMenu
@@ -1757,8 +1759,9 @@ Votre texte de prompt ici.
                 <span class="material-symbols-outlined">{{ visuFoldedIds().has(sec.sectionId) ? 'chevron_right' : 'expand_more' }}</span>
               </button>
 
-              <!-- Badge niveau (gouttière gauche, aligné en face du titre) -->
-              <span class="visu-sec-level">H{{ sec.level }}</span>
+              <!-- Badge niveau (gouttière gauche, aligné en face du titre) — fond du plus clair
+                   (H1) au plus foncé (H6) : voir .visu-sec-level--N -->
+              <span class="visu-sec-level" [ngClass]="'visu-sec-level--' + sec.level">H{{ sec.level }}</span>
 
               <!-- F6 — Bouton commentaires (apparaît au hover de la section) -->
               <button type="button"

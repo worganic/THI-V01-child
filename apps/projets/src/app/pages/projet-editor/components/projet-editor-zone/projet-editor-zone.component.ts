@@ -7471,20 +7471,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const el = (root.querySelector(`[data-file-id="${id}"]`)
                  || root.querySelector(`[data-section-id="${id}"]`)) as HTMLElement | null;
       if (el) {
-        // La barre de formatage est en position sticky DANS ce même conteneur : un scrollIntoView
-        // naïf (block:'start') aligne la section sur le haut du viewport, exactement là où la
-        // barre reste affichée → elle recouvre le début de la section. On décale donc la cible
-        // de la hauteur réelle de la barre pour que la section apparaisse juste en dessous.
-        const toolbar = root.querySelector('.visu-format-toolbar--docked') as HTMLElement | null;
-        const offset = toolbar?.offsetHeight ?? 0;
+        // La barre de formatage est désormais une sœur du conteneur défilant (plus un enfant
+        // sticky à l'intérieur) : elle ne recouvre plus jamais le contenu, aucun décalage requis.
         const elTop = el.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop;
-        root.scrollTo({ top: Math.max(0, elTop - offset - 8), behavior: 'smooth' });
+        root.scrollTo({ top: Math.max(0, elTop - 8), behavior: 'smooth' });
       } else {
         // Aperçu autonome (Trello/Array/Prompt/fichier/image sélectionné seul — previewPromptInstanceId
         // et consorts) : remplace tout le contenu de .visu-content-wrap, aucun data-file-id/
-        // data-section-id à cibler. Toujours affiché depuis le tout début du conteneur → repositionner
-        // en haut, sinon un scrollTop hérité d'une section précédente plus longue laisse la barre de
-        // formatage recouvrir le début du nouveau contenu (aucun ajustement n'était fait dans ce cas).
+        // data-section-id à cibler. Toujours affiché depuis le tout début du conteneur →
+        // repositionner en haut plutôt que de garder un scrollTop hérité d'une section précédente.
         root.scrollTo({ top: 0, behavior: 'smooth' });
       }
       return;

@@ -14472,6 +14472,74 @@
       "prompt": "lorsqu'on copie un texte qui proviens de la conversation, celui ci dois être enregistré après le prompt et pas avant comme actuellement",
       "startedAt": "2026-07-05T20:59:38.853Z",
       "completedAt": "2026-07-05T20:59:38.853Z"
+    },
+    {
+      "id": "mod-567",
+      "version": "Br-0.001",
+      "date": "2026-07-05T21:14:10.855Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : l'ascenseur du navigateur remontait dans la zone de la barre de formatage",
+      "description": "La barre de formatage permanente du mode Edition (.visu-format-toolbar--docked) etait un enfant position:sticky A L'INTERIEUR du conteneur defilant (.preview-wrap, overflow-y-auto) -- l'ascenseur natif du navigateur representait donc toute la hauteur scrollable reelle du conteneur, qui inclut l'espace occupe par la barre en position normale (avant qu'elle ne colle en haut), donnant l'impression que l'ascenseur remonte jusque dans/au-dessus de la zone de la barre plutot que de rester cantonne a la zone de contenu en dessous. Fix : la barre est desormais une soeur de .preview-wrap (tous deux enfants directs du conteneur flex vertical), plus un enfant sticky a l'interieur -- l'ascenseur ne represente ainsi plus que la zone de contenu. position:sticky reste sur la classe partagee --docked (inchangee pour le mode Code, qui l'utilise toujours a l'interieur de son propre conteneur scrollable, non touche) mais devient un no-op inoffensif en mode Edition. scrollToNodeById() simplifie en consequence : le decalage toolbar.offsetHeight (necessaire avant pour compenser le recouvrement par la barre sticky) est retire, plus aucun recouvrement n'etant possible. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "la zone d'affichage de l'Edition doit être réduite, l'ascenseur ne doit par remonté aussi haut et resté dans la zone en dessous de la bar de style",
+      "startedAt": "2026-07-05T21:14:10.855Z",
+      "completedAt": "2026-07-05T21:14:10.855Z"
+    },
+    {
+      "id": "mod-568",
+      "version": "Br-0.002",
+      "date": "2026-07-05T21:18:29.533Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : bouton accordeon de repli deplace entre le badge de niveau et le titre (au lieu d'etre empile au-dessus)",
+      "description": "Le bouton accordeon (.visu-fold-btn, replie une section + ses sous-sections) etait positionne au-dessus du badge de niveau (.visu-sec-level, H1-H4), a la meme position horizontale (left: -3.2rem) -- empilement visuel gene dans l'etroite gouttiere gauche, les deux elements se chevauchant. Corrige : le bouton (reduit a 18px, icone 14px) est desormais aligne sur la meme ligne que le badge de niveau (top: 0.5em, identique) et positionne juste apres lui (left: -1.15rem contre -3.2rem pour le badge) -- ordre horizontal : badge de niveau, puis accordeon, puis titre. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "déplace le bouton accordeon entre le niveau et le titre",
+      "startedAt": "2026-07-05T21:18:29.533Z",
+      "completedAt": "2026-07-05T21:18:29.533Z"
+    },
+    {
+      "id": "mod-569",
+      "version": "Br-0.003",
+      "date": "2026-07-05T21:21:45.085Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : degrade clair vers fonce sur le fond du badge de niveau (H1 a H6)",
+      "description": "Le badge de niveau (.visu-sec-level, H1-H6 affiche dans la gouttiere gauche de chaque section) avait un fond d'opacite identique quel que soit le niveau. Ajout de classes visu-sec-level--1 a --6 ([ngClass]) appliquant une opacite de fond nettement croissante (avec !important pour garantir la priorite quelle que soit la specificite CSS environnante) : H1 = 0.04 (la plus claire) jusqu'a H6 = 0.46 (la plus foncee) -- meme teinte que l'existant (noir en theme clair, blanc en theme sombre), seule l'intensite varie selon le niveau. Premiere version (deltas de 0.04) jugee insuffisamment visible par l'utilisateur -- deltas elargis (0.04 a 0.46, increments ~0.07-0.11) et regle dark-mode deplacee a l'interieur du bon bloc de nesting SCSS (bug de structure corrige au passage : le premier essai placait le bloc :host-context(.dark) hors de .visu-sec-level, generant un selecteur invalide qui ne matchait jamais). Compile CSS verifie directement dans dist/ pour confirmer la presence des regles avec les bonnes valeurs.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans le tag des niveaux met du plus clair au plus foncé de 1 à 6 (background)",
+      "startedAt": "2026-07-05T21:21:45.085Z",
+      "completedAt": "2026-07-05T21:21:45.085Z"
     }
   ]
 }

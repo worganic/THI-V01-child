@@ -843,7 +843,7 @@
   padding: 0;
   position: relative;
 
-  // Badge de niveau (H1..H4) dans la gouttière gauche, aligné en face du titre
+  // Badge de niveau (H1..H6) dans la gouttière gauche, aligné en face du titre
   .visu-sec-level {
     position: absolute;
     top: 0.5em;
@@ -866,16 +866,36 @@
       background: rgba(255, 255, 255, 0.06);
       border-color: rgba(255, 255, 255, 0.12);
     }
+
+    // Fond du plus clair (H1) au plus foncé (H6) — opacité nettement croissante de la même
+    // teinte (noir en thème clair, blanc en thème sombre) selon la profondeur du titre.
+    &--1 { background: rgba(0, 0, 0, 0.04) !important; }
+    &--2 { background: rgba(0, 0, 0, 0.11) !important; }
+    &--3 { background: rgba(0, 0, 0, 0.18) !important; }
+    &--4 { background: rgba(0, 0, 0, 0.26) !important; }
+    &--5 { background: rgba(0, 0, 0, 0.35) !important; }
+    &--6 { background: rgba(0, 0, 0, 0.46) !important; }
+
+    :host-context(.dark) & {
+      &--1 { background: rgba(255, 255, 255, 0.04) !important; }
+      &--2 { background: rgba(255, 255, 255, 0.11) !important; }
+      &--3 { background: rgba(255, 255, 255, 0.18) !important; }
+      &--4 { background: rgba(255, 255, 255, 0.26) !important; }
+      &--5 { background: rgba(255, 255, 255, 0.35) !important; }
+      &--6 { background: rgba(255, 255, 255, 0.46) !important; }
+    }
   }
 
   // Accordéon (mode Edition) — replie le texte de cette section + toutes ses sous-sections.
   // Purement visuel : le DOM de chaque section reste toujours monté (voir isVisuSectionHidden /
   // visu-sec-body--folded plus bas), seul l'affichage change.
+  // Positionné entre le badge de niveau (.visu-sec-level, left: -3.2rem, largeur 30px) et le
+  // titre (left: 0) — même ligne que le badge (top identique), pas empilé au-dessus.
   .visu-fold-btn {
     position: absolute;
-    top: -1.15em;
-    left: -3.2rem;
-    width: 30px;
+    top: 0.5em;
+    left: -1.15rem;
+    width: 18px;
     height: 18px;
     display: flex;
     align-items: center;
@@ -887,7 +907,7 @@
     cursor: pointer;
     padding: 0;
 
-    .material-symbols-outlined { font-size: 16px; }
+    .material-symbols-outlined { font-size: 14px; }
 
     &:hover { background: rgba(0, 0, 0, 0.06); color: rgba(0, 0, 0, 0.6); }
     &--folded { color: rgb(34, 197, 94); }
