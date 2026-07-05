@@ -13994,6 +13994,49 @@
       "prompt": "Dans le MO prompt lorsqu'on clique sur Executer cela t'ouvre un popup, maintenant j'aimerais que tu change l'affichage : n'ouvre plus de popup et lance le prompt directement dans l'outils de conversation en mode IA, le système de type de tchat devra être reproduit directement dans l'onglet de conversation, l'IA et le model utilisé sera celui selectionné dans la conversation, la conversation devra inclure directement dans l'onglet les MO comme les form, array, etc. Le système devra prendre en compte le mode de prompt pour utiliser les prompts initiaux utilisé pour chaque mode. Un bouton devra permettre de copier les réponses de l'IA dans le texte d'Edition. En conclusion je ne veux plus de popup pour géré les prompts mais que tous soi gérer directement dans la fenètre de conversation.",
       "startedAt": "2026-07-05T12:14:45.814Z",
       "completedAt": "2026-07-05T12:14:45.814Z"
+    },
+    {
+      "id": "mod-546",
+      "version": "Br-0.012",
+      "date": "2026-07-05T12:38:32.119Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : réduction de l'espace vide entre la barre de formatage et le contenu",
+      "description": "En mode Edition (visu), le conteneur des sections (.visu-content-wrap) avait un padding-top de 2rem (32px), créant un grand espace vide entre la barre de formatage ancrée en haut (.visu-format-toolbar--docked, position sticky) et le contenu de la section (titre, board MO Prompt, texte). Réduit à 0.75rem pour que le contenu démarre juste sous la barre de formatage, conformément à la demande. Vérifié visuellement dans le navigateur (projet de test, section avec board Prompt et section texte simple) : le contenu suit immédiatement la barre, sans régression sur le reste de la mise en page (max-width/padding horizontal/bas inchangés).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "la zone d'edition n'est pas bien placer, elle doit commencer juste en dessous de la barre des styles",
+      "startedAt": "2026-07-05T12:38:32.119Z",
+      "completedAt": "2026-07-05T12:38:32.119Z"
+    },
+    {
+      "id": "mod-547",
+      "version": "Br-0.013",
+      "date": "2026-07-05T12:45:43.728Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : le clic sur une section dans la sidebar cachait son haut sous la barre de formatage",
+      "description": "La reduction du padding-top (mod-546) ne suffisait pas : le vrai probleme etait scrollToNodeById() qui utilisait el.scrollIntoView({block:'start'}) en mode visu. La barre de formatage (.visu-format-toolbar--docked) est en position sticky DANS le meme conteneur scrollable (#visu) -- scrollIntoView aligne donc le haut de la section exactement la ou la barre reste affichee, qui la recouvre visuellement (confirme par l ascenseur affiche au-dessus de la barre au lieu d en dessous). Corrige en calculant manuellement la position cible : hauteur reelle de la barre (toolbar.offsetHeight) soustraite de la position de la section avant d appeler root.scrollTo({top, behavior:smooth}), au lieu du scrollIntoView natif qui ignore les elements sticky internes. Verifie visuellement dans le navigateur (projet cours d anglais, clic sur la section \"test 2\" dans la sidebar en mode Edition) : le titre de section apparait maintenant entierement visible juste sous la barre, sans etre recouvert.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai encore le même problème en mode Edition lorsque je clique sur une section dans le menu, la zone edition affiche bien la section, mais le haut de la section est caché sous la barre de style, la zone d'edition doit commencer en dessous des barre de style, on voi bien l'ascensseur qui n'est pas en dessous mais au dessus de la barre ce qui cache le haut de la section",
+      "startedAt": "2026-07-05T12:45:43.728Z",
+      "completedAt": "2026-07-05T12:45:43.728Z"
     }
   ]
 }

@@ -38,9 +38,12 @@ Vue : éditeur type Google Docs — rendu HTML des sections éditables (contente
 
 ---
 
-## `2-5-2-5-4` — Barre de formatage permanente (haut de zone)
+## `2-5-2-5-4` — [modification] Barre de formatage permanente (haut de zone)
 
 - **Affichage** : barre **toujours visible** en haut de la zone Edition (`.visu-format-toolbar--docked`, `position: sticky; top: 0`), sous la barre des méga-outils — plus de toolbar flottante au curseur (vB-0.282)
+- **[modification] Espacement avec le contenu** : le conteneur des sections (`.visu-content-wrap`) a un `padding-top` réduit à `0.75rem` (au lieu de `2rem`) pour que le contenu (titre de section, board MO, texte) démarre juste sous la barre de formatage, sans grand espace vide entre les deux.
+- **[modification] Navigation depuis la sidebar (clic sur une section)** : `scrollToNodeById()` (`ProjetEditorZoneComponent`) calcule désormais manuellement la position cible en mode Edition au lieu d'utiliser `el.scrollIntoView({block:'start'})`. La barre de formatage étant en `position: sticky` **dans le même conteneur scrollable** (`#visu`), un `scrollIntoView` naïf alignait le haut de la section exactement là où la barre reste affichée à l'écran, la recouvrant visuellement (le haut du titre/texte disparaissait sous la barre, ascenseur visible au-dessus de la barre plutôt qu'en dessous). Le calcul soustrait désormais `toolbar.offsetHeight` (+ 8px) à la position de la section avant `root.scrollTo({top, behavior:'smooth'})`, pour que la section apparaisse entièrement visible sous la barre.
+- **À vérifier** : cliquer sur une section dans la sidebar (mode Edition) → le titre de la section doit apparaître intégralement sous la barre de formatage, jamais recouvert, quelle que soit la profondeur de scroll nécessaire.
 - La sélection est préservée au clic via `(mousedown)="$event.preventDefault()"` sur chaque bouton
 - **Boutons (mise en forme riche, vB-0.282)** : `applyVisuFormat(command, value?)`
   - Inline : Gras, Italique, **Souligné** (`underline`), Barré

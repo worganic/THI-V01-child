@@ -7404,7 +7404,16 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const root = this.visuRef?.nativeElement;
       const el = (root?.querySelector(`[data-file-id="${id}"]`)
                  || root?.querySelector(`[data-section-id="${id}"]`)) as HTMLElement | null;
-      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (root && el) {
+        // La barre de formatage est en position sticky DANS ce même conteneur : un scrollIntoView
+        // naïf (block:'start') aligne la section sur le haut du viewport, exactement là où la
+        // barre reste affichée → elle recouvre le début de la section. On décale donc la cible
+        // de la hauteur réelle de la barre pour que la section apparaisse juste en dessous.
+        const toolbar = root.querySelector('.visu-format-toolbar--docked') as HTMLElement | null;
+        const offset = toolbar?.offsetHeight ?? 0;
+        const elTop = el.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop;
+        root.scrollTo({ top: Math.max(0, elTop - offset - 8), behavior: 'smooth' });
+      }
       return;
     }
     const fileRange = this.fileRanges.find(r => r.fileId === id);
