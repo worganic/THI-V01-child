@@ -13925,6 +13925,32 @@
       "prompt": "dans le mode tchat, il y a une possibilité de Récupéré une ancienne conversation, rajoute un bouton pour effacer l'historique.",
       "startedAt": "2026-07-05T08:45:24.649Z",
       "completedAt": "2026-07-05T08:45:24.649Z"
+    },
+    {
+      "id": "mod-544",
+      "version": "Br-0.010",
+      "date": "2026-07-05T10:24:23.998Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:sidebar,projets:editor-zone-code",
+      "title": "Sidebar : Enregistrer/Annuler une section avec ou sans ses sous-sections",
+      "description": "Jusqu'ici, publier/annuler les modifications d'une section via le menu contextuel de la sidebar (\"Enregistrer et partager\"/\"Annuler les modifications\") cascadait automatiquement vers toutes les sous-sections locales pending, sans jamais proposer de ne traiter que la section selectionnee, et le bouton ne s'affichait meme pas si seules des sous-sections (et pas la section elle-meme) portaient des modifications -- obligeant a ouvrir chaque sous-section individuellement pour la publier. Ajout du choix explicite : ProjetCollabService.requestPublishSection/requestCancelSection(sectionId, includeDescendants = true) transmet desormais includeDescendants dans le payload de publishSectionRequest$/cancelSectionRequest$ ({ sectionId, includeDescendants }). projet-editor-zone.component.ts : publishSection/cancelSection(sectionId, includeDescendants = true) et collectSectionPublishIds(sectionId, includeDescendants) limitent le perimetre a la section seule (+ ses propres entites granulaires verrouillees) quand includeDescendants=false, ou embarquent tous les descendants isLocalPending sinon (comportement precedent, inchange par defaut). projet-sidebar.component.ts : nouvelle methode hasPendingDescendants(node) (parcours recursif de node.children + collab.isLocalPending) qui pilote l'affichage de 2 a 4 boutons dans le menu contextuel selon les cas : section elle-meme pending -> \"Enregistrer cette section\"/\"Annuler cette section\" ; sous-sections pending -> \"Enregistrer + sous-sections\"/\"Annuler + sous-sections\" (ou juste \"les sous-sections\" si la section elle-meme n'est pas modifiee). Build portail+projets verifie sans erreur.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "On doit pouvoir sauvegarder une section et tous ses enfants pour ne pas avoir à les faire 1 par un, il faut garder l'option sauvegardé juste la section selectionné ou toutes les sections dont les enfants",
+      "startedAt": "2026-07-05T10:24:23.998Z",
+      "completedAt": "2026-07-05T10:24:23.998Z"
     }
   ]
 }

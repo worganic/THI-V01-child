@@ -143,15 +143,29 @@ export class ProjetSidebarComponent implements OnChanges {
   isLocalPending(nodeId: string): boolean { return this.collab.isLocalPending(nodeId); }
 
   // Partager / Annuler les modifications d'une section depuis le menu contextuel.
-  // Déléguée à la zone d'édition via le bus du service collab.
-  publishSection(node: FileNode) {
+  // Déléguée à la zone d'édition via le bus du service collab. includeDescendants permet
+  // de choisir entre « juste cette section » et « cette section + ses sous-sections modifiées ».
+  publishSection(node: FileNode, includeDescendants: boolean) {
     this.closeContextMenu();
-    this.collab.requestPublishSection(node.id);
+    this.collab.requestPublishSection(node.id, includeDescendants);
   }
 
-  cancelSection(node: FileNode) {
+  cancelSection(node: FileNode, includeDescendants: boolean) {
     this.closeContextMenu();
-    this.collab.requestCancelSection(node.id);
+    this.collab.requestCancelSection(node.id, includeDescendants);
+  }
+
+  /** Vrai si au moins un descendant (section ou fichier, hors le nœud lui-même) porte des
+   *  modifications locales non partagées — affiche/masque l'option « + sous-sections ». */
+  hasPendingDescendants(node: FileNode): boolean {
+    const walk = (n: FileNode): boolean => {
+      for (const c of n.children || []) {
+        if (this.collab.isLocalPending(c.id)) return true;
+        if (walk(c)) return true;
+      }
+      return false;
+    };
+    return walk(node);
   }
 
   // Ajout d'un méga-outil (Trello / Tableau) dans une section depuis le menu contextuel.

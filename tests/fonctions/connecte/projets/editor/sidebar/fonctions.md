@@ -103,7 +103,7 @@
 
 ---
 
-## `2-5-2-2-9` — Menu contextuel (clic droit)
+## `2-5-2-2-9` — [modification] Menu contextuel (clic droit)
 
 - Affichage d'un menu contextuel au clic droit avec options dépendant de la sélection
 - Options pour les dossiers : Nouvelle section, Nouveau fichier, Renommer, Supprimer, Monter/Descendre, Supprimer le titre, Ajout MO Trello, Ajout MO Tableau, options de verrous
@@ -241,3 +241,15 @@
 - **Résultat à redouter** : `localStorage` indisponible (navigation privée stricte) → lecture/écriture entourées d'un `try/catch` silencieux, la largeur retombe simplement sur la valeur par défaut sans erreur.
 - **À vérifier** : glisser chaque poignée dans les deux sens jusqu'aux bornes (180/480 pour l'arbre, 240/640 pour Conversation) → le panneau ne dépasse jamais ces limites. Recharger la page → les deux largeurs sont conservées. Volet Conversation réduit (`zone5Collapsed`) → sa poignée disparaît (pas de redimensionnement d'un volet invisible).
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`
+
+---
+
+## `2-5-2-2-21` — Enregistrer/Annuler une section + choix "avec sous-sections"
+
+- **Précondition** : une section (dossier) porte des modifications locales non partagées (`isLocalPending`), et/ou au moins une de ses sous-sections en porte aussi.
+- **Action** : clic droit sur la section dans l'arbre.
+- **Résultat attendu — la section elle-même est modifiée** (`isLocalPending(node.id)` vrai) : deux boutons distincts apparaissent, "Enregistrer cette section" (`publishSection(node, false)`) et, si au moins une sous-section est aussi modifiée (`hasPendingDescendants(node)` vrai), "Enregistrer + sous-sections" (`publishSection(node, true)`). Idem côté annulation : "Annuler cette section" (`cancelSection(node, false)`) / "Annuler + sous-sections" (`cancelSection(node, true)`).
+- **Résultat attendu — seules des sous-sections sont modifiées** (la section elle-même ne l'est pas) : seuls les boutons "Enregistrer les sous-sections" / "Annuler les sous-sections" apparaissent (cascade uniquement, rien à faire sur la section elle-même) — évite d'avoir à ouvrir et publier chaque sous-section modifiée une par une.
+- **Mécanisme** : `ProjetSidebarComponent.hasPendingDescendants(node)` parcourt récursivement `node.children` et teste `collab.isLocalPending(id)` sur chaque descendant (dossier ou fichier). `publishSection`/`cancelSection` transmettent `includeDescendants` à `ProjetCollabService.requestPublishSection/requestCancelSection(sectionId, includeDescendants)`, qui l'embarque dans le payload de `publishSectionRequest$`/`cancelSectionRequest$` (`{ sectionId, includeDescendants }`). La zone d'édition (`projet-editor-zone.component.ts`) le reçoit et l'applique dans `collectSectionPublishIds(sectionId, includeDescendants)` (voir `2-5-2-4-9`) : `includeDescendants=false` limite le périmètre à la section seule (+ ses propres entités granulaires verrouillées), `includeDescendants=true` (comportement par défaut, inchangé) ajoute tous les descendants `isLocalPending`.
+- **À vérifier** : éditer une section ET une de ses sous-sections (deux brouillons locaux distincts) → clic droit sur la section parente affiche les 4 boutons ; "Enregistrer cette section" ne publie QUE le parent (la sous-section reste avec son cadenas) ; "Enregistrer + sous-sections" publie les deux et retire les deux cadenas. Éditer uniquement une sous-section (parent intact) → clic droit sur le parent n'affiche que "Enregistrer/Annuler les sous-sections" (pas de variante "cette section").
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`

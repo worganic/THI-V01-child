@@ -152,15 +152,16 @@ export class ProjetCollabService {
 
   // Demandes Partager / Annuler d'une section depuis le menu contextuel de la sidebar.
   // La zone d'édition (seule à connaître le contenu/les snapshots) écoute ces flux.
-  readonly publishSectionRequest$ = new Subject<string>();
-  readonly cancelSectionRequest$ = new Subject<string>();
+  // includeDescendants : true = section + ses sous-sections modifiées, false = section seule.
+  readonly publishSectionRequest$ = new Subject<{ sectionId: string; includeDescendants: boolean }>();
+  readonly cancelSectionRequest$ = new Subject<{ sectionId: string; includeDescendants: boolean }>();
 
-  requestPublishSection(sectionId: string): void {
-    this.publishSectionRequest$.next(sectionId);
+  requestPublishSection(sectionId: string, includeDescendants = true): void {
+    this.publishSectionRequest$.next({ sectionId, includeDescendants });
   }
 
-  requestCancelSection(sectionId: string): void {
-    this.cancelSectionRequest$.next(sectionId);
+  requestCancelSection(sectionId: string, includeDescendants = true): void {
+    this.cancelSectionRequest$.next({ sectionId, includeDescendants });
   }
 
   // Demande de création d'un méga-outil (Trello / Tableau) dans une section,
