@@ -13900,6 +13900,31 @@
       "prompt": "dans le menu projet/Edition/MO/prompt je voudrais que tu rajoute un mode en plus de Normal/guidé/tchat qui serait un mode \"Tchat libre\", ce mode permettrais de lancer le prompt en mode tchat mais sans faire appel du tous au MO, sans transformé les réponses de l'IA en format html, cela ne fera qu'envoyé des prompts (initial puis après user) et l'IA renverrais les réponses, seul chose à garder, le bouton copier pour insserré le texte dans le texte d'Edition.",
       "startedAt": "2026-07-05T08:40:03.037Z",
       "completedAt": "2026-07-05T08:40:03.037Z"
+    },
+    {
+      "id": "mod-543",
+      "version": "Br-0.009",
+      "date": "2026-07-05T08:45:24.649Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "server"
+      ],
+      "features": "projets:mo-prompt",
+      "title": "MO Prompt : bouton effacer l'historique dans la bannière de reprise (mode Tchat)",
+      "description": "Le mode Tchat du MO Prompt affichait deja une banniere \"Reprendre\" quand une conversation precedente existait en BDD (mega_outil_prompt_chat_sessions/_messages), mais aucun moyen de la supprimer. Ajout d'un bouton icone poubelle a cote de \"Reprendre\" (PromptChatPopupComponent), avec confirmation inline (Confirmer/Annuler, meme pattern que la suppression d'un board Trello/Prompt). Nouvelle route serveur DELETE /api/mega-outils/prompt/:instanceId/chat-sessions (server-data.js) qui supprime toutes les sessions ET tous les messages de l'instance (pas de contrainte FK cascade sur ces tables, suppression explicite des messages avant les sessions). Nouvelle methode MegaOutilsService.deleteChatHistory(instanceId). Cote UI, la banniere disparait immediatement apres suppression reussie (resumableSession mis a null). Build portail+projets verifie sans erreur, syntaxe server-data.js verifiee (node -c).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-chat-popup/prompt-chat-popup.component.ts",
+        "libs/portail-core/data-access/src/lib/mega-outils.service.ts",
+        "server/server-data.js",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans le mode tchat, il y a une possibilité de Récupéré une ancienne conversation, rajoute un bouton pour effacer l'historique.",
+      "startedAt": "2026-07-05T08:45:24.649Z",
+      "completedAt": "2026-07-05T08:45:24.649Z"
     }
   ]
 }

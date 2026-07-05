@@ -64,8 +64,21 @@ interface ChatMessage { role: 'user' | 'ai' | 'error'; text: string; mos?: Mater
               <div class="flex items-center gap-2 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2">
                 <span class="material-symbols-outlined text-emerald-400 text-base">history</span>
                 <span class="flex-1 text-[12px] text-light-text dark:text-white/75">Une conversation précédente est disponible ({{ formatSessionDate(rs.updatedAt) }}).</span>
-                <button class="text-[11px] px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/30 transition-colors"
-                        (click)="resumeSession(rs.id)">Reprendre</button>
+                @if (confirmDeleteHistory()) {
+                  <button class="text-[11px] px-2 py-1 rounded-md bg-red-500/20 border border-red-500/30 text-red-400 font-semibold hover:bg-red-500/30 transition-colors"
+                          [disabled]="deletingHistory()"
+                          (click)="deleteHistory()">{{ deletingHistory() ? 'Suppression…' : 'Confirmer' }}</button>
+                  <button class="text-[11px] px-2 py-1 rounded-md border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white transition-colors"
+                          (click)="confirmDeleteHistory.set(false)">Annuler</button>
+                } @else {
+                  <button class="w-7 h-7 flex items-center justify-center rounded-md text-light-text-muted dark:text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors flex-shrink-0"
+                          title="Effacer l'historique de conversation"
+                          (click)="confirmDeleteHistory.set(true)">
+                    <span class="material-symbols-outlined text-base">delete</span>
+                  </button>
+                  <button class="text-[11px] px-2.5 py-1 rounded-md bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/30 transition-colors"
+                          (click)="resumeSession(rs.id)">Reprendre</button>
+                }
               </div>
             }
             @if (providers().length === 0) {
@@ -263,6 +276,8 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
   private currentSessionId: string | null = null;
   private nextSeq = 0;
   resumableSession = signal<{ id: string; provider: string; model: string | null; createdAt: string; updatedAt: string } | null>(null);
+  confirmDeleteHistory = signal(false);
+  deletingHistory = signal(false);
 
   state = signal<ChatState>('idle');
   selectedProvider = signal('');
@@ -417,6 +432,17 @@ export class PromptChatPopupComponent implements OnInit, OnDestroy {
       }));
       this.state.set('chatting');
     }).catch(() => {});
+  }
+
+  /** Efface définitivement tout l'historique de tchat (toutes les sessions + messages)
+   *  de cette instance Prompt — fait disparaître la bannière "Reprendre". */
+  deleteHistory() {
+    if (!this.instanceId || this.deletingHistory()) return;
+    this.deletingHistory.set(true);
+    this.megaSvc.deleteChatHistory(this.instanceId)
+      .then(() => { this.resumableSession.set(null); })
+      .catch(() => {})
+      .finally(() => { this.deletingHistory.set(false); this.confirmDeleteHistory.set(false); });
   }
 
   formatSessionDate(iso: string): string {

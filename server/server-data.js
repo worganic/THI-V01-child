@@ -11076,6 +11076,26 @@ app.get('/api/mega-outils/prompt/chat-session/:sessionId/messages', async (req, 
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// DELETE /api/mega-outils/prompt/:instanceId/chat-sessions — efface tout l'historique de tchat
+// (toutes les sessions + messages) d'une instance Prompt. Pas de contrainte FK sur ces tables
+// (juste un index) → suppression explicite des messages avant les sessions.
+app.delete('/api/mega-outils/prompt/:instanceId/chat-sessions', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [sessions] = await pool.query(
+            'SELECT id FROM mega_outil_prompt_chat_sessions WHERE instance_id = ?',
+            [req.params.instanceId]
+        );
+        const ids = sessions.map(s => s.id);
+        if (ids.length > 0) {
+            await pool.query('DELETE FROM mega_outil_prompt_chat_messages WHERE session_id IN (?)', [ids]);
+            await pool.query('DELETE FROM mega_outil_prompt_chat_sessions WHERE id IN (?)', [ids]);
+        }
+        res.json({ deleted: ids.length });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // GET /api/mega-outils/prompt/:instanceId/history
 app.get('/api/mega-outils/prompt/:instanceId/history', async (req, res) => {
     const user = getSessionUser(req);
