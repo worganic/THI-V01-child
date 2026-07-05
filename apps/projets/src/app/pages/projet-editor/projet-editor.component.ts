@@ -885,8 +885,15 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
 
   async onFolderCreated(info: { name: string; parentId: string | null }) {
     // Protège le nouveau dossier contre une suppression accidentelle par processSectionsChange
-    // qui pourrait s'exécuter avec des sections stales (avant que le signal files() soit propagé
-    // à l'editor zone, ou via un save différé déclenché entre temps : blur textarea, timer 2s…).
+    // (réconciliation texte↔structure qui supprime tout dossier dont elle ne retrouve plus le
+    // titre correspondant dans le texte). `appendSection`/`insertSectionInParent` ci-dessous sont
+    // des stubs vides (aucun titre n'est réellement inséré dans le texte à la création) : un
+    // dossier vide ne sera donc jamais "confirmé" tant que l'utilisateur n'a pas lui-même tapé du
+    // contenu dedans. La protection ne doit donc PAS expirer après un délai fixe (incident du
+    // 2026-07-05 : un minuteur de 5s expirait juste avant le cycle de sauvegarde suivant,
+    // supprimant des dossiers Prompt fraîchement créés — ex. « Pr - Questions », « Pr - Tchat »).
+    // Elle reste active indéfiniment jusqu'à confirmation réelle : `processSectionsChange` la
+    // lève lui-même dès qu'une section est retrouvée liée à ce dossier (`matchedFolderIds`).
     this.pendingFolderNames.add(info.name);
     let waited = 0;
     while (this.isSaving && waited < 5000) {
@@ -903,11 +910,6 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
         this.editionOutil?.insertSectionInParent(parent.name, depth, info.name);
       }
     }
-    // On retient la protection assez longtemps pour couvrir tout save différé (timer 2 s)
-    // et le ngOnChanges de l'editor zone qui reconstruit le texte avec le nouveau dossier.
-    // Tant que la protection est active, processSectionsChange ne supprimera pas ce dossier
-    // même si le texte parsé ne le contient pas encore.
-    setTimeout(() => this.pendingFolderNames.delete(info.name), 5000);
   }
 
   onOutilSelect(outilId: string): void {
@@ -1231,7 +1233,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     const renameOps: RenameOp[] = [];
     const matchedFolderIds = new Set<string>();
 
-    // 2. Détection des renommages niveau par niveau pour stabiliser la hiérarchie
+    // 2. Détection des renommages — uniquement par identifiant stable {{SID}}, jamais par
+    // devinette de position (bug corrigé : voir "hierarchical match" ci-dessous, retiré).
     for (const s of resolved) {
       if (s.folderId) {
         matchedFolderIds.add(s.folderId);
@@ -1243,40 +1246,19 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           console.log('[EDITOR] Rename detected (SID):', { from: sidFolder.name, to: s.folderName });
           renameOps.push({ folderId: s.folderId, newName: s.folderName, section: s });
         }
-        continue;
+        // Confirmation réelle : ce dossier est bien lié à une section du texte → la protection
+        // anti-suppression posée à sa création (onFolderCreated) n'a plus lieu d'être.
+        if (sidFolder) this.pendingFolderNames.delete(sidFolder.name);
       }
-
-      const parentS = parentSectionMap.get(s);
-      const parentFolderId = parentS ? (parentS.folderId || renameOps.find(op => op.section === parentS)?.folderId) : null;
-      
-      const parentFolder = parentFolderId ? this.findFolderById(parentFolderId, currentFiles) : null;
-      const siblings = parentFolderId ? (parentFolder?.children || []) : currentFiles;
-      
-      const orphanFolders = siblings.filter(f => 
-        f.type === 'folder' && 
-        !matchedFolderIds.has(f.id) && 
-        !resolved.some(rs => rs.folderId === f.id)
-      );
-      
-      const unmatchedSectionsAtThisLevelUnderThisParent = resolved.filter(rs => 
-          !rs.folderId && 
-          rs.level === s.level && 
-          parentSectionMap.get(rs) === parentS &&
-          !renameOps.some(op => op.section === rs)
-      );
-
-      // Match si on a le même nombre de dossiers orphelins et de sections non matchées à ce niveau
-      // OU si on a une seule section non matchée et qu'il reste des orphelins (plus risqué mais nécessaire si doublons sur serveur)
-      if (orphanFolders.length > 0 && unmatchedSectionsAtThisLevelUnderThisParent.length > 0) {
-          const idx = unmatchedSectionsAtThisLevelUnderThisParent.indexOf(s);
-          if (idx !== -1 && idx < orphanFolders.length) {
-              const matchedFolder = orphanFolders[idx];
-              console.log('[EDITOR] Rename detected (hierarchical match):', { from: matchedFolder.name, to: s.folderName });
-              renameOps.push({ folderId: matchedFolder.id, newName: s.folderName, section: s });
-              matchedFolderIds.add(matchedFolder.id);
-              s.folderId = matchedFolder.id; // Patch immédiat pour les enfants
-          }
-      }
+      // Ancienne logique retirée (incidents répétés — voir 2-5-2-2-4) : un dossier "orphelin"
+      // (sans {{SID}} correspondant retrouvé) et une "section non matchée" du même niveau/parent
+      // étaient appariés par simple position d'index dès que leurs comptes coïncidaient, sans
+      // aucune garantie qu'ils se correspondent réellement (ex. suppression d'un prompt dans
+      // « Pr - Questions » pendant que « Pr - Ideation » est aussi présent au même niveau →
+      // appariement erroné, contenu écrit dans le mauvais dossier — effet visuel de "copie" dans
+      // le mauvais dossier). Sans cette devinette, un renommage de titre tapé à la main (sans
+      // passer par le SID) crée simplement un nouveau dossier au lieu de renommer l'existant
+      // (dossier "orphelin" resté inoffensif, plus jamais fusionné/déplacé/supprimé à tort).
     }
 
     // 3. Mise à jour finale des parentFolderId pour les créations/déplacements
@@ -1322,30 +1304,23 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       }
     }
 
-    // GARDE-FOU (incident du 2026-07-05 : suppression automatique de sections entières —
-    // "H1 new menu après 5.4b" et "save", 36 dossiers/65 fichiers — quand la reconciliation
-    // texte↔structure a détecté ces sections comme "orphelines" à partir d'un contenu
-    // partiel/obsolète). Un orphelin isolé (cas normal : suppression manuelle d'une petite
-    // section vide) ne déclenche jamais ce seuil ; un contenu tronqué/obsolète, si.
+    // SUPPRESSION AUTOMATIQUE DÉSACTIVÉE (incidents répétés du 2026-07-05 : d'abord 36 dossiers/65
+    // fichiers supprimés d'un coup quand la réconciliation texte↔structure a détecté des sections
+    // entières comme "orphelines" à partir d'un contenu partiel/obsolète — un premier garde-fou à
+    // seuil avait alors été ajouté ; puis des dossiers Prompt isolés fraîchement créés supprimés
+    // quelques secondes après leur création — cas que le seuil ne bloquait pas, un orphelin isolé
+    // étant considéré comme une suppression manuelle normale). Après plusieurs itérations de
+    // rustines toujours contournées, décision : la réconciliation ne supprime plus JAMAIS aucun
+    // dossier automatiquement, quelle que soit la situation — seule la suppression manuelle via la
+    // corbeille de la sidebar (`ProjetSidebarComponent.confirmDelete`) reste possible. La détection
+    // ci-dessus (boucle `toDelete`/logs `console.log('[EDITOR] Deletion detected:'...)`) reste utile
+    // pour le diagnostic mais n'entraîne plus aucune suppression réelle.
     if (toDelete.length > 0) {
-      const countFolderTree = (folder: FileNode): number => {
-        let n = 1;
-        for (const c of folder.children || []) if (c.type === 'folder') n += countFolderTree(c);
-        return n;
-      };
-      const nodesToDelete = toDelete.reduce((sum, f) => sum + countFolderTree(f), 0);
-      const totalExisting = allFolderPaths.size;
-      const MAX_DELETE_RATIO = 0.3;
-      const MAX_DELETE_ABSOLUTE = 15;
-      if (totalExisting > 0 && (nodesToDelete > totalExisting * MAX_DELETE_RATIO || nodesToDelete > MAX_DELETE_ABSOLUTE)) {
-        console.error(
-          `[EDITOR] Garde-fou : suppression automatique bloquée — ${nodesToDelete} dossier(s) sur ${totalExisting} ` +
-          `auraient été supprimés comme "orphelins" (${toDelete.map(f => f.name).join(', ')}). ` +
-          `Ceci ressemble à un contenu partiel/obsolète plutôt qu'à une suppression volontaire de l'utilisateur — ` +
-          `abandon de la suppression pour cette sauvegarde (le reste des changements, s'il y en a, est appliqué normalement).`
-        );
-        toDelete.length = 0;
-      }
+      console.warn(
+        `[EDITOR] Suppression automatique ignorée (désactivée) pour ${toDelete.length} dossier(s) ` +
+        `détecté(s) comme "orphelins" : ${toDelete.map(f => f.name).join(', ')}.`
+      );
+      toDelete.length = 0;
     }
 
     // Détection de suppression de fichiers additionnels

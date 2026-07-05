@@ -14256,6 +14256,198 @@
       "prompt": "lorsque à partir de la conversation des données d'un MO est ajouter au texte général, il faut changer le bouton de \"Ajouter au projet\" à \"Déjà ajouté\" et quand on clique dessus on arrive dans la section ou à été copié les données du MO",
       "startedAt": "2026-07-05T15:25:26.915Z",
       "completedAt": "2026-07-05T15:25:26.915Z"
+    },
+    {
+      "id": "mod-557",
+      "version": "Br-0.001",
+      "date": "2026-07-05T17:50:54.940Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code",
+      "title": "Coller dans un fence MegaOutil (Prompt, Trello, Array...) : collage brut natif, plus de popup de recalage de niveaux",
+      "description": "Coller un texte contenant des titres markdown (#, ##...) dans le corps d'un Prompt (ex: le champ 'Votre prompt ici.') ou de tout autre MegaOutil fence declenchait a tort le popup de collage (pastePreview) qui propose de recaler les niveaux de titres comme si ce texte devenait une nouvelle section du document -- alors que ce contenu vit a l'interieur d'un fence \\`\\`\\`TYPE: ... \\`\\`\\` et a sa propre structure, independante du document. Ajout de isOffsetInsideFence(offset) dans projet-editor-zone.component.ts (meme detection fence-aware que sectionLevelBeforeOffset, mais retourne directement l'etat inFence a la position donnee) ; onTextareaPaste() retourne desormais tot (collage natif, sans preventDefault) si le curseur est a l'interieur d'un fence, avant meme de calculer le niveau cible/le recalage. Verifie que le menu principal (sidebar) n'est de toute facon jamais impacte par des titres a l'interieur d'un fence, dans les deux cas (avant et apres ce fix) : parseContent/recomputeRanges excluent deja tout heading situe entre des delimiteurs \\`\\`\\`...\\`\\`\\` de la construction de l'arborescence des dossiers -- seul le comportement du popup de collage etait a corriger. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee (pas de session authentifiee disponible dans cette instance).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lors de l'import d'un texte dans une section un popup d'information s'ouvre pour determiné si il faut changer les niveaux des menus. JE voudrais que lorsqu'on import du texte dans une section type MO comme un prompt on doit pouvoir copier un texte brut sans modification du niveau (pas de popup de coller) mais il faut que la gestion des menus ne prenne pas en compte les textes à l'intérieur des MO, ainsi si le texte comporte des menus, cela n'impacte pas le menu principal",
+      "startedAt": "2026-07-05T17:50:54.940Z",
+      "completedAt": "2026-07-05T17:50:54.940Z"
+    },
+    {
+      "id": "mod-558",
+      "version": "Br-0.002",
+      "date": "2026-07-05T18:39:46.874Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Clic sur un MO Prompt (aperçu autonome) : le début du contenu passait sous la barre de formatage",
+      "description": "En mode Edition, cliquer sur un noeud de type MO Prompt (ou Trello/Array/fichier/image) dans la sidebar affiche un apercu autonome (previewPromptInstanceId et equivalents) qui remplace tout le contenu de .visu-content-wrap -- cet apercu n'a pas d'attribut data-file-id/data-section-id, donc scrollToNodeById() ne trouvait aucun element cible et ne faisait RIEN (contrairement au cas section normale deja corrige en mod-547) : un scrollTop herite d'une section precedente plus longue restait en l'etat, laissant la barre de formatage sticky recouvrir le debut du nouvel apercu (toujours affiche depuis le tout debut du conteneur). Corrige dans projet-editor-zone.component.ts : quand aucun element n'est trouve via data-file-id/data-section-id, scrollToNodeById() repositionne desormais le conteneur en haut (root.scrollTo({top:0})) au lieu de ne rien faire. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee (pas de session authentifiee disponible).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsqu'on clique sur un MO prompt le début du prompt est trop haut et passe en dessous la bar de style : la zone d'édition ne doit commencer qu'en dessous de la bar de style",
+      "startedAt": "2026-07-05T18:39:46.874Z",
+      "completedAt": "2026-07-05T18:39:46.874Z"
+    },
+    {
+      "id": "mod-559",
+      "version": "Br-0.003",
+      "date": "2026-07-05T18:45:06.362Z",
+      "type": "config",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-toolbar",
+      "title": "Ouverture d'un projet : mode Edition sélectionné par défaut au lieu de Code (supprime le message de sélection de section)",
+      "description": "A l'ouverture d'un projet, le mode par defaut etait 'edit' (Code), qui affiche un overlay \"Selectionnez une section dans la barre laterale pour l'editer\" tant qu'aucune section n'est choisie (!focusedHandle && !activeNodeId) -- ce message apparaissait donc systematiquement au lancement, avant tout clic. Change le champ mode de ProjetEditorZoneComponent (projet-editor-zone.component.ts) de 'edit' a 'visu' (onglet Edition) par defaut : ce mode affiche directement la vue assemblee du document sans necessiter de selection, donc plus de message au chargement. L'overlay lui-meme reste inchange pour le mode Code (toujours pertinent si l'utilisateur y bascule manuellement sans selectionner de section). Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee (pas de session authentifiee disponible).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque la page projet ce lance on à un message enlève ce message et selectionne directement \"Edition\"",
+      "startedAt": "2026-07-05T18:45:06.362Z",
+      "completedAt": "2026-07-05T18:45:06.362Z"
+    },
+    {
+      "id": "mod-560",
+      "version": "Br-0.004",
+      "date": "2026-07-05T19:15:27.858Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-sidebar",
+      "title": "Dossiers Prompt supprimes automatiquement quelques secondes apres leur creation (minuteur de protection trop court)",
+      "description": "Preuve trouvee dans l'historique git interne du projet (data/projets/<id>/.git) : dossier 'Pr - Questions' cree a 20:59:38, supprime automatiquement a 20:59:44 (6s plus tard) -- meme schema reproduit 3 fois (Pr - Tchat, Pr - Questions, Pr - Test Tchat), leurs fichiers Prompt se retrouvant reattaches au dossier voisin survivant ('Pr - Ideation'), d'ou l'impression que 'les menus ont change tout seul'. Cause : ProjetEditorComponent.onFolderCreated() protegeait le nouveau dossier (pendingFolderNames) contre la suppression automatique par processSectionsChange (reconciliation texte/structure qui supprime tout dossier dont elle ne retrouve plus le titre dans le texte), mais seulement via un minuteur FIXE de 5 secondes -- independant de toute confirmation reelle. Or appendSection/insertSectionInParent (ProjetEditorZoneComponent) sont des stubs vides (aucun titre n'est reellement insere dans le texte a la creation, bug de longue date, deja present dans les sauvegardes de code du 2026-05-06) : un dossier reste vide plus de 5s (le temps de configurer un Prompt dedans) se faisait donc supprimer comme orphelin au cycle de sauvegarde suivant. Fix (approche validee avec l'utilisateur, la plus prudente des deux proposees compte tenu de l'incident deja documente du 2026-07-05 sur ce meme mecanisme) : suppression du minuteur fixe ; la protection n'est desormais levee que par processSectionsChange lui-meme, au moment ou une section du texte est reellement retrouvee liee a ce dossier (matchedFolderIds, via SID ou position hierarchique). Un dossier reste vide indefiniment reste protege de la suppression automatique (suppression manuelle via la sidebar toujours possible, mecanisme distinct non affecte). Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai créé des dossiers dans le menu pour mettre tous les prompts dans des dossiers spécifique... Peux tu vérifié pourquoi les menus on changé tous seul car maintenant les prompt n'ont plus leur propre menu",
+      "startedAt": "2026-07-05T19:15:27.858Z",
+      "completedAt": "2026-07-05T19:15:27.858Z"
+    },
+    {
+      "id": "mod-561",
+      "version": "Br-0.005",
+      "date": "2026-07-05T19:31:06.946Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-sidebar",
+      "title": "Suppression automatique de dossier desactivee definitivement (incidents repetes malgre le fix precedent)",
+      "description": "Le fix precedent (mod-560, protection pendingFolderNames non expiree par minuteur) s'est revele insuffisant : un nouveau cas reproduit (dossier 'Pr - Tchat' cree, prompt 'PR: Tchat' ajoute dedans, dossier supprime immediatement, prompt retrouve sous 'Pr - Ideation'). Cause supplementaire identifiee : la logique de 'renommage par position hierarchique' dans processSectionsChange (appariement dossiers orphelins <-> sections non matchees du meme niveau/parent, cense detecter un renommage de titre) peut apparier a tort un dossier vide non lie (ex. Pr - Tchat, jamais rattache a un titre car insertAt() ne trouve pas encore son sectionRange et place le nouveau prompt ailleurs) avec une section sans rapport, levant alors sa protection pendingFolderNames par erreur -- rendant le dossier de nouveau eligible a la suppression orpheline au cycle suivant. Plutot que de continuer a rustiner ce mecanisme deja responsable de 2 incidents de perte de donnees documentes, decision (validee avec l'utilisateur) : desactivation complete et definitive de la suppression automatique de dossier dans processSectionsChange (projet-editor.component.ts) -- le tableau toDelete est desormais systematiquement vide avant l'execution (uniquement logue en console.warn a des fins de diagnostic), quelle que soit la situation. Le renommage automatique de dossier reste actif (moins risque, n'efface aucune donnee). La suppression manuelle via la corbeille de la sidebar (action explicite avec confirmation) n'est pas affectee. Structure du projet 'cours d'anglais' deja reparee manuellement lors du prompt precedent (dossiers Pr - Questions/Pr - Test Tchat recrees). Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Cela continue de faire n'importe quoi, je viens de créé \"PR: Tchat\" dans le dossier \"Pr - Tchat\" et à peine le prompt créé que le dossier à été supprimé le le prompt déplacé dans \"Pr - Ideation\", rien ne doit être déplacé ou supprimé si on ne la pas demandé",
+      "startedAt": "2026-07-05T19:31:06.946Z",
+      "completedAt": "2026-07-05T19:31:06.946Z"
+    },
+    {
+      "id": "mod-562",
+      "version": "Br-0.006",
+      "date": "2026-07-05T19:47:02.306Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-sidebar",
+      "title": "Retrait de la logique de renommage par devinette de position (cause racine du 3e incident : contenu copie/deplace vers le mauvais dossier)",
+      "description": "3e incident reproduit malgre mod-560/mod-561 : supprimer le Prompt place dans 'Pr - Questions' faisait apparaitre son contenu (ou l'effet d'une copie) dans 'Pr - Ideation'. Cause racine identifiee (distincte de la suppression automatique deja desactivee) : processSectionsChange contenait une logique de 'renommage par position hierarchique' (orphanFolders / unmatchedSectionsAtThisLevelUnderThisParent) qui appariait un dossier orphelin (sans {{SID}} retrouve) et une section non matchee du MEME niveau sous le MEME parent par simple POSITION D'INDEX dans leurs listes respectives, des que les comptes coincidaient -- sans aucune garantie qu'ils se correspondent reellement. Quand 'Pr - Questions' devenait orphelin (prompt supprime) alors que 'Pr - Ideation' etait aussi present au meme niveau, l'appariement pouvait etre errone, ecrivant le contenu resolu dans le mauvais dossier (etape 5 'Save content' de processSectionsChange, qui ecrit s.content dans s.fileId) -- effet visuel de copie/deplacement non demande. Cette meme logique appelait aussi pendingFolderNames.delete() sur le mauvais dossier, ce qui expliquait egalement pourquoi le fix precedent (protection jusqu'a confirmation reelle) pouvait etre contourne. Fix : logique de renommage par position entierement retiree de projet-editor.component.ts. Seul le renommage par {{SID}} explicite (identifiant stable, zero devinette) reste actif -- un renommage de titre tape a la main sans SID cree desormais un nouveau dossier au lieu de deviner un renommage (compromis assume : surete des donnees plutot que confort d'edition). Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "non cela continue à changer les dossiers lorsque je supprime Mon prompt placer dans \"Questions\" cela la copier dans le dossier \"Pr - Ideation\" il faut arrété de changer les dossiers et les sections dans tous les sens, vérifi tous le système et corrige les modification/suppression/déplacement intempestif",
+      "startedAt": "2026-07-05T19:47:02.306Z",
+      "completedAt": "2026-07-05T19:47:02.306Z"
+    },
+    {
+      "id": "mod-563",
+      "version": "Br-0.007",
+      "date": "2026-07-05T19:59:06.099Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "data"
+      ],
+      "features": "projets:editor-sidebar",
+      "title": "Nettoyage d'un residu de donnees corrompu dans 'Pr - Ideation' (cause du 4e symptome, pas un bug de code)",
+      "description": "Le symptome le plus recent ('PR: Questions se copie dans Pr - Ideation') n'etait PAS un nouveau bug de code -- c'etait un residu corrompu laisse par l'incident original, jamais nettoye lors de ma reparation manuelle precedente (mod du prompt 'répare la structure actuelle'). Le dossier 'Pr - Ideation' a son propre fichier contenu.md/contenu-css.md (contenu direct du dossier, en plus de ses fichiers Prompt enfants) qui contenait encore : contenu.md = '\\n```\\n' (un fence orphelin) et contenu-css.md = '\\n```\\n\\n#### Pr - Questions {{SID:5cb1a159-0801-44e1-ad86-0760ea886cd2}}\\n' (meme fence + un FRAGMENT DE TITRE LITTERAL laisse par l'ancienne suppression, avec un SID desormais orphelin ne correspondant a aucun dossier reel). buildDocSections() (projet-editor-zone.component.ts) injecte le contenu de ce fichier tel quel dans le texte reconstruit du dossier 'Pr - Ideation' -- ce fragment de titre y apparaissait donc systematiquement, EMBARQUE dans le contenu propre de Pr - Ideation, a chaque reconstruction du buffer (chargement de page, sauvegarde), quelle que soit l'action de l'utilisateur -- d'ou l'illusion d'une 'copie automatique'. Scan de l'ensemble de la structure du projet (tous les contenu.md/contenu-css.md) pour verifier qu'aucun autre residu similaire ({{SID: orphelin ou fence orpheline) n'existe ailleurs -- confirme, seul Pr - Ideation etait affecte. Nettoyage : les deux fichiers reinitialises a un contenu vide (sauvegarde de config.json prise avant modification). Aucun changement de code cette fois -- action de nettoyage de donnees uniquement, en plus des 3 fix de code deja appliques (mod-560/561/562) qui restent valides et necessaires par ailleurs.",
+      "files": [],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je supprime PR: Tchat dans \"Pr - Ideation\" le PR est supprimé et le \"PR: Questions\" ce copie tous seul dans \"Pr - Ideation\"",
+      "startedAt": "2026-07-05T19:59:06.099Z",
+      "completedAt": "2026-07-05T19:59:06.099Z"
+    },
+    {
+      "id": "mod-564",
+      "version": "Br-0.008",
+      "date": "2026-07-05T20:12:48.825Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "data"
+      ],
+      "features": "projets:editor-sidebar",
+      "title": "Vraie cause racine trouvee : un ``` orphelin dans 'Pr - Ideation' avale tout le contenu des dossiers freres jusqu'au prochain fence ferme (corruption active et grandissante)",
+      "description": "Le symptome signale dans le projet 'cours d'anglais_v2' (id 2015c238-8b34-4947-98ad-9daf9d669700, doublon ffe43264-d58a-486e-b461-7e5a21bff895) etait une VRAIE corruption ACTIVE et GRANDISSANTE (pas juste un residu statique comme dans le fix precedent sur 'cours d'anglais') : le contenu.md de 'Pr - Ideation' contenait un fence \\`\\`\\` OUVRANT mais JAMAIS FERME (residu du tout premier incident), suivi de fragments de titres empiles ('#### Pr - Tchat {{SID:...}}', '#### Pr - Questions {{SID:...}}') se DUPLIQUANT a chaque cycle. Cause racine identifiee en tracant parseContent() (projet-editor-zone.component.ts) : le pre-scan codeFencePreScan (regex /^\\`\\`\\`[^\\n]*\\n(?:[\\s\\S]*?\\n)?\\`\\`\\`(?=\\n|\\$)/gm) matche sur l'ENSEMBLE du document, sans borne de section -- un \\`\\`\\` ouvrant orphelin dans le contenu propre de 'Pr - Ideation' est donc apparie au PROCHAIN \\`\\`\\` fermant trouve n'importe ou plus loin dans le document (typiquement la fermeture du fence PROMPT d'un dossier frere comme 'Pr - Tchat'), transformant tout l'intervalle en un unique 'bloc de fichier exclu' -- les titres des dossiers freres a l'interieur (ex. '#### Pr - Tchat {{SID:...}}') ne sont alors JAMAIS detectes comme de vrais headings par le scan principal, et leur texte brut (title inclus) est absorbe tel quel dans le rawContent de 'Pr - Ideation' -- sauvegarde comme si ca faisait partie de son propre contenu.md. Comme ce cycle (parse -> save -> buildDocSections -> re-parse) se repete a chaque sauvegarde, et que le \\`\\`\\` orphelin reste toujours present (jamais nettoye), CHAQUE cycle absorbe a nouveau les titres des freres actuellement presents, faisant grandir le contenu corrompu indefiniment (log serveur observe : creation automatique d'un fichier 'prompt-Questions.md' EN DOUBLE dans Pr - Ideation via la logique additionalFiles de processSectionsChange, faussement declenchee par ce texte absorbe). Nettoyage : le \\`\\`\\` orphelin + tous les fragments accumules retires des contenu.md/contenu-css.md de 'Pr - Ideation' dans les 2 copies de 'cours d'anglais_v2' (local + MySQL, sauvegardes prises avant modification) + le fichier prompt-Questions.md duplique automatiquement supprime. Le meme nettoyage avait deja ete fait pour 'cours d'anglais' (mod-563) mais sans en comprendre pleinement la mecanique de propagation -- desormais claire. Pas de changement de code cette fois (action de donnees), mais le bug de fond (codeFencePreScan non borne par section) reste latent dans parseContent() et pourrait resurgir si un \\`\\`\\` orphelin est reintroduit un jour -- a durcir eventuellement en suivant.",
+      "files": [],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque j'essaye de supprimé le PR: Tchat j'ai le PR: Questions qui ce met et inversement / je suis dans le projet cours d'anglais_v2 et j'ai toujours le même soucis",
+      "startedAt": "2026-07-05T20:12:48.825Z",
+      "completedAt": "2026-07-05T20:12:48.825Z"
+    },
+    {
+      "id": "mod-565",
+      "version": "Br-0.009",
+      "date": "2026-07-05T20:17:25.561Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code,projets:editor-zone-structure",
+      "title": "Durcissement parseContent/recomputeRanges/parseStructureNodes : un delimiteur de bloc orphelin ne peut plus avaler le contenu des sections voisines",
+      "description": "Suite a mod-564 (nettoyage de donnees), durcissement du code pour empecher la recurrence : parseContent, recomputeRanges et parseStructureNodes (projet-editor-zone.component.ts) detectaient les blocs de fichier ('/`/^) et les fences \\`\\`\\` en cherchant le PROCHAIN delimiteur fermant trouve n'importe ou dans tout le document, sans limite de section. Un delimiteur ouvrant reste orphelin (residu de contenu corrompu jamais ferme) s'appariait donc a tort avec la fermeture d'un bloc completement different plus loin dans le document, transformant tout l'intervalle en un faux bloc de fichier qui rendait invisibles les titres de section a l'interieur -- leur texte brut se retrouvait absorbe comme contenu ordinaire du dossier courant a chaque sauvegarde (corruption qui grandit a chaque cycle, cause racine exacte de l'incident 'cours d'anglais_v2'). Fix : ajout d'une garde isSuspiciousLineSpan (recomputeRanges/parseStructureNodes) et isSuspiciousBlock (parseContent) -- un bloc/fence dont l'intervalle contient une ligne de titre de section reelle ('#### Nom {{SID:id}}') est desormais rejete plutot que traite comme un bloc valide, puisqu'une vraie fence de contenu ne contient jamais cette syntaxe interne reservee aux titres de section. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Oui, durcis parseContent",
+      "startedAt": "2026-07-05T20:17:25.561Z",
+      "completedAt": "2026-07-05T20:17:25.561Z"
     }
   ]
 }

@@ -40,7 +40,7 @@
 
 ---
 
-## `2-5-2-2-4` — Création de dossier
+## `2-5-2-2-4` — [modification] Création de dossier
 
 - Déclenchement via option "Nouvelle section" du menu contextuel
 - Affichage d'un champ de saisie inline sous le parent sélectionné
@@ -49,8 +49,11 @@
 - Annulation via Escape pour réinitialiser la saisie
 - Règle d'unicité du nom (récupère le dossier existant en cas de doublon)
 - Enregistrement de la création dans l'historique d'annulation (Undo)
+- **[modification] Suppression automatique de dossier désactivée (incidents répétés)** : `processSectionsChange` (réconciliation texte↔structure) détectait les dossiers "orphelins" (dont elle ne retrouve plus le titre correspondant dans le texte) et les supprimait automatiquement. Deux incidents réels successifs sur le projet « cours d'anglais » : (1) suppression massive de 36 dossiers/65 fichiers à partir d'un contenu partiel/obsolète (2026-07-05) — un premier garde-fou à seuil avait été ajouté (`MAX_DELETE_RATIO`/`MAX_DELETE_ABSOLUTE`) ; (2) malgré ce garde-fou, des dossiers Prompt isolés (« Pr - Questions », « Pr - Tchat », « Pr - Test Tchat ») supprimés quelques secondes après leur création — un orphelin isolé ne déclenchant jamais le seuil (considéré comme une suppression manuelle normale). Décision : la réconciliation ne supprime plus **jamais** aucun dossier automatiquement, quelle que soit la situation — seule la suppression manuelle via la corbeille de la sidebar (`ProjetSidebarComponent.confirmDelete`, action explicite avec confirmation) reste possible. La détection reste loguée (`console.warn`) pour le diagnostic, sans effet réel.
+- **[modification] Renommage automatique par devinette de position retiré (3e incident, cause racine)** : au-delà de la suppression, `processSectionsChange` contenait une seconde logique dite de "renommage par position hiérarchique" — quand un dossier "orphelin" (sans `{{SID}}` retrouvé dans le texte) et une "section non matchée" du même niveau sous le même parent coexistaient, ils étaient appariés par simple **position d'index** dans leurs listes respectives, dès que les comptes coïncidaient, sans aucune garantie qu'ils se correspondent réellement. C'est cette logique — pas la suppression — qui causait le 3e incident observé : supprimer un Prompt placé dans « Pr - Questions » pendant que « Pr - Ideation » existe au même niveau faisait apparaître le contenu à tort dans « Pr - Ideation » (appariement erroné → contenu écrit dans le mauvais fichier, effet visuel de "copie"/déplacement non demandé). Cette logique appelait aussi `pendingFolderNames.delete()` sur le mauvais dossier, levant à tort sa protection anti-suppression (ce qui avait déjà permis au 2e incident de contourner le premier correctif). Retirée entièrement : seul le renommage par `{{SID}}` explicite (identifiant stable, zéro devinette) reste actif. Un renommage de titre tapé à la main sans SID crée désormais un nouveau dossier au lieu de renommer l'existant (le dossier "orphelin" reste inoffensif en l'état, plus jamais fusionné/déplacé/supprimé à tort) — compromis assumé : sûreté des données plutôt que confort d'édition.
+- **À vérifier** : créer un dossier, y ajouter un Prompt/Trello/Array quelques secondes ou minutes après, sauvegarder plusieurs fois → le dossier n'est jamais supprimé ni son contenu déplacé automatiquement, quel que soit le délai. Supprimer un Prompt placé dans un dossier ayant un frère au même niveau (ex. « Pr - Questions » à côté de « Pr - Ideation ») → le contenu du frère (« Pr - Ideation ») n'est jamais modifié ni "copié".
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`
 
 ---
 
