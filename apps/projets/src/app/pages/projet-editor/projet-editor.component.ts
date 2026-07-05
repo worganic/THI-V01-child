@@ -12,6 +12,7 @@ import { LayoutService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
 import { ProjetCollabService, CollabHistoryEntry, VersionSavedEvent } from '@worganic/portail-core/data-access';
 import { PromptLaunchContext, MaterializedMoPreview } from '@worganic/portail-core/data-access';
+import { ConversationService } from '@worganic/portail-core/data-access';
 
 import { WorgMiniHeaderComponent } from '@worganic/shared/ui';
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
@@ -56,6 +57,7 @@ import { ProjetAiEditService } from './services/projet-ai-edit.service';
 export class ProjetEditorComponent implements OnInit, OnDestroy {
   @ViewChild(EditionOutilComponent) editionOutil?: EditionOutilComponent;
   @ViewChild(ProjetSidebarComponent) sidebar?: ProjetSidebarComponent;
+  @ViewChild(ProjetConversationComponent) conversationPanel?: ProjetConversationComponent;
 
   readonly portailUrl = runtimeEnv.portailUrl;
 
@@ -209,6 +211,9 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   });
   aiEditService = inject(ProjetAiEditService);
   private megaOutilsService = inject(MegaOutilsService);
+  private conversationService = inject(ConversationService);
+  // Confirmation inline avant suppression de toute la conversation de la section active.
+  confirmDeleteConversation = signal(false);
   hasPendingEdit = computed(() => !!this.aiEditService.pendingEdit());
   hasFtpBackup = computed(() => this.project()?.backupType === 'ftp');
 
@@ -805,15 +810,41 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   }
 
   /** Relayé depuis ProjetConversationComponent : matérialise les MegaOutils cochés d'une
-   *  conversation Prompt (mode Guidé/Tchat) via la zone d'édition (seule à connaître unifiedContent). */
-  onMaterializeRequested(payload: { promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string }) {
-    this.editionOutil?.materializeFromConversation(payload.promptInstanceId, payload.deliverable, payload.selectedMos, payload.transcript);
+   *  conversation Prompt (mode Guidé/Tchat) via la zone d'édition (seule à connaître unifiedContent).
+   *  Une fois terminé, rappelle le panneau conversation pour marquer ces MO "déjà ajoutés"
+   *  (bouton "Déjà ajouté" + navigation vers la section résultat), sans les retirer de la carte. */
+  async onMaterializeRequested(payload: { promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }) {
+    const sectionId = (await this.editionOutil?.materializeFromConversation(payload.promptInstanceId, payload.deliverable, payload.selectedMos, payload.transcript)) ?? null;
+    this.conversationPanel?.markMosMaterialized(payload.messageKey, payload.selectedMos, sectionId);
   }
 
   /** Relayé depuis ProjetConversationComponent : "Copier vers l'édition" sur un message IA
    *  d'une conversation Prompt → ouvre le popup d'import (pastePreview) via la zone d'édition. */
   onCopyToEditionRequested(payload: { text: string; sectionId: string }) {
     this.editionOutil?.insertTextIntoEdition(payload.text, payload.sectionId);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : clic sur "Déjà ajouté" d'un MO matérialisé —
+   *  navigue vers sa section résultat (même mécanisme que `onTrelloNavigate`). */
+  onNavigateToSection(folderId: string) {
+    this.activeNodeId.set(folderId);
+    this.highlightNodeId.set(folderId);
+    this.scrollToNodeId.set(null);
+    setTimeout(() => this.scrollToNodeId.set(folderId), 0);
+  }
+
+  /** Supprime toute la conversation (chat général + MO Prompt confondus) de la section active. */
+  deleteConversation() {
+    const id = this.activeNodeId();
+    if (!id) return;
+    this.conversationService.deleteConversation(id).subscribe({
+      next: () => {
+        this.conversationPanel?.clearConversationLocal();
+        this.confirmDeleteConversation.set(false);
+        this.sidebar?.loadConversations();
+      },
+      error: () => this.confirmDeleteConversation.set(false),
+    });
   }
 
   onOpenMockupDiagram() {

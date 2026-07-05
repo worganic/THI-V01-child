@@ -72,4 +72,9 @@ export class ConversationService {
   appendMessage(sectionId: string, partial: Partial<Message> & { text: string; role: 'user' | 'ai' }): Observable<Message> {
     return this.http.post<Message>(`${this.apiUrl}/${sectionId}`, partial);
   }
+
+  /** Efface toute la conversation d'une section (tous les messages, chat général + MO Prompt confondus). */
+  deleteConversation(sectionId: string): Observable<{ ok: boolean }> {
+    return this.http.delete<{ ok: boolean }>(`${this.apiUrl}/${sectionId}`);
+  }
 }

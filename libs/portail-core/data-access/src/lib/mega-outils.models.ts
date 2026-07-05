@@ -211,4 +211,7 @@ export interface MaterializedMoPreview {
   summary: string;   // ex: "8 cartes", "4×3", "5 questions"
   fence: string;     // le bloc fence complet (```TYPE: NOM ... ```)
   selected: boolean; // coché par défaut
+  /** folderId de la section "PR-Res {nom}" où ce MO a été ajouté (déjà matérialisé), sinon
+   *  absent/null. Non persisté (état de session), réinitialisé au rechargement de la page. */
+  materializedSectionId?: string | null;
 }

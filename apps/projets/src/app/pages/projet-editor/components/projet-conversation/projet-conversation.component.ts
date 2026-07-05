@@ -10,6 +10,7 @@ import {
   AiExecuteService, MegaOutilsService,
   composeSystemPrompt, promptDeliverableHeadingInstruction,
   detectMoFences, parseChoiceForm, fenceBody, parseChartPoints,
+  parseArrayTable, parseTrelloPreview, parseAgendaPreview,
 } from '@worganic/portail-core/data-access';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
@@ -55,10 +56,15 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   @Input() launchPrompt: PromptLaunchContext | null = null;
   @Output() conversationAdded = new EventEmitter<string>();
   /** MegaOutils cochés sur un message d'une conversation Prompt à matérialiser (Trello/Array réels,
-   *  Agenda réel, livrable inséré dans la section) — relayé par le parent vers la zone d'édition. */
-  @Output() materializeRequested = new EventEmitter<{ promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string }>();
+   *  Agenda réel, livrable inséré dans la section) — relayé par le parent vers la zone d'édition.
+   *  `messageKey` (timestamp du message) permet au parent de rappeler `markMosMaterialized()` une
+   *  fois la matérialisation terminée (asynchrone), pour marquer les MO concernés "déjà ajoutés". */
+  @Output() materializeRequested = new EventEmitter<{ promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }>();
   /** "Copier vers l'édition" sur un message IA d'une conversation Prompt — relayé par le parent. */
   @Output() copyToEditionRequested = new EventEmitter<{ text: string; sectionId: string }>();
+  /** Clic sur "Déjà ajouté" d'un MO matérialisé : demande au parent de naviguer vers la section
+   *  résultat correspondante (même mécanisme que la navigation depuis la liste des Trello/Mockup). */
+  @Output() navigateToSectionRequested = new EventEmitter<string>();
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   private convService = inject(ConversationService);
@@ -316,6 +322,18 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
       },
       error: () => this.loading.set(false)
     });
+  }
+
+  /** Réinitialise l'état local après suppression de la conversation côté serveur
+   *  (bouton "Supprimer la conversation" du parent, ProjetEditorComponent). */
+  clearConversationLocal() {
+    this.messages = [];
+    this.activePromptLaunch = null;
+    this.awaitingPromptVars.set(null);
+    this.formDismissedMessageKey = null;
+    this.promptSending.set(false);
+    this.promptStreamingText.set('');
+    this.inputMessage = '';
   }
 
   toggleHistory() {
@@ -750,11 +768,21 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     this.formDismissedMessageKey = active.message.timestamp;
     if (active.message.isCadrageForm) {
       this.onCadrageFormSubmitted(active.message, entry);
+      return;
+    }
+    const answersText = Object.entries(entry.answers)
+      .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`)
+      .join('\n');
+    const ctx = this.activePromptLaunch;
+    if (ctx && ctx.instanceId === active.message.promptInstanceId) {
+      // Mode Tchat/Tchat libre/Normal : envoie directement les réponses à l'IA et reste
+      // en conversation Prompt active (comme continuePromptConversation()), pas de pré-remplissage.
+      this.appendPromptMessage(ctx, 'user', answersText, {});
+      this.sendPromptTurn(ctx, this.buildPromptTranscriptText(ctx.instanceId), 'chat');
     } else {
-      // Mode Tchat/Tchat libre/Normal : pré-remplit le composeur pour relecture, pas d'envoi auto.
-      this.inputMessage = Object.entries(entry.answers)
-        .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`)
-        .join('\n');
+      // Filet de sécurité : conversation Prompt non active (ex. "Terminer" cliqué) → pré-remplit
+      // le composeur pour relecture manuelle, l'envoi automatique n'aurait pas de contexte valide.
+      this.inputMessage = answersText;
     }
   }
 
@@ -768,6 +796,111 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   dismissForm() {
     const active = this.activeForm();
     if (active) this.formDismissedMessageKey = active.message.timestamp;
+  }
+
+  // ── Accordéon "réponse brute de l'IA" — masqué par défaut quand un MO est affiché ──────────
+  /** Vrai si ce message IA a produit un widget MO (carte MegaOutils détectés ou formulaire
+   *  interactif) — dans ce cas le texte brut de l'IA est masqué par défaut (accordéon). */
+  messageHasMoWidget(msg: Message): boolean {
+    if (msg.mos && msg.mos.length > 0) return true;
+    const af = this.activeForm();
+    return !!af && af.message === msg;
+  }
+
+/** Position [start, end) de la fence MO consolidée (1re à dernière fence détectée) et/ou
+   *  du bloc formulaire non-fencé actif, dans le texte brut du message — utilisées pour
+   *  isoler le texte libre écrit par l'IA autour de ces blocs (intro/milieu/outro). */
+  private structuredRanges(msg: Message): { start: number; end: number }[] {
+    const ranges: { start: number; end: number }[] = [];
+    if (msg.mos && msg.mos.length > 0) {
+      const firstFence = msg.mos[0].fence;
+      const lastFence = msg.mos[msg.mos.length - 1].fence;
+      const firstIdx = msg.text.indexOf(firstFence);
+      const lastIdx = msg.text.indexOf(lastFence);
+      if (firstIdx >= 0 && lastIdx >= 0) ranges.push({ start: firstIdx, end: lastIdx + lastFence.length });
+    }
+    const formSpan = this.formCharSpanFor(msg);
+    if (formSpan) ranges.push(formSpan);
+    ranges.sort((a, b) => a.start - b.start);
+    return ranges;
+  }
+
+  /** Position [start, end) du bloc de questions non-fencé du formulaire actif de ce message
+   *  (uniquement si le formulaire n'est pas déjà couvert par une fence FORM dans msg.mos). */
+  private formCharSpanFor(msg: Message): { start: number; end: number } | null {
+    const af = this.activeForm();
+    if (!af || af.message !== msg) return null;
+    if (msg.mos?.some(mo => mo.type === 'form')) return null;
+    const lines = msg.text.split('\n');
+    const qRe = /^\s*(?:[\*\-]\s+)?\*\*(.+?)\*\*\s*:?\s*$/;
+    const cRe = /^\s*(?:[\*\-]\s+)?\[\s*\]\s+(.+)$/;
+    const rRe = /^\s*(?:[\*\-]\s+)?\(\s*\)\s+(.+)$/;
+    const blankRe = /^\s*_{5,}\s*$/;
+    let startLine = -1;
+    let endLine = -1;
+    let open = false;
+    lines.forEach((line, i) => {
+      if (qRe.test(line)) { if (startLine < 0) startLine = i; endLine = i; open = true; return; }
+      if (open && (cRe.test(line) || rRe.test(line) || blankRe.test(line))) endLine = i;
+    });
+    if (startLine < 0) return null;
+    const offset = (n: number): number => {
+      if (n <= 0) return 0;
+      if (n >= lines.length) return msg.text.length;
+      return lines.slice(0, n).join('\n').length + 1;
+    };
+    return { start: offset(startLine), end: offset(endLine + 1) };
+  }
+
+  /** Texte libre écrit par l'IA avant tout MO/formulaire — toujours affiché, contrairement
+   *  au reste du texte qui duplique le(s) widget(s) et reste masqué derrière l'accordéon.
+   *  Ex. "Voici l'analyse mise à jour de votre profil..." avant un formulaire de cadrage. */
+  messageIntroText(msg: Message): string {
+    const ranges = this.structuredRanges(msg);
+    if (!ranges.length) return '';
+    return msg.text.slice(0, ranges[0].start).trim();
+  }
+
+  /** Texte libre écrit par l'IA entre deux blocs structurés du même message (ex. un
+   *  livrable ARRAY/TRELLO mis à jour suivi d'une phrase de transition puis d'un
+   *  formulaire de suivi) — sans quoi ce texte disparaissait entièrement, avalé par
+   *  l'accordéon au même titre que le texte dupliqué par les widgets. */
+  messageMiddleText(msg: Message): string {
+    const ranges = this.structuredRanges(msg);
+    if (ranges.length < 2) return '';
+    return msg.text.slice(ranges[0].end, ranges[1].start).trim();
+  }
+
+  /** Texte libre écrit par l'IA après tout MO/formulaire — toujours affiché (même logique
+   *  que l'intro, côté fin du message). */
+  messageOutroText(msg: Message): string {
+    const ranges = this.structuredRanges(msg);
+    if (!ranges.length) return '';
+    return msg.text.slice(ranges[ranges.length - 1].end).trim();
+  }
+
+  renderedIntroHtml(msg: Message): SafeHtml {
+    const html = marked.parse(this.messageIntroText(msg), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  renderedMiddleHtml(msg: Message): SafeHtml {
+    const html = marked.parse(this.messageMiddleText(msg), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  renderedOutroHtml(msg: Message): SafeHtml {
+    const html = marked.parse(this.messageOutroText(msg), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  private expandedRawTextKeys = new Set<string>();
+  isRawTextExpanded(msg: Message): boolean {
+    return this.expandedRawTextKeys.has(msg.timestamp);
+  }
+  toggleRawText(msg: Message) {
+    if (this.expandedRawTextKeys.has(msg.timestamp)) this.expandedRawTextKeys.delete(msg.timestamp);
+    else this.expandedRawTextKeys.add(msg.timestamp);
   }
 
   private onCadrageFormSubmitted(msg: Message, entry: FormEntry) {
@@ -803,13 +936,44 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     this.messages = this.messages.map(m => m === msg ? { ...m, mos: updatedMos } : m);
   }
 
-  /** Émet la matérialisation des MO cochés pour ce message — relayée par le parent vers la
-   *  zone d'édition (Trello/Array réels, Agenda réel, livrable inséré dans la section). */
+  /** Émet la matérialisation des MO cochés (et pas déjà ajoutés) pour ce message — relayée par
+   *  le parent vers la zone d'édition (Trello/Array réels, Agenda réel, livrable inséré dans la
+   *  section). Les MO restent dans la carte, marqués "déjà ajoutés" par `markMosMaterialized()`. */
   materializeMo(msg: Message) {
-    const selected = msg.mos?.filter(mo => mo.selected) ?? [];
+    const selected = msg.mos?.filter(mo => mo.selected && !mo.materializedSectionId) ?? [];
     if (!selected.length || !msg.promptInstanceId) return;
-    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: selected });
-    this.messages = this.messages.map(m => m === msg ? { ...m, mos: undefined } : m);
+    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: selected, messageKey: msg.timestamp });
+  }
+
+  /** Ajoute au projet un seul MegaOutil de la carte (indépendamment de sa case à cocher et des
+   *  autres MO listés) — reste affiché dans la carte, marqué "déjà ajouté" une fois terminé. */
+  materializeSingleMo(msg: Message, moIndex: number) {
+    const mo = msg.mos?.[moIndex];
+    if (!mo || mo.materializedSectionId || !msg.promptInstanceId) return;
+    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: [mo], messageKey: msg.timestamp });
+  }
+
+  /** Rappelé par le parent une fois la matérialisation asynchrone terminée : marque les MO
+   *  concernés comme "déjà ajoutés" (folderId de la section résultat) au lieu de les retirer —
+   *  état de session uniquement, non persisté (pas de ré-écriture du message stocké). */
+  markMosMaterialized(messageKey: string, materializedMos: MaterializedMoPreview[], sectionId: string | null) {
+    const keys = new Set(materializedMos.map(mo => this.moIdentity(mo)));
+    this.messages = this.messages.map(m => {
+      if (m.timestamp !== messageKey || !m.mos) return m;
+      const updatedMos = m.mos.map(mo => keys.has(this.moIdentity(mo)) ? { ...mo, materializedSectionId: sectionId } : mo);
+      return { ...m, mos: updatedMos };
+    });
+  }
+
+  /** Navigue vers la section résultat d'un MO déjà ajouté (bouton "Déjà ajouté"). */
+  navigateToSection(sectionId: string) {
+    this.navigateToSectionRequested.emit(sectionId);
+  }
+
+  /** Vrai s'il reste au moins un MO coché et pas déjà ajouté — conditionne l'affichage du
+   *  bouton groupé "Ajouter au projet (sélection)". */
+  hasMaterializableMos(msg: Message): boolean {
+    return !!msg.mos?.some(mo => mo.selected && !mo.materializedSectionId);
   }
 
   /** "Copier vers l'édition" sur un message IA d'une conversation Prompt. */
@@ -820,6 +984,36 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
 
   chartPointsFor(mo: MaterializedMoPreview) {
     return parseChartPoints(fenceBody(mo.fence));
+  }
+
+  arrayTableFor(mo: MaterializedMoPreview) {
+    return parseArrayTable(fenceBody(mo.fence));
+  }
+
+  trelloPreviewFor(mo: MaterializedMoPreview) {
+    return parseTrelloPreview(fenceBody(mo.fence));
+  }
+
+  agendaPreviewFor(mo: MaterializedMoPreview) {
+    return parseAgendaPreview(fenceBody(mo.fence));
+  }
+
+  // ── Accordéon "aperçu des données" par MegaOutil détecté (avant matérialisation) ────────
+  private expandedMoKeys = new Set<string>();
+  /** Identité d'un MO au sein d'un message (type + nom) — pas d'ID stable propre au MO. */
+  private moIdentity(mo: MaterializedMoPreview): string {
+    return `${mo.type}::${mo.name}`;
+  }
+  private moKey(msg: Message, mo: MaterializedMoPreview): string {
+    return `${msg.timestamp}::${this.moIdentity(mo)}`;
+  }
+  isMoExpanded(msg: Message, mo: MaterializedMoPreview): boolean {
+    return this.expandedMoKeys.has(this.moKey(msg, mo));
+  }
+  toggleMoExpanded(msg: Message, mo: MaterializedMoPreview) {
+    const key = this.moKey(msg, mo);
+    if (this.expandedMoKeys.has(key)) this.expandedMoKeys.delete(key);
+    else this.expandedMoKeys.add(key);
   }
 
   /** Rendu markdown d'un message IA d'une conversation Prompt — les fences MO déjà extraites

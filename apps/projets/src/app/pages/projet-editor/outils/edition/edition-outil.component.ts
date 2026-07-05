@@ -137,9 +137,10 @@ export class EditionOutilComponent {
   }
 
   /** Relayé depuis ProjetConversationComponent (conversation lancée par un MO Prompt) :
-   *  matérialise les MegaOutils cochés et insère le livrable dans la section du Prompt. */
-  materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string): void {
-    this.innerZone?.materializeFromConversation(promptInstanceId, deliverable, selectedMos, transcript);
+   *  matérialise les MegaOutils cochés et insère le livrable dans la section du Prompt.
+   *  Retourne le folderId de la section résultat (ou null), pour la navigation "Déjà ajouté". */
+  async materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string): Promise<string | null> {
+    return (await this.innerZone?.materializeFromConversation(promptInstanceId, deliverable, selectedMos, transcript)) ?? null;
   }
 
   /** Relayé depuis ProjetConversationComponent : ouvre le popup d'import (pastePreview) pour

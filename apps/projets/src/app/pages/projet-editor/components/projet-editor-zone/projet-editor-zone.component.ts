@@ -5935,11 +5935,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   /** Reçoit le livrable validé + les MegaOutils cochés depuis une conversation lancée par un
    *  MO Prompt (mode Guidé ou Tchat) — appelé depuis EditionOutilComponent, qui relaie l'@Output
-   *  matérialisation bubblé par ProjetConversationComponent. */
-  async materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string) {
+   *  matérialisation bubblé par ProjetConversationComponent. Retourne le folderId de la section
+   *  "PR-Res {nom}" où le livrable a été placé, pour permettre au bouton "Ajouter au projet" de la
+   *  conversation de devenir "Déjà ajouté" et de naviguer vers cette section au clic. */
+  async materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string): Promise<string | null> {
     const inst = this.promptInstances.find(i => i.id === promptInstanceId);
     const folderId = inst?.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
     await this.materializeMegaOutilsFromContent(deliverable, selectedMos, folderId, promptInstanceId, transcript);
+    if (!inst) return null;
+    return this.docSections.find(s => s.folderName === this.promptResultLabel(inst.name))?.folderId ?? null;
   }
 
   /**

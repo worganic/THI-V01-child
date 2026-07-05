@@ -524,7 +524,18 @@
               </div>
               <div class="flex-1 min-w-0">
                 @if (msg.promptInstanceId) {
-                  <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
+                  @if (messageHasMoWidget(msg)) {
+                    @if (isRawTextExpanded(msg)) {
+                      <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
+                    } @else {
+                      @if (messageIntroText(msg); as intro) {
+                        <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed mb-1.5" [innerHTML]="renderedIntroHtml(msg)"></div>
+                      }
+                      <p class="text-[11px] text-light-text-muted dark:text-white/30 italic">Réponse de l'IA masquée — voir le MegaOutil ci-dessous</p>
+                    }
+                  } @else {
+                    <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
+                  }
                 } @else {
                   <p class="text-xs text-light-text dark:text-white/80 leading-relaxed whitespace-pre-wrap">{{ msg.text }}
                     @if (last && aiEditService.isStreaming()) {
@@ -534,6 +545,13 @@
                 }
               </div>
               @if (msg.promptInstanceId) {
+                @if (messageHasMoWidget(msg)) {
+                  <button (click)="toggleRawText(msg)"
+                          [title]="isRawTextExpanded(msg) ? 'Masquer la réponse brute de l\'IA' : 'Voir la réponse brute de l\'IA'"
+                          class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white/70 hover:bg-light-border dark:hover:bg-white/5 transition-all">
+                    <span class="material-symbols-outlined text-[15px]">{{ isRawTextExpanded(msg) ? 'expand_less' : 'expand_more' }}</span>
+                  </button>
+                }
                 <button (click)="copyMessageToImport(msg)"
                         title="Copier vers l'édition"
                         class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/5 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all">
@@ -556,24 +574,126 @@
                 <span class="text-[10px] font-medium text-light-text-muted dark:text-white/40 uppercase tracking-wide">MegaOutils détectés</span>
                 @for (mo of msg.mos; track $index; let moi = $index) {
                   @if (mo.type !== 'form') {
-                    <label class="flex items-center gap-2 px-1.5 py-1 rounded-md hover:bg-light-border dark:hover:bg-white/5 cursor-pointer">
-                      <input type="checkbox" class="w-3.5 h-3.5 accent-amber-500 cursor-pointer flex-shrink-0"
-                             [checked]="mo.selected" (change)="toggleMo(msg, moi, $any($event.target).checked)" />
-                      <span class="material-symbols-outlined text-[14px] flex-shrink-0"
-                            [ngClass]="mo.type === 'trello' ? 'text-emerald-400' : (mo.type === 'array' ? 'text-sky-400' : (mo.type === 'chart' ? 'text-indigo-400' : 'text-amber-400'))">
-                        {{ mo.type === 'trello' ? 'view_kanban' : (mo.type === 'array' ? 'table' : (mo.type === 'chart' ? 'show_chart' : 'calendar_month')) }}
-                      </span>
-                      <span class="text-[12px] text-light-text dark:text-white/80 flex-1 truncate">{{ mo.name }}</span>
-                      <span class="text-[10px] text-light-text-muted dark:text-white/40">{{ mo.summary }}</span>
-                    </label>
-                    @if (mo.type === 'chart' && mo.selected) {
-                      <app-chart-board [title]="mo.name" [points]="chartPointsFor(mo)" />
-                    }
+                    <div class="flex flex-col gap-1">
+                      <label class="flex items-center gap-2 px-1.5 py-1 rounded-md hover:bg-light-border dark:hover:bg-white/5 cursor-pointer">
+                        <input type="checkbox" class="w-3.5 h-3.5 accent-amber-500 cursor-pointer flex-shrink-0"
+                               [checked]="mo.selected" (change)="toggleMo(msg, moi, $any($event.target).checked)" />
+                        <span class="material-symbols-outlined text-[14px] flex-shrink-0"
+                              [ngClass]="mo.type === 'trello' ? 'text-emerald-400' : (mo.type === 'array' ? 'text-sky-400' : (mo.type === 'chart' ? 'text-indigo-400' : 'text-amber-400'))">
+                          {{ mo.type === 'trello' ? 'view_kanban' : (mo.type === 'array' ? 'table' : (mo.type === 'chart' ? 'show_chart' : 'calendar_month')) }}
+                        </span>
+                        <span class="text-[12px] text-light-text dark:text-white/80 flex-1 truncate">{{ mo.name }}</span>
+                        <span class="text-[10px] text-light-text-muted dark:text-white/40">{{ mo.summary }}</span>
+                        <button type="button" (click)="$event.preventDefault(); toggleMoExpanded(msg, mo)"
+                                title="Voir les données qui seront ajoutées"
+                                class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded hover:bg-light-border dark:hover:bg-white/10 text-light-text-muted dark:text-white/40">
+                          <span class="material-symbols-outlined text-[14px]">{{ isMoExpanded(msg, mo) ? 'expand_less' : 'expand_more' }}</span>
+                        </button>
+                        @if (mo.materializedSectionId) {
+                          <button type="button" (click)="$event.preventDefault(); navigateToSection(mo.materializedSectionId!)"
+                                  title="Aller à la section où ce MegaOutil a été ajouté"
+                                  class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors">
+                            Déjà ajouté
+                          </button>
+                        } @else {
+                          <button type="button" (click)="$event.preventDefault(); materializeSingleMo(msg, moi)"
+                                  title="Ajouter ce MegaOutil au projet"
+                                  class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors">
+                            Ajouter au projet
+                          </button>
+                        }
+                      </label>
+                      @if (isMoExpanded(msg, mo)) {
+                        <div class="ml-6 mr-1.5 mb-1 rounded-md border border-light-border dark:border-white/10 bg-light-bg dark:bg-black/20 p-2 overflow-x-auto">
+                          @if (mo.type === 'chart') {
+                            <app-chart-board [title]="mo.name" [points]="chartPointsFor(mo)" />
+                          } @else if (mo.type === 'array') {
+                            <table class="text-[11px] border-collapse w-full">
+                              <thead>
+                                <tr>
+                                  @for (h of arrayTableFor(mo).headers; track $index) {
+                                    <th class="text-left px-2 py-1 border-b border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 font-medium">{{ h }}</th>
+                                  }
+                                </tr>
+                              </thead>
+                              <tbody>
+                                @for (row of arrayTableFor(mo).rows; track $index) {
+                                  <tr>
+                                    @for (cell of row; track $index) {
+                                      <td class="px-2 py-1 border-b border-light-border dark:border-white/5 text-light-text dark:text-white/80">{{ cell }}</td>
+                                    }
+                                  </tr>
+                                }
+                              </tbody>
+                            </table>
+                          } @else if (mo.type === 'trello') {
+                            <div class="flex gap-2">
+                              @for (col of trelloPreviewFor(mo); track $index) {
+                                <div class="flex-1 min-w-0 flex flex-col gap-1">
+                                  <span class="text-[10px] font-semibold text-light-text-muted dark:text-white/50 uppercase truncate">{{ col.name }}</span>
+                                  @for (card of col.cards; track $index) {
+                                    <div class="text-[11px] rounded px-2 py-1 bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white/80 truncate">
+                                      {{ card.title }}
+                                      @if (card.priority) {
+                                        <span class="text-[9px] text-light-text-muted dark:text-white/40">[{{ card.priority }}]</span>
+                                      }
+                                    </div>
+                                  }
+                                </div>
+                              }
+                            </div>
+                          } @else if (mo.type === 'agenda') {
+                            <div class="flex flex-col gap-1">
+                              @for (ev of agendaPreviewFor(mo); track $index) {
+                                <div class="text-[11px] text-light-text dark:text-white/80">
+                                  <span class="font-medium">{{ ev.date }}</span>
+                                  @if (ev.time) { <span class="text-light-text-muted dark:text-white/40"> · {{ ev.time }}</span> }
+                                  <span> — {{ ev.title }}</span>
+                                  @if (ev.description) { <span class="text-light-text-muted dark:text-white/40"> ({{ ev.description }})</span> }
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
                   }
                 }
-                <button class="self-start text-[11px] px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors"
-                        (click)="materializeMo(msg)">Ajouter au projet</button>
+                @if (hasMaterializableMos(msg)) {
+                  <button class="self-start text-[11px] px-2.5 py-1 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors"
+                          (click)="materializeMo(msg)">Ajouter au projet (sélection)</button>
+                }
               </div>
+            }
+
+            <!-- Texte libre de l'IA entre les MO détectés et le formulaire (ex. phrase de transition) —
+                 masqué par l'accordéon sinon, alors qu'il ne duplique aucun widget. -->
+            @if (!isRawTextExpanded(msg) && messageMiddleText(msg); as middle) {
+              <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed ml-7 my-1.5" [innerHTML]="renderedMiddleHtml(msg)"></div>
+            }
+
+            <!-- Formulaire de cadrage (mode Guidé) ou formulaire détecté (Tchat/Tchat libre/Normal) —
+                 intégré comme une bulle de la conversation (pas une zone séparée), scrolle avec le fil. -->
+            @if (activeForm(); as af) {
+              @if (af.message === msg) {
+                <div class="ml-7">
+                  <app-form-execution-popup
+                    [inline]="true"
+                    [formName]="af.message.isCadrageForm ? 'Cadrage — ' + af.message.promptInstanceName : 'Formulaire — ' + af.message.promptInstanceName"
+                    [questions]="af.questions"
+                    [userName]="'Moi'"
+                    [secondaryAction]="af.message.isCadrageForm ? 'Générer le livrable maintenant' : ''"
+                    (submitted)="onFormSubmitted($event)"
+                    (secondary)="onFormSecondary($event)"
+                    (cancel)="dismissForm()" />
+                </div>
+              }
+            }
+
+            <!-- Texte libre de l'IA après le(s) MO/formulaire (ex. remarque de clôture) — même
+                 logique que l'intro, côté fin du message. -->
+            @if (!isRawTextExpanded(msg) && messageOutroText(msg); as outro) {
+              <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed ml-7 mt-1.5" [innerHTML]="renderedOutroHtml(msg)"></div>
             }
           </div>
         } @else {
@@ -609,44 +729,30 @@
           </div>
         </div>
       }
-    }
-  </div>
 
-  <!-- Variables {{var}} à remplir avant le lancement d'une conversation Prompt (en ligne, pas de popup) -->
-  @if (awaitingPromptVars(); as launchCtx) {
-    <div class="flex-shrink-0 border-t border-amber-500/20 bg-amber-500/5 p-3 space-y-2">
-      <p class="text-[11px] font-medium text-amber-400 uppercase tracking-wide">Variables à remplir — {{ launchCtx.instanceName }}</p>
-      @for (varName of launchCtx.variables; track varName) {
-        <div class="flex flex-col gap-1">
-          <label class="text-[10px] text-light-text-muted dark:text-white/50">{{ '{{' + varName + '}}' }}</label>
-          <input type="text"
-                 class="w-full rounded-md border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-xs px-3 py-1.5"
-                 [placeholder]="'Valeur pour ' + varName"
-                 [ngModel]="promptVarValues[varName] || ''"
-                 (ngModelChange)="promptVarValues[varName] = $event" />
+      <!-- Variables {{var}} à remplir avant le lancement d'une conversation Prompt — intégré
+           dans le fil (pas une zone séparée), scrolle avec le reste de la conversation. -->
+      @if (awaitingPromptVars(); as launchCtx) {
+        <div class="ml-7 rounded-lg border border-amber-500/20 bg-amber-500/5 p-3 space-y-2">
+          <p class="text-[11px] font-medium text-amber-400 uppercase tracking-wide">Variables à remplir — {{ launchCtx.instanceName }}</p>
+          @for (varName of launchCtx.variables; track varName) {
+            <div class="flex flex-col gap-1">
+              <label class="text-[10px] text-light-text-muted dark:text-white/50">{{ '{{' + varName + '}}' }}</label>
+              <input type="text"
+                     class="w-full rounded-md border border-light-border dark:border-white/15 bg-light-background dark:bg-background text-light-text dark:text-white/85 text-xs px-3 py-1.5"
+                     [placeholder]="'Valeur pour ' + varName"
+                     [ngModel]="promptVarValues[varName] || ''"
+                     (ngModelChange)="promptVarValues[varName] = $event" />
+            </div>
+          }
+          <div class="flex gap-2 justify-end">
+            <button (click)="cancelPromptVars()" class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors">Annuler</button>
+            <button (click)="continuePromptWithVars()" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors">Continuer</button>
+          </div>
         </div>
       }
-      <div class="flex gap-2 justify-end">
-        <button (click)="cancelPromptVars()" class="text-xs px-3 py-1.5 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors">Annuler</button>
-        <button (click)="continuePromptWithVars()" class="text-xs px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors">Continuer</button>
-      </div>
-    </div>
-  }
-
-  <!-- Formulaire de cadrage (mode Guidé) ou formulaire détecté (Tchat/Tchat libre/Normal), en ligne -->
-  @if (activeForm(); as af) {
-    <div class="flex-shrink-0 border-t border-amber-500/20 p-3">
-      <app-form-execution-popup
-        [inline]="true"
-        [formName]="af.message.isCadrageForm ? 'Cadrage — ' + af.message.promptInstanceName : 'Formulaire — ' + af.message.promptInstanceName"
-        [questions]="af.questions"
-        [userName]="'Moi'"
-        [secondaryAction]="af.message.isCadrageForm ? 'Générer le livrable maintenant' : ''"
-        (submitted)="onFormSubmitted($event)"
-        (secondary)="onFormSecondary($event)"
-        (cancel)="dismissForm()" />
-    </div>
-  }
+    }
+  </div>
 
   <!-- Indicateur de conversation Prompt active -->
   @if (activePromptLaunch && !awaitingPromptVars() && !activeForm()) {
