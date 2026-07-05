@@ -369,6 +369,15 @@
               <span class="block text-[10px] text-light-text-muted dark:text-white/40">Discussion libre avec l'IA ; tu copies ensuite la réponse voulue vers le document via le popup d'import.</span>
             </span>
           </label>
+          <label class="flex items-start gap-2 cursor-pointer">
+            <input type="radio" name="promptMode" class="mt-0.5 w-4 h-4 accent-violet-500 cursor-pointer flex-shrink-0"
+                   [checked]="promptMode() === 'freechat'"
+                   (change)="promptMode.set('freechat')" />
+            <span class="text-[12px] text-light-text dark:text-white/70 leading-snug">
+              Tchat libre
+              <span class="block text-[10px] text-light-text-muted dark:text-white/40">Discussion brute avec l'IA, sans MegaOutils ni prompts de configuration, sans mise en forme des réponses. Seule action : copier la réponse vers le document.</span>
+            </span>
+          </label>
         </div>
         <div class="flex gap-2">
           <button class="flex-1 text-xs px-3 py-2 rounded-lg bg-amber-500 text-black font-semibold hover:bg-amber-600 transition-colors disabled:opacity-50"
@@ -520,6 +529,17 @@ Votre texte de prompt ici.
       (insertAsSection)="onChatInsertRequested($event)"
       (materialize)="onChatMaterialize($event)"
       (cancel)="showChatPopup.set(false)" />
+  }
+
+  <!-- Popup mode tchat libre (conversation brute → copie manuelle vers le popup d'import, sans MO ni mise en forme) -->
+  @if (showFreeChatPopup() && activeFreeChatForExecution) {
+    <app-prompt-freechat-popup
+      [instanceName]="activeFreeChatForExecution!.instanceName"
+      [userPrompt]="activeFreeChatForExecution!.userPrompt"
+      [systemPrompt]="activeFreeChatForExecution!.systemPrompt"
+      [variables]="activeFreeChatForExecution!.variables"
+      (insertAsSection)="onFreeChatInsertRequested($event)"
+      (cancel)="showFreeChatPopup.set(false)" />
   }
 
   @if (showFormExecutePopup() && activeFormForExecution) {

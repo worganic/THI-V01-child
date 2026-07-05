@@ -9,6 +9,7 @@ import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
 import { PromptChatPopupComponent } from '../prompt-chat-popup/prompt-chat-popup.component';
+import { PromptFreeChatPopupComponent } from '../prompt-freechat-popup/prompt-freechat-popup.component';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { ProjetCollabService } from '@worganic/portail-core/data-access';
@@ -184,7 +185,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, PromptChatPopupComponent, ChartBoardComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, PromptChatPopupComponent, PromptFreeChatPopupComponent, ChartBoardComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -403,7 +404,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   promptName = '';
   promptNameError = signal<string | null>(null);
   promptCreating = signal(false);
-  promptMode = signal<'simple' | 'guided' | 'chat'>('simple');
+  promptMode = signal<'simple' | 'guided' | 'chat' | 'freechat'>('simple');
   contentPromptIds: string[] = [];
   promptPanelCollapsed = signal(false);
   // Section résolue par instance prompt (clé = instanceId) — pour l'affichage du nom de section dans la liste
@@ -425,6 +426,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   activeChatForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; variables: string[]; folderId: string | null } | null = null;
   // Vide = désactivé (le tchat reste 100% conversationnel libre tant que l'admin n'a rien configuré).
   promptChatStructuredPrompt: string | null = null;
+
+  // Mode tchat libre (conversation brute : pas de MO, pas de prompts de config, pas de rendu HTML —
+  // seule sortie possible : copier la dernière réponse vers le popup d'import de l'éditeur).
+  showFreeChatPopup = signal(false);
+  activeFreeChatForExecution: { instanceName: string; userPrompt: string; systemPrompt: string | null; variables: string[]; folderId: string | null } | null = null;
 
   // ── Form MO ────────────────────────────────────────────────────────────────
   contentFormIds: string[] = [];
@@ -5787,10 +5793,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   /** Extrait systemPrompt, userPrompt et variables d'un bloc PROMPT. */
-  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[]; mode: 'guided' | 'simple' | 'chat' } {
-    const modeMatch = body.match(/^\s*MODE:\s*(guided|simple|chat)\s*$/im);
+  parsePromptFence(body: string): { systemPrompt: string | null; userPrompt: string; variables: string[]; mode: 'guided' | 'simple' | 'chat' | 'freechat' } {
+    const modeMatch = body.match(/^\s*MODE:\s*(guided|simple|chat|freechat)\s*$/im);
     const modeRaw = modeMatch?.[1]?.toLowerCase();
-    const mode: 'guided' | 'simple' | 'chat' = modeRaw === 'guided' || modeRaw === 'chat' ? modeRaw : 'simple';
+    const mode: 'guided' | 'simple' | 'chat' | 'freechat' = modeRaw === 'guided' || modeRaw === 'chat' || modeRaw === 'freechat' ? modeRaw : 'simple';
     const sepMatch = body.match(/^\s*---\s*$/m);
     let systemPrompt: string | null = null;
     let userPrompt = body;
@@ -5808,8 +5814,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return { systemPrompt, userPrompt, variables: varNames, mode };
   }
 
-  /** Mode d'exécution d'un prompt ('guided' = workflow cadrage→formulaire→génération, 'chat' = conversation libre). */
-  promptModeForId(id: string): 'guided' | 'simple' | 'chat' {
+  /** Mode d'exécution d'un prompt ('guided' = workflow cadrage→formulaire→génération, 'chat' = conversation libre,
+   *  'freechat' = conversation brute sans MO ni mise en forme). */
+  promptModeForId(id: string): 'guided' | 'simple' | 'chat' | 'freechat' {
     return this.parsePromptFence(this.getPromptBodyById(id)).mode;
   }
 
@@ -5878,6 +5885,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.openChatPopup(instanceId, inst.name, parsed.userPrompt, parsed.systemPrompt, parsed.variables, inst.folderId ?? null);
       return;
     }
+    // Mode tchat libre → conversation brute, sans MO ni prompts de config
+    if (parsed.mode === 'freechat') {
+      this.openFreeChatPopup(inst.name, parsed.userPrompt, parsed.systemPrompt, parsed.variables, inst.folderId ?? null);
+      return;
+    }
 
     this.activePromptForExecution = {
       instanceId,
@@ -5897,7 +5909,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   /** Change le mode d'exécution d'un prompt en ajoutant/retirant/remplaçant la ligne MODE: xxx. */
-  setPromptMode(instanceId: string, mode: 'simple' | 'guided' | 'chat') {
+  setPromptMode(instanceId: string, mode: 'simple' | 'guided' | 'chat' | 'freechat') {
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return;
     const lines = this.unifiedContent.split('\n');
@@ -5964,6 +5976,21 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
    *  ciblé sur le dossier du prompt, sans fermer le tchat (l'utilisateur peut y revenir ensuite). */
   onChatInsertRequested(text: string) {
     const chat = this.activeChatForExecution;
+    if (!chat || !text.trim()) return;
+    const sectionId = chat.folderId || '';
+    const level = chat.folderId ? (this.sectionRanges.find(r => r.folderId === chat.folderId)?.level ?? 1) : 0;
+    this.openPastePreviewForText(text, { mode: 'visu', sectionId, level });
+  }
+
+  private openFreeChatPopup(instanceName: string, userPrompt: string, systemPrompt: string | null, variables: string[], folderId: string | null) {
+    this.activeFreeChatForExecution = { instanceName, userPrompt, systemPrompt, variables, folderId };
+    this.showFreeChatPopup.set(true);
+  }
+
+  /** Reçoit la dernière réponse IA du tchat libre à insérer : même mécanique que le tchat
+   *  structuré (popup d'import ciblé sur le dossier du prompt), sans fermer le tchat. */
+  onFreeChatInsertRequested(text: string) {
+    const chat = this.activeFreeChatForExecution;
     if (!chat || !text.trim()) return;
     const sectionId = chat.folderId || '';
     const level = chat.folderId ? (this.sectionRanges.find(r => r.folderId === chat.folderId)?.level ?? 1) : 0;

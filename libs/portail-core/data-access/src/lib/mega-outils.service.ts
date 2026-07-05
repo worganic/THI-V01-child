@@ -220,4 +220,8 @@ export class MegaOutilsService {
   getChatSessionMessages(sessionId: string): Promise<{ role: string; text: string }[]> {
     return firstValueFrom(this.http.get<{ role: string; text: string }[]>(`${this.apiUrl}/api/mega-outils/prompt/chat-session/${sessionId}/messages`, { headers: this.h() }));
   }
+
+  deleteChatHistory(instanceId: string): Promise<{ deleted: number }> {
+    return firstValueFrom(this.http.delete<{ deleted: number }>(`${this.apiUrl}/api/mega-outils/prompt/${instanceId}/chat-sessions`, { headers: this.h() }));
+  }
 }
