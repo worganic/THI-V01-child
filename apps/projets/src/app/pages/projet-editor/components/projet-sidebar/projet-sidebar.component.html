@@ -387,7 +387,7 @@
 
       <!-- Présence collaborative — pure information, jamais un verrou : aucune action pour
            "bloquer"/"débloquer" une section, seulement enregistrer/partager ses propres modifs. -->
-      @if (isLockedByOther(contextMenu()!.node!.id) || isLocalPending(contextMenu()!.node!.id)) {
+      @if (isLockedByOther(contextMenu()!.node!.id) || isLocalPending(contextMenu()!.node!.id) || hasPendingDescendants(contextMenu()!.node!)) {
         <div class="border-t border-light-border dark:border-white/10 my-1"></div>
       }
       @if (isLockedByOther(contextMenu()!.node!.id)) {
@@ -398,12 +398,30 @@
       }
       @if (isLocalPending(contextMenu()!.node!.id)) {
         <button class="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 transition-colors text-left"
-                (click)="publishSection(contextMenu()!.node!)">
-          <span class="material-symbols-outlined text-sm">share</span> Enregistrer et partager
+                (click)="publishSection(contextMenu()!.node!, false)">
+          <span class="material-symbols-outlined text-sm">share</span> Enregistrer cette section
         </button>
+      }
+      @if (hasPendingDescendants(contextMenu()!.node!)) {
+        <button class="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 text-indigo-500 dark:text-indigo-400 transition-colors text-left"
+                (click)="publishSection(contextMenu()!.node!, true)"
+                title="Enregistre cette section et toutes ses sous-sections modifiées">
+          <span class="material-symbols-outlined text-sm">layers</span>
+          {{ isLocalPending(contextMenu()!.node!.id) ? 'Enregistrer + sous-sections' : 'Enregistrer les sous-sections' }}
+        </button>
+      }
+      @if (isLocalPending(contextMenu()!.node!.id)) {
         <button class="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-light-surface dark:hover:bg-white/5 text-light-text dark:text-white/80 transition-colors text-left"
-                (click)="cancelSection(contextMenu()!.node!)">
-          <span class="material-symbols-outlined text-sm">undo</span> Annuler les modifications
+                (click)="cancelSection(contextMenu()!.node!, false)">
+          <span class="material-symbols-outlined text-sm">undo</span> Annuler cette section
+        </button>
+      }
+      @if (hasPendingDescendants(contextMenu()!.node!)) {
+        <button class="w-full flex items-center gap-2 px-3 py-1.5 hover:bg-light-surface dark:hover:bg-white/5 text-light-text dark:text-white/80 transition-colors text-left"
+                (click)="cancelSection(contextMenu()!.node!, true)"
+                title="Annule les modifications de cette section et de toutes ses sous-sections">
+          <span class="material-symbols-outlined text-sm">layers</span>
+          {{ isLocalPending(contextMenu()!.node!.id) ? 'Annuler + sous-sections' : 'Annuler les sous-sections' }}
         </button>
       }
     }

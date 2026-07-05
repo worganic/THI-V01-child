@@ -689,8 +689,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
 
   constructor(private svc: ProjectFilesService) {
     // Partager / Annuler une section déclenchés depuis le menu contextuel de la sidebar
-    this.collab.publishSectionRequest$.pipe(takeUntilDestroyed()).subscribe(id => this.publishSection(id));
-    this.collab.cancelSectionRequest$.pipe(takeUntilDestroyed()).subscribe(id => this.cancelSection(id));
+    this.collab.publishSectionRequest$.pipe(takeUntilDestroyed()).subscribe(({ sectionId, includeDescendants }) => this.publishSection(sectionId, includeDescendants));
+    this.collab.cancelSectionRequest$.pipe(takeUntilDestroyed()).subscribe(({ sectionId, includeDescendants }) => this.cancelSection(sectionId, includeDescendants));
     // Ajout d'un méga-outil (Trello / Tableau / Prompt) dans une section depuis le menu contextuel
     this.collab.createMegaOutilRequest$.pipe(takeUntilDestroyed()).subscribe(({ type, folderId }) => {
       this.pendingMoFolderId = folderId;
@@ -8578,26 +8578,30 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   // Portée = la section demandée ET ses sous-sections modifiées (descendants pending).
   // Les sous-sections non modifiées ne sont pas touchées (pas de publish=true superflu).
 
-  // Calcule l'ensemble des folderId à traiter : la section + ses descendants modifiés.
-  private collectSectionPublishIds(sectionId: string): Set<string> {
-    const descendantIds = this.getDescendantFolderIds(sectionId, this.files);
+  // Calcule l'ensemble des folderId à traiter : la section, et si includeDescendants,
+  // ses sous-sections modifiées (isLocalPending) en plus. Sans includeDescendants,
+  // seule la section elle-même (+ ses entités granulaires propres) est concernée.
+  private collectSectionPublishIds(sectionId: string, includeDescendants: boolean): Set<string> {
     const ids = new Set<string>([sectionId]);
-    for (const id of descendantIds) {
-      if (this.collab.isLocalPending(id)) ids.add(id);
+    const scopeIds = includeDescendants ? this.getDescendantFolderIds(sectionId, this.files) : new Set<string>([sectionId]);
+    if (includeDescendants) {
+      for (const id of scopeIds) {
+        if (this.collab.isLocalPending(id)) ids.add(id);
+      }
     }
-    // Entités granulaires (blocs/fichiers) dont le dossier est dans le sous-arbre
+    // Entités granulaires (blocs/fichiers) dont le dossier est dans le périmètre concerné
     for (const eid of this.activeEntityLocks) {
       const fid = this.modifiedEntities.get(eid) ?? eid;
-      if (descendantIds.has(fid)) ids.add(fid);
+      if (scopeIds.has(fid)) ids.add(fid);
     }
     return ids;
   }
 
-  async publishSection(sectionId: string): Promise<void> {
+  async publishSection(sectionId: string, includeDescendants = true): Promise<void> {
     if (!this.projectName || !sectionId) return;
     this.isPublishing.set(true);
     // Sous-arbre + entités verrouillées capturés AVANT le flush (qui vide modifiedEntities)
-    const publishFolderIds = this.collectSectionPublishIds(sectionId);
+    const publishFolderIds = this.collectSectionPublishIds(sectionId, includeDescendants);
     const lockedEntityIds = [...this.activeEntityLocks].filter(eid => {
       const fid = this.modifiedEntities.get(eid) ?? eid;
       return publishFolderIds.has(fid) || publishFolderIds.has(eid);
@@ -8664,9 +8668,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
   }
 
-  async cancelSection(sectionId: string): Promise<void> {
+  async cancelSection(sectionId: string, includeDescendants = true): Promise<void> {
     if (!this.projectName || !sectionId) return;
-    const cancelFolderIds = this.collectSectionPublishIds(sectionId);
+    const cancelFolderIds = this.collectSectionPublishIds(sectionId, includeDescendants);
     const lockedEntityIds = [...this.activeEntityLocks].filter(eid => {
       const fid = this.modifiedEntities.get(eid) ?? eid;
       return cancelFolderIds.has(fid) || cancelFolderIds.has(eid);
