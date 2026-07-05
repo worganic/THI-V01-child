@@ -1,9 +1,9 @@
 import { ChartPoint, FormQuestion, MaterializedMoPreview } from './mega-outils.models';
 
 /**
- * Fonctions pures de parsing partagées entre le mode "Workflow guidé" et le mode
- * "Tchat" du MO Prompt — extraites de PromptWorkflowPopupComponent pour être
- * réutilisées sans duplication (voir prompt-chat-popup.component.ts).
+ * Fonctions pures de parsing des MegaOutils détectés dans les réponses IA d'une
+ * conversation MO Prompt (tous modes : Normal/Guidé/Tchat/Tchat libre), utilisées
+ * par ProjetConversationComponent.
  */
 
 /** Corps d'un fence (entre la 1re et la dernière ligne ```). */

@@ -13951,6 +13951,49 @@
       "prompt": "On doit pouvoir sauvegarder une section et tous ses enfants pour ne pas avoir à les faire 1 par un, il faut garder l'option sauvegardé juste la section selectionné ou toutes les sections dont les enfants",
       "startedAt": "2026-07-05T10:24:23.998Z",
       "completedAt": "2026-07-05T10:24:23.998Z"
+    },
+    {
+      "id": "mod-545",
+      "version": "Br-0.011",
+      "date": "2026-07-05T12:14:45.814Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs",
+        "server"
+      ],
+      "features": "projets:mo-prompt,projets:zone5-conversation",
+      "title": "MO Prompt : exécution dans l'onglet Conversation, suppression des 4 popups",
+      "description": "Refonte complete de l'execution des MO Prompt (Normal/Guide/Tchat/Tchat libre) : le bouton \"Executer\" n'ouvre plus aucun popup, il bascule vers l'onglet Conversation (zone 5) et y lance la conversation avec l'IA/modele deja selectionnes dans cet onglet. Nouveau flux dans ProjetConversationComponent : lancement (variable-fill en ligne si {{vars}}), composition du system prompt selon le mode (composeSystemPrompt(), nouveau libs/portail-core/data-access/src/lib/prompt-system-composer.util.ts, unifie la logique dupliquee dans les 3 anciens popups), cadrage en ligne pour le mode Guide (formulaire via app-form-execution-popup [inline]=true, nouveau Input sur ce composant), detection MO (detectMoFences) + carte \"MegaOutils detectes\" + bouton \"Ajouter au projet\" par message (pas seulement le dernier), rendu markdown (marked+DomSanitizer) gate sur les messages tagues promptInstanceId, bouton \"Copier vers l'edition\" par message. Un seul fil de conversation par section (chat general + tous les Prompts, tagues promptInstanceId/mode), persiste dans le fichier JSON existant (ConversationService, POST /api/conversations/:sectionId etendu pour ces nouveaux champs optionnels) -- abandon des tables BDD mega_outil_prompt_chat_sessions/_messages (laissees en place, inutilisees). Plomberie : nouvel Output launchPromptConversation (ProjetEditorZoneComponent -> EditionOutilComponent -> ProjetEditorComponent, qui bascule zone5Tab/zone5Collapsed et navigue vers la section), et deux methodes exposees sur EditionOutilComponent (materializeFromConversation, insertTextIntoEdition) qui delegent au ViewChild interne existant -- reutilise le pattern deja etabli (appendSection/applyExternalContent) plutot qu'un nouveau service. Simplification assumee (a ameliorer si besoin) : pas de toggle \"Utiliser les prompts de configuration\" ni de panneau \"Journal IA\" dans cette premiere version (presents dans les anciens popups Guide/Tchat). Suppression des 4 composants popup (prompt-execution-popup, prompt-workflow-popup, prompt-chat-popup, prompt-freechat-popup) apres portage de leur logique utile. Build portail+projets verifie sans erreur (cache desactive), grep final sans reference residuelle aux composants supprimes.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts",
+        "libs/portail-core/data-access/src/lib/conversation.service.ts",
+        "libs/portail-core/data-access/src/lib/prompt-launch-context.model.ts",
+        "libs/portail-core/data-access/src/lib/prompt-system-composer.util.ts",
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "libs/portail-core/data-access/src/index.ts",
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts (supprimé)",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts (supprimé)",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-chat-popup/prompt-chat-popup.component.ts (supprimé)",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-freechat-popup/prompt-freechat-popup.component.ts (supprimé)",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans le MO prompt lorsqu'on clique sur Executer cela t'ouvre un popup, maintenant j'aimerais que tu change l'affichage : n'ouvre plus de popup et lance le prompt directement dans l'outils de conversation en mode IA, le système de type de tchat devra être reproduit directement dans l'onglet de conversation, l'IA et le model utilisé sera celui selectionné dans la conversation, la conversation devra inclure directement dans l'onglet les MO comme les form, array, etc. Le système devra prendre en compte le mode de prompt pour utiliser les prompts initiaux utilisé pour chaque mode. Un bouton devra permettre de copier les réponses de l'IA dans le texte d'Edition. En conclusion je ne veux plus de popup pour géré les prompts mais que tous soi gérer directement dans la fenètre de conversation.",
+      "startedAt": "2026-07-05T12:14:45.814Z",
+      "completedAt": "2026-07-05T12:14:45.814Z"
     }
   ]
 }

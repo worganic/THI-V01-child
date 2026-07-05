@@ -4,12 +4,8 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict, fenceBody as sharedFenceBody } from '@worganic/portail-core/data-access';
-import { PromptExecutionPopupComponent } from '../prompt-execution-popup/prompt-execution-popup.component';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict, fenceBody as sharedFenceBody, PromptLaunchContext } from '@worganic/portail-core/data-access';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
-import { PromptWorkflowPopupComponent } from '../prompt-workflow-popup/prompt-workflow-popup.component';
-import { PromptChatPopupComponent } from '../prompt-chat-popup/prompt-chat-popup.component';
-import { PromptFreeChatPopupComponent } from '../prompt-freechat-popup/prompt-freechat-popup.component';
 import { marked } from 'marked';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { ProjetCollabService } from '@worganic/portail-core/data-access';
@@ -185,7 +181,7 @@ interface MockupDiagDragState {
 @Component({
   selector: 'app-projet-editor-zone',
   standalone: true,
-  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, PromptExecutionPopupComponent, FormBoardComponent, FormExecutionPopupComponent, PromptWorkflowPopupComponent, PromptChatPopupComponent, PromptFreeChatPopupComponent, ChartBoardComponent],
+  imports: [CommonModule, FormsModule, ImagePropsPanelComponent, SlashCommandMenuComponent, TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, FormBoardComponent, FormExecutionPopupComponent, ChartBoardComponent],
   templateUrl: './projet-editor-zone.component.html',
   styleUrl: './projet-editor-zone.component.scss',
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' },
@@ -307,6 +303,9 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   @Output() megaOutilSelect = new EventEmitter<MegaOutilInstance>();
   @Output() megaOutilCreated = new EventEmitter<MegaOutilInstance>();
   @Output() megaOutilDeleted = new EventEmitter<string>();
+  // Exécution d'un MO Prompt (bouton "Exécuter" du board) : bascule vers l'onglet Conversation
+  // au lieu d'ouvrir un popup — voir launchPromptInConversation().
+  @Output() launchPromptConversation = new EventEmitter<PromptLaunchContext>();
 
   // Vue "Liste des trellos" (zone centrale) déclenchée depuis la sidebar
   @Input()  showTrelloList = false;
@@ -409,28 +408,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   promptPanelCollapsed = signal(false);
   // Section résolue par instance prompt (clé = instanceId) — pour l'affichage du nom de section dans la liste
   promptSections = signal<Record<string, { folderId: string | null; name: string }>>({});
-  // Popup d'exécution d'un prompt (mode Edition)
-  showPromptExecutePopup = signal(false);
-  activePromptForExecution: { instanceId: string; instanceName: string; systemPrompt: string | null; userPrompt: string; variables: string[]; startHeadingLevel: number } | null = null;
-  promptBaseSystemPrompt: string | null = null;
   private seenPromptMarkers = new Set<string>();
-
-  // Workflow guidé (cadrage → formulaire → génération → MO)
-  showWorkflowPopup = signal(false);
-  activeWorkflowForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; currentState: string } | null = null;
-  workflowClarifyPrompt = '';
-  workflowGeneratePrompt = '';
-
-  // Mode tchat (conversation libre multi-tours → copie manuelle vers l'édition via le popup d'import)
-  showChatPopup = signal(false);
-  activeChatForExecution: { instanceId: string; instanceName: string; userPrompt: string; systemPrompt: string | null; variables: string[]; folderId: string | null } | null = null;
-  // Vide = désactivé (le tchat reste 100% conversationnel libre tant que l'admin n'a rien configuré).
-  promptChatStructuredPrompt: string | null = null;
-
-  // Mode tchat libre (conversation brute : pas de MO, pas de prompts de config, pas de rendu HTML —
-  // seule sortie possible : copier la dernière réponse vers le popup d'import de l'éditeur).
-  showFreeChatPopup = signal(false);
-  activeFreeChatForExecution: { instanceName: string; userPrompt: string; systemPrompt: string | null; variables: string[]; folderId: string | null } | null = null;
 
   // ── Form MO ────────────────────────────────────────────────────────────────
   contentFormIds: string[] = [];
@@ -5869,43 +5847,30 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
   }
 
-  openPromptExecutePopup(instanceId: string) {
+  /** Exécution d'un MO Prompt : bascule vers l'onglet Conversation et y lance la conversation
+   *  (plus de popup, quel que soit le mode). Émet le contexte complet analysé de la fence,
+   *  reçu par ProjetEditorComponent qui active l'onglet et le transmet à ProjetConversationComponent. */
+  launchPromptInConversation(instanceId: string) {
     const inst = this.promptInstances.find(i => i.id === instanceId);
     if (!inst) return;
     const body = this.getPromptBodyById(instanceId);
     const parsed = this.parsePromptFence(body);
-
-    // Mode guidé → workflow multi-phases au lieu de l'exécution simple
-    if (parsed.mode === 'guided') {
-      this.openWorkflowPopup(instanceId, inst.name, parsed.userPrompt, parsed.systemPrompt);
-      return;
-    }
-    // Mode tchat → conversation libre au lieu de l'exécution simple
-    if (parsed.mode === 'chat') {
-      this.openChatPopup(instanceId, inst.name, parsed.userPrompt, parsed.systemPrompt, parsed.variables, inst.folderId ?? null);
-      return;
-    }
-    // Mode tchat libre → conversation brute, sans MO ni prompts de config
-    if (parsed.mode === 'freechat') {
-      this.openFreeChatPopup(inst.name, parsed.userPrompt, parsed.systemPrompt, parsed.variables, inst.folderId ?? null);
-      return;
-    }
-
-    this.activePromptForExecution = {
+    const folderId = inst.folderId ?? null;
+    // currentState (formulaires/tableaux répondus) n'est utile qu'en génération du mode Guidé —
+    // calculé une seule fois ici, comme le faisait l'ancien popup à son ouverture.
+    const currentState = parsed.mode === 'guided' ? this.buildTrainingStateContext(folderId ?? undefined) : '';
+    this.launchPromptConversation.emit({
       instanceId,
       instanceName: inst.name,
+      folderId,
       systemPrompt: parsed.systemPrompt,
       userPrompt: parsed.userPrompt,
       variables: parsed.variables,
+      mode: parsed.mode,
+      currentState,
       startHeadingLevel: this.promptResultStartHeadingLevel(inst.folderId),
-    };
-    // Charger le prompt de base (une seule fois)
-    if (this.promptBaseSystemPrompt === null) {
-      this.megaOutilsSvc.getPromptGlobalConfig()
-        .then(cfg => { this.promptBaseSystemPrompt = cfg.baseSystemPrompt || ''; })
-        .catch(() => { this.promptBaseSystemPrompt = ''; });
-    }
-    this.showPromptExecutePopup.set(true);
+      token: Date.now(),
+    });
   }
 
   /** Change le mode d'exécution d'un prompt en ajoutant/retirant/remplaçant la ligne MODE: xxx. */
@@ -5937,74 +5902,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.recomputeAll();
   }
 
-  private openWorkflowPopup(instanceId: string, instanceName: string, userPrompt: string, systemPrompt: string | null) {
-    const inst = this.promptInstances.find(i => i.id === instanceId);
-    const folderId = inst?.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
-    const currentState = this.buildTrainingStateContext(folderId);
-    this.activeWorkflowForExecution = { instanceId, instanceName, userPrompt, systemPrompt, currentState };
-    // Charger les 3 prompts globaux (base + cadrage + génération)
-    this.megaOutilsSvc.getPromptGlobalConfig()
-      .then(cfg => {
-        this.promptBaseSystemPrompt = cfg.baseSystemPrompt || '';
-        this.workflowClarifyPrompt = cfg.workflowClarifyPrompt || '';
-        this.workflowGeneratePrompt = cfg.workflowGeneratePrompt || '';
-        this.showWorkflowPopup.set(true);
-      })
-      .catch(() => {
-        this.promptBaseSystemPrompt = this.promptBaseSystemPrompt || '';
-        this.showWorkflowPopup.set(true);
-      });
-  }
-
-  private openChatPopup(instanceId: string, instanceName: string, userPrompt: string, systemPrompt: string | null, variables: string[], folderId: string | null) {
-    this.activeChatForExecution = { instanceId, instanceName, userPrompt, systemPrompt, variables, folderId };
-    if (this.promptBaseSystemPrompt === null || this.promptChatStructuredPrompt === null) {
-      this.megaOutilsSvc.getPromptGlobalConfig()
-        .then(cfg => {
-          this.promptBaseSystemPrompt = cfg.baseSystemPrompt || '';
-          this.promptChatStructuredPrompt = cfg.chatStructuredPrompt || '';
-        })
-        .catch(() => {
-          this.promptBaseSystemPrompt = '';
-          this.promptChatStructuredPrompt = '';
-        });
-    }
-    this.showChatPopup.set(true);
-  }
-
-  /** Reçoit la dernière réponse IA du tchat à insérer : ouvre le popup d'import (pastePreview)
-   *  ciblé sur le dossier du prompt, sans fermer le tchat (l'utilisateur peut y revenir ensuite). */
-  onChatInsertRequested(text: string) {
-    const chat = this.activeChatForExecution;
-    if (!chat || !text.trim()) return;
-    const sectionId = chat.folderId || '';
-    const level = chat.folderId ? (this.sectionRanges.find(r => r.folderId === chat.folderId)?.level ?? 1) : 0;
+  /** Insère un texte (réponse IA de la conversation) dans le document via le popup d'import
+   *  (pastePreview), recalé au niveau de la section cible — appelé depuis EditionOutilComponent
+   *  (bouton "Copier vers l'édition" de la conversation). */
+  insertTextIntoEdition(text: string, sectionId: string) {
+    if (!text.trim()) return;
+    const level = sectionId ? (this.sectionRanges.find(r => r.folderId === sectionId)?.level ?? 1) : 0;
     this.openPastePreviewForText(text, { mode: 'visu', sectionId, level });
-  }
-
-  private openFreeChatPopup(instanceName: string, userPrompt: string, systemPrompt: string | null, variables: string[], folderId: string | null) {
-    this.activeFreeChatForExecution = { instanceName, userPrompt, systemPrompt, variables, folderId };
-    this.showFreeChatPopup.set(true);
-  }
-
-  /** Reçoit la dernière réponse IA du tchat libre à insérer : même mécanique que le tchat
-   *  structuré (popup d'import ciblé sur le dossier du prompt), sans fermer le tchat. */
-  onFreeChatInsertRequested(text: string) {
-    const chat = this.activeFreeChatForExecution;
-    if (!chat || !text.trim()) return;
-    const sectionId = chat.folderId || '';
-    const level = chat.folderId ? (this.sectionRanges.find(r => r.folderId === chat.folderId)?.level ?? 1) : 0;
-    this.openPastePreviewForText(text, { mode: 'visu', sectionId, level });
-  }
-
-  /** Reçoit les MegaOutils cochés depuis le tchat : réutilise directement le même
-   *  pipeline de matérialisation que le mode Guidé (onWorkflowMaterialize). Le tchat
-   *  reste ouvert (pas de fermeture automatique, contrairement au Guidé). */
-  async onChatMaterialize(payload: { deliverable: string; selectedMos: MaterializedMoPreview[] }) {
-    const chat = this.activeChatForExecution;
-    if (!chat) return;
-    const folderId = chat.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
-    await this.materializeMegaOutilsFromContent(payload.deliverable, payload.selectedMos, folderId, chat.instanceId);
   }
 
   /** Ouvre le popup de prévisualisation de collage (recalage des niveaux) pour un texte donné,
@@ -6029,15 +5933,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     };
   }
 
-  /** Reçoit le livrable validé du workflow : insère le texte + crée les MO retenus. */
-  async onWorkflowMaterialize(payload: { deliverable: string; selectedMos: MaterializedMoPreview[]; transcript: string }) {
-    const wf = this.activeWorkflowForExecution;
-    this.showWorkflowPopup.set(false);
-    if (!wf) return;
-    const inst = this.promptInstances.find(i => i.id === wf.instanceId);
+  /** Reçoit le livrable validé + les MegaOutils cochés depuis une conversation lancée par un
+   *  MO Prompt (mode Guidé ou Tchat) — appelé depuis EditionOutilComponent, qui relaie l'@Output
+   *  matérialisation bubblé par ProjetConversationComponent. */
+  async materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string) {
+    const inst = this.promptInstances.find(i => i.id === promptInstanceId);
     const folderId = inst?.folderId || this.getCursorEntity()?.folderId || this.activeNodeId || undefined;
-    await this.materializeMegaOutilsFromContent(payload.deliverable, payload.selectedMos, folderId, wf.instanceId, payload.transcript);
-    this.activeWorkflowForExecution = null;
+    await this.materializeMegaOutilsFromContent(deliverable, selectedMos, folderId, promptInstanceId, transcript);
   }
 
   /**
@@ -6443,11 +6345,6 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.currentEditSource = 'ia-prompt-result';
     this.scheduleSave();
     this.recomputeAll();
-  }
-
-  onPromptInsert(instanceId: string, result: string) {
-    this.showPromptExecutePopup.set(false);
-    this.upsertPromptResultSection(instanceId, result);
   }
 
   insertPromptResult(instanceId: string, result: string) {

@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_DATA_URL } from './tokens';
+import { MaterializedMoPreview } from './mega-outils.models';
 
 export interface PromptContext {
   sectionName: string;
@@ -22,6 +23,20 @@ export interface Message {
   role?: 'user' | 'ai';
   tokenInfo?: { used: number; total: number; remaining: number };
   promptContext?: PromptContext;
+
+  // ── Conversation lancée depuis un MO Prompt (mode Normal/Guidé/Tchat/Tchat libre) ──
+  /** Instance de Prompt à l'origine de ce message (absent pour le chat général "Mode IA"). */
+  promptInstanceId?: string;
+  /** Snapshot du nom de l'instance au moment de l'envoi (survit à un renommage/suppression). */
+  promptInstanceName?: string;
+  /** Mode actif pour ce tour. */
+  mode?: 'simple' | 'guided' | 'chat' | 'freechat';
+  /** MegaOutils détectés dans ce message IA (fences TRELLO/ARRAY/FORM/CHART/AGENDA). */
+  mos?: MaterializedMoPreview[];
+  /** Mode Guidé uniquement : numéro de la vague de cadrage (1-based). */
+  cadrageWave?: number;
+  /** Mode Guidé uniquement : ce message IA doit être rendu comme un formulaire de cadrage, pas comme du texte. */
+  isCadrageForm?: boolean;
 }
 
 export interface Conversation {
@@ -51,5 +66,10 @@ export class ConversationService {
 
   saveAiMessage(sectionId: string, text: string): Observable<Message> {
     return this.http.post<Message>(`${this.apiUrl}/${sectionId}`, { text, role: 'ai' });
+  }
+
+  /** Ajoute un message avec des champs additionnels (conversation lancée depuis un MO Prompt). */
+  appendMessage(sectionId: string, partial: Partial<Message> & { text: string; role: 'user' | 'ai' }): Observable<Message> {
+    return this.http.post<Message>(`${this.apiUrl}/${sectionId}`, partial);
   }
 }

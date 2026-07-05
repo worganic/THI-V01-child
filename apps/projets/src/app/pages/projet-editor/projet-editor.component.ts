@@ -11,6 +11,7 @@ import { AuthService } from '@worganic/portail-core/data-access';
 import { LayoutService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
 import { ProjetCollabService, CollabHistoryEntry, VersionSavedEvent } from '@worganic/portail-core/data-access';
+import { PromptLaunchContext, MaterializedMoPreview } from '@worganic/portail-core/data-access';
 
 import { WorgMiniHeaderComponent } from '@worganic/shared/ui';
 import { ProjetToolbarComponent } from './components/projet-toolbar/projet-toolbar.component';
@@ -786,6 +787,33 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     this.highlightNodeId.set(folderId);
     this.scrollToNodeId.set(null);
     setTimeout(() => this.scrollToNodeId.set(folderId), 0);
+  }
+
+  // Exécution d'un MO Prompt (bouton "Exécuter") : bascule vers l'onglet Conversation et y
+  // lance la conversation — plus de popup, quel que soit le mode (Normal/Guidé/Tchat/Tchat libre).
+  promptLaunchRequest = signal<PromptLaunchContext | null>(null);
+  onLaunchPromptConversation(ctx: PromptLaunchContext) {
+    if (ctx.folderId && ctx.folderId !== this.activeNodeId()) {
+      this.activeNodeId.set(ctx.folderId);
+      this.highlightNodeId.set(ctx.folderId);
+      this.scrollToNodeId.set(null);
+      setTimeout(() => this.scrollToNodeId.set(ctx.folderId), 0);
+    }
+    this.zone5Tab.set('conversation');
+    this.zone5Collapsed.set(false);
+    this.promptLaunchRequest.set(ctx);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : matérialise les MegaOutils cochés d'une
+   *  conversation Prompt (mode Guidé/Tchat) via la zone d'édition (seule à connaître unifiedContent). */
+  onMaterializeRequested(payload: { promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string }) {
+    this.editionOutil?.materializeFromConversation(payload.promptInstanceId, payload.deliverable, payload.selectedMos, payload.transcript);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier vers l'édition" sur un message IA
+   *  d'une conversation Prompt → ouvre le popup d'import (pastePreview) via la zone d'édition. */
+  onCopyToEditionRequested(payload: { text: string; sectionId: string }) {
+    this.editionOutil?.insertTextIntoEdition(payload.text, payload.sectionId);
   }
 
   onOpenMockupDiagram() {

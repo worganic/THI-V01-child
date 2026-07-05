@@ -133,6 +133,7 @@
               (megaOutilSelect)="onMegaOutilSelect($event)"
               (megaOutilCreated)="onMegaOutilCreated($event)"
               (megaOutilDeleted)="onMegaOutilDeleted($event)"
+              (launchPromptConversation)="onLaunchPromptConversation($event)"
               (closeTrelloList)="showTrelloList.set(false)"
               (openTrelloList)="onTrelloListClick()"
               (trelloNavigate)="onTrelloNavigate($event)"
@@ -270,7 +271,10 @@
                 [files]="files()"
                 [projectName]="project()?.id || null"
                 [iaInstructions]="project()?.iaInstructions || null"
-                (conversationAdded)="sidebar.loadConversations()" />
+                [launchPrompt]="promptLaunchRequest()"
+                (conversationAdded)="sidebar.loadConversations()"
+                (materializeRequested)="onMaterializeRequested($event)"
+                (copyToEditionRequested)="onCopyToEditionRequested($event)" />
             }
             @if (zone5Tab() === 'history') {
               <app-projet-history

@@ -485,63 +485,6 @@ Votre texte de prompt ici.
     </div>
   }
 
-  <!-- Popup d'exécution Prompt -->
-  @if (showPromptExecutePopup() && activePromptForExecution) {
-    <app-prompt-execution-popup
-      [instanceId]="activePromptForExecution!.instanceId"
-      [instanceName]="activePromptForExecution!.instanceName"
-      [baseSystemPrompt]="promptBaseSystemPrompt"
-      [systemPrompt]="activePromptForExecution!.systemPrompt"
-      [userPrompt]="activePromptForExecution!.userPrompt"
-      [variables]="activePromptForExecution!.variables"
-      [startHeadingLevel]="activePromptForExecution!.startHeadingLevel"
-      (insert)="onPromptInsert(activePromptForExecution!.instanceId, $event)"
-      (cancel)="showPromptExecutePopup.set(false)" />
-  }
-
-  <!-- Popup workflow guidé (cadrage → formulaire → génération → MO) -->
-  @if (showWorkflowPopup() && activeWorkflowForExecution) {
-    <app-prompt-workflow-popup
-      [instanceId]="activeWorkflowForExecution!.instanceId"
-      [instanceName]="activeWorkflowForExecution!.instanceName"
-      [userPrompt]="activeWorkflowForExecution!.userPrompt"
-      [extraSystemPrompt]="activeWorkflowForExecution!.systemPrompt"
-      [baseSystemPrompt]="promptBaseSystemPrompt"
-      [clarifyPrompt]="workflowClarifyPrompt"
-      [generatePrompt]="workflowGeneratePrompt"
-      [userName]="currentUserName()"
-      [currentState]="activeWorkflowForExecution!.currentState"
-      (materialize)="onWorkflowMaterialize($event)"
-      (cancel)="showWorkflowPopup.set(false)" />
-  }
-
-  <!-- Popup mode tchat (conversation libre → copie manuelle vers le popup d'import) -->
-  @if (showChatPopup() && activeChatForExecution) {
-    <app-prompt-chat-popup
-      [instanceId]="activeChatForExecution!.instanceId"
-      [instanceName]="activeChatForExecution!.instanceName"
-      [userPrompt]="activeChatForExecution!.userPrompt"
-      [systemPrompt]="activeChatForExecution!.systemPrompt"
-      [variables]="activeChatForExecution!.variables"
-      [baseSystemPrompt]="promptBaseSystemPrompt"
-      [chatStructuredPrompt]="promptChatStructuredPrompt"
-      [userName]="currentUserName()"
-      (insertAsSection)="onChatInsertRequested($event)"
-      (materialize)="onChatMaterialize($event)"
-      (cancel)="showChatPopup.set(false)" />
-  }
-
-  <!-- Popup mode tchat libre (conversation brute → copie manuelle vers le popup d'import, sans MO ni mise en forme) -->
-  @if (showFreeChatPopup() && activeFreeChatForExecution) {
-    <app-prompt-freechat-popup
-      [instanceName]="activeFreeChatForExecution!.instanceName"
-      [userPrompt]="activeFreeChatForExecution!.userPrompt"
-      [systemPrompt]="activeFreeChatForExecution!.systemPrompt"
-      [variables]="activeFreeChatForExecution!.variables"
-      (insertAsSection)="onFreeChatInsertRequested($event)"
-      (cancel)="showFreeChatPopup.set(false)" />
-  }
-
   @if (showFormExecutePopup() && activeFormForExecution) {
     <app-form-execution-popup
       [formName]="activeFormForExecution!.formName"
@@ -1709,7 +1652,7 @@ Votre texte de prompt ici.
                 [mode]="promptModeForId(pid)"
                 [readonly]="false"
                 [deletable]="false"
-                (execute)="openPromptExecutePopup(pid)"
+                (execute)="launchPromptInConversation(pid)"
                 (modeChange)="setPromptMode(pid, $event)" />
               @if (getPromptResultForId(pid); as res) {
                 <div class="mt-2 p-3 rounded-lg border border-primary/30 bg-surface/60 text-sm">
@@ -1926,7 +1869,7 @@ Votre texte de prompt ici.
                       [mode]="promptModeForId(board.inst!.id)"
                       [readonly]="false"
                       [deletable]="false"
-                      (execute)="openPromptExecutePopup(board.inst!.id)"
+                      (execute)="launchPromptInConversation(board.inst!.id)"
                       (modeChange)="setPromptMode(board.inst!.id, $event)" />
                     @if (getPromptResultForId(board.inst!.id); as res) {
                       <div class="mt-2 p-3 rounded-lg border border-primary/30 bg-surface/60 text-sm">
