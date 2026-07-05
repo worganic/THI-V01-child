@@ -13875,6 +13875,31 @@
       "prompt": "ajoute dans le mode Edition devant chaque section un icone accordeon pour ferme tous les texte et menus a partir de celui selectionne et tous ceux en dessous.",
       "startedAt": "2026-07-05T01:20:00.000Z",
       "completedAt": "2026-07-05T01:35:00.000Z"
+    },
+    {
+      "id": "mod-542",
+      "version": "Br-0.008",
+      "date": "2026-07-05T08:40:03.037Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code,projets:mo-prompt",
+      "title": "MO Prompt : nouveau mode Tchat libre (conversation brute sans MO ni HTML)",
+      "description": "Ajout d'un 4e mode d'execution pour le MegaOutil Prompt, en plus de Normal/Guide/Tchat : Tchat libre (MODE: freechat dans le fence). Nouveau composant PromptFreeChatPopupComponent (apps/projets/.../prompt-freechat-popup), qui reprend la boucle conversationnelle du mode Tchat existant (PromptChatPopupComponent) mais volontairement depouillee : aucune injection du prompt de base global ni d'un meta-prompt de config admin (seul le SYSTEM: propre a la section est transmis, sans toggle puisqu'il n'y a rien a activer/desactiver), aucune detection de fences MegaOutils (detectMoFences non appele, donc pas de barre \"Ajouter au projet\"), aucun parsing de formulaire interactif, aucune persistance de session en base (pas de bannière Reprendre). Les reponses IA sont affichees en texte brut (whitespace-pre-wrap) sans passer par marked.parse()/DomSanitizer. Seule action de sortie conservee : bouton \"Copier la derniere reponse -> Coller en edition\", qui reutilise le meme mecanisme pastePreview que le mode Tchat structure. Mis a jour en parallele : PromptBoardComponent (selecteur de mode + badge \"Tchat libre\", theme violet), projet-editor-zone.component.ts (type promptMode/parsePromptFence/promptModeForId/setPromptMode elargis a \"freechat\", nouvelle methode openFreeChatPopup/onFreeChatInsertRequested) et son template (radio \"Tchat libre\" dans le popup de creation, rendu du nouveau popup). Build portail+projets verifie sans erreur (aucune ligne ERROR/error TS). Non teste dans le navigateur a la demande implicite (pas de serveur dev lance dans cette session).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/prompt-freechat-popup/prompt-freechat-popup.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans le menu projet/Edition/MO/prompt je voudrais que tu rajoute un mode en plus de Normal/guidé/tchat qui serait un mode \"Tchat libre\", ce mode permettrais de lancer le prompt en mode tchat mais sans faire appel du tous au MO, sans transformé les réponses de l'IA en format html, cela ne fera qu'envoyé des prompts (initial puis après user) et l'IA renverrais les réponses, seul chose à garder, le bouton copier pour insserré le texte dans le texte d'Edition.",
+      "startedAt": "2026-07-05T08:40:03.037Z",
+      "completedAt": "2026-07-05T08:40:03.037Z"
     }
   ]
 }

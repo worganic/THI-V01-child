@@ -17,11 +17,12 @@ import { MegaOutilsService, ProjetCollabService, PromptExecution } from '@worgan
         <span class="text-sm font-semibold text-light-text dark:text-white/90">{{ instanceName }}</span>
         @if (!readonly) {
           <select class="text-[10px] font-medium px-1.5 py-0.5 rounded border cursor-pointer bg-light-surface dark:bg-surface dark:[color-scheme:dark]"
-                  [ngClass]="mode === 'guided' ? 'border-blue-500/25 text-blue-400' : (mode === 'chat' ? 'border-emerald-500/25 text-emerald-400' : 'border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40')"
+                  [ngClass]="mode === 'guided' ? 'border-blue-500/25 text-blue-400' : (mode === 'chat' ? 'border-emerald-500/25 text-emerald-400' : (mode === 'freechat' ? 'border-violet-500/25 text-violet-400' : 'border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40'))"
                   [ngModel]="mode" (ngModelChange)="modeChange.emit($any($event))">
             <option value="simple">Normal</option>
             <option value="guided">Guidé</option>
             <option value="chat">Tchat</option>
+            <option value="freechat">Tchat libre</option>
           </select>
         } @else if (mode === 'guided') {
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/25 text-blue-400 flex items-center gap-1">
@@ -30,6 +31,10 @@ import { MegaOutilsService, ProjetCollabService, PromptExecution } from '@worgan
         } @else if (mode === 'chat') {
           <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/25 text-emerald-400 flex items-center gap-1">
             <span class="material-symbols-outlined text-[11px]">forum</span>Tchat
+          </span>
+        } @else if (mode === 'freechat') {
+          <span class="text-[10px] px-1.5 py-0.5 rounded bg-violet-500/15 border border-violet-500/25 text-violet-400 flex items-center gap-1">
+            <span class="material-symbols-outlined text-[11px]">chat</span>Tchat libre
           </span>
         }
         @if (variables.length > 0) {
@@ -100,11 +105,11 @@ export class PromptBoardComponent implements OnInit, OnDestroy {
   @Input() variables: string[] = [];
   @Input() readonly = false;
   @Input() deletable = false;
-  @Input() mode: 'simple' | 'guided' | 'chat' = 'simple';
+  @Input() mode: 'simple' | 'guided' | 'chat' | 'freechat' = 'simple';
 
   @Output() execute = new EventEmitter<void>();
   @Output() deleteBoard = new EventEmitter<string>();
-  @Output() modeChange = new EventEmitter<'simple' | 'guided' | 'chat'>();
+  @Output() modeChange = new EventEmitter<'simple' | 'guided' | 'chat' | 'freechat'>();
 
   private megaSvc = inject(MegaOutilsService);
   private collabSvc = inject(ProjetCollabService);
