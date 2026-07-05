@@ -240,12 +240,14 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-19` — Identifiant stable de section `{{SID:folderId}}`
+## `2-5-2-4-19` — [modification] Identifiant stable de section `{{SID:folderId}}`
 
 - **Format** : chaque heading porte en fin de ligne un marqueur `{{SID:<folderId>}}` (ex. `## Présentation {{SID:c7e0205f-…}}`) qui lie de façon **stable** la section à son dossier physique, indépendamment du nom et de l'ordre.
 - **Origine** : dérivé du dossier par `buildDocSections` (`composeHeading(level, name, folderId)`) → présent après chaque reconstruction (`reconstructFromSections`). Les projets sans SID sont **migrés automatiquement** au premier chargement.
 - **Visibilité** : visible en mode Code (buffer brut, comme `{{IMG:}}`/`{{TRELLO:}}`) mais **atténué** (opacité réduite) dans le mirror ; **masqué** en modes Structure et Édition.
 - **Rôle anti-régression** : `parseContent` et `recomputeRanges` résolvent le `folderId` **prioritairement par SID** (puis chemin slugifié, puis nom). Le renommage d'un titre ou le réordonnancement ne perd plus le lien section↔dossier et ne crée plus de dossier parasite.
+- **[modification] Garde anti-corruption contre un délimiteur de bloc orphelin (bug corrigé)** : `parseContent` (pré-scan `codeFencePreScan`/`blockPreScan`), `recomputeRanges` et `parseStructureNodes` détectaient les blocs `` ``` ``/`'`/`` ` ``/`^` en cherchant le **prochain délimiteur fermant trouvé n'importe où dans tout le document**, sans limite de section. Un délimiteur ouvrant resté **orphelin** (résidu de contenu corrompu, jamais fermé — ex. un `` ``` `` seul dans le contenu.md d'un dossier) s'appariait donc à tort avec la fermeture d'un fence complètement différent plus loin dans le document (ex. celle du fence PROMPT d'un dossier frère), transformant tout l'intervalle en un faux "bloc de fichier" qui rendait invisibles les titres de section à l'intérieur — leur texte brut (titre + `{{SID:...}}` inclus) se retrouvait alors absorbé comme contenu ordinaire du dossier courant à chaque sauvegarde, une corruption qui **grandissait à chaque cycle** tant que le délimiteur orphelin n'était pas nettoyé (bug réel observé, incident « cours d'anglais_v2 » : les dossiers frères d'un dossier Prompt semblaient se supprimer/copier les uns dans les autres). Corrigé (`isSuspiciousLineSpan`/`isSuspiciousBlock`) : un bloc/fence dont l'intervalle contient une ligne de titre de section réelle (`#### Nom {{SID:id}}`) est désormais **rejeté** (jamais traité comme un bloc valide) — une vraie fence de contenu ne contient jamais cette syntaxe interne réservée.
+- **À vérifier** : un `` ``` `` orphelin (jamais fermé) dans le contenu propre d'un dossier n'avale plus les titres des dossiers frères qui suivent — ceux-ci restent détectés normalement, leur contenu n'est jamais absorbé par le dossier contenant le délimiteur orphelin.
 
 ---
 
@@ -514,7 +516,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-44` — [modification] Collage de markdown pré-formaté : re-leveling auto des titres + popup de prévisualisation
+## `2-5-2-4-44` — [modification] Collage de markdown pré-formaté : re-leveling auto des titres + popup de prévisualisation (+ exception fence MO)
 
 - **Précondition** : curseur dans un dossier de niveau 2 (Mode Code) ou section visu de niveau 2. Presse-papier = texte markdown commençant par `# Titre` (H1) avec sous-niveaux.
 - **Action** : coller (Ctrl+V) → `onTextareaPaste` (Code) ou `onVisuSectionPaste` (visu).
@@ -525,6 +527,8 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Titres sans espace** : la détection (`parseHeadingLine`) tolère les titres écrits sans espace après les `#` (ex: `#1. Préparation` autant que `## Objectif`). Ils sont comptés dans le calcul du plus haut niveau ET recalés. En sortie, l'espace est **normalisé** (`### 1. Préparation`) pour que `parseContent` crée bien le sous-menu.
 - **Résultat à redouter (bug corrigé)** : (1) sans re-leveling, un H1 collé dans un dossier niveau 2 devient un dossier racine → hiérarchie cassée → texte supprimé à la reconstruction ; (2) un titre `#1.` sans espace était ignoré → niveau le plus haut détecté faux (décalage +1 au lieu de +2) et titre non recalé ; (3) presse-papier avec fins de ligne Windows (`\r\n`, ex: copié depuis Word/un export) → `parseHeadingLine` ne matchait plus aucun titre (le `.` des regex JS exclut `\r`) → `relevelMarkdownHeadings` retournait le texte tel quel (aucun décalage visible dans l'aperçu) alors que le badge « décalage » affichait quand même une valeur incohérente. **Fix** : normalisation `\r\n?` → `\n` dès la lecture du presse-papier dans `onTextareaPaste`/`onVisuSectionPaste`, avant tout calcul.
 - **À vérifier** : coller un document multi-niveaux (y compris titres `#1.` sans espace, et avec fins de ligne `\r\n`) dans un dossier niveau 2 → le popup s'affiche avec le décalage +2, tous les titres recalés et espacés, « Coller » insère les titres en sous-sections (niveau 3+), le menu reflète la nouvelle arborescence, le texte est intégralement présent ; « Annuler » ne touche à rien.
+- **[modification] Exception : collage à l'intérieur d'un fence MegaOutil** : si le curseur (Mode Code) se trouve entre les délimiteurs \`\`\`…\`\`\` d'un MO (Prompt, Trello, Array, Form, Chart, Agenda — ex. dans le corps `Votre prompt ici.` d'un Prompt), coller un texte contenant des titres markdown ne déclenche **plus** le recalage ni le popup de prévisualisation : `isOffsetInsideFence(start)` détecte la position et laisse le collage natif se produire (texte brut inséré tel quel, aucun `preventDefault`). Le contenu d'un MO a sa propre structure, indépendante du document — ses éventuels titres n'ont pas vocation à devenir des sections. Aucun impact sur le menu principal dans tous les cas : `parseContent`/`recomputeRanges` excluent déjà (avant ce fix comme après) tout heading situé à l'intérieur d'un bloc \`\`\`…\`\`\` de la construction de l'arborescence des dossiers — seul le comportement du popup de collage change ici.
+- **À vérifier (nouveau)** : placer le curseur dans le corps d'un Prompt (entre `SYSTEM:`/`---` et le \`\`\` fermant) et coller un texte contenant des `#`/`##` → aucun popup, texte inséré tel quel sans recalage ; le menu (sidebar) ne montre aucune nouvelle section issue de ce texte, avant et après sauvegarde/rechargement.
 - **Composants:** `projet-editor-zone.component.ts`, `projet-editor-zone.component.html`
 
 ---

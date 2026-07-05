@@ -1057,6 +1057,10 @@
   line-height: 1.7;
   cursor: text;
 
+  // Texte après un MO (lecture seule ici, modifiable via le mode Code) : voir
+  // buildVisuSectionHtmlSplit — pas de curseur texte pour ne pas suggérer une édition possible.
+  &--outro { cursor: default; }
+
   // Zone de texte continue : pas de bordure/encadré au survol ni au focus
 
   ::ng-deep {

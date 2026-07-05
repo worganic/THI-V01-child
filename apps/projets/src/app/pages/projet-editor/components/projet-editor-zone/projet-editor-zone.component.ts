@@ -131,6 +131,10 @@ interface VisuSectionState {
   level: number;
   contentHtml: string;
   markdownBefore: string;
+  /** Texte affiché après le dernier MO (Trello/Array/Prompt/Form/Chart/Agenda) de la section,
+   *  s'il y en a un — en lecture seule (modifiable via le mode Code) : voir `boardSpanForSection`.
+   *  Vide si la section ne contient aucun MO (comportement inchangé, tout dans `contentHtml`). */
+  outroHtml: string;
 }
 
 interface StructureAdditionalBlock {
@@ -458,8 +462,10 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private aiExec = inject(AiExecuteService);
   private configSvc = inject(ConfigService);
 
-  // Mode (toggle Edition / Structure / Visu)
-  mode: 'edit' | 'visu' | 'structure' = 'edit';
+  // Mode (toggle Edition / Structure / Visu) — Edition par défaut à l'ouverture d'un projet
+  // (Code affichait l'overlay "Sélectionnez une section..." tant qu'aucune section n'était
+  // choisie ; Edition montre directement la vue assemblée du document, sans ce message).
+  mode: 'edit' | 'visu' | 'structure' = 'visu';
 
   // ── Mode Structure ──────────────────────────────────────────
   structureNodes: StructureNode[] = [];
@@ -1608,6 +1614,21 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       }));
   }
 
+  /** Vrai si l'intervalle de lignes ]start, end[ contient une ligne de titre de section réelle
+   *  ("#### Nom {{SID:id}}") — indique un bloc/fence suspect : un délimiteur ouvrant resté
+   *  orphelin (résidu de contenu corrompu, jamais fermé) s'apparie alors à tort avec la
+   *  fermeture d'un bloc sans rapport plus loin dans le document, avalant les titres de
+   *  sections voisines au passage (incident réel : corruption qui grandit à chaque
+   *  sauvegarde, voir 2-5-2-2-4). Un vrai bloc de contenu ne contient jamais cette syntaxe
+   *  interne réservée aux titres de section — un match qui en contient une est donc rejeté. */
+  private isSuspiciousLineSpan(lines: string[], start: number, end: number): boolean {
+    const sectionHeadingRe = /^#{1,6} .*\{\{SID:[a-zA-Z0-9-]+\}\}\s*$/;
+    for (let k = start + 1; k < end; k++) {
+      if (sectionHeadingRe.test(lines[k])) return true;
+    }
+    return false;
+  }
+
   private recomputeRanges() {
     const lines = this.unifiedContent.split('\n');
     const flatHeads: { lineIdx: number; level: number; name: string; sid: string | null }[] = [];
@@ -1623,7 +1644,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         const bm = /^(['`^])(.+)$/.exec(lines[i]);
         if (bm && !lines[i].startsWith('```')) { bInBlock = true; bDelim = bm[1]; bStart = i; }
       } else if (lines[i].trim() === bDelim) {
-        blockLineRanges.push([bStart, i]);
+        if (!this.isSuspiciousLineSpan(lines, bStart, i)) blockLineRanges.push([bStart, i]);
         bInBlock = false;
       }
     }
@@ -1631,7 +1652,11 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].startsWith('```')) {
         for (let j = i + 1; j < lines.length; j++) {
-          if (lines[j].trim() === '```') { blockLineRanges.push([i, j]); i = j; break; }
+          if (lines[j].trim() === '```') {
+            if (!this.isSuspiciousLineSpan(lines, i, j)) blockLineRanges.push([i, j]);
+            i = j;
+            break;
+          }
         }
       }
     }
@@ -5198,12 +5223,28 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const folderMap = this.buildFolderMap(this.files);
     const sections: SectionInfo[] = [];
 
+    // Garde anti-corruption (incident réel, réplication en cascade) : un ``` (ou bloc
+    // ' / ` / ^) resté OUVERT sans fermeture (résidu d'un contenu corrompu) s'apparie à tort
+    // avec la fermeture d'un fence complètement différent, plus loin dans le document —
+    // transformant tout l'intervalle en un faux "bloc de fichier" qui rend invisibles les
+    // titres de section à l'intérieur. Leur texte brut (titre inclus) se retrouve alors
+    // absorbé comme contenu ordinaire du dossier courant à chaque sauvegarde, et comme le
+    // ``` orphelin n'est jamais nettoyé, la corruption grandit à chaque cycle (dossiers
+    // voisins qui "disparaissent" et dont le contenu semble se copier ailleurs). Une vraie
+    // fence/bloc de contenu ne contient jamais de ligne de titre de section "#### Nom
+    // {{SID:id}}" (syntaxe interne réservée) : un match qui en contient une est rejeté
+    // plutôt que d'être exclu à tort de la détection de titres.
+    const SECTION_HEADING_RE = /^#{1,6} .*\{\{SID:[a-zA-Z0-9-]+\}\}\s*$/m;
+    const isSuspiciousBlock = (start: number, end: number) => SECTION_HEADING_RE.test(text.slice(start, end));
+
     // Pré-scan des blocs fichier pour exclure leurs headings internes (ex: ## Trello: ...) de la détection de sections
     const fileBlockCharRanges: [number, number][] = [];
     const blockPreScan = /^(?!```)(['`^])([^\n]+)(?:\n([\s\S]*?))?\n?\1/gm;
     let bp: RegExpExecArray | null;
     while ((bp = blockPreScan.exec(text)) !== null) {
-      fileBlockCharRanges.push([bp.index, bp.index + bp[0].length - 1]);
+      const end = bp.index + bp[0].length - 1;
+      if (isSuspiciousBlock(bp.index, end)) continue;
+      fileBlockCharRanges.push([bp.index, end]);
     }
     // Pré-scan de TOUT bloc de code fencé (```…```) — y compris Trello et marqueurs corrompus
     // (```TRELO:) — pour exclure leurs ### internes de la détection de sections (le corps reste du texte).
@@ -5213,7 +5254,9 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const codeFencePreScan = /^```[^\n]*\n(?:[\s\S]*?\n)?```(?=\n|$)/gm;
     let tp: RegExpExecArray | null;
     while ((tp = codeFencePreScan.exec(text)) !== null) {
-      fileBlockCharRanges.push([tp.index, tp.index + tp[0].length - 1]);
+      const end = tp.index + tp[0].length - 1;
+      if (isSuspiciousBlock(tp.index, end)) continue;
+      fileBlockCharRanges.push([tp.index, end]);
     }
     const isInsideFileBlock = (pos: number) => fileBlockCharRanges.some(([s, e]) => pos > s && pos <= e);
 
@@ -6979,6 +7022,20 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return level;
   }
 
+  /** Vrai si `offset` (Mode Code) se trouve à l'intérieur d'un bloc fencé ```…``` (MegaOutil
+   *  Prompt/Trello/Array/Form/Chart/Agenda, ou code générique). Le contenu d'un MO a sa propre
+   *  structure, indépendante du document — un titre markdown collé dedans ne doit jamais
+   *  déclencher le recalage de niveaux ni le popup de collage (voir `onTextareaPaste`), et est
+   *  de toute façon déjà ignoré par `recomputeRanges`/`parseContent` (fence-aware) pour le menu. */
+  private isOffsetInsideFence(offset: number): boolean {
+    const before = this.unifiedContent.substring(0, offset);
+    let inFence = false;
+    for (const l of before.split('\n')) {
+      if (/^```/.test(l.trim())) inFence = !inFence;
+    }
+    return inFence;
+  }
+
   /** Alternative au recalage direct : englobe le texte collé sous un nouveau titre
    *  intermédiaire (un niveau au-dessus du parent), ses propres titres étant recalés
    *  un niveau plus bas que ce nouveau titre. S'il n'y a aucun titre dans le texte collé,
@@ -7016,7 +7073,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
   /** Collage Mode Code : si le presse-papier contient des titres markdown, recaler le plus haut
    *  titre sous le dossier où se trouve le curseur (niveau du dossier + 1) puis OUVRIR le popup
-   *  de prévisualisation. L'insertion réelle se fait à la validation (confirmPastePreview). */
+   *  de prévisualisation. L'insertion réelle se fait à la validation (confirmPastePreview).
+   *  Exception : coller à l'intérieur d'un fence MegaOutil (Prompt, Trello, Array...) reste un
+   *  collage brut natif, sans popup ni recalage — ce texte a sa propre structure, indépendante
+   *  du document (voir `isOffsetInsideFence`). */
   onTextareaPaste(ev: ClipboardEvent) {
     const raw = ev.clipboardData?.getData('text/plain');
     // Normaliser les fins de ligne CRLF/CR → LF : sinon `.` (regex JS) ne matche pas le `\r`
@@ -7025,9 +7085,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!text || !/^#{1,6}(?!#)[ \t]*\S/m.test(text)) return;   // pas de titres → collage natif
     const ta = this.textareaRef?.nativeElement;
     if (!ta) return;
-    ev.preventDefault();
     const start = ta.selectionStart;
     const end = ta.selectionEnd;
+    if (this.isOffsetInsideFence(start)) return;   // dans un fence MO → collage brut natif
+    ev.preventDefault();
     const parentLevel = this.sectionLevelBeforeOffset(start);
     const desiredTop = Math.min(parentLevel + 1, 6);
     const releveled = this.relevelMarkdownHeadings(text, desiredTop);
@@ -7406,9 +7467,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   scrollToNodeById(id: string) {
     if (this.mode === 'visu') {
       const root = this.visuRef?.nativeElement;
-      const el = (root?.querySelector(`[data-file-id="${id}"]`)
-                 || root?.querySelector(`[data-section-id="${id}"]`)) as HTMLElement | null;
-      if (root && el) {
+      if (!root) return;
+      const el = (root.querySelector(`[data-file-id="${id}"]`)
+                 || root.querySelector(`[data-section-id="${id}"]`)) as HTMLElement | null;
+      if (el) {
         // La barre de formatage est en position sticky DANS ce même conteneur : un scrollIntoView
         // naïf (block:'start') aligne la section sur le haut du viewport, exactement là où la
         // barre reste affichée → elle recouvre le début de la section. On décale donc la cible
@@ -7417,6 +7479,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         const offset = toolbar?.offsetHeight ?? 0;
         const elTop = el.getBoundingClientRect().top - root.getBoundingClientRect().top + root.scrollTop;
         root.scrollTo({ top: Math.max(0, elTop - offset - 8), behavior: 'smooth' });
+      } else {
+        // Aperçu autonome (Trello/Array/Prompt/fichier/image sélectionné seul — previewPromptInstanceId
+        // et consorts) : remplace tout le contenu de .visu-content-wrap, aucun data-file-id/
+        // data-section-id à cibler. Toujours affiché depuis le tout début du conteneur → repositionner
+        // en haut, sinon un scrollTop hérité d'une section précédente plus longue laisse la barre de
+        // formatage recouvrir le début du nouveau contenu (aucun ajustement n'était fait dans ce cas).
+        root.scrollTo({ top: 0, behavior: 'smooth' });
       }
       return;
     }
@@ -7836,6 +7905,23 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return key;
   }
 
+  /** Position `[start, end)` du 1er au dernier fence MO (Trello/Array/Prompt/Form/Chart/Agenda)
+   *  dans un Markdown donné — `null` si aucun. Utilisée pour séparer le texte "intro" (avant le
+   *  1er MO, seule portion éditable en mode Édition) du texte "outro" (après le dernier MO,
+   *  affiché en lecture seule à sa vraie place — modifiable via le mode Code) : le mode Édition
+   *  regroupait auparavant tout le texte avant les MO quel que soit l'ordre réel du document. */
+  private boardSpanForSection(md: string): { start: number; end: number } | null {
+    const fenceRe = /^```(?:## Trello:|TRELLO:|ARRAY:|PROMPT:|FORM:|CHART:|AGENDA:) .+\n(?:[\s\S]*?\n)?```(?=\n|$)/gm;
+    let start = -1;
+    let end = -1;
+    let m: RegExpExecArray | null;
+    while ((m = fenceRe.exec(md)) !== null) {
+      if (start === -1) start = m.index;
+      end = m.index + m[0].length;
+    }
+    return start === -1 ? null : { start, end };
+  }
+
   // ── Visu edit : construction du HTML par section ────────────
   private buildVisuSections() {
     this.visuSections = this.docSections.map(sec => {
@@ -7844,16 +7930,24 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
       const range = this.sectionRanges.find(r => r.folderId === sec.folderId);
       const lines = this.unifiedContent.split('\n');
-      const markdownBefore = range
-        ? lines.slice(range.lineStart + 1, range.lineEnd + 1).join('\n').trim()
-        : '';
+      const directMd = range ? lines.slice(range.lineStart + 1, range.lineEnd + 1).join('\n').trim() : '';
+      const span = this.boardSpanForSection(directMd);
+      // markdownBefore ne couvre que la portion "intro" (avant le 1er MO) : c'est la seule
+      // portion reflétée par le contenteditable, donc la seule pertinente pour la préservation
+      // des shortcodes {{TRELLO:id}} (preserveTrelloMarkers) et le diff avant/après édition.
+      const markdownBefore = span ? directMd.slice(0, span.start).trim() : directMd;
+
+      const { introHtml, outroHtml } = isDirty && existing
+        ? { introHtml: existing.contentHtml, outroHtml: existing.outroHtml }
+        : this.buildVisuSectionHtmlSplit(sec);
 
       return {
         sectionId: sec.folderId,
         folderName: sec.folderName,
         level: sec.level,
-        contentHtml: isDirty && existing ? existing.contentHtml : this.buildVisuSectionHtml(sec),
+        contentHtml: introHtml,
         markdownBefore: isDirty && existing ? existing.markdownBefore : markdownBefore,
+        outroHtml,
       };
     });
     // Initialiser le innerHTML des contenteditable après le rendu Angular
@@ -7865,9 +7959,24 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
   }
 
-  private buildVisuSectionHtml(sec: DocSection): string {
+  /** Sépare le contenu direct d'une section en HTML "intro" (avant le 1er MO, seule portion
+   *  éditable) et "outro" (après le dernier MO, lecture seule) — voir `boardSpanForSection`.
+   *  Sans MO dans la section, tout part dans introHtml (comportement inchangé). */
+  private buildVisuSectionHtmlSplit(sec: DocSection): { introHtml: string; outroHtml: string } {
     const lines = sec.textContent.split('\n');
-    let contentMd = lines.slice(1).join('\n');
+    const fullMd = lines.slice(1).join('\n');
+    const span = this.boardSpanForSection(fullMd);
+    if (!span) return { introHtml: this.renderVisuMd(fullMd, sec), outroHtml: '' };
+    const introMd = fullMd.slice(0, span.start);
+    const outroMd = fullMd.slice(span.end);
+    return {
+      introHtml: this.renderVisuMd(introMd, sec),
+      outroHtml: outroMd.trim() ? this.renderVisuMd(outroMd, sec) : '',
+    };
+  }
+
+  private renderVisuMd(contentMdInput: string, sec: DocSection): string {
+    let contentMd = contentMdInput;
 
     // Extraire les blocs fichier avant marked (placeholders)
     const fileBlocks: { token: string; html: string; md: string }[] = [];
@@ -8936,7 +9045,17 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
     const after = lines.slice(directEnd + 1);
 
-    const newContentLines = newMd.trim() ? newMd.trim().split('\n') : [];
+    // Le contenteditable ne reflète que la portion "intro" (avant le 1er MO) — voir
+    // buildVisuSectionHtmlSplit/boardSpanForSection. Le(s) fence(s) MO et le texte "outro" qui
+    // les suit (lecture seule dans ce mode) doivent être préservés tels quels, jamais écrasés
+    // par newMd qui ne les contient jamais.
+    const directMd = lines.slice(range.lineStart + 1, directEnd + 1).join('\n');
+    const span = this.boardSpanForSection(directMd);
+    const preservedTail = span ? directMd.slice(span.start).trim() : '';
+
+    const introPart = newMd.trim();
+    const newDirectContent = preservedTail ? [introPart, preservedTail].filter(Boolean).join('\n\n') : introPart;
+    const newContentLines = newDirectContent ? newDirectContent.split('\n') : [];
     const newLines = [...before, headingLine, ...newContentLines, ...after];
     const newContent = newLines.join('\n');
 
@@ -10053,7 +10172,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         const bm = /^(['`^])(.+)$/.exec(lines[i]);
         if (bm && !lines[i].startsWith('```')) { bInBlock = true; bDelim = bm[1]; bStart = i; }
       } else if (lines[i].trim() === bDelim) {
-        blockLineRanges.push([bStart, i]);
+        if (!this.isSuspiciousLineSpan(lines, bStart, i)) blockLineRanges.push([bStart, i]);
         bInBlock = false;
       }
     }
@@ -10061,7 +10180,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     for (let i = 0; i < lines.length; i++) {
       if (lines[i].startsWith('```')) {
         for (let j = i + 1; j < lines.length; j++) {
-          if (lines[j].trim() === '```') { blockLineRanges.push([i, j]); i = j; break; }
+          if (lines[j].trim() === '```') {
+            if (!this.isSuspiciousLineSpan(lines, i, j)) blockLineRanges.push([i, j]);
+            i = j;
+            break;
+          }
         }
       }
     }

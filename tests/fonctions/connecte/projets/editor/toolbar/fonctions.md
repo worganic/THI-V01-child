@@ -51,6 +51,7 @@
 - Onglet actif : l'onglet correspondant au mode courant est mis en surbrillance avec la classe ed-mode-tab--active
 - Toggle de vue (Mode Code) : bouton "Markdown propre / Avec style" à droite de la barre d'onglets permet de basculer la vue et d'activer showCssInCode()
 - Bascule externe : l'Input `modeRequest` ({ mode, token }) déclenche `setMode` sans clic (ex: agenda « Ouvrir la séance » → mode Edition). Le token force le re-déclenchement même mode identique.
+- **[modification] Mode par défaut à l'ouverture d'un projet** : `mode` vaut désormais `'visu'` (onglet Edition) au chargement, au lieu de `'edit'` (Code). En mode Code sans section sélectionnée (`!focusedHandle && !activeNodeId`), un overlay « Sélectionnez une section dans la barre latérale pour l'éditer » recouvrait la vue assemblée dès l'ouverture du projet (aucune section n'étant encore choisie) ; le mode Edition affiche directement la vue assemblée du document sans nécessiter de sélection ni afficher ce message. L'overlay reste inchangé pour le mode Code lui-même (toujours pertinent si l'utilisateur y bascule manuellement sans sélectionner de section).
 - **Priorité:** bloquant
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
