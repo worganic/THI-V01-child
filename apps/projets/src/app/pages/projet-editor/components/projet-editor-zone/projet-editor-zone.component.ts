@@ -131,6 +131,10 @@ interface VisuSectionState {
   level: number;
   contentHtml: string;
   markdownBefore: string;
+  /** Texte affiché après le dernier MO (Trello/Array/Prompt/Form/Chart/Agenda) de la section,
+   *  s'il y en a un — en lecture seule (modifiable via le mode Code) : voir `boardSpanForSection`.
+   *  Vide si la section ne contient aucun MO (comportement inchangé, tout dans `contentHtml`). */
+  outroHtml: string;
 }
 
 interface StructureAdditionalBlock {
@@ -7901,6 +7905,23 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return key;
   }
 
+  /** Position `[start, end)` du 1er au dernier fence MO (Trello/Array/Prompt/Form/Chart/Agenda)
+   *  dans un Markdown donné — `null` si aucun. Utilisée pour séparer le texte "intro" (avant le
+   *  1er MO, seule portion éditable en mode Édition) du texte "outro" (après le dernier MO,
+   *  affiché en lecture seule à sa vraie place — modifiable via le mode Code) : le mode Édition
+   *  regroupait auparavant tout le texte avant les MO quel que soit l'ordre réel du document. */
+  private boardSpanForSection(md: string): { start: number; end: number } | null {
+    const fenceRe = /^```(?:## Trello:|TRELLO:|ARRAY:|PROMPT:|FORM:|CHART:|AGENDA:) .+\n(?:[\s\S]*?\n)?```(?=\n|$)/gm;
+    let start = -1;
+    let end = -1;
+    let m: RegExpExecArray | null;
+    while ((m = fenceRe.exec(md)) !== null) {
+      if (start === -1) start = m.index;
+      end = m.index + m[0].length;
+    }
+    return start === -1 ? null : { start, end };
+  }
+
   // ── Visu edit : construction du HTML par section ────────────
   private buildVisuSections() {
     this.visuSections = this.docSections.map(sec => {
@@ -7909,16 +7930,24 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
       const range = this.sectionRanges.find(r => r.folderId === sec.folderId);
       const lines = this.unifiedContent.split('\n');
-      const markdownBefore = range
-        ? lines.slice(range.lineStart + 1, range.lineEnd + 1).join('\n').trim()
-        : '';
+      const directMd = range ? lines.slice(range.lineStart + 1, range.lineEnd + 1).join('\n').trim() : '';
+      const span = this.boardSpanForSection(directMd);
+      // markdownBefore ne couvre que la portion "intro" (avant le 1er MO) : c'est la seule
+      // portion reflétée par le contenteditable, donc la seule pertinente pour la préservation
+      // des shortcodes {{TRELLO:id}} (preserveTrelloMarkers) et le diff avant/après édition.
+      const markdownBefore = span ? directMd.slice(0, span.start).trim() : directMd;
+
+      const { introHtml, outroHtml } = isDirty && existing
+        ? { introHtml: existing.contentHtml, outroHtml: existing.outroHtml }
+        : this.buildVisuSectionHtmlSplit(sec);
 
       return {
         sectionId: sec.folderId,
         folderName: sec.folderName,
         level: sec.level,
-        contentHtml: isDirty && existing ? existing.contentHtml : this.buildVisuSectionHtml(sec),
+        contentHtml: introHtml,
         markdownBefore: isDirty && existing ? existing.markdownBefore : markdownBefore,
+        outroHtml,
       };
     });
     // Initialiser le innerHTML des contenteditable après le rendu Angular
@@ -7930,9 +7959,24 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
   }
 
-  private buildVisuSectionHtml(sec: DocSection): string {
+  /** Sépare le contenu direct d'une section en HTML "intro" (avant le 1er MO, seule portion
+   *  éditable) et "outro" (après le dernier MO, lecture seule) — voir `boardSpanForSection`.
+   *  Sans MO dans la section, tout part dans introHtml (comportement inchangé). */
+  private buildVisuSectionHtmlSplit(sec: DocSection): { introHtml: string; outroHtml: string } {
     const lines = sec.textContent.split('\n');
-    let contentMd = lines.slice(1).join('\n');
+    const fullMd = lines.slice(1).join('\n');
+    const span = this.boardSpanForSection(fullMd);
+    if (!span) return { introHtml: this.renderVisuMd(fullMd, sec), outroHtml: '' };
+    const introMd = fullMd.slice(0, span.start);
+    const outroMd = fullMd.slice(span.end);
+    return {
+      introHtml: this.renderVisuMd(introMd, sec),
+      outroHtml: outroMd.trim() ? this.renderVisuMd(outroMd, sec) : '',
+    };
+  }
+
+  private renderVisuMd(contentMdInput: string, sec: DocSection): string {
+    let contentMd = contentMdInput;
 
     // Extraire les blocs fichier avant marked (placeholders)
     const fileBlocks: { token: string; html: string; md: string }[] = [];
@@ -9001,7 +9045,17 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
     const after = lines.slice(directEnd + 1);
 
-    const newContentLines = newMd.trim() ? newMd.trim().split('\n') : [];
+    // Le contenteditable ne reflète que la portion "intro" (avant le 1er MO) — voir
+    // buildVisuSectionHtmlSplit/boardSpanForSection. Le(s) fence(s) MO et le texte "outro" qui
+    // les suit (lecture seule dans ce mode) doivent être préservés tels quels, jamais écrasés
+    // par newMd qui ne les contient jamais.
+    const directMd = lines.slice(range.lineStart + 1, directEnd + 1).join('\n');
+    const span = this.boardSpanForSection(directMd);
+    const preservedTail = span ? directMd.slice(span.start).trim() : '';
+
+    const introPart = newMd.trim();
+    const newDirectContent = preservedTail ? [introPart, preservedTail].filter(Boolean).join('\n\n') : introPart;
+    const newContentLines = newDirectContent ? newDirectContent.split('\n') : [];
     const newLines = [...before, headingLine, ...newContentLines, ...after];
     const newContent = newLines.join('\n');
 

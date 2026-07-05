@@ -1930,6 +1930,13 @@ Votre texte de prompt ici.
                 }
               }
 
+              <!-- Texte après le dernier MO de la section — affiché à sa vraie place dans le
+                   document (mode Code fait foi), en lecture seule dans cette vue (modifiable via
+                   le mode Code) : voir buildVisuSectionHtmlSplit/boardSpanForSection. -->
+              @if (sec.outroHtml) {
+                <div class="visu-sec-content visu-sec-content--outro" [innerHTML]="sec.outroHtml"></div>
+              }
+
               </div>
 
             </div>

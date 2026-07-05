@@ -14448,6 +14448,30 @@
       "prompt": "Oui, durcis parseContent",
       "startedAt": "2026-07-05T20:17:25.561Z",
       "completedAt": "2026-07-05T20:17:25.561Z"
+    },
+    {
+      "id": "mod-566",
+      "version": "Br-0.010",
+      "date": "2026-07-05T20:59:38.853Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : le texte apres un MO Prompt/Trello/Array s'affiche desormais a sa vraie place (lecture seule) au lieu d'etre regroupe avant",
+      "description": "Le mode Edition (WYSIWYG) regroupait tout le texte d'une section dans une seule zone contenteditable AVANT tous les MegaOutils (Trello/Array/Prompt/Form/Chart), quel que soit l'ordre reel dans le document -- symptome signale : coller un texte apres un board Prompt (bouton 'Copier vers l'edition' de la conversation) l'affichait quand meme avant le board en mode Edition, alors que le mode Code (qui fait foi) montrait le bon ordre. Options evaluees en mode plan : edition bidirectionnelle complete des 2 zones (intro/outro) vs affichage correct avec edition outro en lecture seule -- la 1ere option demandait d'adapter 37 endroits du fichier keyes par sectionId (locks collaboratifs, undo, sauvegarde live debounce), deja responsables de plusieurs incidents cette session sans possibilite de test navigateur en direct ; option plus sure retenue avec l'utilisateur. Implementation : boardSpanForSection(md) detecte la position [debut,fin] du 1er au dernier fence MO du contenu direct d'une section ; buildVisuSectionHtmlSplit(sec) (l'ancien buildVisuSectionHtml devient renderVisuMd, reutilise 2 fois) separe le rendu en introHtml (avant le 1er MO, seule portion editable, contentHtml existant) et outroHtml (apres le dernier MO, nouveau champ VisuSectionState, affiche en lecture seule sans zone contenteditable). Sans MO dans la section, comportement strictement inchange (tout dans introHtml). Corrige au passage un bug latent decouvert pendant l'implementation : saveVisuSection() remplacait tout le contenu direct de la section par le Markdown edite (qui ne contient jamais les fences MO, retirees avant affichage) -- editer le texte intro puis quitter le champ aurait donc supprime silencieusement le(s) fence(s) MO et le texte outro a la prochaine sauvegarde. saveVisuSection recalcule desormais le span MO courant et reconduit tel quel (preservedTail) tout ce qui suit le debut du 1er fence. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee (pas de session authentifiee disponible) -- a tester manuellement par l'utilisateur en priorite sur le point 'blur ne supprime rien'.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsqu'on copie un texte qui proviens de la conversation, celui ci dois être enregistré après le prompt et pas avant comme actuellement",
+      "startedAt": "2026-07-05T20:59:38.853Z",
+      "completedAt": "2026-07-05T20:59:38.853Z"
     }
   ]
 }
