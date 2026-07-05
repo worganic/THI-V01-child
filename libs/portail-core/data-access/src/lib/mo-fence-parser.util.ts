@@ -1,9 +1,9 @@
 import { ChartPoint, FormQuestion, MaterializedMoPreview } from './mega-outils.models';
 
 /**
- * Fonctions pures de parsing partagées entre le mode "Workflow guidé" et le mode
- * "Tchat" du MO Prompt — extraites de PromptWorkflowPopupComponent pour être
- * réutilisées sans duplication (voir prompt-chat-popup.component.ts).
+ * Fonctions pures de parsing des MegaOutils détectés dans les réponses IA d'une
+ * conversation MO Prompt (tous modes : Normal/Guidé/Tchat/Tchat libre), utilisées
+ * par ProjetConversationComponent.
  */
 
 /** Corps d'un fence (entre la 1re et la dernière ligne ```). */
@@ -91,4 +91,54 @@ export function parseChartPoints(body: string): ChartPoint[] {
     if (m) points.push({ label: m[1].trim(), value: parseFloat(m[2].replace(',', '.')) });
   }
   return points;
+}
+
+/** Aperçu en lecture seule d'un tableau Markdown ARRAY (avant matérialisation réelle). */
+export function parseArrayTable(body: string): { headers: string[]; rows: string[][] } {
+  const lines = body.split('\n').map(l => l.trim()).filter(l => l.startsWith('|') && l.endsWith('|'));
+  const cells = (line: string) => line.slice(1, -1).split('|').map(c => c.trim());
+  const dataLines = lines.filter(l => !/^\|[\s|:-]+\|$/.test(l));
+  if (!dataLines.length) return { headers: [], rows: [] };
+  return { headers: cells(dataLines[0]), rows: dataLines.slice(1).map(cells) };
+}
+
+export interface TrelloPreviewColumn {
+  name: string;
+  cards: { title: string; priority: string | null }[];
+}
+
+/** Aperçu en lecture seule d'un board TRELLO (colonnes `### Nom`, cartes `- [ ] Titre \`[priorité]\``). */
+export function parseTrelloPreview(body: string): TrelloPreviewColumn[] {
+  const columns: TrelloPreviewColumn[] = [];
+  let current: TrelloPreviewColumn | null = null;
+  for (const line of body.split('\n')) {
+    const h = line.match(/^\s*###\s+(.+?)\s*$/);
+    if (h) { current = { name: h[1].trim(), cards: [] }; columns.push(current); continue; }
+    const c = line.match(/^\s*-\s*\[[ x~!]?\]\s*(.+?)\s*$/);
+    if (c && current) {
+      const raw = c[1];
+      const pm = raw.match(/^(.*?)\s*`\[(.+?)\]`\s*$/);
+      current.cards.push(pm ? { title: pm[1].trim(), priority: pm[2].trim() } : { title: raw.trim(), priority: null });
+    }
+  }
+  return columns;
+}
+
+export interface AgendaPreviewEvent {
+  date: string;
+  time: string;
+  title: string;
+  description: string;
+}
+
+/** Aperçu en lecture seule d'un AGENDA (lignes `YYYY-MM-DD | HH:MM-HH:MM | Titre | Description`). */
+export function parseAgendaPreview(body: string): AgendaPreviewEvent[] {
+  const events: AgendaPreviewEvent[] = [];
+  for (const line of body.split('\n')) {
+    const parts = line.split('|').map(p => p.trim());
+    if (parts.length >= 3 && /^\d{4}-\d{2}-\d{2}$/.test(parts[0])) {
+      events.push({ date: parts[0], time: parts[1] || '', title: parts[2] || '', description: parts[3] || '' });
+    }
+  }
+  return events;
 }

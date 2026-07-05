@@ -1,28 +1,70 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, SimpleChanges, signal, computed, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnInit, OnDestroy, SimpleChanges, signal, computed, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { marked } from 'marked';
 import { Subscription } from 'rxjs';
-import { ConversationService, Message, PromptContext } from '@worganic/portail-core/data-access';
+import {
+  ConversationService, Message, PromptContext, FileNode, PromptLaunchContext,
+  MaterializedMoPreview, PromptGlobalConfig, FormQuestion, FormEntry,
+  AiExecuteService, MegaOutilsService,
+  composeSystemPrompt, promptDeliverableHeadingInstruction,
+  detectMoFences, parseChoiceForm, fenceBody, parseChartPoints,
+  parseArrayTable, parseTrelloPreview, parseAgendaPreview,
+} from '@worganic/portail-core/data-access';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
 import { DocumentService } from '@worganic/portail-core/data-access';
 import { ProjetAiEditService } from '../../services/projet-ai-edit.service';
-import { FileNode } from '@worganic/portail-core/data-access';
+import { ChartBoardComponent } from '@worganic/shared/ui';
+import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
+
+const MAX_CADRAGE_WAVES = 5;
 
 @Component({
   selector: 'app-projet-conversation',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ChartBoardComponent, FormExecutionPopupComponent],
   templateUrl: './projet-conversation.component.html',
+  styles: [`
+    .chat-md :where(h1, h2, h3) { font-weight: 700; margin: 0.5em 0 0.25em; line-height: 1.3; }
+    .chat-md h1 { font-size: 1.05em; }
+    .chat-md h2 { font-size: 1em; }
+    .chat-md h3 { font-size: 0.95em; }
+    .chat-md p { margin: 0.35em 0; }
+    .chat-md ul, .chat-md ol { margin: 0.35em 0; padding-left: 1.3em; }
+    .chat-md li { margin: 0.15em 0; }
+    .chat-md strong { font-weight: 700; }
+    .chat-md em { font-style: italic; }
+    .chat-md hr { border: none; border-top: 1px solid currentColor; opacity: 0.15; margin: 0.6em 0; }
+    .chat-md code { font-family: 'Cascadia Code', monospace; font-size: 0.9em; background: rgba(128,128,128,0.15); border-radius: 3px; padding: 0.1em 0.3em; }
+    .chat-md pre { background: rgba(0,0,0,0.25); border-radius: 6px; padding: 0.6em 0.8em; overflow-x: auto; margin: 0.4em 0; }
+    .chat-md pre code { background: none; padding: 0; }
+    .chat-md blockquote { border-left: 2px solid currentColor; opacity: 0.85; padding-left: 0.7em; margin: 0.35em 0; }
+    .chat-md > *:first-child { margin-top: 0; }
+    .chat-md > *:last-child { margin-bottom: 0; }
+  `],
   host: { class: 'flex flex-col min-h-0 flex-1 overflow-hidden' },
 })
-export class ProjetConversationComponent implements OnChanges, AfterViewChecked, OnDestroy {
+export class ProjetConversationComponent implements OnChanges, OnInit, AfterViewChecked, OnDestroy {
   @Input() sectionId: string | null = null;
   @Input() projectId: string | null = null;
   @Input() files: FileNode[] = [];
   @Input() projectName: string | null = null;
   @Input() iaInstructions: string | null = null;
+  /** MO Prompt exécuté (bouton "Exécuter" du board) : lance/poursuit sa conversation ici. */
+  @Input() launchPrompt: PromptLaunchContext | null = null;
   @Output() conversationAdded = new EventEmitter<string>();
+  /** MegaOutils cochés sur un message d'une conversation Prompt à matérialiser (Trello/Array réels,
+   *  Agenda réel, livrable inséré dans la section) — relayé par le parent vers la zone d'édition.
+   *  `messageKey` (timestamp du message) permet au parent de rappeler `markMosMaterialized()` une
+   *  fois la matérialisation terminée (asynchrone), pour marquer les MO concernés "déjà ajoutés". */
+  @Output() materializeRequested = new EventEmitter<{ promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }>();
+  /** "Copier vers l'édition" sur un message IA d'une conversation Prompt — relayé par le parent. */
+  @Output() copyToEditionRequested = new EventEmitter<{ text: string; sectionId: string }>();
+  /** Clic sur "Déjà ajouté" d'un MO matérialisé : demande au parent de naviguer vers la section
+   *  résultat correspondante (même mécanisme que la navigation depuis la liste des Trello/Mockup). */
+  @Output() navigateToSectionRequested = new EventEmitter<string>();
   @ViewChild('scrollContainer') private scrollContainer!: ElementRef;
 
   private convService = inject(ConversationService);
@@ -30,6 +72,9 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
   private woHistory = inject(WoActionHistoryService);
   private documentService = inject(DocumentService);
   aiEditService = inject(ProjetAiEditService);
+  readonly execSvc = inject(AiExecuteService);
+  private megaSvc = inject(MegaOutilsService);
+  private sanitizer = inject(DomSanitizer);
 
   inputMessage = '';
   loading = signal(false);
@@ -65,6 +110,20 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
   currentSectionContent = signal<string | null>(null);
   currentSectionHasSubSections = signal(false);
 
+  // ── Conversation lancée depuis un MO Prompt (mode Normal/Guidé/Tchat/Tchat libre) ──────────
+  /** Contexte du Prompt actuellement "actif" dans ce fil : les messages tapés dans le composeur
+   *  principal lui sont adressés tant qu'il est actif (voir send()/continuePromptConversation()). */
+  activePromptLaunch: PromptLaunchContext | null = null;
+  private lastPromptLaunchToken = 0;
+  private promptGlobalConfig: PromptGlobalConfig | null = null;
+  private currentPromptPhase: 'clarify' | 'generate' | 'chat' = 'chat';
+  promptSending = signal(false);
+  promptStreamingText = signal('');
+  // Variables {{var}} à remplir avant le premier envoi (carte en ligne, pas de popup)
+  awaitingPromptVars = signal<PromptLaunchContext | null>(null);
+  promptVarValues: Record<string, string> = {};
+  private formDismissedMessageKey: string | null = null;
+
   // Liste consolidée de tous les modèles disponibles
   readonly allModels = computed(() => {
     const cfg = this.configService.cliConfig();
@@ -80,6 +139,12 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
     return this.configService.cliConfig().headerSelection?.model || 'claude-sonnet-4-6';
   });
 
+  // Provider dérivé du modèle actif — pas de sélecteur dédié, cohérent avec la sélection de l'onglet.
+  readonly activeProvider = computed(() => {
+    const found = this.allModels().find(m => m.value === this.activeModel());
+    return found?.provider || this.configService.cliConfig().headerSelection?.provider || 'claude';
+  });
+
   // Label court du modèle actif (affichage bouton)
   readonly modelLabel = computed(() => {
     const m = this.activeModel();
@@ -92,6 +157,11 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
     return this.iaMode() || this.inputMessage.trimStart().toLowerCase().startsWith('@ia ');
   }
 
+  /** Vrai si une génération est en cours (Mode IA fichier OU conversation Prompt) — désactive la saisie. */
+  get isBusy(): boolean {
+    return this.aiEditService.isStreaming() || this.promptSending();
+  }
+
   toggleIaMode() {
     this.iaMode.update(v => !v);
     // Nettoie le préfixe @ia s'il était tapé manuellement
@@ -99,6 +169,12 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
       const raw = this.inputMessage.trimStart();
       this.inputMessage = raw.slice(raw.toLowerCase().indexOf('@ia ') + 4);
     }
+  }
+
+  ngOnInit() {
+    this.subs.add(this.execSvc.chunk$.subscribe(c => this.promptStreamingText.update(v => v + c)));
+    this.subs.add(this.execSvc.done$.subscribe(full => this.onPromptTurnDone(full)));
+    this.subs.add(this.execSvc.error$.subscribe(err => this.onPromptTurnError(err)));
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -123,6 +199,9 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
         this.selectedModel.set(cfg.headerSelection?.model || '');
       }
       this.loadGlobalIaInstruction();
+    }
+    if (changes['launchPrompt'] && this.launchPrompt) {
+      this.startPromptLaunch(this.launchPrompt);
     }
   }
 
@@ -245,6 +324,18 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
     });
   }
 
+  /** Réinitialise l'état local après suppression de la conversation côté serveur
+   *  (bouton "Supprimer la conversation" du parent, ProjetEditorComponent). */
+  clearConversationLocal() {
+    this.messages = [];
+    this.activePromptLaunch = null;
+    this.awaitingPromptVars.set(null);
+    this.formDismissedMessageKey = null;
+    this.promptSending.set(false);
+    this.promptStreamingText.set('');
+    this.inputMessage = '';
+  }
+
   toggleHistory() {
     this.includeHistory.update(v => !v);
   }
@@ -260,7 +351,9 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
 
   send() {
     if (!this.inputMessage.trim() || !this.sectionId) return;
-    if (this.isAiMessage) {
+    if (this.activePromptLaunch && !this.iaMode()) {
+      this.continuePromptConversation();
+    } else if (this.isAiMessage) {
       this.sendAiEdit();
     } else {
       this.sendChat();
@@ -490,5 +583,452 @@ export class ProjetConversationComponent implements OnChanges, AfterViewChecked,
       }
     }
     return null;
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════════════════
+  // ── Conversation lancée depuis un MO Prompt (Normal/Guidé/Tchat/Tchat libre) ────────────
+  // Remplace les 4 anciens popups : tout se passe désormais dans ce fil de conversation,
+  // avec l'IA/modèle déjà sélectionnés ci-dessus (activeProvider/activeModel), sans sélecteur
+  // dédié. Les 4 modes ne diffèrent que par la composition du system prompt (composeSystemPrompt)
+  // et par la phase de cadrage préalable du mode Guidé — après quoi tout redevient un chat libre.
+  // ══════════════════════════════════════════════════════════════════════════════════════
+
+  private startPromptLaunch(ctx: PromptLaunchContext) {
+    if (ctx.token === this.lastPromptLaunchToken) return;
+    this.lastPromptLaunchToken = ctx.token;
+    this.activePromptLaunch = ctx;
+    this.promptVarValues = {};
+    if (ctx.variables.length > 0) {
+      this.awaitingPromptVars.set(ctx);
+      return;
+    }
+    this.beginPromptConversation(ctx, ctx.userPrompt);
+  }
+
+  continuePromptWithVars() {
+    const ctx = this.awaitingPromptVars();
+    if (!ctx) return;
+    let resolved = ctx.userPrompt;
+    for (const [k, v] of Object.entries(this.promptVarValues)) {
+      resolved = resolved.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v);
+    }
+    this.awaitingPromptVars.set(null);
+    this.beginPromptConversation(ctx, resolved);
+  }
+
+  cancelPromptVars() {
+    this.awaitingPromptVars.set(null);
+    this.activePromptLaunch = null;
+  }
+
+  private async beginPromptConversation(ctx: PromptLaunchContext, resolvedPrompt: string) {
+    if (!this.promptGlobalConfig) {
+      try {
+        this.promptGlobalConfig = await this.megaSvc.getPromptGlobalConfig();
+      } catch {
+        this.promptGlobalConfig = { baseSystemPrompt: '', workflowClarifyPrompt: '', workflowGeneratePrompt: '', chatStructuredPrompt: '' };
+      }
+    }
+    this.appendPromptMessage(ctx, 'user', resolvedPrompt, {});
+    if (ctx.mode === 'guided') {
+      this.sendPromptTurn(ctx, resolvedPrompt, 'clarify');
+    } else {
+      this.sendPromptTurn(ctx, this.buildPromptTranscriptText(ctx.instanceId), 'chat');
+    }
+  }
+
+  /** Poursuite d'une conversation Prompt déjà lancée, depuis le composeur principal. */
+  continuePromptConversation() {
+    const ctx = this.activePromptLaunch;
+    if (!ctx || !this.inputMessage.trim() || this.isBusy) return;
+    const text = this.inputMessage.trim();
+    this.inputMessage = '';
+    this.appendPromptMessage(ctx, 'user', text, {});
+    this.sendPromptTurn(ctx, this.buildPromptTranscriptText(ctx.instanceId), 'chat');
+  }
+
+  /** Termine la conversation Prompt active : les messages tapés redeviennent du chat normal. */
+  endPromptConversation() {
+    this.activePromptLaunch = null;
+  }
+
+  private buildPromptTranscriptText(instanceId: string): string {
+    return this.messages
+      .filter(m => m.promptInstanceId === instanceId)
+      .map(m => `[${m.role === 'user' ? 'UTILISATEUR' : 'IA'}] : ${m.text}`)
+      .join('\n\n');
+  }
+
+  private buildGenerateUserPrompt(ctx: PromptLaunchContext): string {
+    const transcript = this.buildPromptTranscriptText(ctx.instanceId);
+    return ctx.currentState.trim() ? `${transcript}\n\n[État actuel du projet]\n${ctx.currentState.trim()}` : transcript;
+  }
+
+  private sendPromptTurn(ctx: PromptLaunchContext, userPromptForAi: string, phase: 'clarify' | 'generate' | 'chat') {
+    if (!this.promptGlobalConfig) return;
+    let systemPrompt = composeSystemPrompt({
+      mode: ctx.mode,
+      fenceSystemPrompt: ctx.systemPrompt,
+      globalConfig: this.promptGlobalConfig,
+      useConfigPrompts: true,
+      phase: ctx.mode === 'guided' ? (phase === 'generate' ? 'generate' : 'clarify') : undefined,
+    });
+    if (phase === 'generate') {
+      const headingInstruction = promptDeliverableHeadingInstruction(ctx.startHeadingLevel);
+      systemPrompt = [systemPrompt, headingInstruction].filter(Boolean).join('\n\n---\n\n') || null;
+    }
+    this.currentPromptPhase = phase;
+    this.promptSending.set(true);
+    this.promptStreamingText.set('');
+    this.execSvc.startExecution(systemPrompt, userPromptForAi, this.activeProvider(), this.activeModel());
+  }
+
+  private onPromptTurnDone(full: string) {
+    this.promptSending.set(false);
+    this.promptStreamingText.set('');
+    const ctx = this.activePromptLaunch;
+    if (!ctx) return;
+    const text = full.trim();
+
+    if (ctx.mode === 'guided' && this.currentPromptPhase === 'clarify') {
+      if (/===\s*PR[ÊE]T\s*===/i.test(text)) {
+        this.sendPromptTurn(ctx, this.buildGenerateUserPrompt(ctx), 'generate');
+        return;
+      }
+      const wave = this.nextCadrageWave(ctx.instanceId);
+      const questions = parseChoiceForm(text);
+      if (questions.length > 0) {
+        this.appendPromptMessage(ctx, 'ai', text, { cadrageWave: wave, isCadrageForm: true });
+      } else {
+        // Pas de formulaire exploitable : ce n'est pas une erreur, on enchaîne sur la génération.
+        this.appendPromptMessage(ctx, 'ai', text, { cadrageWave: wave });
+        this.sendPromptTurn(ctx, this.buildGenerateUserPrompt(ctx), 'generate');
+      }
+      return;
+    }
+
+    // Génération (Guidé) ou tour de chat normal (Normal/Tchat/Tchat libre/Guidé post-cadrage)
+    const mos = detectMoFences(text);
+    this.appendPromptMessage(ctx, 'ai', text, { mos: mos.length ? mos : undefined });
+    this.megaSvc.savePromptExecution(ctx.instanceId, {
+      userPrompt: ctx.userPrompt,
+      systemPrompt: ctx.systemPrompt,
+      result: text,
+      provider: this.activeProvider(),
+      model: this.activeModel(),
+    }).catch(() => {});
+  }
+
+  private onPromptTurnError(errMsg: string) {
+    this.promptSending.set(false);
+    this.promptStreamingText.set('');
+    const ctx = this.activePromptLaunch;
+    if (!ctx) return;
+    this.appendPromptMessage(ctx, 'ai', `⚠️ Erreur : ${errMsg}`, {});
+  }
+
+  private nextCadrageWave(instanceId: string): number {
+    return this.messages.filter(m => m.promptInstanceId === instanceId && m.isCadrageForm).length + 1;
+  }
+
+  private appendPromptMessage(ctx: PromptLaunchContext, role: 'user' | 'ai', text: string, extra: Partial<Message>) {
+    if (!this.sectionId) return;
+    const msg = {
+      ...extra,
+      user: role === 'ai' ? 'IA' : 'Moi',
+      userId: role === 'ai' ? 'ai' : 'local',
+      text,
+      timestamp: new Date().toISOString(),
+      role,
+      promptInstanceId: ctx.instanceId,
+      promptInstanceName: ctx.instanceName,
+      mode: ctx.mode,
+    };
+    this.messages = [...this.messages, msg];
+    this.shouldScroll = true;
+    this.convService.appendMessage(this.sectionId, msg).subscribe();
+    this.conversationAdded.emit(this.sectionId);
+  }
+
+  /** Dernier message IA du fil, s'il porte un formulaire exploitable (cadrage Guidé, ou fence/texte
+   *  FORM en mode Tchat/Tchat libre/Normal) — même logique que l'ancien popup Tchat, unifiée ici. */
+  activeForm(): { message: Message; questions: FormQuestion[] } | null {
+    const msgs = this.messages;
+    const last = msgs[msgs.length - 1];
+    if (!last || last.role !== 'ai' || !last.promptInstanceId) return null;
+    if (this.formDismissedMessageKey === last.timestamp) return null;
+    const formMo = last.mos?.find(mo => mo.type === 'form');
+    const questions = formMo ? parseChoiceForm(fenceBody(formMo.fence)) : parseChoiceForm(last.text);
+    return questions.length > 0 ? { message: last, questions } : null;
+  }
+
+  onFormSubmitted(entry: FormEntry) {
+    const active = this.activeForm();
+    if (!active) return;
+    this.formDismissedMessageKey = active.message.timestamp;
+    if (active.message.isCadrageForm) {
+      this.onCadrageFormSubmitted(active.message, entry);
+      return;
+    }
+    const answersText = Object.entries(entry.answers)
+      .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`)
+      .join('\n');
+    const ctx = this.activePromptLaunch;
+    if (ctx && ctx.instanceId === active.message.promptInstanceId) {
+      // Mode Tchat/Tchat libre/Normal : envoie directement les réponses à l'IA et reste
+      // en conversation Prompt active (comme continuePromptConversation()), pas de pré-remplissage.
+      this.appendPromptMessage(ctx, 'user', answersText, {});
+      this.sendPromptTurn(ctx, this.buildPromptTranscriptText(ctx.instanceId), 'chat');
+    } else {
+      // Filet de sécurité : conversation Prompt non active (ex. "Terminer" cliqué) → pré-remplit
+      // le composeur pour relecture manuelle, l'envoi automatique n'aurait pas de contexte valide.
+      this.inputMessage = answersText;
+    }
+  }
+
+  onFormSecondary(entry: FormEntry) {
+    const active = this.activeForm();
+    if (!active || !active.message.isCadrageForm) return;
+    this.formDismissedMessageKey = active.message.timestamp;
+    this.onForceGenerateFromCadrage(entry);
+  }
+
+  dismissForm() {
+    const active = this.activeForm();
+    if (active) this.formDismissedMessageKey = active.message.timestamp;
+  }
+
+  // ── Accordéon "réponse brute de l'IA" — masqué par défaut quand un MO est affiché ──────────
+  /** Vrai si ce message IA a produit un widget MO (carte MegaOutils détectés ou formulaire
+   *  interactif) — dans ce cas le texte brut de l'IA est masqué par défaut (accordéon). */
+  messageHasMoWidget(msg: Message): boolean {
+    if (msg.mos && msg.mos.length > 0) return true;
+    const af = this.activeForm();
+    return !!af && af.message === msg;
+  }
+
+/** Position [start, end) de la fence MO consolidée (1re à dernière fence détectée) et/ou
+   *  du bloc formulaire non-fencé actif, dans le texte brut du message — utilisées pour
+   *  isoler le texte libre écrit par l'IA autour de ces blocs (intro/milieu/outro). */
+  private structuredRanges(msg: Message): { start: number; end: number }[] {
+    const ranges: { start: number; end: number }[] = [];
+    if (msg.mos && msg.mos.length > 0) {
+      const firstFence = msg.mos[0].fence;
+      const lastFence = msg.mos[msg.mos.length - 1].fence;
+      const firstIdx = msg.text.indexOf(firstFence);
+      const lastIdx = msg.text.indexOf(lastFence);
+      if (firstIdx >= 0 && lastIdx >= 0) ranges.push({ start: firstIdx, end: lastIdx + lastFence.length });
+    }
+    const formSpan = this.formCharSpanFor(msg);
+    if (formSpan) ranges.push(formSpan);
+    ranges.sort((a, b) => a.start - b.start);
+    return ranges;
+  }
+
+  /** Position [start, end) du bloc de questions non-fencé du formulaire actif de ce message
+   *  (uniquement si le formulaire n'est pas déjà couvert par une fence FORM dans msg.mos). */
+  private formCharSpanFor(msg: Message): { start: number; end: number } | null {
+    const af = this.activeForm();
+    if (!af || af.message !== msg) return null;
+    if (msg.mos?.some(mo => mo.type === 'form')) return null;
+    const lines = msg.text.split('\n');
+    const qRe = /^\s*(?:[\*\-]\s+)?\*\*(.+?)\*\*\s*:?\s*$/;
+    const cRe = /^\s*(?:[\*\-]\s+)?\[\s*\]\s+(.+)$/;
+    const rRe = /^\s*(?:[\*\-]\s+)?\(\s*\)\s+(.+)$/;
+    const blankRe = /^\s*_{5,}\s*$/;
+    let startLine = -1;
+    let endLine = -1;
+    let open = false;
+    lines.forEach((line, i) => {
+      if (qRe.test(line)) { if (startLine < 0) startLine = i; endLine = i; open = true; return; }
+      if (open && (cRe.test(line) || rRe.test(line) || blankRe.test(line))) endLine = i;
+    });
+    if (startLine < 0) return null;
+    const offset = (n: number): number => {
+      if (n <= 0) return 0;
+      if (n >= lines.length) return msg.text.length;
+      return lines.slice(0, n).join('\n').length + 1;
+    };
+    return { start: offset(startLine), end: offset(endLine + 1) };
+  }
+
+  /** Texte libre écrit par l'IA avant tout MO/formulaire — toujours affiché, contrairement
+   *  au reste du texte qui duplique le(s) widget(s) et reste masqué derrière l'accordéon.
+   *  Ex. "Voici l'analyse mise à jour de votre profil..." avant un formulaire de cadrage. */
+  messageIntroText(msg: Message): string {
+    const ranges = this.structuredRanges(msg);
+    if (!ranges.length) return '';
+    return msg.text.slice(0, ranges[0].start).trim();
+  }
+
+  /** Texte libre écrit par l'IA entre deux blocs structurés du même message (ex. un
+   *  livrable ARRAY/TRELLO mis à jour suivi d'une phrase de transition puis d'un
+   *  formulaire de suivi) — sans quoi ce texte disparaissait entièrement, avalé par
+   *  l'accordéon au même titre que le texte dupliqué par les widgets. */
+  messageMiddleText(msg: Message): string {
+    const ranges = this.structuredRanges(msg);
+    if (ranges.length < 2) return '';
+    return msg.text.slice(ranges[0].end, ranges[1].start).trim();
+  }
+
+  /** Texte libre écrit par l'IA après tout MO/formulaire — toujours affiché (même logique
+   *  que l'intro, côté fin du message). */
+  messageOutroText(msg: Message): string {
+    const ranges = this.structuredRanges(msg);
+    if (!ranges.length) return '';
+    return msg.text.slice(ranges[ranges.length - 1].end).trim();
+  }
+
+  renderedIntroHtml(msg: Message): SafeHtml {
+    const html = marked.parse(this.messageIntroText(msg), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  renderedMiddleHtml(msg: Message): SafeHtml {
+    const html = marked.parse(this.messageMiddleText(msg), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  renderedOutroHtml(msg: Message): SafeHtml {
+    const html = marked.parse(this.messageOutroText(msg), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  private expandedRawTextKeys = new Set<string>();
+  isRawTextExpanded(msg: Message): boolean {
+    return this.expandedRawTextKeys.has(msg.timestamp);
+  }
+  toggleRawText(msg: Message) {
+    if (this.expandedRawTextKeys.has(msg.timestamp)) this.expandedRawTextKeys.delete(msg.timestamp);
+    else this.expandedRawTextKeys.add(msg.timestamp);
+  }
+
+  private onCadrageFormSubmitted(msg: Message, entry: FormEntry) {
+    const ctx = this.activePromptLaunch;
+    if (!ctx || ctx.instanceId !== msg.promptInstanceId) return;
+    const answersText = Object.entries(entry.answers)
+      .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`)
+      .join('\n');
+    this.appendPromptMessage(ctx, 'user', answersText, {});
+    const waveCount = this.messages.filter(m => m.promptInstanceId === ctx.instanceId && m.isCadrageForm).length;
+    if (waveCount >= MAX_CADRAGE_WAVES) {
+      this.sendPromptTurn(ctx, this.buildGenerateUserPrompt(ctx), 'generate');
+    } else {
+      this.sendPromptTurn(ctx, this.buildPromptTranscriptText(ctx.instanceId), 'clarify');
+    }
+  }
+
+  private onForceGenerateFromCadrage(entry?: FormEntry) {
+    const ctx = this.activePromptLaunch;
+    if (!ctx) return;
+    if (entry && Object.keys(entry.answers || {}).length > 0) {
+      const answersText = Object.entries(entry.answers)
+        .map(([k, v]) => `${k} : ${Array.isArray(v) ? v.join(' ; ') : v}`)
+        .join('\n');
+      this.appendPromptMessage(ctx, 'user', answersText, {});
+    }
+    this.sendPromptTurn(ctx, this.buildGenerateUserPrompt(ctx), 'generate');
+  }
+
+  toggleMo(msg: Message, moIndex: number, checked: boolean) {
+    if (!msg.mos) return;
+    const updatedMos = msg.mos.map((mo, i) => i === moIndex ? { ...mo, selected: checked } : mo);
+    this.messages = this.messages.map(m => m === msg ? { ...m, mos: updatedMos } : m);
+  }
+
+  /** Émet la matérialisation des MO cochés (et pas déjà ajoutés) pour ce message — relayée par
+   *  le parent vers la zone d'édition (Trello/Array réels, Agenda réel, livrable inséré dans la
+   *  section). Les MO restent dans la carte, marqués "déjà ajoutés" par `markMosMaterialized()`. */
+  materializeMo(msg: Message) {
+    const selected = msg.mos?.filter(mo => mo.selected && !mo.materializedSectionId) ?? [];
+    if (!selected.length || !msg.promptInstanceId) return;
+    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: selected, messageKey: msg.timestamp });
+  }
+
+  /** Ajoute au projet un seul MegaOutil de la carte (indépendamment de sa case à cocher et des
+   *  autres MO listés) — reste affiché dans la carte, marqué "déjà ajouté" une fois terminé. */
+  materializeSingleMo(msg: Message, moIndex: number) {
+    const mo = msg.mos?.[moIndex];
+    if (!mo || mo.materializedSectionId || !msg.promptInstanceId) return;
+    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: [mo], messageKey: msg.timestamp });
+  }
+
+  /** Rappelé par le parent une fois la matérialisation asynchrone terminée : marque les MO
+   *  concernés comme "déjà ajoutés" (folderId de la section résultat) au lieu de les retirer —
+   *  état de session uniquement, non persisté (pas de ré-écriture du message stocké). */
+  markMosMaterialized(messageKey: string, materializedMos: MaterializedMoPreview[], sectionId: string | null) {
+    const keys = new Set(materializedMos.map(mo => this.moIdentity(mo)));
+    this.messages = this.messages.map(m => {
+      if (m.timestamp !== messageKey || !m.mos) return m;
+      const updatedMos = m.mos.map(mo => keys.has(this.moIdentity(mo)) ? { ...mo, materializedSectionId: sectionId } : mo);
+      return { ...m, mos: updatedMos };
+    });
+  }
+
+  /** Navigue vers la section résultat d'un MO déjà ajouté (bouton "Déjà ajouté"). */
+  navigateToSection(sectionId: string) {
+    this.navigateToSectionRequested.emit(sectionId);
+  }
+
+  /** Vrai s'il reste au moins un MO coché et pas déjà ajouté — conditionne l'affichage du
+   *  bouton groupé "Ajouter au projet (sélection)". */
+  hasMaterializableMos(msg: Message): boolean {
+    return !!msg.mos?.some(mo => mo.selected && !mo.materializedSectionId);
+  }
+
+  /** "Copier vers l'édition" sur un message IA d'une conversation Prompt. */
+  copyMessageToImport(msg: Message) {
+    if (!msg.text.trim() || !this.sectionId) return;
+    this.copyToEditionRequested.emit({ text: msg.text, sectionId: this.sectionId });
+  }
+
+  chartPointsFor(mo: MaterializedMoPreview) {
+    return parseChartPoints(fenceBody(mo.fence));
+  }
+
+  arrayTableFor(mo: MaterializedMoPreview) {
+    return parseArrayTable(fenceBody(mo.fence));
+  }
+
+  trelloPreviewFor(mo: MaterializedMoPreview) {
+    return parseTrelloPreview(fenceBody(mo.fence));
+  }
+
+  agendaPreviewFor(mo: MaterializedMoPreview) {
+    return parseAgendaPreview(fenceBody(mo.fence));
+  }
+
+  // ── Accordéon "aperçu des données" par MegaOutil détecté (avant matérialisation) ────────
+  private expandedMoKeys = new Set<string>();
+  /** Identité d'un MO au sein d'un message (type + nom) — pas d'ID stable propre au MO. */
+  private moIdentity(mo: MaterializedMoPreview): string {
+    return `${mo.type}::${mo.name}`;
+  }
+  private moKey(msg: Message, mo: MaterializedMoPreview): string {
+    return `${msg.timestamp}::${this.moIdentity(mo)}`;
+  }
+  isMoExpanded(msg: Message, mo: MaterializedMoPreview): boolean {
+    return this.expandedMoKeys.has(this.moKey(msg, mo));
+  }
+  toggleMoExpanded(msg: Message, mo: MaterializedMoPreview) {
+    const key = this.moKey(msg, mo);
+    if (this.expandedMoKeys.has(key)) this.expandedMoKeys.delete(key);
+    else this.expandedMoKeys.add(key);
+  }
+
+  /** Rendu markdown d'un message IA d'une conversation Prompt — les fences MO déjà extraites
+   *  (carte "MegaOutils détectés") sont retirées du texte pour ne pas apparaître deux fois. */
+  renderedHtml(msg: Message): SafeHtml {
+    let text = msg.text;
+    for (const mo of msg.mos ?? []) text = text.replace(mo.fence, '');
+    text = text.replace(/^[ \t]*_{5,}[ \t]*$/gm, '');
+    text = text.replace(/\n{3,}/g, '\n\n').trim();
+    const html = marked.parse(text, { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  renderedPromptStreamingHtml(): SafeHtml {
+    const html = marked.parse(this.promptStreamingText().replace(/^[ \t]*_{5,}[ \t]*$/gm, ''), { async: false }) as string;
+    return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 }

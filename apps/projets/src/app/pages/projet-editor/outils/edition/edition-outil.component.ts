@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { FileNode, MegaOutilInstance } from '@worganic/portail-core/data-access';
+import { FileNode, MegaOutilInstance, MaterializedMoPreview, PromptLaunchContext } from '@worganic/portail-core/data-access';
 import {
   ProjetEditorZoneComponent,
   FileSaveEvent,
@@ -36,6 +36,7 @@ import {
       (megaOutilSelect)="megaOutilSelect.emit($event)"
       (megaOutilCreated)="megaOutilCreated.emit($event)"
       (megaOutilDeleted)="megaOutilDeleted.emit($event)"
+      (launchPromptConversation)="launchPromptConversation.emit($event)"
       (closeTrelloList)="closeTrelloList.emit()"
       (openTrelloList)="openTrelloList.emit()"
       (trelloNavigate)="trelloNavigate.emit($event)"
@@ -84,6 +85,7 @@ export class EditionOutilComponent {
   @Output() megaOutilSelect = new EventEmitter<MegaOutilInstance>();
   @Output() megaOutilCreated = new EventEmitter<MegaOutilInstance>();
   @Output() megaOutilDeleted = new EventEmitter<string>();
+  @Output() launchPromptConversation = new EventEmitter<PromptLaunchContext>();
   @Output() closeTrelloList = new EventEmitter<void>();
   @Output() openTrelloList = new EventEmitter<void>();
   @Output() trelloNavigate = new EventEmitter<string>();
@@ -132,5 +134,18 @@ export class EditionOutilComponent {
 
   getEntityText(entityId: string): string | null {
     return this.innerZone?.getEntityText(entityId) ?? null;
+  }
+
+  /** Relayé depuis ProjetConversationComponent (conversation lancée par un MO Prompt) :
+   *  matérialise les MegaOutils cochés et insère le livrable dans la section du Prompt.
+   *  Retourne le folderId de la section résultat (ou null), pour la navigation "Déjà ajouté". */
+  async materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string): Promise<string | null> {
+    return (await this.innerZone?.materializeFromConversation(promptInstanceId, deliverable, selectedMos, transcript)) ?? null;
+  }
+
+  /** Relayé depuis ProjetConversationComponent : ouvre le popup d'import (pastePreview) pour
+   *  coller le texte d'un message IA dans le document, ciblé sur la section donnée. */
+  insertTextIntoEdition(text: string, sectionId: string): void {
+    this.innerZone?.insertTextIntoEdition(text, sectionId);
   }
 }

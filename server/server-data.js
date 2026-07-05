@@ -7887,7 +7887,7 @@ app.post('/api/conversations/:sectionId', (req, res) => {
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     
     const sectionId = req.params.sectionId;
-    const { text, role } = req.body;
+    const { text, role, promptInstanceId, promptInstanceName, mode, mos, cadrageWave, isCadrageForm } = req.body;
 
     if (!text) return res.status(400).json({ error: 'Texte requis' });
 
@@ -7908,15 +7908,39 @@ app.post('/api/conversations/:sectionId', (req, res) => {
             userId: role === 'ai' ? 'ai' : user.id,
             text,
             role: role || 'user',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            // Conversation lancée depuis un MO Prompt (mode Normal/Guidé/Tchat/Tchat libre)
+            ...(promptInstanceId ? { promptInstanceId } : {}),
+            ...(promptInstanceName ? { promptInstanceName } : {}),
+            ...(mode ? { mode } : {}),
+            ...(Array.isArray(mos) && mos.length ? { mos } : {}),
+            ...(cadrageWave ? { cadrageWave } : {}),
+            ...(isCadrageForm ? { isCadrageForm } : {}),
         };
-        
+
         data.messages.push(newMessage);
         fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
         
         res.status(201).json(newMessage);
     } catch (e) {
         res.status(500).json({ error: 'Erreur lors de la sauvegarde du message' });
+    }
+});
+
+// DELETE /api/conversations/:sectionId — efface toute la conversation d'une section
+// (chat général "Mode IA" + tous les échanges MO Prompt confondus, un seul fichier par section).
+app.delete('/api/conversations/:sectionId', (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+
+    const sectionId = req.params.sectionId;
+    const filePath = path.join(CONVERSATIONS_DIR, `${sectionId}.json`);
+
+    try {
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+        res.json({ ok: true });
+    } catch (e) {
+        res.status(500).json({ error: 'Erreur lors de la suppression de la conversation' });
     }
 });
 
@@ -11295,7 +11319,14 @@ const DEFAULT_CHAT_STRUCTURED_PROMPT = `Tu discutes en mode conversationnel libr
   (le label en gras suivi, sur la ligne d'après, d'exactement une ligne de 5 underscores ou plus — rien d'autre sur cette ligne). Une ligne vide entre deux questions.
   Si la question attend un choix parmi des options plutôt qu'une réponse libre, remplace la ligne d'underscores par une liste \`- [ ] Option\` (choix multiple) ou \`- ( ) Option\` (choix unique) — jamais de simple liste à puces \`-\` sans case.
 - Un tableau Kanban (tâches, avancement) : \`\`\`TRELLO: Nom\`\`\` avec les mêmes conventions que le mode Workflow guidé (colonnes \`### À faire/En cours/Terminé\`, cartes \`- [ ] Titre \`[priorité]\`\`).
-- Un tableau de données : \`\`\`ARRAY: Nom\`\`\` avec un tableau Markdown \`| Colonne | ... |\`.
+- **Dès que la réponse contient des données structurées en lignes/colonnes** (comparatif, profil, récapitulatif, liste de caractéristiques…), formate-la EXACTEMENT ainsi, sans exception :
+    \`\`\`ARRAY: Nom du tableau
+    | Colonne A | Colonne B |
+    | --- | --- |
+    | Valeur 1 | Valeur 2 |
+    | Valeur 3 | Valeur 4 |
+    \`\`\`
+  (fence \`\`\`ARRAY: ouvrant avec le nom sur la même ligne, tableau Markdown à pipes \`|\` avec ligne de séparation \`| --- | --- |\`, fence \`\`\`\` fermant seul sur sa ligne). **Jamais** de tableau en texte brut sans les \`|\`, jamais sans les fences \`\`\`ARRAY:\`\`\`/\`\`\`\` — un texte aligné en colonnes sans cette syntaxe ne sera pas reconnu par l'application.
 - Un agenda (événements datés) : \`\`\`AGENDA: Nom\`\`\` avec des lignes \`YYYY-MM-DD | HH:MM-HH:MM | Titre | Description\`.
 - Un graphique de progression : \`\`\`CHART: Titre\`\`\` avec des lignes \`Label: valeur\`.
 

@@ -13951,6 +13951,311 @@
       "prompt": "On doit pouvoir sauvegarder une section et tous ses enfants pour ne pas avoir à les faire 1 par un, il faut garder l'option sauvegardé juste la section selectionné ou toutes les sections dont les enfants",
       "startedAt": "2026-07-05T10:24:23.998Z",
       "completedAt": "2026-07-05T10:24:23.998Z"
+    },
+    {
+      "id": "mod-545",
+      "version": "Br-0.011",
+      "date": "2026-07-05T12:14:45.814Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs",
+        "server"
+      ],
+      "features": "projets:mo-prompt,projets:zone5-conversation",
+      "title": "MO Prompt : exécution dans l'onglet Conversation, suppression des 4 popups",
+      "description": "Refonte complete de l'execution des MO Prompt (Normal/Guide/Tchat/Tchat libre) : le bouton \"Executer\" n'ouvre plus aucun popup, il bascule vers l'onglet Conversation (zone 5) et y lance la conversation avec l'IA/modele deja selectionnes dans cet onglet. Nouveau flux dans ProjetConversationComponent : lancement (variable-fill en ligne si {{vars}}), composition du system prompt selon le mode (composeSystemPrompt(), nouveau libs/portail-core/data-access/src/lib/prompt-system-composer.util.ts, unifie la logique dupliquee dans les 3 anciens popups), cadrage en ligne pour le mode Guide (formulaire via app-form-execution-popup [inline]=true, nouveau Input sur ce composant), detection MO (detectMoFences) + carte \"MegaOutils detectes\" + bouton \"Ajouter au projet\" par message (pas seulement le dernier), rendu markdown (marked+DomSanitizer) gate sur les messages tagues promptInstanceId, bouton \"Copier vers l'edition\" par message. Un seul fil de conversation par section (chat general + tous les Prompts, tagues promptInstanceId/mode), persiste dans le fichier JSON existant (ConversationService, POST /api/conversations/:sectionId etendu pour ces nouveaux champs optionnels) -- abandon des tables BDD mega_outil_prompt_chat_sessions/_messages (laissees en place, inutilisees). Plomberie : nouvel Output launchPromptConversation (ProjetEditorZoneComponent -> EditionOutilComponent -> ProjetEditorComponent, qui bascule zone5Tab/zone5Collapsed et navigue vers la section), et deux methodes exposees sur EditionOutilComponent (materializeFromConversation, insertTextIntoEdition) qui delegent au ViewChild interne existant -- reutilise le pattern deja etabli (appendSection/applyExternalContent) plutot qu'un nouveau service. Simplification assumee (a ameliorer si besoin) : pas de toggle \"Utiliser les prompts de configuration\" ni de panneau \"Journal IA\" dans cette premiere version (presents dans les anciens popups Guide/Tchat). Suppression des 4 composants popup (prompt-execution-popup, prompt-workflow-popup, prompt-chat-popup, prompt-freechat-popup) apres portage de leur logique utile. Build portail+projets verifie sans erreur (cache desactive), grep final sans reference residuelle aux composants supprimes.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts",
+        "libs/portail-core/data-access/src/lib/conversation.service.ts",
+        "libs/portail-core/data-access/src/lib/prompt-launch-context.model.ts",
+        "libs/portail-core/data-access/src/lib/prompt-system-composer.util.ts",
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "libs/portail-core/data-access/src/index.ts",
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-execution-popup/prompt-execution-popup.component.ts (supprimé)",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-workflow-popup/prompt-workflow-popup.component.ts (supprimé)",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-chat-popup/prompt-chat-popup.component.ts (supprimé)",
+        "apps/projets/src/app/pages/projet-editor/components/prompt-freechat-popup/prompt-freechat-popup.component.ts (supprimé)",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans le MO prompt lorsqu'on clique sur Executer cela t'ouvre un popup, maintenant j'aimerais que tu change l'affichage : n'ouvre plus de popup et lance le prompt directement dans l'outils de conversation en mode IA, le système de type de tchat devra être reproduit directement dans l'onglet de conversation, l'IA et le model utilisé sera celui selectionné dans la conversation, la conversation devra inclure directement dans l'onglet les MO comme les form, array, etc. Le système devra prendre en compte le mode de prompt pour utiliser les prompts initiaux utilisé pour chaque mode. Un bouton devra permettre de copier les réponses de l'IA dans le texte d'Edition. En conclusion je ne veux plus de popup pour géré les prompts mais que tous soi gérer directement dans la fenètre de conversation.",
+      "startedAt": "2026-07-05T12:14:45.814Z",
+      "completedAt": "2026-07-05T12:14:45.814Z"
+    },
+    {
+      "id": "mod-546",
+      "version": "Br-0.012",
+      "date": "2026-07-05T12:38:32.119Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : réduction de l'espace vide entre la barre de formatage et le contenu",
+      "description": "En mode Edition (visu), le conteneur des sections (.visu-content-wrap) avait un padding-top de 2rem (32px), créant un grand espace vide entre la barre de formatage ancrée en haut (.visu-format-toolbar--docked, position sticky) et le contenu de la section (titre, board MO Prompt, texte). Réduit à 0.75rem pour que le contenu démarre juste sous la barre de formatage, conformément à la demande. Vérifié visuellement dans le navigateur (projet de test, section avec board Prompt et section texte simple) : le contenu suit immédiatement la barre, sans régression sur le reste de la mise en page (max-width/padding horizontal/bas inchangés).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "la zone d'edition n'est pas bien placer, elle doit commencer juste en dessous de la barre des styles",
+      "startedAt": "2026-07-05T12:38:32.119Z",
+      "completedAt": "2026-07-05T12:38:32.119Z"
+    },
+    {
+      "id": "mod-547",
+      "version": "Br-0.013",
+      "date": "2026-07-05T12:45:43.728Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-preview",
+      "title": "Mode Edition : le clic sur une section dans la sidebar cachait son haut sous la barre de formatage",
+      "description": "La reduction du padding-top (mod-546) ne suffisait pas : le vrai probleme etait scrollToNodeById() qui utilisait el.scrollIntoView({block:'start'}) en mode visu. La barre de formatage (.visu-format-toolbar--docked) est en position sticky DANS le meme conteneur scrollable (#visu) -- scrollIntoView aligne donc le haut de la section exactement la ou la barre reste affichee, qui la recouvre visuellement (confirme par l ascenseur affiche au-dessus de la barre au lieu d en dessous). Corrige en calculant manuellement la position cible : hauteur reelle de la barre (toolbar.offsetHeight) soustraite de la position de la section avant d appeler root.scrollTo({top, behavior:smooth}), au lieu du scrollIntoView natif qui ignore les elements sticky internes. Verifie visuellement dans le navigateur (projet cours d anglais, clic sur la section \"test 2\" dans la sidebar en mode Edition) : le titre de section apparait maintenant entierement visible juste sous la barre, sans etre recouvert.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai encore le même problème en mode Edition lorsque je clique sur une section dans le menu, la zone edition affiche bien la section, mais le haut de la section est caché sous la barre de style, la zone d'edition doit commencer en dessous des barre de style, on voi bien l'ascensseur qui n'est pas en dessous mais au dessus de la barre ce qui cache le haut de la section",
+      "startedAt": "2026-07-05T12:45:43.728Z",
+      "completedAt": "2026-07-05T12:45:43.728Z"
+    },
+    {
+      "id": "mod-548",
+      "version": "Br-0.014",
+      "date": "2026-07-05T13:00:21.596Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : formulaire/variables integres comme bulle du fil (plus de zone separee)",
+      "description": "Le formulaire de cadrage (mode Guide)/FORM detecte et la carte \"Variables a remplir\" etaient rendus dans un bloc flex-shrink-0 place ENTRE la liste des messages (conteneur overflow-y-auto) et le composeur -- ce bloc developpait son propre ascenseur interne des que son contenu depassait l espace disponible (ex. formulaire a 5 questions), donnant l impression de deux zones de defilement superposees dans le meme panneau. Corrige en deplacant les deux A L INTERIEUR du conteneur scrollable des messages : le formulaire de cadrage/FORM est desormais rendu dans la bulle du message IA qui l a produit (@if (activeForm()?.message === msg) a l interieur de la boucle @for), et la carte variables a la suite du dernier message. Un seul ascenseur pour toute la conversation, le formulaire se comporte comme une bulle normale qui scrolle avec le reste. Verifie visuellement dans le navigateur (projet cours d anglais, section test 2, formulaire de cadrage a 5 questions deja actif) : un seul ascenseur visible sur tout le panneau Conversation, le formulaire scrolle avec les messages precedents.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans la zone de conversation les MO inclus comme les form doivent être inclus dans la zone de conversation et non être dans une zone rajouté par dessus, elle doit être comme une bulle de la conversation, ainsi on n'aura pas le problème actuel d'ascenseur car tous sera géré dans la zone de conversation",
+      "startedAt": "2026-07-05T13:00:21.596Z",
+      "completedAt": "2026-07-05T13:00:21.596Z"
+    },
+    {
+      "id": "mod-549",
+      "version": "Br-0.015",
+      "date": "2026-07-05T13:12:25.971Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : texte brut de l'IA masque par defaut quand un MO est affiche (accordeon)",
+      "description": "Quand un message IA d'une conversation Prompt produit un widget MO (carte MegaOutils detectes, ou formulaire interactif type cadrage/FORM), le texte markdown brut de la reponse etait affiche EN PLUS du widget, dupliquant visuellement l information (ex: la liste des questions d un formulaire non-fence en texte brut, suivie du meme formulaire en widget interactif juste en dessous). Ajout d un accordeon : nouvelle methode messageHasMoWidget(msg) (vrai si msg.mos non vide OU si le message est celui de activeForm()) determine si le texte doit etre masque par defaut, remplace par un texte discret \"Reponse de l IA masquee - voir le MegaOutil ci-dessous\". Bouton chevron (expand_more/expand_less) a cote du bouton Copier bascule l etat par message (isRawTextExpanded/toggleRawText, Set keye par timestamp) pour reafficher le texte complet a la demande. Verifie visuellement dans le navigateur (projet cours d anglais, section test 2, formulaire de cadrage actif) : seul le widget \"Formulaire - questions\" est visible par defaut, le chevron revele le texte brut et le recache correctement.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans la fenètre de conversation lorsqu'un texte de l'IA est transformé via un MO , cache par defaut la donnée de l'IA (bouton accordeon pour caché /voir) pour ne faire apparaitre par defaut que le MO",
+      "startedAt": "2026-07-05T13:12:25.971Z",
+      "completedAt": "2026-07-05T13:12:25.971Z"
+    },
+    {
+      "id": "mod-550",
+      "version": "Br-0.016",
+      "date": "2026-07-05T13:22:58.323Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : soumission d'un formulaire FORM envoyee direct a l'IA (reste en mode IA)",
+      "description": "En mode Tchat/Tchat libre/Normal, soumettre un formulaire FORM (hors cadrage Guide) se contentait de pre-remplir le composeur avec les reponses formatees -- l utilisateur devait ensuite cliquer manuellement Envoyer. Corrige : onFormSubmitted() envoie desormais directement les reponses a l IA (appendPromptMessage + sendPromptTurn, meme mecanisme que continuePromptConversation()) quand la conversation Prompt est active (activePromptLaunch.instanceId === message.promptInstanceId), la conversation reste \"en mode IA\" (le bandeau \"En conversation avec\" persiste, le streaming demarre immediatement). Filet de securite conserve : si la conversation Prompt n a plus de contexte actif (ex. apres clic sur Terminer), retombe sur le pre-remplissage du composeur comme avant. Verifie visuellement dans le navigateur (projet cours d anglais, Prompt questions en mode Tchat, section Pr-Ideation) : cliquer Executer, repondre au formulaire, cliquer Envoyer les reponses -> la reponse apparait immediatement comme message utilisateur, l IA enchaine en streaming sans action supplementaire, un nouveau formulaire (collapse par l accordeon) apparait ensuite.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans la zone de conversation, lorsqu'on envoi une réponse via un MO comme un form, il faut l'envoyé direct à l'IA et resté en mode IA",
+      "startedAt": "2026-07-05T13:22:58.323Z",
+      "completedAt": "2026-07-05T13:22:58.323Z"
+    },
+    {
+      "id": "mod-551",
+      "version": "Br-0.017",
+      "date": "2026-07-05T13:36:26.518Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "server"
+      ],
+      "features": "projets:zone5-conversation",
+      "title": "Onglet Conversation : bouton pour supprimer toute la conversation de la section active",
+      "description": "Ajout d'un bouton icone poubelle dans l en-tete du panneau Conversation (a cote du nom de la section active), visible uniquement sur l onglet Conversation. Confirmation inline (Confirmer/Annuler, meme pattern que la suppression d un board). Nouvelle route DELETE /api/conversations/:sectionId (server-data.js) qui supprime le fichier JSON de la conversation. Nouvelle methode ConversationService.deleteConversation(sectionId). ProjetEditorComponent.deleteConversation() appelle la suppression puis ProjetConversationComponent.clearConversationLocal() (via @ViewChild) pour vider immediatement l etat local (messages, conversation Prompt active, variables en attente, texte du composeur) sans attendre un rechargement. sidebar.loadConversations() rafraichit aussi l indicateur de conversation existante sur le noeud de l arborescence. Supprime tout le fil de la section (chat general + tous les MO Prompt confondus), pas de suppression selective. Verifie visuellement dans le navigateur (projet cours d anglais, section test 2) : suppression immediate dans l UI, persistee apres rechargement de la page.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "libs/portail-core/data-access/src/lib/conversation.service.ts",
+        "server/server-data.js",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "ajoute un bouton dans la conversation pour supprimé toutes la conversation lié à la section selectionné",
+      "startedAt": "2026-07-05T13:36:26.518Z",
+      "completedAt": "2026-07-05T13:36:26.518Z"
+    },
+    {
+      "id": "mod-552",
+      "version": "Br-0.018",
+      "date": "2026-07-05T14:10:08.142Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : le texte d'intro de l'IA avant un formulaire/MO n'est plus masque",
+      "description": "L accordeon ajoute precedemment (mod-549) masquait TOUT le texte brut d un message des qu un widget MO etait affiche, y compris le texte libre que l IA ecrit parfois avant les questions/le MO (ex: \"Voici l analyse mise a jour de votre profil professionnel...\") -- ce texte disparaissait completement, seul le widget restant visible. Ajout de splitFormIntro() dans mo-fence-parser.util.ts : repere la 1re ligne **Label** seule (meme grammaire que parseChoiceForm) et separe le texte avant (intro) de la suite (questions). Nouvelle methode messageIntroText(msg) sur ProjetConversationComponent : pour le cas formulaire non-fence, utilise splitFormIntro(msg.text) ; pour le cas MO fence (msg.mos), prend le texte avant msg.mos[0].fence. L intro est desormais toujours affichee (rendu markdown) au-dessus du placeholder \"Reponse masquee\", avant la carte MO/le formulaire -- pas de duplication si l accordeon est deplie (l intro est deja incluse dans le texte complet). Verifie visuellement dans le navigateur (projet cours d anglais, Pr-Ideation, message avec \"Voici l analyse mise a jour...\" avant un widget MegaOutils ET avant un formulaire) : l intro reste visible dans les deux cas.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque l'IA nous réponds avec des question le système transform la réponse en form, mais devant ce form il peux y avoir du texte envoyé par l'IA, il faut affiché ce texte avant le form (voir si il ne faut pas amélioré le prompt initial)",
+      "startedAt": "2026-07-05T14:10:08.142Z",
+      "completedAt": "2026-07-05T14:10:08.142Z"
+    },
+    {
+      "id": "mod-553",
+      "version": "Br-0.019",
+      "date": "2026-07-05T14:22:25.571Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "server"
+      ],
+      "features": "server:mega-outils-prompt,projets:zone5-conversation",
+      "title": "Prompt tchat structure : instruction ARRAY renforcee (fence + exemple + interdiction texte brut)",
+      "description": "L'IA produisait parfois un tableau ARRAY en texte brut (colonnes alignees sans '|', sans fences ```ARRAY:) qui n'etait pas reconnu par detectMoFences() (regex stricte sur les fences), donc rendu comme simple texte markdown au lieu d'un MO Tableau designe. Le bullet ARRAY de DEFAULT_CHAT_STRUCTURED_PROMPT (server/server-data.js) etait plus terse que celui des questions/formulaires -- renforce avec un exemple complet (fence ouvrant/fermant, ligne de separation | --- | --- |) et une consigne negative explicite ('jamais de tableau en texte brut sans les |, jamais sans les fences'). Verifie qu'aucun override BDD n'existe pour mega_outil_prompt_config.chat_structured_prompt sur ce projet -- le defaut code est bien celui actif. Correction au niveau du prompt IA (fiabilite non garantie a 100%, dependante de la conformite du modele), pas de changement de parsing cote client.",
+      "files": [
+        "server/server-data.js",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le mega outil array n'a pas été pris en compte, on aurait du avoir un tableau designé au lieu du texte brut",
+      "startedAt": "2026-07-05T14:22:25.571Z",
+      "completedAt": "2026-07-05T14:22:25.571Z"
+    },
+    {
+      "id": "mod-554",
+      "version": "Br-0.020",
+      "date": "2026-07-05T14:33:48.378Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : intro IA a nouveau masquee quand le message combine fence MO + formulaire non-fence",
+      "description": "Regression sur mod-552 (splitFormIntro) : quand un meme message IA contient a la fois des fences MO (ex. ARRAY + TRELLO d'un livrable mis a jour) ET des questions de suivi non-fencees, messageIntroText(msg) ne considerait que la branche msg.mos.length>0 (court-circuit du if/else), ignorant completement le cas formulaire meme si le texte du formulaire precedait le 1er fence dans le texte brut -- resultat : l'intro de l'IA disparaissait entierement en vue repliee (accordeon), au lieu d'etre affichee au-dessus du placeholder. Corrige : messageIntroText(msg) calcule maintenant les deux points de coupure possibles (position du 1er fence msg.mos[0].fence si des MOs sont detectes, ET position de la 1re ligne **Label** de question si un formulaire est actif sur ce message) et coupe au plus precoce des deux. splitFormIntro() devenu inutile, retire de mo-fence-parser.util.ts (code mort). Verifie via build Angular (aucune erreur).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "on a encore ici du texte envoyé par l'IA et non afficher pour le user",
+      "startedAt": "2026-07-05T14:33:48.378Z",
+      "completedAt": "2026-07-05T14:33:48.378Z"
+    },
+    {
+      "id": "mod-555",
+      "version": "Br-0.021",
+      "date": "2026-07-05T15:09:48.471Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : texte libre avant/entre/apres les blocs structures + accordeon d'apercu et ajout individuel par MegaOutil",
+      "description": "Deux ameliorations demandees suite au constat que du texte ecrit par l'IA restait invisible pour l'utilisateur : (1) messageIntroText/messageMiddleText/messageOutroText (structuredRanges + formCharSpanFor dans projet-conversation.component.ts) extraient desormais TOUT texte libre autour des blocs structures (avant, entre MO et formulaire, et apres), pas seulement l'intro -- un message peut combiner fences MO (ARRAY/TRELLO) et formulaire non-fence dans un ordre quelconque, et le texte de transition entre les deux disparaissait entierement derriere l'accordeon. Une question en texte libre non en gras n'est jamais confondue avec un champ de formulaire (seule la grammaire **Label** declenche une coupure). splitFormIntro() devenu inutile, retire de mo-fence-parser.util.ts. (2) Chaque MegaOutil detecte (hors FORM) a maintenant son propre bouton accordeon affichant un apercu en lecture seule des donnees qui seront ajoutees (tableau pour ARRAY via parseArrayTable(), colonnes/cartes pour TRELLO via parseTrelloPreview(), liste d'evenements pour AGENDA via parseAgendaPreview(), graphique existant pour CHART) et son propre bouton 'Ajouter au projet' (materializeSingleMo()) pour l'ajouter individuellement sans affecter les autres MO de la carte -- le bouton groupe existant reste disponible pour la selection multiple. Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee (session non authentifiee dans l'onglet ouvert, utilisateur a choisi de passer cette etape).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le texte en dehors des questions pure qui ce trouve avant mais aussi après du form doit être affiché avant et après le form mis en forme, attention une question dans le texte n'est pas olbigé d'être insserer dans le form comme c'est le cas ici. Je voudrais aussi que tu rajoute un bouton accordeon à coté de chaque Mega outils proposé pour affiché les données qui seront ajouté : Trello, liste des evenements, array etc, et rajouté un bouton ajouter au projet pour chaque Mega outil",
+      "startedAt": "2026-07-05T15:09:48.471Z",
+      "completedAt": "2026-07-05T15:09:48.471Z"
+    },
+    {
+      "id": "mod-556",
+      "version": "Br-0.022",
+      "date": "2026-07-05T15:25:26.915Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:mo-prompt",
+      "title": "Conversation MO Prompt : bouton 'Déjà ajouté' + navigation vers la section résultat après matérialisation d'un MegaOutil",
+      "description": "Auparavant, un MegaOutil (Trello/Array/Agenda/Chart) matérialisé depuis la conversation etait retire de la carte 'MegaOutils detectes' -- aucune trace visuelle qu'il avait deja ete ajoute, ni moyen de retrouver la section ou il avait ete copie. Ajout du champ optionnel materializedSectionId sur MaterializedMoPreview (mega-outils.models.ts), etat de session uniquement (non persiste, redevient 'Ajouter au projet' au rechargement). ProjetEditorZoneComponent.materializeFromConversation() retourne desormais le folderId de la section 'PR-Res {nom}' creee/mise a jour (recherche dans docSections par folderName apres recomputeAll()), relaye via EditionOutilComponent (devenu async) jusqu'a ProjetEditorComponent.onMaterializeRequested() (devenu async) qui rappelle conversationPanel.markMosMaterialized(messageKey, selectedMos, sectionId) via le ViewChild deja existant -- les MO restent affiches dans la carte (plus retires) et leur bouton devient 'Déjà ajouté' ; cliquer dessus emet navigateToSectionRequested -> ProjetEditorComponent.onNavigateToSection() (meme mecanisme que onTrelloNavigate : activeNodeId/highlightNodeId/scrollToNodeId). Le bouton groupe 'Ajouter au projet (selection)' ne s'affiche plus que s'il reste au moins un MO coche non deja ajoute (hasMaterializableMos()). Verifie par build Angular (aucune erreur) ; verification navigateur live non effectuee (session non authentifiee dans l'onglet ouvert la fois precedente).",
+      "files": [
+        "libs/portail-core/data-access/src/lib/mega-outils.models.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque à partir de la conversation des données d'un MO est ajouter au texte général, il faut changer le bouton de \"Ajouter au projet\" à \"Déjà ajouté\" et quand on clique dessus on arrive dans la section ou à été copié les données du MO",
+      "startedAt": "2026-07-05T15:25:26.915Z",
+      "completedAt": "2026-07-05T15:25:26.915Z"
     }
   ]
 }
