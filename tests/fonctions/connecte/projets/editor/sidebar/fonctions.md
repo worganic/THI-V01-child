@@ -82,15 +82,15 @@
 
 ---
 
-## `2-5-2-2-7` — Suppression
+## `2-5-2-2-7` — [modification] Suppression
 
 - Déclenchement via option "Supprimer" du menu contextuel
 - Affichage d'un modal de confirmation de suppression
 - Clic sur "Supprimer" : envoi de DELETE /api/file-projects/{name}/files/{id} ou DELETE /api/file-projects/{name}/folders/{id}
 - Clic sur "Annuler" : fermeture du modal
-- Règle : suppression physique récursive sur disque de la ressource et de ses enfants
+- **[modification] Corbeille (soft-delete)** : la ressource (et ses enfants pour un dossier) n'est plus supprimée physiquement — elle est déplacée vers `.trash/<horodatage>-<id>/` (jamais commité vers le remote git) et un snapshot restaurable est conservé 30 jours en base (`projet_trash_entry`). Restaurable depuis l'onglet Historique → groupe "Corbeille" (voir `2-5-2-8-14`) ou via le bouton "Annuler" (↺) de l'entrée de suppression dans la timeline.
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `server/modules/projet-git.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -215,12 +215,13 @@
 
 ---
 
-## `2-5-2-2-18` — Historisation et annulation des actions (Undo)
+## `2-5-2-2-18` — [modification] Historisation et annulation des actions (Undo)
 
-- Enregistrement dans l'historique des actions utilisateur (création de fichier, dossier et renommage de fichier) via WoActionHistoryService
+- Enregistrement dans l'historique des actions utilisateur (création de fichier, dossier, renommage de fichier **et suppression de fichier/dossier**) via WoActionHistoryService
 - Déclaration du statut annulable (undoable) et de la payload de rollback (undoAction)
+- **[modification]** : la suppression de fichier **et de dossier** est désormais tracée et `undoable: true` (auparavant `undoable: false` pour les fichiers, et pas tracée du tout pour les dossiers) — l'`undoAction` pointe vers la route de restauration depuis la corbeille (`POST /api/file-projects/:name/trash/:trashId/restore`, voir `2-5-2-2-7` et `2-5-2-8-14`)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `libs/portail-core/data-access/src/lib/wo-action-history.service.ts`
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/wo-action-history.service.ts`
 
 ---
 

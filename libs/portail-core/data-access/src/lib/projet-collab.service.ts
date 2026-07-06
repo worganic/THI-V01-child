@@ -1,4 +1,4 @@
-import { Injectable, signal, inject, NgZone } from '@angular/core';
+import { Injectable, signal, computed, inject, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom, Subject } from 'rxjs';
 import { AuthService } from './auth.service';
@@ -110,6 +110,34 @@ export class ProjetCollabService {
   readonly pendingUpdates = signal<Map<string, SectionPublishedEvent>>(new Map());
 
   readonly isOnline = signal<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
+
+  // Résilience offline de l'autosave : fileId → depuis quand la dernière tentative de
+  // sauvegarde du brouillon échoue (réseau coupé). Alimenté par le composant éditeur à
+  // chaque succès/échec de saveDraft() ; sert à afficher un avertissement visible et à
+  // bloquer la fermeture d'onglet tant qu'un brouillon n'a pas pu être sauvegardé.
+  readonly unsavedSince = signal<Map<string, Date>>(new Map());
+  readonly hasUnsavedWork = computed(() => this.unsavedSince().size > 0);
+  readonly oldestUnsavedAt = computed<Date | null>(() => {
+    const dates = [...this.unsavedSince().values()];
+    return dates.length ? new Date(Math.min(...dates.map(d => d.getTime()))) : null;
+  });
+  // Émis quand la connexion revient après une coupure — déclenche un nouveau essai de
+  // sauvegarde côté éditeur pour les fichiers restés en échec.
+  readonly onlineRestored$ = new Subject<void>();
+
+  markSaveFailed(fileId: string): void {
+    if (this.unsavedSince().has(fileId)) return;
+    const next = new Map(this.unsavedSince());
+    next.set(fileId, new Date());
+    this.unsavedSince.set(next);
+  }
+
+  markSaveSucceeded(fileId: string): void {
+    if (!this.unsavedSince().has(fileId)) return;
+    const next = new Map(this.unsavedSince());
+    next.delete(fileId);
+    this.unsavedSince.set(next);
+  }
 
   addLocalPending(sectionId: string): void {
     if (this.localPendingSections().has(sectionId)) return;
@@ -622,7 +650,10 @@ export class ProjetCollabService {
 
   private listenOnlineStatus(): void {
     if (typeof window === 'undefined') return;
-    window.addEventListener('online', () => this.zone.run(() => this.isOnline.set(true)));
+    window.addEventListener('online', () => this.zone.run(() => {
+      this.isOnline.set(true);
+      if (this.hasUnsavedWork()) this.onlineRestored$.next();
+    }));
     window.addEventListener('offline', () => this.zone.run(() => this.isOnline.set(false)));
   }
 

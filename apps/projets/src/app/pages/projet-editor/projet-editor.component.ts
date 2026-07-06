@@ -599,6 +599,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       this.collab.versionSaved$.subscribe(evt => {
         this.newerVersions.update(m => { const n = new Map(m); n.set(evt.nodeId, evt); return n; });
       }),
+      // Connexion réseau retrouvée après une coupure : retente les brouillons restés en échec.
+      this.collab.onlineRestored$.subscribe(() => this.retryUnsavedDrafts()),
       this.collab.ftpFolderSynced$.subscribe(({ folderId, status, totalChecked, totalFiles }) => {
         this.nodeSyncStatus.update(m => new Map(m).set(folderId, status));
         this.ftpSyncProgress.set({ checked: totalChecked, total: totalFiles || this.ftpSyncProgress().total });
@@ -623,6 +625,29 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  // Réseau retrouvé après coupure : retente les brouillons dont la dernière tentative avait
+  // échoué, avec le contenu le plus récent connu localement (déjà patché de façon optimiste
+  // dans `files` même en cas d'échec réseau — voir processSectionsChange).
+  private async retryUnsavedDrafts(): Promise<void> {
+    const fileIds = [...this.collab.unsavedSince().keys()];
+    for (const fileId of fileIds) {
+      const node = this.findFileById(fileId, this.files());
+      if (!node) { this.collab.markSaveSucceeded(fileId); continue; }
+      const parentFolder = this.findParentFolder(fileId, this.files());
+      await this.projectFilesService.saveDraft(this.projectFolderName, fileId, node.content ?? '', parentFolder?.id ?? null, node.fileVersion ?? null)
+        .then(() => this.collab.markSaveSucceeded(fileId))
+        .catch(e => console.warn('[EDITOR] retry sauvegarde brouillon toujours en échec:', fileId, e.message));
+    }
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent) {
+    if (this.collab.hasUnsavedWork()) {
+      event.preventDefault();
+      event.returnValue = '';
+    }
   }
 
   private async autoPullAndRefresh(): Promise<void> {
@@ -1187,21 +1212,25 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     } catch (e) { console.warn('[Editor] track create failed:', e); }
   }
 
-  private async trackFolderDelete(folder: FileNode) {
+  /** Trace la suppression automatique d'un fichier additionnel orphelin (nettoyage silencieux
+   * jusqu'ici) : passe par la même route DELETE que la suppression manuelle, donc protégé par
+   * la corbeille serveur — on rend cette suppression visible et annulable dans l'historique. */
+  private async trackAdditionalFileDelete(file: FileNode, trashId: string) {
     try {
       await this.history.track({
-        section: 'projets',
-        subsection: folder.name,
+        section: 'projets/fichiers',
+        subsection: file.name,
         actionType: 'delete',
-        label: `Suppression de section "${folder.name}"`,
-        entityType: 'folder',
-        entityId: folder.id,
-        entityLabel: folder.name,
-        beforeState: { name: folder.name },
+        label: `Suppression automatique de fichier orphelin «${file.name.replace(/\.md$/, '')}»`,
+        entityType: 'file',
+        entityId: file.id,
+        entityLabel: file.name.replace(/\.md$/, ''),
+        beforeState: { fileName: file.name.replace(/\.md$/, '') },
         context: this.trackContext(),
-        undoable: false
+        undoable: true,
+        undoAction: { endpoint: `/api/file-projects/${this.projectFolderName}/trash/${trashId}/restore`, method: 'POST' }
       });
-    } catch (e) { console.warn('[Editor] track delete failed:', e); }
+    } catch (e) { console.warn('[Editor] track additional file delete failed:', e); }
   }
 
   private async processSectionsChange(sections: SectionInfo[]) {
@@ -1456,12 +1485,11 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           }
         }
 
-        // 2. Deletions
+        // 2. Deletions (toujours 0 itération — réconciliation auto désactivée, cf. plus haut)
         for (const folder of toDelete) {
           try {
             console.log(`[EDITOR] Deleting orphan folder ${folder.id} (${folder.name})...`);
             await this.projectFilesService.deleteFolder(this.projectFolderName, folder.id);
-            this.trackFolderDelete(folder);
           } catch (e) {
             console.error('Deletion failed:', e);
           }
@@ -1569,7 +1597,9 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           if (oldContent !== clean) {
             const fileNode2 = this.findFileById(s.fileId, this.files());
             const baseVersionId = fileNode2?.fileVersion ?? null;
-            await this.projectFilesService.saveDraft(this.projectFolderName, s.fileId, clean, s.folderId ?? null, baseVersionId).catch(e => console.warn('[EDITOR] Sauvegarde brouillon échouée:', e.message));
+            await this.projectFilesService.saveDraft(this.projectFolderName, s.fileId, clean, s.folderId ?? null, baseVersionId)
+              .then(() => this.collab.markSaveSucceeded(s.fileId!))
+              .catch(e => { console.warn('[EDITOR] Sauvegarde brouillon échouée:', e.message); this.collab.markSaveFailed(s.fileId!); });
             this.patchFileContent(s.fileId, clean);
             this.collab.addLocalPending(s.folderId ?? s.fileId);
           }
@@ -1581,7 +1611,9 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
             if (af.fileId) {
               const oldContent = oldContentMap.get(af.fileId) ?? '';
               if (oldContent !== af.content) {
-                await this.projectFilesService.saveDraft(this.projectFolderName, af.fileId, af.content, s.folderId ?? null).catch(e => console.warn('[EDITOR] Sauvegarde brouillon (fichier additionnel) échouée:', e.message));
+                await this.projectFilesService.saveDraft(this.projectFolderName, af.fileId, af.content, s.folderId ?? null)
+                  .then(() => this.collab.markSaveSucceeded(af.fileId!))
+                  .catch(e => { console.warn('[EDITOR] Sauvegarde brouillon (fichier additionnel) échouée:', e.message); this.collab.markSaveFailed(af.fileId!); });
                 this.patchFileContent(af.fileId, af.content);
               }
             } else {
@@ -1666,7 +1698,8 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
                 }
               }
               console.log(`[EDITOR] Deleting orphaned additional file ${ef.name} from ${freshFolder.name}...`);
-              await this.projectFilesService.deleteFile(this.projectFolderName, ef.id).catch(e => console.error(e));
+              const delResult = await this.projectFilesService.deleteFile(this.projectFolderName, ef.id).catch(e => { console.error(e); return null; });
+              if (delResult?.trashId) this.trackAdditionalFileDelete(ef, delResult.trashId);
               additionalFileOrphanDeleted = true;
             }
           }

@@ -298,7 +298,8 @@
                 [activeIds]="activeHistoryIds()"
                 [activeFileId]="activeContentFileId()"
                 (entryClick)="onHistoryEntryClick($event)"
-                (restored)="onHistoryRestored($event)" />
+                (restored)="onHistoryRestored($event)"
+                (structureRestored)="onRefresh()" />
             }
           </div>
 

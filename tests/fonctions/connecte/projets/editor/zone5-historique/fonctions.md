@@ -2,15 +2,15 @@
 
 Composant : `ProjetHistoryComponent`  
 Position : panneau inférieur, onglet "Historique"  
-Données : via `ProjetCollabService`, temps réel WebSocket
+Données : via `ProjetCollabService`, temps réel SSE (Server-Sent Events — `EventSource`, unidirectionnel serveur→client, pas de WebSocket)
 
 ---
 
 ## `2-5-2-8-1` — Chargement
 
-- **Connexion WebSocket** : lors de l'ouverture de l'éditeur → `collab.connect(projectId)`
+- **Connexion SSE** : lors de l'ouverture de l'éditeur → `collab.connect(projectId)`
 - **Historique initial** : chargé depuis le signal `collab.history()`
-- **Mises à jour temps réel** : nouvelles entrées poussées via WebSocket
+- **Mises à jour temps réel** : nouvelles entrées poussées via SSE
 
 ---
 
@@ -112,6 +112,19 @@ Données : via `ProjetCollabService`, temps réel WebSocket
 - **Clic sur une version** : `GET .../versions/:versionId` (contenu complet) + contenu de la version de base (`base_version_id`) si disponible → ouvre `ProjetDiffComponent` (réutilise `entryClick`, même mécanisme que la timeline d'actions)
 - **Restaurer** : bouton visible au hover → `POST .../restore {versionId}` → insère une **nouvelle** version BDD avec l'ancien contenu (jamais de suppression/réécriture d'historique) → émet `(restored)` au parent comme un undo classique
 - **Composants:** `projet-history.component.ts`, `projet-history.component.html`, `projet-editor.component.ts`, `project-files.service.ts`, `server/server-data.js`
+
+---
+
+## `2-5-2-8-14` — Corbeille (fichiers/dossiers supprimés, réversibles 30 jours)
+
+- **Composant** : `ProjetHistoryComponent`, groupe collapsible "Corbeille" en haut du panneau (au-dessus de la timeline d'actions, sous "Versions de cette section")
+- **Alimentation** : `GET /api/file-projects/:name/trash` → liste les entrées `projet_trash_entry` actives (ni restaurées, ni purgées) du projet, chargée à l'ouverture du projet et au dépliage du groupe
+- **Mécanisme serveur** : les routes `DELETE .../files/:id` et `DELETE .../folders/:id` ne suppriment plus jamais directement sur disque — elles déplacent le fichier/dossier vers `.trash/<horodatage>-<id>/` (jamais poussé au remote git, `.gitignore` dédié) et conservent un snapshot JSON restaurable de la structure. Rétention : purge physique automatique après 30 jours (balayage horaire), ou purge volontaire immédiate
+- **Restaurer** : bouton visible au hover sur chaque entrée → `POST .../trash/:trashId/restore` → réinsère le noeud à son emplacement d'origine (ou à la racine avec avertissement si le dossier parent a disparu depuis), remet le contenu physique en place, diffuse `structure_update` (SSE) aux autres utilisateurs connectés
+- **Purger définitivement** : icône corbeille sur chaque entrée → `DELETE .../trash/:trashId` → suppression physique immédiate, sans attendre les 30 jours
+- **Lien avec l'historique des suppressions** : la suppression manuelle d'un fichier ou d'un dossier depuis la sidebar (`ProjetSidebarComponent.confirmDelete()`) est désormais toujours tracée dans la timeline (`undoable: true`), y compris pour les **dossiers** (auparavant non tracés du tout). Le bouton "Annuler" (↺) d'une entrée de suppression appelle le dispatcher générique `wo-action-history`, qui self-fetch cette même route de restauration — aucune adaptation du dispatcher n'a été nécessaire
+- **Limite connue** : restaurer via l'icône ↺ de la timeline ne rafraîchit pas toujours la sidebar en direct (donnée intacte côté serveur, recharger la page si l'arbre ne se met pas à jour) ; restaurer via le bouton "Restaurer" du groupe Corbeille rafraîchit bien la sidebar immédiatement
+- **Composants:** `projet-history.component.ts`, `projet-history.component.html`, `project-files.service.ts` (`TrashEntry`, `getTrash`/`restoreFromTrash`/`purgeTrashEntry`), `projet-sidebar.component.ts`, `projet-editor.component.ts`, `server/server-data.js`, `server/modules/projet-git.js`
 
 ---
 

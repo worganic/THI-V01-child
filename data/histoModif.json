@@ -1,6 +1,43 @@
 {
   "modifications": [
     {
+      "id": "mod-570",
+      "version": "B-0.328",
+      "date": "2026-07-06T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
+      "features": "projets:editor-sidebar,projets:zone5-historique,projets:editor-zone-code,projets:editor-update-banner,server:collab,server:projet-git",
+      "title": "Corbeille réversible (soft-delete), traçabilité complète des suppressions et résilience réseau",
+      "description": "Sur la branche 2026-07-06_partage : étude complète du système de partage/collaboration de textes de l'éditeur de projet (temps réel SSE, brouillons privés, versioning optimiste — déjà solides) pour identifier et combler les trous de fiabilité restants, en particulier la crainte formulée par l'utilisateur (perte irréversible d'un dossier supprimé). (1) Corbeille (soft-delete) unifiée côté serveur : les routes DELETE fichier/dossier déplacent désormais le contenu vers .trash/<horodatage>-<id>/ (jamais poussé au remote git, .gitignore dédié) au lieu de le supprimer, avec snapshot restaurable en base (nouvelle table projet_trash_entry, rétention 30 jours + purge automatique horaire, purge volontaire possible) ; nouvelles routes GET/POST/DELETE .../trash. (2) Traçabilité complète des suppressions : correction du code mort qui laissait la suppression de dossier totalement non tracée (trackFolderDelete jamais atteint suite à la désactivation de la réconciliation automatique du 2026-07-05, conservée telle quelle) — la suppression manuelle de fichier ET de dossier depuis la sidebar est maintenant tracée avec undoable:true, ainsi que la suppression automatique de fichiers additionnels orphelins (angle mort découvert en cours de route, jusqu'ici silencieuse). Le dispatcher générique d'undo (wo-action-history) fonctionne avec la nouvelle route de restauration sans aucune adaptation. (3) Nouvel onglet Corbeille dans le panneau Historique (zone5) : liste les entrées actives avec bouton Restaurer/purger définitivement. (4) Fix cohérence config.json/MySQL : getProjectConfig() ne bascule plus silencieusement vers le disque quand les deux structures existent mais divergent (seul le cas MySQL vide reste couvert) — anomalie désormais loguée (CONFIG-DRIFT) plutôt que d'écraser silencieusement la source de vérité. (5) Résilience hors-ligne de l'autosave : retry avec backoff exponentiel sur la sauvegarde du brouillon, bannière \"Non sauvegardé depuis Xs\" et garde de fermeture d'onglet (beforeunload) tant qu'une sauvegarde reste en échec, retry immédiat au retour de connexion réseau. (6) Extension du checkpoint BDD aux fichiers additionnels (Prompt/Trello/Array/docs annexes) lors de \"Enregistrer et partager\" — auparavant seuls le fichier principal et son jumeau CSS étaient versionnés, les fichiers additionnels restaient cantonnés au brouillon privé, invisibles aux autres utilisateurs. Vérifié en conditions réelles (navigateur, projet de test jetable) : suppression/restauration de dossier via le bouton Corbeille et via l'icône annuler de l'historique, undo dispatcher générique, purge propre — RAS hormis un rafraîchissement UI non-live sur le chemin restauration-via-undo (donnée serveur toujours correcte, page à recharger dans ce cas précis).",
+      "files": [
+        "server/server-data.js",
+        "server/modules/projet-git.js",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.html",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais que tu reprenne tous le code de projet/Edition et que tu regarde comment amélioré le système de partage des textes. Le système est un système participatif ou les users peuvent travaillé sur les mêmes documents en direct ou en différé (exemple utilisation hors connexion). Il faut que le système soi robuste et fiable et une sécurité max pour ne pas perdre de données, exemple si un user efface un dossier il faut que ce soi indiqué dans l'historique et qu'on puisse revenir en arrière, il faut un système de gestion de conflit etc. Etudi le système actuel et propose moi des solutions.",
+      "startedAt": "2026-07-06T00:00:00.000Z",
+      "completedAt": "2026-07-06T13:30:00.000Z"
+    },
+    {
       "id": "mod-519",
       "version": "B-0.318",
       "date": "2026-07-01T00:00:00.000Z",

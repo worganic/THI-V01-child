@@ -5004,10 +5004,18 @@ async function getProjectConfig(projectName) {
             ? (typeof mysqlRow.outils === 'string' ? JSON.parse(mysqlRow.outils) : mysqlRow.outils)
             : null;
         const localStructure = localConfig?.structure || [];
-        // Préférer le filesystem si : MySQL vide, ou config.json plus récent (ex: après migration de chemins)
+        // Préférer le filesystem uniquement si MySQL est vide (migration/bootstrap).
+        // Ne plus jamais basculer silencieusement vers le disque quand les deux structures
+        // existent mais divergent (ex: config.json obsolète avec un timestamp plus récent
+        // suite à une horloge décalée ou une restauration manuelle malheureuse) : ça écraserait
+        // MySQL — source de vérité — avec des données potentiellement périmées. On se contente
+        // de logger l'anomalie ; une réparation manuelle reste possible via un traitement admin dédié.
         const localUpdatedAt = localConfig?.updatedAt ? new Date(localConfig.updatedAt).getTime() : 0;
         const mysqlUpdatedAt = mysqlRow.updated_at ? new Date(mysqlRow.updated_at).getTime() : 0;
-        const preferLocal = (mysqlStructure.length === 0 && localStructure.length > 0) || (localUpdatedAt > mysqlUpdatedAt && localStructure.length > 0);
+        const preferLocal = mysqlStructure.length === 0 && localStructure.length > 0;
+        if (!preferLocal && localStructure.length > 0 && mysqlStructure.length > 0 && localUpdatedAt > mysqlUpdatedAt) {
+            console.warn(`[CONFIG-DRIFT] projet=${projectName} disque plus récent que MySQL (disk=${localConfig?.updatedAt} mysql=${mysqlRow.updated_at}, nodes disk=${localStructure.length} nodes mysql=${mysqlStructure.length}) — MySQL reste la source de vérité, disque ignoré`);
+        }
         if (preferLocal) {
             try {
                 await pool.query(
@@ -5069,6 +5077,53 @@ function removeNodeById(items, id) {
         if (item.children && removeNodeById(item.children, id)) return true;
     }
     return false;
+}
+
+/** Retourne l'id du dossier parent du noeud `targetId` (null si racine, undefined si introuvable). */
+function findParentId(items, targetId, parentId = null) {
+    for (const item of items) {
+        if (item.id === targetId) return parentId;
+        if (item.children) {
+            const found = findParentId(item.children, targetId, item.id);
+            if (found !== undefined) return found;
+        }
+    }
+    return undefined;
+}
+
+/** Supprime le dossier .trash/<horodatage>-<id>/ s'il est devenu vide (après restore ou purge). */
+function removeEmptyTrashParentDir(trashItemFull) {
+    try {
+        const parentDir = path.dirname(trashItemFull);
+        if (fs.existsSync(parentDir) && fs.readdirSync(parentDir).length === 0) fs.rmdirSync(parentDir);
+    } catch (_) {}
+}
+
+/**
+ * Corbeille (soft-delete) : déplace un fichier/dossier vers .trash/<horodatage>-<id>/
+ * au lieu de le supprimer définitivement, et enregistre un snapshot restaurable en
+ * base (structure + emplacement d'origine). Utilisé par les deux routes DELETE
+ * (fichier/dossier) — suppression manuelle comme nettoyage auto de fichiers
+ * additionnels orphelins passent par le même mécanisme, donc protégés de la même façon.
+ */
+async function moveNodeToTrash(projectName, item, originalParentId, user) {
+    const trashId = crypto.randomUUID();
+    const trashRelDir = `.trash/${Date.now()}-${item.id}`;
+    const trashDirFull = safeProjectPath(projectName, trashRelDir);
+    const full = safeProjectPath(projectName, item.path);
+    if (trashDirFull && full && fs.existsSync(full)) {
+        fs.mkdirSync(trashDirFull, { recursive: true });
+        fs.renameSync(full, path.join(trashDirFull, item.name));
+    }
+    projetGit.ensureTrashGitignore(path.join(PROJECTS_DIR, projectName));
+    await pool.query(
+        `INSERT INTO projet_trash_entry
+         (id, project_id, node_id, node_type, name, original_path, original_parent_id, structure_snapshot, trash_disk_path, deleted_by_id, deleted_by_name, purge_at)
+         VALUES (?,?,?,?,?,?,?,?,?,?,?, DATE_ADD(NOW(), INTERVAL 30 DAY))`,
+        [trashId, projectName, item.id, item.type, item.name, item.path, originalParentId || null,
+         JSON.stringify(item), `${trashRelDir}/${item.name}`, user?.id || null, user?.username || '']
+    );
+    return trashId;
 }
 
 function isImageFile(name) {
@@ -6084,8 +6139,8 @@ app.delete('/api/file-projects/:name/files/:id', async (req, res) => {
     const item = findNodeById(config.structure, req.params.id);
     if (!item || item.type !== 'file') return res.status(404).json({ error: 'Fichier non trouvé' });
     try {
-        const full = safeProjectPath(req.params.name, item.path);
-        if (full && fs.existsSync(full)) fs.unlinkSync(full);
+        const originalParentId = findParentId(config.structure, req.params.id) ?? null;
+        const trashId = await moveNodeToTrash(req.params.name, item, originalParentId, user);
         const deletedName = item.name;
         removeNodeById(config.structure, req.params.id);
         await saveProjectConfig(req.params.name, config);
@@ -6096,8 +6151,8 @@ app.delete('/api/file-projects/:name/files/:id', async (req, res) => {
         } catch (gitErr) { console.warn('[ProjetGit] ensureGithubRemoteForProject (delete_file):', gitErr.message); }
         projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `delete_file ${deletedName}`)
             .catch(gitErr => console.warn('[ProjetGit] commit delete_file:', gitErr.message));
-        broadcastToProject(req.params.name, 'structure_update', { operation: 'delete_file', payload: { id: req.params.id }, updatedBy: user.id });
-        res.json({ success: true });
+        broadcastToProject(req.params.name, 'structure_update', { operation: 'delete_file', payload: { id: req.params.id }, trashId, updatedBy: user.id });
+        res.json({ success: true, trashId });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -6215,14 +6270,122 @@ app.delete('/api/file-projects/:name/folders/:id', async (req, res) => {
     const item = findNodeById(config.structure, req.params.id);
     if (!item || item.type !== 'folder') return res.status(404).json({ error: 'Dossier non trouvé' });
     try {
-        const full = safeProjectPath(req.params.name, item.path);
-        if (full && fs.existsSync(full)) fs.rmSync(full, { recursive: true, force: true });
+        const originalParentId = findParentId(config.structure, req.params.id) ?? null;
+        const trashId = await moveNodeToTrash(req.params.name, item, originalParentId, user);
         const deletedName = item.name;
         removeNodeById(config.structure, req.params.id);
         await saveProjectConfig(req.params.name, config);
         projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `delete_folder ${deletedName}`)
             .catch(gitErr => console.warn('[ProjetGit] commit delete_folder:', gitErr.message));
-        broadcastToProject(req.params.name, 'structure_update', { operation: 'delete_folder', payload: { id: req.params.id }, updatedBy: user.id });
+        broadcastToProject(req.params.name, 'structure_update', { operation: 'delete_folder', payload: { id: req.params.id }, trashId, updatedBy: user.id });
+        res.json({ success: true, trashId });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// GET /api/file-projects/:name/trash — entrées actives de la corbeille (ni restaurées, ni purgées)
+app.get('/api/file-projects/:name/trash', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT id, node_id, node_type, name, original_path, original_parent_id, deleted_by_id, deleted_by_name, deleted_at, purge_at
+             FROM projet_trash_entry
+             WHERE project_id = ? AND restored_at IS NULL AND purged_at IS NULL
+             ORDER BY deleted_at DESC`,
+            [req.params.name]
+        );
+        res.json(rows.map(r => ({
+            trashId: r.id, nodeId: r.node_id, nodeType: r.node_type, name: r.name,
+            originalPath: r.original_path, originalParentId: r.original_parent_id,
+            deletedById: r.deleted_by_id, deletedByName: r.deleted_by_name,
+            deletedAt: r.deleted_at, purgeAt: r.purge_at
+        })));
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// POST /api/file-projects/:name/trash/:trashId/restore
+// Réinsère le noeud (et son contenu physique) à son emplacement d'origine. Sert
+// aussi de undoAction générique pour wo-action-history (voir POST /api/wo-action-history/:id/undo) :
+// le dispatcher fait un simple self-fetch POST sans payload, donc aucune adaptation
+// n'est nécessaire côté dispatcher.
+app.post('/api/file-projects/:name/trash/:trashId/restore', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT * FROM projet_trash_entry WHERE id = ? AND project_id = ? LIMIT 1`,
+            [req.params.trashId, req.params.name]
+        );
+        const entry = rows[0];
+        if (!entry) return res.status(404).json({ error: 'Entrée de corbeille introuvable' });
+        if (entry.restored_at) return res.status(400).json({ error: 'Déjà restauré' });
+        if (entry.purged_at) return res.status(400).json({ error: 'Déjà purgé définitivement' });
+
+        const config = await getProjectConfig(req.params.name);
+        if (!config) return res.status(404).json({ error: 'Projet non trouvé' });
+
+        const snapshot = typeof entry.structure_snapshot === 'string' ? JSON.parse(entry.structure_snapshot) : entry.structure_snapshot;
+
+        const trashFull = safeProjectPath(req.params.name, entry.trash_disk_path);
+        const targetFull = safeProjectPath(req.params.name, entry.original_path);
+        const nameCollisionOnDisk = !!(targetFull && fs.existsSync(targetFull));
+        if (trashFull && targetFull && !nameCollisionOnDisk && fs.existsSync(trashFull)) {
+            fs.mkdirSync(path.dirname(targetFull), { recursive: true });
+            fs.renameSync(trashFull, targetFull);
+            removeEmptyTrashParentDir(trashFull);
+        }
+
+        // Réinsertion dans la structure : au dossier parent d'origine s'il existe encore, sinon à la racine
+        let targetList = config.structure;
+        let warning = null;
+        if (entry.original_parent_id) {
+            const parent = findNodeById(config.structure, entry.original_parent_id);
+            if (parent && parent.type === 'folder') {
+                parent.children = parent.children || [];
+                targetList = parent.children;
+            } else {
+                warning = "Dossier parent d'origine introuvable — restauré à la racine du projet";
+            }
+        }
+        if (targetList.some(n => n.name.toLowerCase() === snapshot.name.toLowerCase())) {
+            warning = (warning ? warning + ' ; ' : '') + 'Un élément du même nom existe déjà à cet emplacement';
+        }
+        targetList.push(snapshot);
+
+        await saveProjectConfig(req.params.name, config);
+        await pool.query(
+            `UPDATE projet_trash_entry SET restored_at = NOW(), restored_by_id = ? WHERE id = ?`,
+            [user.id, req.params.trashId]
+        );
+        projetGit.commitOnMain(path.join(PROJECTS_DIR, req.params.name), `restore_from_trash ${snapshot.name}`)
+            .catch(gitErr => console.warn('[ProjetGit] commit restore_from_trash:', gitErr.message));
+        broadcastToProject(req.params.name, 'structure_update', {
+            operation: entry.node_type === 'folder' ? 'restore_folder' : 'restore_file',
+            payload: { ...snapshot, parentId: entry.original_parent_id || null },
+            updatedBy: user.id
+        });
+        res.json({ success: true, node: snapshot, warning });
+    } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// DELETE /api/file-projects/:name/trash/:trashId — purge définitive volontaire (avant l'échéance des 30 jours)
+app.delete('/api/file-projects/:name/trash/:trashId', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user) return res.status(401).json({ error: 'Non authentifié' });
+    try {
+        const [rows] = await pool.query(
+            `SELECT * FROM projet_trash_entry WHERE id = ? AND project_id = ? LIMIT 1`,
+            [req.params.trashId, req.params.name]
+        );
+        const entry = rows[0];
+        if (!entry) return res.status(404).json({ error: 'Entrée de corbeille introuvable' });
+        if (entry.restored_at) return res.status(400).json({ error: 'Déjà restauré' });
+        const trashFull = safeProjectPath(req.params.name, entry.trash_disk_path);
+        if (trashFull && fs.existsSync(trashFull)) {
+            fs.rmSync(trashFull, { recursive: true, force: true });
+            removeEmptyTrashParentDir(trashFull);
+        }
+        await pool.query(`UPDATE projet_trash_entry SET purged_at = NOW() WHERE id = ?`, [req.params.trashId]);
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -8197,6 +8360,33 @@ setInterval(async () => {
         }
     } catch (e) {
         console.warn('[DRAFT] TTL sweep error:', e.message);
+    }
+}, 60 * 60 * 1000);
+
+// Balayage périodique : purge physiquement les entrées de corbeille dont la
+// rétention (30 jours) est écoulée et qui n'ont jamais été restaurées.
+setInterval(async () => {
+    try {
+        const [expired] = await pool.query(
+            `SELECT id, project_id, trash_disk_path FROM projet_trash_entry
+             WHERE purge_at < NOW() AND restored_at IS NULL AND purged_at IS NULL`
+        );
+        if (!expired.length) return;
+        for (const entry of expired) {
+            try {
+                const trashFull = safeProjectPath(entry.project_id, entry.trash_disk_path);
+                if (trashFull && fs.existsSync(trashFull)) {
+                    fs.rmSync(trashFull, { recursive: true, force: true });
+                    removeEmptyTrashParentDir(trashFull);
+                }
+                await pool.query('UPDATE projet_trash_entry SET purged_at = NOW() WHERE id = ?', [entry.id]);
+            } catch (entryErr) {
+                console.warn(`[TRASH] purge entrée ${entry.id} échouée:`, entryErr.message);
+            }
+        }
+        console.log(`[TRASH] ${expired.length} entrée(s) de corbeille purgée(s) définitivement`);
+    } catch (e) {
+        console.warn('[TRASH] TTL sweep error:', e.message);
     }
 }, 60 * 60 * 1000);
 
@@ -12235,6 +12425,33 @@ app.listen(PORT, async () => {
             INDEX idx_pld_project (project_id)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
     `).catch(e => console.error('[DB] projet_local_draft init error:', e.message));
+
+    // Corbeille (soft-delete) : toute suppression de fichier/dossier déplace le
+    // contenu physique vers .trash/ au lieu de le supprimer, et enregistre ici un
+    // snapshot restaurable. Purge définitive automatique après 30 jours (voir
+    // balayage périodique plus bas), ou manuelle via DELETE .../trash/:trashId.
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS projet_trash_entry (
+            id                 VARCHAR(36)   NOT NULL PRIMARY KEY,
+            project_id         VARCHAR(255)  NOT NULL,
+            node_id            VARCHAR(64)   NOT NULL,
+            node_type          VARCHAR(10)   NOT NULL,
+            name               VARCHAR(255)  NOT NULL,
+            original_path      VARCHAR(500)  NOT NULL,
+            original_parent_id VARCHAR(64)   DEFAULT NULL,
+            structure_snapshot JSON          NOT NULL,
+            trash_disk_path    VARCHAR(500)  NOT NULL,
+            deleted_by_id      VARCHAR(64)   DEFAULT NULL,
+            deleted_by_name    VARCHAR(255)  DEFAULT '',
+            deleted_at         DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            purge_at           DATETIME      NOT NULL,
+            restored_at        DATETIME      DEFAULT NULL,
+            restored_by_id     VARCHAR(64)   DEFAULT NULL,
+            purged_at          DATETIME      DEFAULT NULL,
+            INDEX idx_pte_project (project_id),
+            INDEX idx_pte_purge (purge_at, restored_at, purged_at)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+    `).catch(e => console.error('[DB] projet_trash_entry init error:', e.message));
 
     // Réglages plateforme (clé/valeur) — ex. activation globale de la synchro FTP.
     await pool.query(`

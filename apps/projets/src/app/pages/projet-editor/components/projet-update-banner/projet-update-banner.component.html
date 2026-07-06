@@ -1,3 +1,21 @@
+@if (hasUnsavedWork()) {
+  <div class="update-banner"
+       [class.update-banner--offline]="unsavedSeverity() === 'red'"
+       role="status">
+    <div class="update-banner__icon" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    </div>
+    <div class="update-banner__body">
+      <div class="update-banner__title"
+           [style.color]="unsavedSeverity() === 'red' ? '#f87171' : (unsavedSeverity() === 'amber' ? '#fbbf24' : null)">
+        Non sauvegardé depuis {{ unsavedSeconds() }}s — nouvelle tentative en cours…
+      </div>
+    </div>
+  </div>
+}
+
 @if (count() > 0) {
   <div class="update-banner"
        [class.update-banner--offline]="!isOnline()"

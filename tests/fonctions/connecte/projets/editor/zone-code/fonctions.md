@@ -633,3 +633,24 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Nouveau comportement** : cliquer "Exécuter" sur un Prompt en mode Tchat libre bascule vers l'onglet Conversation comme les 3 autres modes. La différence de comportement (aucun prompt de base/méta injecté, seulement le `SYSTEM:` de la fence) est conservée via `composeSystemPrompt({mode:'freechat', ...})`, qui retourne toujours `fenceSystemPrompt` seul quel que soit `useConfigPrompts`. Le rendu markdown reste actif dans la conversation (gated sur `promptInstanceId`, pas sur le mode) — contrairement à l'ancien popup qui affichait du texte brut ; seule la composition du system prompt distingue encore ce mode des 3 autres.
 - **Détail complet et procédure de test** : voir `2-5-2-7-12`.
 - **Composants:** voir `2-5-2-7-12`.
+
+---
+
+## `2-5-2-4-55` — Résilience hors-ligne du brouillon local (retry + garde de fermeture)
+
+- **Précondition** : coupure réseau (ou requête `PUT .../draft` en échec) pendant la frappe.
+- **Action** : la frappe continue normalement (le buffer Angular reste en mémoire) ; en arrière-plan, `ProjectFilesService.saveDraft()` retente automatiquement avec un backoff exponentiel (1s→2s→4s→8s→16s→30s, ~6 tentatives, jusqu'à ~1min cumulée) avant d'abandonner.
+- **Résultat attendu** : tant qu'au moins un fichier reste en échec (`ProjetCollabService.unsavedSince`), une bannière discrète "Non sauvegardé depuis Xs" s'affiche (ambre à 10s, rouge à 60s) et la fermeture d'onglet est bloquée par une confirmation navigateur (`beforeunload`). Au retour de connexion (event `online`), un nouvel essai est déclenché immédiatement pour les fichiers restés en échec (`onlineRestored$` → `retryUnsavedDrafts()`), sans attendre la prochaine frappe.
+- **Limite assumée (v1)** : file d'attente en mémoire seulement, pas d'IndexedDB — un refresh de page ou une fermeture forcée pendant une coupure prolongée peut perdre les frappes non retentées (le `beforeunload` réduit ce risque sans l'éliminer).
+- **À vérifier** : couper le réseau (DevTools offline) pendant l'édition → bannière "Non sauvegardé" apparaît après ~10s → rétablir le réseau → la bannière disparaît sans action utilisateur (retry automatique) et sans perte de texte.
+- **Composants:** `libs/portail-core/data-access/src/lib/project-files.service.ts`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts`, `projet-update-banner.component.html`
+
+---
+
+## `2-5-2-4-56` — Checkpoint des fichiers additionnels (Prompt/Trello/Array/docs annexes) à la publication
+
+- **Précondition** : une section contient au moins un fichier additionnel (bloc Prompt/Trello/Array ou document annexe) modifié.
+- **Action** : clic sur "Enregistrer et partager" (n'importe lequel des points d'entrée : Code, cross-mode, `publishSection`, mode focus).
+- **Résultat attendu** : `writeSectionStyled` checkpointe désormais aussi chaque fichier additionnel (`updateFile(..., publish:true, checkpoint:true)`) en plus du fichier principal et de son jumeau CSS. Auparavant, ces fichiers ne transitaient que par le brouillon privé (`projet_local_draft`), jamais promus en version BDD partagée (`projet_content_version`) — invisibles aux autres utilisateurs tant qu'aucune autre action ne les touchait, et absents de l'historique de versions.
+- **À vérifier** : modifier le contenu d'un bloc Prompt/Trello dans une section, cliquer "Enregistrer et partager" → l'onglet Historique → "Versions de cette section" (`2-5-2-8-13`) liste désormais aussi une version pour ce fichier additionnel.
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`

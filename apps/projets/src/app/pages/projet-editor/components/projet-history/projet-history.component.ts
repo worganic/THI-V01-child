@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, injec
 import { CommonModule } from '@angular/common';
 import { ProjetCollabService, CollabHistoryEntry } from '@worganic/portail-core/data-access';
 import { AuthService, WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
-import { ProjectFilesService, ContentVersionMeta } from '@worganic/portail-core/data-access';
+import { ProjectFilesService, ContentVersionMeta, TrashEntry } from '@worganic/portail-core/data-access';
 
 export interface DisplayHistoryEntry extends CollabHistoryEntry {
   pendingState?: 'editing' | 'saving';
@@ -30,6 +30,9 @@ export class ProjetHistoryComponent implements OnChanges {
   @Output() entryClick = new EventEmitter<CollabHistoryEntry>();
   // Émis après une annulation réussie → le parent recharge l'éditeur avec le contenu restauré
   @Output() restored = new EventEmitter<WoRestoredContent>();
+  // Émis après une restauration depuis la corbeille → le parent recharge l'arbre de fichiers
+  // (structure, pas juste du contenu — le noeud réapparaît dans la sidebar).
+  @Output() structureRestored = new EventEmitter<void>();
 
   readonly collab = inject(ProjetCollabService);
   readonly auth = inject(AuthService);
@@ -107,6 +110,59 @@ export class ProjetHistoryComponent implements OnChanges {
       console.warn('[History] restoreVersionClick error:', e);
     } finally {
       this.restoringVersionId.set(null);
+    }
+  }
+
+  // ── Corbeille (fichiers/dossiers supprimés, réversibles pendant 30 jours) ───
+  readonly trashEntries = signal<TrashEntry[]>([]);
+  readonly trashLoading = signal(false);
+  readonly trashExpanded = signal(false);
+  readonly restoringTrashId = signal<string | null>(null);
+  readonly trashActionError = signal<string | null>(null);
+
+  async loadTrash() {
+    if (!this.projetId) { this.trashEntries.set([]); return; }
+    this.trashLoading.set(true);
+    try {
+      const entries = await this.projectFilesService.getTrash(this.projetId);
+      this.trashEntries.set(entries);
+    } catch (e) {
+      console.warn('[History] loadTrash error:', e);
+      this.trashEntries.set([]);
+    } finally {
+      this.trashLoading.set(false);
+    }
+  }
+
+  async restoreTrashEntry(entry: TrashEntry, event: Event) {
+    event.stopPropagation();
+    if (!this.projetId || this.restoringTrashId()) return;
+    this.restoringTrashId.set(entry.trashId);
+    this.trashActionError.set(null);
+    try {
+      const res = await this.projectFilesService.restoreFromTrash(this.projetId, entry.trashId);
+      this.trashEntries.update(list => list.filter(e => e.trashId !== entry.trashId));
+      this.structureRestored.emit();
+      if (res.warning) this.trashActionError.set(res.warning);
+    } catch (e: any) {
+      console.warn('[History] restoreTrashEntry error:', e);
+      this.trashActionError.set(e?.error?.error || "Échec de la restauration");
+    } finally {
+      this.restoringTrashId.set(null);
+    }
+  }
+
+  async purgeTrashEntry(entry: TrashEntry, event: Event) {
+    event.stopPropagation();
+    if (!this.projetId || this.restoringTrashId()) return;
+    this.restoringTrashId.set(entry.trashId);
+    try {
+      await this.projectFilesService.purgeTrashEntry(this.projetId, entry.trashId);
+      this.trashEntries.update(list => list.filter(e => e.trashId !== entry.trashId));
+    } catch (e) {
+      console.warn('[History] purgeTrashEntry error:', e);
+    } finally {
+      this.restoringTrashId.set(null);
     }
   }
 
@@ -202,6 +258,7 @@ export class ProjetHistoryComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['projetId'] && this.projetId) {
       this.collab.connect(this.projetId);
+      this.loadTrash();
     }
     if (changes['activeIds']) {
       this._activeIds.set(this.activeIds);
@@ -212,7 +269,10 @@ export class ProjetHistoryComponent implements OnChanges {
   }
 
   reload() {
-    if (this.projetId) this.collab.loadHistory(this.projetId);
+    if (this.projetId) {
+      this.collab.loadHistory(this.projetId);
+      this.loadTrash();
+    }
   }
 
   isMine(entry: DisplayHistoryEntry): boolean {

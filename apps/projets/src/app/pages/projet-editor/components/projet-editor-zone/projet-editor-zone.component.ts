@@ -8469,7 +8469,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
         await Promise.all(
           sections
             .filter(s => s.fileId && s.folderId && ids.includes(s.folderId))
-            .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+            .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true, s.additionalFiles))
         );
         this.lastSavedContent = this.unifiedContent;
         this.localDirty = false;
@@ -8543,7 +8543,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
             (s.folderId != null && publishFolderIds.has(s.folderId)) ||
             publishFolderIds.has(s.fileId!)
           ))
-          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true, s.additionalFiles))
       );
       this.lastSavedContent = this.unifiedContent;
       this.localDirty = false;
@@ -8645,7 +8645,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
             (s.folderId != null && publishFolderIds.has(s.folderId)) ||
             publishFolderIds.has(s.fileId!)
           ))
-          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true, s.additionalFiles))
       );
       this.lastSavedContent = this.unifiedContent;
       // Suppressions d'images différées pour les sections concernées
@@ -8762,7 +8762,10 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   // Écrit une section en double fichier lors d'un « Enregistrer et partager » : clean →
   // fichier principal (version BDD immuable, avec détection de conflit via baseVersionId),
   // styled → jumeau *-css.md (créé si absent). Conserve l'invariant contenu.md propre.
-  private async writeSectionStyled(fileId: string, folderId: string | null | undefined, styledRaw: string, publish: boolean): Promise<void> {
+  // additionalFiles (blocs Prompt/Trello/Array/doc annexes du dossier) : à la publication,
+  // checkpointés eux aussi (jusqu'ici leur contenu ne vivait que dans le brouillon privé de
+  // l'auteur — invisible aux autres utilisateurs et hors historique/corbeille de versions).
+  private async writeSectionStyled(fileId: string, folderId: string | null | undefined, styledRaw: string, publish: boolean, additionalFiles?: AdditionalFile[]): Promise<void> {
     const styled = normalizeStyledMarkdown(styledRaw);
     const clean = stripStyleMarkdown(styled, this.cleanImgResolver);
     const baseVersionId = this.findNode(fileId, this.files)?.fileVersion ?? null;
@@ -8795,6 +8798,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     } else if (folderId) {
       const base = twinName.replace(/\.md$/i, '');
       await this.svc.createFile(this.projectName, { name: base, parentId: folderId, content: styled }).catch(() => {});
+    }
+    if (publish && additionalFiles && additionalFiles.length > 0) {
+      await Promise.all(
+        additionalFiles.filter(af => af.fileId).map(af =>
+          this.svc.updateFile(this.projectName, af.fileId as string, af.content, folderId ?? undefined, true, undefined, undefined, true)
+            .then(() => this.svc.deleteDraft(this.projectName, af.fileId as string).catch(() => {}))
+            .catch(err => console.warn('[EDITOR] checkpoint fichier additionnel échoué:', af.name, err?.message))
+        )
+      );
     }
   }
 
@@ -10653,7 +10665,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       await Promise.all(
         sections
           .filter(s => s.fileId)
-          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true, s.additionalFiles))
       );
       // Déverrouiller toutes les entités structure
       for (const entityId of this.structEntityLocks) {

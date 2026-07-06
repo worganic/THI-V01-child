@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, computed, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, computed, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjetCollabService, SectionPublishedEvent } from '@worganic/portail-core/data-access';
 
@@ -8,7 +8,9 @@ import { ProjetCollabService, SectionPublishedEvent } from '@worganic/portail-co
  * Affiche un résumé des modifications partagées en attente de pull, avec
  * un bouton "Mettre à jour" qui déclenche un git pull côté serveur.
  *
- * Devient une bannière hors-ligne si l'utilisateur perd la connexion.
+ * Devient une bannière hors-ligne si l'utilisateur perd la connexion, et affiche
+ * un avertissement "Non sauvegardé depuis Xs" tant qu'un brouillon reste en échec
+ * de sauvegarde (retry automatique en cours côté service).
  */
 @Component({
   selector: 'app-projet-update-banner',
@@ -17,7 +19,7 @@ import { ProjetCollabService, SectionPublishedEvent } from '@worganic/portail-co
   templateUrl: './projet-update-banner.component.html',
   styleUrls: ['./projet-update-banner.component.scss']
 })
-export class ProjetUpdateBannerComponent {
+export class ProjetUpdateBannerComponent implements OnDestroy {
   private collab = inject(ProjetCollabService);
 
   @Input() projectName: string | null = null;
@@ -25,6 +27,25 @@ export class ProjetUpdateBannerComponent {
 
   readonly pulling = signal(false);
   readonly pullError = signal<string | null>(null);
+
+  readonly hasUnsavedWork = this.collab.hasUnsavedWork;
+  private readonly now = signal(Date.now());
+  private readonly nowTimer = setInterval(() => this.now.set(Date.now()), 1000);
+
+  readonly unsavedSeconds = computed(() => {
+    const since = this.collab.oldestUnsavedAt();
+    return since ? Math.max(0, Math.floor((this.now() - since.getTime()) / 1000)) : 0;
+  });
+
+  readonly unsavedSeverity = computed<'amber' | 'red' | null>(() => {
+    if (!this.hasUnsavedWork()) return null;
+    const s = this.unsavedSeconds();
+    return s >= 60 ? 'red' : (s >= 10 ? 'amber' : null);
+  });
+
+  ngOnDestroy(): void {
+    clearInterval(this.nowTimer);
+  }
 
   // Liste triée par timestamp décroissant
   readonly events = computed<SectionPublishedEvent[]>(() => {
