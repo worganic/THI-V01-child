@@ -490,7 +490,7 @@ export class ProjetSidebarComponent implements OnChanges {
     if (!node) return;
     try {
       if (node.type === 'file') {
-        await this.svc.deleteFile(this.projectName, node.id);
+        const { trashId } = await this.svc.deleteFile(this.projectName, node.id);
         this.woHistory.track({
           section: 'projets/fichiers',
           actionType: 'delete',
@@ -500,11 +500,23 @@ export class ProjetSidebarComponent implements OnChanges {
           entityLabel: node.name.replace(/\.md$/, ''),
           beforeState: { fileName: node.name.replace(/\.md$/, '') },
           context: { projectId: this.projectName, projectTitle: this.projectTitle },
-          undoable: false
+          undoable: true,
+          undoAction: { endpoint: `/api/file-projects/${this.projectName}/trash/${trashId}/restore`, method: 'POST' }
         }).catch(() => {});
       } else {
-        await this.svc.deleteFolder(this.projectName, node.id);
-        // Folder deletions are also tracked in processSectionsChange via the editor
+        const { trashId } = await this.svc.deleteFolder(this.projectName, node.id);
+        this.woHistory.track({
+          section: 'projets/fichiers',
+          actionType: 'delete',
+          label: `Suppression de dossier «${node.name}»`,
+          entityType: 'folder',
+          entityId: node.id,
+          entityLabel: node.name,
+          beforeState: { folderName: node.name },
+          context: { projectId: this.projectName, projectTitle: this.projectTitle },
+          undoable: true,
+          undoAction: { endpoint: `/api/file-projects/${this.projectName}/trash/${trashId}/restore`, method: 'POST' }
+        }).catch(() => {});
       }
       this.refresh.emit();
     } catch (e) { console.error(e); }

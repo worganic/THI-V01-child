@@ -142,6 +142,25 @@ function ensureProjetRepo(projetPath, opts = {}) {
     return initProjetRepo(projetPath, opts);
 }
 
+/**
+ * Garantit que .trash/ (corbeille des suppressions en sursis) est ignoré par
+ * git — son contenu ne doit jamais partir vers le remote GitHub/FTP configuré,
+ * la récupérabilité reposant uniquement sur le disque local + MySQL. Idempotent.
+ */
+function ensureTrashGitignore(projetPath) {
+    if (!projetPath || !fs.existsSync(projetPath)) return;
+    const gitignorePath = path.join(projetPath, '.gitignore');
+    try {
+        const existing = fs.existsSync(gitignorePath) ? fs.readFileSync(gitignorePath, 'utf8') : '';
+        if (!/(^|\n)\.trash\/?\s*(\n|$)/.test(existing)) {
+            const sep = existing && !existing.endsWith('\n') ? '\n' : '';
+            fs.writeFileSync(gitignorePath, `${existing}${sep}.trash/\n`, 'utf8');
+        }
+    } catch (e) {
+        warn('ensureTrashGitignore failed:', e.message);
+    }
+}
+
 function getCurrentBranch(projetPath) {
     if (!isRepo(projetPath)) return null;
     const r = execGit('branch --show-current', projetPath);
@@ -649,6 +668,7 @@ module.exports = {
     wipBranchName,
     initProjetRepo,
     ensureProjetRepo,
+    ensureTrashGitignore,
     getCurrentBranch,
     branchExists,
     createWipBranch, // @deprecated non appelée depuis les routes live, conservée pour compatibilité

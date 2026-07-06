@@ -48,6 +48,19 @@ export interface Outil {
   createdAt: string;
 }
 
+export interface TrashEntry {
+  trashId: string;
+  nodeId: string;
+  nodeType: 'file' | 'folder';
+  name: string;
+  originalPath: string;
+  originalParentId: string | null;
+  deletedById: string | null;
+  deletedByName: string;
+  deletedAt: string;
+  purgeAt: string;
+}
+
 export interface ProjectFilesConfig {
   projectName: string;
   createdAt: string;
@@ -144,9 +157,23 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.get<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/draft`, { headers: this.h() }));
   }
 
-  /** Écrit/écrase le brouillon local de l'utilisateur courant — jamais partagé tant que non validé. */
+  /** Écrit/écrase le brouillon local de l'utilisateur courant — jamais partagé tant que non validé.
+   * Résilient aux coupures réseau brèves : retry avec backoff exponentiel (1s→2s→4s→8s→16s→30s,
+   * ~1min de tentatives cumulées) avant d'abandonner et de remonter l'erreur à l'appelant. */
   saveDraft(projectName: string, fileId: string, content: string, folderId?: string | null, baseVersionId?: string | null): Promise<{ success: boolean }> {
-    return firstValueFrom(this.http.put<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/draft`, { content, folderId: folderId ?? null, baseVersionId: baseVersionId ?? null }, { headers: this.h() }));
+    return this.saveDraftWithRetry(projectName, fileId, content, folderId, baseVersionId, 0);
+  }
+
+  private async saveDraftWithRetry(projectName: string, fileId: string, content: string, folderId: string | null | undefined, baseVersionId: string | null | undefined, attempt: number): Promise<{ success: boolean }> {
+    const MAX_ATTEMPTS = 6;
+    try {
+      return await firstValueFrom(this.http.put<any>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}/draft`, { content, folderId: folderId ?? null, baseVersionId: baseVersionId ?? null }, { headers: this.h() }));
+    } catch (e) {
+      if (attempt >= MAX_ATTEMPTS) throw e;
+      const delayMs = Math.min(1000 * Math.pow(2, attempt), 30000);
+      await new Promise(resolve => setTimeout(resolve, delayMs));
+      return this.saveDraftWithRetry(projectName, fileId, content, folderId, baseVersionId, attempt + 1);
+    }
   }
 
   /** Supprime le brouillon local (après validation réussie ou annulation explicite). */
@@ -179,8 +206,9 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.patch<FileNode>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { name }, { headers: this.h() }));
   }
 
-  deleteFile(projectName: string, fileId: string): Promise<any> {
-    return firstValueFrom(this.http.delete(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { headers: this.h() }));
+  /** Déplace le fichier vers la corbeille (voir getTrash/restoreFromTrash) — jamais supprimé définitivement à ce stade. */
+  deleteFile(projectName: string, fileId: string): Promise<{ success: boolean; trashId: string }> {
+    return firstValueFrom(this.http.delete<{ success: boolean; trashId: string }>(`${this.apiUrl}/api/file-projects/${projectName}/files/${fileId}`, { headers: this.h() }));
   }
 
   createFolder(projectName: string, data: { name: string; parentId?: string; outilSlug?: string }): Promise<FileNode> {
@@ -191,8 +219,24 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.patch<FileNode>(`${this.apiUrl}/api/file-projects/${projectName}/folders/${folderId}`, { name }, { headers: this.h() }));
   }
 
-  deleteFolder(projectName: string, folderId: string): Promise<any> {
-    return firstValueFrom(this.http.delete(`${this.apiUrl}/api/file-projects/${projectName}/folders/${folderId}`, { headers: this.h() }));
+  /** Déplace le dossier (et son contenu) vers la corbeille — jamais supprimé définitivement à ce stade. */
+  deleteFolder(projectName: string, folderId: string): Promise<{ success: boolean; trashId: string }> {
+    return firstValueFrom(this.http.delete<{ success: boolean; trashId: string }>(`${this.apiUrl}/api/file-projects/${projectName}/folders/${folderId}`, { headers: this.h() }));
+  }
+
+  /** Liste des entrées de corbeille encore actives (ni restaurées, ni purgées) pour ce projet. */
+  getTrash(projectName: string): Promise<TrashEntry[]> {
+    return firstValueFrom(this.http.get<TrashEntry[]>(`${this.apiUrl}/api/file-projects/${projectName}/trash`, { headers: this.h() }));
+  }
+
+  /** Restaure un fichier/dossier depuis la corbeille à son emplacement d'origine. */
+  restoreFromTrash(projectName: string, trashId: string): Promise<{ success: boolean; node: FileNode; warning?: string | null }> {
+    return firstValueFrom(this.http.post<any>(`${this.apiUrl}/api/file-projects/${projectName}/trash/${trashId}/restore`, {}, { headers: this.h() }));
+  }
+
+  /** Purge définitive volontaire d'une entrée de corbeille (avant l'échéance de rétention). */
+  purgeTrashEntry(projectName: string, trashId: string): Promise<{ success: boolean }> {
+    return firstValueFrom(this.http.delete<any>(`${this.apiUrl}/api/file-projects/${projectName}/trash/${trashId}`, { headers: this.h() }));
   }
 
   updateStructure(projectName: string, structure: FileNode[]): Promise<any> {

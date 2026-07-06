@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, AfterViewChecked, SimpleChanges, ViewChild, ViewChildren, QueryList, ElementRef, inject, NgZone, ChangeDetectorRef, signal, HostListener } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnDestroy, AfterViewChecked, SimpleChanges, ViewChild, ViewChildren, QueryList, ElementRef, inject, NgZone, ChangeDetectorRef, signal, effect, HostListener } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssTwinName, isCssTwinName } from '../../content-style.util';
 import { CommonModule } from '@angular/common';
@@ -13,6 +13,8 @@ import { AuthService } from '@worganic/portail-core/data-access';
 import { ImagePropsPanelComponent, ImageProps } from '../image-props-panel/image-props-panel.component';
 import { SlashCommandMenuComponent, SlashCommand } from '../slash-command-menu/slash-command-menu.component';
 import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, FormBoardComponent, ChartBoardComponent } from '@worganic/shared/ui';
+import { ProjetIncomingChangeService, IncomingChange } from '../../services/projet-incoming-change.service';
+import { mergeThreeWay } from '../../utils/compute-tri-diff';
 
 export interface FileSaveEvent {
   fileId: string;
@@ -108,6 +110,16 @@ interface DragHandle {
   top: number;
   height: number;
   label: string;
+}
+
+interface IncomingConflictCard {
+  fileId: string;
+  folderId: string;
+  top: number;
+  authorName: string;
+  /** false = fichier additionnel ou section avec sous-sections : "Insérer" désactivé par
+   *  sécurité, seuls "Voir le diff complet"/"Rejeter" restent proposés. */
+  canInsert: boolean;
 }
 
 export interface DragDropEvent {
@@ -289,6 +301,14 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     fileId: string; folderId?: string; baseVersionId: string | null;
     mineContent: string; serverContent: string; serverAuthorName: string; serverCreatedAt: string;
   }>();
+  // Conflit live résolu par "Insérer" (fusion locale déjà faite dans unifiedContent côté zone,
+  // via insertIncomingChange) : le parent doit patcher `files()` avec le contenu fusionné ET le
+  // nouveau fileVersion (voir onIncomingChangeMerged), pour rester cohérent avec unifiedContent.
+  @Output() incomingChangeMerged = new EventEmitter<{ fileId: string; content: string; versionId: string }>();
+  // "Voir le diff complet" / "Rejeter" sur une carte de conflit live : gérés par le parent
+  // (conflictState/patchFileVersionOnly), la zone ne fait que relayer le fileId concerné.
+  @Output() viewIncomingDiff = new EventEmitter<string>();
+  @Output() rejectIncomingChange = new EventEmitter<string>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
@@ -455,6 +475,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private cdr = inject(ChangeDetectorRef);
   private woHistory = inject(WoActionHistoryService);
   collab = inject(ProjetCollabService);
+  incomingChangeService = inject(ProjetIncomingChangeService);
   private authSvc = inject(AuthService);
   currentUserName = () => this.authSvc.currentUser()?.username || '';
   private megaOutilsSvc = inject(MegaOutilsService);
@@ -661,6 +682,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private readonly PADDING_TOP_PX = 16;        // 1rem
   handles: DragHandle[] = [];
   hoveredHandle: DragHandle | null = null;
+  // Cartes flottantes de conflit live (mode Code) — voir recomputeIncomingConflictCards()
+  incomingConflictCards: IncomingConflictCard[] = [];
   dragGhost: { label: string; kind: string; x: number; y: number } | null = null;
   dropIndicator: DropIndicator | null = null;
   private draggingHandle: DragHandle | null = null;
@@ -681,6 +704,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       if (type === 'trello') this.openTrelloPopup();
       else if (type === 'array') this.openArrayPopup();
       else if (type === 'prompt') this.openPromptPopup();
+    });
+    // Recalcule immédiatement les cartes de conflit live dès qu'un changement entrant
+    // arrive/est résolu — sans attendre que l'utilisateur tape (recomputeHandles() ne
+    // tourne, lui, que sur modification du buffer).
+    effect(() => {
+      this.incomingChangeService.incomingChanges();
+      this.recomputeIncomingConflictCards();
     });
   }
 
@@ -1612,6 +1642,31 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
         top: this.PADDING_TOP_PX + r.lineStart * this.LINE_HEIGHT_PX,
         level: r.level,
       }));
+
+    this.recomputeIncomingConflictCards();
+  }
+
+  /** Positionne (calque .ed-overlay, même mécanisme que les chevrons de repli/poignées de
+   *  drag) une carte flottante par changement entrant en attente dont la section est
+   *  actuellement visible dans le buffer — aucune ligne réelle ajoutée, aucun décalage de
+   *  numérotation tant que "Insérer" n'a pas été cliqué. */
+  private recomputeIncomingConflictCards() {
+    const list: IncomingConflictCard[] = [];
+    for (const change of this.incomingChangeService.incomingChanges().values()) {
+      if (!change.folderId) continue;
+      const range = this.sectionRanges.find(r => r.folderId === change.folderId);
+      if (!range) continue; // section non visible dans le buffer actuel (autre focus, etc.)
+      list.push({
+        fileId: change.fileId,
+        folderId: change.folderId,
+        // lineStart + 1 : juste sous le titre de la section (lineStart pointe sur la ligne du
+        // heading lui-même) — évite que la carte se superpose visuellement au titre.
+        top: this.PADDING_TOP_PX + (range.lineStart + 1) * this.LINE_HEIGHT_PX,
+        authorName: change.authorName || 'Un autre utilisateur',
+        canInsert: this.canInsertIncomingChangeDirectly(change.fileId),
+      });
+    }
+    this.incomingConflictCards = list;
   }
 
   /** Vrai si l'intervalle de lignes ]start, end[ contient une ligne de titre de section réelle
@@ -4544,6 +4599,89 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return true;
   }
 
+  // ── Conflit live (carte flottante) ──────────────────────────────────────────
+  // "Insérer" n'est proposé que pour le fichier principal (contenu.md) d'une section SANS
+  // sous-section (feuille) : c'est le seul cas où l'entité résolue par findEntityRange
+  // (basée sur folderId, qui englobe les descendants) correspond exactement au fichier
+  // modifié par l'autre utilisateur. Pour un fichier additionnel (Prompt/Trello/Array/doc
+  // annexe) ou une section avec sous-sections, l'insertion directe est désactivée par
+  // sécurité — seul "Voir le diff complet"/"Rejeter" restent disponibles (voir C/D, qui
+  // gatent l'affichage du bouton "Insérer" via cette méthode).
+  /** Mode Edition/Visu — ancrage par section (pas de numéro de ligne) : trouve le changement
+   *  entrant, s'il y en a un, pour la section donnée (folderId == sectionId en mode Visu). */
+  incomingChangeForSection(folderId: string): IncomingChange | null {
+    for (const change of this.incomingChangeService.incomingChanges().values()) {
+      if (change.folderId === folderId) return change;
+    }
+    return null;
+  }
+
+  canInsertIncomingChangeDirectly(fileId: string): boolean {
+    const change = this.incomingChangeService.get(fileId);
+    if (!change?.folderId) return false;
+    const folder = this.findNode(change.folderId, this.files);
+    const mainFile = folder?.children?.find(c => c.type === 'file' && c.name === 'contenu.md');
+    if (!folder || !mainFile || mainFile.id !== fileId) return false;
+    return this.getDescendantFolderIds(change.folderId, this.files).size <= 1;
+  }
+
+  /** Fusionne le changement entrant de B directement dans `unifiedContent` (aucune tentative
+   *  de publication n'a encore eu lieu) : le curseur/la frappe de A ne sont jamais interrompus,
+   *  seule la section concernée est splicée via applyExternalContent (même mécanisme que la
+   *  fusion manuelle depuis l'Historique). Fusion à 3 voies (mergeThreeWay, pivote sur "avant")
+   *  plutôt qu'un simple remplacement de plage : une ligne tapée par A ailleurs dans la section
+   *  doit survivre, et une ligne que A n'a pas touchée mais que B a modifiée doit être remplacée
+   *  (pas dupliquée) — voir le commentaire de mergeThreeWay pour pourquoi computeTriDiff (pivot
+   *  sur "après", conçu pour l'affichage manuel) ne convient pas à une fusion automatique. */
+  async insertIncomingChange(fileId: string): Promise<void> {
+    if (!this.canInsertIncomingChangeDirectly(fileId)) return;
+    const change = this.incomingChangeService.get(fileId);
+    if (!change?.folderId) return;
+    const rendered = this.getEntityText(change.folderId);
+    if (rendered == null) return; // hors focus / section non visible dans le buffer actuel
+    const lines = rendered.split('\n');
+    const headingLine = lines[0] ?? '';
+    const currentBody = lines.slice(1).join('\n');
+
+    // "before" = la version que B a réellement utilisée comme base pour son édition (son
+    // propre base_version_id), PAS le fileVersion local de A : celui-ci peut être périmé si
+    // une publication locale récente n'a pas encore été resynchronisée côté client (fileVersion
+    // n'est mis à jour qu'au rechargement complet, pas immédiatement après un "Enregistrer et
+    // partager"). Utiliser le base_version_id de B garantit la vraie référence commune, quelle
+    // que soit la fraîcheur du fileVersion local de A.
+    let beforeBody = currentBody; // fallback dégradé (comparaison 2-way current/after) si indisponible
+    try {
+      const changeVersion = await this.svc.getVersionContent(this.projectName, fileId, change.versionId);
+      if (changeVersion.base_version_id) {
+        const baseVersion = await this.svc.getVersionContent(this.projectName, fileId, changeVersion.base_version_id);
+        beforeBody = baseVersion.content;
+      }
+    } catch { /* version de base indisponible — on continue avec le fallback */ }
+
+    const mergedBody = mergeThreeWay(beforeBody.split('\n'), currentBody.split('\n'), change.content.split('\n')).join('\n');
+    const newRenderedText = `${headingLine}\n${mergedBody}`;
+
+    const applied = this.applyExternalContent(change.folderId, newRenderedText);
+    if (applied) {
+      // Le splice dans `unifiedContent` (ci-dessus) suffit pour ce que voit/tape A immédiatement,
+      // mais `files()` (côté parent) doit aussi recevoir le contenu fusionné — pas seulement le
+      // nouveau fileVersion — sinon un changement de mode (Code ↔ Visu), qui reconstruit le
+      // buffer depuis `files()`, écraserait silencieusement la fusion avec l'ancien contenu.
+      this.incomingChangeMerged.emit({ fileId, content: mergedBody, versionId: change.versionId });
+      this.incomingChangeService.resolve(fileId);
+    }
+  }
+
+  /** "Voir le diff complet" sur une carte de conflit live — délégué au parent (conflictState). */
+  onViewIncomingChangeDiff(fileId: string): void {
+    this.viewIncomingDiff.emit(fileId);
+  }
+
+  /** "Rejeter" sur une carte de conflit live — délégué au parent (patchFileVersionOnly). */
+  onRejectIncomingChangeClick(fileId: string): void {
+    this.rejectIncomingChange.emit(fileId);
+  }
+
   private updateSnapshotFromFiles() {
     const pendingFolderIds = new Set(this.modifiedEntities.values());
     const pendingEntityIds = new Set(this.modifiedEntities.keys());
@@ -6027,6 +6165,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.upsertPromptResultSection(promptInstanceId, content);
 
     // 2. Créer les instances pour Trello / Array (Form/Chart/Agenda = rendu par balise ou liste)
+    await this.createSelectedMoInstances(selectedMos, folderId);
+    this.recomputeAll();
+  }
+
+  /** Crée les instances BDD pour les MO Trello/Array sélectionnés (Form/Chart/Agenda ne créent
+   *  aucune instance, cf. commentaire ci-dessus) — factorisé pour être réutilisé à la fois par la
+   *  matérialisation Prompt (sous-section "PR-Res", ci-dessus) et par la matérialisation directe
+   *  dans une section (chat IA classique, `materializeMoIntoSection` ci-dessous). */
+  private async createSelectedMoInstances(selectedMos: MaterializedMoPreview[], folderId: string | undefined): Promise<void> {
     for (const mo of selectedMos) {
       if (mo.type === 'form' || mo.type === 'chart' || mo.type === 'agenda') continue;
       try {
@@ -6053,6 +6200,53 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       } catch (e) {
         console.error('[EditorZone] matérialisation MO échouée :', mo.name, e);
       }
+    }
+  }
+
+  /** Matérialise les MO Trello/Array sélectionnés directement dans la section active (message du
+   *  chat IA "classique", hors conversation MO Prompt) — pas de sous-section "PR-Res" (aucune
+   *  instance Prompt à laquelle la rattacher). Contrairement à `createSelectedMoInstances` (utilisée
+   *  par le chemin Prompt, où la fence brute de l'IA est déjà écrite via `upsertPromptResultSection`),
+   *  il faut ici insérer explicitement le marqueur `{{MOID:id}}` dans le contenu de la section —
+   *  même mécanisme que `confirmArrayPopup()`/`confirmTrelloPopup()` (création manuelle via le menu
+   *  contextuel) — sans quoi l'instance existe en BDD (visible immédiatement dans la session grâce à
+   *  `recomputeAll()`) mais n'est rattachée à aucune position dans le document : elle disparaît du
+   *  rendu Édition/Visu après rechargement (le panneau Code/Structure, résolu par simple `folderId`,
+   *  ne suffit pas à lui seul). */
+  async materializeMoIntoSection(sectionId: string, selectedMos: MaterializedMoPreview[]): Promise<void> {
+    const prevPending = this.pendingMoFolderId;
+    this.pendingMoFolderId = sectionId;
+    try {
+      for (const mo of selectedMos) {
+        if (mo.type === 'form' || mo.type === 'chart' || mo.type === 'agenda') continue;
+        try {
+          const inst = await this.megaOutilsSvc.createInstance({
+            type: mo.type, name: mo.name, projectId: this.projectName,
+            outilId: this.activeOutilId || undefined, folderId: sectionId,
+          });
+          const body = sharedFenceBody(mo.fence);
+          if (mo.type === 'trello') {
+            const cards = this.parseTrelloBodyCards(body);
+            for (let i = 0; i < cards.length; i++) {
+              const c = cards[i];
+              await this.megaOutilsSvc.createTrelloCard(inst.id, {
+                title: c.title, status: c.status, priority: c.priority, description: c.description, orderIndex: i,
+              }).catch(() => {});
+            }
+            this.insertAt(`\n\n\`\`\`TRELLO: ${mo.name} {{MOID:${inst.id}}}\n${body}\n\`\`\`\n\n`, '');
+          } else if (mo.type === 'array') {
+            const base = await this.megaOutilsSvc.getArrayGrid(inst.id).catch(() => null);
+            const grid = base ? this.deserializeArrayGrid(body, base) : null;
+            if (grid) await this.megaOutilsSvc.updateArrayGrid(inst.id, grid).catch(() => {});
+            this.insertAt(`\n\n\`\`\`ARRAY: ${mo.name} {{MOID:${inst.id}}}\n\`\`\`\n\n`, '');
+          }
+          this.megaOutilCreated.emit(inst);
+        } catch (e) {
+          console.error('[EditorZone] matérialisation MO échouée :', mo.name, e);
+        }
+      }
+    } finally {
+      this.pendingMoFolderId = prevPending;
     }
     this.recomputeAll();
   }
@@ -8228,10 +8422,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       } catch (e: any) {
         if (!e?.conflictHandled) {
           console.warn('[Publish] erreur lors de la publication:', e);
-          const msg = e?.error?.pushFailed
-            ? 'Sauvegardé localement — synchronisation GitHub échouée'
-            : 'Erreur lors du partage des modifications';
-          this.showPublishErrorToast(msg);
+          this.showPublishErrorToast(this.buildPublishErrorMsg(e));
         }
         this.isPublishing.set(false);
         return;
@@ -8466,10 +8657,8 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.flushContentModifications();
       const sections = this.parseContent();
       try {
-        await Promise.all(
-          sections
-            .filter(s => s.fileId && s.folderId && ids.includes(s.folderId))
-            .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+        await this.publishSectionsBatch(
+          sections.filter(s => s.fileId && s.folderId && ids.includes(s.folderId))
         );
         this.lastSavedContent = this.unifiedContent;
         this.localDirty = false;
@@ -8537,13 +8726,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const sections = this.parseContent();
     this.unifiedContent = savedContent;
     try {
-      await Promise.all(
-        sections
-          .filter(s => s.fileId && (
-            (s.folderId != null && publishFolderIds.has(s.folderId)) ||
-            publishFolderIds.has(s.fileId!)
-          ))
-          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+      await this.publishSectionsBatch(
+        sections.filter(s => s.fileId && (
+          (s.folderId != null && publishFolderIds.has(s.folderId)) ||
+          publishFolderIds.has(s.fileId!)
+        ))
       );
       this.lastSavedContent = this.unifiedContent;
       this.localDirty = false;
@@ -8639,13 +8826,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     const sections = this.parseContent();
     this.unifiedContent = savedContent;
     try {
-      await Promise.all(
-        sections
-          .filter(s => s.fileId && (
-            (s.folderId != null && publishFolderIds.has(s.folderId)) ||
-            publishFolderIds.has(s.fileId!)
-          ))
-          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
+      await this.publishSectionsBatch(
+        sections.filter(s => s.fileId && (
+          (s.folderId != null && publishFolderIds.has(s.folderId)) ||
+          publishFolderIds.has(s.fileId!)
+        ))
       );
       this.lastSavedContent = this.unifiedContent;
       // Suppressions d'images différées pour les sections concernées
@@ -8762,7 +8947,33 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   // Écrit une section en double fichier lors d'un « Enregistrer et partager » : clean →
   // fichier principal (version BDD immuable, avec détection de conflit via baseVersionId),
   // styled → jumeau *-css.md (créé si absent). Conserve l'invariant contenu.md propre.
-  private async writeSectionStyled(fileId: string, folderId: string | null | undefined, styledRaw: string, publish: boolean): Promise<void> {
+  // additionalFiles (blocs Prompt/Trello/Array/doc annexes du dossier) : à la publication,
+  // checkpointés eux aussi (jusqu'ici leur contenu ne vivait que dans le brouillon privé de
+  // l'auteur — invisible aux autres utilisateurs et hors historique/corbeille de versions).
+  /** Publie un lot de sections, avec blocage TOTAL si l'une d'elles a un conflit live non
+   *  résolu — aucune ne part en BDD (plutôt qu'une publication partielle), pour rester simple
+   *  à comprendre côté utilisateur. writeSectionStyled() a aussi sa propre garde par fichier
+   *  (défense en profondeur), mais un blocage total nécessite de vérifier tout le lot AVANT de
+   *  démarrer le Promise.all — sans quoi les autres fichiers du lot auraient déjà été lancés en
+   *  parallèle avant qu'un rejet isolé ne remonte. */
+  private async publishSectionsBatch(sections: SectionInfo[]): Promise<void> {
+    const conflictId = sections.map(s => s.fileId).find(id => id && this.incomingChangeService.hasUnresolved(id));
+    if (conflictId) {
+      throw Object.assign(new Error('Conflit entrant non résolu — publication bloquée'), { incomingConflictBlocked: true, incomingConflictFileId: conflictId });
+    }
+    await Promise.all(sections.map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true, s.additionalFiles)));
+  }
+
+  private async writeSectionStyled(fileId: string, folderId: string | null | undefined, styledRaw: string, publish: boolean, additionalFiles?: AdditionalFile[]): Promise<void> {
+    // Conflit live non résolu sur ce fichier (carte flottante ignorée, ni Insérer ni Rejeter ni
+    // diff complet) : bloquer la publication de CE fichier plutôt que d'écraser silencieusement
+    // la modification de l'autre utilisateur. Garde défensive de dernier recours — les 4 points
+    // d'appel de "Enregistrer et partager" font déjà un blocage total du lot AVANT d'atteindre
+    // cette fonction (voir hasUnresolvedIncomingConflict), mais celle-ci reste la seule à couvrir
+    // systématiquement les 5 chemins de publication (Visu/Code/Section/Structure/mode focus).
+    if (publish && this.incomingChangeService.hasUnresolved(fileId)) {
+      throw Object.assign(new Error('Conflit entrant non résolu — publication bloquée'), { incomingConflictBlocked: true, incomingConflictFileId: fileId });
+    }
     const styled = normalizeStyledMarkdown(styledRaw);
     const clean = stripStyleMarkdown(styled, this.cleanImgResolver);
     const baseVersionId = this.findNode(fileId, this.files)?.fileVersion ?? null;
@@ -8796,6 +9007,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       const base = twinName.replace(/\.md$/i, '');
       await this.svc.createFile(this.projectName, { name: base, parentId: folderId, content: styled }).catch(() => {});
     }
+    if (publish && additionalFiles && additionalFiles.length > 0) {
+      await Promise.all(
+        additionalFiles.filter(af => af.fileId).map(af =>
+          this.svc.updateFile(this.projectName, af.fileId as string, af.content, folderId ?? undefined, true, undefined, undefined, true)
+            .then(() => this.svc.deleteDraft(this.projectName, af.fileId as string).catch(() => {}))
+            .catch(err => console.warn('[EDITOR] checkpoint fichier additionnel échoué:', af.name, err?.message))
+        )
+      );
+    }
   }
 
   private showPublishToast(): void {
@@ -8809,8 +9029,11 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     setTimeout(() => this.publishErrorToastVisible.set(false), 6000);
   }
 
-  /** Message d'erreur de partage explicite (423 verrou, push échoué, ou générique). */
+  /** Message d'erreur de partage explicite (423 verrou, push échoué, conflit live, ou générique). */
   private buildPublishErrorMsg(e: any): string {
+    if (e?.incomingConflictBlocked) {
+      return 'Une modification d\'un autre utilisateur est en attente sur cette section — résolvez-la (Insérer/Voir le diff/Rejeter) avant de partager';
+    }
     if (e?.status === 423 || e?.error?.error === 'Section verrouillée') {
       return `Section verrouillée par ${e?.error?.lockedBy || 'un autre utilisateur'} — partage impossible`;
     }
@@ -10650,11 +10873,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
 
     const sections = this.parseContent();
     try {
-      await Promise.all(
-        sections
-          .filter(s => s.fileId)
-          .map(s => this.writeSectionStyled(s.fileId!, s.folderId, s.content, true))
-      );
+      await this.publishSectionsBatch(sections.filter(s => s.fileId));
       // Déverrouiller toutes les entités structure
       for (const entityId of this.structEntityLocks) {
         this.collab.removeLocalPending(entityId);
@@ -10667,10 +10886,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       this.showPublishToast();
     } catch (e: any) {
       if (!e?.conflictHandled) {
-        const msg = e?.error?.pushFailed
-          ? 'Sauvegardé localement — synchronisation GitHub échouée'
-          : 'Erreur lors du partage des modifications';
-        this.showPublishErrorToast(msg);
+        this.showPublishErrorToast(this.buildPublishErrorMsg(e));
       }
     } finally {
       this.isPublishing.set(false);

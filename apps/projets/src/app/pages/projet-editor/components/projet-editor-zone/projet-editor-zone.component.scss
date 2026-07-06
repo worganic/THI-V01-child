@@ -1008,6 +1008,67 @@
   .material-symbols-outlined { font-size: 13px; }
 }
 
+.visu-conflict-card {
+  display: block;
+  font-size: 11px;
+  color: rgb(146, 64, 14);
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  border-radius: 6px;
+  padding: 6px 8px;
+  margin: 2px 0 8px;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    margin-bottom: 4px;
+
+    .material-symbols-outlined { font-size: 14px; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    border: 1px solid rgba(217, 119, 6, 0.4);
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgb(146, 64, 14);
+    cursor: pointer;
+    transition: background-color 0.1s;
+
+    &:hover { background: rgba(255, 255, 255, 0.9); }
+
+    &--primary {
+      background: rgb(217, 119, 6);
+      color: white;
+      &:hover { background: rgb(180, 95, 6); }
+    }
+  }
+}
+
+:host-context(.dark) .visu-conflict-card {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: rgb(253, 224, 71);
+
+  .visu-conflict-card__btn {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: rgb(253, 224, 71);
+    &:hover { background: rgba(0, 0, 0, 0.5); }
+    &--primary { background: rgb(217, 119, 6); color: white; &:hover { background: rgb(180, 95, 6); } }
+  }
+}
+
 .visu-publish-bar {
   display: flex;
   align-items: center;
@@ -1849,6 +1910,74 @@
       border-color: rgba(88, 166, 255, 0.35);
       color: rgb(88, 166, 255);
     }
+  }
+}
+
+// ── Conflit live (carte flottante, calque .ed-overlay) ────────────
+.ed-conflict-card {
+  position: absolute;
+  left: 3.25rem;
+  right: 0.75rem;
+  max-width: 480px;
+  z-index: 6;
+  pointer-events: auto; // le conteneur .ed-overlay parent est pointer-events:none par défaut
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(217, 119, 6, 0.4);
+  border-radius: 6px;
+  padding: 6px 8px;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 11px;
+  color: rgb(146, 64, 14);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    margin-bottom: 4px;
+
+    .material-symbols-outlined { font-size: 14px; }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    border: 1px solid rgba(217, 119, 6, 0.4);
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    color: rgb(146, 64, 14);
+    cursor: pointer;
+    transition: background-color 0.1s;
+
+    &:hover { background: rgba(255, 255, 255, 0.9); }
+
+    &--primary {
+      background: rgb(217, 119, 6);
+      color: white;
+      &:hover { background: rgb(180, 95, 6); }
+    }
+  }
+}
+
+:host-context(.dark) .ed-conflict-card {
+  background: rgba(251, 191, 36, 0.08);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: rgb(253, 224, 71);
+
+  .ed-conflict-card__btn {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(251, 191, 36, 0.3);
+    color: rgb(253, 224, 71);
+    &:hover { background: rgba(0, 0, 0, 0.5); }
+    &--primary { background: rgb(217, 119, 6); color: white; &:hover { background: rgb(180, 95, 6); } }
   }
 }
 

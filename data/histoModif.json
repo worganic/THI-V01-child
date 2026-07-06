@@ -1,6 +1,151 @@
 {
   "modifications": [
     {
+      "id": "mod-574",
+      "version": "B-0.328",
+      "date": "2026-07-06T23:15:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:array-outil",
+      "title": "Matérialisation d'un vrai MO Tableau/Trello depuis le chat IA classique",
+      "description": "Suite au fix précédent (rendu markdown propre en conversation), l'utilisateur a signalé qu'un tableau généré par l'IA dans le chat classique (@ia, hors conversation MO Prompt) restait du texte markdown statique une fois inséré dans le document — pas un vrai MO Tableau, donc pas de bouton de bascule éditable. Cause : (1) l'IA n'était jamais informée du format de fence ARRAY/TRELLO (contrairement aux conversations MO Prompt) ; (2) même avec une fence, detectMoFences() n'était jamais appelé sur les réponses du chat classique, donc msg.mos restait vide ; (3) materializeSingleMo()/materializeMo() avaient une garde dure bloquant tout message sans promptInstanceId. Fix : ajout de MO_FENCE_CHAT_INSTRUCTION (mo-fence-parser.util.ts) enseignant la syntaxe ARRAY/TRELLO à l'IA (uniquement ces 2 types, les seuls réellement matérialisés en instance BDD) ; detectMoFences() appelé dans le handler doneSub de sendAiEdit() (même pattern que onPromptTurnDone) ; garde retirée, émission de materializeRequested élargie (sectionId en plus de promptInstanceId). Décidé avec l'utilisateur : le chat classique n'ayant pas de sous-section \"PR-Res\" à utiliser (pas d'instance Prompt), le MO est créé directement dans la section active (nouvelle méthode materializeMoIntoSection() dans projet-editor-zone.component.ts, extraction pure de la boucle de création d'instances existante en createSelectedMoInstances — chemin Prompt strictement inchangé). Deux bugs réels trouvés et corrigés en cours de vérification : (a) l'instance BDD était créée mais invisible après rechargement — il manquait l'insertion du marqueur {{MOID:id}} dans le contenu de la section via insertAt() (même mécanisme que confirmArrayPopup(), création manuelle), sans quoi rien ne rattache l'instance à une position dans le document ; (b) la bannière \"Modification IA proposée\" (diff Accepter/Annuler) démonte <app-edition-outil> tant qu'elle est affichée, faisant échouer la matérialisation silencieusement (aucune erreur, bouton passant quand même à \"Déjà ajouté\") si on cliquait \"Ajouter au projet\" avant de la fermer — corrigé en annulant automatiquement ce diff en attente avant de matérialiser. Vérifié en conditions réelles (projet de test jetable, nettoyé après coup) : création réelle d'instance confirmée via l'API mega-outils après le fix marqueur, carte \"MegaOutils détectés\"/\"Ajouter au projet\" apparaissant correctement même avec le diff IA Edit non résolu. Non vérifié explicitement après ce dernier commit : persistance après rechargement de page avec le fix marqueur en place (build propre confirmé, logique identique à confirmArrayPopup() qui fonctionne de façon fiable) — à confirmer au prochain test si besoin.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans le tableau importé à partir d'un prompt IA le tableau s'affiche bien mais il n'est pas transformé en mega outils tableau, le bouton de modification n'est donc pas présent. [Image]",
+      "startedAt": "2026-07-06T22:40:00.000Z",
+      "completedAt": "2026-07-06T23:15:00.000Z"
+    },
+    {
+      "id": "mod-573",
+      "version": "B-0.328",
+      "date": "2026-07-06T22:10:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:array-outil",
+      "title": "Rendu markdown propre des réponses IA en conversation + vue lecture seule par défaut du MO Tableau",
+      "description": "Deux demandes liées à l'affichage des MO générés/consultés depuis l'éditeur. (1) Zone conversation : les messages IA \"classiques\" (chat @ia hors conversation MO Prompt) s'affichaient en texte brut, y compris quand l'IA répondait avec un tableau markdown (caractères pipe affichés tels quels) — corrigé en réutilisant renderedHtml() (marked.parse() déjà utilisé pour les messages liés à un MO Prompt), avec ajout de règles CSS pour les tableaux (.chat-md table/th/td) reprenant les mêmes valeurs que le nouveau rendu propre côté éditeur, pour un rendu visuellement identique aux deux endroits. (2) MO Tableau (ArrayBoardComponent) : affichait toujours la grille de type tableur (lettres de colonnes A/B/C, gouttière de numéros de ligne, poignées de redimensionnement) même pour une simple lecture — ajout d'un nouvel Input defaultCleanView (opt-in, false par défaut) qui fait démarrer le composant en vue propre (table HTML classique, 1ère ligne = en-tête, aucun chrome de tableur), avec un bouton crayon pour basculer vers la grille éditable complète, et un bouton oeil symétrique pour revenir en vue propre. Activé uniquement sur les 2 points d'appel Édition/Visu (previewArrayInstanceId standalone + inline en section) ; le mode Structure n'a pas reçu ce nouvel Input et garde donc la grille éditable telle quelle sans bascule (scope confirmé avec l'utilisateur avant implémentation, via plan). L'insertion du contenu généré par l'IA dans le document (mécanisme de matérialisation des MO depuis la conversation) n'a pas été touchée, comme demandé. **2 corrections après premier retour utilisateur** (le CSS des tableaux ne s'appliquait pas en conversation, le bouton crayon était invisible) : (a) le CSS ajouté à .chat-md table/th/td ne s'appliquait jamais — [innerHTML] injecte du HTML brut (marked.parse()) qui ne porte pas l'attribut _ngcontent-* qu'Angular ajoute à son propre template, donc un sélecteur scopé classique ne matche jamais ce contenu avec l'encapsulation Emulated par défaut (confirmé par inspection du DOM en conditions réelles : border 0px alors que la règle spécifiait 1px) — corrigé avec :host ::ng-deep sur les 4 règles de tableau ; (b) le bouton crayon de bascule (array-board.component.ts) était invisible par défaut (opacity:0, visible seulement au survol) — l'utilisateur ne le trouvait pas ; passé à opacity:0.55 par défaut (1 au survol) pour rester discret tout en étant découvrable sans avoir à deviner où survoler. Vérifié en conditions réelles (2 projets de test jetables successifs, nettoyés après coup) : build Angular propre à chaque itération ; conversation @ia avec un vrai prompt de génération de tableau (Antigravity/Gemini 3 Pro) affichée en table HTML bordée avec en-tête distinct (confirmé par inspection getComputedStyle du DOM : border/background/font-weight correspondent exactement aux valeurs des règles CSS après le fix ::ng-deep), message texte simple toujours affiché normalement (non-régression) ; MO Tableau en mode Édition affiché en vue propre par défaut avec bouton crayon visible sans survol, bascule vers la grille éditable identique à l'ancien comportement, bouton oeil → retour vue propre ; mode Structure vérifié inchangé (toujours grille éditable, aucun bouton de bascule).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/array/array-board.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/array-outil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsqu'on interroge une IA via conversation, l'IA doit pouvoir retourné des infos au format MO, l'affichage dans la zone de conversation doit èetre affiché de façon design. L'insertion dans la partie Edition/Code est parfaite et ne doit pas changer, prend le même design pour l'affiché dans la zone conversation [Image]. Un MO tableau doit être affiché par defaut dans le mode Edition de cette façon : [Image] et il doit y avoir un bouton pour l'affiché de façon éditable : [Image]",
+      "startedAt": "2026-07-06T21:30:00.000Z",
+      "completedAt": "2026-07-06T22:35:00.000Z"
+    },
+    {
+      "id": "mod-572",
+      "version": "B-0.328",
+      "date": "2026-07-06T20:50:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "system"
+      ],
+      "features": "system:executor-ai",
+      "title": "Fix : Antigravity bloqué sur les prompts IA ciblant un fichier",
+      "description": "L'utilisateur a signalé une erreur \"Antigravity not supported for file prompts\" en tentant de lancer une conversation IA (mention @ia, MO Prompt \"tableaux\", demande de génération d'un tableau markdown). Cause : la route `/execute-file-prompt` de l'executor Electron (port 3002) — utilisée par ProjetAiEditService pour les prompts IA ciblant un fichier — bloquait systématiquement le provider Antigravity avec un message d'erreur générique au lieu de l'implémenter (seul Claude était géré). Fix : spawn direct de `agy` (resolveAgyPath, sans cmd.exe, mêmes arguments que /execute-prompt). Comme `agy -p` n'écrit jamais sur stdout pour une réponse purement textuelle (limitation déjà connue et documentée pour /execute-prompt), le prompt envoyé à agy lui demande d'écrire sa réponse complète dans un fichier relais temporaire (os.tmpdir()) plutôt que de répondre dans le chat ; l'executor relit ce fichier une fois le process terminé, stream le contenu en SSE comme pour Claude, puis supprime le fichier temporaire. Timeout dur de 5 min en filet si agy hang sans écrire. Vérifié en conditions réelles après redémarrage de l'executor : test simple (\"Ecris uniquement le mot OK\") et reproduction exacte du scénario utilisateur (tableau des températures mensuelles à Marseille) — les deux retournent une réponse correcte sans erreur, et le fichier relais temporaire est bien supprimé après lecture (aucun résidu).",
+      "files": [
+        "electron/executor/server-executor.js",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai voulus intérroger une IA gemini 3 pro et j'ai eu un msg d'erreur, il faut corrigé le problème pour pouvoir lancer des conversation avec l'IA [Image #1]",
+      "startedAt": "2026-07-06T20:35:00.000Z",
+      "completedAt": "2026-07-06T20:50:00.000Z"
+    },
+    {
+      "id": "mod-571",
+      "version": "B-0.328",
+      "date": "2026-07-06T16:50:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code,projets:editor-update-banner",
+      "title": "Conflit live : incrustation non-bloquante des modifications concurrentes dans l'éditeur",
+      "description": "Sur la branche 2026-07-06_partage : quand l'utilisateur B publie (\"Enregistrer et partager\") une modification sur une section que l'utilisateur A est en train d'éditer (brouillon local divergent en cours), le changement de B s'incruste désormais dans une carte flottante ambre non-bloquante chez A — sans toucher à son texte ni décaler sa numérotation de lignes — plutôt que d'être silencieusement absorbé (comportement précédent, qui pouvait aussi désynchroniser fileVersion et désactiver la détection de conflit HTTP 409 pour la publication suivante de A, bug corrigé au passage dans mergeLocalDraftsIntoTree). Carte disponible en mode Code (ancrée par ligne, calque .ed-overlay existant) et en mode Édition/Visu (ancrée par section) avec 3 actions : Insérer (fusion automatique 3-voies pivotant sur la version commune \"avant\" — nouvelle fonction mergeThreeWay, distincte de computeTriDiff qui pivote sur \"après\" et duplique les lignes non modifiées par l'un des deux côtés — appliquée directement dans le buffer de A avec save immédiat), Voir le diff complet (réutilise l'écran de fusion manuelle existant <app-projet-diff> via une entrée synthétique, capturant le texte réellement affiché avant le démontage du composant d'édition), Rejeter (A garde son texte, seul fileVersion est aligné pour éviter un faux 409 ultérieur). Aucune des 3 actions ne passe par la route resolve-conflict (qui ne déclenche jamais de publish git/FTP) : fusion/persistance uniquement locales (patchFileContent + saveDraft), la publication suivante utilise le pipeline normal. Blocage à la publication tant que la carte n'est pas résolue (erreur incomingConflictBlocked, toast explicite) — si plusieurs sections sont publiées en un seul lot, une seule section en conflit non résolu bloque tout le lot (pas de publication partielle). Bannière de découvrabilité étendue (ProjetUpdateBannerComponent) pour distinguer visuellement les conflits live des mises à jour normales. Vérifié en conditions réelles (2 sessions du même projet de test jetable, plusieurs cycles publish/insérer/voir-le-diff/rejeter) : carte affichée sans interruption de frappe, fusion correcte sans duplication ni perte de contenu, blocage de publication confirmé (aucune version serveur créée tant que non résolu, message d'erreur exact affiché), rejet confirmé (texte de A intact, publication suivante réussie sans 409 après alignement de version). Deux bugs réels trouvés et corrigés en cours de vérification sur le chemin \"Voir le diff complet\" : (1) mineContent lu depuis fileNode.content (jamais mis à jour par la frappe live) au lieu du texte réellement affiché — corrigé via getEntityText(), même pattern que insertIncomingChange ; (2) heading dupliqué en ligne de corps après application faute d'alignement heading/corps entre mineContent et serverContent — corrigé en alignant les deux sur le même format et en retirant le heading avant persistance (files().content/le brouillon sont conventionnellement sans heading, dérivé de node.name à la reconstruction).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/services/projet-incoming-change.service.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/utils/compute-tri-diff.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais rajouté une option pour le partage je suis un utilisateur A et l'utilisateur B fait une modif dans une section et sauvegarde et partage sa modification. La modification doit s'incrusté dans ma page en mode non en cours de jumelage. Ainsi la partie de texte sera inserré mais non modifiable, les numéros de ligne ne seront pas pris en compte dans ce texte et donc on aura Ligne 103 texte actuel de A [ ligne 104-B texte de B inscrusté dans une autre couleur ] Ligne 104 User A texte actuel. Le texte pourra être inserrer définitivement par le user A en cliquant sur un bouton sur la zone de texte incrusté. Ainsi on met en place en live un système de conflit. Cela permet de le géré avant envoys des modifs de A dans la bdd. Si le conflit n'a pas été réglé il faut le régler à l'enregistrement/partage de l'utilisateur A. Fait moi un plan pour une tel fonctionnalité",
+      "startedAt": "2026-07-06T14:00:00.000Z",
+      "completedAt": "2026-07-06T16:50:00.000Z"
+    },
+    {
+      "id": "mod-570",
+      "version": "B-0.328",
+      "date": "2026-07-06T00:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "server",
+        "libs",
+        "projets"
+      ],
+      "features": "projets:editor-sidebar,projets:zone5-historique,projets:editor-zone-code,projets:editor-update-banner,server:collab,server:projet-git",
+      "title": "Corbeille réversible (soft-delete), traçabilité complète des suppressions et résilience réseau",
+      "description": "Sur la branche 2026-07-06_partage : étude complète du système de partage/collaboration de textes de l'éditeur de projet (temps réel SSE, brouillons privés, versioning optimiste — déjà solides) pour identifier et combler les trous de fiabilité restants, en particulier la crainte formulée par l'utilisateur (perte irréversible d'un dossier supprimé). (1) Corbeille (soft-delete) unifiée côté serveur : les routes DELETE fichier/dossier déplacent désormais le contenu vers .trash/<horodatage>-<id>/ (jamais poussé au remote git, .gitignore dédié) au lieu de le supprimer, avec snapshot restaurable en base (nouvelle table projet_trash_entry, rétention 30 jours + purge automatique horaire, purge volontaire possible) ; nouvelles routes GET/POST/DELETE .../trash. (2) Traçabilité complète des suppressions : correction du code mort qui laissait la suppression de dossier totalement non tracée (trackFolderDelete jamais atteint suite à la désactivation de la réconciliation automatique du 2026-07-05, conservée telle quelle) — la suppression manuelle de fichier ET de dossier depuis la sidebar est maintenant tracée avec undoable:true, ainsi que la suppression automatique de fichiers additionnels orphelins (angle mort découvert en cours de route, jusqu'ici silencieuse). Le dispatcher générique d'undo (wo-action-history) fonctionne avec la nouvelle route de restauration sans aucune adaptation. (3) Nouvel onglet Corbeille dans le panneau Historique (zone5) : liste les entrées actives avec bouton Restaurer/purger définitivement. (4) Fix cohérence config.json/MySQL : getProjectConfig() ne bascule plus silencieusement vers le disque quand les deux structures existent mais divergent (seul le cas MySQL vide reste couvert) — anomalie désormais loguée (CONFIG-DRIFT) plutôt que d'écraser silencieusement la source de vérité. (5) Résilience hors-ligne de l'autosave : retry avec backoff exponentiel sur la sauvegarde du brouillon, bannière \"Non sauvegardé depuis Xs\" et garde de fermeture d'onglet (beforeunload) tant qu'une sauvegarde reste en échec, retry immédiat au retour de connexion réseau. (6) Extension du checkpoint BDD aux fichiers additionnels (Prompt/Trello/Array/docs annexes) lors de \"Enregistrer et partager\" — auparavant seuls le fichier principal et son jumeau CSS étaient versionnés, les fichiers additionnels restaient cantonnés au brouillon privé, invisibles aux autres utilisateurs. Vérifié en conditions réelles (navigateur, projet de test jetable) : suppression/restauration de dossier via le bouton Corbeille et via l'icône annuler de l'historique, undo dispatcher générique, purge propre — RAS hormis un rafraîchissement UI non-live sur le chemin restauration-via-undo (donnée serveur toujours correcte, page à recharger dans ce cas précis).",
+      "files": [
+        "server/server-data.js",
+        "server/modules/projet-git.js",
+        "apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-history/projet-history.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.html",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "libs/portail-core/data-access/src/lib/project-files.service.ts",
+        "libs/portail-core/data-access/src/lib/projet-collab.service.ts",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais que tu reprenne tous le code de projet/Edition et que tu regarde comment amélioré le système de partage des textes. Le système est un système participatif ou les users peuvent travaillé sur les mêmes documents en direct ou en différé (exemple utilisation hors connexion). Il faut que le système soi robuste et fiable et une sécurité max pour ne pas perdre de données, exemple si un user efface un dossier il faut que ce soi indiqué dans l'historique et qu'on puisse revenir en arrière, il faut un système de gestion de conflit etc. Etudi le système actuel et propose moi des solutions.",
+      "startedAt": "2026-07-06T00:00:00.000Z",
+      "completedAt": "2026-07-06T13:30:00.000Z"
+    },
+    {
       "id": "mod-519",
       "version": "B-0.318",
       "date": "2026-07-01T00:00:00.000Z",

@@ -32,7 +32,8 @@
     <div class="px-4">
       <app-projet-update-banner
         [projectName]="project()?.id || null"
-        (pulled)="onProjectPulled($event)" />
+        (pulled)="onProjectPulled($event)"
+        (viewConflict)="activeNodeId.set($event)" />
     </div>
 
     @if (activeSectionNewerVersion(); as newer) {
@@ -146,6 +147,9 @@
               (editSource)="onEditSource($event)"
               (sectionsChange)="onSectionsChange($event)"
               (saveConflict)="conflictState.set($event)"
+              (incomingChangeMerged)="onIncomingChangeMerged($event)"
+              (viewIncomingDiff)="openIncomingChangeDiff($event)"
+              (rejectIncomingChange)="rejectIncomingChange($event)"
               (nodeActive)="onNodeActive($event)"
               (dragDrop)="onDragDrop($event)"
               (dirtyChange)="onDirtyChange($event)"
@@ -298,7 +302,8 @@
                 [activeIds]="activeHistoryIds()"
                 [activeFileId]="activeContentFileId()"
                 (entryClick)="onHistoryEntryClick($event)"
-                (restored)="onHistoryRestored($event)" />
+                (restored)="onHistoryRestored($event)"
+                (structureRestored)="onRefresh()" />
             }
           </div>
 

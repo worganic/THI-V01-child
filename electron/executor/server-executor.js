@@ -11,7 +11,7 @@
  *
  * Routes exposées :
  *   POST /execute-prompt        → Lance claude/antigravity CLI, stream SSE
- *   POST /execute-file-prompt   → Lance claude CLI pour un fichier, stream SSE
+ *   POST /execute-file-prompt   → Lance claude/antigravity CLI pour un fichier, stream SSE
  *   POST /execute-workflow-ai   → Lance claude/antigravity CLI pour workflow, stream SSE
  *   POST /stop-execution        → Tue le process CLI en cours
  *   GET  /api/cli-status        → Statut complet des CLI (cache)
@@ -795,7 +795,8 @@ app.post('/execute-prompt', (req, res) => {
  * - fileContent   : contenu du fichier courant (lu par Angular via GET /read-file sur server-data)
  * - fileName      : nom du fichier (pour l'affichage dans les messages SSE)
  *
- * Streame le résultat via SSE. Ne lit ni n'écrit de fichiers sur le disque.
+ * Streame le résultat via SSE. Ne lit ni n'écrit de fichiers du projet sur le disque
+ * (côté Antigravity, un fichier relais temporaire dans l'OS tmpdir est utilisé puis supprimé).
  * C'est Angular qui devra sauvegarder le résultat via POST /write-file sur server-data.
  */
 app.post('/execute-file-prompt', (req, res) => {
@@ -835,13 +836,70 @@ app.post('/execute-file-prompt', (req, res) => {
         sseWrite(res, 'start', `> Executing prompt for ${fileName}...\n`);
         sseWrite(res, 'info', `Model: ${model}\n`);
 
+        const key = stepId || `file-${fileName}`;
+
+        // Antigravity (agy) : `agy -p` n'écrit JAMAIS sur stdout pour une réponse qui ne fait que
+        // répondre en texte (seule une modification de fichier produit une sortie) — capturer
+        // stdout comme pour Claude donnerait systématiquement un résultat vide. Contournement :
+        // on lui demande d'écrire sa réponse dans un fichier relais temporaire, qu'on relit une
+        // fois le process terminé (cf. resolveAgyPath()). Le contrat de l'endpoint reste inchangé
+        // (aucune écriture dans les fichiers du projet, uniquement ce fichier temporaire jetable).
         if (provider === 'antigravity') {
-            sseWrite(res, 'error', 'Antigravity not supported for file prompts\n');
-            res.end();
+            sseWrite(res, 'info', `[${new Date().toLocaleTimeString('fr-FR', { hour12: false })}] Executing Antigravity CLI (agy) (${model})\n`);
+
+            const agyOutputPath = path.join(os.tmpdir(), `agy-file-prompt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.txt`);
+            const agyPrompt = `${fullPrompt}\n\n---\n\nIMPORTANT: Do not reply in the chat. Write ONLY the complete result (no extra text, no explanation, no markdown code fences) to this exact file path, overwriting it entirely if it already exists: ${agyOutputPath}`;
+
+            const agyPath = resolveAgyPath();
+            const agyArgs = ['-p', agyPrompt];
+            if (model && model !== 'default') agyArgs.push('--model', model);
+            agyArgs.push('--dangerously-skip-permissions');
+            const agyProcess = spawn(agyPath, agyArgs, {
+                cwd: req.body.cwd || process.cwd(),
+                env: { ...process.env, FORCE_COLOR: '0' },
+                stdio: ['ignore', 'pipe', 'pipe']
+            });
+
+            runningProcesses.set(key, { process: agyProcess, startTime: Date.now() });
+
+            const MAX_EXEC_MS = parseInt(process.env.AI_EXEC_TIMEOUT_MS || '', 10) || 5 * 60 * 1000;
+            const execTimeout = setTimeout(() => {
+                console.warn(`[EXECUTOR] Antigravity timeout après ${MAX_EXEC_MS}ms (file prompt ${fileName}) — kill du process.`);
+                try { agyProcess.kill('SIGTERM'); } catch {}
+                setTimeout(() => { try { agyProcess.kill('SIGKILL'); } catch {} }, 3000);
+            }, MAX_EXEC_MS);
+
+            agyProcess.stderr?.on('data', (data) => {
+                sseWrite(res, 'stderr', data.toString());
+            });
+
+            agyProcess.on('close', (code) => {
+                clearTimeout(execTimeout);
+                runningProcesses.delete(key);
+                try {
+                    if (fs.existsSync(agyOutputPath)) {
+                        const result = fs.readFileSync(agyOutputPath, 'utf8');
+                        fs.unlinkSync(agyOutputPath);
+                        sseWrite(res, 'stdout', result);
+                    } else {
+                        sseWrite(res, 'error', `Antigravity n'a produit aucun résultat (fichier relais absent). Réessaie ou change de modèle/provider.\n`);
+                    }
+                } catch (e) {
+                    sseWrite(res, 'error', `Erreur de lecture du résultat Antigravity: ${e.message}\n`);
+                }
+                sseWrite(res, 'end', `\nExecution finished (code ${code})\n`, { code: code });
+                res.end();
+            });
+
+            agyProcess.on('error', (err) => {
+                clearTimeout(execTimeout);
+                runningProcesses.delete(key);
+                sseWrite(res, 'error', `[Antigravity Error] ${err.message}. Make sure 'agy' (Antigravity CLI) is installed.\n`);
+                res.end();
+            });
+
             return;
         }
-
-        const key = stepId || `file-${fileName}`;
 
         const claude = spawn('claude', ['--model', model, '--dangerously-skip-permissions'], {
             env: { ...process.env, FORCE_COLOR: '0' },

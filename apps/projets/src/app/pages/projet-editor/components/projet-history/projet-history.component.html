@@ -49,6 +49,70 @@
     </div>
   }
 
+  <!-- Corbeille : fichiers/dossiers supprimés, restaurables pendant 30 jours -->
+  @if (projetId) {
+    <div class="flex-shrink-0 border-b border-light-border dark:border-white/8">
+      <button type="button"
+              (click)="trashExpanded.set(!trashExpanded()); trashExpanded() && loadTrash()"
+              class="w-full flex items-center gap-2 px-3 py-2 group cursor-pointer">
+        <span class="material-symbols-outlined text-[13px] text-light-text-muted dark:text-white/30 group-hover:text-white/60 transition-colors">
+          {{ trashExpanded() ? 'expand_more' : 'chevron_right' }}
+        </span>
+        <span class="text-[9px] font-bold uppercase tracking-wider text-light-text-muted dark:text-white/40">
+          Corbeille
+          @if (trashEntries().length > 0) { <span class="ml-1 opacity-50 normal-case">({{ trashEntries().length }})</span> }
+        </span>
+        @if (trashLoading()) {
+          <span class="material-symbols-outlined text-[12px] text-white/30 animate-spin ml-auto">progress_activity</span>
+        }
+      </button>
+
+      @if (trashExpanded()) {
+        <div class="px-2 pb-2 max-h-[220px] overflow-y-auto">
+          @if (trashActionError()) {
+            <p class="text-[9px] text-amber-400 px-2 py-1 leading-snug">{{ trashActionError() }}</p>
+          }
+          @if (trashEntries().length === 0 && !trashLoading()) {
+            <p class="text-[10px] text-white/30 px-2 py-1">Corbeille vide.</p>
+          }
+          @for (entry of trashEntries(); track entry.trashId) {
+            <div class="flex items-center gap-2 py-1 px-1.5 rounded-lg hover:bg-red-400/5 group/trash">
+              <span class="material-symbols-outlined text-[13px] text-white/30 flex-shrink-0">
+                {{ entry.nodeType === 'folder' ? 'folder_off' : 'note' }}
+              </span>
+              <div class="flex-1 min-w-0">
+                <p class="text-[10px] text-light-text dark:text-white/70 truncate">{{ entry.name }}</p>
+                <p class="text-[9px] text-white/30 truncate">
+                  Supprimé par {{ entry.deletedByName || 'Système' }} · {{ formatTime(entry.deletedAt) }}
+                </p>
+              </div>
+              <div class="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover/trash:opacity-100 transition-opacity">
+                <button type="button"
+                        class="px-1.5 py-0.5 rounded text-[9px] font-semibold bg-white/5 hover:bg-green-500/20 text-white/40 hover:text-green-300 disabled:opacity-40 transition-colors"
+                        [disabled]="restoringTrashId() !== null"
+                        title="Restaurer à son emplacement d'origine"
+                        (click)="restoreTrashEntry(entry, $event)">
+                  @if (restoringTrashId() === entry.trashId) {
+                    <span class="material-symbols-outlined text-[11px] animate-spin">progress_activity</span>
+                  } @else {
+                    Restaurer
+                  }
+                </button>
+                <button type="button"
+                        class="w-5 h-5 flex items-center justify-center rounded hover:bg-red-500/20 text-white/30 hover:text-red-400 disabled:opacity-40 transition-colors"
+                        [disabled]="restoringTrashId() !== null"
+                        title="Purger définitivement (sinon suppression automatique après 30 jours)"
+                        (click)="purgeTrashEntry(entry, $event)">
+                  <span class="material-symbols-outlined text-[12px]">delete_forever</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
   <!-- Timeline -->
   <div class="flex-1 overflow-y-auto min-h-0 px-3 py-2">
 

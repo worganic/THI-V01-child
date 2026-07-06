@@ -49,6 +49,9 @@ import {
       (editSource)="editSource.emit($event)"
       (sectionsChange)="sectionsChange.emit($event)"
       (saveConflict)="saveConflict.emit($event)"
+      (incomingChangeMerged)="incomingChangeMerged.emit($event)"
+      (viewIncomingDiff)="viewIncomingDiff.emit($event)"
+      (rejectIncomingChange)="rejectIncomingChange.emit($event)"
       (nodeActive)="nodeActive.emit($event)"
       (dragDrop)="dragDrop.emit($event)"
       (dirtyChange)="dirtyChange.emit($event)"
@@ -101,6 +104,9 @@ export class EditionOutilComponent {
     fileId: string; folderId?: string; baseVersionId: string | null;
     mineContent: string; serverContent: string; serverAuthorName: string; serverCreatedAt: string;
   }>();
+  @Output() incomingChangeMerged = new EventEmitter<{ fileId: string; content: string; versionId: string }>();
+  @Output() viewIncomingDiff = new EventEmitter<string>();
+  @Output() rejectIncomingChange = new EventEmitter<string>();
   @Output() nodeActive = new EventEmitter<string>();
   @Output() refresh = new EventEmitter<void>();
   @Output() dragDrop = new EventEmitter<DragDropEvent>();
@@ -141,6 +147,12 @@ export class EditionOutilComponent {
    *  Retourne le folderId de la section résultat (ou null), pour la navigation "Déjà ajouté". */
   async materializeFromConversation(promptInstanceId: string, deliverable: string, selectedMos: MaterializedMoPreview[], transcript?: string): Promise<string | null> {
     return (await this.innerZone?.materializeFromConversation(promptInstanceId, deliverable, selectedMos, transcript)) ?? null;
+  }
+
+  /** Relayé depuis ProjetConversationComponent (message du chat IA "classique", hors conversation
+   *  MO Prompt) : matérialise les MegaOutils cochés directement dans la section donnée. */
+  async materializeMoIntoSection(sectionId: string, selectedMos: MaterializedMoPreview[]): Promise<void> {
+    await this.innerZone?.materializeMoIntoSection(sectionId, selectedMos);
   }
 
   /** Relayé depuis ProjetConversationComponent : ouvre le popup d'import (pastePreview) pour

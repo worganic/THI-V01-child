@@ -470,6 +470,8 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ## `2-5-2-4-40` — [modification] [SYNC] Détection de conflit réel (HTTP 409, version BDD) + fusion ligne à ligne
 
+> [modification] `applyConflictResolution()` (partagée avec `2-5-2-4-57`) a gagné une branche `isLiveConflict` — le chemin `else` (conflit réel 409) documenté ci-dessous n'a pas changé de logique, mais la fonction ayant été modifiée, une re-vérification rapide est recommandée.
+
 - **Précondition** : user A et user B ouvrent le même projet. User B modifie localement puis clique "Enregistrer et partager" sur la section "Intro" (voir `2-5-2-4-37`). User A avait chargé le fichier avant la validation de B et édite encore en brouillon local.
 - **Action** : quand user A clique à son tour "Enregistrer et partager", `PUT /files/:id` envoie `x-base-version-id: <versionId chargé au départ>`. Le serveur compare (transaction `SELECT ... FOR UPDATE`) à la dernière version BDD réelle du fichier — elle a changé (B a validé entre-temps).
 - **Résultat attendu** : serveur répond HTTP 409 avec `{ error:'conflict', base:{versionId}, server:{versionId, content, authorName, createdAt}, mine:{content} }` (aucune écriture BDD). Côté client : panneau ambre "Conflit — {auteur} a modifié ce fichier entre-temps" avec 2 boutons rapides ("Garder ma version" / "Utiliser la version du serveur") **et** en dessous une vue 3 panneaux (`ProjetDiffComponent` réutilisé, `leftLabel="Version serveur"` / `rightLabel="Ma version"`) permettant de composer une fusion ligne à ligne (`←`/`→` par ligne) avant de cliquer "Appliquer dans l'éditeur".
@@ -633,3 +635,50 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Nouveau comportement** : cliquer "Exécuter" sur un Prompt en mode Tchat libre bascule vers l'onglet Conversation comme les 3 autres modes. La différence de comportement (aucun prompt de base/méta injecté, seulement le `SYSTEM:` de la fence) est conservée via `composeSystemPrompt({mode:'freechat', ...})`, qui retourne toujours `fenceSystemPrompt` seul quel que soit `useConfigPrompts`. Le rendu markdown reste actif dans la conversation (gated sur `promptInstanceId`, pas sur le mode) — contrairement à l'ancien popup qui affichait du texte brut ; seule la composition du system prompt distingue encore ce mode des 3 autres.
 - **Détail complet et procédure de test** : voir `2-5-2-7-12`.
 - **Composants:** voir `2-5-2-7-12`.
+
+---
+
+## `2-5-2-4-55` — Résilience hors-ligne du brouillon local (retry + garde de fermeture)
+
+- **Précondition** : coupure réseau (ou requête `PUT .../draft` en échec) pendant la frappe.
+- **Action** : la frappe continue normalement (le buffer Angular reste en mémoire) ; en arrière-plan, `ProjectFilesService.saveDraft()` retente automatiquement avec un backoff exponentiel (1s→2s→4s→8s→16s→30s, ~6 tentatives, jusqu'à ~1min cumulée) avant d'abandonner.
+- **Résultat attendu** : tant qu'au moins un fichier reste en échec (`ProjetCollabService.unsavedSince`), une bannière discrète "Non sauvegardé depuis Xs" s'affiche (ambre à 10s, rouge à 60s) et la fermeture d'onglet est bloquée par une confirmation navigateur (`beforeunload`). Au retour de connexion (event `online`), un nouvel essai est déclenché immédiatement pour les fichiers restés en échec (`onlineRestored$` → `retryUnsavedDrafts()`), sans attendre la prochaine frappe.
+- **Limite assumée (v1)** : file d'attente en mémoire seulement, pas d'IndexedDB — un refresh de page ou une fermeture forcée pendant une coupure prolongée peut perdre les frappes non retentées (le `beforeunload` réduit ce risque sans l'éliminer).
+- **À vérifier** : couper le réseau (DevTools offline) pendant l'édition → bannière "Non sauvegardé" apparaît après ~10s → rétablir le réseau → la bannière disparaît sans action utilisateur (retry automatique) et sans perte de texte.
+- **Composants:** `libs/portail-core/data-access/src/lib/project-files.service.ts`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts`, `projet-update-banner.component.html`
+
+---
+
+## `2-5-2-4-56` — Checkpoint des fichiers additionnels (Prompt/Trello/Array/docs annexes) à la publication
+
+- **Précondition** : une section contient au moins un fichier additionnel (bloc Prompt/Trello/Array ou document annexe) modifié.
+- **Action** : clic sur "Enregistrer et partager" (n'importe lequel des points d'entrée : Code, cross-mode, `publishSection`, mode focus).
+- **Résultat attendu** : `writeSectionStyled` checkpointe désormais aussi chaque fichier additionnel (`updateFile(..., publish:true, checkpoint:true)`) en plus du fichier principal et de son jumeau CSS. Auparavant, ces fichiers ne transitaient que par le brouillon privé (`projet_local_draft`), jamais promus en version BDD partagée (`projet_content_version`) — invisibles aux autres utilisateurs tant qu'aucune autre action ne les touchait, et absents de l'historique de versions.
+- **À vérifier** : modifier le contenu d'un bloc Prompt/Trello dans une section, cliquer "Enregistrer et partager" → l'onglet Historique → "Versions de cette section" (`2-5-2-8-13`) liste désormais aussi une version pour ce fichier additionnel.
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
+
+---
+
+## `2-5-2-4-57` — [SYNC] Conflit live : incrustation non-bloquante de la publication d'un autre utilisateur (carte flottante)
+
+- **Précondition** : user A édite une section (brouillon local divergent en cours, `isLocalPending`). User B publie ("Enregistrer et partager") une modification sur cette **même** section pendant que le brouillon de A est encore ouvert (donc **avant** toute tentative de sauvegarde de A — différent du conflit HTTP 409 réactif de `2-5-2-4-40`, qui ne se déclenche qu'*au moment* où A publie).
+- **Action** : le SSE `content_update` de B est intercepté côté A par `ProjetIncomingChangeService` (au lieu du patch silencieux habituel) dès lors qu'un brouillon local divergent existe pour cette section. Une carte flottante ambre apparaît **sans toucher au texte de A ni à sa numérotation de lignes** : positionnée juste sous le heading en mode Code (`.ed-conflict-card`, calque `.ed-overlay`) et sous le titre de section en mode Édition/Visu (`.visu-conflict-card`), avec 3 actions : **Insérer**, **Voir le diff complet**, **Rejeter**.
+- **Insérer** : fusion automatique 3-voies (`mergeThreeWay`, pivot sur la version commune "avant" — pas sur "après" comme `computeTriDiff` — pour ne jamais faire ressortir en double une ligne que A n'a pas touchée) entre le texte affiché de A, la version de B et leur ancêtre commun (`base_version_id` de la version de B, pas le `fileVersion` local de A qui peut être stale). Résultat inséré directement dans le buffer de A (splice ligne à ligne, pas de remplacement de plage naïf), save immédiat déclenché, carte résolue. Aucun appel à la route `resolve-conflict` (elle ne déclenche jamais de publish git/FTP) — le prochain "Enregistrer et partager" normal de A publie avec `baseVersionId` désormais à jour, sans 409.
+- **Voir le diff complet** : réutilise l'écran de fusion manuelle existant (`<app-projet-diff>`, 3 panneaux Actuel/Version serveur/Ma version, cherry-pick ligne à ligne `←`/`→`) via une entrée synthétique — capture le texte réellement affiché à l'écran (heading inclus, frappe de A comprise) **avant** que `<app-edition-outil>` ne soit démonté par `conflictState`. "Appliquer dans l'éditeur" route vers la fusion locale (`patchFileContent` + `saveDraft`, heading retiré avant persistance), jamais vers `resolve-conflict`.
+- **Rejeter** : A garde son texte tel quel (aucun contenu de B intégré), seul son `fileVersion` local est aligné sur celui de B — décision explicite plutôt qu'un écrasement silencieux, qui évite un faux conflit HTTP 409 au prochain "Enregistrer et partager".
+- **Blocage à la publication** : tant que la carte n'est pas résolue (Insérer/Voir le diff/Rejeter), `writeSectionStyled` refuse de publier CE fichier (erreur `incomingConflictBlocked`, toast explicite listant les 3 actions possibles) — et si plusieurs sections sont publiées en un seul lot (`publishSectionsBatch`, ex: Structure ou cross-mode), **une seule** section en conflit non résolu bloque la publication de **tout le lot** (aucune publication partielle).
+- **Découvrabilité** : `ProjetUpdateBannerComponent` distingue les conflits live (bannière ambre dédiée, bouton "Voir" qui active la section concernée) des mises à jour normales (bannière neutre existante, bouton "Mettre à jour").
+- **Résultat à redouter** : carte qui reste affichée après résolution (fuite de state), heading dupliqué comme ligne de corps après Insérer/Appliquer (désalignement heading vs corps entre les 2 sources de contenu), ou perte silencieuse de la frappe de A pendant la fusion.
+- **À vérifier** : 2 sessions (A et B) sur le même projet, B publie sur une section que A édite → carte visible côté A sans interruption de frappe ni décalage de lignes. Insérer → fusion correcte + save immédiat. Voir le diff → panneaux corrects, Appliquer route en local (pas d'appel réseau vers `resolve-conflict`). Rejeter → texte de A intact, publication suivante réussit sans 409. Tenter "Enregistrer et partager" sans résoudre → publication bloquée avec message explicite.
+- **Composants:** `apps/projets/src/app/pages/projet-editor/services/projet-incoming-change.service.ts`, `apps/projets/src/app/pages/projet-editor/utils/compute-tri-diff.ts` (`mergeThreeWay`), `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts` (+ `.html`/`.scss`), `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts` (+ `.html`/`.scss`)
+
+---
+
+## `2-5-2-4-58` — [modification] Antigravity supporté sur `/execute-file-prompt` (IA sur un fichier)
+
+- **Précondition** : provider actif = Antigravity (agy), utilisateur lance un prompt IA ciblant un fichier (ex: `ProjetAiEditService`, mention `@ia` dans une conversation Prompt).
+- **Bug corrigé** : `/execute-file-prompt` (executor Electron, port 3002) bloquait systématiquement Antigravity avec une erreur `"Antigravity not supported for file prompts"`, quel que soit le prompt — la fonctionnalité IA était totalement inutilisable avec ce provider sur ce chemin.
+- **Action** : la route spawn désormais `agy` directement (`resolveAgyPath()`, pas de `cmd.exe`, mêmes arguments que `/execute-prompt`). Comme `agy -p` n'écrit jamais sur stdout pour une réponse purement textuelle (seule une modification de fichier produit une sortie — cf. `2-5-2-4-45`), le prompt envoyé à agy lui demande explicitement d'écrire sa réponse complète dans un fichier relais temporaire (`os.tmpdir()`) plutôt que de répondre dans le chat ; l'executor relit ce fichier une fois le process terminé, le stream en SSE `stdout` comme pour Claude, puis le supprime. Timeout dur (`AI_EXEC_TIMEOUT_MS`, 5 min par défaut) en filet si agy hang sans jamais écrire.
+- **Résultat attendu** : un prompt IA sur un fichier avec Antigravity retourne le contenu généré normalement, sans erreur, sans laisser de fichier temporaire résiduel.
+- **À vérifier** : sélectionner Antigravity comme provider actif, lancer un prompt de génération de contenu sur un fichier (ex: demander un tableau) → réponse reçue normalement dans l'UI, pas de message "not supported".
+- **Composants:** `electron/executor/server-executor.js`
