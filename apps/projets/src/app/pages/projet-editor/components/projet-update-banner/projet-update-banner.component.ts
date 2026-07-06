@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output, computed, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProjetCollabService, SectionPublishedEvent } from '@worganic/portail-core/data-access';
+import { ProjetIncomingChangeService } from '../../services/projet-incoming-change.service';
 
 /**
  * Bannière de notification des sections partagées par d'autres utilisateurs.
@@ -21,9 +22,14 @@ import { ProjetCollabService, SectionPublishedEvent } from '@worganic/portail-co
 })
 export class ProjetUpdateBannerComponent implements OnDestroy {
   private collab = inject(ProjetCollabService);
+  private incomingChangeService = inject(ProjetIncomingChangeService);
 
   @Input() projectName: string | null = null;
   @Output() pulled = new EventEmitter<{ newCommits: number; changedFiles: string[] }>();
+  // Conflit live sur une section actuellement éditée localement (voir carte flottante dans
+  // la zone d'édition) — "Voir" navigue vers la section au lieu de déclencher un pull global,
+  // qui ne montrerait aucune carte et ferait juste disparaître la notification sans résolution.
+  @Output() viewConflict = new EventEmitter<string>();
 
   readonly pulling = signal(false);
   readonly pullError = signal<string | null>(null);
@@ -47,14 +53,26 @@ export class ProjetUpdateBannerComponent implements OnDestroy {
     clearInterval(this.nowTimer);
   }
 
-  // Liste triée par timestamp décroissant
-  readonly events = computed<SectionPublishedEvent[]>(() => {
+  // Liste triée par timestamp décroissant, séparée en deux catégories : les sections publiées
+  // qui correspondent à un conflit live en attente sur un brouillon local (carte flottante déjà
+  // visible dans la zone d'édition) vs les publications "normales" (aucun brouillon local en
+  // cours ici, la mise à jour globale reste sûre).
+  private readonly allEvents = computed<SectionPublishedEvent[]>(() => {
     const map = this.collab.pendingUpdates();
     return Array.from(map.values()).sort((a, b) => b.timestamp.localeCompare(a.timestamp));
   });
 
+  readonly conflictEvents = computed<SectionPublishedEvent[]>(() =>
+    this.allEvents().filter(e => this.incomingChangeService.hasUnresolved(e.nodeId))
+  );
+
+  readonly events = computed<SectionPublishedEvent[]>(() =>
+    this.allEvents().filter(e => !this.incomingChangeService.hasUnresolved(e.nodeId))
+  );
+
   readonly isOnline = this.collab.isOnline;
   readonly count = computed(() => this.events().length);
+  readonly conflictCount = computed(() => this.conflictEvents().length);
 
   readonly summaryLabel = computed(() => {
     const list = this.events();
@@ -69,6 +87,10 @@ export class ProjetUpdateBannerComponent implements OnDestroy {
     }
     return `${names.length} utilisateurs ont partagé ${list.length} sections`;
   });
+
+  onViewConflict(evt: SectionPublishedEvent): void {
+    this.viewConflict.emit(evt.folderId ?? evt.nodeId);
+  }
 
   async onPull(): Promise<void> {
     if (!this.projectName || this.pulling()) return;

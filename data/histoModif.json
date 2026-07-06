@@ -1,6 +1,38 @@
 {
   "modifications": [
     {
+      "id": "mod-571",
+      "version": "B-0.328",
+      "date": "2026-07-06T16:50:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor-zone-code,projets:editor-update-banner",
+      "title": "Conflit live : incrustation non-bloquante des modifications concurrentes dans l'éditeur",
+      "description": "Sur la branche 2026-07-06_partage : quand l'utilisateur B publie (\"Enregistrer et partager\") une modification sur une section que l'utilisateur A est en train d'éditer (brouillon local divergent en cours), le changement de B s'incruste désormais dans une carte flottante ambre non-bloquante chez A — sans toucher à son texte ni décaler sa numérotation de lignes — plutôt que d'être silencieusement absorbé (comportement précédent, qui pouvait aussi désynchroniser fileVersion et désactiver la détection de conflit HTTP 409 pour la publication suivante de A, bug corrigé au passage dans mergeLocalDraftsIntoTree). Carte disponible en mode Code (ancrée par ligne, calque .ed-overlay existant) et en mode Édition/Visu (ancrée par section) avec 3 actions : Insérer (fusion automatique 3-voies pivotant sur la version commune \"avant\" — nouvelle fonction mergeThreeWay, distincte de computeTriDiff qui pivote sur \"après\" et duplique les lignes non modifiées par l'un des deux côtés — appliquée directement dans le buffer de A avec save immédiat), Voir le diff complet (réutilise l'écran de fusion manuelle existant <app-projet-diff> via une entrée synthétique, capturant le texte réellement affiché avant le démontage du composant d'édition), Rejeter (A garde son texte, seul fileVersion est aligné pour éviter un faux 409 ultérieur). Aucune des 3 actions ne passe par la route resolve-conflict (qui ne déclenche jamais de publish git/FTP) : fusion/persistance uniquement locales (patchFileContent + saveDraft), la publication suivante utilise le pipeline normal. Blocage à la publication tant que la carte n'est pas résolue (erreur incomingConflictBlocked, toast explicite) — si plusieurs sections sont publiées en un seul lot, une seule section en conflit non résolu bloque tout le lot (pas de publication partielle). Bannière de découvrabilité étendue (ProjetUpdateBannerComponent) pour distinguer visuellement les conflits live des mises à jour normales. Vérifié en conditions réelles (2 sessions du même projet de test jetable, plusieurs cycles publish/insérer/voir-le-diff/rejeter) : carte affichée sans interruption de frappe, fusion correcte sans duplication ni perte de contenu, blocage de publication confirmé (aucune version serveur créée tant que non résolu, message d'erreur exact affiché), rejet confirmé (texte de A intact, publication suivante réussie sans 409 après alignement de version). Deux bugs réels trouvés et corrigés en cours de vérification sur le chemin \"Voir le diff complet\" : (1) mineContent lu depuis fileNode.content (jamais mis à jour par la frappe live) au lieu du texte réellement affiché — corrigé via getEntityText(), même pattern que insertIncomingChange ; (2) heading dupliqué en ligne de corps après application faute d'alignement heading/corps entre mineContent et serverContent — corrigé en alignant les deux sur le même format et en retirant le heading avant persistance (files().content/le brouillon sont conventionnellement sans heading, dérivé de node.name à la reconstruction).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/services/projet-incoming-change.service.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/utils/compute-tri-diff.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.scss",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "je voudrais rajouté une option pour le partage je suis un utilisateur A et l'utilisateur B fait une modif dans une section et sauvegarde et partage sa modification. La modification doit s'incrusté dans ma page en mode non en cours de jumelage. Ainsi la partie de texte sera inserré mais non modifiable, les numéros de ligne ne seront pas pris en compte dans ce texte et donc on aura Ligne 103 texte actuel de A [ ligne 104-B texte de B inscrusté dans une autre couleur ] Ligne 104 User A texte actuel. Le texte pourra être inserrer définitivement par le user A en cliquant sur un bouton sur la zone de texte incrusté. Ainsi on met en place en live un système de conflit. Cela permet de le géré avant envoys des modifs de A dans la bdd. Si le conflit n'a pas été réglé il faut le régler à l'enregistrement/partage de l'utilisateur A. Fait moi un plan pour une tel fonctionnalité",
+      "startedAt": "2026-07-06T14:00:00.000Z",
+      "completedAt": "2026-07-06T16:50:00.000Z"
+    },
+    {
       "id": "mod-570",
       "version": "B-0.328",
       "date": "2026-07-06T00:00:00.000Z",

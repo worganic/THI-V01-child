@@ -31,6 +31,7 @@ import { ProjetUpdateBannerComponent } from './components/projet-update-banner/p
 import { CommentsDrawerComponent } from './components/comments-drawer/comments-drawer.component';
 import { ProjectCommentsService } from './services/project-comments.service';
 import { ProjetAiEditService } from './services/projet-ai-edit.service';
+import { ProjetIncomingChangeService } from './services/projet-incoming-change.service';
 
 @Component({
   selector: 'app-projet-editor',
@@ -160,7 +161,19 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     baseVersionId: string | null;
     mineContent: string;
     serverContent: string; serverAuthorName: string; serverCreatedAt: string;
+    // true = conflit LIVE ouvert depuis la carte flottante "Voir le diff complet" (aucune
+    // tentative de publication n'a encore eu lieu) : la résolution ne doit PAS passer par la
+    // route serveur resolve-conflict (qui ne déclenche jamais de publish git/FTP) — juste une
+    // fusion locale, le prochain "Enregistrer et partager" normal publiera avec le bon
+    // baseVersionId. Absent/false = conflit réactif classique (409 ou bouton Synchro).
+    isLiveConflict?: boolean;
+    liveVersionId?: string;
   } | null>(null);
+
+  // Conflit live : signal "changement entrant en attente" par fileId (voir
+  // ProjetIncomingChangeService) — alimenté par contentUpdate$/versionSaved$ filtré sur les
+  // fichiers avec brouillon local divergent (isLocalPending), jamais vidé automatiquement.
+  incomingChangeService = inject(ProjetIncomingChangeService);
 
   // Checkpoints BDD créés par d'AUTRES utilisateurs, en attente de synchro manuelle
   // (bouton "Synchro" — ouvre le même écran de fusion qu'un conflit, sans attendre un 409).
@@ -195,6 +208,80 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     } catch (e) {
       console.error('[Synchro] Récupération de la version échouée:', e);
     }
+  }
+
+  // ── Conflit live (carte flottante) ──────────────────────────────────────────
+  // "Insérer" (fusion automatique du bloc de B) est géré directement dans la zone
+  // d'édition (ProjetEditorZoneComponent.insertIncomingChange) car elle seule peut
+  // spliced `unifiedContent` sans démonter le composant — voir bridge onIncomingChangeMerged
+  // ci-dessous pour la synchro de fileVersion côté parent. "Voir le diff complet" et
+  // "Rejeter" n'ont pas besoin de toucher `unifiedContent` (le premier remplace
+  // temporairement la zone via conflictState, le second ne change aucun contenu) et sont
+  // donc gérés ici directement.
+
+  /** "Voir le diff complet" sur une carte de conflit live — réutilise l'écran de fusion
+   *  existant (<app-projet-diff>/conflictState), sans passer par la route resolve-conflict. */
+  openIncomingChangeDiff(fileId: string): void {
+    const change = this.incomingChangeService.get(fileId);
+    const fileNode = this.findFileById(fileId, this.files());
+    if (!change || !fileNode) return;
+    // Capturer le texte réellement affiché à l'écran (heading + corps, y compris la frappe en
+    // cours de A) AVANT de démonter <app-edition-outil> (conflictState le remplace dans le
+    // template, cf. @else if plus bas) — même contrainte que onHistoryEntryClick.
+    // fileNode.content seul est stale (jamais mis à jour par la frappe live, seul le brouillon
+    // serveur l'est) et sans le heading — alors que change.content (contenu brut publié) l'inclut
+    // en 1ère ligne, ce qui dupliquait le titre une fois réappliqué.
+    const rendered = (change.folderId && this.editionOutil?.getEntityText(change.folderId)) || fileNode.content || '';
+    this.conflictState.set({
+      fileId,
+      folderId: change.folderId ?? undefined,
+      baseVersionId: fileNode.fileVersion ?? null,
+      mineContent: rendered,
+      serverContent: change.content,
+      serverAuthorName: change.authorName,
+      serverCreatedAt: change.timestamp,
+      isLiveConflict: true,
+      liveVersionId: change.versionId
+    });
+    this.incomingChangeService.resolve(fileId);
+  }
+
+  /** "Rejeter" sur une carte de conflit live : A garde son texte tel quel, on aligne juste
+   *  fileVersion sur celui de B (décision explicite et informée, pas un écrasement silencieux)
+   *  pour que le prochain "Enregistrer et partager" ne déclenche pas un faux 409. */
+  rejectIncomingChange(fileId: string): void {
+    const change = this.incomingChangeService.get(fileId);
+    if (!change) return;
+    this.patchFileVersionOnly(fileId, change.versionId);
+    this.incomingChangeService.resolve(fileId);
+  }
+
+  /** Bridge depuis la zone d'édition après un "Insérer" réussi (splice local de
+   *  unifiedContent déjà fait côté zone) : patche `files()` avec le MÊME contenu fusionné
+   *  (pas seulement fileVersion) — sinon un changement de mode Code/Visu, qui reconstruit le
+   *  buffer depuis `files()`, écraserait silencieusement la fusion avec l'ancien contenu. */
+  onIncomingChangeMerged(evt: { fileId: string; content: string; versionId: string }): void {
+    this.patchFileContent(evt.fileId, evt.content, evt.versionId);
+  }
+
+  /** Met à jour uniquement `fileVersion` d'un noeud, en relisant `files()` au moment de
+   *  l'appel (jamais un `content` capturé plus tôt) — évite toute course avec un patch de
+   *  contenu concurrent (ex: sauvegarde de brouillon en cours après un "Insérer"). */
+  private patchFileVersionOnly(fileId: string, versionId: string) {
+    const patch = (nodes: FileNode[]): { changed: boolean; nodes: FileNode[] } => {
+      let changed = false;
+      const out = nodes.map(n => {
+        if (n.id === fileId && n.type === 'file') { changed = true; return { ...n, fileVersion: versionId }; }
+        if (n.children) {
+          const sub = patch(n.children);
+          if (sub.changed) { changed = true; return { ...n, children: sub.nodes }; }
+        }
+        return n;
+      });
+      return { changed, nodes: out };
+    };
+    const result = patch(this.files());
+    if (result.changed) this.files.set(result.nodes);
   }
 
   // Objet "entrée d'historique" synthétique pour réutiliser <app-projet-diff> (3 panneaux
@@ -559,7 +646,14 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   private subscribeToCollabEvents(): void {
     this.collabSubs.push(
       this.collab.contentUpdate$.subscribe(event => {
-        if (this.isSaving) {
+        // Brouillon local divergent sur ce fichier : ne pas écraser silencieusement `files`
+        // avec la version publiée par l'autre utilisateur — ProjetIncomingChangeService a
+        // déjà capté ce même événement et le met en attente (carte flottante à résoudre
+        // explicitement : Insérer / Voir le diff complet / Rejeter, voir writeSectionStyled
+        // pour le blocage à la publication tant que non résolu).
+        if (this.collab.isLocalPending(event.folderId ?? event.nodeId)) {
+          // no-op ici
+        } else if (this.isSaving) {
           // Mettre en queue : ne pas écraser le buffer utilisateur pendant un cycle de sauvegarde
           const existing = this.pendingSSEPatches.findIndex(p => p.nodeId === event.nodeId);
           if (existing >= 0) this.pendingSSEPatches[existing].content = event.content;
@@ -720,7 +814,15 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
           const full = await this.projectFilesService.getDraft(this.projectFolderName, d.nodeId);
           if (!full.exists) continue;
           const node = this.findFileById(d.nodeId, nodes);
-          if (node) node.content = full.content ?? '';
+          if (node) {
+            node.content = full.content ?? '';
+            // Préserve le vrai `baseVersionId` du brouillon comme référence de conflit — un
+            // rechargement (loadFiles/autoPullAndRefresh) ne doit jamais aligner silencieusement
+            // fileVersion sur la dernière version BDD tant que ce brouillon divergent existe,
+            // sinon la détection de conflit à la publication (comparaison baseVersionId côté
+            // serveur) est désactivée sans qu'aucun conflit n'ait été vu ni résolu par l'utilisateur.
+            node.fileVersion = full.baseVersionId ?? node.fileVersion;
+          }
           this.collab.addLocalPending(d.folderId ?? d.nodeId);
         } catch (e) {
           console.warn('[EDITOR] Chargement brouillon échoué pour', d.nodeId, e);
@@ -2206,15 +2308,31 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     const conflict = this.conflictState();
     if (!conflict) return;
     try {
-      const result = await this.projectFilesService.resolveConflict(this.projectFolderName, conflict.fileId, {
-        baseVersionId: conflict.baseVersionId,
-        folderId: conflict.folderId,
-        mineContent: conflict.mineContent,
-        mergedContent
-      });
-      this.patchFileContent(conflict.fileId, mergedContent, result.versionId);
-      this.collab.removeLocalPending(conflict.folderId ?? conflict.fileId);
-      await this.projectFilesService.deleteDraft(this.projectFolderName, conflict.fileId).catch(() => {});
+      if (conflict.isLiveConflict) {
+        // Conflit live résolu via "Voir le diff complet" : aucune tentative de publication n'a
+        // encore eu lieu, donc pas de route resolve-conflict ici (elle ne déclenche jamais de
+        // publish git/FTP) — fusion locale uniquement. Le prochain "Enregistrer et partager"
+        // normal publiera avec baseVersionId=liveVersionId, sans conflit, avec push git/FTP normal.
+        // mineContent/serverContent incluent tous deux le heading en 1ère ligne (cf.
+        // openIncomingChangeDiff) pour un alignement correct dans <app-projet-diff> — mais
+        // files().content/le brouillon sont conventionnellement sans heading (voir
+        // insertIncomingChange), donc on le retire avant de persister.
+        const bodyOnly = mergedContent.split('\n').slice(1).join('\n');
+        this.patchFileContent(conflict.fileId, bodyOnly, conflict.liveVersionId);
+        await this.projectFilesService.saveDraft(
+          this.projectFolderName, conflict.fileId, bodyOnly, conflict.folderId ?? null, conflict.liveVersionId ?? null
+        ).catch(() => {});
+      } else {
+        const result = await this.projectFilesService.resolveConflict(this.projectFolderName, conflict.fileId, {
+          baseVersionId: conflict.baseVersionId,
+          folderId: conflict.folderId,
+          mineContent: conflict.mineContent,
+          mergedContent
+        });
+        this.patchFileContent(conflict.fileId, mergedContent, result.versionId);
+        this.collab.removeLocalPending(conflict.folderId ?? conflict.fileId);
+        await this.projectFilesService.deleteDraft(this.projectFolderName, conflict.fileId).catch(() => {});
+      }
     } catch (e) {
       console.error('[Conflict] Résolution échouée:', e);
     } finally {

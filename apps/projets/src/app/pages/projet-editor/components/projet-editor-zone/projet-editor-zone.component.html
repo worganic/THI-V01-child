@@ -1280,6 +1280,28 @@ Votre texte de prompt ici.
                    [style.top.px]="dropIndicator.top"
                    [style.height.px]="dropIndicator.height"></div>
             }
+
+            <!-- Conflit live : modification publiée par un autre utilisateur pendant que la
+                 section est ouverte ici (brouillon local divergent) — carte non-éditable en
+                 superposition, aucun décalage de la numérotation tant que non résolue. -->
+            @for (card of incomingConflictCards; track card.fileId) {
+              <div class="ed-conflict-card" [style.top.px]="card.top" aria-hidden="false">
+                <div class="ed-conflict-card__header">
+                  <span class="material-symbols-outlined">sync_problem</span>
+                  {{ card.authorName }} a publié une modification ici
+                </div>
+                <div class="ed-conflict-card__actions">
+                  @if (card.canInsert) {
+                    <button type="button" class="ed-conflict-card__btn ed-conflict-card__btn--primary"
+                            (click)="insertIncomingChange(card.fileId)">Insérer</button>
+                  }
+                  <button type="button" class="ed-conflict-card__btn"
+                          (click)="onViewIncomingChangeDiff(card.fileId)">Voir le diff complet</button>
+                  <button type="button" class="ed-conflict-card__btn"
+                          (click)="onRejectIncomingChangeClick(card.fileId)">Rejeter</button>
+                </div>
+              </div>
+            }
           </div>
         </div>
       </div>
@@ -1812,6 +1834,28 @@ Votre texte de prompt ici.
                 <div class="visu-presence-badge" [title]="otherEditorsTooltip(sec.sectionId)">
                   <span class="material-symbols-outlined">{{ collab.getOtherEditors(sec.sectionId).length > 1 ? 'groups' : 'visibility' }}</span>
                   Édité par {{ otherEditorsNames(sec.sectionId) }}
+                </div>
+              }
+
+              <!-- Conflit live : modification publiée par un autre utilisateur pendant que
+                   cette section a un brouillon local divergent — même logique qu'en mode Code
+                   (voir .ed-conflict-card), ancrée ici par section plutôt que par ligne. -->
+              @if (incomingChangeForSection(sec.sectionId); as change) {
+                <div class="visu-conflict-card">
+                  <div class="visu-conflict-card__header">
+                    <span class="material-symbols-outlined">sync_problem</span>
+                    {{ change.authorName || 'Un autre utilisateur' }} a publié une modification sur cette section
+                  </div>
+                  <div class="visu-conflict-card__actions">
+                    @if (canInsertIncomingChangeDirectly(change.fileId)) {
+                      <button type="button" class="visu-conflict-card__btn visu-conflict-card__btn--primary"
+                              (click)="insertIncomingChange(change.fileId)">Insérer</button>
+                    }
+                    <button type="button" class="visu-conflict-card__btn"
+                            (click)="onViewIncomingChangeDiff(change.fileId)">Voir le diff complet</button>
+                    <button type="button" class="visu-conflict-card__btn"
+                            (click)="onRejectIncomingChangeClick(change.fileId)">Rejeter</button>
+                  </div>
                 </div>
               }
 

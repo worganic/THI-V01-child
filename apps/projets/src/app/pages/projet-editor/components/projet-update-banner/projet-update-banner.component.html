@@ -16,6 +16,39 @@
   </div>
 }
 
+@if (conflictCount() > 0) {
+  <div class="update-banner update-banner--conflict" role="status">
+    <div class="update-banner__icon" aria-hidden="true">
+      <span class="material-symbols-outlined">sync_problem</span>
+    </div>
+    <div class="update-banner__body">
+      <div class="update-banner__title">
+        @if (conflictCount() === 1) {
+          {{ conflictEvents()[0].publishedBy.username }} a publié une modification en attente sur une section que vous éditez
+        } @else {
+          {{ conflictCount() }} modifications en attente sur des sections que vous éditez
+        }
+      </div>
+      @if (conflictEvents().length > 1) {
+        <ul class="update-banner__list">
+          @for (e of conflictEvents(); track e.nodeId) {
+            <li>
+              <span class="update-banner__author">{{ e.publishedBy.username }}</span>
+              <span class="update-banner__section">{{ e.sectionName }}</span>
+              <button type="button" class="update-banner__btn update-banner__btn--primary" (click)="onViewConflict(e)">Voir</button>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+    @if (conflictEvents().length === 1) {
+      <div class="update-banner__actions">
+        <button type="button" class="update-banner__btn update-banner__btn--primary" (click)="onViewConflict(conflictEvents()[0])">Voir</button>
+      </div>
+    }
+  </div>
+}
+
 @if (count() > 0) {
   <div class="update-banner"
        [class.update-banner--offline]="!isOnline()"
