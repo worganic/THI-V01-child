@@ -1,6 +1,28 @@
 {
   "modifications": [
     {
+      "id": "mod-572",
+      "version": "B-0.328",
+      "date": "2026-07-06T20:50:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "system"
+      ],
+      "features": "system:executor-ai",
+      "title": "Fix : Antigravity bloqué sur les prompts IA ciblant un fichier",
+      "description": "L'utilisateur a signalé une erreur \"Antigravity not supported for file prompts\" en tentant de lancer une conversation IA (mention @ia, MO Prompt \"tableaux\", demande de génération d'un tableau markdown). Cause : la route `/execute-file-prompt` de l'executor Electron (port 3002) — utilisée par ProjetAiEditService pour les prompts IA ciblant un fichier — bloquait systématiquement le provider Antigravity avec un message d'erreur générique au lieu de l'implémenter (seul Claude était géré). Fix : spawn direct de `agy` (resolveAgyPath, sans cmd.exe, mêmes arguments que /execute-prompt). Comme `agy -p` n'écrit jamais sur stdout pour une réponse purement textuelle (limitation déjà connue et documentée pour /execute-prompt), le prompt envoyé à agy lui demande d'écrire sa réponse complète dans un fichier relais temporaire (os.tmpdir()) plutôt que de répondre dans le chat ; l'executor relit ce fichier une fois le process terminé, stream le contenu en SSE comme pour Claude, puis supprime le fichier temporaire. Timeout dur de 5 min en filet si agy hang sans écrire. Vérifié en conditions réelles après redémarrage de l'executor : test simple (\"Ecris uniquement le mot OK\") et reproduction exacte du scénario utilisateur (tableau des températures mensuelles à Marseille) — les deux retournent une réponse correcte sans erreur, et le fichier relais temporaire est bien supprimé après lecture (aucun résidu).",
+      "files": [
+        "electron/executor/server-executor.js",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai voulus intérroger une IA gemini 3 pro et j'ai eu un msg d'erreur, il faut corrigé le problème pour pouvoir lancer des conversation avec l'IA [Image #1]",
+      "startedAt": "2026-07-06T20:35:00.000Z",
+      "completedAt": "2026-07-06T20:50:00.000Z"
+    },
+    {
       "id": "mod-571",
       "version": "B-0.328",
       "date": "2026-07-06T16:50:00.000Z",
