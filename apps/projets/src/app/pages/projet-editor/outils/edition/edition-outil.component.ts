@@ -149,6 +149,12 @@ export class EditionOutilComponent {
     return (await this.innerZone?.materializeFromConversation(promptInstanceId, deliverable, selectedMos, transcript)) ?? null;
   }
 
+  /** Relayé depuis ProjetConversationComponent (message du chat IA "classique", hors conversation
+   *  MO Prompt) : matérialise les MegaOutils cochés directement dans la section donnée. */
+  async materializeMoIntoSection(sectionId: string, selectedMos: MaterializedMoPreview[]): Promise<void> {
+    await this.innerZone?.materializeMoIntoSection(sectionId, selectedMos);
+  }
+
   /** Relayé depuis ProjetConversationComponent : ouvre le popup d'import (pastePreview) pour
    *  coller le texte d'un message IA dans le document, ciblé sur la section donnée. */
   insertTextIntoEdition(text: string, sectionId: string): void {

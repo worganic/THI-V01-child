@@ -152,6 +152,30 @@ Contexte : lié à la section active (`activeNodeId`)
 
 ---
 
+## `2-5-2-7-14` — [modification] Rendu markdown des messages IA "classiques" (hors MO Prompt)
+
+- **Précondition** : message IA sans `promptInstanceId` (chat "Mode IA"/`@ia` général, pas une conversation lancée par un MO Prompt — cf. `2-5-2-7-12` pour ce second cas, déjà rendu en markdown avant ce fix).
+- **Bug corrigé** : ce type de message s'affichait en texte brut (`whitespace-pre-wrap`), sans aucun parsing markdown — un tableau généré par l'IA (syntaxe pipe `| Mois | Temp |`) s'affichait tel quel, caractères `|` inclus, au lieu d'une table HTML.
+- **Action** : le template utilise désormais `renderedHtml(msg)` (`marked.parse()` + `DomSanitizer.bypassSecurityTrustHtml`, déjà utilisé pour les messages liés à un MO Prompt) au lieu de `{{ msg.text }}` brut — aucune nouvelle méthode nécessaire, `renderedHtml()` est déjà générique. Le curseur de streaming (`aiEditService.isStreaming()`) reste affiché après le contenu rendu.
+- **Résultat attendu** : un message IA classique contenant du markdown (tableau, listes, gras, titres...) s'affiche formaté ; un tableau markdown en particulier s'affiche en table HTML bordée avec en-tête distinct (nouvelles règles CSS `.chat-md table/th/td`, mêmes valeurs que `.array-board__table--clean` — cf. `2-5-2-11-11` — pour un rendu identique entre la conversation et l'éditeur). Un message texte simple (sans markdown) continue de s'afficher normalement, sans régression.
+- **Piège (bug corrigé)** : les 4 règles CSS de tableau ajoutées (`.chat-md table/th/td/tbody tr`) ne s'appliquaient **pas du tout** initialement — `[innerHTML]` injecte du HTML brut (`marked.parse()`) qui ne porte jamais l'attribut `_ngcontent-*` qu'Angular ajoute à son propre template, donc un sélecteur scopé classique ne matche jamais ce contenu avec l'encapsulation `Emulated` par défaut du composant. Corrigé avec `:host ::ng-deep` sur ces 4 règles (confirmé par inspection `getComputedStyle` : `border` passé de `0px` à la valeur attendue après le fix).
+- **À vérifier** : demander à l'IA (`@ia`) de générer un tableau markdown → table HTML stylée (bordures visibles, en-tête distinct) affichée dans la bulle, plus de texte brut à pipes. Demander une réponse texte simple → prose normale, curseur de streaming visible pendant la génération.
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html`, `.ts`
+
+---
+
+## `2-5-2-7-15` — Matérialisation d'un vrai MO (Array/Trello) depuis le chat classique
+
+- **Précondition** : message IA du chat classique (`@ia`, hors conversation MO Prompt) répondant à une demande de tableau/Kanban.
+- **Action** : `buildSystemInstructions()` inclut désormais `MO_FENCE_CHAT_INSTRUCTION` (`mo-fence-parser.util.ts`), qui enseigne à l'IA la syntaxe `` ```ARRAY: Nom\n|col|col|\n``` `` / `` ```TRELLO: Nom\n### À faire...``` `` — uniquement ARRAY et TRELLO (les 2 seuls types réellement matérialisés en instance BDD, FORM/CHART/AGENDA n'en créent aucune même côté MO Prompt). Le handler `doneSub` de `sendAiEdit()` appelle `detectMoFences()` sur la réponse (même pattern que `onPromptTurnDone()`, `2-5-2-7-12`) et peuple `msg.mos` — la carte "MegaOutils détectés" (déjà générique, pas de changement de template) apparaît alors même hors conversation Prompt.
+- **Cible de matérialisation** : contrairement à une conversation Prompt (sous-section "PR-Res {nom}"), le chat classique n'a pas d'instance Prompt à laquelle rattacher un résultat — décidé avec l'utilisateur : le MO est créé **directement dans la section active** de la conversation. `materializeMoIntoSection(sectionId, selectedMos)` (nouvelle méthode, `projet-editor-zone.component.ts`) crée l'instance BDD (`createInstance` + `updateArrayGrid`/`createTrelloCard`) **et** insère le marqueur `` ```ARRAY: Nom {{MOID:id}}\n``` `` dans le contenu de la section via `insertAt()` (`pendingMoFolderId` ciblé sur la section, même mécanisme que `confirmArrayPopup()`/création manuelle) — indispensable : sans ce marqueur, l'instance existe en BDD (visible immédiatement dans la session via `recomputeAll()`) mais disparaît du rendu Édition/Visu après rechargement (aucune position dans le document).
+- **Piège (bug corrigé)** : la bannière "Modification IA proposée" (diff `sendAiEdit`, Accepter/Annuler) démonte `<app-edition-outil>` tant qu'elle est affichée (`@else if (!hasPendingEdit())`) — cliquer "Ajouter au projet" pendant qu'elle est visible faisait échouer la matérialisation **silencieusement** (`this.editionOutil` undefined, aucune erreur, mais bouton passant quand même à "Déjà ajouté"). Corrigé : `onMaterializeRequested()` (`projet-editor.component.ts`) annule d'abord le diff en attente (`aiEditService.cancelEdit()`) si nécessaire, laisse un tick au composant pour se remonter, puis matérialise.
+- **Chemin Prompt inchangé** : `materializeFromConversation()`/`upsertPromptResultSection()` ne sont pas modifiés (juste une extraction pure de la boucle de création d'instances dans `createSelectedMoInstances`, réutilisée telle quelle).
+- **À vérifier** : `@ia crée-moi un tableau...` → carte "MegaOutils détectés" + "Ajouter au projet" (même en présence du diff IA Edit non résolu) → clic → vrai MO Tableau visible dans la section (vue propre + bouton crayon, cf. `2-5-2-11-13`) → **recharger la page** → le tableau doit toujours être là (non-régression du piège marqueur). Conversation MO Prompt existante : "Ajouter au projet" toujours identique (sous-section PR-Res).
+- **Composants:** `libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`
+
+---
+
 ## `2-5-2-7-8` — États
 
 | État | Description |

@@ -1661,6 +1661,7 @@ Votre texte de prompt ici.
                 [boardName]="arrayInstanceName(aid)"
                 [deletable]="false"
                 [readonly]="isArrayInstanceLocked(aid)"
+                [defaultCleanView]="true"
                 (gridChanged)="onArrayGridChanged(aid, $event)" />
             </div>
           }
@@ -1903,6 +1904,7 @@ Votre texte de prompt ici.
                       [boardName]="arrayInstanceName(board.inst!.id)"
                       [deletable]="false"
                       [readonly]="isArrayInstanceLocked(board.inst!.id)"
+                      [defaultCleanView]="true"
                       (gridChanged)="onArrayGridChanged(board.inst!.id, $event)" />
                   </div>
                 } @else if (board.type === 'prompt') {

@@ -537,11 +537,10 @@
                     <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
                   }
                 } @else {
-                  <p class="text-xs text-light-text dark:text-white/80 leading-relaxed whitespace-pre-wrap">{{ msg.text }}
-                    @if (last && aiEditService.isStreaming()) {
-                      <span class="inline-block w-1.5 h-3.5 bg-violet-400 ml-0.5 animate-pulse align-text-bottom"></span>
-                    }
-                  </p>
+                  <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
+                  @if (last && aiEditService.isStreaming()) {
+                    <span class="inline-block w-1.5 h-3.5 bg-violet-400 ml-0.5 animate-pulse align-text-bottom"></span>
+                  }
                 }
               </div>
               @if (msg.promptInstanceId) {

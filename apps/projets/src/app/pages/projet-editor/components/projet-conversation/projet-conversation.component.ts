@@ -10,7 +10,7 @@ import {
   AiExecuteService, MegaOutilsService,
   composeSystemPrompt, promptDeliverableHeadingInstruction,
   detectMoFences, parseChoiceForm, fenceBody, parseChartPoints,
-  parseArrayTable, parseTrelloPreview, parseAgendaPreview,
+  parseArrayTable, parseTrelloPreview, parseAgendaPreview, MO_FENCE_CHAT_INSTRUCTION,
 } from '@worganic/portail-core/data-access';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
@@ -43,6 +43,15 @@ const MAX_CADRAGE_WAVES = 5;
     .chat-md blockquote { border-left: 2px solid currentColor; opacity: 0.85; padding-left: 0.7em; margin: 0.35em 0; }
     .chat-md > *:first-child { margin-top: 0; }
     .chat-md > *:last-child { margin-bottom: 0; }
+    /* Tableaux markdown (ex: réponse IA) — mêmes valeurs que .array-board__table--clean
+       (array-board.component.ts) pour un rendu identique entre conversation et éditeur.
+       ::ng-deep nécessaire : ce contenu vient de [innerHTML] (marked.parse()), donc sans
+       l'attribut _ngcontent-* qu'Angular ajoute à son propre template — un sélecteur scopé
+       classique (.chat-md table) ne le matche jamais avec l'encapsulation par défaut. */
+    :host ::ng-deep .chat-md table { border-collapse: collapse; margin: 0.5em 0; border: 1px solid rgba(255,255,255,.08); border-radius: 6px; overflow: hidden; font-size: 0.95em; }
+    :host ::ng-deep .chat-md th, :host ::ng-deep .chat-md td { border: 1px solid rgba(255,255,255,.08); padding: 6px 10px; text-align: left; }
+    :host ::ng-deep .chat-md th { background: rgba(255,255,255,.06); font-weight: 600; }
+    :host ::ng-deep .chat-md tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
   `],
   host: { class: 'flex flex-col min-h-0 flex-1 overflow-hidden' },
 })
@@ -55,11 +64,13 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   /** MO Prompt exécuté (bouton "Exécuter" du board) : lance/poursuit sa conversation ici. */
   @Input() launchPrompt: PromptLaunchContext | null = null;
   @Output() conversationAdded = new EventEmitter<string>();
-  /** MegaOutils cochés sur un message d'une conversation Prompt à matérialiser (Trello/Array réels,
-   *  Agenda réel, livrable inséré dans la section) — relayé par le parent vers la zone d'édition.
+  /** MegaOutils cochés sur un message IA à matérialiser (Trello/Array réels) — relayé par le parent
+   *  vers la zone d'édition. Deux cas : `promptInstanceId` (message d'une conversation MO Prompt —
+   *  livrable inséré dans la sous-section "PR-Res", inchangé) OU `sectionId` (message du chat
+   *  classique — MO créé directement dans la section active, pas de sous-section dédiée).
    *  `messageKey` (timestamp du message) permet au parent de rappeler `markMosMaterialized()` une
    *  fois la matérialisation terminée (asynchrone), pour marquer les MO concernés "déjà ajoutés". */
-  @Output() materializeRequested = new EventEmitter<{ promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }>();
+  @Output() materializeRequested = new EventEmitter<{ promptInstanceId?: string; sectionId?: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }>();
   /** "Copier vers l'édition" sur un message IA d'une conversation Prompt — relayé par le parent. */
   @Output() copyToEditionRequested = new EventEmitter<{ text: string; sectionId: string }>();
   /** Clic sur "Déjà ajouté" d'un MO matérialisé : demande au parent de naviguer vers la section
@@ -252,6 +263,7 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     const parts: string[] = [];
     if (global) parts.push(global);
     if (project) parts.push(project);
+    parts.push(MO_FENCE_CHAT_INSTRUCTION);
     if (fullDocContent) {
       const header = sectionName
         ? `[Document complet — contexte général]\nSection active ciblée : "${sectionName}"\n\n`
@@ -485,10 +497,20 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
       sub.unsubscribe();
       doneSub.unsubscribe();
       const tokens = this.aiEditService.tokenInfo();
-      if (tokens) {
+      // Détecte les fences MO (ARRAY/TRELLO) dans la réponse — même pattern que
+      // onPromptTurnDone() — pour faire apparaître la carte "MegaOutils détectés" et
+      // permettre "Ajouter au projet" même hors conversation MO Prompt.
+      const mos = finalText ? detectMoFences(finalText) : [];
+      if (tokens || mos.length) {
         const updated = [...this.messages];
         const last = updated[updated.length - 1];
-        if (last?.role === 'ai') updated[updated.length - 1] = { ...last, tokenInfo: tokens };
+        if (last?.role === 'ai') {
+          updated[updated.length - 1] = {
+            ...last,
+            ...(tokens ? { tokenInfo: tokens } : {}),
+            ...(mos.length ? { mos } : {}),
+          };
+        }
         this.messages = updated;
       }
       if (finalText && this.sectionId) {
@@ -941,16 +963,24 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
    *  section). Les MO restent dans la carte, marqués "déjà ajoutés" par `markMosMaterialized()`. */
   materializeMo(msg: Message) {
     const selected = msg.mos?.filter(mo => mo.selected && !mo.materializedSectionId) ?? [];
-    if (!selected.length || !msg.promptInstanceId) return;
-    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: selected, messageKey: msg.timestamp });
+    if (!selected.length) return;
+    if (msg.promptInstanceId) {
+      this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: selected, messageKey: msg.timestamp });
+    } else if (this.sectionId) {
+      this.materializeRequested.emit({ sectionId: this.sectionId, deliverable: msg.text, selectedMos: selected, messageKey: msg.timestamp });
+    }
   }
 
   /** Ajoute au projet un seul MegaOutil de la carte (indépendamment de sa case à cocher et des
    *  autres MO listés) — reste affiché dans la carte, marqué "déjà ajouté" une fois terminé. */
   materializeSingleMo(msg: Message, moIndex: number) {
     const mo = msg.mos?.[moIndex];
-    if (!mo || mo.materializedSectionId || !msg.promptInstanceId) return;
-    this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: [mo], messageKey: msg.timestamp });
+    if (!mo || mo.materializedSectionId) return;
+    if (msg.promptInstanceId) {
+      this.materializeRequested.emit({ promptInstanceId: msg.promptInstanceId, deliverable: msg.text, selectedMos: [mo], messageKey: msg.timestamp });
+    } else if (this.sectionId) {
+      this.materializeRequested.emit({ sectionId: this.sectionId, deliverable: msg.text, selectedMos: [mo], messageKey: msg.timestamp });
+    }
   }
 
   /** Rappelé par le parent une fois la matérialisation asynchrone terminée : marque les MO

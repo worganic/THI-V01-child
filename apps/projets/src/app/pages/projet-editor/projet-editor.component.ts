@@ -939,9 +939,27 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   /** Relayé depuis ProjetConversationComponent : matérialise les MegaOutils cochés d'une
    *  conversation Prompt (mode Guidé/Tchat) via la zone d'édition (seule à connaître unifiedContent).
    *  Une fois terminé, rappelle le panneau conversation pour marquer ces MO "déjà ajoutés"
-   *  (bouton "Déjà ajouté" + navigation vers la section résultat), sans les retirer de la carte. */
-  async onMaterializeRequested(payload: { promptInstanceId: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }) {
-    const sectionId = (await this.editionOutil?.materializeFromConversation(payload.promptInstanceId, payload.deliverable, payload.selectedMos, payload.transcript)) ?? null;
+   *  (bouton "Déjà ajouté" + navigation vers la section résultat), sans les retirer de la carte.
+   *  Deux cas : `promptInstanceId` (conversation MO Prompt, sous-section "PR-Res", inchangé) ou
+   *  `sectionId` (chat IA classique — matérialisation directe dans la section active). */
+  async onMaterializeRequested(payload: { promptInstanceId?: string; sectionId?: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }) {
+    let sectionId: string | null = null;
+    if (payload.promptInstanceId) {
+      sectionId = (await this.editionOutil?.materializeFromConversation(payload.promptInstanceId, payload.deliverable, payload.selectedMos, payload.transcript)) ?? null;
+    } else if (payload.sectionId) {
+      // La bannière "Modification IA proposée" (diff en attente, sendAiEdit) démonte
+      // <app-edition-outil> (cf. template : @else if (!hasPendingEdit())) — sans quoi
+      // `this.editionOutil` est undefined et la matérialisation échoue silencieusement
+      // (aucune erreur, mais aucune instance créée). Choisir "Ajouter au projet" signifie
+      // que l'utilisateur ne veut PAS appliquer le diff texte brut, donc on l'annule
+      // d'abord pour laisser le composant se remonter avant d'y accéder.
+      if (this.hasPendingEdit()) {
+        this.aiEditService.cancelEdit();
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+      await this.editionOutil?.materializeMoIntoSection(payload.sectionId, payload.selectedMos);
+      sectionId = payload.sectionId;
+    }
     this.conversationPanel?.markMosMaterialized(payload.messageKey, payload.selectedMos, sectionId);
   }
 

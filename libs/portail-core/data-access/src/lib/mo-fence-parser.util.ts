@@ -6,6 +6,28 @@ import { ChartPoint, FormQuestion, MaterializedMoPreview } from './mega-outils.m
  * par ProjetConversationComponent.
  */
 
+/** Instruction système pour le chat IA "classique" (hors conversation MO Prompt) : enseigne le
+ *  format de fence ARRAY/TRELLO détecté par detectMoFences(), pour que "Ajouter au projet" puisse
+ *  matérialiser un vrai MegaOutil au lieu de laisser un tableau markdown statique dans le document.
+ *  Volontairement limité à ARRAY/TRELLO : ce sont les 2 seuls types réellement matérialisés en
+ *  instance BDD aujourd'hui (FORM/CHART/AGENDA ne créent aucune instance, même côté MO Prompt). */
+export const MO_FENCE_CHAT_INSTRUCTION = `Si la demande implique de créer ou mettre à jour un tableau de données ou un tableau Kanban, utilise EXACTEMENT une de ces syntaxes (fences \`\`\`) pour que l'élément puisse être ajouté au projet comme un vrai outil interactif :
+
+\`\`\`ARRAY: Nom du tableau
+| Colonne 1 | Colonne 2 |
+|-----------|-----------|
+| valeur    | valeur    |
+\`\`\`
+
+\`\`\`TRELLO: Nom du tableau
+### À faire
+- [ ] Titre de la carte \`[medium]\`
+### En cours
+### Terminé
+\`\`\`
+
+N'utilise cette syntaxe que si la demande porte réellement sur ce type de contenu structuré ; pour toute autre demande, réponds normalement en texte/markdown libre.`;
+
 /** Corps d'un fence (entre la 1re et la dernière ligne ```). */
 export function fenceBody(fence: string): string {
   const lines = fence.split('\n');

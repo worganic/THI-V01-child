@@ -31,7 +31,7 @@ Composant : `ArrayBoardComponent` — panneau bas dans tous les modes
 
 ---
 
-## `2-5-2-11-11` — Affichage stylisé en mode Preview
+## `2-5-2-11-11` — [modification] Affichage stylisé en mode Preview
 
 - **Déclenchement** : passage en mode Preview (visu)
 - **Chargement** : `loadAllVisuArrayGrids()` charge toutes les grilles manquantes via API, puis reconstruit les sections visu
@@ -119,3 +119,14 @@ Composant : `ArrayBoardComponent` — panneau bas dans tous les modes
 
 - **Event** : `array_update` reçu via SSE → `arrayUpdate$` Subject → rechargement de la grille
 - **Scope** : tous les collaborateurs du projet voient les modifications en live
+
+---
+
+## `2-5-2-11-13` — Vue propre (lecture) par défaut en mode Édition/Visu + bascule vers la grille éditable
+
+- **Précondition** : un MO Tableau est affiché en mode Édition/Visu (aperçu standalone `previewArrayInstanceId` ou inline dans une section) — **pas** en mode Structure, qui garde la grille éditable telle quelle sans bascule (scope confirmé avec l'utilisateur).
+- **Action** : `@Input() defaultCleanView` (nouveau, `false` par défaut — Structure ne le passe pas, comportement inchangé) fait démarrer `ArrayBoardComponent` en `viewMode() === 'clean'` au lieu de `'grid'`.
+- **Résultat attendu** : table HTML sobre (1ère ligne = en-tête via `<thead>`, lignes suivantes en `<tbody>`, valeurs via `displayValue()` donc formules déjà évaluées) — pas de lettres de colonnes A/B/C, pas de gouttière de numéros de ligne, pas de bandeau nom/icône. Un petit bouton crayon (coin haut-droit, opacité 0.55 par défaut → 1 au survol — visible sans avoir à deviner où survoler) bascule vers la grille éditable actuelle (bandeau "🔲 Nom du tableau" + icône œil pour revenir en vue propre, lettres A/B/C, redimensionnement, "+ Ligne", tout inchangé).
+- **Résultat à redouter** : bouton crayon invisible/non découvrable (bug corrigé — opacité 0 par défaut initialement, remontée à 0.55), perte de la capacité d'édition (le bouton crayon doit toujours permettre de revenir à la grille complète), ou apparition de la bascule en mode Structure (elle ne doit apparaître que si `defaultCleanView` est passé par le composant parent).
+- **À vérifier** : ouvrir une section avec un MO Tableau en mode Édition → vue propre par défaut, bouton crayon visible sans survoler → cliquer → grille éditable complète (identique à l'ancien comportement) → cliquer l'icône œil → retour vue propre. Mode Structure : toujours la grille éditable, aucun bouton de bascule.
+- **Composants:** `libs/shared/ui/src/lib/mega-outils/array/array-board.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`

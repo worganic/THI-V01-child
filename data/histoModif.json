@@ -1,6 +1,60 @@
 {
   "modifications": [
     {
+      "id": "mod-574",
+      "version": "B-0.328",
+      "date": "2026-07-06T23:15:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:array-outil",
+      "title": "Matérialisation d'un vrai MO Tableau/Trello depuis le chat IA classique",
+      "description": "Suite au fix précédent (rendu markdown propre en conversation), l'utilisateur a signalé qu'un tableau généré par l'IA dans le chat classique (@ia, hors conversation MO Prompt) restait du texte markdown statique une fois inséré dans le document — pas un vrai MO Tableau, donc pas de bouton de bascule éditable. Cause : (1) l'IA n'était jamais informée du format de fence ARRAY/TRELLO (contrairement aux conversations MO Prompt) ; (2) même avec une fence, detectMoFences() n'était jamais appelé sur les réponses du chat classique, donc msg.mos restait vide ; (3) materializeSingleMo()/materializeMo() avaient une garde dure bloquant tout message sans promptInstanceId. Fix : ajout de MO_FENCE_CHAT_INSTRUCTION (mo-fence-parser.util.ts) enseignant la syntaxe ARRAY/TRELLO à l'IA (uniquement ces 2 types, les seuls réellement matérialisés en instance BDD) ; detectMoFences() appelé dans le handler doneSub de sendAiEdit() (même pattern que onPromptTurnDone) ; garde retirée, émission de materializeRequested élargie (sectionId en plus de promptInstanceId). Décidé avec l'utilisateur : le chat classique n'ayant pas de sous-section \"PR-Res\" à utiliser (pas d'instance Prompt), le MO est créé directement dans la section active (nouvelle méthode materializeMoIntoSection() dans projet-editor-zone.component.ts, extraction pure de la boucle de création d'instances existante en createSelectedMoInstances — chemin Prompt strictement inchangé). Deux bugs réels trouvés et corrigés en cours de vérification : (a) l'instance BDD était créée mais invisible après rechargement — il manquait l'insertion du marqueur {{MOID:id}} dans le contenu de la section via insertAt() (même mécanisme que confirmArrayPopup(), création manuelle), sans quoi rien ne rattache l'instance à une position dans le document ; (b) la bannière \"Modification IA proposée\" (diff Accepter/Annuler) démonte <app-edition-outil> tant qu'elle est affichée, faisant échouer la matérialisation silencieusement (aucune erreur, bouton passant quand même à \"Déjà ajouté\") si on cliquait \"Ajouter au projet\" avant de la fermer — corrigé en annulant automatiquement ce diff en attente avant de matérialiser. Vérifié en conditions réelles (projet de test jetable, nettoyé après coup) : création réelle d'instance confirmée via l'API mega-outils après le fix marqueur, carte \"MegaOutils détectés\"/\"Ajouter au projet\" apparaissant correctement même avec le diff IA Edit non résolu. Non vérifié explicitement après ce dernier commit : persistance après rechargement de page avec le fix marqueur en place (build propre confirmé, logique identique à confirmArrayPopup() qui fonctionne de façon fiable) — à confirmer au prochain test si besoin.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/mo-fence-parser.util.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans le tableau importé à partir d'un prompt IA le tableau s'affiche bien mais il n'est pas transformé en mega outils tableau, le bouton de modification n'est donc pas présent. [Image]",
+      "startedAt": "2026-07-06T22:40:00.000Z",
+      "completedAt": "2026-07-06T23:15:00.000Z"
+    },
+    {
+      "id": "mod-573",
+      "version": "B-0.328",
+      "date": "2026-07-06T22:10:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs"
+      ],
+      "features": "projets:zone5-conversation,projets:array-outil",
+      "title": "Rendu markdown propre des réponses IA en conversation + vue lecture seule par défaut du MO Tableau",
+      "description": "Deux demandes liées à l'affichage des MO générés/consultés depuis l'éditeur. (1) Zone conversation : les messages IA \"classiques\" (chat @ia hors conversation MO Prompt) s'affichaient en texte brut, y compris quand l'IA répondait avec un tableau markdown (caractères pipe affichés tels quels) — corrigé en réutilisant renderedHtml() (marked.parse() déjà utilisé pour les messages liés à un MO Prompt), avec ajout de règles CSS pour les tableaux (.chat-md table/th/td) reprenant les mêmes valeurs que le nouveau rendu propre côté éditeur, pour un rendu visuellement identique aux deux endroits. (2) MO Tableau (ArrayBoardComponent) : affichait toujours la grille de type tableur (lettres de colonnes A/B/C, gouttière de numéros de ligne, poignées de redimensionnement) même pour une simple lecture — ajout d'un nouvel Input defaultCleanView (opt-in, false par défaut) qui fait démarrer le composant en vue propre (table HTML classique, 1ère ligne = en-tête, aucun chrome de tableur), avec un bouton crayon pour basculer vers la grille éditable complète, et un bouton oeil symétrique pour revenir en vue propre. Activé uniquement sur les 2 points d'appel Édition/Visu (previewArrayInstanceId standalone + inline en section) ; le mode Structure n'a pas reçu ce nouvel Input et garde donc la grille éditable telle quelle sans bascule (scope confirmé avec l'utilisateur avant implémentation, via plan). L'insertion du contenu généré par l'IA dans le document (mécanisme de matérialisation des MO depuis la conversation) n'a pas été touchée, comme demandé. **2 corrections après premier retour utilisateur** (le CSS des tableaux ne s'appliquait pas en conversation, le bouton crayon était invisible) : (a) le CSS ajouté à .chat-md table/th/td ne s'appliquait jamais — [innerHTML] injecte du HTML brut (marked.parse()) qui ne porte pas l'attribut _ngcontent-* qu'Angular ajoute à son propre template, donc un sélecteur scopé classique ne matche jamais ce contenu avec l'encapsulation Emulated par défaut (confirmé par inspection du DOM en conditions réelles : border 0px alors que la règle spécifiait 1px) — corrigé avec :host ::ng-deep sur les 4 règles de tableau ; (b) le bouton crayon de bascule (array-board.component.ts) était invisible par défaut (opacity:0, visible seulement au survol) — l'utilisateur ne le trouvait pas ; passé à opacity:0.55 par défaut (1 au survol) pour rester discret tout en étant découvrable sans avoir à deviner où survoler. Vérifié en conditions réelles (2 projets de test jetables successifs, nettoyés après coup) : build Angular propre à chaque itération ; conversation @ia avec un vrai prompt de génération de tableau (Antigravity/Gemini 3 Pro) affichée en table HTML bordée avec en-tête distinct (confirmé par inspection getComputedStyle du DOM : border/background/font-weight correspondent exactement aux valeurs des règles CSS après le fix ::ng-deep), message texte simple toujours affiché normalement (non-régression) ; MO Tableau en mode Édition affiché en vue propre par défaut avec bouton crayon visible sans survol, bascule vers la grille éditable identique à l'ancien comportement, bouton oeil → retour vue propre ; mode Structure vérifié inchangé (toujours grille éditable, aucun bouton de bascule).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "libs/shared/ui/src/lib/mega-outils/array/array-board.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/array-outil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsqu'on interroge une IA via conversation, l'IA doit pouvoir retourné des infos au format MO, l'affichage dans la zone de conversation doit èetre affiché de façon design. L'insertion dans la partie Edition/Code est parfaite et ne doit pas changer, prend le même design pour l'affiché dans la zone conversation [Image]. Un MO tableau doit être affiché par defaut dans le mode Edition de cette façon : [Image] et il doit y avoir un bouton pour l'affiché de façon éditable : [Image]",
+      "startedAt": "2026-07-06T21:30:00.000Z",
+      "completedAt": "2026-07-06T22:35:00.000Z"
+    },
+    {
       "id": "mod-572",
       "version": "B-0.328",
       "date": "2026-07-06T20:50:00.000Z",

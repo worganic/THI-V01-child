@@ -6165,6 +6165,15 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.upsertPromptResultSection(promptInstanceId, content);
 
     // 2. Créer les instances pour Trello / Array (Form/Chart/Agenda = rendu par balise ou liste)
+    await this.createSelectedMoInstances(selectedMos, folderId);
+    this.recomputeAll();
+  }
+
+  /** Crée les instances BDD pour les MO Trello/Array sélectionnés (Form/Chart/Agenda ne créent
+   *  aucune instance, cf. commentaire ci-dessus) — factorisé pour être réutilisé à la fois par la
+   *  matérialisation Prompt (sous-section "PR-Res", ci-dessus) et par la matérialisation directe
+   *  dans une section (chat IA classique, `materializeMoIntoSection` ci-dessous). */
+  private async createSelectedMoInstances(selectedMos: MaterializedMoPreview[], folderId: string | undefined): Promise<void> {
     for (const mo of selectedMos) {
       if (mo.type === 'form' || mo.type === 'chart' || mo.type === 'agenda') continue;
       try {
@@ -6191,6 +6200,53 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
       } catch (e) {
         console.error('[EditorZone] matérialisation MO échouée :', mo.name, e);
       }
+    }
+  }
+
+  /** Matérialise les MO Trello/Array sélectionnés directement dans la section active (message du
+   *  chat IA "classique", hors conversation MO Prompt) — pas de sous-section "PR-Res" (aucune
+   *  instance Prompt à laquelle la rattacher). Contrairement à `createSelectedMoInstances` (utilisée
+   *  par le chemin Prompt, où la fence brute de l'IA est déjà écrite via `upsertPromptResultSection`),
+   *  il faut ici insérer explicitement le marqueur `{{MOID:id}}` dans le contenu de la section —
+   *  même mécanisme que `confirmArrayPopup()`/`confirmTrelloPopup()` (création manuelle via le menu
+   *  contextuel) — sans quoi l'instance existe en BDD (visible immédiatement dans la session grâce à
+   *  `recomputeAll()`) mais n'est rattachée à aucune position dans le document : elle disparaît du
+   *  rendu Édition/Visu après rechargement (le panneau Code/Structure, résolu par simple `folderId`,
+   *  ne suffit pas à lui seul). */
+  async materializeMoIntoSection(sectionId: string, selectedMos: MaterializedMoPreview[]): Promise<void> {
+    const prevPending = this.pendingMoFolderId;
+    this.pendingMoFolderId = sectionId;
+    try {
+      for (const mo of selectedMos) {
+        if (mo.type === 'form' || mo.type === 'chart' || mo.type === 'agenda') continue;
+        try {
+          const inst = await this.megaOutilsSvc.createInstance({
+            type: mo.type, name: mo.name, projectId: this.projectName,
+            outilId: this.activeOutilId || undefined, folderId: sectionId,
+          });
+          const body = sharedFenceBody(mo.fence);
+          if (mo.type === 'trello') {
+            const cards = this.parseTrelloBodyCards(body);
+            for (let i = 0; i < cards.length; i++) {
+              const c = cards[i];
+              await this.megaOutilsSvc.createTrelloCard(inst.id, {
+                title: c.title, status: c.status, priority: c.priority, description: c.description, orderIndex: i,
+              }).catch(() => {});
+            }
+            this.insertAt(`\n\n\`\`\`TRELLO: ${mo.name} {{MOID:${inst.id}}}\n${body}\n\`\`\`\n\n`, '');
+          } else if (mo.type === 'array') {
+            const base = await this.megaOutilsSvc.getArrayGrid(inst.id).catch(() => null);
+            const grid = base ? this.deserializeArrayGrid(body, base) : null;
+            if (grid) await this.megaOutilsSvc.updateArrayGrid(inst.id, grid).catch(() => {});
+            this.insertAt(`\n\n\`\`\`ARRAY: ${mo.name} {{MOID:${inst.id}}}\n\`\`\`\n\n`, '');
+          }
+          this.megaOutilCreated.emit(inst);
+        } catch (e) {
+          console.error('[EditorZone] matérialisation MO échouée :', mo.name, e);
+        }
+      }
+    } finally {
+      this.pendingMoFolderId = prevPending;
     }
     this.recomputeAll();
   }

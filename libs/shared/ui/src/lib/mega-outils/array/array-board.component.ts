@@ -10,27 +10,61 @@ import { MegaOutilsService, ProjetCollabService, ArrayCell, ArrayGrid, ArrayCell
   imports: [CommonModule, FormsModule],
   template: `
 <div class="array-board">
-  <!-- En-tête -->
-  <div class="array-board__head">
-    <span class="material-symbols-outlined" style="font-size:16px;color:#a3e635">table</span>
-    <span class="array-board__name">{{ boardName }}</span>
-    @if (sectionName) {
-      <span class="array-board__section">— {{ sectionName }}</span>
-    }
-    @if (!readonly) {
+  <!-- En-tête (uniquement en mode grille — la vue propre reste volontairement sans bandeau) -->
+  @if (viewMode() === 'grid') {
+    <div class="array-board__head">
+      <span class="material-symbols-outlined" style="font-size:16px;color:#a3e635">table</span>
+      <span class="array-board__name">{{ boardName }}</span>
+      @if (sectionName) {
+        <span class="array-board__section">— {{ sectionName }}</span>
+      }
       <div class="array-board__actions">
-        @if (deletable) {
+        @if (defaultCleanView) {
+          <button type="button" class="array-board__view-toggle" title="Afficher en vue simple" (click)="viewMode.set('clean')">
+            <span class="material-symbols-outlined" style="font-size:14px">visibility</span>
+          </button>
+        }
+        @if (deletable && !readonly) {
           <button type="button" class="array-board__del" title="Supprimer ce tableau" (click)="deleteBoard.emit(instanceId)">
             <span class="material-symbols-outlined" style="font-size:14px">delete</span>
           </button>
         }
       </div>
-    }
-  </div>
+    </div>
+  }
 
   <!-- Grille -->
   @if (loading()) {
     <div class="array-board__loading">Chargement…</div>
+  } @else if (grid() && viewMode() === 'clean') {
+    <!-- Vue propre (lecture) : table HTML classique, 1ère ligne = en-tête, sans chrome de tableur -->
+    <div class="array-board__clean-wrap">
+      @if (defaultCleanView) {
+        <button type="button" class="array-board__clean-edit-btn" title="Afficher en mode éditable" (click)="viewMode.set('grid')">
+          <span class="material-symbols-outlined" style="font-size:14px">edit</span>
+        </button>
+      }
+      @if (grid()!.cells.length > 0) {
+        <table class="array-board__table--clean">
+          <thead>
+            <tr>
+              @for (cell of grid()!.cells[0]; track $index) {
+                <th>{{ displayValue(cell) }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of grid()!.cells.slice(1); track rowIdx; let rowIdx = $index) {
+              <tr>
+                @for (cell of row; track colIdx; let colIdx = $index) {
+                  <td>{{ displayValue(cell) }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
   } @else if (grid()) {
     <div class="array-board__scroll-wrap">
       <div class="array-board__table-wrap">
@@ -218,6 +252,18 @@ import { MegaOutilsService, ProjetCollabService, ArrayCell, ArrayGrid, ArrayCell
 .array-board__row-del { border: 1px solid rgba(255,255,255,.08); width: 28px; text-align: center; cursor: pointer; color: rgba(255,255,255,.25); }
 .array-board__row-del:hover { color: #f87171; background: rgba(248,113,113,.1); }
 .array-board__footer { padding: 6px 8px; border-top: 1px solid rgba(255,255,255,.08); }
+/* Vue propre (lecture seule) — mêmes valeurs que .chat-md table (projet-conversation.component.ts)
+   pour un rendu identique entre l'éditeur et la zone conversation. */
+.array-board__clean-wrap { position: relative; padding: 4px; overflow-x: auto; }
+.array-board__table--clean { width: 100%; border-collapse: collapse; font-size: 12px; }
+.array-board__table--clean th, .array-board__table--clean td { border: 1px solid rgba(255,255,255,.08); padding: 6px 10px; text-align: left; color: rgba(255,255,255,.85); }
+.array-board__table--clean th { background: rgba(255,255,255,.06); font-weight: 600; }
+.array-board__table--clean tbody tr:nth-child(even) { background: rgba(255,255,255,.02); }
+.array-board__clean-edit-btn { position: absolute; top: 6px; right: 6px; background: rgba(30,30,46,.85); border: 1px solid rgba(255,255,255,.12); border-radius: 4px; cursor: pointer; color: rgba(255,255,255,.35); padding: 3px 5px; display: flex; align-items: center; opacity: 0.55; transition: opacity .15s ease; z-index: 1; }
+.array-board__clean-wrap:hover .array-board__clean-edit-btn { opacity: 1; }
+.array-board__clean-edit-btn:hover { color: #a3e635; border-color: #a3e635; }
+.array-board__view-toggle { background: transparent; border: none; cursor: pointer; color: rgba(255,255,255,.4); padding: 2px 4px; border-radius: 4px; display: flex; align-items: center; }
+.array-board__view-toggle:hover { color: #a3e635; background: rgba(163,230,53,.1); }
 .array-board__add-row-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 4px; color: rgba(255,255,255,.5); padding: 3px 8px; cursor: pointer; font-size: 11px; }
 .array-board__add-row-btn:hover { border-color: #a3e635; color: #a3e635; background: rgba(163,230,53,.06); }
 .array-board__ctx-menu { position: fixed; background: #1e1e2e; border: 1px solid rgba(255,255,255,.12); border-radius: 8px; padding: 6px; z-index: 9999; min-width: 160px; box-shadow: 0 8px 24px rgba(0,0,0,.5); }
@@ -239,6 +285,10 @@ export class ArrayBoardComponent implements OnInit, OnDestroy {
   @Input() sectionName = '';
   @Input() deletable = false;
   @Input() readonly = false;
+  /** Affiche par défaut une table propre en lecture seule (1ère ligne = en-tête, sans chrome de
+   *  tableur) avec un bouton pour basculer vers la grille éditable — plutôt que la grille éditable
+   *  d'emblée. Opt-in par point d'appel (défaut false = comportement actuel inchangé). */
+  @Input() defaultCleanView = false;
 
   @Output() deleteBoard  = new EventEmitter<string>();
   @Output() gridChanged  = new EventEmitter<ArrayGrid>();
@@ -254,6 +304,7 @@ export class ArrayBoardComponent implements OnInit, OnDestroy {
 
   grid    = signal<ArrayGrid | null>(null);
   loading = signal(true);
+  viewMode = signal<'clean' | 'grid'>('grid');
 
   selectedCell  = signal<{ row: number; col: number } | null>(null);
   editingCell   = signal<{ row: number; col: number } | null>(null);
@@ -286,6 +337,7 @@ export class ArrayBoardComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit() {
+    if (this.defaultCleanView) this.viewMode.set('clean');
     await this.loadGrid();
     this.arraySub = this.collab.arrayUpdate$.subscribe(evt => {
       if (evt.instanceId === this.instanceId) this.loadGrid();
