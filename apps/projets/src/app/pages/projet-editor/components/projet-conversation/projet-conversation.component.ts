@@ -514,7 +514,7 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
         this.messages = updated;
       }
       if (finalText && this.sectionId) {
-        this.convService.saveAiMessage(this.sectionId, finalText).subscribe();
+        this.convService.appendMessage(this.sectionId, { text: finalText, role: 'ai', mos: mos.length ? mos : undefined }).subscribe();
         this.conversationAdded.emit(this.sectionId);
       }
     });

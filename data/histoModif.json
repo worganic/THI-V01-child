@@ -1,6 +1,28 @@
 {
   "modifications": [
     {
+      "id": "mod-577",
+      "version": "B-0.332",
+      "date": "2026-07-07T01:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor:zone5-conversation",
+      "title": "Fix persistance MO Array chat IA classique",
+      "description": "Dans la fenêtre de conversation (chat IA classique, hors mode MO Prompt), le tableau MO Array s'affichait correctement juste après le traitement de l'IA mais redevenait du markdown brut une fois qu'on quittait la section puis qu'on y revenait. Cause : sendAiEdit() détectait bien les fences MO (detectMoFences) et mettait à jour le message IA en mémoire locale (this.messages), mais la persistance serveur passait par saveAiMessage(text) qui n'envoie que { text, role } — le champ mos n'était donc jamais sauvegardé côté serveur. Au rechargement de l'historique (loadHistory), le message revenait sans mos, donc messageHasMoWidget() retournait false et le texte brut du tableau markdown s'affichait au lieu du widget. Remplacé saveAiMessage(text) par appendMessage(sectionId, { text, role: 'ai', mos }) — même mécanisme que appendPromptMessage() utilisé pour les conversations MO Prompt.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le MO array s'affiche bien dans le mode Edition mais pas dans la fenètre de conversation, après le traitement de l'IA cela s'affiche bien mais lorsque je change de section et que je reviens dans la section de conversation du MO array celui ci s'affiche mal",
+      "startedAt": "2026-07-07T00:50:00.000Z",
+      "completedAt": "2026-07-07T01:00:00.000Z"
+    },
+    {
       "id": "mod-576",
       "version": "B-0.331",
       "date": "2026-07-07T00:30:00.000Z",
