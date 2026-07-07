@@ -1,6 +1,31 @@
 {
   "modifications": [
     {
+      "id": "mod-576",
+      "version": "B-0.331",
+      "date": "2026-07-07T00:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "libs",
+        "projets"
+      ],
+      "features": "projets:editor:zone-preview,libs:array-board",
+      "title": "Icône de suppression du tableau MO Array à côté du bouton 'mode éditable'",
+      "description": "Dans la vue « propre » (lecture) d'un MO Array (icône crayon 'Afficher en mode éditable'), il n'y avait aucun moyen de supprimer tout le tableau sans passer par le panneau latéral Structure. Ajout d'une icône corbeille juste à côté (ArrayBoardComponent, visible si deletable && !readonly, émet le même output deleteBoard que le bouton du header en mode grille). Câblé sur les deux points d'affichage inline de l'éditeur (board embarqué dans le corps de section, preview standalone) via deleteArrayInstance(). Bug corrigé au passage : deleteArrayInstance() ne retirait que l'instance en base, sans retirer la fence ```ARRAY: du contenu (contrairement à deleteTrelloInstance/deletePromptInstance) — laissait un marqueur MOID orphelin après suppression ; utilise maintenant removeFenceForInstance('ARRAY', inst) comme les deux autres types.",
+      "files": [
+        "libs/shared/ui/src/lib/mega-outils/array/array-board.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans un MO array en mode Edition tu a un icone \"Affiché en mode editable\", ajoute juste à coté un icone supprimé pour supprimé tous le tableau MO array",
+      "startedAt": "2026-07-07T00:25:00.000Z",
+      "completedAt": "2026-07-07T00:35:00.000Z"
+    },
+    {
       "id": "mod-575",
       "version": "B-0.330",
       "date": "2026-07-07T00:00:00.000Z",

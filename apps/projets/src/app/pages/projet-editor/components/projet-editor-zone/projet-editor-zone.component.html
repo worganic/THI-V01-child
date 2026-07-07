@@ -1659,9 +1659,10 @@ Votre texte de prompt ici.
               <app-array-board
                 [instanceId]="aid"
                 [boardName]="arrayInstanceName(aid)"
-                [deletable]="false"
+                [deletable]="!isArrayInstanceLocked(aid)"
                 [readonly]="isArrayInstanceLocked(aid)"
                 [defaultCleanView]="true"
+                (deleteBoard)="deleteArrayInstance($event)"
                 (gridChanged)="onArrayGridChanged(aid, $event)" />
             </div>
           }
@@ -1902,9 +1903,10 @@ Votre texte de prompt ici.
                     <app-array-board
                       [instanceId]="board.inst!.id"
                       [boardName]="arrayInstanceName(board.inst!.id)"
-                      [deletable]="false"
+                      [deletable]="!isArrayInstanceLocked(board.inst!.id)"
                       [readonly]="isArrayInstanceLocked(board.inst!.id)"
                       [defaultCleanView]="true"
+                      (deleteBoard)="deleteArrayInstance($event)"
                       (gridChanged)="onArrayGridChanged(board.inst!.id, $event)" />
                   </div>
                 } @else if (board.type === 'prompt') {

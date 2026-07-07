@@ -3137,8 +3137,16 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   }
 
   async deleteArrayInstance(id: string) {
+    const inst = this.arrayInstances.find(i => i.id === id);
     try {
       await this.megaOutilsSvc.deleteInstance(id);
+      // Retirer la fence du contenu (localisée par MOID, fallback nom)
+      if (inst) this.removeFenceForInstance('ARRAY', inst);
+      this.megaOutilInstances = this.megaOutilInstances.filter(i => i.id !== id);
+      this.recomputeRanges();
+      this.syncDocSectionsTextFromContent();
+      this.scheduleSave();
+      this.recomputeAll();
       this.megaOutilDeleted.emit(id);
     } catch (e) {
       console.error('[EditorZone] deleteArrayInstance échoué :', e);

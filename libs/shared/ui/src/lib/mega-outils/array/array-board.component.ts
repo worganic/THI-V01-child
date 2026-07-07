@@ -43,6 +43,11 @@ import { MegaOutilsService, ProjetCollabService, ArrayCell, ArrayGrid, ArrayCell
         <button type="button" class="array-board__clean-edit-btn" title="Afficher en mode éditable" (click)="viewMode.set('grid')">
           <span class="material-symbols-outlined" style="font-size:14px">edit</span>
         </button>
+        @if (deletable && !readonly) {
+          <button type="button" class="array-board__clean-del-btn" title="Supprimer ce tableau" (click)="deleteBoard.emit(instanceId)">
+            <span class="material-symbols-outlined" style="font-size:14px">delete</span>
+          </button>
+        }
       }
       @if (grid()!.cells.length > 0) {
         <table class="array-board__table--clean">
@@ -262,6 +267,9 @@ import { MegaOutilsService, ProjetCollabService, ArrayCell, ArrayGrid, ArrayCell
 .array-board__clean-edit-btn { position: absolute; top: 6px; right: 6px; background: rgba(30,30,46,.85); border: 1px solid rgba(255,255,255,.12); border-radius: 4px; cursor: pointer; color: rgba(255,255,255,.35); padding: 3px 5px; display: flex; align-items: center; opacity: 0.55; transition: opacity .15s ease; z-index: 1; }
 .array-board__clean-wrap:hover .array-board__clean-edit-btn { opacity: 1; }
 .array-board__clean-edit-btn:hover { color: #a3e635; border-color: #a3e635; }
+.array-board__clean-del-btn { position: absolute; top: 6px; right: 34px; background: rgba(30,30,46,.85); border: 1px solid rgba(255,255,255,.12); border-radius: 4px; cursor: pointer; color: rgba(255,255,255,.35); padding: 3px 5px; display: flex; align-items: center; opacity: 0.55; transition: opacity .15s ease; z-index: 1; }
+.array-board__clean-wrap:hover .array-board__clean-del-btn { opacity: 1; }
+.array-board__clean-del-btn:hover { color: #f87171; border-color: #f87171; }
 .array-board__view-toggle { background: transparent; border: none; cursor: pointer; color: rgba(255,255,255,.4); padding: 2px 4px; border-radius: 4px; display: flex; align-items: center; }
 .array-board__view-toggle:hover { color: #a3e635; background: rgba(163,230,53,.1); }
 .array-board__add-row-btn { display: flex; align-items: center; gap: 4px; background: transparent; border: 1px solid rgba(255,255,255,.12); border-radius: 4px; color: rgba(255,255,255,.5); padding: 3px 8px; cursor: pointer; font-size: 11px; }
