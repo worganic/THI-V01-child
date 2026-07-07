@@ -7,7 +7,7 @@
       <p class="text-sm text-light-text-muted dark:text-white/40 mt-0.5">Gérez et éditez vos documents Markdown</p>
     </div>
     <button (click)="openNewModal()"
-            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-light-primary dark:bg-primary text-white font-bold transition-all hover:scale-105 shadow-lg shadow-light-primary/20 dark:shadow-primary/20 text-sm">
+            class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-light-primary dark:bg-primary text-white dark:text-btn-text font-bold transition-all hover:scale-105 shadow-lg shadow-light-primary/20 dark:shadow-primary/20 text-sm">
       <span class="material-symbols-outlined text-base">add_circle</span>
       Nouveau projet
     </button>
@@ -43,7 +43,7 @@
       </div>
       <p class="text-light-text-muted dark:text-white/50 text-sm mb-4">Aucun projet pour l'instant</p>
       <button (click)="openNewModal()"
-              class="flex items-center gap-2 px-4 py-2 rounded-lg bg-light-primary dark:bg-primary text-white font-semibold text-sm transition-all hover:scale-105">
+              class="flex items-center gap-2 px-4 py-2 rounded-lg bg-light-primary dark:bg-primary text-white dark:text-btn-text font-semibold text-sm transition-all hover:scale-105">
         <span class="material-symbols-outlined text-base">add_circle</span>
         Créer mon premier projet
       </button>
@@ -390,7 +390,7 @@
         </button>
         <button (click)="createProject()"
                 [disabled]="!newTitle.trim() || creating()"
-                class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-light-primary/20 dark:shadow-primary/20">
+                class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 shadow-lg shadow-light-primary/20 dark:shadow-primary/20">
           @if (creating()) {
             <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
             Création...

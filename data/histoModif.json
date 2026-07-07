@@ -1,6 +1,34 @@
 {
   "modifications": [
     {
+      "id": "mod-575",
+      "version": "B-0.330",
+      "date": "2026-07-07T00:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail",
+        "projets",
+        "libs"
+      ],
+      "features": "portail:admin-theme,portail:admin-deploiements,portail:admin-tests,portail:outils-actions-ia,projets:accueil",
+      "title": "Contraste texte insuffisant sur les boutons primary en dark mode",
+      "description": "Sur le thème dark actif, --tw-primary est une couleur claire (dorée), donc les boutons utilisant text-white sur bg-primary avaient un contraste insuffisant (règle CLAUDE.md : texte sombre obligatoire sur fond clair). Signalé sur le bouton \"Nouveau projet\" de la page Projets. Recherche sur tout le site des boutons du même style (dark:bg-primary + text-white sans dark:text-btn-text) : 9 autres occurrences trouvées dans des fichiers vivants (hors versions -old-). Fix : ajout de dark:text-btn-text (variable déjà définie en noir dans theme.json) à côté de text-white sur chaque bouton concerné, pour ne changer que le rendu dark mode (le light mode utilise bg-light-primary, une couleur foncée, donc text-white y reste correct).",
+      "files": [
+        "apps/projets/src/app/pages/projets/projets.component.html",
+        "apps/portail/src/app/pages/child/admin-theme/admin-theme.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-deployments/admin-deployments.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-help/admin-help.component.html",
+        "libs/shared/ui/src/lib/tools/wo/wo-actions/wo-actions-widget.component.html",
+        "apps/portail/src/app/tools/wo/wo-actions/wo-actions-widget.component.html"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "corrige la couleur du texte du bouton, il faut plus de contraste entre la couleur de fond et le texte, corrige et verifi sur tous le site qu'il n'y a pas d'autre bouton de ce style pour les corriger [Image]",
+      "startedAt": "2026-07-07T00:00:00.000Z",
+      "completedAt": "2026-07-07T00:20:00.000Z"
+    },
+    {
       "id": "mod-574",
       "version": "B-0.328",
       "date": "2026-07-06T23:15:00.000Z",
