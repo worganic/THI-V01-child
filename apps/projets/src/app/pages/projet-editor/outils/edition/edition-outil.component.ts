@@ -114,7 +114,7 @@ export class EditionOutilComponent {
   @Output() dirtyChange = new EventEmitter<boolean>();
   @Output() saveStarting = new EventEmitter<void>();
   @Output() commentRequest = new EventEmitter<{ folderId: string; folderName: string }>();
-  @Output() sendSelectionToPrompt = new EventEmitter<{ text: string; sectionId: string | null }>();
+  @Output() sendSelectionToPrompt = new EventEmitter<{ text: string; sectionId: string | null; sourceInstanceId?: string }>();
 
   appendSection(folderName: string, level = 1): void {
     this.innerZone?.appendSection(folderName, level);
@@ -179,5 +179,17 @@ export class EditionOutilComponent {
    *  (envoyé via "Envoyer au prompt") par le résultat de l'IA, dans la section d'origine. */
   replaceTextInSection(sectionId: string, originalText: string, newText: string): boolean {
     return this.innerZone?.replaceTextInSection(sectionId, originalText, newText) ?? false;
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier" (par-MegaOutil) — mémorise le MO pour
+   *  un collage au format designé (clic droit → Coller), pas en code brut. */
+  setClipboardMo(mo: MaterializedMoPreview): void {
+    this.innerZone?.setClipboardMo(mo);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Remplacer" (par-MegaOutil) — met à jour
+   *  l'instance d'origine si connue, sinon matérialise ce MO dans la section d'origine. */
+  async replaceMoInSection(sourceInstanceId: string | undefined, sectionId: string, mo: MaterializedMoPreview): Promise<void> {
+    await this.innerZone?.replaceMoInSection(sourceInstanceId, sectionId, mo);
   }
 }

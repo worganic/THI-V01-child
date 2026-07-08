@@ -640,41 +640,60 @@
                                 class="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded hover:bg-light-border dark:hover:bg-white/10 text-light-text-muted dark:text-white/40">
                           <span class="material-symbols-outlined text-[14px]">{{ isMoExpanded(msg, mo) ? 'expand_less' : 'expand_more' }}</span>
                         </button>
-                        @if (mo.materializedSectionId) {
-                          <button type="button" (click)="$event.preventDefault(); navigateToSection(mo.materializedSectionId!)"
-                                  title="Aller à la section où ce MegaOutil a été ajouté"
+                        @if (hasContextReplace(msg)) {
+                          <!-- Résultat d'un "Envoyer au prompt" : Remplacer l'instance d'origine
+                               (ou la matérialiser si inconnue), ou Copier pour coller au format
+                               designé ailleurs (menu contextuel de l'éditeur). -->
+                          <button type="button" (click)="$event.preventDefault(); replaceMoWithResult(msg, mo)"
+                                  title="Remplacer le tableau d'origine par ce résultat"
                                   class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors">
-                            Déjà ajouté
+                            Remplacer
+                          </button>
+                          <button type="button" (click)="$event.preventDefault(); copyMoToClipboard(msg, mo)"
+                                  [title]="isMoCopyFlash(msg, mo) ? 'Copié !' : 'Copier — clic droit dans l\'éditeur (Code ou Édition) puis « Coller »'"
+                                  class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md font-semibold transition-colors"
+                                  [ngClass]="isMoCopyFlash(msg, mo)
+                                    ? 'bg-emerald-500/15 border border-emerald-500/30 text-emerald-400'
+                                    : 'bg-amber-500/15 border border-amber-500/30 text-amber-400 hover:bg-amber-500/25'">
+                            {{ isMoCopyFlash(msg, mo) ? 'Copié !' : 'Copier' }}
                           </button>
                         } @else {
-                          <button type="button" (click)="$event.preventDefault(); materializeSingleMo(msg, moi)"
-                                  title="Ajouter ce MegaOutil au projet"
-                                  class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors">
-                            Ajouter au projet
-                          </button>
-                        }
-                        <div class="relative flex-shrink-0 wo-copy-picker">
-                          <button type="button" (click)="$event.preventDefault(); toggleCopyMoPicker(msg, mo)"
-                                  title="Copier ce MegaOutil vers une section (répétable)"
-                                  class="flex-shrink-0 flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-md bg-sky-500/15 border border-sky-500/30 text-sky-400 font-semibold hover:bg-sky-500/25 transition-colors">
-                            Copier vers
-                            <span class="material-symbols-outlined text-[12px]">expand_more</span>
-                          </button>
-                          @if (isCopyMoPickerOpen(msg, mo)) {
-                            <div class="absolute top-full right-0 z-50 mt-1 min-w-[200px] max-h-64 overflow-y-auto rounded-lg border border-light-border dark:border-white/15 bg-white dark:bg-[#1a1a2e] shadow-xl">
-                              @if (!sectionOptions().length) {
-                                <div class="px-3 py-3 text-xs opacity-40 text-center">Aucune section trouvée</div>
-                              }
-                              @for (sec of sectionOptions(); track sec.id) {
-                                <button type="button" (click)="$event.preventDefault(); selectSectionForMo(msg, mo, sec.id)"
-                                        [style.padding-left.px]="12 + sec.depth * 12"
-                                        class="w-full text-left px-3 py-1.5 text-xs hover:bg-light-surface dark:hover:bg-white/5 transition-colors flex items-center gap-1 text-light-text dark:text-white/70">
-                                  <span class="material-symbols-outlined text-xs opacity-40">folder</span>{{ sec.name }}
-                                </button>
-                              }
-                            </div>
+                          @if (mo.materializedSectionId) {
+                            <button type="button" (click)="$event.preventDefault(); navigateToSection(mo.materializedSectionId!)"
+                                    title="Aller à la section où ce MegaOutil a été ajouté"
+                                    class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-semibold hover:bg-emerald-500/25 transition-colors">
+                              Déjà ajouté
+                            </button>
+                          } @else {
+                            <button type="button" (click)="$event.preventDefault(); materializeSingleMo(msg, moi)"
+                                    title="Ajouter ce MegaOutil au projet"
+                                    class="flex-shrink-0 text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-400 font-semibold hover:bg-amber-500/25 transition-colors">
+                              Ajouter au projet
+                            </button>
                           }
-                        </div>
+                          <div class="relative flex-shrink-0 wo-copy-picker">
+                            <button type="button" (click)="$event.preventDefault(); toggleCopyMoPicker(msg, mo)"
+                                    title="Copier ce MegaOutil vers une section (répétable)"
+                                    class="flex-shrink-0 flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-md bg-sky-500/15 border border-sky-500/30 text-sky-400 font-semibold hover:bg-sky-500/25 transition-colors">
+                              Copier vers
+                              <span class="material-symbols-outlined text-[12px]">expand_more</span>
+                            </button>
+                            @if (isCopyMoPickerOpen(msg, mo)) {
+                              <div class="absolute top-full right-0 z-50 mt-1 min-w-[200px] max-h-64 overflow-y-auto rounded-lg border border-light-border dark:border-white/15 bg-white dark:bg-[#1a1a2e] shadow-xl">
+                                @if (!sectionOptions().length) {
+                                  <div class="px-3 py-3 text-xs opacity-40 text-center">Aucune section trouvée</div>
+                                }
+                                @for (sec of sectionOptions(); track sec.id) {
+                                  <button type="button" (click)="$event.preventDefault(); selectSectionForMo(msg, mo, sec.id)"
+                                          [style.padding-left.px]="12 + sec.depth * 12"
+                                          class="w-full text-left px-3 py-1.5 text-xs hover:bg-light-surface dark:hover:bg-white/5 transition-colors flex items-center gap-1 text-light-text dark:text-white/70">
+                                    <span class="material-symbols-outlined text-xs opacity-40">folder</span>{{ sec.name }}
+                                  </button>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
                       </label>
                       @if (isMoExpanded(msg, mo)) {
                         <div class="ml-6 mr-1.5 mb-1 rounded-md border border-light-border dark:border-white/10 bg-light-bg dark:bg-black/20 p-2 overflow-x-auto">
@@ -772,6 +791,18 @@
         } @else {
           <!-- Message Utilisateur -->
           <div class="flex flex-col items-end gap-1">
+            <!-- Contexte attaché (clic droit "Envoyer au prompt" — texte sélectionné ou tableau
+                 MO Array sérialisé) : reste visible dans l'historique, pas seulement utilisé en
+                 arrière-plan pour l'IA. -->
+            @if (msg.attachedContext) {
+              <div class="max-w-[90%] w-full rounded-lg border border-violet-500/25 bg-violet-500/5 px-3 py-2">
+                <div class="flex items-center gap-1 mb-1">
+                  <span class="material-symbols-outlined text-[11px] text-violet-400/70">format_quote</span>
+                  <span class="text-[9px] font-semibold uppercase tracking-wide text-violet-400/60">Contexte envoyé</span>
+                </div>
+                <pre class="text-[10px] text-light-text-muted dark:text-white/50 whitespace-pre-wrap font-mono max-h-28 overflow-y-auto leading-relaxed">{{ msg.attachedContext }}</pre>
+              </div>
+            }
             <div class="max-w-[90%] rounded-2xl rounded-tr-sm px-4 py-3"
                  [ngClass]="msg.promptInstanceId ? 'bg-amber-500/15 border border-amber-500/30' : 'bg-green-500/20 dark:bg-green-600/20 border border-green-500/30'">
               <p class="text-xs text-light-text dark:text-white/90 leading-relaxed whitespace-pre-wrap">{{ msg.text }}</p>

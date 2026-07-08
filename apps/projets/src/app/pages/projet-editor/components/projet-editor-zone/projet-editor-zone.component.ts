@@ -322,7 +322,10 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // sectionId : section contenant la sélection (résolue au clic droit), pour que le parent
   // active cette section — sans quoi la conversation (liée à activeNodeId) resterait indisponible
   // en "vue assemblée" (aucune section cliquée dans la sidebar, cf. onNodeActive côté parent).
-  @Output() sendSelectionToPrompt = new EventEmitter<{ text: string; sectionId: string | null }>();
+  // sourceInstanceId : présent quand la source est un MO Array ("Envoyer au prompt" du tableau,
+  // pas une sélection de texte) — permet à "Remplacer" de mettre à jour l'instance d'origine
+  // directement (au lieu d'un remplacement de texte brut dans le document).
+  @Output() sendSelectionToPrompt = new EventEmitter<{ text: string; sectionId: string | null; sourceInstanceId?: string }>();
   // F6 — Compteurs de commentaires par folderId (alimentés par le parent)
   @Input() commentCounts: Record<string, number> = {};
 
@@ -610,11 +613,13 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   visuLinkMenu: { x: number; y: number; href: string } | null = null;
   private visuLinkEl: HTMLAnchorElement | null = null;
   // Menu contextuel (clic droit) sur une sélection de texte (Code ou Édition) — "Envoyer au
-  // prompt" (si sélection non vide) et/ou "Coller" (si clipboardText non vide, même sans sélection).
+  // prompt" (si sélection non vide) et/ou "Coller" (si clipboard non vide, même sans sélection).
   selectionCtxMenu: { x: number; y: number; text: string; sectionId: string | null; source: 'code' | 'visu' } | null = null;
   // "Copier" (résultat IA d'un message "Envoyer au prompt") — mémorisé pour pouvoir coller
   // n'importe où (Code ou Édition) via le menu contextuel, indépendamment de "Copier vers...".
-  clipboardText: string | null = null;
+  // Texte simple → collé tel quel au curseur ; MegaOutil → matérialisé au format designé
+  // (nouvelle instance + marqueur, comme "Ajouter au projet") plutôt qu'en code brut.
+  clipboard: { kind: 'text'; value: string } | { kind: 'mo'; value: MaterializedMoPreview } | null = null;
   // Popup stylisé de modification d'URL du lien
   showLinkEditPopup = signal(false);
   linkEditUrl = '';
@@ -9913,7 +9918,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
   onCodeContextMenu(ev: MouseEvent) {
     const ta = ev.target as HTMLTextAreaElement;
     const text = ta.value?.substring(ta.selectionStart ?? 0, ta.selectionEnd ?? 0).trim() || '';
-    if (!text && !this.clipboardText) { this.selectionCtxMenu = null; return; }
+    if (!text && !this.clipboard) { this.selectionCtxMenu = null; return; }
     ev.preventDefault();
     const lineIdx = ta.value.substring(0, ta.selectionStart ?? 0).split('\n').length - 1;
     this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, this.sectionIdAtLine(lineIdx), 'code');
@@ -9927,7 +9932,7 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!secEl) return;
     const sel = window.getSelection();
     const text = (sel && !sel.isCollapsed) ? sel.toString().trim() : '';
-    if (!text && !this.clipboardText) { this.selectionCtxMenu = null; return; }
+    if (!text && !this.clipboard) { this.selectionCtxMenu = null; return; }
     ev.preventDefault();
     this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, secEl.getAttribute('data-section-id'), 'visu');
   }
@@ -9944,21 +9949,42 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.selectionCtxMenu = null;
   }
 
+  /** "Envoyer au prompt" sur un tableau (MO Array, vue propre) — réutilise exactement le même
+   *  circuit que la sélection de texte (le tableau est traité comme du texte simple, déjà
+   *  sérialisé en table markdown par ArrayBoardComponent.toMarkdownTable()). */
+  onArraySendToPrompt(payload: { instanceId: string; text: string }) {
+    const sectionId = this.resolveArrayFolderId(payload.instanceId);
+    this.sendSelectionToPrompt.emit({ text: payload.text, sectionId, sourceInstanceId: payload.instanceId });
+  }
+
   /** "Copier" (bouton de la conversation sur un résultat IA) — mémorise le texte pour un collage
    *  ultérieur via le menu contextuel, n'importe où dans le document (Code ou Édition). */
   setClipboardText(text: string): void {
-    this.clipboardText = text?.trim() || null;
+    const v = text?.trim();
+    this.clipboard = v ? { kind: 'text', value: v } : null;
   }
 
-  // "Coller" (menu contextuel) : insère le texte mémorisé au point de clic droit — remplace la
-  // sélection éventuelle, sinon insère au curseur (comportement standard d'un collage).
+  /** "Copier" (par-MegaOutil, bouton de la conversation) — mémorise le MO pour un collage au
+   *  format designé (nouvelle instance + marqueur), pas en code brut. */
+  setClipboardMo(mo: MaterializedMoPreview): void {
+    this.clipboard = { kind: 'mo', value: mo };
+  }
+
+  // "Coller" (menu contextuel) : texte simple → inséré au point de clic droit (remplace la
+  // sélection éventuelle, sinon insère au curseur) ; MegaOutil → matérialisé au format designé
+  // dans la section du point de clic (même mécanisme que "Ajouter au projet").
   pasteClipboardClick() {
     const menu = this.selectionCtxMenu;
-    const text = this.clipboardText;
+    const clip = this.clipboard;
     this.selectionCtxMenu = null;
-    if (!menu || !text) return;
-    if (menu.source === 'code') this.pasteTextIntoCode(text);
-    else this.pasteTextIntoVisu(text);
+    if (!menu || !clip) return;
+    if (clip.kind === 'mo') {
+      if (!menu.sectionId) return;
+      this.materializeMoIntoSection(menu.sectionId, [clip.value]).catch(() => {});
+      return;
+    }
+    if (menu.source === 'code') this.pasteTextIntoCode(clip.value);
+    else this.pasteTextIntoVisu(clip.value);
   }
 
   private pasteTextIntoCode(text: string) {
@@ -10009,6 +10035,29 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     }
     this.scheduleSave();
     return true;
+  }
+
+  /** "Remplacer" (par-MegaOutil, résultat d'un "Envoyer au prompt" sur un tableau) : met à jour
+   *  l'instance d'origine directement (grille remplacée en place, position/marqueur inchangés
+   *  dans le document) quand elle est connue et du même type — sinon matérialise ce MO comme un
+   *  nouveau MegaOutil dans la section d'origine (même comportement que "Ajouter au projet"). */
+  async replaceMoInSection(sourceInstanceId: string | undefined, sectionId: string, mo: MaterializedMoPreview): Promise<void> {
+    if (mo.type === 'array' && sourceInstanceId) {
+      const inst = this.megaOutilInstances.find(i => i.id === sourceInstanceId && i.type === 'array');
+      if (inst) {
+        const base = await this.megaOutilsSvc.getArrayGrid(sourceInstanceId).catch(() => null);
+        if (base) {
+          const body = sharedFenceBody(mo.fence);
+          const partial = this.deserializeArrayGrid(body, base);
+          if (partial) {
+            await this.megaOutilsSvc.updateArrayGrid(sourceInstanceId, { ...base, ...partial } as ArrayGrid).catch(() => {});
+            this.recomputeAll();
+            return;
+          }
+        }
+      }
+    }
+    await this.materializeMoIntoSection(sectionId, [mo]);
   }
 
   // Crée un lien sur la sélection

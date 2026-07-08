@@ -1003,7 +1003,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
    *  Active aussi la section contenant la sélection : sans quoi la conversation (liée à
    *  activeNodeId) resterait indisponible en "vue assemblée" (aucune section cliquée dans la
    *  sidebar — cf. onNodeActive() qui ne touche jamais activeNodeId depuis la zone d'édition). */
-  onSendSelectionToPrompt(payload: { text: string; sectionId: string | null }) {
+  onSendSelectionToPrompt(payload: { text: string; sectionId: string | null; sourceInstanceId?: string }) {
     if (payload.sectionId && payload.sectionId !== this.activeNodeId()) {
       this.activeNodeId.set(payload.sectionId);
       this.highlightNodeId.set(payload.sectionId);
@@ -1012,7 +1012,19 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
     }
     this.zone5Tab.set('conversation');
     this.zone5Collapsed.set(false);
-    setTimeout(() => this.conversationPanel?.attachContextText(payload.text), 0);
+    setTimeout(() => this.conversationPanel?.attachContextText(payload.text, payload.sourceInstanceId), 0);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier" (par-MegaOutil) — mémorise le MO pour
+   *  un collage au format designé (clic droit → Coller) plutôt qu'en code brut. */
+  onSetEditorClipboardMo(mo: MaterializedMoPreview) {
+    this.editionOutil?.setClipboardMo(mo);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Remplacer" (par-MegaOutil) — met à jour
+   *  l'instance d'origine si connue, sinon matérialise ce MO dans la section d'origine. */
+  onReplaceMoInSection(payload: { sourceInstanceId?: string; sectionId: string; mo: MaterializedMoPreview }) {
+    this.editionOutil?.replaceMoInSection(payload.sourceInstanceId, payload.sectionId, payload.mo);
   }
 
   /** Relayé depuis ProjetConversationComponent : clic sur "Déjà ajouté" d'un MO matérialisé —

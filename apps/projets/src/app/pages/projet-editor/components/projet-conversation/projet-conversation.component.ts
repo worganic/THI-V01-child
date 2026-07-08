@@ -88,6 +88,10 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   /** "Copier" sur un résultat de "Envoyer au prompt" — mémorise le texte pour un collage ultérieur
    *  n'importe où dans l'éditeur (clic droit → Coller), au lieu de cibler une section précise. */
   @Output() setEditorClipboardRequested = new EventEmitter<string>();
+  /** "Remplacer" (par-MegaOutil) sur un MO détecté dans un résultat "Envoyer au prompt". */
+  @Output() replaceMoInSectionRequested = new EventEmitter<{ sourceInstanceId?: string; sectionId: string; mo: MaterializedMoPreview }>();
+  /** "Copier" (par-MegaOutil) — mémorise le MO pour un collage au format designé (pas de code brut). */
+  @Output() setEditorClipboardMoRequested = new EventEmitter<MaterializedMoPreview>();
   /** Clic sur "Déjà ajouté" d'un MO matérialisé : demande au parent de naviguer vers la section
    *  résultat correspondante (même mécanisme que la navigation depuis la liste des Trello/Mockup). */
   @Output() navigateToSectionRequested = new EventEmitter<string>();
@@ -126,6 +130,11 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   // Texte sélectionné dans le document (clic droit "Envoyer au prompt", Code ou Édition) —
   // affiché en chip au-dessus de la saisie, retiré du composeur, envoyé à l'IA pour information.
   pendingContext = signal<string | null>(null);
+  // Instance d'origine si le contexte attaché vient d'un MO Array ("Envoyer au prompt" du
+  // tableau) plutôt que d'une sélection de texte — permet à "Remplacer" de mettre à jour
+  // l'instance directement. Reconstruit à chaque nouvel attachement, non persisté ici (persisté
+  // dans Message.contextReplace.sourceInstanceId une fois le message envoyé).
+  private pendingContextSourceInstanceId: string | null = null;
   // Génération en cours pour un message envoyé avec un contexte attaché (sendContextChat) —
   // simple réponse de chat, ne modifie jamais le fichier (contrairement au Mode IA classique).
   contextChatSending = signal(false);
@@ -206,15 +215,17 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   /** Appelé par le parent (clic droit "Envoyer au prompt" dans l'éditeur, Code ou Édition) :
    *  colle le texte sélectionné dans la zone de conversation (chip au-dessus de la saisie) et
    *  active le mode IA — l'utilisateur n'a plus qu'à décrire sa demande et envoyer. */
-  attachContextText(text: string) {
+  attachContextText(text: string, sourceInstanceId?: string) {
     const trimmed = text.trim();
     if (!trimmed) return;
     this.pendingContext.set(trimmed);
+    this.pendingContextSourceInstanceId = sourceInstanceId ?? null;
     this.iaMode.set(true);
   }
 
   clearPendingContext() {
     this.pendingContext.set(null);
+    this.pendingContextSourceInstanceId = null;
   }
 
   ngOnInit() {
@@ -482,17 +493,25 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
       finalPrompt = `[Historique de la conversation]\n${historyLines}\n\n[Demande actuelle]\n${prompt}`;
     }
     const selectedContext = this.pendingContext();
+    const sourceInstanceId = this.pendingContextSourceInstanceId;
     if (selectedContext) {
       finalPrompt = `[Texte sélectionné par l'utilisateur dans le document]\n${selectedContext}\n\n[Demande]\n${finalPrompt}`;
     }
     this.pendingContext.set(null);
+    this.pendingContextSourceInstanceId = null;
     this.inputMessage = '';
 
     const userMsg: Message = {
-      user: 'Moi', userId: 'local', text: `@ia ${prompt}`, timestamp: new Date().toISOString(), role: 'user'
+      user: 'Moi', userId: 'local', text: `@ia ${prompt}`, timestamp: new Date().toISOString(), role: 'user',
+      ...(selectedContext ? { attachedContext: selectedContext } : {}),
     };
     this.messages = [...this.messages, userMsg];
-    this.convService.sendMessage(this.sectionId!, userMsg.text).subscribe();
+    // appendMessage (et non sendMessage) : nécessaire pour persister attachedContext, qui doit
+    // rester visible dans l'historique de la conversation même après rechargement.
+    this.convService.appendMessage(this.sectionId!, {
+      text: userMsg.text, role: 'user',
+      ...(userMsg.attachedContext ? { attachedContext: userMsg.attachedContext } : {}),
+    }).subscribe();
 
     const promptCtx: PromptContext = {
       sectionName: fileInfo.fileName, sectionContent: fileInfo.content, subSectionsContent, fullDocumentContent,
@@ -500,7 +519,7 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     };
     const aiMsg: Message = {
       user: 'IA', userId: 'ai', text: '', timestamp: new Date().toISOString(), role: 'ai', promptContext: promptCtx,
-      ...(selectedContext ? { contextReplace: { originalText: selectedContext, sectionId: this.sectionId! } } : {}),
+      ...(selectedContext ? { contextReplace: { originalText: selectedContext, sectionId: this.sectionId!, ...(sourceInstanceId ? { sourceInstanceId } : {}) } } : {}),
     };
     this.messages = [...this.messages, aiMsg];
     this.shouldScroll = true;
@@ -1224,6 +1243,29 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     this.copiedFlashKey.set(msg.timestamp);
     if (this.copiedFlashTimer) clearTimeout(this.copiedFlashTimer);
     this.copiedFlashTimer = setTimeout(() => this.copiedFlashKey.set(null), 1500);
+  }
+
+  /** "Remplacer" (par-MegaOutil) sur un MO détecté dans un résultat "Envoyer au prompt" — met à
+   *  jour l'instance d'origine (tableau source) si connue, sinon matérialise ce MO dans la section. */
+  replaceMoWithResult(msg: Message, mo: MaterializedMoPreview) {
+    const info = msg.contextReplace;
+    if (!info) return;
+    this.replaceMoInSectionRequested.emit({ sourceInstanceId: info.sourceInstanceId, sectionId: info.sectionId, mo });
+  }
+
+  /** "Copier" (par-MegaOutil) — mémorise ce MO pour un collage au format designé (nouvelle
+   *  instance + marqueur, comme "Ajouter au projet"), pas en code brut. */
+  copyMoToClipboard(msg: Message, mo: MaterializedMoPreview) {
+    this.setEditorClipboardMoRequested.emit(mo);
+    const key = this.moKey(msg, mo);
+    this.copiedFlashKey.set(key);
+    if (this.copiedFlashTimer) clearTimeout(this.copiedFlashTimer);
+    this.copiedFlashTimer = setTimeout(() => this.copiedFlashKey.set(null), 1500);
+  }
+
+  /** Retour visuel bref ("Copié !") sur le bouton "Copier" d'un MegaOutil précis. */
+  isMoCopyFlash(msg: Message, mo: MaterializedMoPreview): boolean {
+    return this.copiedFlashKey() === this.moKey(msg, mo);
   }
 
   /** "Copier vers..." un MegaOutil détecté vers une section choisie — indépendant du bouton

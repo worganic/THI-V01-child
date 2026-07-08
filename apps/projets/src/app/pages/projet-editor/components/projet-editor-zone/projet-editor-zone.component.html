@@ -1665,7 +1665,8 @@ Votre texte de prompt ici.
                 [readonly]="isArrayInstanceLocked(aid)"
                 [defaultCleanView]="true"
                 (deleteBoard)="deleteArrayInstance($event)"
-                (gridChanged)="onArrayGridChanged(aid, $event)" />
+                (gridChanged)="onArrayGridChanged(aid, $event)"
+                (sendToPrompt)="onArraySendToPrompt($event)" />
             </div>
           }
 
@@ -1909,7 +1910,8 @@ Votre texte de prompt ici.
                       [readonly]="isArrayInstanceLocked(board.inst!.id)"
                       [defaultCleanView]="true"
                       (deleteBoard)="deleteArrayInstance($event)"
-                      (gridChanged)="onArrayGridChanged(board.inst!.id, $event)" />
+                      (gridChanged)="onArrayGridChanged(board.inst!.id, $event)"
+                      (sendToPrompt)="onArraySendToPrompt($event)" />
                   </div>
                 } @else if (board.type === 'prompt') {
                   <div class="visu-trello-board-wrap visu-trello-board-wrap--auto">
@@ -2074,7 +2076,8 @@ Votre texte de prompt ici.
                     [deletable]="!isArrayInstanceLocked(aid)"
                     [readonly]="isArrayInstanceLocked(aid)"
                     (deleteBoard)="deleteArrayInstance($event)"
-                    (gridChanged)="onArrayGridChanged(aid, $event)" />
+                    (gridChanged)="onArrayGridChanged(aid, $event)"
+                    (sendToPrompt)="onArraySendToPrompt($event)" />
                 }
               </div>
             }
@@ -2332,7 +2335,7 @@ Votre texte de prompt ici.
           <span class="material-symbols-outlined">forum</span> Envoyer au prompt
         </button>
       }
-      @if (clipboardText) {
+      @if (clipboard) {
         <button type="button" (mousedown)="$event.preventDefault(); pasteClipboardClick()">
           <span class="material-symbols-outlined">content_paste</span> Coller
         </button>

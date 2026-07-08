@@ -14873,6 +14873,67 @@
       "prompt": "Cela fonctionne bien lorsqu'on a fait le prompt direct mais lorsqu'on change de section et qu'on revient dessus on a de nouveau les anciens boutons, je ne veux que les nouveaux boutons \"copier\" et \"remplacer\"",
       "startedAt": "2026-07-08T20:18:14.695Z",
       "completedAt": "2026-07-08T20:18:14.695Z"
+    },
+    {
+      "id": "mod-582",
+      "version": "B-0.334",
+      "date": "2026-07-08T20:37:50.349Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets",
+        "libs",
+        "server"
+      ],
+      "features": "projets:zone5-conversation,libs:array-board",
+      "title": "Envoyer un tableau (MO Array) au prompt + contexte visible dans la conversation",
+      "description": "1) Ajout d'un bouton \"Envoyer au prompt\" (icone bulle) sur ArrayBoardComponent en vue propre (defaultCleanView), a cote des boutons existants Supprimer/Afficher en mode editable. sendToPromptClick() serialise le tableau entier en table markdown via toMarkdownTable() (methode d'export deja existante dans le composant, non utilisee jusqu'ici) et emet un nouvel Output sendToPrompt : { instanceId, text }. ProjetEditorZoneComponent.onArraySendToPrompt() resout la section contenant l'instance (resolveArrayFolderId(), deja utilise pour la resynchronisation folder_id) et relaie via le circuit EXISTANT sendSelectionToPrompt (mod-578) -- le tableau est traite exactement comme du texte simple selectionne, aucune duplication de logique cote conversation/IA. Bouton cable sur les 3 points d'usage de <app-array-board> dans projet-editor-zone (apercu Code, inline Edition, panneau Code) ; il n'est visible que la ou defaultCleanView est actif (2 des 3).\n2) Le contenu attache (texte OU tableau) est desormais aussi conserve avec le MESSAGE UTILISATEUR lui-meme, pas seulement utilise en arriere-plan pour construire le prompt envoye a l'IA : nouveau champ attachedContext sur Message (conversation.service.ts), persiste via appendMessage() (au lieu de sendMessage() qui ne supporte pas de champs additionnels) et accepte cote serveur (server/server-data.js, allowlist du endpoint POST /api/conversations/:sectionId etendue). Affiche dans un encart dedie (bordure violette, police mono, defilement si long) au-dessus de la bulle du message utilisateur -- reste visible apres rechargement de l'historique.\nVerifie en navigateur : bouton visible au survol du tableau (vue propre), clic -> section activee, table markdown collee en chip, mode IA active ; envoi d'une question sur le tableau -> l'IA repond correctement en se basant sur son contenu (compte des lignes verifie) ; l'encart \"Contexte envoye\" affiche la table markdown complete au-dessus du message utilisateur dans la conversation.",
+      "files": [
+        "libs/shared/ui/src/lib/mega-outils/array/array-board.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "libs/portail-core/data-access/src/lib/conversation.service.ts",
+        "server/server-data.js",
+        "tests/fonctions/connecte/projets/editor/array-outil/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "j'ai besoin de pouvoir selectionner un tableau (MO array) pour pouvoir l'envoyer dans un prompt comme on peut le faire avec du texte. A cote des boutons Supprimer et Afficher en mode Editable ajoute un bouton \"Envoyer au prompt\" et met en place la fonction pour l'ajouter comme du texte simple. Ajoute aussi dans la conversation le texte recupere (texte ou array)",
+      "startedAt": "2026-07-08T20:37:50.349Z",
+      "completedAt": "2026-07-08T20:37:50.349Z"
+    },
+    {
+      "id": "mod-583",
+      "version": "B-0.335",
+      "date": "2026-07-08T21:15:19.862Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:zone5-conversation,projets:array-outil",
+      "title": "MegaOutil detecte : boutons Remplacer/Copier + collage au format designe",
+      "description": "Sur la carte 'MegaOutils detectes' d'un message resultant de 'Envoyer au prompt' (hasContextReplace true), les boutons 'Deja ajoute'/'Ajouter au projet' et 'Copier vers...' sont remplaces par 'Remplacer' et 'Copier', symetrique du traitement deja applique au texte du message (mod-580). 'Remplacer' (ProjetEditorZoneComponent.replaceMoInSection) met a jour l'instance ARRAY D'ORIGINE EN PLACE (getArrayGrid + deserializeArrayGrid + updateArrayGrid, meme fusion que le reste du composant) quand sourceInstanceId est connu -- aucune nouvelle instance, aucun marqueur duplique, le widget affiche a la meme position se rafraichit avec les nouvelles valeurs ; sinon (type non pris en charge ou origine inconnue) bascule sur materializeMoIntoSection (comportement de 'Ajouter au projet'). Pour tracer sourceInstanceId, le payload du bouton 'Envoyer au prompt' du tableau (mod-582) est etendu de bout en bout (sendSelectionToPrompt -> attachContextText -> Message.contextReplace.sourceInstanceId, persiste cote serveur). 'Copier' memorise le MO dans un nouveau clipboard unifie texte/MO sur ProjetEditorZoneComponent (clipboard: {kind:'text'|'mo', value}, remplace l'ancien champ clipboardText string) ; le menu contextuel (clic droit, meme sans selection) affiche 'Coller' des que ce clipboard est non vide, et pasteClipboardClick() route vers materializeMoIntoSection() pour un MO (jamais d'insertion de fence brute) ou vers l'insertion texte existante sinon. Corrige au passage un incident de build : le serveur de dev (nx serve projets) avait cesse de recompiler ce fichier apres une succession d'edits rapproches (HMR bloque, aucune erreur visible) ; diagnostique via l'API DevTools Angular (window.ng.getComponent) qui montrait les nouvelles methodes absentes du composant charge malgre un code source correct et un `nx build` propre ; resolu en redemarrant le process nx serve projets (PID identifie via Get-CimInstance Win32_Process, le launcher ne l'a pas redemarre automatiquement -- relance manuelle necessaire).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "libs/portail-core/data-access/src/lib/conversation.service.ts",
+        "tests/fonctions/connecte/projets/editor/array-outil/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "De la meme facon que par les textes remplace les boutons Deja ajoute et Copier vers par les 2 boutons Remplacer et Copier, par contre lorsqu'on copie un MO array ou un autre MO il faut le coller dans la zone Edition au format (design) du MO et pas juste le code brut",
+      "startedAt": "2026-07-08T21:15:19.862Z",
+      "completedAt": "2026-07-08T21:15:19.862Z"
     }
   ]
 }

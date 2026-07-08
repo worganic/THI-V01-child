@@ -41,7 +41,11 @@ export interface Message {
   /** Message IA résultant d'un "Envoyer au prompt" (clic droit sur une sélection, sendContextChat) :
    *  texte original + section d'où il vient, pour permettre le bouton "Remplacer". Persisté pour
    *  que ces boutons ("Remplacer"/"Copier") survivent au rechargement de l'historique. */
-  contextReplace?: { originalText: string; sectionId: string };
+  contextReplace?: { originalText: string; sectionId: string; sourceInstanceId?: string };
+  /** Message utilisateur envoyé via "Envoyer au prompt" (sélection de texte OU tableau MO Array,
+   *  sérialisé en markdown) : le contenu attaché, affiché avec le message pour rester visible
+   *  dans l'historique de la conversation (pas seulement utilisé en arrière-plan pour l'IA). */
+  attachedContext?: string;
 }
 
 export interface Conversation {
