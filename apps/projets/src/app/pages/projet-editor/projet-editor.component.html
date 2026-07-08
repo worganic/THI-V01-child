@@ -295,6 +295,9 @@
                 (conversationAdded)="sidebar.loadConversations()"
                 (materializeRequested)="onMaterializeRequested($event)"
                 (copyToEditionRequested)="onCopyToEditionRequested($event)"
+                (copyDirectlyToActiveSectionRequested)="onCopyDirectlyToActiveSection($event)"
+                (setEditorClipboardRequested)="onSetEditorClipboard($event)"
+                (replaceInSectionRequested)="onReplaceInSection($event)"
                 (navigateToSectionRequested)="onNavigateToSection($event)" />
             }
             @if (zone5Tab() === 'history') {
@@ -317,6 +320,13 @@
       <div class="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 px-4 py-2.5 rounded-lg bg-red-950/95 border border-red-500/40 text-red-300 text-sm flex items-center gap-2 shadow-xl whitespace-nowrap">
         <span class="material-symbols-outlined text-[16px] flex-shrink-0">move_item</span>
         {{ dragDropError() }}
+      </div>
+    }
+
+    @if (replaceError()) {
+      <div class="absolute bottom-14 left-1/2 -translate-x-1/2 z-30 px-4 py-2.5 rounded-lg bg-red-950/95 border border-red-500/40 text-red-300 text-sm flex items-center gap-2 shadow-xl whitespace-nowrap">
+        <span class="material-symbols-outlined text-[16px] flex-shrink-0">find_replace</span>
+        {{ replaceError() }}
       </div>
     }
 

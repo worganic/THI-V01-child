@@ -81,6 +81,13 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   }>();
   /** "Copier vers l'édition" sur un message IA d'une conversation Prompt — relayé par le parent. */
   @Output() copyToEditionRequested = new EventEmitter<{ text: string; sectionId: string }>();
+  /** "Copier ici" (section active, sans popup de prévisualisation) sur un message IA — relayé par le parent. */
+  @Output() copyDirectlyToActiveSectionRequested = new EventEmitter<{ text: string; sectionId: string }>();
+  /** "Remplacer" sur un résultat de "Envoyer au prompt" — remplace le texte original par ce résultat. */
+  @Output() replaceInSectionRequested = new EventEmitter<{ originalText: string; newText: string; sectionId: string }>();
+  /** "Copier" sur un résultat de "Envoyer au prompt" — mémorise le texte pour un collage ultérieur
+   *  n'importe où dans l'éditeur (clic droit → Coller), au lieu de cibler une section précise. */
+  @Output() setEditorClipboardRequested = new EventEmitter<string>();
   /** Clic sur "Déjà ajouté" d'un MO matérialisé : demande au parent de naviguer vers la section
    *  résultat correspondante (même mécanisme que la navigation depuis la liste des Trello/Mockup). */
   @Output() navigateToSectionRequested = new EventEmitter<string>();
@@ -119,6 +126,9 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   // Texte sélectionné dans le document (clic droit "Envoyer au prompt", Code ou Édition) —
   // affiché en chip au-dessus de la saisie, retiré du composeur, envoyé à l'IA pour information.
   pendingContext = signal<string | null>(null);
+  // Génération en cours pour un message envoyé avec un contexte attaché (sendContextChat) —
+  // simple réponse de chat, ne modifie jamais le fichier (contrairement au Mode IA classique).
+  contextChatSending = signal(false);
   // Popup prompt complet (par message IA — session courante avec promptContext)
   showPromptInfo = signal(false);
   selectedPromptContext = signal<PromptContext | null>(null);
@@ -179,9 +189,9 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     return this.iaMode() || this.inputMessage.trimStart().toLowerCase().startsWith('@ia ');
   }
 
-  /** Vrai si une génération est en cours (Mode IA fichier OU conversation Prompt) — désactive la saisie. */
+  /** Vrai si une génération est en cours (Mode IA fichier, conversation Prompt, ou chat de contexte) — désactive la saisie. */
   get isBusy(): boolean {
-    return this.aiEditService.isStreaming() || this.promptSending();
+    return this.aiEditService.isStreaming() || this.promptSending() || this.contextChatSending();
   }
 
   toggleIaMode() {
@@ -392,7 +402,12 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     if (this.activePromptLaunch && !this.iaMode()) {
       this.continuePromptConversation();
     } else if (this.isAiMessage) {
-      this.sendAiEdit();
+      // Message envoyé avec un contexte attaché (clic droit "Envoyer au prompt") : simple
+      // réponse de chat (execSvc.executeOnce), jamais une proposition de remplacement du
+      // fichier — sinon la moindre question ("traduis ceci") ouvrait directement la bannière
+      // "Modification IA proposée" en proposant de remplacer toute la section active.
+      if (this.pendingContext()) this.sendContextChat();
+      else this.sendAiEdit();
     } else {
       this.sendChat();
     }
@@ -419,6 +434,101 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
       },
       error: () => { this.inputMessage = text; }
     });
+  }
+
+  /** Envoi d'un message avec contexte attaché (clic droit "Envoyer au prompt") : réponse de
+   *  chat simple via execSvc.executeOnce (exécution "one-shot" indépendante du flux streamé
+   *  partagé par la conversation Prompt — n'interfère pas avec activePromptLaunch) — contrairement
+   *  à sendAiEdit(), ne touche jamais aiEditService/le fichier de la section (pas de bannière
+   *  "Modification IA proposée" ni de remplacement automatique). Le résultat s'affiche comme un
+   *  message IA normal, avec les boutons "Copier ici"/"Copier vers..." pour l'insérer si voulu. */
+  private sendContextChat() {
+    if (this.contextChatSending()) return;
+    const raw = this.inputMessage.trimStart();
+    const prompt = raw.toLowerCase().startsWith('@ia ')
+      ? raw.slice(raw.toLowerCase().indexOf('@ia ') + 4).trim()
+      : raw.trim();
+    if (!prompt) return;
+
+    const fileInfo = this.findContenFile(this.sectionId!, this.files);
+    if (!fileInfo) {
+      this.addSystemMessage('⚠️ Impossible de trouver le fichier contenu.md pour cette section.');
+      return;
+    }
+    const provider = this.configService.cliConfig().headerSelection?.provider || 'claude';
+    const model = this.activeModel();
+
+    let subSectionsContent: string | null = null;
+    let fullDocumentContent: string | null = null;
+    let systemInstructions: string | null;
+    if (this.includeFullDocument()) {
+      fullDocumentContent = this.collectAllSectionsContent(this.files);
+      systemInstructions = this.buildSystemInstructions(null, fullDocumentContent, fileInfo.fileName);
+    } else {
+      subSectionsContent = this.collectSubSectionsContent(this.sectionId!, this.files);
+      systemInstructions = this.buildSystemInstructions(subSectionsContent);
+      // Contrairement à sendAiEdit() (qui envoie fileInfo.content séparément comme "fileContent"
+      // à /execute-file-prompt), ici il n'y a pas de fichier édité : le contenu de la section
+      // active doit être ajouté explicitement au system prompt pour que l'IA le voie.
+      const activeBlock = `[Section active — "${fileInfo.fileName}"]\n${fileInfo.content || '(vide)'}`;
+      systemInstructions = [activeBlock, systemInstructions].filter(Boolean).join('\n\n---\n\n');
+    }
+
+    let finalPrompt = prompt;
+    if (this.includeHistory() && this.messages.length > 0) {
+      const historyLines = this.messages
+        .map(m => `${m.role === 'ai' ? 'IA' : m.user}: ${m.text.slice(0, 500)}`)
+        .join('\n');
+      finalPrompt = `[Historique de la conversation]\n${historyLines}\n\n[Demande actuelle]\n${prompt}`;
+    }
+    const selectedContext = this.pendingContext();
+    if (selectedContext) {
+      finalPrompt = `[Texte sélectionné par l'utilisateur dans le document]\n${selectedContext}\n\n[Demande]\n${finalPrompt}`;
+    }
+    this.pendingContext.set(null);
+    this.inputMessage = '';
+
+    const userMsg: Message = {
+      user: 'Moi', userId: 'local', text: `@ia ${prompt}`, timestamp: new Date().toISOString(), role: 'user'
+    };
+    this.messages = [...this.messages, userMsg];
+    this.convService.sendMessage(this.sectionId!, userMsg.text).subscribe();
+
+    const promptCtx: PromptContext = {
+      sectionName: fileInfo.fileName, sectionContent: fileInfo.content, subSectionsContent, fullDocumentContent,
+      globalInstruction: this.globalIaInstruction(), projectInstruction: this.iaInstructions, userPrompt: prompt, model
+    };
+    const aiMsg: Message = {
+      user: 'IA', userId: 'ai', text: '', timestamp: new Date().toISOString(), role: 'ai', promptContext: promptCtx,
+      ...(selectedContext ? { contextReplace: { originalText: selectedContext, sectionId: this.sectionId! } } : {}),
+    };
+    this.messages = [...this.messages, aiMsg];
+    this.shouldScroll = true;
+    this.contextChatSending.set(true);
+
+    this.execSvc.executeOnce(systemInstructions, finalPrompt, provider, model)
+      .then(full => {
+        const mos = full ? detectMoFences(full) : [];
+        const updated = [...this.messages];
+        const last = updated[updated.length - 1];
+        if (last?.role === 'ai') updated[updated.length - 1] = { ...last, text: full, ...(mos.length ? { mos } : {}) };
+        this.messages = updated;
+        this.shouldScroll = true;
+        if (full && this.sectionId) {
+          this.convService.appendMessage(this.sectionId, {
+            text: full, role: 'ai', mos: mos.length ? mos : undefined,
+            ...(aiMsg.contextReplace ? { contextReplace: aiMsg.contextReplace } : {}),
+          }).subscribe();
+          this.conversationAdded.emit(this.sectionId);
+        }
+      })
+      .catch(err => {
+        const updated = [...this.messages];
+        const last = updated[updated.length - 1];
+        if (last?.role === 'ai') updated[updated.length - 1] = { ...last, text: `⚠️ Erreur : ${err?.message || err}` };
+        this.messages = updated;
+      })
+      .finally(() => this.contextChatSending.set(false));
   }
 
   private sendAiEdit(messageOverride?: string) {
@@ -1079,6 +1189,41 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   selectSectionForText(msg: Message, sectionId: string) {
     this.showSectionPickerFor.set(null);
     this.copyMessageToSection(msg, sectionId);
+  }
+
+  /** "Copier ici" — insère directement le texte du message dans la section active (celle de
+   *  cette conversation), sans popup de prévisualisation, contrairement à "Copier vers...". */
+  copyMessageToActiveSection(msg: Message) {
+    if (!msg.text.trim() || !this.sectionId) return;
+    this.copyDirectlyToActiveSectionRequested.emit({ text: msg.text, sectionId: this.sectionId });
+  }
+
+  /** Vrai si ce message est le résultat d'un "Envoyer au prompt" (texte original connu, persisté
+   *  avec le message) — dans ce cas les boutons "Remplacer"/"Copier" remplacent "Copier ici"/"Copier vers...". */
+  hasContextReplace(msg: Message): boolean {
+    return !!msg.contextReplace;
+  }
+
+  /** "Remplacer" — remplace le texte original (celui envoyé via "Envoyer au prompt") par le
+   *  résultat de l'IA, dans sa section d'origine. */
+  replaceOriginalWithResult(msg: Message) {
+    const info = msg.contextReplace;
+    if (!info || !msg.text.trim()) return;
+    this.replaceInSectionRequested.emit({ originalText: info.originalText, newText: msg.text, sectionId: info.sectionId });
+  }
+
+  // Retour visuel bref ("Copié !") après clic sur "Copier" — clé = timestamp du message.
+  copiedFlashKey = signal<string | null>(null);
+  private copiedFlashTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** "Copier" — mémorise le texte du résultat pour un collage ultérieur n'importe où dans
+   *  l'éditeur (clic droit → Coller), sans cibler une section précise. */
+  copyResultToClipboard(msg: Message) {
+    if (!msg.text.trim()) return;
+    this.setEditorClipboardRequested.emit(msg.text);
+    this.copiedFlashKey.set(msg.timestamp);
+    if (this.copiedFlashTimer) clearTimeout(this.copiedFlashTimer);
+    this.copiedFlashTimer = setTimeout(() => this.copiedFlashKey.set(null), 1500);
   }
 
   /** "Copier vers..." un MegaOutil détecté vers une section choisie — indépendant du bouton

@@ -14791,6 +14791,88 @@
       "prompt": "Dans le menu projet Edition, je voudrais pouvoir selectionner du texte dans le mode Edition ou Mode Code et pouvoir avoir un menu avec le clic droit. Dans ce menu on pourra \"Envoyer au prompt\". Cette action copîera le texte et le collera dans la zone de conversation au dessus de la saisie cela declenchera aussi le mode IA, lorsque l'utilisateur remplira la zone de saisie et enverra son prompt cela enverra aussi le texte copié pour information pour l'IA.",
       "startedAt": "2026-07-08T16:58:09.772Z",
       "completedAt": "2026-07-08T16:58:09.772Z"
+    },
+    {
+      "id": "mod-579",
+      "version": "B-0.333",
+      "date": "2026-07-08T19:44:26.199Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:zone5-conversation,projets:editor|zone-preview",
+      "title": "Envoyer au prompt : reponse en chat simple (plus de diff auto) + bouton \"Copier ici\"",
+      "description": "Corrige le comportement de la conversation quand un message est envoye avec un contexte attache (clic droit \"Envoyer au prompt\", mod-578) : jusqu'ici, comme le mode IA etait force actif, l'envoi passait par sendAiEdit() qui propose TOUJOURS un remplacement complet du contenu de la section active (banniere violette \"Modification IA proposee - verifiez avant d'accepter\", Accepter/Annuler) - inadapte pour une simple question/transformation sur un extrait selectionne (ex. traduire une phrase), qui ne doit pas proposer de remplacer toute la section. Ajout d'une nouvelle methode sendContextChat() (ProjetConversationComponent) utilisee uniquement quand pendingContext() est defini au moment de l'envoi : construit le meme system prompt contextualise (sous-sections ou document entier + contenu de la section active + historique + texte selectionne) mais l'envoie via AiExecuteService.executeOnce() (execution 'one-shot' independante du flux partage de la conversation Prompt, sans toucher chunk$/done$ partages ni activePromptLaunch) au lieu de ProjetAiEditService.startEdit() - le fichier n'est jamais touche, la reponse s'affiche comme un message IA normal dans la conversation. Ajout d'un bouton \"Copier ici\" (vert, a cote de \"Copier vers...\") sur les messages IA : insere directement le texte du message dans la section active de la conversation, sans popup de previsualisation (insertTextDirectlyIntoSection, nouvelle methode sur ProjetEditorZoneComponent/EditionOutilComponent, reutilise le recalage de niveaux de insertTextIntoEdition mais appelle applyVisuPaste() directement au lieu d'ouvrir pastePreview) ; le bouton existant \"Copier vers...\" (dropdown, choix d'une AUTRE section, popup de previsualisation) reste inchange. Verifie en navigateur : envoi d'une demande de traduction avec contexte attache -> reponse en chat simple, aucune banniere de diff, section active intacte ; clic \"Copier ici\" -> texte insere directement dans la section active (confirme apres re-affichage stable, sans popup) ; \"Copier vers...\" toujours fonctionnel (dropdown ouvert, liste des sections).",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque le resultat du prompt est renvoye, on peux copier le texte dans la section active. je ne veux pas que cela affiche direct la page de conflit pour la copie mais uniquement les boutons de copie. l'affichage de la zone de copie ne doit s'affiche que si le bouton de copie de la zone de conversation pour cela rajoute un bouton pour copie le texte directement dans la zone de selection et laisse le bouton pour copie le texte dans une autre zone.",
+      "startedAt": "2026-07-08T19:44:26.199Z",
+      "completedAt": "2026-07-08T19:44:26.199Z"
+    },
+    {
+      "id": "mod-580",
+      "version": "B-0.334",
+      "date": "2026-07-08T20:03:40.066Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:zone5-conversation,projets:editor|zone-code,projets:editor|zone-preview",
+      "title": "Resultat \"Envoyer au prompt\" : boutons \"Remplacer\"/\"Copier\" + coller n'importe ou",
+      "description": "Sur les messages IA resultant de \"Envoyer au prompt\" (mod-578/579), les boutons \"Copier ici\"/\"Copier vers...\" sont remplaces par deux nouveaux boutons : \"Remplacer\" et \"Copier\". \"Remplacer\" (replaceOriginalWithResult -> ProjetEditorZoneComponent.replaceTextInSection) recherche la premiere occurrence exacte du texte ORIGINAL (celui envoye via le clic droit) dans sa section d'origine et le remplace directement par le resultat de l'IA (recalcule les ranges, resynchronise docSections, sauvegarde) ; si le texte original n'est plus trouve (deja modifie entre-temps), un toast d'erreur s'affiche au lieu d'echouer silencieusement. \"Copier\" (copyResultToClipboard) memorise le texte dans un nouvel etat clipboardText sur ProjetEditorZoneComponent (memoire de session, pas le presse-papiers systeme) avec un retour visuel bref (\"Copie !\"). Le menu contextuel existant (clic droit, cf. mod-578) est etendu : il affiche desormais \"Coller\" des qu'un texte est en memoire, meme SANS selection active (auparavant le clic droit sans selection ne montrait rien) ; \"Coller\" insere le texte exactement au point de clic — pasteTextIntoCode() (mode Code : decoupe/replace sur selectionStart/End du textarea, reutilise le pipeline de sauvegarde existant) ou pasteTextIntoVisu() (mode Edition : document.execCommand('insertText', ...) sur le contenteditable, remplace la selection eventuelle sinon insere au curseur). Les messages IA \"classiques\" (Mode IA sans contexte attache) conservent \"Copier ici\"/\"Copier vers...\" inchanges (distinction via hasContextReplace(msg), une Map locale timestamp -> {originalText, sectionId} peuplee uniquement par sendContextChat(), non persistee). Verifie en navigateur : \"Remplacer\" remplace bien le texte original en place dans la section (pas d'ajout, pas de doublon) ; \"Copier\" puis clic droit ailleurs (Code ET Edition, avec et sans selection) -> \"Coller\" insere le texte exactement a l'endroit voulu, dans les deux modes.",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "petit changement les 2 bouton a cote du resultat du prompt doivent etre remplace par \"Remplacer\" cela doit permettre de remplace le texte d'origine par le nouveau, et le bouton copie qui doit garde en memoire le texte copie et on doit pouvoir ce placer ou on veux dans la zone Edition (ou code) faire un bouton de droite et faire coller.",
+      "startedAt": "2026-07-08T20:03:40.066Z",
+      "completedAt": "2026-07-08T20:03:40.066Z"
+    },
+    {
+      "id": "mod-581",
+      "version": "B-0.334",
+      "date": "2026-07-08T20:18:14.695Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "projets",
+        "server"
+      ],
+      "features": "projets:zone5-conversation",
+      "title": "Fix : boutons \"Remplacer\"/\"Copier\" revenaient a \"Copier ici\"/\"Copier vers\" apres rechargement",
+      "description": "Bug corrige (retour utilisateur suite a mod-580) : les boutons \"Remplacer\"/\"Copier\" d'un resultat \"Envoyer au prompt\" fonctionnaient bien juste apres l'envoi, mais redevenaient \"Copier ici\"/\"Copier vers...\" des qu'on changeait de section puis revenait dessus. Cause : le lien message -> texte original etait garde dans une simple Map en memoire (contextReplaceInfo, cote client uniquement) ; changer de section declenche loadHistory() qui remplace entierement messages[] par les donnees fraiches du serveur (nouveaux objets sans lien avec la Map). Corrige en persistant l'info avec le message lui-meme : nouveau champ contextReplace ({ originalText, sectionId }) ajoute a l'interface Message (libs/portail-core/data-access/conversation.service.ts), envoye dans le payload de convService.appendMessage() lors de la reponse de sendContextChat(), et accepte cote serveur (server/server-data.js, POST /api/conversations/:sectionId ajoute contextReplace a la liste des champs destructures/persistes -- le endpoint fonctionne par allowlist explicite, tout champ non liste y etait silencieusement ignore). hasContextReplace(msg)/replaceOriginalWithResult() lisent desormais msg.contextReplace directement au lieu de la Map locale (supprimee). Verifie en navigateur : nouveau message envoye avec contexte -> Remplacer/Copier corrects ; navigation vers une autre section puis retour -> les memes boutons Remplacer/Copier restent affiches (avant le fix ils redevenaient Copier ici/Copier vers).",
+      "files": [
+        "libs/portail-core/data-access/src/lib/conversation.service.ts",
+        "server/server-data.js",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Cela fonctionne bien lorsqu'on a fait le prompt direct mais lorsqu'on change de section et qu'on revient dessus on a de nouveau les anciens boutons, je ne veux que les nouveaux boutons \"copier\" et \"remplacer\"",
+      "startedAt": "2026-07-08T20:18:14.695Z",
+      "completedAt": "2026-07-08T20:18:14.695Z"
     }
   ]
 }

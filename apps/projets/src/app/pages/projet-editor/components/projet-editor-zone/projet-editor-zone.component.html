@@ -2323,12 +2323,20 @@ Votre texte de prompt ici.
     </div>
   }
 
-  <!-- Menu contextuel (clic droit sur une sélection, Code ou Édition) — "Envoyer au prompt" -->
+  <!-- Menu contextuel (clic droit, Code ou Édition) — "Envoyer au prompt" (sélection) et/ou
+       "Coller" (texte en mémoire via le bouton "Copier" d'un résultat IA, même sans sélection) -->
   @if (selectionCtxMenu) {
     <div class="wo-selection-ctxmenu" [style.left.px]="selectionCtxMenu.x" [style.top.px]="selectionCtxMenu.y">
-      <button type="button" (mousedown)="$event.preventDefault(); sendSelectionToPromptClick()">
-        <span class="material-symbols-outlined">forum</span> Envoyer au prompt
-      </button>
+      @if (selectionCtxMenu.text) {
+        <button type="button" (mousedown)="$event.preventDefault(); sendSelectionToPromptClick()">
+          <span class="material-symbols-outlined">forum</span> Envoyer au prompt
+        </button>
+      }
+      @if (clipboardText) {
+        <button type="button" (mousedown)="$event.preventDefault(); pasteClipboardClick()">
+          <span class="material-symbols-outlined">content_paste</span> Coller
+        </button>
+      }
     </div>
   }
 

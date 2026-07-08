@@ -37,6 +37,11 @@ export interface Message {
   cadrageWave?: number;
   /** Mode Guidé uniquement : ce message IA doit être rendu comme un formulaire de cadrage, pas comme du texte. */
   isCadrageForm?: boolean;
+
+  /** Message IA résultant d'un "Envoyer au prompt" (clic droit sur une sélection, sendContextChat) :
+   *  texte original + section d'où il vient, pour permettre le bouton "Remplacer". Persisté pour
+   *  que ces boutons ("Remplacer"/"Copier") survivent au rechargement de l'historique. */
+  contextReplace?: { originalText: string; sectionId: string };
 }
 
 export interface Conversation {

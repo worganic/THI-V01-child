@@ -536,6 +536,11 @@
                   } @else {
                     <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
                   }
+                } @else if (last && contextChatSending() && !msg.text) {
+                  <span class="inline-flex items-center gap-1.5 text-[11px] text-light-text-muted dark:text-white/40 italic">
+                    <span class="material-symbols-outlined text-[13px] animate-spin">progress_activity</span>
+                    L'IA génère une réponse…
+                  </span>
                 } @else {
                   <div class="chat-md text-xs text-light-text dark:text-white/80 leading-relaxed" [innerHTML]="renderedHtml(msg)"></div>
                   @if (last && aiEditService.isStreaming()) {
@@ -559,30 +564,58 @@
                   <span class="text-[9px]">{{ msg.promptContext ? 'Prompt' : 'Contexte IA' }}</span>
                 </button>
               }
-              @if (msg.text.trim()) {
-                <div class="relative flex-shrink-0 wo-copy-picker">
-                  <button (click)="toggleCopyTextPicker(msg)"
-                          title="Copier vers une section"
-                          class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/5 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all">
-                    <span class="material-symbols-outlined text-[10px]">content_paste_go</span>
-                    <span class="text-[9px]">Copier vers</span>
-                    <span class="material-symbols-outlined text-[10px]">expand_more</span>
+              @if (msg.text.trim() && hasContextReplace(msg)) {
+                <!-- Résultat d'un "Envoyer au prompt" : Remplacer le texte original, ou Copier
+                     (mémoire) pour coller ensuite où voulu via le menu contextuel de l'éditeur. -->
+                <button (click)="replaceOriginalWithResult(msg)"
+                        title="Remplacer le texte original par ce résultat"
+                        class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/5 text-emerald-400/60 hover:text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all">
+                  <span class="material-symbols-outlined text-[10px]">find_replace</span>
+                  <span class="text-[9px]">Remplacer</span>
+                </button>
+                <button (click)="copyResultToClipboard(msg)"
+                        title="Copier — clic droit dans l'éditeur (Code ou Édition) puis « Coller » où vous voulez"
+                        class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border transition-all"
+                        [ngClass]="copiedFlashKey() === msg.timestamp
+                          ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400'
+                          : 'border-amber-500/20 bg-amber-500/5 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10'">
+                  <span class="material-symbols-outlined text-[10px]">{{ copiedFlashKey() === msg.timestamp ? 'check' : 'content_copy' }}</span>
+                  <span class="text-[9px]">{{ copiedFlashKey() === msg.timestamp ? 'Copié !' : 'Copier' }}</span>
+                </button>
+              } @else {
+                @if (msg.text.trim() && sectionId) {
+                  <button (click)="copyMessageToActiveSection(msg)"
+                          title="Copier directement dans la section active"
+                          class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/5 text-emerald-400/60 hover:text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-500/10 transition-all">
+                    <span class="material-symbols-outlined text-[10px]">download</span>
+                    <span class="text-[9px]">Copier ici</span>
                   </button>
-                  @if (isCopyTextPickerOpen(msg)) {
-                    <div class="absolute top-full right-0 z-50 mt-1 min-w-[200px] max-h-64 overflow-y-auto rounded-lg border border-light-border dark:border-white/15 bg-white dark:bg-[#1a1a2e] shadow-xl">
-                      @if (!sectionOptions().length) {
-                        <div class="px-3 py-3 text-xs opacity-40 text-center">Aucune section trouvée</div>
-                      }
-                      @for (sec of sectionOptions(); track sec.id) {
-                        <button (click)="selectSectionForText(msg, sec.id)"
-                                [style.padding-left.px]="12 + sec.depth * 12"
-                                class="w-full text-left px-3 py-1.5 text-xs hover:bg-light-surface dark:hover:bg-white/5 transition-colors flex items-center gap-1 text-light-text dark:text-white/70">
-                          <span class="material-symbols-outlined text-xs opacity-40">folder</span>{{ sec.name }}
-                        </button>
-                      }
-                    </div>
-                  }
-                </div>
+                }
+                @if (msg.text.trim()) {
+                  <div class="relative flex-shrink-0 wo-copy-picker">
+                    <button (click)="toggleCopyTextPicker(msg)"
+                            title="Copier vers une section"
+                            class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/5 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all">
+                      <span class="material-symbols-outlined text-[10px]">content_paste_go</span>
+                      <span class="text-[9px]">Copier vers</span>
+                      <span class="material-symbols-outlined text-[10px]">expand_more</span>
+                    </button>
+                    @if (isCopyTextPickerOpen(msg)) {
+                      <div class="absolute top-full right-0 z-50 mt-1 min-w-[200px] max-h-64 overflow-y-auto rounded-lg border border-light-border dark:border-white/15 bg-white dark:bg-[#1a1a2e] shadow-xl">
+                        @if (!sectionOptions().length) {
+                          <div class="px-3 py-3 text-xs opacity-40 text-center">Aucune section trouvée</div>
+                        }
+                        @for (sec of sectionOptions(); track sec.id) {
+                          <button (click)="selectSectionForText(msg, sec.id)"
+                                  [style.padding-left.px]="12 + sec.depth * 12"
+                                  class="w-full text-left px-3 py-1.5 text-xs hover:bg-light-surface dark:hover:bg-white/5 transition-colors flex items-center gap-1 text-light-text dark:text-white/70">
+                            <span class="material-symbols-outlined text-xs opacity-40">folder</span>{{ sec.name }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
               }
             </div>
 

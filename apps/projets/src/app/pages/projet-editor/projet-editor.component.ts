@@ -155,6 +155,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
   pendingEditSource = 'user-editing';
   onEditSource(source: string) { this.pendingEditSource = source; }
   dragDropError = signal<string | null>(null);
+  replaceError = signal<string | null>(null);
   private dragDropErrorTimer: ReturnType<typeof setTimeout> | null = null;
   conflictState = signal<{
     fileId: string; folderId?: string;
@@ -972,6 +973,28 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
    *  d'une conversation Prompt → ouvre le popup d'import (pastePreview) via la zone d'édition. */
   onCopyToEditionRequested(payload: { text: string; sectionId: string }) {
     this.editionOutil?.insertTextIntoEdition(payload.text, payload.sectionId);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier ici" — insertion directe (sans popup)
+   *  du texte d'un message IA dans la section active. */
+  onCopyDirectlyToActiveSection(payload: { text: string; sectionId: string }) {
+    this.editionOutil?.insertTextDirectlyIntoSection(payload.text, payload.sectionId);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier" (résultat d'un message avec contexte
+   *  attaché) — mémorise le texte pour un collage ultérieur via le menu contextuel (clic droit). */
+  onSetEditorClipboard(text: string) {
+    this.editionOutil?.setClipboardText(text);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Remplacer" — remplace le texte original par
+   *  le résultat de l'IA dans la section d'origine. */
+  onReplaceInSection(payload: { originalText: string; newText: string; sectionId: string }) {
+    const ok = this.editionOutil?.replaceTextInSection(payload.sectionId, payload.originalText, payload.newText) ?? false;
+    if (!ok) {
+      this.replaceError.set('Texte original introuvable — il a peut-être déjà été modifié.');
+      setTimeout(() => this.replaceError.set(null), 3500);
+    }
   }
 
   /** Relayé depuis ProjetEditorZoneComponent (via app-edition-outil) : clic droit sur une

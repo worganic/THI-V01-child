@@ -8050,7 +8050,7 @@ app.post('/api/conversations/:sectionId', (req, res) => {
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     
     const sectionId = req.params.sectionId;
-    const { text, role, promptInstanceId, promptInstanceName, mode, mos, cadrageWave, isCadrageForm } = req.body;
+    const { text, role, promptInstanceId, promptInstanceName, mode, mos, cadrageWave, isCadrageForm, contextReplace } = req.body;
 
     if (!text) return res.status(400).json({ error: 'Texte requis' });
 
@@ -8079,6 +8079,7 @@ app.post('/api/conversations/:sectionId', (req, res) => {
             ...(Array.isArray(mos) && mos.length ? { mos } : {}),
             ...(cadrageWave ? { cadrageWave } : {}),
             ...(isCadrageForm ? { isCadrageForm } : {}),
+            ...(contextReplace ? { contextReplace } : {}),
         };
 
         data.messages.push(newMessage);

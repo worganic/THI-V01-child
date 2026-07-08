@@ -162,4 +162,22 @@ export class EditionOutilComponent {
   insertTextIntoEdition(text: string, sectionId: string): void {
     this.innerZone?.insertTextIntoEdition(text, sectionId);
   }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier ici" — insertion directe dans la
+   *  section active, sans popup de prévisualisation (contrairement à insertTextIntoEdition). */
+  insertTextDirectlyIntoSection(text: string, sectionId: string): void {
+    this.innerZone?.insertTextDirectlyIntoSection(text, sectionId);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Copier" — mémorise le texte pour un collage
+   *  ultérieur (clic droit → Coller) n'importe où dans le document, Code ou Édition. */
+  setClipboardText(text: string): void {
+    this.innerZone?.setClipboardText(text);
+  }
+
+  /** Relayé depuis ProjetConversationComponent : "Remplacer" — remplace le texte original
+   *  (envoyé via "Envoyer au prompt") par le résultat de l'IA, dans la section d'origine. */
+  replaceTextInSection(sectionId: string, originalText: string, newText: string): boolean {
+    return this.innerZone?.replaceTextInSection(sectionId, originalText, newText) ?? false;
+  }
 }

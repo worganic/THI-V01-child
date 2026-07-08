@@ -685,9 +685,9 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 
 ---
 
-## `2-5-2-4-59` — Clic droit sur une sélection → "Envoyer au prompt"
+## `2-5-2-4-59` — [modification] Clic droit → "Envoyer au prompt" et/ou "Coller"
 
-- **Précondition** : texte sélectionné dans le `textarea` du mode Code.
-- **Action** : clic droit sur la sélection ouvre un menu contextuel réduit à "Envoyer au prompt" (au lieu du menu natif) — colle le texte en chip au-dessus de la saisie de la conversation et active le mode IA.
+- **Précondition** : texte sélectionné dans le `textarea` du mode Code (pour "Envoyer au prompt"), et/ou un texte mémorisé via le bouton "Copier" d'un résultat de conversation (pour "Coller", même sans sélection).
+- **Action** : clic droit ouvre un menu contextuel réduit à "Envoyer au prompt" (si sélection) et/ou "Coller" (si texte en mémoire) — au lieu du menu natif. "Envoyer au prompt" colle le texte en chip au-dessus de la saisie de la conversation et active le mode IA. "Coller" insère le texte mémorisé exactement au point de clic (remplace la sélection éventuelle, sinon insère au curseur — `pasteTextIntoCode()`).
 - **Détail complet et procédure de test** : voir `2-5-2-7-16`.
 - **Composants:** voir `2-5-2-7-16`.

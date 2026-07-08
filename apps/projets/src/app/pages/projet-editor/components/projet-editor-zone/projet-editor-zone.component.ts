@@ -609,8 +609,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Menu d'actions sur un lien cliqué (suivre / modifier / supprimer) en mode Edition
   visuLinkMenu: { x: number; y: number; href: string } | null = null;
   private visuLinkEl: HTMLAnchorElement | null = null;
-  // Menu contextuel (clic droit) sur une sélection de texte (Code ou Édition) — "Envoyer au prompt"
-  selectionCtxMenu: { x: number; y: number; text: string; sectionId: string | null } | null = null;
+  // Menu contextuel (clic droit) sur une sélection de texte (Code ou Édition) — "Envoyer au
+  // prompt" (si sélection non vide) et/ou "Coller" (si clipboardText non vide, même sans sélection).
+  selectionCtxMenu: { x: number; y: number; text: string; sectionId: string | null; source: 'code' | 'visu' } | null = null;
+  // "Copier" (résultat IA d'un message "Envoyer au prompt") — mémorisé pour pouvoir coller
+  // n'importe où (Code ou Édition) via le menu contextuel, indépendamment de "Copier vers...".
+  clipboardText: string | null = null;
   // Popup stylisé de modification d'URL du lien
   showLinkEditPopup = signal(false);
   linkEditUrl = '';
@@ -6129,6 +6133,18 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.openPastePreviewForText(text, { mode: 'visu', sectionId, level });
   }
 
+  /** "Copier ici" (bouton de la conversation) : insère le texte directement dans la section
+   *  donnée, sans passer par le popup de prévisualisation "Coller du markdown" — même recalage
+   *  des niveaux de titre que insertTextIntoEdition, juste sans étape de confirmation. */
+  insertTextDirectlyIntoSection(text: string, sectionId: string) {
+    if (!text.trim() || !sectionId) return;
+    const level = this.sectionRanges.find(r => r.folderId === sectionId)?.level ?? 1;
+    const normalized = text.replace(/\r\n?/g, '\n');
+    const desiredTop = Math.min(level + 1, 6);
+    const releveled = this.relevelMarkdownHeadings(normalized, desiredTop);
+    this.applyVisuPaste(sectionId, releveled);
+  }
+
   /** Ouvre le popup de prévisualisation de collage (recalage des niveaux) pour un texte donné,
    *  hors événement clipboard réel — même mécanique que onVisuSectionPaste/onTextareaPaste. */
   private openPastePreviewForText(text: string, target: { mode: 'visu'; sectionId: string; level: number }) {
@@ -9872,13 +9888,13 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.saveAll();
   }
 
-  // ── Menu contextuel (clic droit) sur une sélection de texte — "Envoyer au prompt" ──────────
+  // ── Menu contextuel (clic droit) sur une sélection de texte — "Envoyer au prompt" / "Coller" ──
   // Positionne le menu au clic droit, en restant dans la fenêtre visible.
-  private positionSelectionCtxMenu(clientX: number, clientY: number, text: string, sectionId: string | null) {
-    const menuW = 190, menuH = 40;
+  private positionSelectionCtxMenu(clientX: number, clientY: number, text: string, sectionId: string | null, source: 'code' | 'visu') {
+    const menuW = 190, menuH = 76;
     const x = Math.max(4, Math.min(clientX, window.innerWidth - menuW - 4));
     const y = Math.max(4, Math.min(clientY, window.innerHeight - menuH - 4));
-    this.selectionCtxMenu = { x, y, text, sectionId };
+    this.selectionCtxMenu = { x, y, text, sectionId, source };
   }
 
   // Section contenant la ligne donnée (index dans unifiedContent) — section la plus spécifique
@@ -9891,26 +9907,29 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     return null;
   }
 
-  // Mode Code (textarea) : sélection native (selectionStart/selectionEnd)
+  // Mode Code (textarea) : sélection native (selectionStart/selectionEnd) — le menu s'affiche
+  // si une sélection existe ("Envoyer au prompt") et/ou si un texte est en mémoire ("Coller"),
+  // même sans sélection (pour coller au point de clic).
   onCodeContextMenu(ev: MouseEvent) {
     const ta = ev.target as HTMLTextAreaElement;
     const text = ta.value?.substring(ta.selectionStart ?? 0, ta.selectionEnd ?? 0).trim() || '';
-    if (!text) { this.selectionCtxMenu = null; return; }
+    if (!text && !this.clipboardText) { this.selectionCtxMenu = null; return; }
     ev.preventDefault();
     const lineIdx = ta.value.substring(0, ta.selectionStart ?? 0).split('\n').length - 1;
-    this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, this.sectionIdAtLine(lineIdx));
+    this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, this.sectionIdAtLine(lineIdx), 'code');
   }
 
-  // Mode Édition (contenteditable par section) : sélection via l'API Selection
+  // Mode Édition (contenteditable par section) : sélection via l'API Selection — mêmes règles
+  // d'affichage que le mode Code.
   onVisuContextMenu(ev: MouseEvent) {
     const target = ev.target as HTMLElement;
     const secEl = target.closest('.visu-sec-content') as HTMLElement | null;
     if (!secEl) return;
     const sel = window.getSelection();
     const text = (sel && !sel.isCollapsed) ? sel.toString().trim() : '';
-    if (!text) { this.selectionCtxMenu = null; return; }
+    if (!text && !this.clipboardText) { this.selectionCtxMenu = null; return; }
     ev.preventDefault();
-    this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, secEl.getAttribute('data-section-id'));
+    this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, secEl.getAttribute('data-section-id'), 'visu');
   }
 
   closeSelectionCtxMenu() {
@@ -9923,6 +9942,73 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!this.selectionCtxMenu) return;
     this.sendSelectionToPrompt.emit({ text: this.selectionCtxMenu.text, sectionId: this.selectionCtxMenu.sectionId });
     this.selectionCtxMenu = null;
+  }
+
+  /** "Copier" (bouton de la conversation sur un résultat IA) — mémorise le texte pour un collage
+   *  ultérieur via le menu contextuel, n'importe où dans le document (Code ou Édition). */
+  setClipboardText(text: string): void {
+    this.clipboardText = text?.trim() || null;
+  }
+
+  // "Coller" (menu contextuel) : insère le texte mémorisé au point de clic droit — remplace la
+  // sélection éventuelle, sinon insère au curseur (comportement standard d'un collage).
+  pasteClipboardClick() {
+    const menu = this.selectionCtxMenu;
+    const text = this.clipboardText;
+    this.selectionCtxMenu = null;
+    if (!menu || !text) return;
+    if (menu.source === 'code') this.pasteTextIntoCode(text);
+    else this.pasteTextIntoVisu(text);
+  }
+
+  private pasteTextIntoCode(text: string) {
+    const ta = this.textareaRef?.nativeElement;
+    if (!ta) return;
+    this.pushCodeUndoSnapshot();
+    const start = ta.selectionStart ?? ta.value.length;
+    const end = ta.selectionEnd ?? start;
+    const newVal = ta.value.slice(0, start) + text + ta.value.slice(end);
+    ta.value = newVal;
+    this.unifiedContent = newVal;
+    const pos = start + text.length;
+    ta.selectionStart = ta.selectionEnd = pos;
+    this.recomputeRanges();
+    this.recomputeMirrorLines();
+    this.recomputeHandles();
+    this.scheduleSave();
+  }
+
+  private pasteTextIntoVisu(text: string) {
+    try { document.execCommand('insertText', false, text); } catch { /* ignore */ }
+    this.markActiveVisuDirty();
+  }
+
+  /** "Remplacer" (bouton de la conversation) : remplace la première occurrence exacte du texte
+   *  original (celui envoyé via "Envoyer au prompt") par le résultat de l'IA, dans la section
+   *  d'origine. Retourne false si la section ou le texte original n'est plus trouvé (déjà modifié
+   *  entre-temps) — dans ce cas le parent peut informer l'utilisateur plutôt qu'échouer en silence. */
+  replaceTextInSection(sectionId: string, originalText: string, newText: string): boolean {
+    const range = this.sectionRanges.find(r => r.folderId === sectionId);
+    if (!range) return false;
+    const lines = this.unifiedContent.split('\n');
+    const sectionLines = lines.slice(range.lineStart, range.lineEnd + 1);
+    const sectionText = sectionLines.join('\n');
+    const needle = originalText.trim();
+    const idx = needle ? sectionText.indexOf(needle) : -1;
+    if (idx < 0) return false;
+    const replaced = sectionText.slice(0, idx) + newText.trim() + sectionText.slice(idx + needle.length);
+    lines.splice(range.lineStart, sectionLines.length, ...replaced.split('\n'));
+    this.unifiedContent = lines.join('\n');
+    const ta = this.textareaRef?.nativeElement;
+    if (ta) ta.value = this.unifiedContent;
+    this.recomputeAll();
+    this.syncDocSectionsTextFromContent();
+    if (this.mode === 'visu') {
+      this.forceVisuReinject = true;
+      this.buildVisuSections();
+    }
+    this.scheduleSave();
+    return true;
   }
 
   // Crée un lien sur la sélection
