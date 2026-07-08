@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnChanges, OnInit, OnDestroy, SimpleChanges, signal, computed, inject, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, OnInit, OnDestroy, SimpleChanges, signal, computed, inject, ViewChild, ElementRef, AfterViewChecked, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import {
   composeSystemPrompt, promptDeliverableHeadingInstruction,
   detectMoFences, parseChoiceForm, fenceBody, parseChartPoints,
   parseArrayTable, parseTrelloPreview, parseAgendaPreview, MO_FENCE_CHAT_INSTRUCTION,
+  flattenFolders,
 } from '@worganic/portail-core/data-access';
 import { ConfigService } from '@worganic/portail-core/data-access';
 import { WoActionHistoryService } from '@worganic/portail-core/data-access';
@@ -70,7 +71,14 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
    *  classique — MO créé directement dans la section active, pas de sous-section dédiée).
    *  `messageKey` (timestamp du message) permet au parent de rappeler `markMosMaterialized()` une
    *  fois la matérialisation terminée (asynchrone), pour marquer les MO concernés "déjà ajoutés". */
-  @Output() materializeRequested = new EventEmitter<{ promptInstanceId?: string; sectionId?: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }>();
+  @Output() materializeRequested = new EventEmitter<{
+    promptInstanceId?: string; sectionId?: string; deliverable: string;
+    selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string;
+    /** true pour "Copier vers..." (répétable à l'infini) : n'écrit jamais materializedSectionId
+     *  sur le MO source, pour ne pas transformer "Ajouter au projet" en "Déjà ajouté" vers une
+     *  section différente de celle du raccourci 1-clic. */
+    skipMaterializedMark?: boolean;
+  }>();
   /** "Copier vers l'édition" sur un message IA d'une conversation Prompt — relayé par le parent. */
   @Output() copyToEditionRequested = new EventEmitter<{ text: string; sectionId: string }>();
   /** Clic sur "Déjà ajouté" d'un MO matérialisé : demande au parent de naviguer vers la section
@@ -108,6 +116,9 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
   popupPrompt = '';
   // Inclure le document entier comme contexte (au lieu de la section seule)
   includeFullDocument = signal(false);
+  // Texte sélectionné dans le document (clic droit "Envoyer au prompt", Code ou Édition) —
+  // affiché en chip au-dessus de la saisie, retiré du composeur, envoyé à l'IA pour information.
+  pendingContext = signal<string | null>(null);
   // Popup prompt complet (par message IA — session courante avec promptContext)
   showPromptInfo = signal(false);
   selectedPromptContext = signal<PromptContext | null>(null);
@@ -180,6 +191,20 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
       const raw = this.inputMessage.trimStart();
       this.inputMessage = raw.slice(raw.toLowerCase().indexOf('@ia ') + 4);
     }
+  }
+
+  /** Appelé par le parent (clic droit "Envoyer au prompt" dans l'éditeur, Code ou Édition) :
+   *  colle le texte sélectionné dans la zone de conversation (chip au-dessus de la saisie) et
+   *  active le mode IA — l'utilisateur n'a plus qu'à décrire sa demande et envoyer. */
+  attachContextText(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    this.pendingContext.set(trimmed);
+    this.iaMode.set(true);
+  }
+
+  clearPendingContext() {
+    this.pendingContext.set(null);
   }
 
   ngOnInit() {
@@ -346,6 +371,7 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     this.promptSending.set(false);
     this.promptStreamingText.set('');
     this.inputMessage = '';
+    this.pendingContext.set(null);
   }
 
   toggleHistory() {
@@ -442,6 +468,12 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
         .join('\n');
       finalPrompt = `[Historique de la conversation]\n${historyLines}\n\n[Demande actuelle]\n${prompt}`;
     }
+    // Texte sélectionné dans le document (clic droit "Envoyer au prompt") — pour information
+    const selectedContext = this.pendingContext();
+    if (selectedContext) {
+      finalPrompt = `[Texte sélectionné par l'utilisateur dans le document]\n${selectedContext}\n\n[Demande]\n${finalPrompt}`;
+    }
+    this.pendingContext.set(null);
 
     // Effacer uniquement l'input source utilisé
     if (messageOverride === undefined) {
@@ -1006,10 +1038,63 @@ export class ProjetConversationComponent implements OnChanges, OnInit, AfterView
     return !!msg.mos?.some(mo => mo.selected && !mo.materializedSectionId);
   }
 
-  /** "Copier vers l'édition" sur un message IA d'une conversation Prompt. */
-  copyMessageToImport(msg: Message) {
-    if (!msg.text.trim() || !this.sectionId) return;
-    this.copyToEditionRequested.emit({ text: msg.text, sectionId: this.sectionId });
+  // ── "Copier vers..." — copie répétable (MO ou texte brut) vers une section choisie ──────────
+  /** Clé du dropdown "Copier vers..." actuellement ouvert (timestamp du message pour le texte,
+   *  clé composite message+MO pour un MegaOutil) — un seul dropdown ouvert à la fois. */
+  showSectionPickerFor = signal<string | null>(null);
+
+  /** Liste plate des sections du projet (dossiers uniquement), pour peupler le dropdown —
+   *  calculée depuis `files` déjà chargé, sans appel serveur. */
+  sectionOptions(): { id: string; name: string; depth: number }[] {
+    return flattenFolders(this.files);
+  }
+
+  isCopyTextPickerOpen(msg: Message): boolean {
+    return this.showSectionPickerFor() === msg.timestamp;
+  }
+  toggleCopyTextPicker(msg: Message) {
+    this.showSectionPickerFor.update(cur => cur === msg.timestamp ? null : msg.timestamp);
+  }
+  isCopyMoPickerOpen(msg: Message, mo: MaterializedMoPreview): boolean {
+    return this.showSectionPickerFor() === this.moKey(msg, mo);
+  }
+  toggleCopyMoPicker(msg: Message, mo: MaterializedMoPreview) {
+    const key = this.moKey(msg, mo);
+    this.showSectionPickerFor.update(cur => cur === key ? null : key);
+  }
+
+  /** Ferme le dropdown "Copier vers..." au clic en dehors de son conteneur (bouton + liste). */
+  @HostListener('document:click', ['$event'])
+  onDocClickClosePicker(e: MouseEvent) {
+    if (!this.showSectionPickerFor()) return;
+    if (!(e.target as HTMLElement)?.closest?.('.wo-copy-picker')) this.showSectionPickerFor.set(null);
+  }
+
+  /** "Copier vers..." le texte brut d'un message IA vers une section choisie — répétable,
+   *  fonctionne pour tout message IA (chat classique ou conversation MO Prompt). */
+  copyMessageToSection(msg: Message, targetSectionId: string) {
+    if (!msg.text.trim()) return;
+    this.copyToEditionRequested.emit({ text: msg.text, sectionId: targetSectionId });
+  }
+  selectSectionForText(msg: Message, sectionId: string) {
+    this.showSectionPickerFor.set(null);
+    this.copyMessageToSection(msg, sectionId);
+  }
+
+  /** "Copier vers..." un MegaOutil détecté vers une section choisie — indépendant du bouton
+   *  "Ajouter au projet" (jamais bloqué par `mo.materializedSectionId`, et `skipMaterializedMark`
+   *  évite d'écrire dedans pour ne pas casser l'état "Déjà ajouté" du raccourci 1-clic). Toujours
+   *  matérialisé directement dans la section cible, même pour un message de conversation Prompt
+   *  (le choix explicite de section prime sur le rangement automatique en sous-section "PR-Res"). */
+  copyMoToSection(msg: Message, mo: MaterializedMoPreview, targetSectionId: string) {
+    this.materializeRequested.emit({
+      sectionId: targetSectionId, deliverable: msg.text, selectedMos: [mo],
+      messageKey: msg.timestamp, skipMaterializedMark: true,
+    });
+  }
+  selectSectionForMo(msg: Message, mo: MaterializedMoPreview, sectionId: string) {
+    this.showSectionPickerFor.set(null);
+    this.copyMoToSection(msg, mo, sectionId);
   }
 
   chartPointsFor(mo: MaterializedMoPreview) {

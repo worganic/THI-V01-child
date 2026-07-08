@@ -264,3 +264,12 @@ Vue : éditeur type Google Docs — rendu HTML des sections éditables (contente
 - **[modification] Position entre le badge de niveau et le titre (bug corrigé)** : le bouton était positionné **au-dessus** du badge de niveau (`top: -1.15em`), à la même position horizontale (`left: -3.2rem`) — empilement visuel gênant, les deux éléments se chevauchant dans l'étroite gouttière gauche. Corrigé : le bouton (réduit à 18px, icône 14px) est désormais aligné sur la **même ligne** que le badge de niveau (`top: 0.5em`, identique), positionné juste après lui (`left: -1.15rem`, contre `-3.2rem` pour le badge) — ordre horizontal : badge de niveau, puis accordéon, puis titre.
 - **À vérifier** : chaque titre de section affiche, dans sa gouttière gauche, le badge `H1`-`H4` suivi immédiatement du chevron d'accordéon sur la même ligne, sans chevauchement ni décalage vertical entre les deux.
 - **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss`
+
+---
+
+## `2-5-2-5-24` — Clic droit sur une sélection → "Envoyer au prompt"
+
+- **Précondition** : texte sélectionné dans le corps `contenteditable` d'une section (mode Édition).
+- **Action** : clic droit sur la sélection ouvre un menu contextuel réduit à "Envoyer au prompt" (au lieu du menu natif) — colle le texte en chip au-dessus de la saisie de la conversation et active le mode IA.
+- **Détail complet et procédure de test** : voir `2-5-2-7-16`.
+- **Composants:** voir `2-5-2-7-16`.

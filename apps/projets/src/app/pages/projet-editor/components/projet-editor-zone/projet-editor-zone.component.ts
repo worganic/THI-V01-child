@@ -317,6 +317,12 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   currentEditSource = 'user-editing';
   // F6 — Commentaires : demande d'ouverture du drawer pour une section
   @Output() commentRequest = new EventEmitter<{ folderId: string; folderName: string }>();
+  // Clic droit sur une sélection de texte (Code ou Édition) → "Envoyer au prompt" : relayé
+  // au parent qui colle le texte dans la conversation et active le mode IA (voir CLAUDE.md).
+  // sectionId : section contenant la sélection (résolue au clic droit), pour que le parent
+  // active cette section — sans quoi la conversation (liée à activeNodeId) resterait indisponible
+  // en "vue assemblée" (aucune section cliquée dans la sidebar, cf. onNodeActive côté parent).
+  @Output() sendSelectionToPrompt = new EventEmitter<{ text: string; sectionId: string | null }>();
   // F6 — Compteurs de commentaires par folderId (alimentés par le parent)
   @Input() commentCounts: Record<string, number> = {};
 
@@ -603,6 +609,8 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   // Menu d'actions sur un lien cliqué (suivre / modifier / supprimer) en mode Edition
   visuLinkMenu: { x: number; y: number; href: string } | null = null;
   private visuLinkEl: HTMLAnchorElement | null = null;
+  // Menu contextuel (clic droit) sur une sélection de texte (Code ou Édition) — "Envoyer au prompt"
+  selectionCtxMenu: { x: number; y: number; text: string; sectionId: string | null } | null = null;
   // Popup stylisé de modification d'URL du lien
   showLinkEditPopup = signal(false);
   linkEditUrl = '';
@@ -1192,6 +1200,27 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
     return this.megaOutilInstances.find(i => i.id === instId)?.folderId ?? null;
   }
 
+  // Anti-boucle : mémorise la dernière correction folderId envoyée par instance (avec horodatage)
+  // pour éviter de re-PATCHer en boucle serrée une instance dont la résolution est ambiguë
+  // (ex. même MOID présent dans 2 sections — cas de données corrompues) — un PATCH réussi
+  // déclenche un broadcast collab qui refait recharger les instances côté client, ce qui peut
+  // relancer immédiatement le même recompute ; sans ce garde-fou cela tourne indéfiniment et
+  // martèle le serveur (GET/PATCH en rafale, plusieurs requêtes toutes les ~20ms).
+  private recentFolderIdCorrections = new Map<string, { folderId: string; at: number }>();
+  private static readonly FOLDER_CORRECTION_COOLDOWN_MS = 5000;
+
+  /** Vrai si on a déjà tenté cette même correction (instanceId → folderId) très récemment —
+   *  dans ce cas on saute le PATCH pour casser une éventuelle boucle infinie. */
+  private shouldSkipFolderCorrection(instanceId: string, folderId: string): boolean {
+    const last = this.recentFolderIdCorrections.get(instanceId);
+    const now = Date.now();
+    if (last && last.folderId === folderId && (now - last.at) < ProjetEditorZoneComponent.FOLDER_CORRECTION_COOLDOWN_MS) {
+      return true;
+    }
+    this.recentFolderIdCorrections.set(instanceId, { folderId, at: now });
+    return false;
+  }
+
   private recomputeTrelloSections() {
     const map: Record<string, { folderId: string | null; name: string }> = {};
     for (const inst of this.trelloInstances) {
@@ -1201,7 +1230,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       map[inst.id] = { folderId, name };
       // Persiste le folder_id si la section résolue (via marqueur) diffère de celle stockée,
       // pour que la vue Admin › Méga-outils affiche la bonne section.
-      if (folderId && folderId !== inst.folderId) {
+      if (folderId && folderId !== inst.folderId && !this.shouldSkipFolderCorrection(inst.id, folderId)) {
         inst.folderId = folderId;
         this.megaOutilsSvc.updateInstance(inst.id, { folderId }).catch(() => {});
       }
@@ -1233,7 +1262,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
   private recomputeArraySections() {
     for (const inst of this.arrayInstances) {
       const folderId = this.resolveArrayFolderId(inst.id);
-      if (folderId && folderId !== inst.folderId) {
+      if (folderId && folderId !== inst.folderId && !this.shouldSkipFolderCorrection(inst.id, folderId)) {
         inst.folderId = folderId;
         this.megaOutilsSvc.updateInstance(inst.id, { folderId }).catch(() => {});
       }
@@ -1268,7 +1297,7 @@ export class ProjetEditorZoneComponent implements OnChanges, OnDestroy, AfterVie
       const node = folderId ? this.findNode(folderId, this.files) : null;
       const name = node?.name ?? (folderId ? 'Section introuvable' : 'Sans section');
       map[inst.id] = { folderId, name };
-      if (folderId && folderId !== inst.folderId) {
+      if (folderId && folderId !== inst.folderId && !this.shouldSkipFolderCorrection(inst.id, folderId)) {
         inst.folderId = folderId;
         this.megaOutilsSvc.updateInstance(inst.id, { folderId }).catch(() => {});
       }
@@ -9528,6 +9557,25 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     if (!target.closest('.visu-tb-dropdown')) this.visuDropdown = null;
   }
 
+  // Ferme le menu contextuel "Envoyer au prompt" si l'on clique en dehors (ou on scroll/redimensionne)
+  @HostListener('document:mousedown', ['$event'])
+  onDocumentMousedownForSelectionCtxMenu(ev: MouseEvent) {
+    if (!this.selectionCtxMenu) return;
+    const target = ev.target as HTMLElement;
+    if (!target.closest('.wo-selection-ctxmenu')) this.selectionCtxMenu = null;
+  }
+
+  @HostListener('window:scroll')
+  @HostListener('window:resize')
+  onWindowScrollForSelectionCtxMenu() {
+    if (this.selectionCtxMenu) this.selectionCtxMenu = null;
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscapeForSelectionCtxMenu() {
+    if (this.selectionCtxMenu) this.selectionCtxMenu = null;
+  }
+
   applyVisuFormat(command: string, value?: string) {
     // Couleur / surlignage / taille → styles CSS inline (<span style>) ; le reste → balises
     // sémantiques (<b>, <i>, <u>, <s>) pour une conversion Markdown fidèle (**…**, *…*, …).
@@ -9822,6 +9870,59 @@ Règles : sois concret et bienveillant. N'invente pas de questions. Utilise du M
     this.onVisuSectionInput(sectionId);
     this.commitVisuSection(sectionId);
     this.saveAll();
+  }
+
+  // ── Menu contextuel (clic droit) sur une sélection de texte — "Envoyer au prompt" ──────────
+  // Positionne le menu au clic droit, en restant dans la fenêtre visible.
+  private positionSelectionCtxMenu(clientX: number, clientY: number, text: string, sectionId: string | null) {
+    const menuW = 190, menuH = 40;
+    const x = Math.max(4, Math.min(clientX, window.innerWidth - menuW - 4));
+    const y = Math.max(4, Math.min(clientY, window.innerHeight - menuH - 4));
+    this.selectionCtxMenu = { x, y, text, sectionId };
+  }
+
+  // Section contenant la ligne donnée (index dans unifiedContent) — section la plus spécifique
+  // (même logique que onTextareaCursor : parcours à l'envers pour privilégier une sous-section).
+  private sectionIdAtLine(lineIdx: number): string | null {
+    for (let i = this.sectionRanges.length - 1; i >= 0; i--) {
+      const r = this.sectionRanges[i];
+      if (lineIdx >= r.lineStart && lineIdx <= r.lineEnd) return r.folderId;
+    }
+    return null;
+  }
+
+  // Mode Code (textarea) : sélection native (selectionStart/selectionEnd)
+  onCodeContextMenu(ev: MouseEvent) {
+    const ta = ev.target as HTMLTextAreaElement;
+    const text = ta.value?.substring(ta.selectionStart ?? 0, ta.selectionEnd ?? 0).trim() || '';
+    if (!text) { this.selectionCtxMenu = null; return; }
+    ev.preventDefault();
+    const lineIdx = ta.value.substring(0, ta.selectionStart ?? 0).split('\n').length - 1;
+    this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, this.sectionIdAtLine(lineIdx));
+  }
+
+  // Mode Édition (contenteditable par section) : sélection via l'API Selection
+  onVisuContextMenu(ev: MouseEvent) {
+    const target = ev.target as HTMLElement;
+    const secEl = target.closest('.visu-sec-content') as HTMLElement | null;
+    if (!secEl) return;
+    const sel = window.getSelection();
+    const text = (sel && !sel.isCollapsed) ? sel.toString().trim() : '';
+    if (!text) { this.selectionCtxMenu = null; return; }
+    ev.preventDefault();
+    this.positionSelectionCtxMenu(ev.clientX, ev.clientY, text, secEl.getAttribute('data-section-id'));
+  }
+
+  closeSelectionCtxMenu() {
+    this.selectionCtxMenu = null;
+  }
+
+  // "Envoyer au prompt" : relaie le texte sélectionné (et sa section) au parent — colle dans
+  // la conversation, active cette section et le mode IA (voir onSendSelectionToPrompt du parent).
+  sendSelectionToPromptClick() {
+    if (!this.selectionCtxMenu) return;
+    this.sendSelectionToPrompt.emit({ text: this.selectionCtxMenu.text, sectionId: this.selectionCtxMenu.sectionId });
+    this.selectionCtxMenu = null;
   }
 
   // Crée un lien sur la sélection

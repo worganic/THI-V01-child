@@ -177,6 +177,16 @@ Contexte : lié à la section active (`activeNodeId`)
 
 ---
 
+## `2-5-2-7-16` — Clic droit sur une sélection (Code ou Édition) → "Envoyer au prompt"
+
+- **Précondition** : texte sélectionné dans le mode Code (`textarea`) ou le mode Édition (section `contenteditable`, `2-5-2-5`).
+- **Action** : clic droit sur la sélection fait apparaître un menu contextuel réduit à une entrée "Envoyer au prompt" (au lieu du menu natif du navigateur) — géré par `onCodeContextMenu()`/`onVisuContextMenu()` (`projet-editor-zone.component.ts`), qui ne prennent la main que si une sélection non vide existe (sinon le menu natif reste affiché normalement). Cliquer l'entrée émet `sendSelectionToPrompt` (relayé par `EditionOutilComponent` puis `ProjetEditorZoneComponent` → `onSendSelectionToPrompt()` dans `projet-editor.component.ts`), qui bascule l'onglet Zone 5 sur "Conversation" (dépliant le volet s'il était réduit) puis appelle `attachContextText()` sur `ProjetConversationComponent`.
+- **Résultat attendu** : le texte sélectionné apparaît en chip (icône guillemet, fond violet) au-dessus de la zone de saisie de la conversation, avec un bouton de suppression (✕) ; le mode IA (`iaMode`) est activé automatiquement. Un clic sur ✕ retire la chip sans rien envoyer (le mode IA reste actif).
+- **Envoi** : quand l'utilisateur tape sa demande et envoie (`sendAiEdit()`), le texte de la chip est préfixé au prompt final envoyé à l'IA (`[Texte sélectionné par l'utilisateur dans le document]\n...\n\n[Demande]\n...`) — pour information uniquement, il n'apparaît pas dans la bulle du message affiché. La chip est retirée après l'envoi.
+- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `.html`, `.scss`, `apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `.html`, `apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`, `.html`
+
+---
+
 ## `2-5-2-7-8` — États
 
 | État | Description |

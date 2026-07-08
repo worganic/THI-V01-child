@@ -682,3 +682,12 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Résultat attendu** : un prompt IA sur un fichier avec Antigravity retourne le contenu généré normalement, sans erreur, sans laisser de fichier temporaire résiduel.
 - **À vérifier** : sélectionner Antigravity comme provider actif, lancer un prompt de génération de contenu sur un fichier (ex: demander un tableau) → réponse reçue normalement dans l'UI, pas de message "not supported".
 - **Composants:** `electron/executor/server-executor.js`
+
+---
+
+## `2-5-2-4-59` — Clic droit sur une sélection → "Envoyer au prompt"
+
+- **Précondition** : texte sélectionné dans le `textarea` du mode Code.
+- **Action** : clic droit sur la sélection ouvre un menu contextuel réduit à "Envoyer au prompt" (au lieu du menu natif) — colle le texte en chip au-dessus de la saisie de la conversation et active le mode IA.
+- **Détail complet et procédure de test** : voir `2-5-2-7-16`.
+- **Composants:** voir `2-5-2-7-16`.

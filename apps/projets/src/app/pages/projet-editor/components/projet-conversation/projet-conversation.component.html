@@ -551,12 +551,6 @@
                     <span class="material-symbols-outlined text-[15px]">{{ isRawTextExpanded(msg) ? 'expand_less' : 'expand_more' }}</span>
                   </button>
                 }
-                <button (click)="copyMessageToImport(msg)"
-                        title="Copier vers l'édition"
-                        class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/5 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all">
-                  <span class="material-symbols-outlined text-[10px]">content_paste_go</span>
-                  <span class="text-[9px]">Copier</span>
-                </button>
               } @else {
                 <button (click)="msg.promptContext ? openPromptInfo(msg.promptContext!) : openContextView(msg)"
                         [title]="msg.promptContext ? 'Voir le prompt complet envoyé à l\'IA' : 'Voir le contexte IA de la section'"
@@ -564,6 +558,31 @@
                   <span class="material-symbols-outlined text-[10px]">receipt_long</span>
                   <span class="text-[9px]">{{ msg.promptContext ? 'Prompt' : 'Contexte IA' }}</span>
                 </button>
+              }
+              @if (msg.text.trim()) {
+                <div class="relative flex-shrink-0 wo-copy-picker">
+                  <button (click)="toggleCopyTextPicker(msg)"
+                          title="Copier vers une section"
+                          class="flex-shrink-0 flex items-center gap-1 px-1.5 py-0.5 rounded border border-amber-500/20 bg-amber-500/5 text-amber-400/60 hover:text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10 transition-all">
+                    <span class="material-symbols-outlined text-[10px]">content_paste_go</span>
+                    <span class="text-[9px]">Copier vers</span>
+                    <span class="material-symbols-outlined text-[10px]">expand_more</span>
+                  </button>
+                  @if (isCopyTextPickerOpen(msg)) {
+                    <div class="absolute top-full right-0 z-50 mt-1 min-w-[200px] max-h-64 overflow-y-auto rounded-lg border border-light-border dark:border-white/15 bg-white dark:bg-[#1a1a2e] shadow-xl">
+                      @if (!sectionOptions().length) {
+                        <div class="px-3 py-3 text-xs opacity-40 text-center">Aucune section trouvée</div>
+                      }
+                      @for (sec of sectionOptions(); track sec.id) {
+                        <button (click)="selectSectionForText(msg, sec.id)"
+                                [style.padding-left.px]="12 + sec.depth * 12"
+                                class="w-full text-left px-3 py-1.5 text-xs hover:bg-light-surface dark:hover:bg-white/5 transition-colors flex items-center gap-1 text-light-text dark:text-white/70">
+                          <span class="material-symbols-outlined text-xs opacity-40">folder</span>{{ sec.name }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
               }
             </div>
 
@@ -601,6 +620,28 @@
                             Ajouter au projet
                           </button>
                         }
+                        <div class="relative flex-shrink-0 wo-copy-picker">
+                          <button type="button" (click)="$event.preventDefault(); toggleCopyMoPicker(msg, mo)"
+                                  title="Copier ce MegaOutil vers une section (répétable)"
+                                  class="flex-shrink-0 flex items-center gap-0.5 text-[10px] px-2 py-0.5 rounded-md bg-sky-500/15 border border-sky-500/30 text-sky-400 font-semibold hover:bg-sky-500/25 transition-colors">
+                            Copier vers
+                            <span class="material-symbols-outlined text-[12px]">expand_more</span>
+                          </button>
+                          @if (isCopyMoPickerOpen(msg, mo)) {
+                            <div class="absolute top-full right-0 z-50 mt-1 min-w-[200px] max-h-64 overflow-y-auto rounded-lg border border-light-border dark:border-white/15 bg-white dark:bg-[#1a1a2e] shadow-xl">
+                              @if (!sectionOptions().length) {
+                                <div class="px-3 py-3 text-xs opacity-40 text-center">Aucune section trouvée</div>
+                              }
+                              @for (sec of sectionOptions(); track sec.id) {
+                                <button type="button" (click)="$event.preventDefault(); selectSectionForMo(msg, mo, sec.id)"
+                                        [style.padding-left.px]="12 + sec.depth * 12"
+                                        class="w-full text-left px-3 py-1.5 text-xs hover:bg-light-surface dark:hover:bg-white/5 transition-colors flex items-center gap-1 text-light-text dark:text-white/70">
+                                  <span class="material-symbols-outlined text-xs opacity-40">folder</span>{{ sec.name }}
+                                </button>
+                              }
+                            </div>
+                          }
+                        </div>
                       </label>
                       @if (isMoExpanded(msg, mo)) {
                         <div class="ml-6 mr-1.5 mb-1 rounded-md border border-light-border dark:border-white/10 bg-light-bg dark:bg-black/20 p-2 overflow-x-auto">
@@ -764,6 +805,19 @@
 
   <!-- Zone de saisie -->
   <div class="flex-shrink-0 border-t border-light-border dark:border-white/8 p-3 space-y-2">
+
+    <!-- Texte sélectionné dans le document (clic droit "Envoyer au prompt") -->
+    @if (pendingContext(); as ctx) {
+      <div class="flex items-start gap-2 px-3 py-2 rounded-lg border border-violet-500/30 bg-violet-500/10">
+        <span class="material-symbols-outlined text-[13px] text-violet-400 mt-0.5 flex-shrink-0">format_quote</span>
+        <p class="flex-1 min-w-0 text-[11px] text-violet-300 leading-relaxed line-clamp-3 whitespace-pre-wrap">{{ ctx }}</p>
+        <button (click)="clearPendingContext()"
+                title="Retirer le texte sélectionné"
+                class="flex-shrink-0 p-0.5 rounded hover:bg-violet-500/20 text-violet-400/70 hover:text-violet-400 transition-colors">
+          <span class="material-symbols-outlined text-[13px]">close</span>
+        </button>
+      </div>
+    }
 
     <!-- Textarea -->
     <div class="relative rounded-xl border overflow-hidden transition-all"

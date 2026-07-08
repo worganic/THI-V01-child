@@ -1204,7 +1204,8 @@ Votre texte de prompt ici.
                   (scroll)="onTextareaScroll($event)"
                   (keyup)="onTextareaCursor($event)"
                   (mouseup)="onTextareaCursor($event)"
-                  (blur)="onTextareaBlur()"></textarea>
+                  (blur)="onTextareaBlur()"
+                  (contextmenu)="onCodeContextMenu($event)"></textarea>
 
         <!-- Alerte non bloquante : un autre utilisateur édite aussi cette section (les 2 peuvent
              continuer à écrire ; la fusion se fera via le bouton Synchro au prochain checkpoint). -->
@@ -1595,7 +1596,8 @@ Votre texte de prompt ici.
 
       <div class="preview-wrap flex-1 min-h-0 overflow-y-auto" #visu
            (click)="onVisuContainerClick($event)"
-           (keydown)="onVisuSectionKeydown($event)">
+           (keydown)="onVisuSectionKeydown($event)"
+           (contextmenu)="onVisuContextMenu($event)">
 
         <!-- Slash command menu (« / ») en mode Edition -->
         <app-slash-command-menu #visuSlashMenu
@@ -2318,6 +2320,15 @@ Votre texte de prompt ici.
                   (click)="cancelPastePreview()">Annuler</button>
         </div>
       </div>
+    </div>
+  }
+
+  <!-- Menu contextuel (clic droit sur une sélection, Code ou Édition) — "Envoyer au prompt" -->
+  @if (selectionCtxMenu) {
+    <div class="wo-selection-ctxmenu" [style.left.px]="selectionCtxMenu.x" [style.top.px]="selectionCtxMenu.y">
+      <button type="button" (mousedown)="$event.preventDefault(); sendSelectionToPromptClick()">
+        <span class="material-symbols-outlined">forum</span> Envoyer au prompt
+      </button>
     </div>
   }
 

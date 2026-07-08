@@ -14760,6 +14760,37 @@
       "prompt": "dans le tag des niveaux met du plus clair au plus foncé de 1 à 6 (background)",
       "startedAt": "2026-07-05T21:21:45.085Z",
       "completedAt": "2026-07-05T21:21:45.085Z"
+    },
+    {
+      "id": "mod-578",
+      "version": "B-0.333",
+      "date": "2026-07-08T16:58:09.772Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "projets"
+      ],
+      "features": "projets:editor|zone-code,projets:editor|zone-preview,projets:zone5-conversation",
+      "title": "Clic droit sur une sélection (Code/Édition) → \"Envoyer au prompt\" (mode IA)",
+      "description": "Ajout d'un menu contextuel (clic droit) sur une sélection de texte dans l'éditeur, en mode Code (textarea, selectionStart/selectionEnd) comme en mode Édition (contenteditable par section, API Selection) — n'intercepte le clic droit que si une sélection non vide existe, sinon le menu natif du navigateur reste affiché. L'unique entrée \"Envoyer au prompt\" émet un nouvel Output sendSelectionToPrompt (ProjetEditorZoneComponent → EditionOutilComponent → ProjetEditorComponent.onSendSelectionToPrompt), qui bascule l'onglet Zone 5 sur Conversation (dépliant le volet si réduit) puis appelle ProjetConversationComponent.attachContextText() : le texte apparaît en chip (icône guillemet, fond violet, bouton ✕) au-dessus de la zone de saisie, et le mode IA (iaMode) s'active automatiquement. À l'envoi du prompt (sendAiEdit), le texte de la chip est préfixé au prompt final envoyé à l'IA pour information (pas affiché dans la bulle du message), puis la chip est retirée. Vérifié en conditions réelles dans le navigateur (Code et Édition) : menu affiché uniquement sur sélection, chip + mode IA correctement déclenchés, texte sélectionné bien pris en compte par l'IA dans sa réponse, fermeture par ✕/clic extérieur/Échap opérationnelle. [Correction suite au retour utilisateur : la zone de saisie de la conversation restait desactivee (aucune section active) quand la selection etait faite en \"vue assemblee\" (aucun noeud choisi dans la sidebar). Le payload de sendSelectionToPrompt transporte desormais aussi le sectionId de la section contenant la selection (via sectionRanges en Code, data-section-id du bloc contenteditable en Edition) ; onSendSelectionToPrompt() active cette section (activeNodeId/highlightNodeId/scrollToNodeId) avant d'ouvrir la conversation, qui devient alors immediatement utilisable. Reverifie en navigateur dans les deux modes, en vue assemblee (sans section pre-selectionnee).] [Second retour utilisateur : la vue Admin/Launcher montrait un flot ininterrompu de GET /api/mega-outils/instances + PATCH /api/mega-outils/instances/:id (plusieurs requetes toutes les ~20-30ms, sans jamais s'arreter). Cause racine identifiee (non liee au code de cette feature) : le projet de test contient une instance ARRAY (MOID b0ed8282-...) dont le meme marqueur ARRAY: Liste des fruits (fence) est duplique dans 2 sections differentes (5.5 Securite et 5.6 Internationalisation & Contenu) -- recomputeArraySections()/recomputeTrelloSections()/recomputePromptSections() (projet-editor-zone.component.ts) tentent de resynchroniser folder_id via PATCH des que la resolution ne correspond pas a la valeur stockee ; ce PATCH declenche un evenement collab (broadcastTrelloUpdate, utilise pour tous les types d'instance) qui fait recharger les instances cote client (loadMegaOutilInstances, projet-editor.component.ts), ce qui relance immediatement le meme recompute -- boucle auto-entretenue tant que la resolution reste ambigue. Corrige par un garde-fou cote client (shouldSkipFolderCorrection, cooldown 5s par instance) dans les 3 fonctions recompute*Sections() : une correction folderId identique n'est plus reenvoyee tant que le cooldown n'est pas ecoule, ce qui casse la boucle sans changer le comportement normal (une vraie correction ponctuelle reste immediate). Verifie en reproduisant le declencheur exact (meme section, memes clics) puis en interrogeant directement mega_outil_instances en base : plus aucune mise a jour sur 5s d'observation (updated_at fige), alors qu'avant le fix la meme instance etait patchee en continu. Donnees de test dupliquees (MOID partage) non nettoyees -- hors perimetre de cette feature, mais racine du declenchement.]",
+      "files": [
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss",
+        "apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.ts",
+        "apps/projets/src/app/pages/projet-editor/projet-editor.component.html",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts",
+        "apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.html",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-preview/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "Dans le menu projet Edition, je voudrais pouvoir selectionner du texte dans le mode Edition ou Mode Code et pouvoir avoir un menu avec le clic droit. Dans ce menu on pourra \"Envoyer au prompt\". Cette action copîera le texte et le collera dans la zone de conversation au dessus de la saisie cela declenchera aussi le mode IA, lorsque l'utilisateur remplira la zone de saisie et enverra son prompt cela enverra aussi le texte copié pour information pour l'IA.",
+      "startedAt": "2026-07-08T16:58:09.772Z",
+      "completedAt": "2026-07-08T16:58:09.772Z"
     }
   ]
 }

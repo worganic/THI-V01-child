@@ -57,6 +57,7 @@ import {
       (dirtyChange)="dirtyChange.emit($event)"
       (saveStarting)="saveStarting.emit()"
       (commentRequest)="commentRequest.emit($event)"
+      (sendSelectionToPrompt)="sendSelectionToPrompt.emit($event)"
       (refresh)="refresh.emit()" />
   `,
   host: { class: 'flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden' }
@@ -113,6 +114,7 @@ export class EditionOutilComponent {
   @Output() dirtyChange = new EventEmitter<boolean>();
   @Output() saveStarting = new EventEmitter<void>();
   @Output() commentRequest = new EventEmitter<{ folderId: string; folderName: string }>();
+  @Output() sendSelectionToPrompt = new EventEmitter<{ text: string; sectionId: string | null }>();
 
   appendSection(folderName: string, level = 1): void {
     this.innerZone?.appendSection(folderName, level);

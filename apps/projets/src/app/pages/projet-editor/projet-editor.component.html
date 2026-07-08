@@ -155,6 +155,7 @@
               (dirtyChange)="onDirtyChange($event)"
               (saveStarting)="onSaveStarting()"
               (commentRequest)="onCommentRequest($event)"
+              (sendSelectionToPrompt)="onSendSelectionToPrompt($event)"
               (refresh)="onRefresh()" />
         } @else if (activeOutil()!.type === 'tests') {
           <app-tests-outil

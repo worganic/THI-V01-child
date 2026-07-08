@@ -942,7 +942,7 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
    *  (bouton "Déjà ajouté" + navigation vers la section résultat), sans les retirer de la carte.
    *  Deux cas : `promptInstanceId` (conversation MO Prompt, sous-section "PR-Res", inchangé) ou
    *  `sectionId` (chat IA classique — matérialisation directe dans la section active). */
-  async onMaterializeRequested(payload: { promptInstanceId?: string; sectionId?: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string }) {
+  async onMaterializeRequested(payload: { promptInstanceId?: string; sectionId?: string; deliverable: string; selectedMos: MaterializedMoPreview[]; transcript?: string; messageKey: string; skipMaterializedMark?: boolean }) {
     let sectionId: string | null = null;
     if (payload.promptInstanceId) {
       sectionId = (await this.editionOutil?.materializeFromConversation(payload.promptInstanceId, payload.deliverable, payload.selectedMos, payload.transcript)) ?? null;
@@ -960,13 +960,36 @@ export class ProjetEditorComponent implements OnInit, OnDestroy {
       await this.editionOutil?.materializeMoIntoSection(payload.sectionId, payload.selectedMos);
       sectionId = payload.sectionId;
     }
-    this.conversationPanel?.markMosMaterialized(payload.messageKey, payload.selectedMos, sectionId);
+    // skipMaterializedMark ("Copier vers...", répétable) : ne pas marquer le MO source "déjà
+    // ajouté" — sinon le raccourci 1-clic "Ajouter au projet" basculerait vers "Déjà ajouté"
+    // pointant sur une section différente de celle réellement visée par ce raccourci.
+    if (!payload.skipMaterializedMark) {
+      this.conversationPanel?.markMosMaterialized(payload.messageKey, payload.selectedMos, sectionId);
+    }
   }
 
   /** Relayé depuis ProjetConversationComponent : "Copier vers l'édition" sur un message IA
    *  d'une conversation Prompt → ouvre le popup d'import (pastePreview) via la zone d'édition. */
   onCopyToEditionRequested(payload: { text: string; sectionId: string }) {
     this.editionOutil?.insertTextIntoEdition(payload.text, payload.sectionId);
+  }
+
+  /** Relayé depuis ProjetEditorZoneComponent (via app-edition-outil) : clic droit sur une
+   *  sélection de texte (Code ou Édition) → "Envoyer au prompt" — ouvre l'onglet Conversation
+   *  et colle le texte au-dessus de la saisie, en activant le mode IA (voir CLAUDE.md).
+   *  Active aussi la section contenant la sélection : sans quoi la conversation (liée à
+   *  activeNodeId) resterait indisponible en "vue assemblée" (aucune section cliquée dans la
+   *  sidebar — cf. onNodeActive() qui ne touche jamais activeNodeId depuis la zone d'édition). */
+  onSendSelectionToPrompt(payload: { text: string; sectionId: string | null }) {
+    if (payload.sectionId && payload.sectionId !== this.activeNodeId()) {
+      this.activeNodeId.set(payload.sectionId);
+      this.highlightNodeId.set(payload.sectionId);
+      this.scrollToNodeId.set(null);
+      setTimeout(() => this.scrollToNodeId.set(payload.sectionId), 0);
+    }
+    this.zone5Tab.set('conversation');
+    this.zone5Collapsed.set(false);
+    setTimeout(() => this.conversationPanel?.attachContextText(payload.text), 0);
   }
 
   /** Relayé depuis ProjetConversationComponent : clic sur "Déjà ajouté" d'un MO matérialisé —
