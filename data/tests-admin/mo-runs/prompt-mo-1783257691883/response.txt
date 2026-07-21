@@ -1,0 +1,21 @@
+C'est bien noté pour votre expérience en tant que **Manager / Directeur**.
+
+Pour compléter votre profil professionnel, veuillez répondre aux questions suivantes :
+
+**Quel est votre domaine d'activité principal ?**
+- ( ) Technologie / Informatique
+- ( ) Commerce / Vente / Marketing
+- ( ) Finance / Comptabilité / Gestion
+- ( ) Ressources Humaines / Recrutement
+- ( ) Santé / Social
+- ( ) Éducation / Formation
+- ( ) Autre
+
+**Quelles sont vos compétences clés (techniques et humaines) ?**
+_____
+
+**Quels types de postes recherchez-vous actuellement (secteur, fonctions) ?**
+_____
+
+**Quels sont vos objectifs de carrière à court et moyen terme ?**
+_____

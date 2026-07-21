@@ -1,0 +1,21 @@
+**Quel est votre domaine d'activité principal ?**
+_____
+
+**Quel est votre niveau d'expérience actuel ?**
+- ( ) Débutant / Junior (0-2 ans)
+- ( ) Intermédiaire / Confirmé (2-5 ans)
+- ( ) Senior / Expert (5 ans et plus)
+- ( ) En reconversion professionnelle
+
+**Quelles sont vos compétences clés ou spécialités (techniques ou comportementales) ?**
+_____
+
+**Quels sont vos objectifs professionnels à court et moyen terme ?**
+_____
+
+**Quel type de contrat ou de collaboration recherchez-vous ?**
+- [ ] CDI (Contrat à Durée Indéterminée)
+- [ ] CDD (Contrat à Durée Limitée)
+- [ ] Freelance / Indépendant / Consultant
+- [ ] Alternance / Stage
+- [ ] Association / Entrepreneuriat

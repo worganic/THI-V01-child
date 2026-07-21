@@ -1,0 +1,31 @@
+Voici le récapitulatif de votre profil professionnel avec les informations fournies, ainsi que les questions complémentaires pour le compléter :
+
+```ARRAY: Profil Professionnel (Partiel)
+| Critère | Valeur |
+| --- | --- |
+| Niveau d'expérience | Entre 2 et 5 ans (Intermédiaire) |
+| Type de contrat recherché | CDD |
+| Mode de travail privilégié | 100% Présentiel |
+| Intitulé de poste | À renseigner |
+| Secteur d'activité | À renseigner |
+| Compétences clés | À renseigner |
+| Zone géographique | À renseigner |
+| Prétention salariale / TJM | À renseigner |
+```
+
+Afin de finaliser votre profil, merci de répondre aux questions complémentaires suivantes :
+
+**Quel est votre intitulé de poste actuel ou recherché ?**
+_____
+
+**Quel est votre secteur d'activité principal ?**
+_____
+
+**Quelles sont vos trois compétences clés ou expertises principales ?**
+_____
+
+**Dans quelle zone géographique ou ville souhaitez-vous travailler ?**
+_____
+
+**Quelle est votre prétention salariale annuelle brute souhaitée (en k€) ou votre TJM (en €) ?**
+_____

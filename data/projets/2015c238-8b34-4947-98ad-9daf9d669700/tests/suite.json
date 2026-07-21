@@ -1,0 +1,1095 @@
+{
+  "projectId": "0475514d-ed29-407d-8cbf-f837232cac46",
+  "categories": [
+    {
+      "id": "cat-1780935264977",
+      "name": "testfdfs",
+      "order": 0
+    },
+    {
+      "id": "cat-1780943415684-63t",
+      "name": "3.4.4 Résumé par catégorie",
+      "order": 1
+    },
+    {
+      "id": "cat-1781034119988-oqv",
+      "name": "5.7 Hébergement & Déploiement",
+      "order": 2
+    }
+  ],
+  "cases": [
+    {
+      "id": "tc-1780935342156",
+      "title": "affichage de la page d'accueil",
+      "description": "bla blabla",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "manual",
+      "categoryId": "cat-1780935264977",
+      "steps": [],
+      "createdAt": "2026-06-08T16:15:42.156Z",
+      "updatedAt": "2026-06-08T16:53:10.684Z",
+      "url": "http://localhost:4203/projets/0475514d-ed29-407d-8cbf-f837232cac46"
+    },
+    {
+      "id": "tc-1780935362422",
+      "title": "22222",
+      "description": "22222",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "manual",
+      "categoryId": "cat-1780935264977",
+      "steps": [],
+      "createdAt": "2026-06-08T16:16:02.422Z",
+      "updatedAt": "2026-06-08T18:14:19.622Z"
+    },
+    {
+      "id": "tc-1780936070960",
+      "title": "test 1 2",
+      "description": "test 1 2",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "manual",
+      "categoryId": "cat-1780935264977",
+      "steps": [],
+      "createdAt": "2026-06-08T16:27:50.960Z",
+      "updatedAt": "2026-06-08T16:27:54.309Z"
+    },
+    {
+      "id": "tc-1780941883870-hx2qw",
+      "title": "Vérifier les éléments de \"Mon Mockup\"",
+      "description": "Board mockup : Mon Mockup",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "mockup",
+      "sourceRef": "67d8277c-5c6f-439b-8149-5cdec19a4e3e",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Placeholder...\"",
+          "expected": "L'élément \"Placeholder...\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 5,
+          "action": "Vérifier la présence de l'élément \"Groupe\"",
+          "expected": "L'élément \"Groupe\" est visible"
+        },
+        {
+          "order": 6,
+          "action": "Vérifier la présence de l'élément \"Texte...\"",
+          "expected": "L'élément \"Texte...\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:04:43.890Z",
+      "updatedAt": "2026-06-08T18:04:43.890Z"
+    },
+    {
+      "id": "tc-1780941883886-5qao3",
+      "title": "Vérifier les éléments de \"Mon Mockup 2\"",
+      "description": "Board mockup : Mon Mockup 2",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "mockup",
+      "sourceRef": "b97ac05c-a105-4066-bbc3-f071bbbd4cc1",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"balbal\"",
+          "expected": "L'élément \"balbal\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:04:43.890Z",
+      "updatedAt": "2026-06-08T18:04:43.890Z"
+    },
+    {
+      "id": "tc-1780942447991-4qcwi",
+      "title": "Vérifier les éléments de \"Mon Mockup\"",
+      "description": "Board mockup : Mon Mockup",
+      "criticality": "majeur",
+      "status": "archived",
+      "source": "mockup",
+      "sourceRef": "67d8277c-5c6f-439b-8149-5cdec19a4e3e",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Placeholder...\"",
+          "expected": "L'élément \"Placeholder...\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 5,
+          "action": "Vérifier la présence de l'élément \"Groupe\"",
+          "expected": "L'élément \"Groupe\" est visible"
+        },
+        {
+          "order": 6,
+          "action": "Vérifier la présence de l'élément \"Texte...\"",
+          "expected": "L'élément \"Texte...\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:14:08.010Z",
+      "updatedAt": "2026-06-08T18:14:08.010Z"
+    },
+    {
+      "id": "tc-1780942448007-xbkqm",
+      "title": "Vérifier les éléments de \"Mon Mockup 2\"",
+      "description": "Board mockup : Mon Mockup 2",
+      "criticality": "majeur",
+      "status": "archived",
+      "source": "mockup",
+      "sourceRef": "b97ac05c-a105-4066-bbc3-f071bbbd4cc1",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"balbal\"",
+          "expected": "L'élément \"balbal\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:14:08.010Z",
+      "updatedAt": "2026-06-08T18:14:08.010Z"
+    },
+    {
+      "id": "tc-1780942602245-k6pj3",
+      "title": "Vérifier les éléments de \"Mon Mockup\"",
+      "description": "Board mockup : Mon Mockup",
+      "criticality": "majeur",
+      "status": "archived",
+      "source": "mockup",
+      "sourceRef": "67d8277c-5c6f-439b-8149-5cdec19a4e3e",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Placeholder...\"",
+          "expected": "L'élément \"Placeholder...\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 5,
+          "action": "Vérifier la présence de l'élément \"Groupe\"",
+          "expected": "L'élément \"Groupe\" est visible"
+        },
+        {
+          "order": 6,
+          "action": "Vérifier la présence de l'élément \"Texte...\"",
+          "expected": "L'élément \"Texte...\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:16:42.265Z",
+      "updatedAt": "2026-06-08T18:16:42.265Z"
+    },
+    {
+      "id": "tc-1780942602261-bzd7d",
+      "title": "Vérifier les éléments de \"Mon Mockup 2\"",
+      "description": "Board mockup : Mon Mockup 2",
+      "criticality": "majeur",
+      "status": "archived",
+      "source": "mockup",
+      "sourceRef": "b97ac05c-a105-4066-bbc3-f071bbbd4cc1",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"balbal\"",
+          "expected": "L'élément \"balbal\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:16:42.265Z",
+      "updatedAt": "2026-06-08T18:16:42.265Z"
+    },
+    {
+      "id": "tc-1780942603707-u8b3t",
+      "title": "Vérifier les éléments de \"Mon Mockup\"",
+      "description": "Board mockup : Mon Mockup",
+      "criticality": "majeur",
+      "status": "archived",
+      "source": "mockup",
+      "sourceRef": "67d8277c-5c6f-439b-8149-5cdec19a4e3e",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Placeholder...\"",
+          "expected": "L'élément \"Placeholder...\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 5,
+          "action": "Vérifier la présence de l'élément \"Groupe\"",
+          "expected": "L'élément \"Groupe\" est visible"
+        },
+        {
+          "order": 6,
+          "action": "Vérifier la présence de l'élément \"Texte...\"",
+          "expected": "L'élément \"Texte...\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:16:43.730Z",
+      "updatedAt": "2026-06-08T18:16:43.730Z"
+    },
+    {
+      "id": "tc-1780942603724-i5buz",
+      "title": "Vérifier les éléments de \"Mon Mockup 2\"",
+      "description": "Board mockup : Mon Mockup 2",
+      "criticality": "majeur",
+      "status": "archived",
+      "source": "mockup",
+      "sourceRef": "b97ac05c-a105-4066-bbc3-f071bbbd4cc1",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"balbal\"",
+          "expected": "L'élément \"balbal\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-08T18:16:43.730Z",
+      "updatedAt": "2026-06-08T18:16:43.730Z"
+    },
+    {
+      "id": "tc-1780943320115-6ny74",
+      "title": "Afficher les 3 blocs catégorie",
+      "description": "Vérifier que les blocs Vocabulaire, Grammaire et Conjugaison sont tous affichés dans la section 3.4.4",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Naviguer vers la section 3.4.4 Résumé par catégorie",
+          "expected": "3 blocs visuels distincts sont visibles : Vocabulaire, Grammaire, Conjugaison"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier le titre de chaque bloc",
+          "expected": "Chaque bloc affiche son nom de catégorie exact (Vocabulaire, Grammaire, Conjugaison)"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-0kpki",
+      "title": "Calculer correctement la barre de complétion",
+      "description": "Vérifier que le ratio modules terminés / total est exact pour chaque catégorie",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Relever le nombre de modules terminés et total dans la catégorie Vocabulaire depuis la source de données",
+          "expected": "Les valeurs en base correspondent aux valeurs affichées dans la barre"
+        },
+        {
+          "order": 2,
+          "action": "Compléter un module supplémentaire dans Vocabulaire puis recharger la section",
+          "expected": "Le compteur passe de X/N à (X+1)/N et la barre de progression s'allonge proportionnellement"
+        },
+        {
+          "order": 3,
+          "action": "Répéter la vérification pour Grammaire et Conjugaison",
+          "expected": "Chaque barre reflète fidèlement le ratio propre à sa catégorie"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-qmaia",
+      "title": "Afficher la barre de complétion à 0%",
+      "description": "Vérifier le rendu quand aucun module d'une catégorie n'a été complété",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Utiliser un compte neuf sans aucun module complété et accéder à la section",
+          "expected": "La barre de chaque catégorie est à 0, le compteur affiche 0/N, aucune erreur visuelle"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-7s9kz",
+      "title": "Afficher la barre de complétion à 100%",
+      "description": "Vérifier le rendu quand tous les modules d'une catégorie sont terminés",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Utiliser un compte où tous les modules de Grammaire sont complétés",
+          "expected": "La barre de Grammaire est pleine (100%), le compteur affiche N/N"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier l'absence de débordement visuel de la barre",
+          "expected": "La barre ne dépasse pas son conteneur, aucun artefact graphique"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-nslt5",
+      "title": "Afficher le dernier module consulté",
+      "description": "Vérifier que le module consulté en dernier dans chaque catégorie est bien identifié et affiché",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Consulter un module de la catégorie Conjugaison puis revenir à la section 3.4.4",
+          "expected": "Le bloc Conjugaison affiche le nom de ce module comme dernier module consulté"
+        },
+        {
+          "order": 2,
+          "action": "Consulter un second module différent de Conjugaison puis revenir",
+          "expected": "Le dernier module affiché est mis à jour avec le module le plus récemment consulté"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-sxe73",
+      "title": "Naviguer via le lien de reprise rapide",
+      "description": "Vérifier que le lien du dernier module consulté redirige correctement vers ce module",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Cliquer sur le lien de reprise rapide du dernier module dans le bloc Vocabulaire",
+          "expected": "L'utilisateur est redirigé directement vers le module indiqué, à son état de progression existant"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier l'URL ou l'état de la page cible",
+          "expected": "La page correspond bien au bon module et à la bonne catégorie"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-mo5jy",
+      "title": "Gérer l'absence de dernier module consulté",
+      "description": "Vérifier le comportement quand aucun module n'a encore été consulté dans une catégorie",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Accéder à la section avec un compte n'ayant jamais consulté de module Grammaire",
+          "expected": "Le bloc Grammaire affiche un état vide explicite (ex: 'Aucun module consulté') sans lien de reprise ni erreur"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-us0nd",
+      "title": "Afficher le badge de niveau de catégorie",
+      "description": "Vérifier que le badge de niveau est présent et visuellement distinct pour chaque catégorie",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Observer les 3 blocs sur un compte avec des niveaux différents par catégorie",
+          "expected": "Chaque bloc affiche un badge de niveau visible et le libellé correspond au niveau attendu"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-lk6gj",
+      "title": "Vérifier la cohérence du niveau affiché",
+      "description": "Vérifier que le badge de niveau dans chaque bloc correspond aux données réelles de l'utilisateur",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Relever le niveau attendu pour Vocabulaire depuis le profil ou la source de données",
+          "expected": "Le badge du bloc Vocabulaire affiche exactement ce niveau"
+        },
+        {
+          "order": 2,
+          "action": "Changer de niveau dans Vocabulaire (via progression) et recharger la section",
+          "expected": "Le badge est mis à jour et reflète le nouveau niveau"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-ovzya",
+      "title": "Afficher le badge quand le niveau est nul",
+      "description": "Vérifier le rendu du badge pour une catégorie où aucun niveau n'a été atteint",
+      "criticality": "mineur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Accéder à la section avec un compte sans niveau atteint dans Conjugaison",
+          "expected": "Le bloc Conjugaison affiche un badge 'Aucun niveau' ou un état par défaut clair, sans erreur"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-3fo00",
+      "title": "Isoler les données entre les 3 blocs",
+      "description": "Vérifier que la progression, le dernier module et le niveau de chaque bloc sont indépendants",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Compléter des modules uniquement dans Vocabulaire",
+          "expected": "Seul le bloc Vocabulaire voit sa barre de complétion évoluer ; Grammaire et Conjugaison restent inchangés"
+        },
+        {
+          "order": 2,
+          "action": "Consulter un module Grammaire puis vérifier le dernier module des 3 blocs",
+          "expected": "Seul le bloc Grammaire met à jour son dernier module consulté"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-8u7eu",
+      "title": "Rafraîchir la section après activité",
+      "description": "Vérifier que les 3 blocs reflètent bien l'état le plus récent après navigation et retour",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Compléter un module Vocabulaire, naviguer vers une autre page puis revenir à la section 3.4.4",
+          "expected": "Le bloc Vocabulaire affiche les données mises à jour (barre, dernier module) sans nécessiter de rechargement complet"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1780943320115-f2pir",
+      "title": "Afficher correctement sur mobile",
+      "description": "Vérifier que les 3 blocs sont lisibles et utilisables sur écran étroit (≤ 375px)",
+      "criticality": "mineur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "b45277fb-5589-4a50-87c8-c9d503d7d321",
+      "categoryId": "cat-1780943415684-63t",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Ouvrir la section sur un viewport de 375px de largeur",
+          "expected": "Les 3 blocs s'empilent proprement, les barres de complétion et badges sont lisibles, le lien de reprise est cliquable"
+        }
+      ],
+      "createdAt": "2026-06-08T18:30:15.684Z",
+      "updatedAt": "2026-06-08T18:30:15.684Z"
+    },
+    {
+      "id": "tc-1781034103962-c3nqc",
+      "title": "Vérifier l'échec du pipeline sur code invalide",
+      "description": "Confirmer que le pipeline CI/CD bloque le déploiement lorsque les tests ou le build échouent.",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Pousser un commit contenant une erreur de compilation volontaire",
+          "expected": "Le pipeline détecte l'erreur et passe en statut 'échec'"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier que l'environnement cible n'a pas été mis à jour",
+          "expected": "La version précédemment déployée reste active, aucun artefact défaillant n'est déployé"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la notification d'échec (email, Slack ou équivalent)",
+          "expected": "Une alerte est envoyée à l'équipe avec le motif de l'échec"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-p5pl0",
+      "title": "Vérifier les variables d'environnement par contexte",
+      "description": "Confirmer que chaque environnement utilise ses propres secrets et variables de configuration (base de données, clés API, etc.).",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Consulter les logs de démarrage de l'application sur chaque environnement",
+          "expected": "Chaque environnement affiche sa propre chaîne de connexion BDD (développement ≠ staging ≠ production)"
+        },
+        {
+          "order": 2,
+          "action": "Effectuer une requête API qui retourne le nom de l'environnement courant",
+          "expected": "La réponse indique correctement 'development', 'staging' ou 'production' selon l'URL appelée"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-ekytt",
+      "title": "Effectuer un rollback en moins de 5 minutes",
+      "description": "Valider que le retour à la version précédente peut être réalisé et complété en moins de 5 minutes après détection d'un problème.",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Déployer une nouvelle version sur production, noter l'heure de début",
+          "expected": "La nouvelle version est déployée et active"
+        },
+        {
+          "order": 2,
+          "action": "Déclencher la procédure de rollback (via pipeline, commande CLI ou interface de la plateforme d'hébergement)",
+          "expected": "La procédure de rollback démarre immédiatement"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier l'heure de fin du rollback et accéder à l'application",
+          "expected": "La version précédente est active en moins de 5 minutes ; le numéro de version affiché correspond à l'ancienne release"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-gctf7",
+      "title": "Vérifier l'intégrité de l'application après rollback",
+      "description": "Confirmer que l'application est pleinement fonctionnelle après un rollback (pas de données corrompues, sessions valides).",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Après un rollback, se connecter à l'application avec un compte utilisateur",
+          "expected": "L'authentification réussit et la session est valide"
+        },
+        {
+          "order": 2,
+          "action": "Effectuer les actions CRUD principales (créer, lire, modifier, supprimer un enregistrement)",
+          "expected": "Toutes les opérations répondent correctement sans erreur"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-ep708",
+      "title": "Vérifier l'alerte en cas d'indisponibilité",
+      "description": "S'assurer qu'une alerte est envoyée à l'équipe technique en cas de détection d'indisponibilité de l'application.",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Simuler une indisponibilité (arrêt du service ou blocage du health check endpoint)",
+          "expected": "L'outil de monitoring détecte l'indisponibilité dans les 2 minutes"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier le canal de notification configuré (email, Slack, PagerDuty, etc.)",
+          "expected": "Une alerte est reçue avec l'heure, l'environnement et la nature de l'incident"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-1g3rr",
+      "title": "Confirmer l'exécution quotidienne de la sauvegarde BDD",
+      "description": "Vérifier que la base de données est sauvegardée automatiquement une fois par jour.",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Accéder à l'interface d'administration des sauvegardes (panneau hébergeur ou script cron)",
+          "expected": "Un historique de sauvegardes est visible avec au minimum une entrée par jour sur les 7 derniers jours"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier l'horodatage de la dernière sauvegarde",
+          "expected": "La dernière sauvegarde date de moins de 24 heures"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-jmjzd",
+      "title": "Vérifier la rétention des sauvegardes sur 30 jours",
+      "description": "Confirmer que les sauvegardes sont conservées pendant 30 jours et que les sauvegardes antérieures à 30 jours sont supprimées automatiquement.",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Lister toutes les sauvegardes disponibles dans l'interface de gestion",
+          "expected": "Des sauvegardes datant de J-30 (ou proche) sont présentes dans la liste"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier qu'aucune sauvegarde antérieure à 30 jours n'est présente",
+          "expected": "Aucune sauvegarde de plus de 30 jours n'apparaît dans la liste"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-2z76e",
+      "title": "Restaurer une sauvegarde BDD et vérifier l'intégrité",
+      "description": "Valider que les sauvegardes sont utilisables en restaurant l'une d'elles sur un environnement de test et en vérifiant la cohérence des données.",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Sélectionner une sauvegarde datant de J-7 et lancer la restauration sur l'environnement de développement",
+          "expected": "La restauration se termine sans erreur"
+        },
+        {
+          "order": 2,
+          "action": "Se connecter à l'application pointant sur la base restaurée et consulter des données clés (utilisateurs, projets, etc.)",
+          "expected": "Les données affichées correspondent à l'état de la base à la date de la sauvegarde, sans corruption"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-yt7a4",
+      "title": "Vérifier le déploiement automatique sur merge en staging",
+      "description": "Confirmer que tout merge sur la branche staging déclenche automatiquement un déploiement sur l'environnement staging sans action manuelle.",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Merger une branche feature dans la branche staging via une Pull Request",
+          "expected": "Le pipeline CI/CD se déclenche automatiquement après la fusion"
+        },
+        {
+          "order": 2,
+          "action": "Accéder à l'URL de staging après la fin du pipeline",
+          "expected": "Les modifications de la branche feature sont visibles sur staging"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034103962-bjivb",
+      "title": "Vérifier que production ne se déploie pas sans validation manuelle",
+      "description": "S'assurer qu'un déploiement en production nécessite une approbation explicite (gate manuel) et ne s'effectue pas automatiquement.",
+      "criticality": "bloquant",
+      "status": "active",
+      "source": "ia",
+      "sourceRef": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+      "categoryId": "cat-1781034119988-oqv",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Merger une branche dans main sans approuver manuellement l'étape de déploiement production dans le pipeline",
+          "expected": "Le pipeline s'arrête à l'étape de validation et attend une approbation ; production n'est pas mise à jour"
+        },
+        {
+          "order": 2,
+          "action": "Accéder à l'URL de production",
+          "expected": "La version précédente est toujours active"
+        }
+      ],
+      "createdAt": "2026-06-09T19:41:59.987Z",
+      "updatedAt": "2026-06-09T19:41:59.987Z"
+    },
+    {
+      "id": "tc-1781034409523-qlmuu",
+      "title": "Vérifier les éléments de \"Mon Mockup\"",
+      "description": "Board mockup : Mon Mockup",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "mockup",
+      "sourceRef": "67d8277c-5c6f-439b-8149-5cdec19a4e3e",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Placeholder...\"",
+          "expected": "L'élément \"Placeholder...\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 5,
+          "action": "Vérifier la présence de l'élément \"Texte...\"",
+          "expected": "L'élément \"Texte...\" est visible"
+        },
+        {
+          "order": 6,
+          "action": "Vérifier la présence de l'élément \"Bofgdgfdgfd\"",
+          "expected": "L'élément \"Bofgdgfdgfd\" est visible"
+        },
+        {
+          "order": 7,
+          "action": "Vérifier la présence de l'élément \"Bouton\"",
+          "expected": "L'élément \"Bouton\" est visible"
+        },
+        {
+          "order": 8,
+          "action": "Vérifier la présence de l'élément \"Groupe\"",
+          "expected": "L'élément \"Groupe\" est visible"
+        },
+        {
+          "order": 9,
+          "action": "Vérifier la présence de l'élément \"Bouton\"",
+          "expected": "L'élément \"Bouton\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-09T19:46:49.614Z",
+      "updatedAt": "2026-06-09T19:46:49.614Z"
+    },
+    {
+      "id": "tc-1781034409611-y66hk",
+      "title": "Vérifier les éléments de \"Mon Mockup 2\"",
+      "description": "Board mockup : Mon Mockup 2",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "mockup",
+      "sourceRef": "b97ac05c-a105-4066-bbc3-f071bbbd4cc1",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"balbal\"",
+          "expected": "L'élément \"balbal\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-09T19:46:49.614Z",
+      "updatedAt": "2026-06-09T19:46:49.614Z"
+    },
+    {
+      "id": "tc-1781196299550-efn8l",
+      "title": "Vérifier les éléments de \"Mon Mockup\"",
+      "description": "Board mockup : Mon Mockup",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "mockup",
+      "sourceRef": "67d8277c-5c6f-439b-8149-5cdec19a4e3e",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Placeholder...\"",
+          "expected": "L'élément \"Placeholder...\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 5,
+          "action": "Vérifier la présence de l'élément \"Texte...\"",
+          "expected": "L'élément \"Texte...\" est visible"
+        },
+        {
+          "order": 6,
+          "action": "Vérifier la présence de l'élément \"Bofgdgfdgfd\"",
+          "expected": "L'élément \"Bofgdgfdgfd\" est visible"
+        },
+        {
+          "order": 7,
+          "action": "Vérifier la présence de l'élément \"Bouton\"",
+          "expected": "L'élément \"Bouton\" est visible"
+        },
+        {
+          "order": 8,
+          "action": "Vérifier la présence de l'élément \"Groupe\"",
+          "expected": "L'élément \"Groupe\" est visible"
+        },
+        {
+          "order": 9,
+          "action": "Vérifier la présence de l'élément \"Bouton\"",
+          "expected": "L'élément \"Bouton\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-11T16:44:59.571Z",
+      "updatedAt": "2026-06-11T16:44:59.571Z"
+    },
+    {
+      "id": "tc-1781196299568-r4itl",
+      "title": "Vérifier les éléments de \"Mon Mockup 2\"",
+      "description": "Board mockup : Mon Mockup 2",
+      "criticality": "majeur",
+      "status": "active",
+      "source": "mockup",
+      "sourceRef": "b97ac05c-a105-4066-bbc3-f071bbbd4cc1",
+      "categoryId": "",
+      "steps": [
+        {
+          "order": 1,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 2,
+          "action": "Vérifier la présence de l'élément \"balbal\"",
+          "expected": "L'élément \"balbal\" est visible"
+        },
+        {
+          "order": 3,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        },
+        {
+          "order": 4,
+          "action": "Vérifier la présence de l'élément \"Option\"",
+          "expected": "L'élément \"Option\" est visible"
+        }
+      ],
+      "createdAt": "2026-06-11T16:44:59.571Z",
+      "updatedAt": "2026-06-11T16:44:59.571Z"
+    }
+  ],
+  "updatedAt": "2026-06-11T16:44:59.575Z"
+}

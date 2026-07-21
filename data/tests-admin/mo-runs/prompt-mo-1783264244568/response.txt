@@ -1,0 +1,12 @@
+Voici le récapitulatif complet de votre profil professionnel avec toutes les informations fournies.
+
+```ARRAY: Profil Professionnel Actuel
+| Critère | Valeur |
+| --- | --- |
+| Domaine d'activité / Métier | zear |
+| Années d'expérience | Entre 2 et 5 ans |
+| Compétences / Expertises | ezr |
+| Type de structure | PME / Entreprise à taille humaine |
+| Postes / Opportunités recherchés | chef de projet informatique |
+| Attentes principales | devenir riche |
+```

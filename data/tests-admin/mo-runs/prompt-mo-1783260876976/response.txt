@@ -1,0 +1,29 @@
+Merci pour ces précisions. Votre profil professionnel est désormais complet et a été enregistré.
+
+Voici le récapitulatif de votre profil professionnel final :
+
+### ARRAY: Profil Professionnel Final
+| Critère | Informations saisies |
+| :--- | :--- |
+| **Secteur d'activité** | Développeur informatique |
+| **Niveau d'expérience** | Confirmé (5 à 10 ans) |
+| **Type de contrat** | Freelance / Indépendant / Consultant |
+| **Modalité de travail** | Présentiel |
+| **Compétences techniques (Hard Skills)** | Angular, PHP |
+| **Compétences relationnelles (Soft Skills)** | zefrsdq |
+| **Objectifs professionnels** | Devenir riche (optimisation financière) |
+
+Afin de vous accompagner dans la réalisation de vos objectifs (notamment l'optimisation financière en freelance), voici une suggestion de feuille de route :
+
+### TRELLO: Feuille de route Freelance Angular/PHP
+### À faire
+- [ ] Définir son taux journalier moyen (TJM) cible [Haute]
+- [ ] Rechercher des missions longues en présentiel [Haute]
+- [ ] Optimiser sa structure juridique pour maximiser les revenus nets [Haute]
+- [ ] Améliorer ses soft skills et sa communication client [Moyenne]
+
+### En cours
+- [ ] Mettre à jour son profil sur les plateformes de freelance (Malt, etc.) [Moyenne]
+
+### Terminé
+- [ ] Identification des technologies clés (Angular, PHP) [Basse]

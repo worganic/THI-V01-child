@@ -1,0 +1,1 @@
+Authentication via JWT (24-hour expiration, 30-day refresh token)

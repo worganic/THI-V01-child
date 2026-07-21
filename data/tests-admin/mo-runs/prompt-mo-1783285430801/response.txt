@@ -1,0 +1,21 @@
+Texte brut reçu avec succès. Passage à l'étape **Récolte**.
+
+J'ai analysé votre texte brut (qui décrit le fonctionnement de l'atelier P.A.R.S.) et j'en ai extrait les unités de sens suivantes :
+
+```ARRAY: Unités de sens extraites
+| Unité de sens (Verbatim) | Qualification |
+| --- | --- |
+| Mettre en place un environnement propice à la créativité | Objectif |
+| Écrire sans s'arrêter, sans jugement ni censure | Règle / Consigne |
+| Valider la durée de la session (10 à 15 minutes) | Consigne |
+| Recevoir l'intégralité du texte produit en un seul bloc | Règle |
+| Identifier et extraire verbatim chaque unité de sens | Consigne / Étape |
+| Présenter la liste des unités qualifiées pour validation | Étape / Règle |
+| Formater les données en une structure de listes imbriquées | Règle / Synthèse |
+```
+
+Afin de finaliser cette étape de Récolte, merci de valider ou de préciser vos modifications :
+
+**Validez-vous cette liste qualifiée d'unités de sens ?**
+- ( ) Oui, je valide l'intégralité de la liste.
+- ( ) Non, je souhaite apporter des modifications.

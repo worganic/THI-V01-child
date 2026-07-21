@@ -1,0 +1,16 @@
+Voici le récapitulatif complet de votre profil professionnel :
+
+```ARRAY: Profil Professionnel
+| Critère | Valeur |
+| --- | --- |
+| Niveau d'expérience | Entre 2 et 5 ans (Intermédiaire) |
+| Type de contrat recherché | CDD |
+| Mode de travail privilégié | 100% Présentiel |
+| Intitulé de poste | dev informatique |
+| Secteur d'activité | informatique |
+| Compétences clés | expert |
+| Zone géographique | sud |
+| Prétention salariale / TJM | 350 |
+```
+
+Votre profil est désormais complet. N'hésitez pas à me faire part de toute modification ou de tout besoin complémentaire.

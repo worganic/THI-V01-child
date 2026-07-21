@@ -1,0 +1,29 @@
+**Quel est votre domaine d'activité principal ?**
+_____
+
+**Quel est votre niveau d'expérience actuel ?**
+- ( ) Débutant / Junior (0-2 ans)
+- ( ) Intermédiaire (2-5 ans)
+- ( ) Expérimenté / Senior (5-10 ans)
+- ( ) Expert / Directeur (10 ans et plus)
+
+**Quelles sont vos compétences clés (techniques ou comportementales) ?**
+_____
+
+**Quel type de poste ou de contrat recherchez-vous ?**
+- [ ] CDI (Temps plein)
+- [ ] CDI (Temps partiel)
+- [ ] CDD / Mission temporaire
+- [ ] Freelance / Indépendant
+- [ ] Alternance / Stage
+
+**Quelles sont vos prétentions salariales annuelles (brut) ?**
+_____
+
+**Dans quelle région géographique ou ville souhaitez-vous travailler ?**
+_____
+
+**Êtes-vous ouvert au télétravail ?**
+- ( ) Oui, à 100% (Full Remote)
+- ( ) Oui, de manière hybride (quelques jours par semaine)
+- ( ) Non, je préfère le présentiel

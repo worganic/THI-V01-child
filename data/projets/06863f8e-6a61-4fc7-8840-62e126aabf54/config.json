@@ -2,7 +2,7 @@
   "projectName": "Interview utilisateur",
   "gitRemoteUrl": null,
   "createdAt": "2026-06-25T03:51:46.000Z",
-  "updatedAt": "2026-06-28T19:40:06.543Z",
+  "updatedAt": "2026-07-05T12:36:52.319Z",
   "structure": [
     {
       "id": "040ae082-8158-4d74-ab03-695ab7abbda5",
@@ -41,9 +41,9 @@
                   "name": "contenu.md",
                   "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/contenu.md",
                   "order": 1,
-                  "content": "",
+                  "content": "Le dernier rapport de l'OCDE sur l'éducation pointe un risque majeur : **la paresse métacognitive**. Les outils actuels mâchent trop le travail. L'étudiant sous-traite sa réflexion à l'IA (résumés automatiques, réponses directes), ce qui crée une **illusion de savoir**, mais une rétention d'information très faible sur le long terme. De plus, la plupart de ces outils sont *réactifs* (ils attendent que l'étudiant pose une question) plutôt que *proactifs*.",
                   "fileType": "text",
-                  "fileVersion": "811c9dc5"
+                  "fileVersion": "a73e1908"
                 },
                 {
                   "id": "021e6169-662c-4c9c-a98e-d9a2198f4072",
@@ -58,9 +58,9 @@
                       "name": "contenu.md",
                       "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-0-ajout-dun-cours/contenu.md",
                       "order": 1,
-                      "content": "",
+                      "content": "Implémentation des cours, comment implémenter les cours dans l'application, qui s'en occupe\n\n- si c'est l'étudiant : d'où vient la données, comment s'assuré de la conformité des connaissances dans ce cours\n- si c'est le prof : comment il fait pour implément son cours, qui, quoi comment",
                       "fileType": "text",
-                      "fileVersion": "811c9dc5"
+                      "fileVersion": "26bafa46"
                     },
                     {
                       "id": "81d82fc3-5570-4424-ab93-811bfe80dcba",
@@ -68,9 +68,9 @@
                       "name": "contenu-css.md",
                       "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-0-ajout-dun-cours/contenu-css.md",
                       "order": 2,
-                      "content": "",
+                      "content": "<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\">Implémentation des cours, comment implémenter les cours dans l'application, qui s'en occupe</span>\n\n- si c'est l'étudiant : d'où vient la données, comment s'assuré de la conformité des connaissances dans ce cours\n- si c'est le prof : comment il fait pour implément son cours, qui, quoi comment",
                       "fileType": "text",
-                      "fileVersion": "811c9dc5"
+                      "fileVersion": "3012eb94"
                     }
                   ]
                 },
@@ -80,9 +80,9 @@
                   "name": "contenu-css.md",
                   "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/contenu-css.md",
                   "order": 2,
-                  "content": "",
+                  "content": "Le dernier rapport de l'OCDE sur l'éducation pointe un risque majeur : **la paresse métacognitive**. Les outils actuels mâchent trop le travail. L'étudiant sous-traite sa réflexion à l'IA (résumés automatiques, réponses directes), ce qui crée une **illusion de savoir**, mais une rétention d'information très faible sur le long terme. De plus, la plupart de ces outils sont *réactifs* (ils attendent que l'étudiant pose une question) plutôt que *proactifs*.",
                   "fileType": "text",
-                  "fileVersion": "811c9dc5"
+                  "fileVersion": "a73e1908"
                 },
                 {
                   "id": "cf505a3b-8793-4686-8d5d-e79a43f3e806",
@@ -97,15 +97,44 @@
                       "name": "contenu.md",
                       "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-1-le-diagnostic-initial-dynamique/contenu.md",
                       "order": 1,
-                      "content": "",
+                      "content": "Au lieu de simplement demander \"quel est ton niveau ?\", l'IA évalue les biais d'apprentissage de l'étudiant via un mini-jeu ou une discussion de 3 minutes.\n\n- **Fonctionnalité :** Création d'un \"Passeport d'Apprentissage\" qui identifie son niveau, ses objectifs, son temps disponible et sa charge cognitive maximale.",
                       "fileType": "text",
-                      "fileVersion": "811c9dc5"
+                      "fileVersion": "79c6f608"
                     },
                     {
                       "id": "859f92e3-ca60-45aa-bc65-202ec066bdc3",
                       "type": "file",
                       "name": "contenu-css.md",
                       "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/etape-1-le-diagnostic-initial-dynamique/contenu-css.md",
+                      "order": 2,
+                      "content": "Au lieu de simplement demander \"quel est ton niveau ?\", l'IA évalue les biais d'apprentissage de l'étudiant via un mini-jeu ou une discussion de 3 minutes.\n\n- **Fonctionnalité :** Création d'un \"Passeport d'Apprentissage\" qui identifie son niveau, ses objectifs, son temps disponible et sa charge cognitive maximale.",
+                      "fileType": "text",
+                      "fileVersion": "79c6f608"
+                    }
+                  ]
+                },
+                {
+                  "id": "d7b462b6-b92e-4dfc-8b32-d912a647a41b",
+                  "type": "folder",
+                  "name": "Étape 1 : Le Diagnostic initial dynamique (2)",
+                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/Étape 1 : Le Diagnostic initial dynamique (2)",
+                  "order": 3,
+                  "children": [
+                    {
+                      "id": "2a54b430-b4ff-4c45-9848-f271411bfe3d",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/Étape 1 : Le Diagnostic initial dynamique (2)/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "811c9dc5"
+                    },
+                    {
+                      "id": "cf9029a2-eb2e-48ab-9b75-6fdeefc5a817",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/le-probleme-majeur-du-marche-actuel-opportunite/Étape 1 : Le Diagnostic initial dynamique (2)/contenu-css.md",
                       "order": 2,
                       "content": "",
                       "fileType": "text",
@@ -116,40 +145,31 @@
               ]
             },
             {
-              "id": "d7b462b6-b92e-4dfc-8b32-d912a647a41b",
-              "type": "folder",
-              "name": "Étape 1 : Le Diagnostic initial dynamique",
-              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 1 : Le Diagnostic initial dynamique",
+              "id": "7b5aba1f-0f09-4467-b866-10035c2311cc",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/contenu.md",
+              "order": 1,
+              "content": "Mise en place d’un programme de cours pour une matière.\n\n- Ces cours sont déstiné a des étudiants, peut import l'age\n- **Les générateurs de cours (Côté prof) :** Des outils comme *MagicSchool.ai*, *EdBuild AI* ou *Course AI* permettent aux formateurs de créer des quiz, des fiches et des modules e-learning complets en quelques clics.\n- **Les synthétiseurs passifs (Côté étudiant) :** Des outils comme *Google NotebookLM* ou *Quizlet* permettent à l'étudiant de glisser ses cours pour obtenir des résumés automatiques, des flashcards ou des fichiers audio explicatifs.\n- **Les tuteurs conversationnels réactifs :** *Khanmigo* (Khan Academy) ou les versions customisées de ChatGPT agissent comme des profs particuliers à qui l'on pose des questions quand on bloque.",
+              "fileType": "text",
+              "fileVersion": "0d8984f0"
+            },
+            {
+              "id": "762294b0-d832-45f8-af3d-4b417a16c258",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/contenu-css.md",
               "order": 2,
-              "children": [
-                {
-                  "id": "2a54b430-b4ff-4c45-9848-f271411bfe3d",
-                  "type": "file",
-                  "name": "contenu.md",
-                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 1 : Le Diagnostic initial dynamique/contenu.md",
-                  "order": 1,
-                  "content": "",
-                  "fileType": "text",
-                  "fileVersion": "811c9dc5"
-                },
-                {
-                  "id": "cf9029a2-eb2e-48ab-9b75-6fdeefc5a817",
-                  "type": "file",
-                  "name": "contenu-css.md",
-                  "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 1 : Le Diagnostic initial dynamique/contenu-css.md",
-                  "order": 2,
-                  "content": "",
-                  "fileType": "text",
-                  "fileVersion": "811c9dc5"
-                }
-              ]
+              "content": "Mise en place d’un programme de cours pour une matière.\n\n- Ces cours sont déstiné a des étudiants, peut import l'age\n- **Les générateurs de cours (Côté prof) :**<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> Des outils comme </span>*MagicSchool.ai*<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\">, </span>*EdBuild AI*<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> ou </span>*Course AI*<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> permettent aux formateurs de créer des quiz, des fiches et des modules e-learning complets en quelques clics.</span>\n- **Les synthétiseurs passifs (Côté étudiant) :**<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> Des outils comme </span>*Google NotebookLM*<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> ou </span>*Quizlet*<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> permettent à l'étudiant de glisser ses cours pour obtenir des résumés automatiques, des flashcards ou des fichiers audio explicatifs.</span>\n- **Les tuteurs conversationnels réactifs :**<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> </span>*Khanmigo*<span style=\"color:var(--p-color, inherit);font-size:var(--p-size, inherit)\"> (Khan Academy) ou les versions customisées de ChatGPT agissent comme des profs particuliers à qui l'on pose des questions quand on bloque.</span>",
+              "fileType": "text",
+              "fileVersion": "848e7d30"
             },
             {
               "id": "7a5bceb1-60c0-4c30-9a53-078fa0b314a2",
               "type": "folder",
               "name": "Étape 2 : L'Apprentissage par \"Maïeutique\" (Méthode Socratique)",
               "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/etape-2-lapprentissage-par-maieutique-methode-socratique",
-              "order": 3,
+              "order": 2,
               "children": [
                 {
                   "id": "8dfd19ad-da64-422e-a36c-bad5e9833e13",
@@ -178,7 +198,7 @@
               "type": "folder",
               "name": "Étape 3 : Le \"Contrôle Anti-Illusion\" (Évaluation continue)",
               "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 3 : Le \"Contrôle Anti-Illusion\" (Évaluation continue)",
-              "order": 4,
+              "order": 3,
               "children": [
                 {
                   "id": "5218feac-4cdf-417b-8054-6296d6659345",
@@ -207,7 +227,7 @@
               "type": "folder",
               "name": "Étape 4 : Le Moteur de Relance Proactif (Répétition Espacée)",
               "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/Étape 4 : Le Moteur de Relance Proactif (Répétition Espacée)",
-              "order": 5,
+              "order": 4,
               "children": [
                 {
                   "id": "be407ef0-58dc-4287-9960-b9616d8c7d2e",
@@ -230,26 +250,6 @@
                   "fileVersion": "811c9dc5"
                 }
               ]
-            },
-            {
-              "id": "7b5aba1f-0f09-4467-b866-10035c2311cc",
-              "type": "file",
-              "name": "contenu.md",
-              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/contenu.md",
-              "order": 1,
-              "content": "",
-              "fileType": "text",
-              "fileVersion": "811c9dc5"
-            },
-            {
-              "id": "762294b0-d832-45f8-af3d-4b417a16c258",
-              "type": "file",
-              "name": "contenu-css.md",
-              "path": "edition/cours-de-maths/pitch-de-la-typo-du-projet/contenu-css.md",
-              "order": 2,
-              "content": "",
-              "fileType": "text",
-              "fileVersion": "811c9dc5"
             }
           ]
         },
@@ -264,6 +264,45 @@
           "fileVersion": "811c9dc5"
         }
       ]
+    },
+    {
+      "id": "e5e8a44b-f08f-4835-bb8f-ee14d30bdefa",
+      "type": "folder",
+      "name": "test",
+      "path": "edition/test",
+      "order": 2,
+      "children": [
+        {
+          "id": "e7af31ce-4549-4163-a83f-858034bbbad5",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/test/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text",
+          "fileVersion": "811c9dc5"
+        },
+        {
+          "id": "21ebb9e4-6042-46b0-9ead-1f96a3905ad7",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/test/contenu-css.md",
+          "order": 2,
+          "content": "",
+          "fileType": "text",
+          "fileVersion": "811c9dc5"
+        },
+        {
+          "id": "8f163b0e-90b0-453d-a96b-232e2a1bd8c5",
+          "type": "file",
+          "name": "prompt-Cours.md",
+          "path": "edition/test/prompt-Cours.md",
+          "order": 2,
+          "content": "```PROMPT: Cours {{MOID:a4cfcfb6-9386-4085-af79-04fb0d4252da}}\nMODE: guided\nSYSTEM: \n\n---\n\nVotre prompt ici.\n```",
+          "fileType": "text",
+          "fileVersion": "6a0dbac8"
+        }
+      ]
     }
   ],
   "outils": [
@@ -272,7 +311,8 @@
       "type": "edition",
       "name": "Edition",
       "rootFolderIds": [
-        "040ae082-8158-4d74-ab03-695ab7abbda5"
+        "040ae082-8158-4d74-ab03-695ab7abbda5",
+        "e5e8a44b-f08f-4835-bb8f-ee14d30bdefa"
       ],
       "createdAt": "2026-06-25T03:51:46.000Z"
     }

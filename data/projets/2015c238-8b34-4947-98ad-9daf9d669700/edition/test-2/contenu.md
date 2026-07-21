@@ -1,0 +1,1 @@
+Les températures à Paris le 7 juillet 2026 ont atteint des maximales de 34°C à 36°C, plaçant la ville sous vigilance orange canicule.

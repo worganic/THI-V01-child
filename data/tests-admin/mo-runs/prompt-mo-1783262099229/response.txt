@@ -1,0 +1,39 @@
+Voici le récapitulatif de votre profil professionnel actuel, basé sur vos premières réponses :
+
+```ARRAY: Profil Professionnel Actuel
+| Critère | Valeur |
+| --- | --- |
+| Domaine d'activité | Vente / Commerce |
+| Niveau d'expérience | Senior (Plus de 8 ans) |
+| Structure souhaitée | PME / Entreprise à taille humaine |
+```
+
+Afin de compléter votre profil et de mieux cibler vos opportunités, pouvez-vous répondre aux questions suivantes ?
+
+**Quelles sont vos compétences clés (techniques ou méthodologiques) dans le domaine de la Vente et du Commerce ?**
+_____
+
+**Quels types de postes (ex: Directeur Commercial, Responsable Grand Compte, Business Developer...) ou de responsabilités recherchez-vous actuellement ?**
+_____
+
+**Quelle est votre modalité de travail préférée concernant le présentiel et le télétravail ?**
+- ( ) 100% Présentiel
+- ( ) Hybride (quelques jours de télétravail par semaine)
+- ( ) 100% Télétravail (Full Remote)
+
+**Quelles sont vos attentes salariales ou votre TJM (Tarif Journalier Moyen) cible ?**
+_____
+
+Voici également un aperçu des prochaines étapes pour votre accompagnement :
+
+```TRELLO: Plan d'action - Profil & Recherche
+### À faire
+- [ ] Préciser les compétences clés et les postes ciblés `[Haute]`
+- [ ] Définir les attentes salariales ou le TJM `[Moyenne]`
+### En cours
+- [ ] Compléter le profil professionnel `[Haute]`
+### Terminé
+- [ ] Sélectionner le domaine d'activité (Vente / Commerce) `[Basse]`
+- [ ] Définir le niveau d'expérience (Senior) `[Basse]`
+- [ ] Choisir le type de structure (PME) `[Basse]`
+```

@@ -1,0 +1,44 @@
+{
+  "id": "run-1780941650725-z1kxk",
+  "projectId": "0475514d-ed29-407d-8cbf-f837232cac46",
+  "date": "2026-06-08T18:00:50.725Z",
+  "mode": "manual",
+  "status": "completed",
+  "testerName": "johann",
+  "caseIds": [
+    "tc-1780935342156",
+    "tc-1780935362422",
+    "tc-1780936070960"
+  ],
+  "results": [
+    {
+      "caseId": "tc-1780935342156",
+      "status": "fail",
+      "testedBy": "johann",
+      "testedAt": "2026-06-08T18:00:52.430Z"
+    },
+    {
+      "caseId": "tc-1780935362422",
+      "status": "pass",
+      "testedBy": "johann",
+      "testedAt": "2026-06-08T18:00:54.132Z"
+    },
+    {
+      "caseId": "tc-1780936070960",
+      "status": "fail",
+      "testedBy": "johann",
+      "testedAt": "2026-06-08T18:00:55.355Z"
+    }
+  ],
+  "summary": {
+    "total": 3,
+    "pass": 1,
+    "fail": 2,
+    "skip": 0,
+    "pending": 0,
+    "score": 33,
+    "goNoGo": "NO-GO",
+    "durationMs": 4634
+  },
+  "createdAt": "2026-06-08T18:00:50.725Z"
+}

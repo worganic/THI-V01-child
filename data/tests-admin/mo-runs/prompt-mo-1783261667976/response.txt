@@ -1,0 +1,36 @@
+**Quel est votre domaine d'activité principal ?**
+- ( ) Technologie / Informatique
+- ( ) Marketing / Communication
+- ( ) Finance / Comptabilité
+- ( ) Ressources Humaines
+- ( ) Vente / Commerce
+- ( ) Santé / Social
+- ( ) Enseignement / Formation
+- ( ) Autre
+
+**Quel est votre niveau d'expérience dans ce domaine ?**
+- ( ) Débutant (0 - 2 ans)
+- ( ) Intermédiaire (2 - 5 ans)
+- ( ) Confirmé / Senior (5 - 10 ans)
+- ( ) Expert / Directeur (10 ans et plus)
+
+**Quelles sont vos compétences clés ou spécialités techniques/métiers ?**
+_____
+
+**Quel est votre poste actuel ou le dernier poste que vous avez occupé ?**
+_____
+
+**Dans quel type d'environnement ou structure préférez-vous travailler ?**
+- [ ] Grande entreprise / Groupe international
+- [ ] PME / ETI
+- [ ] Startup
+- [ ] Travailleur indépendant / Freelance
+- [ ] Secteur public / Association
+- [ ] Travail à distance (Full Remote)
+
+**Quels sont vos objectifs professionnels principaux pour les mois à venir ?**
+- [ ] Trouver un nouvel emploi
+- [ ] Obtenir une promotion ou évoluer en interne
+- [ ] Changer de secteur ou de métier (reconversion)
+- [ ] Lancer mon activité indépendante
+- [ ] Acquérir de nouvelles compétences / Formation

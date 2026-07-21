@@ -1,0 +1,13 @@
+Voici les informations concernant la date du jour et la météo de demain à Marseille.
+
+```ARRAY: Prévisions Météo Marseille
+| Paramètre | Détails |
+| --- | --- |
+| Date du jour | Dimanche 5 juillet 2026 |
+| Date de prévision | Lundi 6 juillet 2026 |
+| Ville | Marseille |
+| Temps prévu | Très ensoleillé et sec |
+| Températures | 23°C (Min) / 33°C (Max) |
+| Vent | Faible à modéré de secteur sud |
+| Vigilance | Jaune Canicule |
+```

@@ -1,0 +1,23 @@
+Texte brut reçu avec succès. Analyse et qualification en cours...
+
+Voici la récolte des unités de sens extraites de votre texte :
+
+```ARRAY: Unités de sens récoltées
+| Unité de sens (Verbatim) | Qualification |
+| --- | --- |
+| Mettre en place un environnement propice à la créativité | Objectif |
+| Définir un cadre clair pour la session d'écriture libre | Objectif |
+| Écrire sans s'arrêter, sans jugement ni censure | Règle |
+| Valider la durée de la session (suggerant 10 à 15 minutes) | Instruction |
+| Lancer la session d'écriture et produire un texte brut | Objectif |
+| Ne s'arrêter qu'à la fin du temps imparti | Règle |
+| Recevoir l'intégralité du texte produit en un seul bloc | Attente |
+| Analyser le texte brut pour extraire et qualifier toutes les unités | Objectif |
+| Assigner une qualification (ex: Idée, Problème, Émotion, Frustration) | Instruction |
+| Présenter la liste des unités qualifiées au business owner | Instruction |
+| Compiler la liste finale en un document de synthèse structuré | Objectif |
+```
+
+**Validez-vous cette liste qualifiée d'unités de sens pour passer à la synthèse ?**
+- ( ) Oui, je valide la récolte et je souhaite générer la synthèse
+- ( ) Non, je souhaite apporter des modifications

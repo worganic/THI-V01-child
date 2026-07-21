@@ -1,0 +1,6 @@
+- HTTPS obligatoire (HSTS activé)
+- Authentification via JWT (expiration 24h, refresh token 30 jours)
+- Protection C[SRF sur tous les **formulairces**](https://test.Com)
+- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc
+- Données personnelles chiffrées au repos (RGPD)
+- Politique CSP stricte définie dans les headers HTTP

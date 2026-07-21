@@ -323,3 +323,16 @@ export class ProjectFilesService {
     return firstValueFrom(this.http.delete(`${this.apiUrl}/api/file-projects/${projectName}/outils/${outilId}`, { headers: this.h() }));
   }
 }
+
+/** Aplatit l'arborescence de sections (dossiers uniquement) en liste plate {id, name, depth} —
+ *  calculée côté client à partir d'un `files` déjà chargé (pas de nouvel appel serveur). Utilisée
+ *  par le sélecteur "Copier vers..." de la conversation IA. */
+export function flattenFolders(nodes: FileNode[], depth = 0): { id: string; name: string; depth: number }[] {
+  const result: { id: string; name: string; depth: number }[] = [];
+  for (const node of nodes) {
+    if (node.type !== 'folder') continue;
+    result.push({ id: node.id, name: node.name, depth });
+    if (node.children?.length) result.push(...flattenFolders(node.children, depth + 1));
+  }
+  return result;
+}

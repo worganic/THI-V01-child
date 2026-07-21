@@ -1,0 +1,42 @@
+{
+  "projectName": "TEST-conflit-live",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-07-06T15:35:09.000Z",
+  "updatedAt": "2026-07-06T16:42:22.585Z",
+  "structure": [
+    {
+      "id": "447881ea-a7dc-4e21-ae30-8402fcaec31c",
+      "type": "folder",
+      "name": "Section-Test",
+      "path": "edition/section-test",
+      "order": 1,
+      "children": [
+        {
+          "id": "ddf1a7da-47be-49eb-baeb-4849a6aad3e5",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/section-test/contenu.md",
+          "order": 1
+        },
+        {
+          "id": "79de6e30-8798-4be9-8396-16216942fba8",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/section-test/contenu-css.md",
+          "order": 2
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "6d1e0e2b-9345-43a9-a246-aa847531a7d8",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "447881ea-a7dc-4e21-ae30-8402fcaec31c"
+      ],
+      "createdAt": "2026-07-06T15:35:09.000Z"
+    }
+  ]
+}

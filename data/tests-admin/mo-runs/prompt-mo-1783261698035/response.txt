@@ -1,0 +1,42 @@
+```ARRAY: Profil Professionnel Actuel
+| Critère | Détail |
+| --- | --- |
+| Domaine d'activité | Ressources Humaines |
+| Expérience | Débutant (0 - 2 ans) |
+| Cadre privilégié | Startup |
+| Objectif principal | Changer de secteur ou de métier (reconversion) |
+```
+
+Afin de préciser votre projet de reconversion, merci de répondre aux questions suivantes :
+
+**Vers quels domaines ou métiers envisagez-vous de vous reconvertir ?**
+- [ ] Métiers de la Tech (Développement, Data, Product...)
+- [ ] Marketing Digital / Growth Hacking
+- [ ] Vente / Business Development
+- [ ] Gestion de projet / Opérations
+- [ ] Autre / Je ne sais pas encore
+
+**Quelles sont les compétences acquises en RH que vous souhaitez valoriser (soft skills, recrutement, relations humaines) ?**
+_____
+
+**De quel temps disposez-vous pour cette transition (formation, recherche) ?**
+- ( ) Immédiatement disponible (plein temps)
+- ( ) En parallèle de mon activité actuelle (temps partiel)
+- ( ) D'ici 3 à 6 mois
+- ( ) Plus de 6 mois
+
+Voici une proposition de feuille de route pour initier votre démarche :
+
+```TRELLO: Plan de Reconversion en Startup
+### À faire
+- [ ] Identifier 3 métiers cibles dans l'écosystème Startup [Haute]
+- [ ] Lister les compétences transférables des RH vers ces métiers [Moyenne]
+- [ ] Participer à des webinaires ou événements Meetup sur l'écosystème Tech/Startup [Moyenne]
+
+### En cours
+- [ ] Réaliser un bilan de compétences ou un point de carrière [Haute]
+- [ ] Mettre à jour son profil LinkedIn pour orienter le discours vers la reconversion [Haute]
+
+### Terminé
+- [ ] Définir le cadre cible (Startup) et le niveau d'expérience de départ [Faible]
+```

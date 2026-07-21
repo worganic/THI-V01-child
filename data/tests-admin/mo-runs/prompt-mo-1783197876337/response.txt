@@ -1,0 +1,30 @@
+Voici le profil professionnel complété ainsi que votre plan d'action personnalisé :
+
+```ARRAY: Profil professionnel final
+| Critère | Informations saisies |
+| :--- | :--- |
+| Domaine d'activité | Technologie et Informatique |
+| Niveau d'expérience | Étudiant / Jeune diplômé |
+| Type de postes recherchés | Freelance / Mission de conseil |
+| Préférence de télétravail | Présentiel complet |
+| Compétences clés | Expérience |
+| Objectifs professionnels | Intégrer une grande entreprise |
+```
+
+Afin de vous accompagner au mieux dans votre projet d'intégrer une grande entreprise en tant que freelance/consultant en présentiel, voici un plan d'action adapté :
+
+```TRELLO: Plan d'action - Intégration Grande Entreprise
+### À faire
+- [ ] Cibler et lister 10 grandes entreprises dans votre région [Haute]
+- [ ] Adapter votre CV et portfolio pour valoriser vos expériences [Haute]
+- [ ] Optimiser votre profil LinkedIn pour le freelancing en présentiel [Moyenne]
+- [ ] Vous inscrire sur des plateformes de freelancing adaptées aux grands comptes [Moyenne]
+
+### En cours
+- [ ] Développer votre réseau professionnel auprès de recruteurs de grands groupes [Moyenne]
+
+### Terminé
+- [ ] Clarification des objectifs professionnels [Basse]
+```
+
+Bonne chance dans vos démarches ! Je reste à votre disposition si vous souhaitez affiner une étape ou simuler un entretien d'embauche.

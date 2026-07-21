@@ -1,0 +1,16 @@
+Bienvenue dans l'étape de Préparation de l'atelier P.A.R.S.
+
+La règle d'or de l'écriture libre (Freewriting) est simple : écrivez en continu sans jamais vous arrêter, sans vous juger ni vous corriger. L'objectif est de libérer le flux d'idées, pas de chercher la perfection.
+
+Afin de configurer au mieux cette session, merci de répondre aux questions suivantes :
+
+**Quelle durée souhaitez-vous valider pour cette session d'écriture ?**
+- ( ) 10 minutes
+- ( ) 15 minutes (Recommandé)
+- ( ) Autre durée
+
+**Quel est le point de départ (déclencheur) de votre écriture ?**
+_____
+
+**Confirmez-vous vouloir démarrer la session avec ces règles ?**
+- ( ) Oui, je valide et je suis prêt

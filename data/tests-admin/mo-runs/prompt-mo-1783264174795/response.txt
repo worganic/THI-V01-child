@@ -1,0 +1,20 @@
+Voici un récapitulatif de votre profil avec les informations fournies, suivi des questions restantes pour compléter votre profil professionnel.
+
+```ARRAY: Profil Professionnel Actuel
+| Critère | Valeur |
+| --- | --- |
+| Années d'expérience | Entre 2 et 5 ans |
+| Type de structure | PME / Entreprise à taille humaine |
+```
+
+**Quel est votre domaine d'activité principal ou votre métier actuel ?**
+_____
+
+**Quelles sont vos principales compétences techniques ou expertises ?**
+_____
+
+**Quels types de postes ou opportunités recherchez-vous actuellement ?**
+_____
+
+**Quelles sont vos attentes principales concernant votre prochain défi professionnel ?**
+_____

@@ -1,0 +1,761 @@
+{
+  "projectName": "avion",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-05-28T12:00:00.000Z",
+  "updatedAt": "2026-06-27T19:07:36.341Z",
+  "structure": [
+    {
+      "id": "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+      "type": "folder",
+      "name": "Cahier des Charges — App Angular \"Apprendre l'anglais\"",
+      "path": "edition/cahier-des-charges-app-angular-apprendre-langlais",
+      "order": 1,
+      "children": [
+        {
+          "id": "ef5f74f6-6299-498b-a256-8be148fac38b",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text"
+        },
+        {
+          "id": "36a7a07a-d15b-47af-85de-cc0c14613bce",
+          "type": "folder",
+          "name": "1. Contexte & Objectif",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/1-contexte-objectif",
+          "order": 1,
+          "children": [
+            {
+              "id": "3a529a83-7f5a-49b5-bbed-41cc969b803d",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/1-contexte-objectif/contenu.md",
+              "order": 1,
+              "content": "Application web Angular **standalone pour ap**prendre l'anglais en autonomie, niveaux A1 à C1. **vxffdsgvfdgfd**",
+              "fileType": "text"
+            },
+            {
+              "id": "5ddc59e9-4df5-45e8-82a0-032cd51580e7",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/1-contexte-objectif/contenu-css.md",
+              "order": 2,
+              "content": "Application web Angular **standalone pour ap**prendre l'anglais en autonomie, niveaux A1 à C1. **vxffdsgvfdgfd**",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "e5c24b08-d712-4635-a986-517ad028ea0c",
+          "type": "folder",
+          "name": "2. Utilisateurs cibles",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/2-utilisateurs-cibles",
+          "order": 2,
+          "children": [
+            {
+              "id": "1787eaf6-c7b3-4686-b521-7baa378b22c1",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/2-utilisateurs-cibles/contenu.md",
+              "order": 1,
+              "content": "Francophones adultes et adolescents souhaitant progresser en anglais.",
+              "fileType": "text"
+            },
+            {
+              "id": "5f4930de-e684-4313-b773-c8a108d76b85",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/2-utilisateurs-cibles/contenu-css.md",
+              "order": 2,
+              "content": "Francophones adultes et adolescents souhaitant progresser en anglais.",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "a0904fdf-a169-4e18-b7c2-8e1d99092bb6",
+          "type": "folder",
+          "name": "3. Fonctionnalités principales",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales",
+          "order": 3,
+          "children": [
+            {
+              "id": "2fdc740e-eb6f-4b6e-8688-577407f40e2c",
+              "type": "folder",
+              "name": "3.1 Authentification",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/31-authentification",
+              "order": 1,
+              "children": [
+                {
+                  "id": "7a725d22-8ec0-4a1e-893b-89acd38ffa62",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/31-authentification/contenu.md",
+                  "order": 1,
+                  "content": "- Inscription / connexion (email + mot de passe)********\n\n- Profil avec niveau sélectionné et progression sauvegardée",
+                  "fileType": "text"
+                },
+                {
+                  "id": "79e4a023-994b-4831-8ed8-bf25b0ae18ca",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/31-authentification/contenu-css.md",
+                  "order": 2,
+                  "content": "- Inscription / connexion (email + mot de passe)********\n\n- Profil avec niveau sélectionné et progression sauvegardée",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "c2cc83c7-b31e-4e80-b80a-5fb69da72ef3",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/contenu.md",
+              "order": 1,
+              "content": "",
+              "fileType": "text"
+            },
+            {
+              "id": "755d7092-6f4b-4997-bc62-0318875895a4",
+              "type": "folder",
+              "name": "3.2 Leçons",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/3.2 Leçons",
+              "order": 2,
+              "children": [
+                {
+                  "id": "cac6605f-749c-4f77-9aaf-6b53c61bbc76",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/3.2 Leçons/contenu.md",
+                  "order": 1,
+                  "content": "- Modules thématiques organisés en 3 catégories principales : **vocabulaire**, **grammaire**, **conjugaison**\n- Contenu structuré par niveau CECRL (A1 → C1), soit 5 niveaux distincts\n- Chaque niveau contient entre 8 et 12 modules thématiques\n- Chaque module est composé de :\n- Une page d'introduction (objectifs, durée estimée, prérequis)\n- Entre 3 et 6 leçons séquentielles\n- Une leçon de révision récapitulative\n- Un quiz de validation pour déverrouiller le module suivant\n- Progression linéaire avec déverrouillage des modules (un module doit être complété à ≥ 70% pour débloquer le suivant)\n- Chaque leçon inclut :\n- Un contenu théorique court (texte + illustrations ou exemples contextualisés)\n- Des exemples audio natifs (via Free Dictionary API ou fichiers embarqués)\n- Des encadrés \"Astuce\" et \"Erreur fréquente\" pour guider l'apprenant\n- Indicateur de progression visuel par module (barre de complétion + badges de niveau)\n- Marquage \"Déjà vu\" et \"À réviser\" sur chaque leçon, alimentant l'algorithme de répétition espacée (section 3.5)\n- Mode hors-ligne : contenu des leçons téléchargeable pour consultation sans connexion (PWA, cf. section 5)\n- Estimation du temps de lecture affichée en en-tête de chaque leçon (ex. : \"5 min\")\n-",
+                  "fileType": "text"
+                },
+                {
+                  "id": "b53306c8-324d-4129-8151-63a49ed1ead3",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/3.2 Leçons/contenu-css.md",
+                  "order": 2,
+                  "content": "- Modules thématiques organisés en 3 catégories principales : **vocabulaire**, **grammaire**, **conjugaison**\n- Contenu structuré par niveau CECRL (A1 → C1), soit 5 niveaux distincts\n- Chaque niveau contient entre 8 et 12 modules thématiques\n- Chaque module est composé de :\n- Une page d'introduction (objectifs, durée estimée, prérequis)\n- Entre 3 et 6 leçons séquentielles\n- Une leçon de révision récapitulative\n- Un quiz de validation pour déverrouiller le module suivant\n- Progression linéaire avec déverrouillage des modules (un module doit être complété à ≥ 70% pour débloquer le suivant)\n- Chaque leçon inclut :\n- Un contenu théorique court (texte + illustrations ou exemples contextualisés)\n- Des exemples audio natifs (via Free Dictionary API ou fichiers embarqués)\n- Des encadrés \"Astuce\" et \"Erreur fréquente\" pour guider l'apprenant\n- Indicateur de progression visuel par module (barre de complétion + badges de niveau)\n- Marquage \"Déjà vu\" et \"À réviser\" sur chaque leçon, alimentant l'algorithme de répétition espacée (section 3.5)\n- Mode hors-ligne : contenu des leçons téléchargeable pour consultation sans connexion (PWA, cf. section 5)\n- Estimation du temps de lecture affichée en en-tête de chaque leçon (ex. : \"5 min\")\n-",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "43779f27-e4e8-48b1-8b79-0b3065508dc2",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/contenu-css.md",
+              "order": 7,
+              "content": "",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "3f4b7ad2-27d6-4c08-b15e-c61662518adc",
+          "type": "folder",
+          "name": "4. Stack technique",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/4-stack-technique",
+          "order": 4,
+          "children": [
+            {
+              "id": "6bd8c723-eeba-49b9-a327-5e4f9c09b738",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/4-stack-technique/contenu.md",
+              "order": 1,
+              "content": "- Angular 17+ (standalone components, Signals)\n- TailwindCSS\n- Firebase (auth + Firestore)\n- API externe : Free Dictionary API pour définitions/audio",
+              "fileType": "text"
+            },
+            {
+              "id": "a5298581-9ee8-4f02-8e65-9bf404e18cb2",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/4-stack-technique/contenu-css.md",
+              "order": 2,
+              "content": "- Angular 17+ (standalone components, Signals)\n- TailwindCSS\n- Firebase (auth + Firestore)\n- API externe : Free Dictionary API pour définitions/audio",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "dfde931d-a84a-4a49-8af8-ece9c085ef55",
+          "type": "folder",
+          "name": "5. Contraintes",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes",
+          "order": 5,
+          "children": [
+            {
+              "id": "792c4747-0c36-4564-9c1d-b96d96b1307c",
+              "type": "folder",
+              "name": "5.1 Performance",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/51-performance",
+              "order": 1,
+              "children": [
+                {
+                  "id": "cfdaf51c-4007-41e1-bfb1-f5181886591d",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/51-performance/contenu.md",
+                  "order": 1,
+                  "content": "- Responsive mobile-first (breakpoints : 320px, 768px, 1024px, 1440px)\n- Temps de chargement initial < 3s sur connexion 4G moyenne (lazy loading par module)\n- First Contentful Paint (FCP) < 1.8s\n- Time to Interactive (TTI) < 3.5s\n- Core Web Vitals : LCP < 2.5s, CLS < 0.1, FID < 100ms\n- Bundle JS principal < 200 Ko (gzip)\n- Images optimisées : WebP avec fallback JPEG/PNG, compression automatique",
+                  "fileType": "text"
+                },
+                {
+                  "id": "dc934826-6278-4057-b409-90fb230f5827",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/51-performance/contenu-css.md",
+                  "order": 2,
+                  "content": "- Responsive mobile-first (breakpoints : 320px, 768px, 1024px, 1440px)\n- Temps de chargement initial < 3s sur connexion 4G moyenne (lazy loading par module)\n- First Contentful Paint (FCP) < 1.8s\n- Time to Interactive (TTI) < 3.5s\n- Core Web Vitals : LCP < 2.5s, CLS < 0.1, FID < 100ms\n- Bundle JS principal < 200 Ko (gzip)\n- Images optimisées : WebP avec fallback JPEG/PNG, compression automatique",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "f05e38c1-ac18-4254-a134-c96521edd5ff",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/contenu.md",
+              "order": 1,
+              "content": "",
+              "fileType": "text"
+            },
+            {
+              "id": "a7511077-35fa-47d8-b8e0-8049bcb96399",
+              "type": "folder",
+              "name": "5.2 Accessibilité",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/52-accessibilite",
+              "order": 2,
+              "children": [
+                {
+                  "id": "36b5f84c-c039-483a-98bd-d1af2ee66e31",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/52-accessibilite/contenu.md",
+                  "order": 1,
+                  "content": "- Score Lighthouse Accessibilité ≥ 90\n- Conformité WCAG 2.1 niveau AA\n- Navigation clavier complète (focus visible, ordre logique)\n- Compatibilité lecteurs d'écran (NVDA, VoiceOver)\n- Contrastes de couleurs : ratio ≥ 4.5:1 pour le texte courant, ≥ 3:1 pour les grands titres\n- Attributs ARIA sur tous les composants interactifs\n- Textes alternatifs obligatoires sur toutes les images pédagogiques",
+                  "fileType": "text"
+                },
+                {
+                  "id": "7a77e4a3-07ed-4070-8702-928c8204e516",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/52-accessibilite/contenu-css.md",
+                  "order": 2,
+                  "content": "- Score Lighthouse Accessibilité ≥ 90\n- Conformité WCAG 2.1 niveau AA\n- Navigation clavier complète (focus visible, ordre logique)\n- Compatibilité lecteurs d'écran (NVDA, VoiceOver)\n- Contrastes de couleurs : ratio ≥ 4.5:1 pour le texte courant, ≥ 3:1 pour les grands titres\n- Attributs ARIA sur tous les composants interactifs\n- Textes alternatifs obligatoires sur toutes les images pédagogiques",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "63bbb1da-f495-4587-9c15-86e6b8953319",
+              "type": "folder",
+              "name": "5.3 PWA & Mode hors-ligne",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.3 PWA & Mode hors-ligne",
+              "order": 3,
+              "children": [
+                {
+                  "id": "b78a7636-2a07-48e8-9216-80d16c4b8aad",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.3 PWA & Mode hors-ligne/contenu.md",
+                  "order": 1,
+                  "content": "- PWA obligatoire : manifest.json + Service Worker\n- Mode hors-ligne pour les modules de révision déjà consultés (cache via IndexedDB)\n- Synchronisation différée des résultats d'exercices au retour en ligne\n\n- \n- Installation sur écran d'accueil (Android / iOS)\n- Mise à jour silencieuse du cache en arrière-plan\n\n****### 5.4b nouveau menu h3 après 5.4 {{SID:92b40c70-0a8d-4fe8-9a11-a6fc433a78b0}}\nddsq qsdsq\nqds QS\n\nDQSdsq",
+                  "fileType": "text"
+                },
+                {
+                  "id": "243a1ace-e547-4d40-b841-36860c202004",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.3 PWA & Mode hors-ligne/contenu-css.md",
+                  "order": 2,
+                  "content": "- PWA obligatoire : manifest.json + Service Worker\n- Mode hors-ligne pour les modules de révision déjà consultés (cache via IndexedDB)\n- Synchronisation différée des résultats d'exercices au retour en ligne\n\n- \n- Installation sur écran d'accueil (Android / iOS)\n- Mise à jour silencieuse du cache en arrière-plan\n\n****### 5.4b nouveau menu h3 après 5.4 {{SID:92b40c70-0a8d-4fe8-9a11-a6fc433a78b0}}\nddsq qsdsq\nqds QS\n\nDQSdsq",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "b6178e8b-0213-4269-816a-fdf9d497c176",
+              "type": "folder",
+              "name": "5.4 Compatibilité navigateurs",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.4 Compatibilité navigateurs",
+              "order": 4,
+              "children": [
+                {
+                  "id": "88ce348a-6d35-4e5f-a0d0-4e8eeb134346",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.4 Compatibilité navigateurs/contenu.md",
+                  "order": 1,
+                  "content": "- Chrome / Edge ≥ 2 dernières versions majeures\n- Firefox ≥ 2 dernières versions majeures\n- Safari iOS ≥ 15 (support PWA limité pris en compte)\n- Pas de support IE11",
+                  "fileType": "text"
+                },
+                {
+                  "id": "b480009b-1d31-4997-b812-960b5fa883c6",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.4 Compatibilité navigateurs/contenu-css.md",
+                  "order": 2,
+                  "content": "- Chrome / Edge ≥ 2 dernières versions majeures\n- Firefox ≥ 2 dernières versions majeures\n- Safari iOS ≥ 15 (support PWA limité pris en compte)\n- Pas de support IE11",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "4c2d0b66-7142-4a17-b49c-fc1440625fde",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/contenu-css.md",
+              "order": 9,
+              "content": "",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "ea535b61-a148-4a55-9c7b-08fbe5524c3d",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/contenu-css.md",
+          "order": 12,
+          "content": "",
+          "fileType": "text"
+        }
+      ]
+    },
+    {
+      "id": "4a358c4f-2ee7-45fa-babc-121209b8a801",
+      "type": "folder",
+      "name": "H1 new menu après 5.4b",
+      "path": "edition/h1-new-menu-apres-54b",
+      "order": 2,
+      "children": [
+        {
+          "id": "36ebdd41-1238-4019-9f61-a30ebd78281e",
+          "type": "folder",
+          "name": "5.5 Sécurité",
+          "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité",
+          "order": 1,
+          "children": [
+            {
+              "id": "b537066d-5eb4-4cbe-8518-60f1fd1bdc5c",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu.md",
+              "order": 1,
+              "content": "- HTTPS obligatoire (HSTS activé)\n- Authentification via JWT (expiration 24h, refresh token 30 jours)\n- Protection C[SRF sur tous les **formulairces**](https://test.Com)\n- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc\n- Données personnelles chiffrées au repos (RGPD)\n- Politique CSP stricte définie dans les headers HTTP",
+              "fileType": "text"
+            },
+            {
+              "id": "896dc048-a834-4621-8878-e41f47dd1fed",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu-css.md",
+              "order": 2,
+              "content": "- HTTPS obligatoire (HSTS activé)\n- Authentification via JWT (expiration 24h, refresh token 30 jours)\n- Protection C[SRF sur tous les **formulairces**](https://test.Com)\n- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc\n- Données personnelles chiffrées au repos (RGPD)\n- Politique CSP stricte définie dans les headers HTTP",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "dd0c5d7b-cb2b-4304-89f1-2a975f7cf770",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/h1-new-menu-apres-54b/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text"
+        },
+        {
+          "id": "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+          "type": "folder",
+          "name": "5.6 Internationalisation & Contenu",
+          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu",
+          "order": 2,
+          "children": [
+            {
+              "id": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+              "type": "folder",
+              "name": "5.7 Hébergement & Déploiement",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement",
+              "order": 1,
+              "children": [
+                {
+                  "id": "4e6e672d-a699-4a48-bd42-744fd778f278",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/contenu.md",
+                  "order": 1,
+                  "content": "- Déploiement CI/CD automatisé (GitHub Actions ou équivalent)\n- Environnements distincts : développement / staging / production sfdsdffsd",
+                  "fileType": "text"
+                },
+                {
+                  "id": "f0a3a0d3-c693-4a9a-a911-8f1552788582",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/contenu-css.md",
+                  "order": 2,
+                  "content": "- Déploiement CI/CD automatisé (GitHub Actions ou équivalent)\n- Environnements distincts : développement / staging / production sfdsdffsd",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "e25b63ff-8b5b-4218-81d4-8497e7fb6dbc",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/contenu.md",
+              "order": 1,
+              "content": "- Langue principale : français\n- Architecture i18n prête pour ajout d'une seconde langue (anglais) sans refonte\n- Encodage UTF-8 sur l'ensemble des fichiers et flux de données",
+              "fileType": "text"
+            },
+            {
+              "id": "908ed53e-b323-4455-840b-ae7c6ed327ee",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/contenu-css.md",
+              "order": 2,
+              "content": "- Langue principale : français\n- Architecture i18n prête pour ajout d'une seconde langue (anglais) sans refonte\n- Encodage UTF-8 sur l'ensemble des fichiers et flux de données",
+              "fileType": "text"
+            },
+            {
+              "id": "fa0bc9b0-f3e4-4cfa-9a9c-b948165026d6",
+              "type": "folder",
+              "name": "7.7b test",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/77b-test",
+              "order": 2,
+              "children": [
+                {
+                  "id": "9fb7a613-3ec8-4c95-abd6-a48649f13639",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/77b-test/contenu.md",
+                  "order": 1,
+                  "content": "- Rollback possible en **< 5 minutes** **dsffdssdfdssdfds**\n- Disponibilité cible : 99.5 % (hors maintenance planifiée)",
+                  "fileType": "text"
+                },
+                {
+                  "id": "1443a921-e054-4c5a-8b9f-213af06ca76e",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/77b-test/contenu-css.md",
+                  "order": 2,
+                  "content": "- Rollback possible en **< 5 minutes** **dsffdssdfdssdfds**\n- Disponibilité cible : 99.5 % (hors maintenance planifiée)",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "c6ad68ac-9580-4aff-b838-bc1346c0041f",
+              "type": "folder",
+              "name": "Disponibilité",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/disponibilite",
+              "order": 3,
+              "children": [
+                {
+                  "id": "3ce9a718-3640-40ad-b305-7376762d2f40",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/disponibilite/contenu.md",
+                  "order": 1,
+                  "content": "- Sauvegardes automatiques de la base de données : 1 fois/jour, rétention 30 jours",
+                  "fileType": "text"
+                },
+                {
+                  "id": "7017ed0a-165b-4000-90a4-cfd89ce306f8",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/disponibilite/contenu-css.md",
+                  "order": 2,
+                  "content": "- Sauvegardes automatiques de la base de données : 1 fois/jour, rétention 30 jours",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "550f4bf8-c955-42aa-b85b-5673e44075f1",
+              "type": "folder",
+              "name": "H3 TEST",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST",
+              "order": 4,
+              "children": [
+                {
+                  "id": "ec6f3c51-891c-4cfb-90d1-5f519ee85c21",
+                  "type": "folder",
+                  "name": "save",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/save",
+                  "order": 1,
+                  "children": [
+                    {
+                      "id": "eb6f5bda-6d72-4df9-8da9-b5763b7bb943",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/save/contenu.md",
+                      "order": 1,
+                      "content": "Mon Prompt maths\n\nMODE: guided\n\nSYSTEM:  Tu es un expert en formation en mathématique\n\n- Tu doit demander le niveau scolaire et la matière à travaillé.\n- Tu dois prévoir un plan de travail, des cours et des exercices\n- \n\n**Création projet maison d'höte**\n\nMODE: guided\nSYSTEM:\n\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "bb436e42-4efc-43f5-ac8c-c6b9067a7495",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/save/contenu-css.md",
+                      "order": 2,
+                      "content": "Mon Prompt maths\n\nMODE: guided\n\nSYSTEM:  Tu es un expert en formation en mathématique\n\n- Tu doit demander le niveau scolaire et la matière à travaillé.\n- Tu dois prévoir un plan de travail, des cours et des exercices\n- \n\n<span style=\"color:rgba(255, 255, 255, 0.9);background-color:rgba(245, 158, 11, 0.05)\">**Création projet maison d'höte**</span>\n\nMODE: guided\nSYSTEM:\n\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "520334cc-72b4-404f-aef4-21312daf12ed",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/contenu.md",
+                  "order": 1,
+                  "content": "fdsqfsdqfs\n\nsfdqqsdf",
+                  "fileType": "text"
+                },
+                {
+                  "id": "4daaf178-09fb-4607-815b-7b07229c4c4c",
+                  "type": "folder",
+                  "name": "tableaux",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "2d4590d3-dbf2-4617-abab-4c459109da13",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux/contenu.md",
+                      "order": 1,
+                      "content": "ddddddddddd",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "113d3c6c-9f66-498a-835e-9183504ca8e2",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux/contenu-css.md",
+                      "order": 2,
+                      "content": "ddddddddddd",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "c9d5cca5-9b17-45a8-a44a-ce9bc8b9669e",
+                      "type": "file",
+                      "name": "array-Mon Tableau.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux/array-Mon Tableau.md",
+                      "order": 2,
+                      "content": "```ARRAY: Mon Tableau\n|  |  |  |\n| --- | --- | --- |\n|  | 44 |  |\n|  | 5 | 2 |\n|  | =B2+B3 |  |\n|  |  |  |\n```",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "7ed7f376-304e-4470-907a-cb16310ce2c8",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/contenu-css.md",
+                  "order": 2,
+                  "content": "fdsqfsdqfs\n\nsfdqqsdf",
+                  "fileType": "text"
+                },
+                {
+                  "id": "a0e918ff-124b-4752-9110-ed5eb2643d8a",
+                  "type": "folder",
+                  "name": "trello",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello",
+                  "order": 3,
+                  "children": [
+                    {
+                      "id": "cad9e775-b200-4541-8b9a-a567225aa30b",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "411fef14-8291-44bb-8b66-06b77c5144b2",
+                      "type": "file",
+                      "name": "trello-Mon Trello.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello/trello-Mon Trello.md",
+                      "order": 2,
+                      "content": "```TRELLO: Mon Trello\n### À faire\n- [ ] Task test 1 `[Normale]` — admin · 20/06/26\n  Description Task test 1\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "83d44db2-8281-479a-bf9d-654a5daff0a1",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "54f0262d-074e-4c87-a864-3b02c2bde370",
+                  "type": "folder",
+                  "name": "Prompt maison",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-maison",
+                  "order": 4,
+                  "children": [
+                    {
+                      "id": "22529300-03dd-431f-8b7a-5b9c81f53284",
+                      "type": "file",
+                      "name": "prompt-Création projet maison d'höte.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-maison/prompt-Création projet maison d'höte.md",
+                      "order": 1,
+                      "content": "```PROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "66a8ad13-831e-499b-b01e-fef49dd10ee8",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-maison/contenu-css.md",
+                      "order": 2,
+                      "content": "```PROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n```\n\n\n\n```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "af113c00-9d30-4d2a-8b90-7e73f9e0b98e",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-maison/contenu.md",
+                      "order": 3,
+                      "content": "```PROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n```\n\n```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "58a91808-9eb3-467e-8b1c-2214421ddac2",
+                      "type": "file",
+                      "name": "prompt-Cours de maths.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-maison/prompt-Cours de maths.md",
+                      "order": 2,
+                      "content": "```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "94089086-bd38-49c1-a4a7-5bb9e81a9e97",
+                  "type": "folder",
+                  "name": "Prompt cours",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-cours",
+                  "order": 5,
+                  "children": [
+                    {
+                      "id": "ff8cd563-c73c-4676-b32c-eb069f2c2fa0",
+                      "type": "file",
+                      "name": "prompt-Cours de maths.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-cours/prompt-Cours de maths.md",
+                      "order": 1,
+                      "content": "```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "70de874e-d03e-4863-9794-59c4c484c243",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-cours/contenu.md",
+                      "order": 2,
+                      "content": "```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "eeeb30e9-74a7-4a88-8f2c-59ba2040b39b",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt-cours/contenu-css.md",
+                      "order": 3,
+                      "content": "```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fcefe58f-26de-4b2c-83df-051e88994c4a",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/h1-new-menu-apres-54b/contenu-css.md",
+          "order": 5,
+          "content": "",
+          "fileType": "text"
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "c4f9769c-1bec-4b6c-8d82-ef44664af7ac",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+        "2ee15300-e2fe-4515-b8f6-ce985e56c818",
+        "f5b172f0-e820-4782-a0fd-29fa4acc785f",
+        "4a358c4f-2ee7-45fa-babc-121209b8a801",
+        "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+        "550f4bf8-c955-42aa-b85b-5673e44075f1",
+        "39ec48e5-9632-44db-90ad-d17a149326ec",
+        "8e294451-4e56-4d82-acb6-a30b9fda716a",
+        "bf6ba1d3-a9ef-41ae-b3e7-47d59b26109b",
+        "0bc3020f-c108-4c80-8219-bc0188b5b1bd",
+        "4a862dc1-97d3-47da-9a79-1fb352db216f"
+      ],
+      "createdAt": "2026-05-28T12:00:00.000Z"
+    },
+    {
+      "id": "6af6909b-ece6-4721-9fe1-62859ce101c4",
+      "type": "tests",
+      "name": "Tests",
+      "rootFolderIds": [],
+      "createdAt": "2026-06-08T16:05:39.587Z"
+    },
+    {
+      "id": "dd9cf12b-1396-4665-8f66-7c7ae0d8100e",
+      "type": "agenda",
+      "name": "agenda",
+      "rootFolderIds": [
+        "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+        "4a358c4f-2ee7-45fa-babc-121209b8a801",
+        "36a7a07a-d15b-47af-85de-cc0c14613bce",
+        "e5c24b08-d712-4635-a986-517ad028ea0c",
+        "a0904fdf-a169-4e18-b7c2-8e1d99092bb6",
+        "3f4b7ad2-27d6-4c08-b15e-c61662518adc",
+        "dfde931d-a84a-4a49-8af8-ece9c085ef55",
+        "36ebdd41-1238-4019-9f61-a30ebd78281e",
+        "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+        "2fdc740e-eb6f-4b6e-8688-577407f40e2c",
+        "755d7092-6f4b-4997-bc62-0318875895a4",
+        "792c4747-0c36-4564-9c1d-b96d96b1307c",
+        "a7511077-35fa-47d8-b8e0-8049bcb96399",
+        "63bbb1da-f495-4587-9c15-86e6b8953319",
+        "b6178e8b-0213-4269-816a-fdf9d497c176",
+        "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+        "fa0bc9b0-f3e4-4cfa-9a9c-b948165026d6",
+        "c6ad68ac-9580-4aff-b838-bc1346c0041f",
+        "550f4bf8-c955-42aa-b85b-5673e44075f1",
+        "ec6f3c51-891c-4cfb-90d1-5f519ee85c21",
+        "4daaf178-09fb-4607-815b-7b07229c4c4c",
+        "a0e918ff-124b-4752-9110-ed5eb2643d8a",
+        "54f0262d-074e-4c87-a864-3b02c2bde370",
+        "94089086-bd38-49c1-a4a7-5bb9e81a9e97"
+      ],
+      "createdAt": "2026-06-10T19:02:33.259Z"
+    }
+  ]
+}

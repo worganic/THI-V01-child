@@ -1,0 +1,42 @@
+{
+  "projectName": "TEST-clean-table",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-07-06T19:15:09.000Z",
+  "updatedAt": "2026-07-06T19:17:07.934Z",
+  "structure": [
+    {
+      "id": "4dd7369a-b327-4a2d-9812-be29d26db798",
+      "type": "folder",
+      "name": "Section-Tableau",
+      "path": "edition/section-tableau",
+      "order": 1,
+      "children": [
+        {
+          "id": "5c3c6047-3748-4f66-88ab-a4274fb1ee90",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/section-tableau/contenu.md",
+          "order": 1
+        },
+        {
+          "id": "4f8266f2-a345-4e7f-b315-91759be038f8",
+          "type": "file",
+          "name": "array-Mon Tableau.md",
+          "path": "edition/section-tableau/array-Mon Tableau.md",
+          "order": 2
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "8e380105-ddac-4047-bc9a-4083dea13d4d",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "4dd7369a-b327-4a2d-9812-be29d26db798"
+      ],
+      "createdAt": "2026-07-06T19:15:09.000Z"
+    }
+  ]
+}

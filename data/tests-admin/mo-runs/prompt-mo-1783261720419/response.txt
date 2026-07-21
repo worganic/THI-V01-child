@@ -1,0 +1,44 @@
+```ARRAY: Profil Professionnel Mis à Jour
+| Critère | Détail |
+| --- | --- |
+| Domaine d'activité initial | Ressources Humaines |
+| Expérience initiale | Débutant (0 - 2 ans) |
+| Cadre privilégié | Startup |
+| Objectif principal | Changer de secteur ou de métier (reconversion) |
+| Domaine visé | Marketing Digital / Growth Hacking |
+| Disponibilité / Transition | Identifier 3 métiers cibles dans l'écosystème Startup [Haute] |
+```
+
+Afin d'affiner votre projet de reconversion vers le Marketing Digital et le Growth Hacking, voici quelques questions complémentaires pour structurer votre plan d'action :
+
+**Quels aspects du Marketing Digital vous attirent le plus ?**
+- [ ] Acquisition de trafic (SEO, SEA, Social Ads)
+- [ ] Content Marketing & Social Media (Rédaction, Community Management)
+- [ ] Data & Analytics (Suivi de performance, A/B Testing)
+- [ ] Growth Hacking & Automation (Scraping, No-code, Outbound)
+
+**Avez-vous déjà des notions ou suivi des formations d'initiation sur ces sujets ?**
+_____
+
+**Quels sont vos points forts issus des RH que vous pensez pouvoir transférer dans le marketing ?**
+- [ ] Compréhension de la psychologie humaine (Copywriting, UX)
+- [ ] Gestion de projet et organisation
+- [ ] Communication écrite et orale
+- [ ] Empathie et relation client (User Research)
+
+Voici votre plan d'action mis à jour sous forme de Kanban :
+
+```TRELLO: Plan de Reconversion en Marketing Digital
+### À faire
+- [ ] Lister les compétences transférables des RH vers le Marketing Digital [Moyenne]
+- [ ] Identifier 3 formations de référence (gratuites ou certifiantes) en Marketing/Growth [Haute]
+- [ ] Participer à des événements ou Meetups dédiés au Growth Hacking [Moyenne]
+
+### En cours
+- [ ] Réaliser un bilan de compétences ou un point de carrière [Haute]
+- [ ] Mettre à jour son profil LinkedIn pour orienter le discours vers la reconversion [Haute]
+
+### Terminé
+- [ ] Définir le cadre cible (Startup) et le niveau d'expérience de départ [Faible]
+- [ ] Identifier 3 métiers cibles dans l'écosystème Startup (Marketing Digital) [Haute]
+```

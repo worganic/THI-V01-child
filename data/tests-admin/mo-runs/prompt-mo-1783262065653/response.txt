@@ -1,0 +1,37 @@
+**Quel est votre domaine d'activité principal ?**
+- ( ) Technologie / Informatique
+- ( ) Marketing / Communication
+- ( ) Finance / Comptabilité
+- ( ) Ressources Humaines
+- ( ) Vente / Commerce
+- ( ) Santé / Médical
+- ( ) Éducation / Formation
+- ( ) Autre
+
+**Quel est votre niveau d'expérience actuel ?**
+- ( ) Étudiant / Jeune diplômé
+- ( ) Junior (1 à 3 ans)
+- ( ) Confirmé (3 à 8 ans)
+- ( ) Senior (Plus de 8 ans)
+- ( ) Expert / Directeur (Plus de 15 ans)
+
+**Quelles sont vos compétences clés (techniques ou méthodologiques) ?**
+_____
+
+**Quels types de postes ou de responsabilités recherchez-vous actuellement ?**
+_____
+
+**Dans quel type de structure souhaitez-vous évoluer ?**
+- [ ] Startup / Jeune entreprise
+- [ ] PME / Entreprise à taille humaine
+- [ ] Grande entreprise / Groupe international
+- [ ] Secteur public / Association
+- [ ] Freelance / Travailleur indépendant
+
+**Quelle est votre modalité de travail préférée concernant le présentiel et le télétravail ?**
+- ( ) 100% Présentiel
+- ( ) Hybride (quelques jours de télétravail par semaine)
+- ( ) 100% Télétravail (Full Remote)
+
+**Quelles sont vos attentes salariales ou votre TJM (Tarif Journalier Moyen) cible ?**
+_____

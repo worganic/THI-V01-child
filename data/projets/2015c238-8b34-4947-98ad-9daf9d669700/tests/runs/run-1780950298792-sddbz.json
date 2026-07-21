@@ -1,0 +1,149 @@
+{
+  "id": "run-1780950298792-sddbz",
+  "projectId": "0475514d-ed29-407d-8cbf-f837232cac46",
+  "date": "2026-06-08T20:24:58.792Z",
+  "mode": "manual",
+  "status": "completed",
+  "testerName": "dscfd",
+  "caseIds": [
+    "tc-1780935342156",
+    "tc-1780935362422",
+    "tc-1780936070960",
+    "tc-1780941883870-hx2qw",
+    "tc-1780941883886-5qao3",
+    "tc-1780943320115-6ny74",
+    "tc-1780943320115-0kpki",
+    "tc-1780943320115-qmaia",
+    "tc-1780943320115-7s9kz",
+    "tc-1780943320115-nslt5",
+    "tc-1780943320115-sxe73",
+    "tc-1780943320115-mo5jy",
+    "tc-1780943320115-us0nd",
+    "tc-1780943320115-lk6gj",
+    "tc-1780943320115-ovzya",
+    "tc-1780943320115-3fo00",
+    "tc-1780943320115-8u7eu",
+    "tc-1780943320115-f2pir"
+  ],
+  "results": [
+    {
+      "caseId": "tc-1780935342156",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:00.597Z"
+    },
+    {
+      "caseId": "tc-1780935362422",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:01.639Z"
+    },
+    {
+      "caseId": "tc-1780936070960",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:02.766Z"
+    },
+    {
+      "caseId": "tc-1780941883870-hx2qw",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:04.092Z"
+    },
+    {
+      "caseId": "tc-1780941883886-5qao3",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:05.487Z"
+    },
+    {
+      "caseId": "tc-1780943320115-6ny74",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:07.002Z"
+    },
+    {
+      "caseId": "tc-1780943320115-0kpki",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:08.833Z"
+    },
+    {
+      "caseId": "tc-1780943320115-qmaia",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:25:09.852Z"
+    },
+    {
+      "caseId": "tc-1780943320115-7s9kz",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:08.315Z"
+    },
+    {
+      "caseId": "tc-1780943320115-nslt5",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:08.960Z"
+    },
+    {
+      "caseId": "tc-1780943320115-sxe73",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:09.478Z"
+    },
+    {
+      "caseId": "tc-1780943320115-mo5jy",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:09.950Z"
+    },
+    {
+      "caseId": "tc-1780943320115-us0nd",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:10.444Z"
+    },
+    {
+      "caseId": "tc-1780943320115-lk6gj",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:11.097Z"
+    },
+    {
+      "caseId": "tc-1780943320115-ovzya",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:11.721Z"
+    },
+    {
+      "caseId": "tc-1780943320115-3fo00",
+      "status": "fail",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:12.508Z"
+    },
+    {
+      "caseId": "tc-1780943320115-8u7eu",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:13.019Z"
+    },
+    {
+      "caseId": "tc-1780943320115-f2pir",
+      "status": "pass",
+      "testedBy": "dscfd",
+      "testedAt": "2026-06-08T20:26:13.640Z"
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "pass": 11,
+    "fail": 7,
+    "skip": 0,
+    "pending": 0,
+    "score": 61,
+    "goNoGo": "NO-GO",
+    "durationMs": 74852
+  },
+  "createdAt": "2026-06-08T20:24:58.792Z"
+}

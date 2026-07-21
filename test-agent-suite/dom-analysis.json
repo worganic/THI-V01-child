@@ -1,0 +1,110 @@
+{
+  "landingUrl": "http://localhost:4202/",
+  "title": "Frankenstein Child v0.90",
+  "loginModal": {
+    "title": "Connexion",
+    "subtitle": "Accédez à votre espace Frankenstein Junior",
+    "inputs": [
+      {
+        "tagName": "input",
+        "type": "email",
+        "name": "login-email",
+        "id": "login-email",
+        "placeholder": "votre@email.com",
+        "label": "EMAIL",
+        "required": false
+      },
+      {
+        "tagName": "input",
+        "type": "password",
+        "name": "login-password",
+        "id": "login-password",
+        "placeholder": "••••••••",
+        "label": "MOT DE PASSE",
+        "required": false
+      }
+    ],
+    "buttons": [
+      {
+        "tagName": "button",
+        "type": null,
+        "className": "modal-close",
+        "text": "close"
+      },
+      {
+        "tagName": "button",
+        "type": "submit",
+        "className": "btn-submit",
+        "text": "login Se connecter"
+      },
+      {
+        "tagName": "button",
+        "type": null,
+        "className": "link-btn",
+        "text": "Créer un compte"
+      }
+    ]
+  },
+  "registerModal": {
+    "title": "Créer un compte",
+    "subtitle": "Rejoignez la plateforme Frankenstein Junior",
+    "inputs": [
+      {
+        "tagName": "input",
+        "type": "text",
+        "name": "reg-username",
+        "id": "reg-username",
+        "placeholder": "johndoe",
+        "label": "NOM D'UTILISATEUR",
+        "required": false
+      },
+      {
+        "tagName": "input",
+        "type": "email",
+        "name": null,
+        "id": "reg-email",
+        "placeholder": "votre@email.com",
+        "label": "EMAIL",
+        "required": false
+      },
+      {
+        "tagName": "input",
+        "type": "password",
+        "name": "reg-password",
+        "id": "reg-password",
+        "placeholder": "Min. 6 caractères",
+        "label": "MOT DE PASSE",
+        "required": false
+      },
+      {
+        "tagName": "input",
+        "type": "password",
+        "name": "reg-password2",
+        "id": "reg-password2",
+        "placeholder": "Répéter le mot de passe",
+        "label": "CONFIRMER",
+        "required": false
+      }
+    ],
+    "buttons": [
+      {
+        "tagName": "button",
+        "type": null,
+        "className": "modal-close",
+        "text": "close"
+      },
+      {
+        "tagName": "button",
+        "type": "submit",
+        "className": "btn-submit btn-green",
+        "text": "person_add Créer mon compte"
+      },
+      {
+        "tagName": "button",
+        "type": null,
+        "className": "link-btn",
+        "text": "Se connecter"
+      }
+    ]
+  }
+}

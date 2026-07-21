@@ -1,0 +1,33 @@
+**En quelle classe es-tu actuellement ?**
+- ( ) Seconde
+- ( ) Première (Spécialité Mathématiques)
+- ( ) Première (Tronc commun / Autre)
+- ( ) Terminale (Spécialité Mathématiques)
+- ( ) Terminale (Option Mathématiques Complémentaires)
+- ( ) Terminale (Option Mathématiques Expertes)
+
+**Quels sont tes objectifs principaux avec ces séances de maths ?**
+- [ ] Améliorer mes notes au lycée
+- [ ] Préparer les épreuves du Baccalauréat
+- [ ] Comprendre les notions fondamentales et combler mes lacunes
+- [ ] Acquérir une méthode de travail efficace
+- [ ] Préparer mes études supérieures (classes prépa, école d'ingénieurs, licence...)
+
+**Quels sont les chapitres ou thèmes qui te posent le plus de difficultés ?**
+- [ ] Les fonctions (dérivées, limites, variations...)
+- [ ] L'algèbre et l'arithmétique (suites, équations...)
+- [ ] L'analyse et la géométrie (vecteurs, géométrie dans l'espace...)
+- [ ] Les probabilités et les statistiques
+- [ ] Les algorithmes et la programmation (Python)
+
+**De combien de temps disposes-tu par semaine pour ces séances de travail en plus de tes cours ?**
+- ( ) Moins d'une heure
+- ( ) 1 à 2 heures
+- ( ) 2 à 4 heures
+- ( ) Plus de 4 heures
+
+**Comment préfères-tu travailler et valider ta progression ?**
+- [ ] Par des résumés de cours et des fiches de révisions rapides
+- [ ] Par des exercices d'application directe du cours
+- [ ] Par des problèmes plus complexes et des sujets de type Bac
+- [ ] Par des mini-quiz réguliers pour tester mes connaissances

@@ -1,0 +1,51 @@
+Voici l'analyse mise à jour de votre profil professionnel axée sur votre choix de l'intrapreneuriat et de la direction générale dans l'industrie de la santé.
+
+```ARRAY: Analyse Stratégique - Direction & Intrapreneuriat
+| Paramètre / Dimension | Diagnostic & Alignement | Opportunités de Richesse |
+| :--- | :--- | :--- |
+| **Profil Senior (10+ ans)** | Légitimité managériale, technique et sectorielle forte pour viser des rôles de direction stratégique (C-level, VP, Directeur de Business Unit). | Rémunération globale avec un fort levier (fixe élevé + bonus variable lié aux résultats + stock-options/actions gratuites). |
+| **Créativité** | Atout clé pour concevoir et mener des projets d'intrapreneuriat (nouveaux produits, virage numérique, restructurations innovantes). | Primes exceptionnelles de performance ou obtention de parts dans les filiales ou spin-offs créés sous votre impulsion. |
+| **Objectif de Richesse** | Viser l'alignement d'intérêts avec les actionnaires, fonds d'investissement ou via des mécanismes de LBO / restructuring. | Négociation minutieuse du package d'entrée (Golden Hello, BSPCE, stock-options) et des clauses d'intéressement aux bénéfices. |
+| **Cible (Pharma/Biotech)** | Secteurs très capitalisés avec des budgets d'innovation massifs, nécessitant une vision stratégique et une gestion rigoureuse. | Postes de direction de R&D, de stratégie de portefeuille, d'alliance management ou de business development global. |
+```
+
+```TRELLO: Feuille de Route Intrapreneur & Leader
+### À faire
+- [ ] Cibler 5 entreprises leaders ou biotechs en phase de scale-up [Haute]
+- [ ] Préparer son pitch de valeur "leader créatif/intrapreneur" [Haute]
+- [ ] Se former à la négociation de packages C-level (equity, bonus) [Moyenne]
+### En cours
+- [ ] Développer son réseau de chasseurs de têtes spécialisés en Santé [Haute]
+- [ ] Cartographier les opportunités de restructuration ou d'expansion dans son réseau [Moyenne]
+### Terminé
+- [ ] Choix de la voie d'action : Intrapreneuriat et Direction [Basse]
+- [ ] Bilan de compétences initial validé [Basse]
+```
+
+```CHART: Projection de Package Financier Annuel C-Level / VP (k€)
+Salaire Fixe de Base: 140
+Bonus Variable sur Objectifs: 60
+Valeur Annuelle Estimée Equity (Options/Actions): 100
+Primes Spéciales d'Intrapreneuriat: 40
+```
+
+Pour structurer la meilleure approche et affiner votre plan de carrière, merci de répondre aux questions suivantes :
+
+**Quel est l'intitulé exact de votre diplôme ou votre spécialité technique / scientifique ?**
+_____
+
+**Quel type de structure ciblez-vous en priorité pour ce rôle de direction ?**
+- ( ) Grand groupe pharmaceutique mondial (ex: Sanofi, Roche)
+- ( ) Start-up Biotech / MedTech en forte croissance (Série A ou B)
+- ( ) Réseau de cliniques ou d'établissements de santé privés
+- ( ) Entreprise de dispositifs médicaux (MedTech) établie
+
+**Avez-vous déjà de l'expérience en gestion budgétaire importante ou en management d'équipes de plus de 20 personnes ?**
+- ( ) Oui, gestion de budget (>1M€) et d'équipes larges
+- ( ) Oui, management d'équipes mais budget limité
+- ( ) Non, mais fort leadership et gestion de projets transversaux
+
+**Quel niveau de risque êtes-vous prêt à accepter (compromis entre salaire fixe élevé et forte part de variable/capital) ?**
+- ( ) Risque faible : Fixe très élevé, variable modéré, peu d'equity (Grand groupe)
+- ( ) Risque modéré : Bon fixe, variable significatif, equity intéressante (ETI / PME en croissance)
+- ( ) Risque élevé : Fixe correct, variable très fort sur objectifs, grosse part d'equity (Biotech/Start-up)

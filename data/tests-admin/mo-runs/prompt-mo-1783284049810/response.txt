@@ -1,0 +1,13 @@
+Aujourd'hui, nous sommes le dimanche 5 juillet 2026.
+
+Voici les prévisions météo pour demain, lundi 6 juillet 2026, à Marseille :
+
+```ARRAY: Prévisions Météo Marseille - Lundi 6 Juillet 2026
+| Paramètre | Valeur |
+| --- | --- |
+| Date | Lundi 6 juillet 2026 |
+| Conditions | Ensoleillé et très chaud |
+| Température minimale | 21°C - 22°C |
+| Température maximale | 30°C - 31°C |
+| Vent | Modéré du sud (14 à 36 km/h) |
+```

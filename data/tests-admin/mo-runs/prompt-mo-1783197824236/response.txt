@@ -1,0 +1,18 @@
+Voici un premier récapitulatif de votre profil professionnel en cours de constitution :
+
+```ARRAY: Profil professionnel (Brouillon)
+| Critère | Informations saisies |
+| :--- | :--- |
+| Domaine d'activité | Technologie et Informatique |
+| Niveau d'expérience | Étudiant / Jeune diplômé |
+| Type de postes recherchés | Freelance / Mission de conseil |
+| Préférence de télétravail | Présentiel complet |
+```
+
+Afin de compléter et d'affiner votre profil professionnel, veuillez répondre aux questions suivantes :
+
+**Quelles sont vos compétences techniques ou spécialisations clés ?**
+_____
+
+**Décrivez en quelques mots vos objectifs professionnels à court et moyen terme ?**
+_____

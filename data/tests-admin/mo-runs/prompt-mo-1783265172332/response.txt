@@ -1,0 +1,33 @@
+Bonjour. Afin d'établir votre profil professionnel précis, merci de répondre aux questions ci-dessous :
+
+**Quel est votre intitulé de poste actuel ou recherché ?**
+_____
+
+**Quel est votre secteur d'activité principal ?**
+_____
+
+**Quel est votre niveau d'expérience professionnelle ?**
+- ( ) Moins de 2 ans (Junior)
+- ( ) Entre 2 et 5 ans (Intermédiaire)
+- ( ) Entre 5 et 10 ans (Senior)
+- ( ) Plus de 10 ans (Expert)
+
+**Quelles sont vos trois compétences clés ou expertises principales ?**
+_____
+
+**Quels types de contrats recherchez-vous ?**
+- [ ] CDI
+- [ ] CDD
+- [ ] Freelance / Prestation
+- [ ] Alternance / Stage
+
+**Dans quelle zone géographique ou ville souhaitez-vous travailler ?**
+_____
+
+**Quel est votre mode de travail privilégié ?**
+- ( ) 100% Présentiel
+- ( ) Hybride (Télétravail partiel)
+- ( ) 100% Distanciel (Full Remote)
+
+**Quelle est votre prétention salariale annuelle brute souhaitée (en k€) ou votre TJM (en €) ?**
+_____

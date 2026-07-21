@@ -1,0 +1,8 @@
+```ARRAY: Liste des fruits
+| Fruit | Couleur | Prix |
+|---|---|---|
+| Pomme | Rouge | 6.50 € |
+| Banane | Jaune | 6.20 € |
+| Orange | Orange | 6.80 € |
+| Kiwi | Vert | 7.00 € |
+```

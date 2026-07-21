@@ -1,0 +1,13 @@
+Aujourd'hui, nous sommes le mardi 7 juillet 2026.
+
+Voici les informations concernant la météo prévue pour demain, mercredi 8 juillet 2026, à Marseille :
+
+```ARRAY: Météo Marseille - Demain
+| Indicateur | Détails |
+| --- | --- |
+| Date | Mercredi 8 juillet 2026 |
+| Conditions | Ensoleillé et chaud (Climat méditerranéen typique) |
+| Températures | 21°C à 32°C |
+| Risque de pluie | Faible (Sec) |
+| Vent | Présence possible du Mistral |
+```

@@ -1,0 +1,32 @@
+**En quelle classe es-tu actuellement ?**
+- ( ) Seconde
+- ( ) Première (Spécialité Mathématiques)
+- ( ) Terminale (Spécialité Mathématiques)
+- ( ) Terminale (Option Maths Complémentaires)
+- ( ) Terminale (Option Maths Expertes)
+- ( ) Autre niveau
+
+**Quels sont les chapitres ou thèmes sur lesquels tu souhaites travailler en priorité ?**
+- [ ] Fonctions, dérivation et limites
+- [ ] Suites numériques
+- [ ] Géométrie (vecteurs, produit scalaire, espace)
+- [ ] Probabilités et statistiques
+- [ ] Algèbre et équations (calcul littéral, second degré)
+- [ ] Arithmétique ou autres notions spécifiques
+
+**Quel est ton objectif principal pour ce plan d'action ?**
+- ( ) Augmenter ma moyenne générale en mathématiques
+- ( ) Préparer et réussir les épreuves du Baccalauréat
+- ( ) Me préparer aux exigences des études supérieures (prépa, école d'ingénieurs, licence...)
+- ( ) Comprendre les bases et reprendre confiance en moi
+
+**Combien de temps peux-tu consacrer à ce travail personnel chaque semaine (en plus du lycée) ?**
+- ( ) 1 à 2 heures
+- ( ) 3 à 4 heures
+- ( ) Plus de 4 heures
+
+**Quel type de séances ou de supports te correspond le mieux pour apprendre et progresser ?**
+- [ ] Fiches de cours synthétiques et rappels théoriques
+- [ ] Exercices d'application directe pour acquérir des automatismes
+- [ ] Problèmes d'approfondissement ou de type Bac
+- [ ] Quiz de validation rapides et réguliers

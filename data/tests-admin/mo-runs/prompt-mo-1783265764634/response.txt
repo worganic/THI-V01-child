@@ -1,0 +1,42 @@
+Bienvenue dans l'atelier P.A.R.S. (Préparation, Action, Récolte, Synthèse). 
+
+Cet atelier de Freewriting va vous permettre de libérer votre créativité et d'extraire des idées de business brutes sans aucun filtre.
+
+Voici le déroulement de notre session :
+
+```TRELLO: Déroulement de l'atelier P.A.R.S.
+### À faire
+- [ ] Action : Session d'écriture libre [Haute]
+- [ ] Récolte : Extraction et qualification des idées [Moyenne]
+- [ ] Synthèse : Génération du rapport Markdown [Basse]
+
+### En cours
+- [ ] Préparation : Cadrage et configuration [Haute]
+
+### Terminé
+```
+
+```ARRAY: Les étapes de la méthodologie P.A.R.S.
+| Étape | Objectif | Type d'interaction |
+| --- | --- | --- |
+| P - Préparation | Définir le cadre, la durée et le déclencheur | Formulaire interactif |
+| A - Action | Session d'écriture libre non-stop de 10-15 min | Saisie de texte brut |
+| R - Récolte | Qualifier les unités de sens extraites du texte | Validation de liste |
+| S - Synthèse | Produire le rapport final structuré en Markdown | Restitution finale |
+```
+
+---
+
+### Étape 1 : Préparation
+
+Avant de commencer la session d'écriture, nous devons définir les paramètres. Veuillez répondre aux questions ci-dessous pour lancer l'atelier :
+
+**Quelle durée souhaitez-vous fixer pour cette session d'écriture libre ?**
+- ( ) 10 minutes
+- ( ) 15 minutes (Recommandé)
+- ( ) 20 minutes
+
+**Quel est le point de départ ou déclencheur de votre écriture ? (Par exemple : "Ce qui manque vraiment aux randonneurs, c'est...")**
+_____
+
+Une fois que vous aurez validé ces choix, nous passerons à l'étape d'**Action** où vous lancerez votre minuteur et écrirez sans vous arrêter.

@@ -1,0 +1,50 @@
+Voici ton plan d'action personnalisé pour tes cours de mathématiques, adapté à ton profil de Première (Tronc commun) et à tes objectifs de remise à niveau en géométrie.
+
+```ARRAY: Synthèse du profil et des objectifs
+| Critère | Détail |
+| --- | --- |
+| Classe | Première (Tronc commun / Autre) |
+| Objectif principal | Comprendre les notions fondamentales et combler les lacunes |
+| Thème ciblé | Analyse et Géométrie (Vecteurs) |
+| Temps disponible | 1 à 2 heures par semaine |
+| Mode de validation | Exercices d'application directe du cours |
+```
+
+Voici le programme de travail structuré sous forme de tableau de suivi :
+
+```TRELLO: Plan d'Action - Géométrie et Vecteurs
+### À faire
+- [ ] Rappels de cours : Qu'est-ce qu'un vecteur ? (Définition, direction, sens, norme) [Haute]
+- [ ] Lire la fiche de synthèse sur la colinéarité de deux vecteurs [Moyenne]
+- [ ] Apprendre les formules des coordonnées d'un vecteur dans un repère [Haute]
+
+### En cours
+- [ ] Exercice d'application 1 : Calculer les coordonnées d'un vecteur AB [Haute]
+- [ ] Exercice d'application 2 : Démontrer que deux vecteurs sont colinéaires [Haute]
+
+### Terminé
+- [ ] Évaluation diagnostique initiale sur les notions de seconde [Basse]
+```
+
+Voici la planification de tes séances hebdomadaires (basée sur un créneau de 1h30 par semaine) :
+
+```AGENDA: Calendrier des séances de travail (1h30 par semaine)
+2026-07-08 | 17:00-18:00 | Séance 1 : Rappels & Bases | Revoir la définition des vecteurs, égalité et somme (relation de Chasles).
+2026-07-08 | 18:00-18:30 | Séance 1 : Exercices | 3 exercices d'application directe sur la relation de Chasles.
+2026-07-15 | 17:00-18:00 | Séance 2 : Coordonnées | Cours sur les coordonnées de vecteurs et formule de la distance.
+2026-07-15 | 18:00-18:30 | Séance 2 : Exercices | Exercices d'application sur le calcul de coordonnées et de longueurs.
+2026-07-22 | 17:00-18:00 | Séance 3 : Colinéarité | Cours sur la colinéarité et ses applications géométriques (parallélisme, alignement).
+2026-07-22 | 18:00-18:30 | Séance 3 : Exercices | Exercices sur la colinéarité de deux vecteurs.
+2026-07-29 | 17:00-18:00 | Séance 4 : Bilan & Validation | Session d'exercices d'application globale sur tout le chapitre Géométrie/Vecteurs.
+```
+
+Voici une estimation de ta progression pour suivre ton évolution :
+
+```CHART: Score de confiance sur les notions (sur 10)
+Vecteurs - Définition et somme: 6
+Vecteurs - Coordonnées: 4
+Vecteurs - Colinéarité: 3
+Géométrie dans l'espace (bases): 2
+```
+
+N'hésite pas à valider chaque étape et à faire des exercices d'application directe pour ancrer ces notions !

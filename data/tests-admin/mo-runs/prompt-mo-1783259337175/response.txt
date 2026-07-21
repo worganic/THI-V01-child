@@ -1,0 +1,40 @@
+**Quel est votre secteur d'activité principal ?**
+- ( ) Technologie / Informatique
+- ( ) Santé / Médical
+- ( ) Finance / Banque / Assurance
+- ( ) Éducation / Formation
+- ( ) Vente / Commerce / Marketing
+- ( ) Industrie / Ingénierie
+- ( ) Art / Design / Médias
+- ( ) Autre
+
+**Quel est l'intitulé de votre poste actuel ou visé ?**
+_____
+
+**Combien d'années d'expérience professionnelle possédez-vous dans ce domaine ?**
+- ( ) Moins de 2 ans
+- ( ) Entre 2 et 5 ans
+- ( ) Entre 5 et 10 ans
+- ( ) Plus de 10 ans
+
+**Quelles sont vos principales compétences techniques (hard skills) ?**
+_____
+
+**Quelles sont vos principales compétences comportementales (soft skills) ?**
+- [ ] Communication
+- [ ] Esprit d'équipe
+- [ ] Résolution de problèmes
+- [ ] Leadership / Management
+- [ ] Adaptabilité / Flexibilité
+- [ ] Organisation / Gestion du temps
+- [ ] Créativité
+
+**Quel est votre niveau d'études le plus élevé ?**
+- ( ) Baccalauréat ou équivalent
+- ( ) Licence / Bachelor (Bac+3)
+- ( ) Master / Diplôme d'ingénieur (Bac+5)
+- ( ) Doctorat (Bac+8)
+- ( ) Autre
+
+**Quels sont vos objectifs professionnels à court et moyen terme ?**
+_____

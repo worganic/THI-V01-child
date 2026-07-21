@@ -1,0 +1,16 @@
+Voici une mise à jour de votre profil avec les nouvelles informations fournies, suivie des questions restantes pour finaliser votre profil professionnel.
+
+```ARRAY: Profil Professionnel Actuel
+| Critère | Valeur |
+| --- | --- |
+| Domaine d'activité / Métier | zear |
+| Années d'expérience | Entre 2 et 5 ans |
+| Compétences / Expertises | ezr |
+| Type de structure | PME / Entreprise à taille humaine |
+```
+
+**Quels types de postes ou opportunités recherchez-vous actuellement ?**
+_____
+
+**Quelles sont vos attentes principales concernant votre prochain défi professionnel ?**
+_____

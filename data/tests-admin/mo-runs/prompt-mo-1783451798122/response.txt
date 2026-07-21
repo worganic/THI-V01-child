@@ -1,0 +1,13 @@
+Aujourd'hui, nous sommes le mardi 7 juillet 2026.
+
+Voici les informations concernant la météo prévue pour demain, mercredi 8 juillet 2026, à Paris :
+
+```ARRAY: Météo Paris - Demain
+| Indicateur | Détails |
+| --- | --- |
+| Date | Mercredi 8 juillet 2026 |
+| Conditions | Ensoleillé avec quelques nuages passagers |
+| Températures | 17°C à 26°C |
+| Risque de pluie | Faible |
+| Vent | Vent faible d'ouest |
+```

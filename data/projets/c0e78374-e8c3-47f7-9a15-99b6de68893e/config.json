@@ -1,0 +1,35 @@
+{
+  "projectName": "TEST-corbeille-verif",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-07-06T11:05:17.000Z",
+  "updatedAt": "2026-07-06T11:20:34.786Z",
+  "structure": [
+    {
+      "id": "a88d05d4-9bb3-43c5-8239-f1cbca62e87a",
+      "type": "folder",
+      "name": "Dossier-a-supprimer",
+      "path": "edition/dossier-a-supprimer",
+      "order": 1,
+      "children": [
+        {
+          "id": "9db4115f-0aad-4dd5-9e3b-dc758d4e3ea9",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/dossier-a-supprimer/contenu.md",
+          "order": 1
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "09f028d1-6f82-4f0d-9662-0f4fea2e6621",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "a88d05d4-9bb3-43c5-8239-f1cbca62e87a"
+      ],
+      "createdAt": "2026-07-06T11:05:17.000Z"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+Voici l'analyse mise à jour de votre profil professionnel, intégrant votre ciblage des grands groupes pharmaceutiques mondiaux conjugué à une préférence pour un profil de risque modéré avec equity.
+
+```ARRAY: Alignement Stratégique - Grand Groupe & Risque Modéré
+| Dimension | Analyse & Positionnement | Pistes de Maximisation Financière |
+| :--- | :--- | :--- |
+| **Cible : Grand Groupe** | Sanofi, Roche, etc. offrent une très grande stabilité et d'immenses ressources, mais l'equity y est souvent plus standardisée (LTI, actions gratuites de performance). | Viser des postes de Direction de Business Unit Innovante, de Direction de l'Innovation ou de Direction des Alliances Stratégiques. |
+| **Profil de Risque Modéré** | Recherche d'un équilibre entre un salaire fixe protecteur et un intéressement significatif aux résultats (variable/equity). | Négocier des packages comprenant des bonus de performance individuelle/collective élevés et des plans d'attribution d'actions de performance (Performance Shares). |
+| **Créativité en Grand Groupe** | La créativité sera cruciale pour piloter la transformation numérique, optimiser les portefeuilles de produits ou lancer de nouvelles initiatives intrapreneuriales. | Proposer des projets de rupture en interne (ex: IA en R&D, parcours patient connecté) pour capter des budgets d'innovation et des primes associées. |
+| **Diplôme Master / Ingénieur** | Permet de dialoguer à haut niveau avec les équipes scientifiques (R&D) et réglementaires du groupe, tout en gérant les aspects business. | Facilite l'accès aux grilles de salaires les plus élevées des conventions collectives de l'industrie pharmaceutique. |
+```
+
+```TRELLO: Plan d'Action - Approche Grand Groupe
+### À faire
+- [ ] Cartographier les départements Innovation/Intrapreneuriat des 5 plus grands groupes [Haute]
+- [ ] Préparer un pitch sur un cas concret d'innovation ou de transformation mené avec succès [Haute]
+- [ ] Étudier les grilles salariales et packages de rémunération (LTI/MBO) pratiqués dans la pharma [Moyenne]
+### En cours
+- [ ] Activer son réseau auprès des directeurs et VP en poste chez les leaders du secteur [Haute]
+- [ ] Identifier les chasseurs de têtes spécialisés sur les rôles exécutifs pharma/biotech [Moyenne]
+### Terminé
+- [ ] Ciblage du secteur : Grand groupe pharmaceutique mondial [Basse]
+- [ ] Choix du profil de risque : Modéré avec équilibre fixe/variable/equity [Basse]
+```
+
+```CHART: Décomposition du Package Cible en Grand Groupe (k€/an)
+Salaire Fixe Garanti: 160
+Bonus Variable sur Objectifs (MBO): 50
+Actions de Performance / LTI (Ligne à moyen terme): 70
+Primes ou Avantages divers (Véhicule, Retraite sup): 20
+```
+
+Pour aller plus loin et finaliser votre feuille de route, veuillez répondre aux questions suivantes :
+
+**Avez-vous déjà une spécialité thérapeutique de prédilection (ex: Oncologie, Cardiologie, Maladies rares) ?**
+- ( ) Oui, j'ai une expertise thérapeutique très ciblée
+- ( ) Non, mon profil est plutôt généraliste / transverse (technologique ou opérationnel)
+- ( ) Oui, mais je souhaite en changer
+
+**Quelle est votre situation géographique ou votre mobilité pour ce rôle ?**
+- ( ) Mobilité totale (y compris à l'international : Suisse, USA, Allemagne...)
+- ( ) Mobilité nationale (France entière)
+- ( ) Mobilité restreinte à une région spécifique / Télétravail privilégié
+
+**Quel est le délai dans lequel vous souhaitez concrétiser cette transition professionnelle ?**
+_____

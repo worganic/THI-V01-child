@@ -1,0 +1,57 @@
+```ARRAY: Profil Professionnel Mis à Jour
+| Critère | Détail |
+| --- | --- |
+| Domaine d'activité initial | Ressources Humaines |
+| Expérience initiale | Débutant (0 - 2 ans) |
+| Cadre privilégié | Startup |
+| Objectif principal | Changer de secteur ou de métier (reconversion) |
+| Domaine visé | Marketing Digital / Growth Hacking |
+| Spécialité ciblée | Content Marketing & Social Media (Rédaction, Community Management) |
+| Points forts transférables | Empathie et relation client (User Research) |
+| Expérience en rédaction | Oui, occasionnellement ou pour des projets personnels |
+| Thématique de prédilection | Personal Branding & Optimisation LinkedIn pour le Content Marketing |
+```
+
+Pour continuer à structurer et accélérer votre transition vers le Content Marketing, voici quelques questions complémentaires :
+
+**Quels canaux préférez-vous utiliser pour publier et valoriser votre portfolio de rédacteur ?**
+- [ ] LinkedIn (articles et posts)
+- [ ] Plateformes de blogging (Medium, Substack)
+- [ ] Site web personnel (No-code / Wix / Framer)
+- [ ] Portfolio PDF partagé en direct
+
+**Quel est votre niveau de familiarité avec les outils d'IA générative pour vous assister dans la rédaction (Claude, ChatGPT...) ?**
+- ( ) Très à l'aise (co-rédaction, structuration de plans)
+- ( ) Intermédiaire (recherche d'idées, relecture)
+- ( ) Débutant (pas encore testé dans un cadre pro)
+
+**Quelle est votre principale attente concernant le suivi de vos candidatures auprès des startups cibles ?**
+_____
+
+Voici votre plan d'action mis à jour sous forme de Kanban :
+
+```TRELLO: Plan de Reconversion en Content Marketing
+### À faire
+- [ ] Suivre une formation en ligne gratuite sur le SEO (ex: Google, HubSpot) [Haute]
+- [ ] Rédiger un premier article sur le Personal Branding sur LinkedIn [Haute]
+- [ ] Rédiger un deuxième article sur la reconversion des RH vers le Marketing [Moyenne]
+
+### En cours
+- [ ] Identifier 10 startups cibles dans lesquelles postuler [Moyenne]
+- [ ] Mettre à jour son profil LinkedIn pour orienter le discours vers le Content Marketing [Haute]
+
+### Terminé
+- [ ] Définir le cadre cible (Startup) et le niveau d'expérience de départ [Faible]
+- [ ] Identifier 3 métiers cibles dans l'écosystème Startup (Marketing Digital) [Haute]
+- [ ] Réaliser un bilan de compétences ou un point de carrière [Haute]
+- [ ] Lister les compétences transférables des RH vers le Marketing Digital [Moyenne]
+- [ ] Choisir une thématique de prédilection pour le portfolio (Personal Branding / LinkedIn) [Faible]
+```
+
+Et voici une suggestion de calendrier pour votre troisième semaine de transition :
+
+```AGENDA: Planning de Transition - Semaine 3
+2026-07-20 | 09:00-12:00 | Portfolio | Rédaction de l'article sur le Personal Branding sur LinkedIn
+2026-07-22 | 14:00-16:00 | Formation | Suite de la formation SEO en ligne (HubSpot)
+2026-07-24 | 10:00-11:30 | Candidature | Premier contact avec 3 startups identifiées sur LinkedIn
+```

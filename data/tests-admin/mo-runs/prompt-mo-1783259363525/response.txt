@@ -1,0 +1,45 @@
+Voici l'analyse de votre profil professionnel ainsi que les premières pistes stratégiques adaptées à vos objectifs financiers dans le secteur de la santé.
+
+```ARRAY: Analyse du Profil Professionnel
+| Paramètre | Valeur déclarée | Diagnostic & Opportunités |
+| :--- | :--- | :--- |
+| **Secteur** | Santé / Médical | Secteur à forte valeur ajoutée, barrières à l'entrée élevées, opportunités massives en MedTech / Biotech / Santé connectée. |
+| **Expérience** | > 10 ans | Niveau Senior / Expert. Crédibilité établie pour lever des fonds, conseiller des directions ou piloter des projets d'envergure. |
+| **Niveau d'études** | Master / Ingénieur (Bac+5) | Base technique et scientifique solide. Capacité à structurer des projets complexes et à dialoguer avec les instances réglementaires. |
+| **Soft Skill clé** | Créativité | Atout majeur pour innover, concevoir de nouvelles solutions ou modèles économiques disruptifs dans un secteur souvent rigide. |
+| **Objectif** | Devenir riche | Nécessite de s'orienter vers la propriété intellectuelle (brevets), la création d'entreprise ou des postes de direction avec intéressement au capital (stock-options). |
+```
+
+```TRELLO: Plan d'Action Stratégique
+### À faire
+- [ ] Valider l'adéquation Homme/Projet (Spécialité vs Opportunités de marché) [Haute]
+- [ ] Rédiger un business plan préliminaire [Moyenne]
+- [ ] Identifier 3 opportunités de rupture dans le secteur de la santé (créativité) [Haute]
+### En cours
+- [ ] Analyse des technologies médicales émergentes [Haute]
+- [ ] Évaluation du réseau professionnel et partenaires potentiels [Moyenne]
+### Terminé
+- [ ] Bilan de compétences initial [Basse]
+- [ ] Définition des objectifs financiers à long terme [Moyenne]
+```
+
+```CHART: Potentiel de Revenus Annuels Estimé par Piste (k€)
+Start-up MedTech (Succès): 350
+Consulting Expert Santé: 180
+Directeur Industrie Pharmaceutique: 220
+Cabinet de Conseil Spécialisé: 150
+```
+
+Pour affiner votre projet et structurer la meilleure approche, merci de répondre aux questions suivantes :
+
+**Quel est l'intitulé exact de votre diplôme ou votre spécialité technique / scientifique ?**
+_____
+
+**Quelle voie d'action privilégiez-vous actuellement pour atteindre vos objectifs financiers ?**
+- ( ) Entrepreneuriat (créer une start-up MedTech, un produit de santé innovant)
+- ( ) Intrapreneuriat / Rôle de direction générale en industrie (Pharma, Biotech, Cliniques)
+- ( ) Consulting de niche ou expertise réglementaire / clinique à haut tarif
+- ( ) Investissement et rachat/transfert de technologies médicales
+
+**Avez-vous déjà des idées de projets ou d'innovations que vous aimeriez développer en priorité ?**
+_____

@@ -1,0 +1,925 @@
+{
+  "projectName": "avion",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-05-28T12:00:00.000Z",
+  "updatedAt": "2026-06-27T17:14:44.694Z",
+  "structure": [
+    {
+      "id": "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+      "type": "folder",
+      "name": "Cahier des Charges — App Angular \"Apprendre l'anglais\"",
+      "path": "edition/cahier-des-charges-app-angular-apprendre-langlais",
+      "order": 1,
+      "children": [
+        {
+          "id": "ef5f74f6-6299-498b-a256-8be148fac38b",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text"
+        },
+        {
+          "id": "36a7a07a-d15b-47af-85de-cc0c14613bce",
+          "type": "folder",
+          "name": "1. Contexte & Objectif",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/1-contexte-objectif",
+          "order": 1,
+          "children": [
+            {
+              "id": "3a529a83-7f5a-49b5-bbed-41cc969b803d",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/1-contexte-objectif/contenu.md",
+              "order": 1,
+              "content": "Application web Angular **standalone pour ap**prendre l'anglais en autonomie, niveaux A1 à C1. **vxffdsgvfdgfd**",
+              "fileType": "text"
+            },
+            {
+              "id": "5ddc59e9-4df5-45e8-82a0-032cd51580e7",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/1-contexte-objectif/contenu-css.md",
+              "order": 2,
+              "content": "Application web Angular **standalone pour ap**prendre l'anglais en autonomie, niveaux A1 à C1. **vxffdsgvfdgfd**",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "e5c24b08-d712-4635-a986-517ad028ea0c",
+          "type": "folder",
+          "name": "2. Utilisateurs cibles",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/2-utilisateurs-cibles",
+          "order": 2,
+          "children": [
+            {
+              "id": "1787eaf6-c7b3-4686-b521-7baa378b22c1",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/2-utilisateurs-cibles/contenu.md",
+              "order": 1,
+              "content": "Francophones adultes et adolescents souhaitant progresser en anglais.",
+              "fileType": "text"
+            },
+            {
+              "id": "5f4930de-e684-4313-b773-c8a108d76b85",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/2-utilisateurs-cibles/contenu-css.md",
+              "order": 2,
+              "content": "Francophones adultes et adolescents souhaitant progresser en anglais.",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "a0904fdf-a169-4e18-b7c2-8e1d99092bb6",
+          "type": "folder",
+          "name": "3. Fonctionnalités principales",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales",
+          "order": 3,
+          "children": [
+            {
+              "id": "2fdc740e-eb6f-4b6e-8688-577407f40e2c",
+              "type": "folder",
+              "name": "3.1 Authentification",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/31-authentification",
+              "order": 1,
+              "children": [
+                {
+                  "id": "7a725d22-8ec0-4a1e-893b-89acd38ffa62",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/31-authentification/contenu.md",
+                  "order": 1,
+                  "content": "- Inscription / connexion (email + mot de passe)********\n\n- Profil avec niveau sélectionné et progression sauvegardée",
+                  "fileType": "text"
+                },
+                {
+                  "id": "79e4a023-994b-4831-8ed8-bf25b0ae18ca",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/31-authentification/contenu-css.md",
+                  "order": 2,
+                  "content": "- Inscription / connexion (email + mot de passe)********\n\n- Profil avec niveau sélectionné et progression sauvegardée",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "c2cc83c7-b31e-4e80-b80a-5fb69da72ef3",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/contenu.md",
+              "order": 1,
+              "content": "",
+              "fileType": "text"
+            },
+            {
+              "id": "755d7092-6f4b-4997-bc62-0318875895a4",
+              "type": "folder",
+              "name": "3.2 Leçons",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/3.2 Leçons",
+              "order": 2,
+              "children": [
+                {
+                  "id": "cac6605f-749c-4f77-9aaf-6b53c61bbc76",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/3.2 Leçons/contenu.md",
+                  "order": 1,
+                  "content": "- Modules thématiques organisés en 3 catégories principales : **vocabulaire**, **grammaire**, **conjugaison**\n- Contenu structuré par niveau CECRL (A1 → C1), soit 5 niveaux distincts\n- Chaque niveau contient entre 8 et 12 modules thématiques\n- Chaque module est composé de :\n- Une page d'introduction (objectifs, durée estimée, prérequis)\n- Entre 3 et 6 leçons séquentielles\n- Une leçon de révision récapitulative\n- Un quiz de validation pour déverrouiller le module suivant\n- Progression linéaire avec déverrouillage des modules (un module doit être complété à ≥ 70% pour débloquer le suivant)\n- Chaque leçon inclut :\n- Un contenu théorique court (texte + illustrations ou exemples contextualisés)\n- Des exemples audio natifs (via Free Dictionary API ou fichiers embarqués)\n- Des encadrés \"Astuce\" et \"Erreur fréquente\" pour guider l'apprenant\n- Indicateur de progression visuel par module (barre de complétion + badges de niveau)\n- Marquage \"Déjà vu\" et \"À réviser\" sur chaque leçon, alimentant l'algorithme de répétition espacée (section 3.5)\n- Mode hors-ligne : contenu des leçons téléchargeable pour consultation sans connexion (PWA, cf. section 5)\n- Estimation du temps de lecture affichée en en-tête de chaque leçon (ex. : \"5 min\")\n-",
+                  "fileType": "text"
+                },
+                {
+                  "id": "b53306c8-324d-4129-8151-63a49ed1ead3",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/3.2 Leçons/contenu-css.md",
+                  "order": 2,
+                  "content": "- Modules thématiques organisés en 3 catégories principales : **vocabulaire**, **grammaire**, **conjugaison**\n- Contenu structuré par niveau CECRL (A1 → C1), soit 5 niveaux distincts\n- Chaque niveau contient entre 8 et 12 modules thématiques\n- Chaque module est composé de :\n- Une page d'introduction (objectifs, durée estimée, prérequis)\n- Entre 3 et 6 leçons séquentielles\n- Une leçon de révision récapitulative\n- Un quiz de validation pour déverrouiller le module suivant\n- Progression linéaire avec déverrouillage des modules (un module doit être complété à ≥ 70% pour débloquer le suivant)\n- Chaque leçon inclut :\n- Un contenu théorique court (texte + illustrations ou exemples contextualisés)\n- Des exemples audio natifs (via Free Dictionary API ou fichiers embarqués)\n- Des encadrés \"Astuce\" et \"Erreur fréquente\" pour guider l'apprenant\n- Indicateur de progression visuel par module (barre de complétion + badges de niveau)\n- Marquage \"Déjà vu\" et \"À réviser\" sur chaque leçon, alimentant l'algorithme de répétition espacée (section 3.5)\n- Mode hors-ligne : contenu des leçons téléchargeable pour consultation sans connexion (PWA, cf. section 5)\n- Estimation du temps de lecture affichée en en-tête de chaque leçon (ex. : \"5 min\")\n-",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "43779f27-e4e8-48b1-8b79-0b3065508dc2",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/3-fonctionnalites-principales/contenu-css.md",
+              "order": 7,
+              "content": "",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "3f4b7ad2-27d6-4c08-b15e-c61662518adc",
+          "type": "folder",
+          "name": "4. Stack technique",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/4-stack-technique",
+          "order": 4,
+          "children": [
+            {
+              "id": "6bd8c723-eeba-49b9-a327-5e4f9c09b738",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/4-stack-technique/contenu.md",
+              "order": 1,
+              "content": "- Angular 17+ (standalone components, Signals)\n- TailwindCSS\n- Firebase (auth + Firestore)\n- API externe : Free Dictionary API pour définitions/audio",
+              "fileType": "text"
+            },
+            {
+              "id": "a5298581-9ee8-4f02-8e65-9bf404e18cb2",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/4-stack-technique/contenu-css.md",
+              "order": 2,
+              "content": "- Angular 17+ (standalone components, Signals)\n- TailwindCSS\n- Firebase (auth + Firestore)\n- API externe : Free Dictionary API pour définitions/audio",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "dfde931d-a84a-4a49-8af8-ece9c085ef55",
+          "type": "folder",
+          "name": "5. Contraintes",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes",
+          "order": 5,
+          "children": [
+            {
+              "id": "792c4747-0c36-4564-9c1d-b96d96b1307c",
+              "type": "folder",
+              "name": "5.1 Performance",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/51-performance",
+              "order": 1,
+              "children": [
+                {
+                  "id": "cfdaf51c-4007-41e1-bfb1-f5181886591d",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/51-performance/contenu.md",
+                  "order": 1,
+                  "content": "- Responsive mobile-first (breakpoints : 320px, 768px, 1024px, 1440px)\n- Temps de chargement initial < 3s sur connexion 4G moyenne (lazy loading par module)\n- First Contentful Paint (FCP) < 1.8s\n- Time to Interactive (TTI) < 3.5s\n- Core Web Vitals : LCP < 2.5s, CLS < 0.1, FID < 100ms\n- Bundle JS principal < 200 Ko (gzip)\n- Images optimisées : WebP avec fallback JPEG/PNG, compression automatique",
+                  "fileType": "text"
+                },
+                {
+                  "id": "dc934826-6278-4057-b409-90fb230f5827",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/51-performance/contenu-css.md",
+                  "order": 2,
+                  "content": "- Responsive mobile-first (breakpoints : 320px, 768px, 1024px, 1440px)\n- Temps de chargement initial < 3s sur connexion 4G moyenne (lazy loading par module)\n- First Contentful Paint (FCP) < 1.8s\n- Time to Interactive (TTI) < 3.5s\n- Core Web Vitals : LCP < 2.5s, CLS < 0.1, FID < 100ms\n- Bundle JS principal < 200 Ko (gzip)\n- Images optimisées : WebP avec fallback JPEG/PNG, compression automatique",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "f05e38c1-ac18-4254-a134-c96521edd5ff",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/contenu.md",
+              "order": 1,
+              "content": "",
+              "fileType": "text"
+            },
+            {
+              "id": "a7511077-35fa-47d8-b8e0-8049bcb96399",
+              "type": "folder",
+              "name": "5.2 Accessibilité",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/52-accessibilite",
+              "order": 2,
+              "children": [
+                {
+                  "id": "36b5f84c-c039-483a-98bd-d1af2ee66e31",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/52-accessibilite/contenu.md",
+                  "order": 1,
+                  "content": "- Score Lighthouse Accessibilité ≥ 90\n- Conformité WCAG 2.1 niveau AA\n- Navigation clavier complète (focus visible, ordre logique)\n- Compatibilité lecteurs d'écran (NVDA, VoiceOver)\n- Contrastes de couleurs : ratio ≥ 4.5:1 pour le texte courant, ≥ 3:1 pour les grands titres\n- Attributs ARIA sur tous les composants interactifs\n- Textes alternatifs obligatoires sur toutes les images pédagogiques",
+                  "fileType": "text"
+                },
+                {
+                  "id": "7a77e4a3-07ed-4070-8702-928c8204e516",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/52-accessibilite/contenu-css.md",
+                  "order": 2,
+                  "content": "- Score Lighthouse Accessibilité ≥ 90\n- Conformité WCAG 2.1 niveau AA\n- Navigation clavier complète (focus visible, ordre logique)\n- Compatibilité lecteurs d'écran (NVDA, VoiceOver)\n- Contrastes de couleurs : ratio ≥ 4.5:1 pour le texte courant, ≥ 3:1 pour les grands titres\n- Attributs ARIA sur tous les composants interactifs\n- Textes alternatifs obligatoires sur toutes les images pédagogiques",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "63bbb1da-f495-4587-9c15-86e6b8953319",
+              "type": "folder",
+              "name": "5.3 PWA & Mode hors-ligne",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.3 PWA & Mode hors-ligne",
+              "order": 3,
+              "children": [
+                {
+                  "id": "b78a7636-2a07-48e8-9216-80d16c4b8aad",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.3 PWA & Mode hors-ligne/contenu.md",
+                  "order": 1,
+                  "content": "- PWA obligatoire : manifest.json + Service Worker\n- Mode hors-ligne pour les modules de révision déjà consultés (cache via IndexedDB)\n- Synchronisation différée des résultats d'exercices au retour en ligne\n\n- \n- Installation sur écran d'accueil (Android / iOS)\n- Mise à jour silencieuse du cache en arrière-plan\n\n****### 5.4b nouveau menu h3 après 5.4 {{SID:92b40c70-0a8d-4fe8-9a11-a6fc433a78b0}}\nddsq qsdsq\nqds QS\n\nDQSdsq",
+                  "fileType": "text"
+                },
+                {
+                  "id": "243a1ace-e547-4d40-b841-36860c202004",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.3 PWA & Mode hors-ligne/contenu-css.md",
+                  "order": 2,
+                  "content": "- PWA obligatoire : manifest.json + Service Worker\n- Mode hors-ligne pour les modules de révision déjà consultés (cache via IndexedDB)\n- Synchronisation différée des résultats d'exercices au retour en ligne\n\n- \n- Installation sur écran d'accueil (Android / iOS)\n- Mise à jour silencieuse du cache en arrière-plan\n\n****### 5.4b nouveau menu h3 après 5.4 {{SID:92b40c70-0a8d-4fe8-9a11-a6fc433a78b0}}\nddsq qsdsq\nqds QS\n\nDQSdsq",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "b6178e8b-0213-4269-816a-fdf9d497c176",
+              "type": "folder",
+              "name": "5.4 Compatibilité navigateurs",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.4 Compatibilité navigateurs",
+              "order": 4,
+              "children": [
+                {
+                  "id": "88ce348a-6d35-4e5f-a0d0-4e8eeb134346",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.4 Compatibilité navigateurs/contenu.md",
+                  "order": 1,
+                  "content": "- Chrome / Edge ≥ 2 dernières versions majeures\n- Firefox ≥ 2 dernières versions majeures\n- Safari iOS ≥ 15 (support PWA limité pris en compte)\n- Pas de support IE11",
+                  "fileType": "text"
+                },
+                {
+                  "id": "b480009b-1d31-4997-b812-960b5fa883c6",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/5.4 Compatibilité navigateurs/contenu-css.md",
+                  "order": 2,
+                  "content": "- Chrome / Edge ≥ 2 dernières versions majeures\n- Firefox ≥ 2 dernières versions majeures\n- Safari iOS ≥ 15 (support PWA limité pris en compte)\n- Pas de support IE11",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "4c2d0b66-7142-4a17-b49c-fc1440625fde",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/5-contraintes/contenu-css.md",
+              "order": 9,
+              "content": "",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "ea535b61-a148-4a55-9c7b-08fbe5524c3d",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/cahier-des-charges-app-angular-apprendre-langlais/contenu-css.md",
+          "order": 12,
+          "content": "",
+          "fileType": "text"
+        }
+      ]
+    },
+    {
+      "id": "4a358c4f-2ee7-45fa-babc-121209b8a801",
+      "type": "folder",
+      "name": "H1 new menu après 5.4b",
+      "path": "edition/h1-new-menu-apres-54b",
+      "order": 2,
+      "children": [
+        {
+          "id": "36ebdd41-1238-4019-9f61-a30ebd78281e",
+          "type": "folder",
+          "name": "5.5 Sécurité",
+          "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité",
+          "order": 1,
+          "children": [
+            {
+              "id": "b537066d-5eb4-4cbe-8518-60f1fd1bdc5c",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu.md",
+              "order": 1,
+              "content": "- HTTPS obligatoire (HSTS activé)\n- Authentification via JWT (expiration 24h, refresh token 30 jours)\n- Protection C[SRF sur tous les **formulairces**](https://test.Com)\n- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc\n- Données personnelles chiffrées au repos (RGPD)\n- Politique CSP stricte définie dans les headers HTTP",
+              "fileType": "text"
+            },
+            {
+              "id": "896dc048-a834-4621-8878-e41f47dd1fed",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu-css.md",
+              "order": 2,
+              "content": "- HTTPS obligatoire (HSTS activé)\n- Authentification via JWT (expiration 24h, refresh token 30 jours)\n- Protection C[SRF sur tous les **formulairces**](https://test.Com)\n- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc\n- Données personnelles chiffrées au repos (RGPD)\n- Politique CSP stricte définie dans les headers HTTP",
+              "fileType": "text"
+            }
+          ]
+        },
+        {
+          "id": "dd0c5d7b-cb2b-4304-89f1-2a975f7cf770",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/h1-new-menu-apres-54b/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text"
+        },
+        {
+          "id": "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+          "type": "folder",
+          "name": "5.6 Internationalisation & Contenu",
+          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu",
+          "order": 2,
+          "children": [
+            {
+              "id": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+              "type": "folder",
+              "name": "5.7 Hébergement & Déploiement",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement",
+              "order": 1,
+              "children": [
+                {
+                  "id": "4e6e672d-a699-4a48-bd42-744fd778f278",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/contenu.md",
+                  "order": 1,
+                  "content": "- Déploiement CI/CD automatisé (GitHub Actions ou équivalent)\n- Environnements distincts : développement / staging / production sfdsdffsd",
+                  "fileType": "text"
+                },
+                {
+                  "id": "f0a3a0d3-c693-4a9a-a911-8f1552788582",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/contenu-css.md",
+                  "order": 2,
+                  "content": "- Déploiement CI/CD automatisé (GitHub Actions ou équivalent)\n- Environnements distincts : développement / staging / production sfdsdffsd",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "e25b63ff-8b5b-4218-81d4-8497e7fb6dbc",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/contenu.md",
+              "order": 1,
+              "content": "- Langue principale : français\n- Architecture i18n prête pour ajout d'une seconde langue (anglais) sans refonte\n- Encodage UTF-8 sur l'ensemble des fichiers et flux de données",
+              "fileType": "text"
+            },
+            {
+              "id": "908ed53e-b323-4455-840b-ae7c6ed327ee",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/contenu-css.md",
+              "order": 2,
+              "content": "- Langue principale : français\n- Architecture i18n prête pour ajout d'une seconde langue (anglais) sans refonte\n- Encodage UTF-8 sur l'ensemble des fichiers et flux de données",
+              "fileType": "text"
+            },
+            {
+              "id": "fa0bc9b0-f3e4-4cfa-9a9c-b948165026d6",
+              "type": "folder",
+              "name": "7.7b test",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/77b-test",
+              "order": 2,
+              "children": [
+                {
+                  "id": "9fb7a613-3ec8-4c95-abd6-a48649f13639",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/77b-test/contenu.md",
+                  "order": 1,
+                  "content": "- Rollback possible en **< 5 minutes** **dsffdssdfdssdfds**\n- Disponibilité cible : 99.5 % (hors maintenance planifiée)",
+                  "fileType": "text"
+                },
+                {
+                  "id": "1443a921-e054-4c5a-8b9f-213af06ca76e",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/77b-test/contenu-css.md",
+                  "order": 2,
+                  "content": "- Rollback possible en **< 5 minutes** **dsffdssdfdssdfds**\n- Disponibilité cible : 99.5 % (hors maintenance planifiée)",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "c6ad68ac-9580-4aff-b838-bc1346c0041f",
+              "type": "folder",
+              "name": "Disponibilité",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/disponibilite",
+              "order": 3,
+              "children": [
+                {
+                  "id": "3ce9a718-3640-40ad-b305-7376762d2f40",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/disponibilite/contenu.md",
+                  "order": 1,
+                  "content": "- Sauvegardes automatiques de la base de données : 1 fois/jour, rétention 30 jours",
+                  "fileType": "text"
+                },
+                {
+                  "id": "7017ed0a-165b-4000-90a4-cfd89ce306f8",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/disponibilite/contenu-css.md",
+                  "order": 2,
+                  "content": "- Sauvegardes automatiques de la base de données : 1 fois/jour, rétention 30 jours",
+                  "fileType": "text"
+                }
+              ]
+            },
+            {
+              "id": "550f4bf8-c955-42aa-b85b-5673e44075f1",
+              "type": "folder",
+              "name": "H3 TEST",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST",
+              "order": 4,
+              "children": [
+                {
+                  "id": "ec6f3c51-891c-4cfb-90d1-5f519ee85c21",
+                  "type": "folder",
+                  "name": "save",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/save",
+                  "order": 1,
+                  "children": [
+                    {
+                      "id": "eb6f5bda-6d72-4df9-8da9-b5763b7bb943",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/save/contenu.md",
+                      "order": 1,
+                      "content": "Mon Prompt maths\n\nMODE: guided\n\nSYSTEM:  Tu es un expert en formation en mathématique\n\n- Tu doit demander le niveau scolaire et la matière à travaillé.\n- Tu dois prévoir un plan de travail, des cours et des exercices\n- \n\n**Création projet maison d'höte**\n\nMODE: guided\nSYSTEM:\n\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "bb436e42-4efc-43f5-ac8c-c6b9067a7495",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/save/contenu-css.md",
+                      "order": 2,
+                      "content": "Mon Prompt maths\n\nMODE: guided\n\nSYSTEM:  Tu es un expert en formation en mathématique\n\n- Tu doit demander le niveau scolaire et la matière à travaillé.\n- Tu dois prévoir un plan de travail, des cours et des exercices\n- \n\n<span style=\"color:rgba(255, 255, 255, 0.9);background-color:rgba(245, 158, 11, 0.05)\">**Création projet maison d'höte**</span>\n\nMODE: guided\nSYSTEM:\n\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "520334cc-72b4-404f-aef4-21312daf12ed",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/contenu.md",
+                  "order": 1,
+                  "content": "fdsqfsdqfs\n\nsfdqqsdf",
+                  "fileType": "text"
+                },
+                {
+                  "id": "4daaf178-09fb-4607-815b-7b07229c4c4c",
+                  "type": "folder",
+                  "name": "tableaux",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "2d4590d3-dbf2-4617-abab-4c459109da13",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux/contenu.md",
+                      "order": 1,
+                      "content": "ddddddddddd",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "113d3c6c-9f66-498a-835e-9183504ca8e2",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux/contenu-css.md",
+                      "order": 2,
+                      "content": "ddddddddddd",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "c9d5cca5-9b17-45a8-a44a-ce9bc8b9669e",
+                      "type": "file",
+                      "name": "array-Mon Tableau.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/tableaux/array-Mon Tableau.md",
+                      "order": 2,
+                      "content": "```ARRAY: Mon Tableau\n|  |  |  |\n| --- | --- | --- |\n|  | 44 |  |\n|  | 5 | 2 |\n|  | =B2+B3 |  |\n|  |  |  |\n```",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "7ed7f376-304e-4470-907a-cb16310ce2c8",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/contenu-css.md",
+                  "order": 2,
+                  "content": "fdsqfsdqfs\n\nsfdqqsdf",
+                  "fileType": "text"
+                },
+                {
+                  "id": "a0e918ff-124b-4752-9110-ed5eb2643d8a",
+                  "type": "folder",
+                  "name": "trello",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello",
+                  "order": 3,
+                  "children": [
+                    {
+                      "id": "cad9e775-b200-4541-8b9a-a567225aa30b",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "411fef14-8291-44bb-8b66-06b77c5144b2",
+                      "type": "file",
+                      "name": "trello-Mon Trello.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello/trello-Mon Trello.md",
+                      "order": 2,
+                      "content": "```TRELLO: Mon Trello\n### À faire\n- [ ] Task test 1 `[Normale]` — admin · 20/06/26\n  Description Task test 1\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "83d44db2-8281-479a-bf9d-654a5daff0a1",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/trello/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "54f0262d-074e-4c87-a864-3b02c2bde370",
+                  "type": "folder",
+                  "name": "Prompt",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt",
+                  "order": 4,
+                  "children": [
+                    {
+                      "id": "af113c00-9d30-4d2a-8b90-7e73f9e0b98e",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/contenu.md",
+                      "order": 1,
+                      "content": "```PROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n```\n\n```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "36d95508-cd4b-4d72-95cc-0d777030c2bb",
+                      "type": "folder",
+                      "name": "Séance 1 — 2026-06-29 : Théorème de Pythagore et Trigonométrie",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-1-2026-06-29-theoreme-de-pythagore-et-trigonometrie",
+                      "order": 5,
+                      "children": [
+                        {
+                          "id": "de652fe0-a366-48a9-ac9d-f32f27f62cc9",
+                          "type": "file",
+                          "name": "contenu.md",
+                          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-1-2026-06-29-theoreme-de-pythagore-et-trigonometrie/contenu.md",
+                          "order": 1,
+                          "content": "",
+                          "fileType": "text"
+                        },
+                        {
+                          "id": "93dac5cb-3db5-465d-97bc-e33146a806da",
+                          "type": "file",
+                          "name": "contenu-css.md",
+                          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-1-2026-06-29-theoreme-de-pythagore-et-trigonometrie/contenu-css.md",
+                          "order": 2,
+                          "content": "",
+                          "fileType": "text"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "58988eee-1b21-4df2-a923-e7eea1879ee1",
+                      "type": "folder",
+                      "name": "Séance 2 — 2026-07-06 : Fonctions linéaires et affines",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-2-2026-07-06-fonctions-lineaires-et-affines",
+                      "order": 6,
+                      "children": [
+                        {
+                          "id": "af89ec50-7c6f-41f5-a174-f3862e677179",
+                          "type": "file",
+                          "name": "contenu.md",
+                          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-2-2026-07-06-fonctions-lineaires-et-affines/contenu.md",
+                          "order": 1,
+                          "content": "",
+                          "fileType": "text"
+                        },
+                        {
+                          "id": "9d03cf4a-0717-4d13-ba94-a6e78e29e2f2",
+                          "type": "file",
+                          "name": "contenu-css.md",
+                          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-2-2026-07-06-fonctions-lineaires-et-affines/contenu-css.md",
+                          "order": 2,
+                          "content": "",
+                          "fileType": "text"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "5f038bc4-2866-43a5-b440-4080ad2470a1",
+                      "type": "folder",
+                      "name": "Séance 3 — 2026-07-13 : Probabilités simples",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-3-2026-07-13-probabilites-simples",
+                      "order": 7,
+                      "children": [
+                        {
+                          "id": "7ac4c92c-5585-4ce4-be68-d3471ad77725",
+                          "type": "file",
+                          "name": "contenu.md",
+                          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-3-2026-07-13-probabilites-simples/contenu.md",
+                          "order": 1,
+                          "content": "",
+                          "fileType": "text"
+                        },
+                        {
+                          "id": "dbb690c6-8fe5-4a61-89af-bc10145a365b",
+                          "type": "file",
+                          "name": "contenu-css.md",
+                          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/seance-3-2026-07-13-probabilites-simples/contenu-css.md",
+                          "order": 2,
+                          "content": "",
+                          "fileType": "text"
+                        }
+                      ]
+                    },
+                    {
+                      "id": "66a8ad13-831e-499b-b01e-fef49dd10ee8",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/prompt/contenu-css.md",
+                      "order": 2,
+                      "content": "```PROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n```\n\n```PROMPT: Cours de maths\nMODE: guided\nSYSTEM: Tu es un expert en formation en mathématique\n\n---\nTu doit demander le niveau scolaire et la matière à travaillé.\nTu dois prévoir un plan de travail, des cours et des exercices\n```",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "e7c84ac3-cd95-4846-ad4c-8ea39b30f76d",
+                  "type": "folder",
+                  "name": "📊 Bilan général et suivi du cours",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/📊 Bilan général et suivi du cours",
+                  "order": 8,
+                  "children": [
+                    {
+                      "id": "34c7beb0-42b5-45d0-8014-db31a7a8dc01",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/📊 Bilan général et suivi du cours/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "cd0f0aac-1dea-4339-89fe-7ba5ad850a07",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/📊 Bilan général et suivi du cours/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fcefe58f-26de-4b2c-83df-051e88994c4a",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/h1-new-menu-apres-54b/contenu-css.md",
+          "order": 5,
+          "content": "",
+          "fileType": "text"
+        }
+      ]
+    },
+    {
+      "id": "8e294451-4e56-4d82-acb6-a30b9fda716a",
+      "type": "folder",
+      "name": "📊 Bilan général et suivi du cours",
+      "path": "edition/-bilan-general-et-suivi-du-cours",
+      "order": 3,
+      "children": [
+        {
+          "id": "72faf671-c545-4a1c-8a90-2d8a879a7eca",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/-bilan-general-et-suivi-du-cours/contenu.md",
+          "order": 1,
+          "content": "Ce tableau de bord vous permet de configurer votre profil et de suivre l'avancement de votre apprentissage en mathématiques.\n\n```FORM: Profil de l'élève\n* **Quel est votre niveau scolaire actuel ?**\n  * ( ) Collège - Classe de Troisième\n  * ( ) Lycée - Classe de Seconde\n  * ( ) Lycée - Classe de Première\n  * ( ) Lycée - Classe de Terminale\n* **Quelle matière ou domaine des mathématiques souhaitez-vous travailler ?**\n  * ( ) Géométrie & Trigonométrie\n  * ( ) Algèbre & Fonctions\n  * ( ) Probabilités & Statistiques\n  * ( ) Analyse & Calcul\n```\n\n##### Plan de travail et planification\n\n<!-- agenda-group:7f171797-65b1-47d4-9584-6264e1c3bada agenda-name:Cours de maths -->\n- **2026-06-29 14:00–16:00** — Séance 1 — 2026-06-29 : Théorème de Pythagore et Trigonométrie : Découverte théorique, exemples d'applications et QCM d'évaluation.\n- **2026-07-06 14:00–16:00** — Séance 2 — 2026-07-06 : Fonctions linéaires et affines : Tracé de droites, étude de coefficients directeurs et QCM d'évaluation.\n- **2026-07-13 14:00–16:00** — Séance 3 — 2026-07-13 : Probabilités simples : Concepts d'événements aléatoires, équiprobabilité et QCM d'évaluation.\n\n##### Suivi des évaluations et progression\n\n```CHART: Progression des notes\nsource: Suivi des notes | col: Note\n```\n\n---",
+          "fileType": "text"
+        },
+        {
+          "id": "1dbc0856-130e-4cf5-becf-aed055bd7c99",
+          "type": "file",
+          "name": "trello-Avancement du cours.md",
+          "path": "edition/-bilan-general-et-suivi-du-cours/trello-Avancement du cours.md",
+          "order": 2,
+          "content": "```TRELLO: Avancement du cours\n### À faire\n- [ ] Réaliser le cours et le QCM de la Séance 1 `[medium]`\n- [ ] Réaliser le cours et le QCM de la Séance 2 `[medium]`\n- [ ] Réaliser le cours et le QCM de la Séance 3 `[medium]`\n### En cours\n### Terminé\n```",
+          "fileType": "text"
+        },
+        {
+          "id": "469e2647-bfac-44b8-bcd5-7c0dccd10d9b",
+          "type": "file",
+          "name": "array-Planning.md",
+          "path": "edition/-bilan-general-et-suivi-du-cours/array-Planning.md",
+          "order": 3,
+          "content": "```ARRAY: Planning\n| Séance | Date | Thème | Objectif | Statut |\n|---|---|---|---|---|\n| Séance 1 | 2026-06-29 | Théorème de Pythagore et Trigonométrie | Calculer des longueurs et des angles dans un triangle rectangle | À faire |\n| Séance 2 | 2026-07-06 | Fonctions linéaires et affines | Modéliser et représenter graphiquement des fonctions | À faire |\n| Séance 3 | 2026-07-13 | Probabilités simples | Calculer des probabilités d'événements élémentaires | À faire |\n```",
+          "fileType": "text"
+        },
+        {
+          "id": "6a28866b-d569-4673-82dd-158d44f6a9f6",
+          "type": "file",
+          "name": "array-Suivi des notes.md",
+          "path": "edition/-bilan-general-et-suivi-du-cours/array-Suivi des notes.md",
+          "order": 4,
+          "content": "```ARRAY: Suivi des notes\n| Séance | Date | Thème | Note | Max | % | Moyenne |\n| --- | --- | --- | --- | --- | --- | --- |\n| Séance 1 | 2026-06-29 | Théorème de Pythagore | 0 | 3 | =D2/E2*100 | =AVG(D2:D4) |\n| Séance 2 | 2026-07-06 | Fonctions |  | 20 | =D3/E3*100 |  |\n| Séance 3 | 2026-07-13 | Probabilités |  | 20 | =D4/E4*100 |  |\n```",
+          "fileType": "text"
+        },
+        {
+          "id": "33fbef80-9c80-4995-903a-7fa7d234e2b4",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/-bilan-general-et-suivi-du-cours/contenu-css.md",
+          "order": 5,
+          "content": "Ce tableau de bord vous permet de configurer votre profil et de suivre l'avancement de votre apprentissage en mathématiques.\n\n```FORM: Profil de l'élève\n* **Quel est votre niveau scolaire actuel ?**\n  * ( ) Collège - Classe de Troisième\n  * ( ) Lycée - Classe de Seconde\n  * ( ) Lycée - Classe de Première\n  * ( ) Lycée - Classe de Terminale\n* **Quelle matière ou domaine des mathématiques souhaitez-vous travailler ?**\n  * ( ) Géométrie & Trigonométrie\n  * ( ) Algèbre & Fonctions\n  * ( ) Probabilités & Statistiques\n  * ( ) Analyse & Calcul\n```\n\n##### Plan de travail et planification\n\n<!-- agenda-group:7f171797-65b1-47d4-9584-6264e1c3bada agenda-name:Cours de maths -->\n- **2026-06-29 14:00–16:00** — Séance 1 — 2026-06-29 : Théorème de Pythagore et Trigonométrie : Découverte théorique, exemples d'applications et QCM d'évaluation.\n- **2026-07-06 14:00–16:00** — Séance 2 — 2026-07-06 : Fonctions linéaires et affines : Tracé de droites, étude de coefficients directeurs et QCM d'évaluation.\n- **2026-07-13 14:00–16:00** — Séance 3 — 2026-07-13 : Probabilités simples : Concepts d'événements aléatoires, équiprobabilité et QCM d'évaluation.\n\n##### Suivi des évaluations et progression\n\n```CHART: Progression des notes\nsource: Suivi des notes | col: Note\n```\n\n---",
+          "fileType": "text"
+        }
+      ]
+    },
+    {
+      "id": "bf6ba1d3-a9ef-41ae-b3e7-47d59b26109b",
+      "type": "folder",
+      "name": "Séance 1 — 2026-06-29 : Théorème de Pythagore et Trigonométrie",
+      "path": "edition/seance-1-2026-06-29-theoreme-de-pythagore-et-trigonometrie",
+      "order": 4,
+      "children": [
+        {
+          "id": "60af71c5-a666-4f9e-b67d-a252e42b463f",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/seance-1-2026-06-29-theoreme-de-pythagore-et-trigonometrie/contenu.md",
+          "order": 1,
+          "content": "##### I. Le théorème de Pythagore\n\nDans un triangle rectangle, le carré de la longueur de l'hypoténuse est égal à la somme des carrés des longueurs des deux autres côtés.\n* Si le triangle $ABC$ est rectangle en $A$, alors l'hypoténuse est le côté $[BC]$.\n* On a la relation : $BC^2 = AB^2 + AC^2$.\n\n##### II. Réciproque du théorème de Pythagore\n\nSi dans un triangle $ABC$, on a $BC^2 = AB^2 + AC^2$, alors le triangle $ABC$ est rectangle en $A$.\nCette réciproque sert à démontrer qu'un triangle est rectangle lorsqu'on connaît les longueurs de ses trois côtés.\n\n##### III. Trigonométrie dans le triangle rectangle\n\nLa trigonométrie relie les mesures des angles et les longueurs des côtés dans un triangle rectangle :\n* **Cosinus** : $\\cos(\\theta) = \\frac{\\text{Côté Adjacent}}{\\text{Hypoténuse}}$\n* **Sinus** : $\\sin(\\theta) = \\frac{\\text{Côté Opposé}}{\\text{Hypoténuse}}$\n* **Tangente** : $\\tan(\\theta) = \\frac{\\text{Côté Opposé}}{\\text{Côté Adjacent}}$\n\n*Moyen mnémotechnique : SOH CAH TOA.*\n\n##### IV. Exercices d'application (QCM)\n\n```FORM: QCM Séance 1\n* **Question 1 : Si un triangle ABC est rectangle en A avec AB = 3 cm et AC = 4 cm, combien mesure l'hypoténuse BC ?**\n  * ( ) 5 cm\n  * ( ) 7 cm\n  * ( ) 25 cm\n* **Question 2 : Dans un triangle DEF rectangle en D, quel rapport définit le cosinus de l'angle E ?**\n  * ( ) DF / EF\n  * ( ) DE / EF\n  * ( ) DE / DF\n* **Question 3 : Un triangle GHI a pour côtés GH = 6 cm, GI = 8 cm et HI = 10 cm. Ce triangle est-il rectangle ?**\n  * ( ) Oui\n  * ( ) Non\n  * ( ) On ne peut pas le déterminer\n===RÉPONSES===\n---\n27/06/2026 18:58 | admin\nQuestion 1 : Si un triangle ABC est rectangle en A avec AB = 3 cm et AC = 4 cm, combien mesure l'hypoténuse BC ? : 7 cm\nQuestion 2 : Dans un triangle DEF rectangle en D, quel rapport définit le cosinus de l'angle E ? : DF / EF\nQuestion 3 : Un triangle GHI a pour côtés GH = 6 cm, GI = 8 cm et HI = 10 cm. Ce triangle est-il rectangle ? : Non\n---\n```\n\n<!-- qcm-correction:QCM Séance 1 -->\n**📝 Correction IA — QCM Séance 1** _(27/06/2026 18:58, note : 0/3)_\n\n* **Question 1** : ❌ Fausse.\n  * La réponse de l'élève était **7 cm**.\n  * La bonne réponse est **5 cm**.\n  * **Explication** : Tu as probablement additionné directement les longueurs 3 cm et 4 cm. Or, d'après le théorème de Pythagore, il faut calculer la somme des carrés des côtés de l'angle droit : BC² = AB² + AC² = 3² + 4² = 9 + 16 = 25. L'hypoténuse BC mesure donc la racine carrée de 25, soit 5 cm.\n\n* **Question 2** : ❌ Fausse.\n  * La réponse de l'élève était **DF / EF**.\n  * La bonne response est **DE / EF**.\n  * **Explication** : Le rapport DF / EF correspond au sinus de l'angle E (côté opposé / hypoténuse). Pour le cosinus, on utilise le côté adjacent divisé par l'hypoténuse, ce qui donne DE / EF.\n\n* **Question 3** : ❌ Fausse.\n  * La réponse de l'élève était **Non**.\n  * La bonne réponse est **Oui**.\n  * **Explication** : En testant l'égalité de Pythagore, on constate que le carré du plus grand côté est HI² = 10² = 100, et la somme des carrés des deux autres côtés est GH² + GI² = 6² + 8² = 36 + 64 = 100. L'égalité étant vérifiée, le triangle est donc bien rectangle en G d'après la réciproque du théorème.\n\nNe te décourage pas ! Prends le temps de bien revoir le théorème de Pythagore et les définitions de trigonométrie (notamment la distinction entre côté adjacent et opposé), et tu réussiras sans problème la prochaine fois.\n<!-- /qcm-correction:QCM Séance 1 -->\n\n---",
+          "fileType": "text"
+        },
+        {
+          "id": "04d0d797-4bdd-4590-bb5a-b02bad77fd20",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/seance-1-2026-06-29-theoreme-de-pythagore-et-trigonometrie/contenu-css.md",
+          "order": 2,
+          "content": "##### I. Le théorème de Pythagore\n\nDans un triangle rectangle, le carré de la longueur de l'hypoténuse est égal à la somme des carrés des longueurs des deux autres côtés.\n* Si le triangle $ABC$ est rectangle en $A$, alors l'hypoténuse est le côté $[BC]$.\n* On a la relation : $BC^2 = AB^2 + AC^2$.\n\n##### II. Réciproque du théorème de Pythagore\n\nSi dans un triangle $ABC$, on a $BC^2 = AB^2 + AC^2$, alors le triangle $ABC$ est rectangle en $A$.\nCette réciproque sert à démontrer qu'un triangle est rectangle lorsqu'on connaît les longueurs de ses trois côtés.\n\n##### III. Trigonométrie dans le triangle rectangle\n\nLa trigonométrie relie les mesures des angles et les longueurs des côtés dans un triangle rectangle :\n* **Cosinus** : $\\cos(\\theta) = \\frac{\\text{Côté Adjacent}}{\\text{Hypoténuse}}$\n* **Sinus** : $\\sin(\\theta) = \\frac{\\text{Côté Opposé}}{\\text{Hypoténuse}}$\n* **Tangente** : $\\tan(\\theta) = \\frac{\\text{Côté Opposé}}{\\text{Côté Adjacent}}$\n\n*Moyen mnémotechnique : SOH CAH TOA.*\n\n##### IV. Exercices d'application (QCM)\n\n```FORM: QCM Séance 1\n* **Question 1 : Si un triangle ABC est rectangle en A avec AB = 3 cm et AC = 4 cm, combien mesure l'hypoténuse BC ?**\n  * ( ) 5 cm\n  * ( ) 7 cm\n  * ( ) 25 cm\n* **Question 2 : Dans un triangle DEF rectangle en D, quel rapport définit le cosinus de l'angle E ?**\n  * ( ) DF / EF\n  * ( ) DE / EF\n  * ( ) DE / DF\n* **Question 3 : Un triangle GHI a pour côtés GH = 6 cm, GI = 8 cm et HI = 10 cm. Ce triangle est-il rectangle ?**\n  * ( ) Oui\n  * ( ) Non\n  * ( ) On ne peut pas le déterminer\n===RÉPONSES===\n---\n27/06/2026 18:58 | admin\nQuestion 1 : Si un triangle ABC est rectangle en A avec AB = 3 cm et AC = 4 cm, combien mesure l'hypoténuse BC ? : 7 cm\nQuestion 2 : Dans un triangle DEF rectangle en D, quel rapport définit le cosinus de l'angle E ? : DF / EF\nQuestion 3 : Un triangle GHI a pour côtés GH = 6 cm, GI = 8 cm et HI = 10 cm. Ce triangle est-il rectangle ? : Non\n---\n```\n\n<!-- qcm-correction:QCM Séance 1 -->\n**📝 Correction IA — QCM Séance 1** _(27/06/2026 18:58, note : 0/3)_\n\n* **Question 1** : ❌ Fausse.\n  * La réponse de l'élève était **7 cm**.\n  * La bonne réponse est **5 cm**.\n  * **Explication** : Tu as probablement additionné directement les longueurs 3 cm et 4 cm. Or, d'après le théorème de Pythagore, il faut calculer la somme des carrés des côtés de l'angle droit : BC² = AB² + AC² = 3² + 4² = 9 + 16 = 25. L'hypoténuse BC mesure donc la racine carrée de 25, soit 5 cm.\n\n* **Question 2** : ❌ Fausse.\n  * La réponse de l'élève était **DF / EF**.\n  * La bonne response est **DE / EF**.\n  * **Explication** : Le rapport DF / EF correspond au sinus de l'angle E (côté opposé / hypoténuse). Pour le cosinus, on utilise le côté adjacent divisé par l'hypoténuse, ce qui donne DE / EF.\n\n* **Question 3** : ❌ Fausse.\n  * La réponse de l'élève était **Non**.\n  * La bonne réponse est **Oui**.\n  * **Explication** : En testant l'égalité de Pythagore, on constate que le carré du plus grand côté est HI² = 10² = 100, et la somme des carrés des deux autres côtés est GH² + GI² = 6² + 8² = 36 + 64 = 100. L'égalité étant vérifiée, le triangle est donc bien rectangle en G d'après la réciproque du théorème.\n\nNe te décourage pas ! Prends le temps de bien revoir le théorème de Pythagore et les définitions de trigonométrie (notamment la distinction entre côté adjacent et opposé), et tu réussiras sans problème la prochaine fois.\n<!-- /qcm-correction:QCM Séance 1 -->\n\n\n---",
+          "fileType": "text"
+        }
+      ]
+    },
+    {
+      "id": "0bc3020f-c108-4c80-8219-bc0188b5b1bd",
+      "type": "folder",
+      "name": "Séance 2 — 2026-07-06 : Fonctions linéaires et affines",
+      "path": "edition/seance-2-2026-07-06-fonctions-lineaires-et-affines",
+      "order": 5,
+      "children": [
+        {
+          "id": "a0a47c6f-d17a-45a0-96ca-3f9e6fe90430",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/seance-2-2026-07-06-fonctions-lineaires-et-affines/contenu.md",
+          "order": 1,
+          "content": "##### I. Fonctions linéaires\n\nUne fonction linéaire $f$ traduit une situation de proportionnalité. Elle associe à tout nombre $x$ le nombre $a \\times x$, noté $ax$.\n* Formule : $f(x) = ax$.\n* $a$ est appelé le coefficient directeur de la fonction.\n* Sa représentation graphique est une droite qui passe par l'origine du repère $(0,0)$.\n\n##### II. Fonctions affines\n\nUne fonction affine $f$ associe à tout nombre $x$ le nombre $ax + b$.\n* Formule : $f(x) = ax + b$.\n* $a$ est le coefficient directeur de la droite représentative.\n* $b$ est l'ordonnée à l'origine (l'endroit où la droite coupe l'axe des ordonnées).\n* Sa représentation graphique est une droite.\n\n##### III. Déterminer et tracer une fonction affine\n\n1. Repérer l'ordonnée à l'origine $b$ et placer le point $(0, b)$.\n2. Calculer l'image d'un autre nombre (par exemple $f(1) = a + b$) pour obtenir un deuxième point $(1, a+b)$.\n3. Tracer la droite qui passe par ces deux points.\n\n##### IV. Exercices d'application (QCM)\n\n```FORM: QCM Séance 2\n* **Question 1 : Parmi les expressions suivantes, laquelle définit une fonction linéaire ?**\n  * ( ) f(x) = 3x + 2\n  * ( ) f(x) = 5x\n  * ( ) f(x) = x²\n* **Question 2 : Soit la fonction affine f(x) = -2x + 4. Quelle est son ordonnée à l'origine ?**\n  * ( ) -2\n  * ( ) 4\n  * ( ) 0\n* **Question 3 : Si le coefficient directeur d'une fonction affine g(x) = ax + b est strictement négatif (a < 0), quel est le sens de variation de la fonction g ?**\n  * ( ) Elle est strictement croissante\n  * ( ) Elle est strictement décroissante\n  * ( ) Elle est constante\n```\n\n---",
+          "fileType": "text"
+        },
+        {
+          "id": "de5bb33f-1857-47ab-aa27-d6014865ce74",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/seance-2-2026-07-06-fonctions-lineaires-et-affines/contenu-css.md",
+          "order": 2,
+          "content": "##### I. Fonctions linéaires\n\nUne fonction linéaire $f$ traduit une situation de proportionnalité. Elle associe à tout nombre $x$ le nombre $a \\times x$, noté $ax$.\n* Formule : $f(x) = ax$.\n* $a$ est appelé le coefficient directeur de la fonction.\n* Sa représentation graphique est une droite qui passe par l'origine du repère $(0,0)$.\n\n##### II. Fonctions affines\n\nUne fonction affine $f$ associe à tout nombre $x$ le nombre $ax + b$.\n* Formule : $f(x) = ax + b$.\n* $a$ est le coefficient directeur de la droite représentative.\n* $b$ est l'ordonnée à l'origine (l'endroit où la droite coupe l'axe des ordonnées).\n* Sa représentation graphique est une droite.\n\n##### III. Déterminer et tracer une fonction affine\n\n1. Repérer l'ordonnée à l'origine $b$ et placer le point $(0, b)$.\n2. Calculer l'image d'un autre nombre (par exemple $f(1) = a + b$) pour obtenir un deuxième point $(1, a+b)$.\n3. Tracer la droite qui passe par ces deux points.\n\n##### IV. Exercices d'application (QCM)\n\n```FORM: QCM Séance 2\n* **Question 1 : Parmi les expressions suivantes, laquelle définit une fonction linéaire ?**\n  * ( ) f(x) = 3x + 2\n  * ( ) f(x) = 5x\n  * ( ) f(x) = x²\n* **Question 2 : Soit la fonction affine f(x) = -2x + 4. Quelle est son ordonnée à l'origine ?**\n  * ( ) -2\n  * ( ) 4\n  * ( ) 0\n* **Question 3 : Si le coefficient directeur d'une fonction affine g(x) = ax + b est strictement négatif (a < 0), quel est le sens de variation de la fonction g ?**\n  * ( ) Elle est strictement croissante\n  * ( ) Elle est strictement décroissante\n  * ( ) Elle est constante\n```\n\n---",
+          "fileType": "text"
+        }
+      ]
+    },
+    {
+      "id": "4a862dc1-97d3-47da-9a79-1fb352db216f",
+      "type": "folder",
+      "name": "Séance 3 — 2026-07-13 : Probabilités simples",
+      "path": "edition/seance-3-2026-07-13-probabilites-simples",
+      "order": 6,
+      "children": [
+        {
+          "id": "35523415-ca91-4b2d-b19c-11fce7ec3642",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/seance-3-2026-07-13-probabilites-simples/contenu.md",
+          "order": 1,
+          "content": "##### I. Vocabulaire des probabilités\n\n* **Expérience aléatoire** : Expérience dont on ne peut pas prévoir le résultat avec certitude.\n* **Issue** : Un résultat possible d'une expérience aléatoire.\n* **Événement** : Un ensemble composé d'une ou plusieurs issues.\n\n##### II. Calcul d'une probabilité dans une situation d'équiprobabilité\n\nQuand toutes les issues ont la même chance de se produire (équiprobabilité), la probabilité d'un événement $A$ se calcule par :\n$$P(A) = \\frac{\\text{Nombre d'issues favorables à l'événement } A}{\\text{Nombre total d'issues possibles}}$$\n\n##### III. Propriétés fondamentales\n\n1. La probabilité d'un événement est toujours comprise entre $0$ et $1$.\n2. La probabilité d'un événement impossible est égale à $0$.\n3. La probabilité d'un événement certain est égale à $1$.\n4. La somme des probabilités de toutes les issues possibles est toujours égale à $1$.\n\n##### IV. Exercices d'application (QCM)\n\n```FORM: QCM Séance 3\n* **Question 1 : On lance un dé équilibré à 6 faces. Quelle est la probabilité d'obtenir un nombre pair ?**\n  * ( ) 1/6\n  * ( ) 1/2\n  * ( ) 1/3\n* **Question 2 : On tire une carte au hasard dans un jeu de 32 cartes. Quelle est la probabilité de tirer un cœur ?**\n  * ( ) 1/4\n  * ( ) 1/8\n  * ( ) 1/2\n* **Question 3 : Si la probabilité qu'un événement se réalise est de 0,15, quelle est la probabilité de l'événement contraire ?**\n  * ( ) 0,15\n  * ( ) 0,85\n  * ( ) 1,00\n```",
+          "fileType": "text"
+        },
+        {
+          "id": "9dd2e265-4350-407d-8f58-1303c50f9ad8",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/seance-3-2026-07-13-probabilites-simples/contenu-css.md",
+          "order": 2,
+          "content": "##### I. Vocabulaire des probabilités\n\n* **Expérience aléatoire** : Expérience dont on ne peut pas prévoir le résultat avec certitude.\n* **Issue** : Un résultat possible d'une expérience aléatoire.\n* **Événement** : Un ensemble composé d'une ou plusieurs issues.\n\n##### II. Calcul d'une probabilité dans une situation d'équiprobabilité\n\nQuand toutes les issues ont la même chance de se produire (équiprobabilité), la probabilité d'un événement $A$ se calcule par :\n$$P(A) = \\frac{\\text{Nombre d'issues favorables à l'événement } A}{\\text{Nombre total d'issues possibles}}$$\n\n##### III. Propriétés fondamentales\n\n1. La probabilité d'un événement est toujours comprise entre $0$ et $1$.\n2. La probabilité d'un événement impossible est égale à $0$.\n3. La probabilité d'un événement certain est égale à $1$.\n4. La somme des probabilités de toutes les issues possibles est toujours égale à $1$.\n\n##### IV. Exercices d'application (QCM)\n\n```FORM: QCM Séance 3\n* **Question 1 : On lance un dé équilibré à 6 faces. Quelle est la probabilité d'obtenir un nombre pair ?**\n  * ( ) 1/6\n  * ( ) 1/2\n  * ( ) 1/3\n* **Question 2 : On tire une carte au hasard dans un jeu de 32 cartes. Quelle est la probabilité de tirer un cœur ?**\n  * ( ) 1/4\n  * ( ) 1/8\n  * ( ) 1/2\n* **Question 3 : Si la probabilité qu'un événement se réalise est de 0,15, quelle est la probabilité de l'événement contraire ?**\n  * ( ) 0,15\n  * ( ) 0,85\n  * ( ) 1,00\n```",
+          "fileType": "text"
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "c4f9769c-1bec-4b6c-8d82-ef44664af7ac",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+        "2ee15300-e2fe-4515-b8f6-ce985e56c818",
+        "f5b172f0-e820-4782-a0fd-29fa4acc785f",
+        "4a358c4f-2ee7-45fa-babc-121209b8a801",
+        "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+        "550f4bf8-c955-42aa-b85b-5673e44075f1",
+        "39ec48e5-9632-44db-90ad-d17a149326ec",
+        "8e294451-4e56-4d82-acb6-a30b9fda716a",
+        "bf6ba1d3-a9ef-41ae-b3e7-47d59b26109b",
+        "0bc3020f-c108-4c80-8219-bc0188b5b1bd",
+        "4a862dc1-97d3-47da-9a79-1fb352db216f"
+      ],
+      "createdAt": "2026-05-28T12:00:00.000Z"
+    },
+    {
+      "id": "6af6909b-ece6-4721-9fe1-62859ce101c4",
+      "type": "tests",
+      "name": "Tests",
+      "rootFolderIds": [],
+      "createdAt": "2026-06-08T16:05:39.587Z"
+    },
+    {
+      "id": "dd9cf12b-1396-4665-8f66-7c7ae0d8100e",
+      "type": "agenda",
+      "name": "agenda",
+      "rootFolderIds": [],
+      "createdAt": "2026-06-10T19:02:33.259Z"
+    }
+  ]
+}

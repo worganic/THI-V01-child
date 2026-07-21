@@ -1,0 +1,16 @@
+Bienvenue dans l'atelier **P.A.R.S.** (Préparation, Action, Récolte, Synthèse) de Freewriting. 
+
+Voici les règles fondamentales à respecter :
+1. **Écrivez sans vous arrêter** : Vos doigts doivent rester en mouvement constant sur le clavier pendant toute la durée de la session.
+2. **Pas de jugement ni de censure** : Ne corrigez pas vos fautes, ne relisez pas vos phrases, n'effacez rien.
+3. **Le flux avant tout** : L'objectif est la quantité et le flux d'idées brutes, pas la qualité ni la structure.
+
+Pour configurer cette session, merci de répondre aux questions suivantes :
+
+**Quelle durée souhaitez-vous fixer pour cette session d'écriture libre ?**
+- ( ) 10 minutes (Format court recommandé)
+- ( ) 15 minutes (Format standard)
+- ( ) 5 minutes (Format express)
+
+**Quel est le point de départ ou le déclencheur de votre écriture (par exemple : "Ce qui manque vraiment aux randonneurs, c'est...") ?**
+_____

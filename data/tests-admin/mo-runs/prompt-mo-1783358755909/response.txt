@@ -1,0 +1,56 @@
+Voici ton plan d'action personnalisé pour t'aider à combler tes lacunes, reprendre confiance et progresser à ton rythme en Première Spécialité Mathématiques, en te concentrant sur l'algèbre et la géométrie.
+
+### 📋 Suivi de la progression
+
+```TRELLO: Plan de travail - Algèbre & Géométrie
+### À faire
+- [ ] Produit scalaire : Définitions et propriétés [Haute]
+- [ ] Applications du produit scalaire (calculs d'angles et équations de cercles) [Haute]
+- [ ] Équations du second degré et signe du trinôme [Moyenne]
+
+### En cours
+- [ ] Vecteurs du plan, colinéarité et repérage [Haute]
+- [ ] Équations cartésiennes de droites [Moyenne]
+
+### Terminé
+```
+
+---
+
+### 📅 Programme des séances (Semaines 1 à 3)
+
+```AGENDA: Séances d'accompagnement (1h30)
+2026-07-08 | 17:00-18:30 | Séance 1 : Rappels sur les vecteurs | Révisions des notions de base, colinéarité, repérage et exercices d'application directe.
+2026-07-10 | 17:00-18:30 | Séance 2 : Équations de droites | Vecteurs directeurs et normaux, équations cartésiennes de droites.
+2026-07-15 | 17:00-18:30 | Séance 3 : Introduction au Produit Scalaire | Définition géométrique, projection orthogonale et calculs de base.
+2026-07-17 | 17:00-18:30 | Séance 4 : Propriétés du Produit Scalaire | Expression dans un repère orthonormé, bilinéarité et symétrie.
+2026-07-22 | 17:00-18:30 | Séance 5 : Applications géométriques | Calculs d'angles, de longueurs (théorème d'Al-Kashi) et équations de cercles.
+2026-07-24 | 17:00-18:30 | Séance 6 : Second degré & Synthèse | Résolution d'équations avec le discriminant, lien avec la géométrie et bilan.
+```
+
+---
+
+### 📊 Auto-évaluation des compétences actuelles
+
+```ARRAY: Suivi des compétences
+| Compétence visée | Niveau actuel | Niveau ciblé | Statut |
+| --- | --- | --- | --- |
+| Manipuler les vecteurs et coordonnées | Intermédiaire | Maîtrisé | En cours |
+| Déterminer une équation cartésienne de droite | À renforcer | Maîtrisé | En cours |
+| Calculer un produit scalaire (méthodes géométriques) | Débutant | Maîtrisé | Planifié |
+| Appliquer le produit scalaire en coordonnées | Débutant | Maîtrisé | Planifié |
+| Résoudre des équations et inéquations du 2nd degré | Intermédiaire | Maîtrisé | Planifié |
+```
+
+---
+
+### 📈 Niveau de confiance initial par sujet (sur 10)
+
+```CHART: Confiance par sujet
+Vecteurs et repérage: 5
+Équations de droites: 4
+Produit scalaire (concepts): 2
+Produit scalaire (applications): 1
+Second degré (équations): 6
+Méthodologie et rédaction: 4
+```

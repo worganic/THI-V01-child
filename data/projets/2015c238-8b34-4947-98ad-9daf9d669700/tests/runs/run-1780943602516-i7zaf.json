@@ -1,0 +1,113 @@
+{
+  "id": "run-1780943602516-i7zaf",
+  "projectId": "0475514d-ed29-407d-8cbf-f837232cac46",
+  "date": "2026-06-08T18:33:22.516Z",
+  "mode": "manual",
+  "status": "running",
+  "testerName": "dssffsd",
+  "caseIds": [
+    "tc-1780935342156",
+    "tc-1780935362422",
+    "tc-1780936070960",
+    "tc-1780941883870-hx2qw",
+    "tc-1780941883886-5qao3",
+    "tc-1780943320115-6ny74",
+    "tc-1780943320115-0kpki",
+    "tc-1780943320115-qmaia",
+    "tc-1780943320115-7s9kz",
+    "tc-1780943320115-nslt5",
+    "tc-1780943320115-sxe73",
+    "tc-1780943320115-mo5jy",
+    "tc-1780943320115-us0nd",
+    "tc-1780943320115-lk6gj",
+    "tc-1780943320115-ovzya",
+    "tc-1780943320115-3fo00",
+    "tc-1780943320115-8u7eu",
+    "tc-1780943320115-f2pir"
+  ],
+  "results": [
+    {
+      "caseId": "tc-1780935342156",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780935362422",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780936070960",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780941883870-hx2qw",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780941883886-5qao3",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-6ny74",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-0kpki",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-qmaia",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-7s9kz",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-nslt5",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-sxe73",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-mo5jy",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-us0nd",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-lk6gj",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-ovzya",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-3fo00",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-8u7eu",
+      "status": "pending"
+    },
+    {
+      "caseId": "tc-1780943320115-f2pir",
+      "status": "pending"
+    }
+  ],
+  "summary": {
+    "total": 18,
+    "pass": 0,
+    "fail": 0,
+    "skip": 0,
+    "pending": 18,
+    "score": 0,
+    "goNoGo": "GO",
+    "durationMs": 0
+  },
+  "createdAt": "2026-06-08T18:33:22.516Z"
+}

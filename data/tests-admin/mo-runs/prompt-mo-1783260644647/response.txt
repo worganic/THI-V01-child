@@ -1,0 +1,30 @@
+**Quel est votre domaine d'activité ou secteur professionnel ?**
+_____
+
+**Quel est votre niveau d'expérience dans ce secteur ?**
+- ( ) Débutant (moins de 2 ans)
+- ( ) Intermédiaire (2 à 5 ans)
+- ( ) Confirmé (5 à 10 ans)
+- ( ) Expert (plus de 10 ans)
+
+**Quelles sont vos compétences techniques et professionnelles principales (hard skills) ?**
+_____
+
+**Quelles sont vos compétences comportementales ou relationnelles (soft skills) ?**
+_____
+
+**Quel type de contrat ou statut recherchez-vous actuellement ?**
+- [ ] CDI (Contrat à Durée Indéterminée)
+- [ ] CDD / Intérim
+- [ ] Freelance / Indépendant / Consultant
+- [ ] Alternance / Stage
+- [ ] Association / Entrepreneuriat
+
+**Dans quelle région géographique ou modalité de travail souhaitez-vous exercer ?**
+- [ ] Télétravail complet (Full Remote)
+- [ ] Télétravail hybride
+- [ ] Présentiel
+- [ ] Mobilité nationale ou internationale
+
+**Quels sont vos objectifs professionnels principaux à court et moyen terme ?**
+_____

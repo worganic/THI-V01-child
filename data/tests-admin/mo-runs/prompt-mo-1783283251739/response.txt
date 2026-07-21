@@ -1,0 +1,13 @@
+Voici les informations concernant la date du jour et la météo de demain à Paris.
+
+```ARRAY: Prévisions Météo Paris
+| Paramètre | Détails |
+| --- | --- |
+| Date du jour | Dimanche 5 juillet 2026 |
+| Date de prévision | Lundi 6 juillet 2026 |
+| Ville | Paris |
+| Temps prévu | Quelques passages nuageux et éclaircies |
+| Températures | 16°C (Min) / 24°C (Max) |
+| Vent | Faible de secteur Ouest |
+| Vigilance | Verte |
+```

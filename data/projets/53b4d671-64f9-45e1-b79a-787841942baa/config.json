@@ -1,0 +1,35 @@
+{
+  "projectName": "TEST-materialize-mo",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-07-06T20:59:58.000Z",
+  "updatedAt": "2026-07-06T21:14:48.365Z",
+  "structure": [
+    {
+      "id": "63459203-bc1e-4387-85ed-94056eca30e4",
+      "type": "folder",
+      "name": "Section-Test",
+      "path": "edition/section-test",
+      "order": 1,
+      "children": [
+        {
+          "id": "b9bbb9fe-b4b3-4b80-8db4-8e42b3760791",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/section-test/contenu.md",
+          "order": 1
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "cd1dcd60-816e-46ba-8455-f88156a4ef7f",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "63459203-bc1e-4387-85ed-94056eca30e4"
+      ],
+      "createdAt": "2026-07-06T20:59:58.000Z"
+    }
+  ]
+}

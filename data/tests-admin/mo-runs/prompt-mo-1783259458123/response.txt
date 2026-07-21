@@ -1,0 +1,46 @@
+Voici l'analyse mise à jour de votre profil professionnel, intégrant votre spécialité thérapeutique ciblée au sein de grands groupes pharmaceutiques.
+
+```ARRAY: Alignement Stratégique - Expertise Thérapeutique Ciblée & Grand Groupe
+| Dimension | Analyse & Positionnement | Pistes de Maximisation Financière |
+| :--- | :--- | :--- |
+| **Expertise Thérapeutique Ciblée** | La spécialisation thérapeutique (ex: oncologie, immunologie, maladies rares) est le principal levier de valeur en Grand Groupe Pharma. Elle justifie un positionnement d'expert-leader incontournable. | Viser les directions de franchises thérapeutiques globales ou nationales, ou les rôles de direction médicale et d'accès au marché pour cette aire thérapeutique. |
+| **Mobilité Nationale (France)** | Flexibilité géographique sur le territoire national pour rejoindre les sièges sociaux des géants de la pharma (ex: Paris/IDF pour les sièges, Lyon pour l'infectiologie/vaccins). | Se positionner sur les opportunités de direction de BU ou de franchise thérapeutique nécessitant des déplacements réguliers auprès des KOLs nationaux. |
+| **Cible : Grand Groupe** | Structures dotées de portefeuilles de produits spécialisés à forte valeur ajoutée. Processus de décision et de gouvernance robustes mais stables. | Négocier une rémunération de base élevée complétée par un variable indexé sur la performance de la franchise thérapeutique (MBO) et des LTI conséquents. |
+| **Profil de Risque Modéré** | Recherche d'un équilibre optimal : sécurité d'un salaire fixe important et bonus de performance significatifs liés au succès commercial ou clinique de sa spécialité. | Maximiser les bonus de signature ("Sign-on bonus") ou clauses d'intéressement basées sur l'atteinte d'étapes clés de développement ou de vente (milestones). |
+```
+
+```TRELLO: Plan d'Action - Valorisation de l'Expertise Ciblée
+### À faire
+- [ ] Préciser et documenter sa spécialité thérapeutique (réalisations clés, KOLs connus) [Haute]
+- [ ] Identifier les franchises thérapeutiques leaders ou en expansion des grands groupes en France [Haute]
+- [ ] Préparer un pitch spécifique sur le lancement ou la gestion de produits de cette aire thérapeutique [Moyenne]
+### En cours
+- [ ] Cartographier les sièges sociaux des grands groupes pharma en France (Paris, Lyon, etc.) [Haute]
+- [ ] Prendre contact avec des cabinets de chasse de têtes spécialisés en Life Sciences (ex: Korn Ferry, Spencer Stuart, Page Executive) [Haute]
+### Terminé
+- [ ] Choix du profil de risque : Risque modéré avec equity [Basse]
+- [ ] Définition de la cible géographique : Mobilité France entière [Basse]
+- [ ] Ciblage sectoriel : Grand groupe pharmaceutique mondial [Basse]
+- [ ] Identification du profil thérapeutique : Expertise ciblée confirmée [Basse]
+```
+
+```CHART: Impact Estimé de la Spécialisation sur le Package Financier (k€/an)
+Fixe Base Spécialisé: 165
+Bonus Variable Franchise (MBO): 55
+LTI / Performance Shares: 75
+Avantages & Primes d'Expertise: 25
+```
+
+Pour finaliser notre diagnostic et lancer les actions, veuillez répondre aux dernières questions de cadrage :
+
+**Quelle est votre spécialité thérapeutique de prédilection actuelle ou visée (ex: Oncologie, Cardiologie, Immunologie, Maladies rares) ?**
+_____
+
+**Quel est le délai dans lequel vous souhaitez concrétiser cette transition professionnelle ?**
+- ( ) Immédiatement (moins de 3 mois)
+- ( ) À court terme (3 à 6 mois)
+- ( ) À moyen terme (6 à 12 mois)
+- ( ) Simple veille active / opportuniste
+
+**Quels types de postes de direction ciblez-vous spécifiquement en France (ex: Directeur de BU, Directeur Innovation, Directeur Médical, Directeur des Opérations) ?**
+_____

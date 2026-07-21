@@ -1,0 +1,42 @@
+Bonjour ! C'est une excellente initiative de mettre en place un plan de travail structuré pour progresser en mathématiques. Pour que je puisse concevoir des séances de cours, des exercices adaptés et un suivi sur mesure, j'ai besoin d'en savoir un peu plus sur ton profil et tes besoins.
+
+Voici les questions pour commencer :
+
+**Dans quelle classe es-tu actuellement ?**
+- ( ) Seconde
+- ( ) Première (Spécialité Mathématiques)
+- ( ) Terminale (Spécialité Mathématiques)
+- ( ) Terminale (Option Mathématiques Complémentaires)
+- ( ) Terminale (Option Mathématiques Expertes)
+- ( ) Autre classe / Autre filière
+
+**Quel est ton objectif principal pour ces cours de maths ?**
+- ( ) Améliorer ma moyenne générale et mes résultats aux devoirs surveillés
+- ( ) Comprendre les bases et surmonter mes difficultés de compréhension
+- ( ) Me préparer sereinement aux épreuves du Baccalauréat
+- ( ) Anticiper et me préparer pour les études supérieures (prépa, licences scientifiques, etc.)
+
+**Quels sont les thèmes ou chapitres qui te posent le plus de difficultés actuellement ?**
+- [ ] L'algèbre et le calcul littéral (équations, inéquations, fractions)
+- [ ] L'analyse (fonctions, dérivation, limites, intégrales)
+- [ ] Les suites numériques
+- [ ] La géométrie (vecteurs, géométrie plane ou dans l'espace)
+- [ ] Les probabilités et les statistiques
+- [ ] La méthodologie (comment rédiger et structurer un raisonnement)
+
+**À quel rythme souhaites-tu travailler ?**
+- ( ) 1 heure par semaine
+- ( ) 2 heures par semaine
+- ( ) 3 heures ou plus par semaine
+- ( ) Rythme flexible en fonction des contrôles à venir
+
+**Quels types d'exercices préfères-tu pour valider ta progression ?**
+- [ ] Des QCM ou quiz rapides de début de séance pour réviser le cours
+- [ ] Des exercices d'application directe pour maîtriser les formules
+- [ ] Des problèmes plus longs et complexes pour approfondir
+- [ ] Des sujets types de contrôle ou de Bac pour s'entraîner en conditions réelles
+
+**Quelles sont tes disponibilités dans la semaine pour planifier ces séances ? (Précise les jours et les créneaux horaires libres)**
+_____
+
+Dès que tu auras répondu à ces questions, je te proposerai un calendrier de travail et un tableau de suivi personnalisé (Kanban) pour t'aider à suivre tes progrès au fil des séances !

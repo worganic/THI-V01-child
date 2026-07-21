@@ -1,0 +1,24 @@
+**Quel est votre domaine d'activité principal ?**
+- ( ) Technologie / Informatique
+- ( ) Commerce / Vente / Marketing
+- ( ) Finance / Comptabilité / Gestion
+- ( ) Ressources Humaines / Recrutement
+- ( ) Santé / Social
+- ( ) Éducation / Formation
+- ( ) Autre
+
+**Quel est votre niveau d'expérience professionnelle ?**
+- ( ) Étudiant / Jeune diplômé
+- ( ) Débutant (moins de 2 ans)
+- ( ) Confirmé (2 à 5 ans)
+- ( ) Senior (plus de 5 ans)
+- ( ) Manager / Directeur
+
+**Quelles sont vos compétences clés (techniques et humaines) ?**
+_____
+
+**Quels types de postes recherchez-vous actuellement (secteur, fonctions) ?**
+_____
+
+**Quels sont vos objectifs de carrière à court et moyen terme ?**
+_____

@@ -1,0 +1,24 @@
+**Quel est votre domaine d'activité principal ou votre métier actuel ?**
+_____
+
+**Combien d'années d'expérience avez-vous dans ce domaine ?**
+- ( ) Moins de 2 ans
+- ( ) Entre 2 et 5 ans
+- ( ) Entre 5 et 10 ans
+- ( ) Plus de 10 ans
+
+**Quelles sont vos principales compétences techniques ou expertises ?**
+_____
+
+**Quels types de postes ou opportunités recherchez-vous actuellement ?**
+_____
+
+**Dans quel type de structure préférez-vous travailler ?**
+- [ ] Startup / Jeune entreprise
+- [ ] PME / Entreprise à taille humaine
+- [ ] Grand groupe / Multinationale
+- [ ] En indépendant / Freelance
+- [ ] Secteur public ou association
+
+**Quelles sont vos attentes principales concernant votre prochain défi professionnel ?**
+_____

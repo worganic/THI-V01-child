@@ -1,0 +1,16 @@
+C'est bien noté. Voici un récapitulatif des informations déjà enregistrées pour votre profil :
+
+### ARRAY: Profil Professionnel Temporaire
+| Critère | Informations saisies |
+| :--- | :--- |
+| **Secteur** | Développeur informatique |
+| **Expérience** | Confirmé (5 à 10 ans) |
+| **Type de contrat** | Freelance / Indépendant / Consultant |
+| **Modalité** | Présentiel |
+| **Hard Skills** | Angular, PHP |
+| **Objectifs** | Devenir riche (optimisation financière) |
+
+Pour compléter définitivement votre profil, il ne reste plus qu'à répondre à cette dernière question :
+
+**Quelles sont vos compétences comportementales ou relationnelles (soft skills) ?**
+_____

@@ -51,6 +51,30 @@
   ],
   "claude": [
     {
+      "value": "claude-opus-4-7",
+      "label": "Claude Opus 4.7",
+      "costInput": 15,
+      "costOutput": 75
+    },
+    {
+      "value": "claude-sonnet-4-6",
+      "label": "Claude Sonnet 4.6",
+      "costInput": 3,
+      "costOutput": 15
+    },
+    {
+      "value": "claude-opus-4-6",
+      "label": "Claude Opus 4.6",
+      "costInput": 15,
+      "costOutput": 75
+    },
+    {
+      "value": "claude-haiku-4-5-20251001",
+      "label": "Claude Haiku 4.5",
+      "costInput": 0.8,
+      "costOutput": 4
+    },
+    {
       "value": "claude-3-7-sonnet-latest",
       "label": "Claude 3.7 Sonnet (Latest)",
       "costInput": 3,
@@ -73,27 +97,9 @@
       "label": "Claude 3 Opus",
       "costInput": 15,
       "costOutput": 75
-    },
-    {
-      "value": "claude-sonnet-4-6",
-      "label": "Claude Sonnet 4.6",
-      "costInput": 3,
-      "costOutput": 15
-    },
-    {
-      "value": "claude-opus-4-6",
-      "label": "Claude Opus 4.6",
-      "costInput": 15,
-      "costOutput": 75
-    },
-    {
-      "value": "claude-haiku-4-5",
-      "label": "Claude Haiku 4.5",
-      "costInput": 0.8,
-      "costOutput": 4
     }
   ],
-  "lastUpdated": "2026-06-19T17:24:32.968Z",
+  "lastUpdated": "2026-07-21T19:23:37.427Z",
   "antigravity": [
     {
       "value": "default",

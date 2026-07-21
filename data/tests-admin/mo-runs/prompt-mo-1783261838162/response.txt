@@ -1,0 +1,54 @@
+```ARRAY: Profil Professionnel Mis à Jour
+| Critère | Détail |
+| --- | --- |
+| Domaine d'activité initial | Ressources Humaines |
+| Expérience initiale | Débutant (0 - 2 ans) |
+| Cadre privilégié | Startup |
+| Objectif principal | Changer de secteur ou de métier (reconversion) |
+| Domaine visé | Marketing Digital / Growth Hacking |
+| Spécialité ciblée | Content Marketing & Social Media (Rédaction, Community Management) |
+| Points forts transférables | Empathie et relation client (User Research) |
+```
+
+Pour affiner votre projet de reconversion dans le Content Marketing et le Social Media, voici quelques questions complémentaires :
+
+**Avez-vous déjà rédigé des contenus professionnels ou personnels (articles de blog, posts de réseaux sociaux, newsletters) ?**
+- ( ) Oui, régulièrement dans mon travail actuel/précédent
+- ( ) Oui, occasionnellement ou pour des projets personnels
+- ( ) Non, mais j'ai une forte appétence pour l'écriture
+- ( ) Non, pas du tout
+
+**Quels outils de réseaux sociaux, de création de contenu ou de SEO connaissez-vous (Canva, Buffer, Notion, WordPress, etc.) ?**
+_____
+
+**Quel type de formation ou d'apprentissage envisagez-vous pour cette transition ?**
+- [ ] Formation longue certifiante (diplômante)
+- [ ] Bootcamp intensif de quelques semaines
+- [ ] Auto-formation en ligne (MOOCs, tutoriels, pratique autonome)
+- [ ] Mentorat / Accompagnement par un professionnel du secteur
+
+Voici votre plan d'action mis à jour sous forme de Kanban :
+
+```TRELLO: Plan de Reconversion en Content Marketing
+### À faire
+- [ ] Choisir une thématique et rédiger 2 articles de blog fictifs pour créer un portfolio [Haute]
+- [ ] Suivre une formation en ligne gratuite sur le SEO (ex: Google, HubSpot) [Haute]
+- [ ] Identifier 10 startups cibles dans lesquelles postuler [Moyenne]
+
+### En cours
+- [ ] Lister les compétences transférables des RH vers le Marketing Digital [Moyenne]
+- [ ] Mettre à jour son profil LinkedIn pour orienter le discours vers le Content Marketing [Haute]
+
+### Terminé
+- [ ] Définir le cadre cible (Startup) et le niveau d'expérience de départ [Faible]
+- [ ] Identifier 3 métiers cibles dans l'écosystème Startup (Marketing Digital) [Haute]
+- [ ] Réaliser un bilan de compétences ou un point de carrière [Haute]
+```
+
+Et voici une suggestion de calendrier pour votre première semaine de transition :
+
+```AGENDA: Planning de Transition - Semaine 1
+2026-07-06 | 09:00-11:00 | Formation | Cours d'initiation au Content Marketing (HubSpot Academy)
+2026-07-08 | 14:00-16:00 | Pratique | Rédaction d'un premier post LinkedIn sur une thématique RH/Marketing
+2026-07-10 | 10:00-11:30 | Networking | Prise de contact avec 3 Content Managers travaillant en startup
+```

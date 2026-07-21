@@ -1,0 +1,37 @@
+**Dans quelle classe es-tu actuellement ?**
+- ( ) Seconde
+- ( ) Première (Spécialité Maths)
+- ( ) Première (Maths complémentaires / Autre)
+- ( ) Terminale (Spécialité Maths)
+- ( ) Terminale (Option Maths expertes)
+- ( ) Terminale (Option Maths complémentaires)
+- ( ) Autre / Filière technologique
+
+**Quel est ton objectif principal avec ces cours de maths ?**
+- ( ) Améliorer mes notes et ma moyenne générale
+- ( ) Préparer le Baccalauréat
+- ( ) Combler mes lacunes et reprendre confiance en moi
+- ( ) Me préparer aux études supérieures (Classes prépas, Écoles d'ingénieurs, etc.)
+
+**Quels sont les chapitres ou thèmes qui te posent le plus de difficultés ?**
+- [ ] Les fonctions et l'analyse (dérivées, limites, variations...)
+- [ ] L'algèbre et la géométrie (vecteurs, produit scalaire, équations...)
+- [ ] Les probabilités et les statistiques
+- [ ] Les suites numériques
+- [ ] La méthodologie (rédiger une démonstration, comprendre les énoncés)
+
+**À quel rythme souhaites-tu travailler ?**
+- ( ) 1 séance par semaine (suivi régulier)
+- ( ) 2 séances par semaine (rythme soutenu / rattrapage)
+- ( ) Plus de 2 séances par semaine (stage intensif)
+
+**Quelle est la durée idéale pour chaque séance de travail ?**
+- ( ) 1 heure (court et ciblé)
+- ( ) 1 heure 30 (bon équilibre cours/exercices)
+- ( ) 2 heures (approfondissement complet)
+
+**Quels types d'exercices préfères-tu pour valider ta progression ?**
+- [ ] Quiz rapides et QCM de début de séance
+- [ ] Exercices d'application directe du cours
+- [ ] Problèmes type Bac ou sujets de synthèse
+- [ ] Exercices corrigés pas à pas avec moi

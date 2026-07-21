@@ -1,0 +1,718 @@
+{
+  "projectName": "cours d'anglais_v2",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-07-05T19:19:33.000Z",
+  "updatedAt": "2026-07-05T20:06:52.443Z",
+  "structure": [
+    {
+      "id": "4a358c4f-2ee7-45fa-babc-121209b8a801",
+      "type": "folder",
+      "name": "H1 new menu après 5.4b",
+      "path": "edition/h1-new-menu-apres-54b",
+      "order": 1,
+      "children": [
+        {
+          "id": "36ebdd41-1238-4019-9f61-a30ebd78281e",
+          "type": "folder",
+          "name": "5.5 Sécurité",
+          "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité",
+          "order": 1,
+          "children": [
+            {
+              "id": "b537066d-5eb4-4cbe-8518-60f1fd1bdc5c",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu.md",
+              "order": 1,
+              "content": "- HTTPS obligatoire (HSTS activé)\n- Authentification via JWT (expiration 24h, refresh token 30 jours)\n- Protection C[SRF sur tous les **formulairces**](https://test.Com)\n- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc\n- Données personnelles chiffrées au repos (RGPD)\n- Politique CSP stricte définie dans les headers HTTP\n",
+              "fileType": "text",
+              "fileVersion": "6113bff8-97f2-44bf-a056-684e03a66cd1"
+            },
+            {
+              "id": "896dc048-a834-4621-8878-e41f47dd1fed",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/h1-new-menu-apres-54b/5.5 Sécurité/contenu-css.md",
+              "order": 2,
+              "content": "- HTTPS obligatoire (HSTS activé)\n- Authentification via JWT (expiration 24h, refresh token 30 jours)\n- Protection C[SRF sur tous les **formulairces**](https://test.Com)\n- Sanitisation des entrées utilisateur (prévention XSS)cvxcxxccxvxcvxcvcxcxxc\n- Données personnelles chiffrées au repos (RGPD)\n- Politique CSP stricte définie dans les headers HTTP\n",
+              "fileType": "text",
+              "fileVersion": "b7c5d613-7978-4961-891b-3b5e28faa1c4"
+            }
+          ]
+        },
+        {
+          "id": "dd0c5d7b-cb2b-4304-89f1-2a975f7cf770",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/h1-new-menu-apres-54b/contenu.md",
+          "order": 1,
+          "content": "",
+          "fileType": "text",
+          "fileVersion": "7ac6d4c3-9c8a-4a4b-bf77-04a8c41c1a33"
+        },
+        {
+          "id": "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+          "type": "folder",
+          "name": "5.6 Internationalisation & Contenu",
+          "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu",
+          "order": 2,
+          "children": [
+            {
+              "id": "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+              "type": "folder",
+              "name": "5.7 Hébergement & Déploiement",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement",
+              "order": 1,
+              "children": [
+                {
+                  "id": "4e6e672d-a699-4a48-bd42-744fd778f278",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "54540a0f-a94a-426a-aeed-95738a11ed43"
+                },
+                {
+                  "id": "fa0bc9b0-f3e4-4cfa-9a9c-b948165026d6",
+                  "type": "folder",
+                  "name": "7.7b test",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/7.7b test",
+                  "order": 1,
+                  "children": [
+                    {
+                      "id": "9fb7a613-3ec8-4c95-abd6-a48649f13639",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/7.7b test/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "8202c982-4d71-4637-ac0e-ec8d688d9b86"
+                    },
+                    {
+                      "id": "1443a921-e054-4c5a-8b9f-213af06ca76e",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/7.7b test/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "2c08461f-5a4a-45b9-9bf3-28a51157e8a8"
+                    }
+                  ]
+                },
+                {
+                  "id": "f0a3a0d3-c693-4a9a-a911-8f1552788582",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "fab3c1a9-2763-497f-9355-f23b92fa7e9a"
+                },
+                {
+                  "id": "c6ad68ac-9580-4aff-b838-bc1346c0041f",
+                  "type": "folder",
+                  "name": "Disponibilité",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/Disponibilité",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "3ce9a718-3640-40ad-b305-7376762d2f40",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/Disponibilité/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "c2e7390c-e702-4271-ab54-9a7e5b613c2d"
+                    },
+                    {
+                      "id": "7017ed0a-165b-4000-90a4-cfd89ce306f8",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/5.7 Hébergement & Déploiement/Disponibilité/contenu-css.md",
+                      "order": 2,
+                      "content": "",
+                      "fileType": "text",
+                      "fileVersion": "ca1db1d1-1e05-480c-a411-92b7b5883ecc"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "e25b63ff-8b5b-4218-81d4-8497e7fb6dbc",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/contenu.md",
+              "order": 1,
+              "content": "",
+              "fileType": "text",
+              "fileVersion": "f9c15402-5841-4850-a0eb-cde5320fd4b1"
+            },
+            {
+              "id": "908ed53e-b323-4455-840b-ae7c6ed327ee",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/contenu-css.md",
+              "order": 2,
+              "content": "",
+              "fileType": "text",
+              "fileVersion": "65c5425d-0ab6-4eb9-aa43-7d3b87a742d8"
+            },
+            {
+              "id": "550f4bf8-c955-42aa-b85b-5673e44075f1",
+              "type": "folder",
+              "name": "H3 TEST",
+              "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST",
+              "order": 2,
+              "children": [
+                {
+                  "id": "520334cc-72b4-404f-aef4-21312daf12ed",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "d6364034-03d8-4803-b53f-f7cd0bb47330"
+                },
+                {
+                  "id": "7ed7f376-304e-4470-907a-cb16310ce2c8",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "edition/h1-new-menu-apres-54b/5.6 Internationalisation & Contenu/H3 TEST/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "9ce755e4-0809-4a60-b7e0-858dc3be2d0c"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "fcefe58f-26de-4b2c-83df-051e88994c4a",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/h1-new-menu-apres-54b/contenu-css.md",
+          "order": 5,
+          "content": "",
+          "fileType": "text",
+          "fileVersion": "4ebaa372-ef3a-41cc-bdda-0444b26a981c"
+        }
+      ]
+    },
+    {
+      "id": "ec6f3c51-891c-4cfb-90d1-5f519ee85c21",
+      "type": "folder",
+      "name": "save",
+      "path": "save",
+      "order": 2,
+      "children": [
+        {
+          "id": "eb6f5bda-6d72-4df9-8da9-b5763b7bb943",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "save/contenu.md",
+          "order": 1,
+          "content": "Mon Prompt maths\n\nMODE: guided\n\nSYSTEM:  Tu es un expert en formation en mathématique\n\n- Tu doit demander le niveau scolaire et la matière à travaillé.\n- Tu dois prévoir un plan de travail, des cours et des exercices\n- \n\n--------------------------------------------------\nPROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n\n-------------------\n\nPROMPT: Idéation {{MOID:5441e1d2-1e97-451a-ac48-0eb51350ee30}}\nSYSTEM: \n\n---\n\n#1. P - Préparation\n",
+          "fileType": "text",
+          "fileVersion": "30c70c21-e28f-4785-a335-7f7248900a3f"
+        },
+        {
+          "id": "b437dfd8-d3a2-4790-9cdc-22c5b69bb809",
+          "type": "folder",
+          "name": "Objectif",
+          "path": "save/Objectif",
+          "order": 1,
+          "children": [
+            {
+              "id": "49f9000f-481f-439f-aca7-c4e131fbcf78",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "save/Objectif/contenu.md",
+              "order": 1,
+              "content": "\nCompiler la liste finale des unités de sens qualifiées en un document de synthèse structuré au format Markdown, servant de livrable final\n",
+              "fileType": "text",
+              "fileVersion": "e3a61e3a-40f2-4450-a46a-8fc5733e3abf"
+            },
+            {
+              "id": "2ed75d18-69a9-418e-965f-ccad61e4e79a",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "save/Objectif/contenu-css.md",
+              "order": 2,
+              "content": "\nCompiler la liste finale des unités de sens qualifiées en un document de synthèse structuré au format Markdown, servant de livrable final\n",
+              "fileType": "text",
+              "fileVersion": "2a5ae634-4f4f-46fa-b99b-20efea825fc9"
+            }
+          ]
+        },
+        {
+          "id": "bb436e42-4efc-43f5-ac8c-c6b9067a7495",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "save/contenu-css.md",
+          "order": 2,
+          "content": "Mon Prompt maths\n\nMODE: guided\n\nSYSTEM:  Tu es un expert en formation en mathématique\n\n- Tu doit demander le niveau scolaire et la matière à travaillé.\n- Tu dois prévoir un plan de travail, des cours et des exercices\n- \n\n--------------------------------------------------\nPROMPT: Création projet maison d'höte\nMODE: guided\nSYSTEM: \n\n---\nCrait tous les documents necessaire pour créé un projet destiné à acheté un bien dans le but d'une maison d'hote.\n\n-------------------\n\nPROMPT: Idéation {{MOID:5441e1d2-1e97-451a-ac48-0eb51350ee30}}\nSYSTEM: \n\n---\n\n#1. P - Préparation\n",
+          "fileType": "text",
+          "fileVersion": "bb6da89b-a64d-4657-beb5-82943506a782"
+        },
+        {
+          "id": "5a53371d-2f35-4ea9-80a6-09d5cd3517f1",
+          "type": "folder",
+          "name": "Instructions",
+          "path": "save/Instructions",
+          "order": 2,
+          "children": [
+            {
+              "id": "42bf9cf7-984e-4e9c-ae59-bc2bf4b4a925",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "save/Instructions/contenu.md",
+              "order": 1,
+              "content": "\nLe système collecte la liste complète et validée des unités qualifiées de l'étape \"Récolte\".\nLe système formate ces données en une structure de listes imbriquées à l'intérieur d'un bloc de code Markdown.\nLe système présente ce rapport final au business owner, clôturant ainsi l'atelier.\nLe système génère le rapport final (Payload).\n",
+              "fileType": "text",
+              "fileVersion": "af417ff3-714a-4dd2-be78-7a12d0df9e6d"
+            },
+            {
+              "id": "25e85b6d-b377-4414-9b19-1adb54de7812",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "save/Instructions/contenu-css.md",
+              "order": 2,
+              "content": "\nLe système collecte la liste complète et validée des unités qualifiées de l'étape \"Récolte\".\r\nLe système formate ces données en une structure de listes imbriquées à l'intérieur d'un bloc de code Markdown.\r\nLe système présente ce rapport final au business owner, clôturant ainsi l'atelier.\r\nLe système génère le rapport final (Payload).\n",
+              "fileType": "text",
+              "fileVersion": "8a83b4cd-05aa-4a2c-97ad-6e7888684358"
+            }
+          ]
+        },
+        {
+          "id": "712a3d4b-3170-47bc-878b-2be271153aa7",
+          "type": "folder",
+          "name": "Interaction",
+          "path": "save/Interaction",
+          "order": 3,
+          "children": [
+            {
+              "id": "babc32ac-4f7e-4736-bd8a-0565e4559e23",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "save/Interaction/contenu.md",
+              "order": 1,
+              "content": "\nCette étape est non-interactive. Le système produit le rapport final sur la base des données précédemment validées.\n",
+              "fileType": "text",
+              "fileVersion": "64b67103-3b96-43ae-8188-2154034ba633"
+            },
+            {
+              "id": "f2f65c83-dbb0-4ee0-ae1e-16de89209738",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "save/Interaction/contenu-css.md",
+              "order": 2,
+              "content": "\nCette étape est non-interactive. Le système produit le rapport final sur la base des données précédemment validées.\n",
+              "fileType": "text",
+              "fileVersion": "202aacdf-d571-4fae-afad-47342ef1906e"
+            }
+          ]
+        },
+        {
+          "id": "c9839b01-55a7-4617-b263-8ada857a11fb",
+          "type": "folder",
+          "name": "Exemple",
+          "path": "save/Exemple",
+          "order": 4,
+          "children": [
+            {
+              "id": "4daaf178-09fb-4607-815b-7b07229c4c4c",
+              "type": "folder",
+              "name": "tableaux",
+              "path": "save/Exemple/tableaux",
+              "order": 1,
+              "children": [
+                {
+                  "id": "2d4590d3-dbf2-4617-abab-4c459109da13",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "save/Exemple/tableaux/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "3a98f48c-ce26-4359-8c62-fa2e2d7e7723"
+                },
+                {
+                  "id": "113d3c6c-9f66-498a-835e-9183504ca8e2",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "save/Exemple/tableaux/contenu-css.md",
+                  "order": 2,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "0a853f7c-41df-41da-9616-39912d21bbe6"
+                }
+              ]
+            },
+            {
+              "id": "e6fef4ac-87fc-4034-91fc-e6a7032b9858",
+              "type": "file",
+              "name": "contenu.md",
+              "path": "save/Exemple/contenu.md",
+              "order": 1,
+              "content": "\nSystème: \"Toutes les étapes sont terminées. Voici le rapport de synthèse structuré de votre atelier P.A.R.S. Ces données sont prêtes à être utilisées dans un framework de Mind Mapping.\"\n(Le système génère le rapport au format Markdown)\n",
+              "fileType": "text",
+              "fileVersion": "6f5983f6-2afb-4c97-abfb-cd909b400202"
+            },
+            {
+              "id": "bc8c119d-7bee-4cce-8160-1ce37ab125e8",
+              "type": "folder",
+              "name": "Prompt",
+              "path": "save/Exemple/prompt",
+              "order": 2,
+              "children": [
+                {
+                  "id": "fc1aa3d1-38b9-4781-8c3e-c0d5be0df83f",
+                  "type": "file",
+                  "name": "contenu.md",
+                  "path": "save/Exemple/prompt/contenu.md",
+                  "order": 1,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "9898bd64-bbeb-4657-bd05-bcec5b555540"
+                },
+                {
+                  "id": "68f0f003-0bed-4b17-93cd-110d831aaf0a",
+                  "type": "folder",
+                  "name": "Pr - Ideation",
+                  "path": "save/Exemple/prompt/Pr - Ideation",
+                  "order": 1,
+                  "children": [
+                    {
+                      "id": "32f5d7d5-b18b-427d-bb84-0b1877f7f802",
+                      "type": "file",
+                      "name": "prompt-Idéation.md",
+                      "path": "save/Exemple/prompt/Pr - Ideation/prompt-Idéation.md",
+                      "order": 1,
+                      "content": "```PROMPT: Idéation {{MOID:6a2c4369-86c1-40bc-be4a-9e417a5b5075}}\nMODE: chat\nSYSTEM: \n\n---\n\nPose moi des question afin d'établir un profil professionel.\n```",
+                      "fileVersion": "cf4001b8-3987-45e1-92bd-e06aa0c8ead8",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "e66ae069-922d-4266-a0c6-7a895ce051ae",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "save/Exemple/prompt/Pr - Ideation/contenu.md",
+                      "order": 3,
+                      "content": "\n```\n\n#### Pr - Questions {{SID:ee339530-cf00-4276-8f2c-c9b9510c5788}}\n\n#### Pr - Test Tchat {{SID:0a3ac2ef-38e8-4e52-aaaa-0594bc08d716}}\n\n#### Pr - Questions {{SID:f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Questions {{SID:f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Questions {{SID:f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Questions {{SID:f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Questions {{SID:f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b}}\n",
+                      "fileVersion": "d5374d3f-2cdf-498f-98db-56786ac86b12",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "fa26c490-2557-47fb-920b-966ae77d7037",
+                      "type": "file",
+                      "name": "contenu-css.md",
+                      "path": "save/Exemple/prompt/Pr - Ideation/contenu-css.md",
+                      "order": 3,
+                      "content": "\n```\n\n#### Pr - Questions {{SID:ee339530-cf00-4276-8f2c-c9b9510c5788}}\n\n#### Pr - Test Tchat {{SID:0a3ac2ef-38e8-4e52-aaaa-0594bc08d716}}\n\n#### Pr - Questions {{SID:f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n\n#### Pr - Tchat {{SID:72819ada-9bb9-4984-bc58-cb053df88ef8}}\n",
+                      "fileVersion": "99516003-c978-4df6-9270-c916854cf96a",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "5f147eae-25ae-4c18-ad1d-cafb697113bd",
+                      "type": "file",
+                      "name": "prompt-Questions.md",
+                      "path": "save/Exemple/prompt/Pr - Ideation/prompt-Questions.md",
+                      "order": 2,
+                      "content": "```PROMPT: Questions {{MOID:a0effb09-e9ac-4b77-8d3b-6276f8df5c10}}\nSYSTEM: \n\n---\n\nVotre prompt ici.\n```",
+                      "fileVersion": "27c2efa0-d5b3-4072-81e2-2af8ee3bd33e",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "72819ada-9bb9-4984-bc58-cb053df88ef8",
+                  "type": "folder",
+                  "name": "Pr - Tchat",
+                  "path": "save/Exemple/prompt/pr-tchat",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "c7614b8d-f20a-461e-aa50-57b750c6741f",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "save/Exemple/prompt/pr-tchat/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileVersion": "940aa951-5ad2-4a7d-86be-7abc5d9df715",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "8b437a57-7111-47ab-8518-0f3edc5025df",
+                      "type": "file",
+                      "name": "prompt-Tchat.md",
+                      "path": "save/Exemple/prompt/pr-tchat/prompt-Tchat.md",
+                      "order": 2,
+                      "content": "```PROMPT: Tchat {{MOID:a32bea38-9dd6-463d-9f79-23c602f2472d}}\nMODE: chat\nSYSTEM: \n\n---\n\nVotre prompt ici.\n```",
+                      "fileVersion": "8f0faeb6-8ff1-4ac5-8b74-fb2a657b7c29",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "f3a99f2a-7b3f-49c6-9ed0-7a3007029c7b",
+                  "type": "folder",
+                  "name": "Pr - Questions",
+                  "path": "save/Exemple/prompt/pr-questions",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "361cbc38-cbef-4818-9924-94458f0fb594",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "save/Exemple/prompt/pr-questions/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileVersion": "1cf4a751-b953-46aa-879f-b1a6fb122933",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "5211b43b-f7cf-4508-8eb7-7f482e35fd74",
+                      "type": "file",
+                      "name": "prompt-Questions.md",
+                      "path": "save/Exemple/prompt/pr-questions/prompt-Questions.md",
+                      "order": 2,
+                      "content": "```PROMPT: Questions {{MOID:a0effb09-e9ac-4b77-8d3b-6276f8df5c10}}\nSYSTEM: \n\n---\n\nVotre prompt ici.\n```",
+                      "fileVersion": "197c1667-6242-4b2d-92e1-4574a17d8550",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "c3741da9-08f5-4950-aec7-3667af2daff2",
+                  "type": "folder",
+                  "name": "Pr - Mon prompt",
+                  "path": "save/Exemple/prompt/pr-mon-prompt",
+                  "order": 2,
+                  "children": [
+                    {
+                      "id": "51b9eb9e-76ad-44e1-9f5e-02a4fc5ec59b",
+                      "type": "file",
+                      "name": "contenu.md",
+                      "path": "save/Exemple/prompt/pr-mon-prompt/contenu.md",
+                      "order": 1,
+                      "content": "",
+                      "fileVersion": "7cd63bfb-2e04-456e-a6e2-a6542ca1c56d",
+                      "fileType": "text"
+                    },
+                    {
+                      "id": "11e03f23-5c6e-43a7-93bb-5a5424ca5c1c",
+                      "type": "file",
+                      "name": "prompt-Mon Prompt.md",
+                      "path": "save/Exemple/prompt/pr-mon-prompt/prompt-Mon Prompt.md",
+                      "order": 2,
+                      "content": "```PROMPT: Mon Prompt {{MOID:a0effb09-e9ac-4b77-8d3b-6276f8df5c10}}\nSYSTEM: \n\n---\n\nVotre prompt ici.\n```",
+                      "fileVersion": "e847b451-1bf5-434a-b415-9aee1c1225dc",
+                      "fileType": "text"
+                    }
+                  ]
+                },
+                {
+                  "id": "b8e775d5-8436-4ca9-b84f-c2583258c893",
+                  "type": "file",
+                  "name": "contenu-css.md",
+                  "path": "save/Exemple/prompt/contenu-css.md",
+                  "order": 3,
+                  "content": "",
+                  "fileType": "text",
+                  "fileVersion": "b3270c69-446b-466c-9f21-c45786e42695"
+                }
+              ]
+            },
+            {
+              "id": "bc02de38-11de-425c-b747-bd9c2e8633ad",
+              "type": "file",
+              "name": "contenu-css.md",
+              "path": "save/Exemple/contenu-css.md",
+              "order": 9,
+              "content": "\nSystème: \"Toutes les étapes sont terminées. Voici le rapport de synthèse structuré de votre atelier P.A.R.S. Ces données sont prêtes à être utilisées dans un framework de Mind Mapping.\"\r\n(Le système génère le rapport au format Markdown)\n",
+              "fileType": "text",
+              "fileVersion": "7e2d68f5-fb56-4166-80fc-4745fe49ef1b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "c85e4a5d-1543-4e9e-a76b-ebd030ab9d56",
+      "type": "folder",
+      "name": "test 2",
+      "path": "edition/test-2",
+      "order": 3,
+      "children": [
+        {
+          "id": "e13e55c5-5616-481e-9bd7-0b434ebd3d04",
+          "type": "file",
+          "name": "contenu-css.md",
+          "path": "edition/test-2/contenu-css.md",
+          "order": 2,
+          "content": "",
+          "fileVersion": "c60ab056-a492-4c53-bbf5-7a7e3cfcdb2c",
+          "fileType": "text"
+        },
+        {
+          "id": "f4831d7c-86d0-4b30-bfc4-a640f5ee3aab",
+          "type": "file",
+          "name": "contenu.md",
+          "path": "edition/test-2/contenu.md",
+          "order": 2,
+          "content": "",
+          "fileVersion": "d8350745-d540-4617-b35e-a840d7f6552b",
+          "fileType": "text"
+        }
+      ]
+    }
+  ],
+  "outils": [
+    {
+      "id": "c4f9769c-1bec-4b6c-8d82-ef44664af7ac",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+        "2ee15300-e2fe-4515-b8f6-ce985e56c818",
+        "f5b172f0-e820-4782-a0fd-29fa4acc785f",
+        "4a358c4f-2ee7-45fa-babc-121209b8a801",
+        "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+        "550f4bf8-c955-42aa-b85b-5673e44075f1",
+        "39ec48e5-9632-44db-90ad-d17a149326ec",
+        "8e294451-4e56-4d82-acb6-a30b9fda716a",
+        "bf6ba1d3-a9ef-41ae-b3e7-47d59b26109b",
+        "0bc3020f-c108-4c80-8219-bc0188b5b1bd",
+        "4a862dc1-97d3-47da-9a79-1fb352db216f",
+        "ec6f3c51-891c-4cfb-90d1-5f519ee85c21",
+        "3b6f5f77-d620-487e-8652-d93b812a0fa4",
+        "e23a334e-76e7-453f-b17b-d30d4ee88e95",
+        "f0c7d0a5-10c7-4d3d-a22a-4f0aa0300e8f",
+        "cd00cadc-dd13-4697-b4b1-08dbbcd61968",
+        "66f08814-607c-4f2d-83b8-d8506e71078a",
+        "21519630-3551-48ea-a320-9af8acb20084",
+        "09f135b6-bc52-4167-a209-7ba1b965963b",
+        "63cc4385-8c1d-428d-98ab-4d61d4aa91f1",
+        "2dbcf53b-b49d-456a-8c31-d6c80d5b944b",
+        "46e50698-5ca4-4676-8c34-3206a4b0f383",
+        "ae8f355c-c0f5-45d5-8dcc-769c3dbf075e",
+        "a9d36a43-fb8e-443e-94f6-c253c07e52d0",
+        "e938278d-1c44-4387-91f4-805311d54306",
+        "63dc2032-5f18-4eb8-a1c3-d4a0a7c7b238",
+        "f421e56a-c7e8-406a-a6d4-a1161c566172",
+        "dbbe598c-0b72-4724-a87b-92a100fd8e3f",
+        "5ceace58-6864-40c1-9ffb-b8452fb4f300",
+        "8a7e5452-b4c4-4660-b44c-74b6a238a582",
+        "15d5c05e-7c33-4f15-87f4-ce43baa8bec8",
+        "a11665b5-100b-433c-8ded-05cbe469edaa",
+        "ecc5baea-1965-4861-bd23-12dacd833cd2",
+        "3a23061c-7c06-4c03-aff2-06c9f70f0182",
+        "57dd583b-8adb-4bb0-bcd2-b355b359c6c4",
+        "3520886b-c0bf-4e8b-afb9-1b8806140490",
+        "3e603e43-72f2-4874-884f-1a79b4fc9140",
+        "f8855153-dcd5-4692-a799-c4f3ab6331b5",
+        "1e48b712-56b5-4b59-88f8-5c9833e4734d",
+        "b39ce8a4-3fec-445a-bca6-2f2ce492e8ea",
+        "64f553b3-07f1-45e4-bf18-5599bd05bd22",
+        "b2086f2b-8301-4eb1-b937-f179d91441ae",
+        "a4b6bd41-4a6a-4275-b686-9c0760145a25",
+        "10f2f567-c0b4-4b8b-9e2b-84f60cea124b",
+        "1e7e8265-4968-497b-9578-3c2ad846be9b",
+        "ecee57cc-8009-4194-83e3-5e59e5a34f3d",
+        "c90aab66-a147-451e-916c-c2ed22a45179",
+        "c85e4a5d-1543-4e9e-a76b-ebd030ab9d56",
+        "61411a22-5182-4c97-a91e-401b6f446793",
+        "db992e06-7e33-4eac-9e44-9e500f8b161e",
+        "b89b681e-c63e-4d3f-82de-b6f64702a12a",
+        "f76c9007-f391-478e-bdbb-589ee1d6d94d",
+        "e9a5b5a3-f606-4a6e-8a0b-6864caf2bb83",
+        "845bb557-f035-4692-8ce3-86b47598c913",
+        "51cde0c1-5a60-4f78-8b9e-f4bb587ece9c",
+        "90a5ab87-b296-4d17-a347-ce2b0df4b03b",
+        "05b7c9e1-b74c-4fee-97f6-2442c2247a99",
+        "87380b7a-6891-42bb-b3d3-1d2de1fd24fb",
+        "4d999f25-754d-4ecb-8006-788a8a234b2c",
+        "fd98aa1d-e31a-46a2-9d12-f5d9d0fb5217",
+        "96952925-f729-4d67-8919-4fcdb0793eec",
+        "1fac1465-2b9b-48de-9150-7c44f52c7518",
+        "1850e5cb-d24d-4daa-8815-c16b36dec2ce",
+        "c2f7a9f3-9add-4c05-b66e-017b3a47b54c",
+        "bc610662-70cb-4163-873d-6f692e923b10",
+        "f04bf3d4-b24a-4d15-aad4-0ca1ca6c933c",
+        "79494005-fc3f-458f-8415-9d35a538bf2c",
+        "34a8f27a-1da8-4e42-b8fb-8779130eb739",
+        "fafbd6c6-af14-4f76-bef1-ecac8f853622",
+        "2d332eab-04cd-4c73-8b13-bcd57678196f",
+        "f502d49e-730d-40a6-b2fa-ff4f7a21c1b2",
+        "f31d80b9-1a0a-4e68-8df3-0e0d58f8462c",
+        "78272d4c-849d-478d-99d3-0cba405cc42d",
+        "7853bac5-8670-4872-8d9e-4ae97762c2e5",
+        "b668160b-4305-4645-91a5-1cf5ff245848",
+        "f3bc587b-09a0-45d9-94e6-2f87a36d2b30",
+        "9674c37a-a177-4863-879e-209b525ea7e2",
+        "156451fb-20ef-4829-8318-8811314b3d75",
+        "16bfecac-4b66-405b-8541-16310761d29a",
+        "8a078888-2709-4ef2-952a-cff98a884b89",
+        "6b3fb177-18e8-4bac-bdcb-77a1aff09edb",
+        "7b905d1e-734b-4048-b5b6-454f8174f855",
+        "529bd506-bad1-4e2b-b737-0c0083bf2f9a",
+        "6ea5ad7f-3147-4c45-b0a2-f3238d0bfd09",
+        "6b2cf59f-e137-4f3c-9f21-f6f39e19a6c1",
+        "829e013a-cf5a-4715-b1f0-eedebaec337a",
+        "ebb8c902-5173-49ad-8b1a-58d11172a59b",
+        "5eddedd1-845b-425d-9e89-8d953ad309f6",
+        "f0e2dab5-85b1-4e82-91a7-c1c46d33b78e",
+        "a3ad7b87-501d-42bf-bd6c-b4693c4a17d6"
+      ],
+      "createdAt": "2026-05-28T12:00:00.000Z"
+    },
+    {
+      "id": "6af6909b-ece6-4721-9fe1-62859ce101c4",
+      "type": "tests",
+      "name": "Tests",
+      "rootFolderIds": [],
+      "createdAt": "2026-06-08T16:05:39.587Z"
+    },
+    {
+      "id": "dd9cf12b-1396-4665-8f66-7c7ae0d8100e",
+      "type": "agenda",
+      "name": "agenda",
+      "rootFolderIds": [
+        "c7e0205f-6335-454a-b48d-b32a69b62f8e",
+        "4a358c4f-2ee7-45fa-babc-121209b8a801",
+        "36a7a07a-d15b-47af-85de-cc0c14613bce",
+        "e5c24b08-d712-4635-a986-517ad028ea0c",
+        "a0904fdf-a169-4e18-b7c2-8e1d99092bb6",
+        "3f4b7ad2-27d6-4c08-b15e-c61662518adc",
+        "dfde931d-a84a-4a49-8af8-ece9c085ef55",
+        "36ebdd41-1238-4019-9f61-a30ebd78281e",
+        "036b6f17-73d6-4a31-8e17-fc0af42fd0a0",
+        "2fdc740e-eb6f-4b6e-8688-577407f40e2c",
+        "755d7092-6f4b-4997-bc62-0318875895a4",
+        "792c4747-0c36-4564-9c1d-b96d96b1307c",
+        "a7511077-35fa-47d8-b8e0-8049bcb96399",
+        "63bbb1da-f495-4587-9c15-86e6b8953319",
+        "b6178e8b-0213-4269-816a-fdf9d497c176",
+        "8b50cea5-3b6f-4949-8115-c6b0c2f69633",
+        "fa0bc9b0-f3e4-4cfa-9a9c-b948165026d6",
+        "c6ad68ac-9580-4aff-b838-bc1346c0041f",
+        "550f4bf8-c955-42aa-b85b-5673e44075f1",
+        "ec6f3c51-891c-4cfb-90d1-5f519ee85c21",
+        "4daaf178-09fb-4607-815b-7b07229c4c4c",
+        "a0e918ff-124b-4752-9110-ed5eb2643d8a",
+        "54f0262d-074e-4c87-a864-3b02c2bde370",
+        "94089086-bd38-49c1-a4a7-5bb9e81a9e97"
+      ],
+      "createdAt": "2026-06-10T19:02:33.259Z"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+Bonjour ! Afin de vous aider à établir un profil professionnel complet et précis, veuillez répondre aux questions suivantes :
+
+**Quel est votre domaine d'activité principal ?**
+- ( ) Technologie et Informatique
+- ( ) Marketing, Communication et Vente
+- ( ) Gestion, Administration et RH
+- ( ) Finance et Comptabilité
+- ( ) Design, Art et Création
+- ( ) Ingénierie et Industrie
+- ( ) Santé, Social et Éducation
+- ( ) Autre
+
+**Quel est votre niveau d'expérience actuel ?**
+- ( ) Étudiant / Jeune diplômé
+- ( ) Débutant (1-3 ans)
+- ( ) Intermédiaire (3-7 ans)
+- ( ) Senior (7 ans et plus)
+- ( ) Manager / Directeur
+
+**Quelles sont vos compétences techniques ou spécialisations clés ?**
+_____
+
+**Quels types de postes ou opportunités recherchez-vous actuellement ?**
+- [ ] CDI (Temps plein)
+- [ ] Freelance / Mission de conseil
+- [ ] Alternance / Stage
+- [ ] CDD / Projets temporaires
+- [ ] Entrepreneuriat / Association
+
+**Quelle est votre situation ou préférence concernant le télétravail ?**
+- ( ) Présentiel complet
+- ( ) Hybride (télétravail partiel)
+- ( ) 100% Télétravail
+- ( ) Indifférent / Mobile géographiquement
+
+**Décrivez en quelques mots vos objectifs professionnels à court et moyen terme :**
+_____
+
+Une fois ces informations recueillies, nous pourrons générer votre profil professionnel détaillé.

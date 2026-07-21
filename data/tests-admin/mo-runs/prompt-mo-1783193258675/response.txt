@@ -1,0 +1,39 @@
+Voici un formulaire pour en savoir plus sur vous :
+
+==================================================
+FORMULAIRE DE PRÉSENTATION
+==================================================
+
+1. Informations Générales
+-------------------------
+a) Quel est votre prénom / pseudo ?
+   R : 
+b) Quel est votre domaine d'activité ou vos études ?
+   R : 
+c) Dans quelle ville ou région résidez-vous ?
+   R : 
+
+2. Vos Centres d'Intérêt & Loisirs
+----------------------------------
+a) Quels sont vos principaux passetemps (ex. lecture, sport, jeux vidéo, musique, cinéma) ?
+   R : 
+b) Quel est votre livre, film, ou jeu préféré de tous les temps ?
+   R : 
+c) Avez-vous des animaux de compagnie ? Si oui, de quelle espèce s'agit-il ?
+   R : 
+
+3. Vos Projets & Objectifs
+--------------------------
+a) Sur quel genre de projet travaillez-vous actuellement ?
+   R : 
+b) Quelle nouvelle compétence aimeriez-vous acquérir ou perfectionner dans les prochains mois ?
+   R : 
+
+4. Vos Préférences d'Interaction avec l'IA
+-------------------------------------------
+a) Comment comptez-vous principalement utiliser mes services (programmation, rédaction, brainstorming, apprentissage) ?
+   R : 
+b) Préférez-vous des réponses synthétiques et directes, ou détaillées et pédagogiques ?
+   R : 
+
+Merci d'avoir pris le temps de remplir ce formulaire ! Cela me permettra de mieux m'adapter à vos besoins lors de nos prochains échanges.

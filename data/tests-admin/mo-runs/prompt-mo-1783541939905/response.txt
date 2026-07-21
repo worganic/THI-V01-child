@@ -1,0 +1,1 @@
+Esta etapa no es interactiva. El sistema produce el informe final sobre la base de los datos previamente validados.
