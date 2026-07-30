@@ -1,0 +1,137 @@
+<div class="card-section aide-card">
+  <div
+    class="card-header"
+    role="button"
+    tabindex="0"
+    [class.is-expanded]="!collapsed"
+    (click)="toggleCollapsed()"
+    (keydown.enter)="toggleCollapsed()"
+    (keydown.space)="toggleCollapsed(); $event.preventDefault()"
+    [title]="collapsed ? 'Afficher la zone' : 'Masquer la zone'"
+  >
+    <span class="card-icon">❔</span>
+    <h3 class="card-title">Aide — Fonctions de l'application</h3>
+    <span class="btn-toggle-collapse" [class.collapsed]="collapsed">▾</span>
+  </div>
+
+  @if (!collapsed) {
+    <div class="card-body">
+      <p class="aide-intro">
+        Cette page pilote la planification des projets SI et le suivi du temps réellement passé,
+        au niveau de la demi-journée. Chaque zone porte une pastille
+        <span class="aide-inline-badge">?</span> qui rappelle son rôle sans quitter la page. Un
+        second onglet, <strong>Configuration</strong>, en haut de la page, regroupe les réglages
+        transverses (catégories de projet).
+      </p>
+
+      <div class="aide-grid">
+        <section class="aide-block">
+          <h4>1. Créer un nouveau projet</h4>
+          <p>
+            Crée un projet (code, nom, risque, catégorie, dates, charge estimée) et lui affecte
+            des développeurs. Deux contraintes de planification s'y règlent : interdire les
+            week-ends et/ou les jours fériés.
+          </p>
+          <p class="aide-note">
+            Activer une contrainte sur un projet en cours ne réécrit jamais le passé : elle ne
+            s'applique qu'à partir du lendemain. Les jours déjà travaillés — et aujourd'hui —
+            gardent leurs tâches et leurs demi-journées validées.
+          </p>
+        </section>
+
+        <section class="aide-block">
+          <h4>2. Liste des projets SI</h4>
+          <p>
+            Inventaire des projets avec leur avancement. Le projet sélectionné ici devient le
+            projet actif : c'est lui qu'affichent le planning (zone 3) et les statistiques
+            (zone 4). La modification d'un projet se lance également depuis cette liste.
+          </p>
+          <p>
+            Se filtre par statut, développeur ou <strong>catégorie</strong> (badge coloré affiché
+            dans le tableau, géré depuis l'onglet Configuration).
+          </p>
+        </section>
+
+        <section class="aide-block">
+          <h4>3. Planning &amp; Gantt par développeur</h4>
+          <p>Le cœur de l'outil, en deux affichages :</p>
+          <ul>
+            <li><strong>Vue jour</strong> : une ligne par développeur, une colonne par jour, les tâches formant des barres continues.</li>
+            <li><strong>Vue mois</strong> : un calendrier classique, toutes tâches du projet confondues.</li>
+          </ul>
+          <p>
+            Une tâche se déplace par glisser-déposer et s'ouvre au clic. Les deux cases de chaque
+            tuile valident la matinée et l'après-midi réellement travaillés.
+          </p>
+          <p class="aide-note">
+            Une demi-journée passée non validée prolonge automatiquement la tâche : le planning
+            reflète le temps réel, pas seulement le temps prévu.
+          </p>
+        </section>
+
+        <section class="aide-block">
+          <h4>4. Statistiques du projet</h4>
+          <p>
+            Indicateurs du projet actif : nombre de tâches, avancement global, demi-journées
+            travaillées / restantes / en retard, et répartition des tâches par statut.
+          </p>
+        </section>
+
+        <section class="aide-block">
+          <h4>5. Charge inter-projets par développeur</h4>
+          <p>
+            Contrairement au planning ci-dessus, cette grille couvre <strong>tous les projets</strong>.
+            Elle sert à repérer les surcharges : une case orange signale un développeur affecté à
+            plusieurs projets le même jour.
+          </p>
+        </section>
+
+        <section class="aide-block">
+          <h4>6. Indisponibilités développeur</h4>
+          <p>
+            Congés et absences, indépendants de tout projet. Ils apparaissent en rayures rouges
+            sur le planning et déclenchent un avertissement si l'on affecte une tâche à un
+            développeur absent sur la période.
+          </p>
+        </section>
+      </div>
+
+      <section class="aide-block aide-block-wide">
+        <h4>Règles de gestion à connaître</h4>
+        <ul>
+          <li>
+            <strong>Le plan se fixe à la création.</strong> On saisit la date de début et la durée ;
+            la date de fin en est déduite. Ensuite, dates et durée ne se modifient plus directement.
+          </li>
+          <li>
+            <strong>Prolonger une tâche passe par « Ajouter des jours »</strong>, avec un commentaire
+            obligatoire. Les jours ajoutés se rattachent à la suite de la tâche, augmentent sa durée
+            et restent tracés — une ligne récapitulative les résume sous les dates.
+          </li>
+          <li>
+            <strong>Une tâche terminée est figée</strong> : ni ses dates ni son développeur ne
+            bougent, et elle ne se déplace plus dans le planning.
+          </li>
+          <li>
+            <strong>Rouvrir une tâche terminée</strong> (repasser son statut à « En cours ») annule
+            automatiquement sa dernière demi-journée validée : sans cela elle se re-terminerait
+            aussitôt, puisqu'elle aurait toujours son compte de demi-journées au complet.
+          </li>
+        </ul>
+      </section>
+
+      <section class="aide-block aide-block-wide">
+        <h4>Repères visuels du planning</h4>
+        <ul>
+          <li><strong>Colonne jaune</strong> : aujourd'hui.</li>
+          <li><strong>Fond gris rayé de jaune</strong> : jour déjà passé.</li>
+          <li><strong>Colonne gris foncé</strong> : jour non travaillé (week-end ou férié exclu par le projet).</li>
+          <li><strong>Rayures rouges</strong> : développeur absent ce jour-là.</li>
+          <li><strong>Tuile noire</strong> : jour passé dont les demi-journées n'ont pas été validées.</li>
+          <li><strong>Liseré rouge en haut d'une barre</strong> : tâche signalée à risque.</li>
+          <li><strong>Passage gris dans une barre</strong> : la tâche traverse un jour non travaillé.</li>
+        </ul>
+      </section>
+    </div>
+  }
+</div>

@@ -1,0 +1,22 @@
+<div>
+
+  <!-- Sous-onglets -->
+  <div class="flex gap-1 mb-6 p-1 bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 rounded-xl w-fit">
+    @for (s of sections; track s.id) {
+      <button (click)="setSection(s.id)"
+              class="flex items-center gap-2 px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
+              [class]="section() === s.id
+                ? 'bg-white dark:bg-background text-light-primary dark:text-primary shadow-sm border border-light-border dark:border-white/10'
+                : 'text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white'">
+        <span class="material-symbols-outlined text-sm">{{ s.icon }}</span>
+        {{ s.label }}
+      </button>
+    }
+  </div>
+
+  @if (section() === 'apps')    { <app-portail-apps-section /> }
+  @if (section() === 'groupes') { <app-portail-groupes-section /> }
+  @if (section() === 'metiers') { <app-portail-metiers-section /> }
+  @if (section() === 'droits')  { <app-portail-droits-section /> }
+
+</div>

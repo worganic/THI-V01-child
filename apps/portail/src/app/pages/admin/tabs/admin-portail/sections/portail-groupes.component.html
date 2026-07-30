@@ -1,0 +1,163 @@
+@if (error()) {
+  <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="flex items-center justify-center py-16">
+    <span class="material-symbols-outlined text-3xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+  </div>
+}
+
+@if (!loading()) {
+
+  <!-- Formulaire groupe -->
+  @if (showForm()) {
+    <div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-primary/30 dark:border-primary/20 overflow-hidden">
+      <div class="px-5 py-3 bg-light-primary/5 dark:bg-primary/5 border-b border-light-primary/20 dark:border-primary/10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-light-primary dark:text-primary">{{ editing() ? 'edit' : 'add' }}</span>
+          <span class="text-sm font-semibold text-light-text dark:text-white">
+            {{ editing() ? 'Modifier le groupe ' + editing()!.nom : 'Nouveau groupe' }}
+          </span>
+        </div>
+        <button (click)="closeForm()"
+                class="p-1.5 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-all">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+      <div class="px-5 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Nom *</label>
+          <input type="text" [(ngModel)]="fNom" placeholder="Applications métier"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Ordre d'affichage</label>
+          <input type="number" [(ngModel)]="fOrdre"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Description</label>
+          <input type="text" [(ngModel)]="fDescription" placeholder="Sous-titre affiché sur la page d'accueil"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div class="flex items-end">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="fIsActive" class="w-4 h-4 rounded accent-light-primary dark:accent-primary" />
+            <span class="text-sm text-light-text dark:text-white">Groupe actif</span>
+          </label>
+        </div>
+      </div>
+      <div class="px-5 py-3 border-t border-light-border dark:border-white/10 flex justify-end gap-3">
+        <button (click)="closeForm()"
+                class="px-4 py-2 rounded-lg text-sm font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-all">
+          Annuler
+        </button>
+        <button (click)="save()" [disabled]="!fNom.trim() || saving()"
+                class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 disabled:opacity-50 shadow-sm shadow-light-primary/20 dark:shadow-primary/20">
+          @if (saving()) { <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> }
+          @else { <span class="material-symbols-outlined text-base">save</span> }
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+    <!-- Liste des groupes -->
+    <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+      <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between">
+        <span class="text-sm font-semibold text-light-text dark:text-white">Groupes</span>
+        @if (!showForm()) {
+          <button (click)="openCreate()"
+                  class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 shadow-sm shadow-light-primary/20 dark:shadow-primary/20">
+            <span class="material-symbols-outlined text-sm">add</span>
+            Nouveau groupe
+          </button>
+        }
+      </div>
+
+      @if (groupes().length === 0) {
+        <div class="text-center py-12 text-light-text-muted dark:text-white/40 text-sm">Aucun groupe</div>
+      } @else {
+        <div class="divide-y divide-light-border/50 dark:divide-white/5">
+          @for (groupe of groupes(); track groupe.id) {
+            <div class="px-5 py-3 flex items-center gap-3 cursor-pointer transition-colors"
+                 [class]="selectedGroupeId() === groupe.id
+                   ? 'bg-light-primary/5 dark:bg-primary/5'
+                   : 'hover:bg-light-primary/5 dark:hover:bg-primary/5'"
+                 (click)="selectedGroupeId.set(groupe.id)">
+              <span class="material-symbols-outlined text-base"
+                    [class]="selectedGroupeId() === groupe.id
+                      ? 'text-light-primary dark:text-primary'
+                      : 'text-light-text-muted dark:text-white/30'">category</span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-light-text dark:text-white truncate">{{ groupe.nom }}</span>
+                  @if (!groupe.isActive) {
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-light-surface dark:bg-white/5 text-light-text-muted dark:text-white/40 border border-light-border dark:border-white/10">Inactif</span>
+                  }
+                </div>
+                <div class="text-[11px] text-light-text-muted dark:text-white/30 truncate">
+                  {{ countApps(groupe.id) }} application(s){{ groupe.description ? ' — ' + groupe.description : '' }}
+                </div>
+              </div>
+              <div class="flex items-center gap-1">
+                <button (click)="openEdit(groupe); $event.stopPropagation()"
+                        class="p-1.5 rounded-lg hover:bg-light-primary/10 dark:hover:bg-primary/10 text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-all" title="Modifier">
+                  <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+                @if (deletingId() === groupe.id) {
+                  <button (click)="remove(groupe.id); $event.stopPropagation()"
+                          class="px-2 py-1 rounded text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-all">Oui</button>
+                  <button (click)="cancelDelete(); $event.stopPropagation()"
+                          class="px-2 py-1 rounded text-xs font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 transition-all">Non</button>
+                } @else {
+                  <button (click)="confirmDelete(groupe.id); $event.stopPropagation()"
+                          class="p-1.5 rounded-lg hover:bg-red-500/10 text-light-text-muted dark:text-white/40 hover:text-red-400 transition-all" title="Supprimer">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Applications rattachées au groupe sélectionné -->
+    <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+      <div class="px-5 py-3 border-b border-light-border dark:border-white/10">
+        <span class="text-sm font-semibold text-light-text dark:text-white">
+          Applications du groupe {{ selectedGroupe()?.nom || '—' }}
+        </span>
+        <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">Coche les applications visibles pour les membres de ce groupe.</p>
+      </div>
+
+      @if (!selectedGroupe()) {
+        <div class="text-center py-12 text-light-text-muted dark:text-white/40 text-sm">Sélectionne un groupe</div>
+      } @else if (apps().length === 0) {
+        <div class="text-center py-12 text-light-text-muted dark:text-white/40 text-sm">Aucune application déclarée</div>
+      } @else {
+        <div class="divide-y divide-light-border/50 dark:divide-white/5">
+          @for (app of apps(); track app.id) {
+            <label class="px-5 py-3 flex items-center gap-3 cursor-pointer hover:bg-light-primary/5 dark:hover:bg-primary/5 transition-colors">
+              <input type="checkbox" [checked]="isLinked(app.id)" (change)="toggleApp(app.id)"
+                     class="w-4 h-4 rounded accent-light-primary dark:accent-primary" />
+              <span class="material-symbols-outlined text-base text-light-text-muted dark:text-white/30">{{ app.icone || 'apps' }}</span>
+              <div class="min-w-0 flex-1">
+                <div class="font-medium text-light-text dark:text-white truncate">{{ app.nom }}</div>
+                <div class="text-[11px] font-mono text-light-text-muted dark:text-white/30 truncate">{{ app.code }}</div>
+              </div>
+              @if (!app.isActive) {
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-light-surface dark:bg-white/5 text-light-text-muted dark:text-white/40 border border-light-border dark:border-white/10">Inactive</span>
+              }
+            </label>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+}

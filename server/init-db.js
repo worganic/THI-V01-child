@@ -149,6 +149,84 @@ const SCHEMA_STATEMENTS = [
         undo_action  JSON          DEFAULT NULL,
         meta         JSON          DEFAULT NULL
     )`,
+
+    // ── Portail : sous-applications, groupes, métiers et droits ──────────────
+    // Partagé entre tous les utilisateurs (règle de persistance : données
+    // d'administration hors éditeur de projet → MySQL, pas de JSON local).
+
+    `CREATE TABLE IF NOT EXISTS portal_metiers (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        nom        VARCHAR(120)  NOT NULL,
+        color      VARCHAR(20)   DEFAULT 'blue',
+        is_active  TINYINT(1)    DEFAULT 1,
+        created_at DATETIME      DEFAULT CURRENT_TIMESTAMP
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS portal_apps (
+        id          INT AUTO_INCREMENT PRIMARY KEY,
+        code        VARCHAR(120)  NOT NULL UNIQUE,
+        nom         VARCHAR(120)  NOT NULL,
+        description TEXT          DEFAULT NULL,
+        url_path    VARCHAR(500)  DEFAULT '',
+        icone       VARCHAR(120)  DEFAULT 'apps',
+        ordre       INT           DEFAULT 0,
+        is_active   TINYINT(1)    DEFAULT 1,
+        created_at  DATETIME      DEFAULT CURRENT_TIMESTAMP
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS portal_groupes (
+        id          INT AUTO_INCREMENT PRIMARY KEY,
+        nom         VARCHAR(120)  NOT NULL,
+        description TEXT          DEFAULT NULL,
+        ordre       INT           DEFAULT 0,
+        is_active   TINYINT(1)    DEFAULT 1,
+        created_at  DATETIME      DEFAULT CURRENT_TIMESTAMP
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS portal_groupe_apps (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        groupe_id  INT NOT NULL,
+        app_id     INT NOT NULL,
+        UNIQUE KEY uniq_groupe_app (groupe_id, app_id),
+        FOREIGN KEY (groupe_id) REFERENCES portal_groupes(id) ON DELETE CASCADE,
+        FOREIGN KEY (app_id)    REFERENCES portal_apps(id)    ON DELETE CASCADE
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS portal_user_groupes (
+        id         INT AUTO_INCREMENT PRIMARY KEY,
+        user_id    CHAR(36) NOT NULL,
+        groupe_id  INT NOT NULL,
+        UNIQUE KEY uniq_user_groupe (user_id, groupe_id),
+        FOREIGN KEY (user_id)   REFERENCES users(id)          ON DELETE CASCADE,
+        FOREIGN KEY (groupe_id) REFERENCES portal_groupes(id) ON DELETE CASCADE
+    )`,
+
+    `CREATE TABLE IF NOT EXISTS portal_user_apps (
+        id      INT AUTO_INCREMENT PRIMARY KEY,
+        user_id CHAR(36)    NOT NULL,
+        app_id  INT         NOT NULL,
+        droits  VARCHAR(20) DEFAULT 'lecture',
+        UNIQUE KEY uniq_user_app (user_id, app_id),
+        FOREIGN KEY (user_id) REFERENCES users(id)      ON DELETE CASCADE,
+        FOREIGN KEY (app_id)  REFERENCES portal_apps(id) ON DELETE CASCADE
+    )`,
+];
+
+// Colonnes ajoutées après coup sur des tables existantes (MySQL ne supporte pas
+// ADD COLUMN IF NOT EXISTS → on teste information_schema avant).
+const COLUMN_MIGRATIONS = [
+    { table: 'users', column: 'metier_id', ddl: 'ADD COLUMN metier_id INT NULL' },
+];
+
+// Données de départ : les sous-applications du monorepo (apps/*).
+const SEED_GROUPES = [
+    { nom: 'Applications', description: 'Les sous-applications du portail', ordre: 1 },
+];
+
+const SEED_APPS = [
+    { code: 'projets',        nom: 'Projets',  description: 'Éditeur de projets et de documentation',  url_path: 'http://localhost:4203', icone: 'folder_open', ordre: 1 },
+    { code: 'appli-agenda',   nom: 'Agenda',   description: 'Planification des projets et des tâches', url_path: '/agenda', icone: 'calendar_month', ordre: 2 },
+    { code: 'appli-recettes', nom: 'Recettes', description: 'Cahiers de recette et campagnes de test', url_path: '/recettes', icone: 'restaurant_menu', ordre: 3 },
 ];
 
 // ── Helpers ───────────────────────────────────────────────────────────────
@@ -375,6 +453,51 @@ async function migrateDeployments() {
     } catch (e) { console.warn(`  ⚠ Deployment: ${e.message}`); }
 }
 
+async function alterPortalColumns() {
+    for (const { table, column, ddl } of COLUMN_MIGRATIONS) {
+        try {
+            await pool.query(`ALTER TABLE ${table} ${ddl}`);
+        } catch (e) {
+            // 1060 = Duplicate column name — colonne déjà présente
+            if (e.errno !== 1060) console.warn(`  ⚠ alter ${table}.${column}: ${e.message}`);
+        }
+    }
+    console.log('  users: colonne metier_id vérifiée');
+}
+
+async function seedPortal() {
+    // Groupe par défaut
+    for (const g of SEED_GROUPES) {
+        const [rows] = await pool.query('SELECT id FROM portal_groupes WHERE nom = ?', [g.nom]);
+        if (!rows.length) {
+            await pool.query(
+                'INSERT INTO portal_groupes (nom, description, ordre) VALUES (?,?,?)',
+                [g.nom, g.description, g.ordre]
+            );
+        }
+    }
+    // Applications du monorepo — INSERT IGNORE sur le code (unique)
+    for (const a of SEED_APPS) {
+        await pool.query(
+            `INSERT IGNORE INTO portal_apps (code, nom, description, url_path, icone, ordre)
+             VALUES (?,?,?,?,?,?)`,
+            [a.code, a.nom, a.description, a.url_path, a.icone, a.ordre]
+        );
+    }
+    // Rattache toutes les apps seedées au groupe par défaut
+    const [[groupe]] = await pool.query('SELECT id FROM portal_groupes ORDER BY ordre, id LIMIT 1');
+    if (groupe) {
+        const [apps] = await pool.query('SELECT id FROM portal_apps');
+        for (const app of apps) {
+            await pool.query(
+                'INSERT IGNORE INTO portal_groupe_apps (groupe_id, app_id) VALUES (?,?)',
+                [groupe.id, app.id]
+            );
+        }
+    }
+    console.log(`  portal_apps: ${SEED_APPS.length} sous-applications vérifiées`);
+}
+
 // ── Main ──────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -397,6 +520,15 @@ async function main() {
     await migratePipelineProjects();
     await alterDeploymentsTable();
     await migrateDeployments();
+    await alterPortalColumns();
+    await seedPortal();
+
+    // Sous-applications montées dans le portail : leur schéma est décrit dans
+    // leur propre module (source unique, rejouée aussi au démarrage du serveur).
+    console.log('\n🧩 Schéma des sous-applications...');
+    await require('./modules/appli-agenda').ensureSchema(pool);
+    await require('./modules/appli-recettes').ensureSchema(pool);
+    console.log('  ✓ agenda_* et recette_* vérifiées');
 
     console.log('\n✅ Migration terminée avec succès !');
     await pool.end();

@@ -4,16 +4,22 @@
   "projectType": "application",
   "sourceRoot": "apps/portail/src",
   "prefix": "app",
-  "tags": ["app:portail"],
+  "tags": [
+    "app:portail"
+  ],
   "targets": {
     "build": {
       "executor": "@angular/build:application",
-      "outputs": ["{workspaceRoot}/dist/apps/portail"],
+      "outputs": [
+        "{workspaceRoot}/dist/apps/portail"
+      ],
       "options": {
         "outputPath": "dist/apps/portail",
         "index": "apps/portail/src/index.html",
         "browser": "apps/portail/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/portail/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -22,8 +28,15 @@
             "input": "apps/portail/public"
           }
         ],
-        "styles": ["apps/portail/src/styles.scss"],
-        "scripts": []
+        "styles": [
+          "apps/portail/src/styles.scss"
+        ],
+        "scripts": [],
+        "stylePreprocessorOptions": {
+          "includePaths": [
+            "node_modules"
+          ]
+        }
       },
       "configurations": {
         "production": {
@@ -70,7 +83,10 @@
     "test": {
       "executor": "@angular/build:karma",
       "options": {
-        "polyfills": ["zone.js", "zone.js/testing"],
+        "polyfills": [
+          "zone.js",
+          "zone.js/testing"
+        ],
         "tsConfig": "apps/portail/tsconfig.spec.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -79,7 +95,9 @@
             "input": "apps/portail/public"
           }
         ],
-        "styles": ["apps/portail/src/styles.scss"],
+        "styles": [
+          "apps/portail/src/styles.scss"
+        ],
         "scripts": []
       }
     }

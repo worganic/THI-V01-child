@@ -1,0 +1,134 @@
+<div class="agenda-page-layout">
+  <!-- SOUS-HEADER SPÉCIFIQUE AGENDA (Le Header principal et le Footer sont gérés par le Shell) -->
+  <nav class="app-sub-header">
+    <div class="sub-header-nav">
+      <span class="sub-nav-title">Agenda &amp; Suivi de Projets SI</span>
+    </div>
+  </nav>
+
+  <!-- CONTENU UNIQUE ASSEMBLANT LES COMPOSANTS DANS L'ORDRE DÉFINI -->
+  <main class="agenda-main-content">
+    <!-- Bandeau visible tant qu'un appel API n'a pas abouti (voir ProjectService.apiIssue$) :
+         distingue une vraie panne serveur du simple mode démo, contrairement au fallback
+         silencieux d'origine qui masquait les deux de la même façon. -->
+    @if (apiIssue) {
+      <div class="api-issue-banner">⚠️ {{ apiIssue }}</div>
+    }
+
+    <!-- Digest retard/échéances, tous projets confondus : visible dès l'arrivée sur la page, sans
+         avoir à ouvrir un projet et repérer un badge dans le Gantt. Replié par défaut, le détail
+         par tâche ne s'affiche qu'au clic. -->
+    @if (overdueDigestItems.length > 0 || upcomingDeadlineDigestItems.length > 0) {
+      <div class="digest-banner">
+        <button type="button" class="digest-summary" (click)="toggleDigestExpanded()">
+          <span class="digest-icon">⏰</span>
+          @if (overdueDigestItems.length > 0) {
+            <span class="digest-chip digest-chip-overdue">{{ overdueDigestItems.length }} tâche(s) en retard</span>
+          }
+          @if (upcomingDeadlineDigestItems.length > 0) {
+            <span class="digest-chip digest-chip-upcoming">{{ upcomingDeadlineDigestItems.length }} échéance(s) sous 7 jours</span>
+          }
+          <span class="digest-toggle-hint">{{ digestExpanded ? 'Masquer le détail ▲' : 'Voir le détail ▼' }}</span>
+        </button>
+        @if (digestExpanded) {
+          <div class="digest-details">
+            @if (overdueDigestItems.length > 0) {
+              <div class="digest-group">
+                <h4>En retard</h4>
+                <ul>
+                  @for (item of overdueDigestItems; track item.taskId) {
+                    <li><strong>{{ item.projectCode }}</strong> — {{ item.taskName }} ({{ item.devLabel }})</li>
+                  }
+                </ul>
+              </div>
+            }
+            @if (upcomingDeadlineDigestItems.length > 0) {
+              <div class="digest-group">
+                <h4>Échéances sous 7 jours</h4>
+                <ul>
+                  @for (item of upcomingDeadlineDigestItems; track item.taskId) {
+                    <li><strong>{{ item.projectCode }}</strong> — {{ item.taskName }} ({{ item.devLabel }}) — {{ item.dateEnd | date: 'dd/MM/yyyy' }}</li>
+                  }
+                </ul>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- 1. COMPOSANT NOUVEAU PROJET / MODIFIER PROJET -->
+    <app-nouveau-projet
+      [users]="users"
+      [allUsers]="allActiveUsers"
+      [metiers]="metiers"
+      [editingProject]="editingProject"
+      (projectCreated)="onProjectCreated($event)"
+      (projectUpdated)="onProjectUpdated($event)"
+      (editCancelled)="onEditCancelled()"
+      (metierAssignmentAutoSaved)="onMetierAssignmentAutoSaved($event)"
+    ></app-nouveau-projet>
+
+    <!-- 2. COMPOSANT LISTE DES PROJETS -->
+    <app-liste-projets
+      [projects]="projects"
+      [users]="users"
+      [metiers]="metiers"
+      [selectedProjectId]="selectedProject?.id ?? null"
+      (selectProject)="onSelectProject($event)"
+      (editProject)="onEditProjectRequested($event)"
+    ></app-liste-projets>
+
+    <!-- 3. COMPOSANT AGENDA / PLANNING -->
+    <app-planning-agenda
+      [selectedProject]="selectedProject"
+      [users]="users"
+      [agendaDays]="agendaDays"
+      [agendaDaysMonth2]="agendaDaysMonth2"
+      [monthDisplayCount]="monthDisplayCount"
+      [unavailabilities]="unavailabilities"
+      [viewRangeLabel]="viewRangeLabel"
+      [rangeOptions]="rangeOptions"
+      [selectedRangeIndex]="selectedRangeIndex"
+      [viewMode]="viewMode"
+      (viewModeChanged)="onViewModeChanged($event)"
+      (monthDisplayCountChanged)="onMonthDisplayCountChanged($event)"
+      (rangeChanged)="onRangeChanged($event)"
+      (previousRequested)="goToPrevious()"
+      (nextRequested)="goToNext()"
+      (previousDayRequested)="goToPreviousDay()"
+      (nextDayRequested)="goToNextDay()"
+      (todayRequested)="goToToday()"
+      (taskStatusChanged)="onTaskStatusChanged($event)"
+      (taskCreateRequested)="onTaskCreateRequested($event)"
+      (taskUpdateRequested)="onTaskUpdateRequested($event)"
+      (taskDeleteRequested)="onTaskDeleteRequested($event)"
+      (devRemovalRequested)="onDevRemovalRequested($event)"
+    ></app-planning-agenda>
+
+    <!-- 4. COMPOSANT STATISTIQUES DU PROJET -->
+    <app-project-stats
+      [project]="selectedProject"
+    ></app-project-stats>
+
+    <!-- 5. CHARGE INTER-PROJETS PAR DÉVELOPPEUR (tous projets confondus, contrairement au
+         planning ci-dessus qui est scopé au projet sélectionné) -->
+    <app-charge-inter-projets
+      [projects]="projects"
+      [users]="users"
+      [agendaDays]="agendaDays"
+    ></app-charge-inter-projets>
+
+    <!-- 6. INDISPONIBILITÉS DÉVELOPPEUR (congés/absences) -->
+    <app-indisponibilites
+      [users]="users"
+      [unavailabilities]="unavailabilities"
+      (created)="onUnavailabilityCreateRequested($event)"
+      (deleted)="onUnavailabilityDeleteRequested($event)"
+    ></app-indisponibilites>
+
+    <!-- AIDE GÉNÉRALE : récapitulatif de toutes les zones et des règles de gestion, en complément
+         des pastilles « ? » posées sur chaque en-tête de zone. Repliée par défaut. -->
+    <app-aide-agenda></app-aide-agenda>
+  </main>
+</div>

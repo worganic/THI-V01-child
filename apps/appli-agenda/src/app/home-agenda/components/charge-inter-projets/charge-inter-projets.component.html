@@ -1,0 +1,89 @@
+<div class="card-section charge-card">
+  <div
+    class="card-header"
+    role="button"
+    tabindex="0"
+    [class.is-expanded]="!collapsed"
+    (click)="toggleCollapsed()"
+    (keydown.enter)="toggleCollapsed()"
+    (keydown.space)="toggleCollapsed(); $event.preventDefault()"
+    [title]="collapsed ? 'Afficher la zone' : 'Masquer la zone'"
+  >
+    <span class="card-icon">📊</span>
+    <h3 class="card-title">5. Charge Inter-Projets par Développeur</h3>
+    <app-help-hint heading="5. Charge Inter-Projets par Développeur">
+      <p>Contrairement au planning de la zone 3, cette grille couvre <strong>tous les projets</strong>, pas seulement le projet actif. Elle sert à repérer les surcharges.</p>
+      <ul>
+        <li>Chaque case indique le <strong>nombre de tâches</strong> affectées au développeur ce jour-là.</li>
+        <li>Une case <strong>orange</strong> signale un développeur affecté à <strong>plusieurs projets le même jour</strong>.</li>
+        <li>Le badge ⚠️ à côté du nom totalise ses jours de chevauchement sur la période affichée.</li>
+      </ul>
+      <p>La période affichée est celle choisie dans le planning ci-dessus.</p>
+    </app-help-hint>
+    <span class="btn-toggle-collapse" [class.collapsed]="collapsed">▾</span>
+  </div>
+
+  @if (!collapsed) {
+    <div class="card-body">
+      <p class="charge-hint">
+        Vue tous projets confondus, sur la période actuellement affichée dans le planning ci-dessus.
+        Une case orange signale un développeur affecté à plusieurs projets le même jour.
+      </p>
+
+      @if (users.length === 0 || agendaDays.length === 0) {
+        <div class="no-data">Aucun développeur ou aucune période à afficher.</div>
+      } @else {
+        <div class="charge-scroll-container">
+          <table class="charge-grid-table">
+            <thead>
+              <tr>
+                <th class="col-fixed-dev">Développeur</th>
+                @for (day of agendaDays; track day.dateSql) {
+                  <th
+                    class="col-day-cell"
+                    [class.is-weekend]="day.isWeekend"
+                    [class.is-holiday]="day.isHoliday"
+                    [class.is-today]="day.isToday"
+                    [class.is-past]="day.isPast"
+                  >
+                    <div class="day-num">{{ day.dayNumber }}</div>
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (dev of users; track dev.id) {
+                <tr>
+                  <td class="col-fixed-dev">
+                    <strong>{{ dev.firstname }} {{ dev.lastname }}</strong>
+                    @if (overloadedDaysCount(dev.id); as overloadCount) {
+                      <span class="overload-count-badge" title="Jours en chevauchement inter-projets sur la période affichée">
+                        ⚠️ {{ overloadCount }} j.
+                      </span>
+                    }
+                  </td>
+                  @for (day of agendaDays; track day.dateSql) {
+                    <td
+                      class="col-day-cell"
+                      [class.is-weekend]="day.isWeekend"
+                      [class.is-holiday]="day.isHoliday"
+                      [class.is-past]="day.isPast"
+                    >
+                      @if (loadForDevAndDay(dev.id, day.dateSql).taskCount; as taskCount) {
+                        <span
+                          class="load-badge"
+                          [class.is-overloaded]="isOverloaded(dev.id, day.dateSql)"
+                          [title]="cellTooltip(dev.id, day.dateSql)"
+                        >{{ taskCount }}</span>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  }
+</div>

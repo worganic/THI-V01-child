@@ -1,0 +1,315 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-blue-primary
+// pointe vers --heading-color (texte), pas --brand-primary — les rares usages en fond (chip de
+// filtre sélectionné) référencent --brand-primary directement plus bas.
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$airbus-green: var(--brand-green);
+$border-color: var(--border-color);
+
+.liste-projets-card {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  // Toute la barre est cliquable (pas seulement le chevron) pour masquer/afficher la zone : cible
+  // trop petite sinon, voir toggleCollapsed() sur le composant.
+  .card-header {
+    background: var(--surface-alt);
+    padding: 14px 20px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface-alt) 70%, var(--brand-secondary) 6%);
+    }
+
+    // Zone dépliée : fond plus prononcé pour repérer d'un coup d'œil quelles sections sont
+    // ouvertes parmi toute la liste (surtout utile une fois plusieurs sections repliées).
+    &.is-expanded {
+      background: color-mix(in srgb, var(--surface-alt) 60%, var(--brand-secondary) 16%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--surface-alt) 50%, var(--brand-secondary) 24%);
+      }
+    }
+
+    .card-icon {
+      font-size: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+      margin: 0;
+    }
+
+    .btn-toggle-collapse {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: $airbus-blue-primary;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.15s ease-in-out;
+
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+
+      &:hover {
+        color: $airbus-blue-secondary;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .filter-card-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 16px;
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      label {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-secondary);
+      }
+
+      select,
+      .search-input {
+        padding: 6px 10px;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+    }
+
+    .chip-filter {
+      background: var(--surface-alt);
+      border: 1px solid $border-color;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+
+      &.selected {
+        background: var(--brand-primary);
+        color: #ffffff;
+        border-color: var(--brand-primary);
+      }
+    }
+  }
+
+  .projects-table-container {
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    overflow-x: auto;
+  }
+
+  .airbus-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th {
+      background-color: var(--surface-alt);
+      color: $airbus-blue-primary;
+      text-align: left;
+      padding: 12px 14px;
+      font-weight: 700;
+      border-bottom: 2px solid $border-color;
+    }
+
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid $border-color;
+    }
+
+    tr.clickable-row {
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--surface-alt);
+      }
+
+      // Projet actuellement affiché dans le panneau Agenda (section 3).
+      &.selected-row {
+        background-color: var(--category-blue-bg);
+        box-shadow: inset 4px 0 0 0 $airbus-blue-primary;
+
+        &:hover {
+          background-color: color-mix(in srgb, var(--category-blue-bg) 70%, var(--category-blue-border) 30%);
+        }
+      }
+    }
+
+    .project-title-link {
+      // Lien permanent (pas juste au survol) : --heading-color directement (pas via
+      // $airbus-blue-secondary) pour rester lisible même en thème sombre.
+      color: var(--heading-color);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    .project-desc-mini {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 2px 0 0 0;
+    }
+
+    .devs-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+
+      .dev-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--surface-alt);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: var(--text-primary);
+      }
+
+      // Nombre de tâches en cours/à venir de ce développeur sur CE projet (voir
+      // devActiveTaskCount) : une tâche déjà terminée n'y compte pas, c'est une charge de travail
+      // actuelle, pas un historique.
+      .dev-task-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 15px;
+        height: 15px;
+        padding: 0 3px;
+        border-radius: 8px;
+        background: var(--brand-secondary);
+        color: #ffffff;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1;
+      }
+    }
+
+    .progress-bar-wrapper {
+      position: relative;
+      background: var(--border-color);
+      height: 18px;
+      border-radius: 9px;
+      overflow: hidden;
+
+      .progress-bar-fill {
+        background: $airbus-green;
+        height: 100%;
+      }
+
+      .progress-text {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+    }
+
+    .no-data-cell {
+      text-align: center;
+      padding: 24px;
+      color: var(--text-secondary);
+    }
+  }
+
+  .status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+
+    &.badge-in-progress { background: #a8c6fa; color: #00205b; }
+    &.badge-done { background: #aedd94; color: #215200; }
+    &.badge-todo { background: #fef8a0; color: #6b6100; }
+  }
+
+  .risk-badge {
+    padding: 3px 6px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+
+    &.risk-low { background: #e2e8f0; color: #334155; }
+    &.risk-medium { background: #fef08a; color: #854d0e; }
+    &.risk-high { background: #fecaca; color: #991b1b; }
+  }
+
+  // Un projet peut porter plusieurs métiers : empilés verticalement (pas côte à côte) pour
+  // ne pas élargir la colonne au gré du nombre de métiers cochés.
+  .category-badge-list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+  }
+
+  // Badge de métier : réutilise les 6 teintes --category-* du design system (voir
+  // utils/metier-colors.ts) — même convention que .risk-badge/.status-badge ci-contre, propre à
+  // chaque composant (voir aussi .metier-badge dans admin.component.scss côté portail-shell).
+  .category-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    border: 1px solid transparent;
+    white-space: nowrap;
+
+    &.metier-blue { background: var(--category-blue-bg); color: var(--category-blue-text); border-color: var(--category-blue-border); }
+    &.metier-green { background: var(--category-green-bg); color: var(--category-green-text); border-color: var(--category-green-border); }
+    &.metier-purple { background: var(--category-purple-bg); color: var(--category-purple-text); border-color: var(--category-purple-border); }
+    &.metier-amber { background: var(--category-amber-bg); color: var(--category-amber-text); border-color: var(--category-amber-border); }
+    &.metier-slate { background: var(--category-slate-bg); color: var(--category-slate-text); border-color: var(--category-slate-border); }
+    &.metier-red { background: var(--category-red-bg); color: var(--category-red-text); border-color: var(--category-red-border); }
+  }
+
+  .no-category-label {
+    color: var(--text-secondary);
+  }
+
+  .btn-secondary-airbus {
+    background: $airbus-green;
+    color: #ffffff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 12px;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+}

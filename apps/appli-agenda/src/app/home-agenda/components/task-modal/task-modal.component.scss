@@ -1,0 +1,529 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-blue-primary
+// pointe vers --heading-color (texte) ; le seul usage en fond (.btn-submit-airbus) référence
+// --brand-primary directement plus bas. $airbus-blue-secondary/$airbus-green ne servent qu'en
+// fonds (statuts de sous-tâche notamment) → --brand-* (invariant, aucune couleur métier ne bouge).
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$airbus-green: var(--brand-green);
+$border-color: var(--border-color);
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-panel {
+  background: var(--surface);
+  border-radius: 8px;
+  // Couleur posée via [style.border-color] (voir modalAccentColor) : reprend le bandeau d'accent
+  // de la tuile mois de la tâche éditée, pour la repérer immédiatement même modal ouvert.
+  border: 3px solid transparent;
+  width: min(600px, 92vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.15s ease-in-out;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid $border-color;
+
+  h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: $airbus-blue-primary;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px 8px;
+
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}
+
+.task-stats-panel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-alt);
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  padding: 10px 14px;
+
+  .stat-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 110px;
+
+    &.stat-block-right {
+      align-items: flex-end;
+      text-align: right;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+    }
+  }
+
+  .stat-progress-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+
+    .stat-progress-fill {
+      height: 100%;
+      background: $airbus-blue-secondary;
+    }
+  }
+}
+
+.add-days-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .add-days-form {
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .add-days-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    button {
+      padding: 6px 14px;
+      font-size: 12px;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .extensions-log {
+    margin: 0;
+    padding-left: 18px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+}
+
+.subtasks-panel {
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  h4 {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: $airbus-blue-primary;
+  }
+
+  .subtasks-empty {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .subtask-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .subtask-title {
+      flex: 1;
+      min-width: 0;
+    }
+
+    input,
+    select {
+      padding: 6px 8px;
+      border: 1px solid $border-color;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .btn-remove-subtask {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 6px;
+      flex-shrink: 0;
+
+      &:hover {
+        color: #dc2626;
+      }
+    }
+  }
+
+  // Fond coloré selon l'état (même palette que les statuts de tâche dans le planning), pour
+  // qu'un coup d'œil suffise à distinguer une sous-tâche non commencée / en cours / terminée.
+  .subtask-row-saved {
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #ffffff;
+
+    &.status-non-commence {
+      background: #94a3b8;
+    }
+
+    &.status-en-attente {
+      background: #64748b;
+    }
+
+    &.status-en-cours {
+      background: $airbus-blue-secondary;
+    }
+
+    &.status-termine {
+      background: $airbus-green;
+    }
+
+    .subtask-saved-title {
+      flex: 1;
+      min-width: 0;
+      color: #ffffff;
+
+      &.done {
+        text-decoration: line-through;
+        opacity: 0.85;
+      }
+    }
+
+    .subtask-saved-date,
+    .subtask-saved-status {
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .btn-cancel-subtask {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.75);
+      cursor: pointer;
+      font-size: 14px;
+      padding: 2px 6px;
+      flex-shrink: 0;
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+
+    .btn-remove-subtask {
+      color: rgba(255, 255, 255, 0.75);
+
+      &:hover {
+        color: #ffffff;
+      }
+    }
+  }
+
+  .subtask-row-add {
+    border-top: 1px dashed $border-color;
+    padding-top: 10px;
+    margin-top: 2px;
+
+    .btn-submit-airbus {
+      padding: 6px 14px;
+      font-size: 12px;
+      flex-shrink: 0;
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  .subtasks-hint {
+    margin: 0;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+}
+
+.unused-days-note {
+  font-size: 11px;
+  color: var(--category-amber-text);
+  background: var(--category-amber-bg);
+  border: 1px solid var(--category-amber-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: 0;
+}
+
+.dates-locked-note {
+  font-size: 11px;
+  color: var(--text-secondary);
+  background: var(--surface-alt);
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: -8px 0 0 0;
+}
+
+// Avertissement (non bloquant) : le développeur assigné est en congé sur une partie de la période
+// de la tâche (voir assignedDevUnavailabilityWarning) — informe sans empêcher l'enregistrement.
+.unavailability-warning-note {
+  font-size: 11px;
+  color: var(--category-amber-text);
+  background: var(--category-amber-bg);
+  border: 1px solid var(--category-amber-border);
+  border-radius: 4px;
+  padding: 6px 10px;
+  margin: -8px 0 0 0;
+}
+
+.form-error {
+  background: var(--category-red-bg);
+  color: var(--category-red-text);
+  border: 1px solid var(--category-red-border);
+  border-radius: 4px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+// Popup d'information (tâche Terminée) : lecture seule tant qu'on n'a pas cliqué "Modifier".
+.task-info-view {
+  .info-readonly-hint {
+    background: var(--category-green-bg);
+    color: var(--category-green-text);
+    border: 1px solid var(--category-green-border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .info-row {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid $border-color;
+
+    .info-label {
+      width: 120px;
+      flex-shrink: 0;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    .info-value {
+      font-size: 13px;
+      color: var(--text-primary);
+      white-space: pre-wrap;
+    }
+  }
+}
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+}
+
+// Jours ajoutés après coup : même grille que la ligne des dates juste au-dessus, mais rattachée
+// visuellement à elle (liseré vertical) pour se lire comme son prolongement plutôt que comme un
+// second plan indépendant.
+.extension-summary-row {
+  margin-top: 8px;
+  padding-left: 10px;
+  border-left: 3px solid var(--brand-secondary);
+
+  label {
+    color: var(--brand-secondary);
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  input[type='text'],
+  input[type='number'],
+  input[type='date'],
+  select,
+  textarea {
+    padding: 8px 12px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--text-primary);
+    background: var(--surface);
+
+    &:focus {
+      outline: none;
+      border-color: $airbus-blue-secondary;
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-secondary) 15%, transparent);
+    }
+
+    &:disabled {
+      background: var(--surface-alt);
+      color: var(--text-secondary);
+      cursor: not-allowed;
+    }
+  }
+
+  &.form-check label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+
+  .form-actions-right {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+  }
+
+  .delete-confirm-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .delete-confirm-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--category-red-text);
+    }
+  }
+
+  .btn-delete {
+    background: var(--category-red-bg);
+    color: var(--category-red-text);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--category-red-bg) 60%, var(--category-red-border) 40%);
+    }
+  }
+
+  .btn-cancel {
+    background: var(--surface-alt);
+    color: var(--text-primary);
+    border: none;
+    padding: 10px 18px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      background: var(--border-color);
+    }
+  }
+
+  .btn-submit-airbus {
+    // Fond plein (pas texte) : --brand-primary directement, pas $airbus-blue-primary
+    // (--heading-color) — un bouton plein reste lisible avec du texte blanc quel que soit le thème.
+    background: var(--brand-primary);
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      background: $airbus-blue-secondary;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,0 +1,45 @@
+<div class="date-range-picker">
+  <button #triggerBtn type="button" class="drp-trigger" (click)="toggleOpen()">
+    <span class="drp-icon">📅</span>
+    <span class="drp-label" [class.is-placeholder]="!workingStart">{{ displayLabel }}</span>
+  </button>
+
+  @if (open) {
+    <div
+      class="drp-popup"
+      [style.top.px]="popupTop"
+      [style.left.px]="popupLeft"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="drp-popup-header">
+        <button type="button" class="drp-nav-btn" (click)="prevMonth()">‹</button>
+        <span class="drp-month-label">{{ monthLabel }}</span>
+        <button type="button" class="drp-nav-btn" (click)="nextMonth()">›</button>
+      </div>
+      <div class="drp-weekdays">
+        @for (label of weekDayLabels; track $index) {
+          <span class="drp-weekday">{{ label }}</span>
+        }
+      </div>
+      @for (week of calendarWeeks; track $index) {
+        <div class="drp-week">
+          @for (day of week; track day.dateSql) {
+            <button
+              type="button"
+              class="drp-day"
+              [class.is-outside]="day.isOutsideMonth"
+              [class.is-edge]="isRangeEdge(day.dateSql)"
+              [class.is-in-range]="isInRange(day.dateSql)"
+              (click)="onDayClick(day.dateSql)"
+              (mouseenter)="hoveredDateSql = day.dateSql"
+              (mouseleave)="hoveredDateSql = null"
+            >{{ day.dayNumber }}</button>
+          }
+        </div>
+      }
+      <p class="drp-hint">
+        {{ workingStart && !workingEnd ? 'Choisissez la date de fin' : 'Choisissez la date de début' }}
+      </p>
+    </div>
+  }
+</div>

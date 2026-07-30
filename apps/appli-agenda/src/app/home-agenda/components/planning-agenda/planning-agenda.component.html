@@ -1,0 +1,496 @@
+<div class="card-section planning-agenda-card">
+  <div
+    class="card-header"
+    role="button"
+    tabindex="0"
+    [class.is-expanded]="!collapsed"
+    (click)="toggleCollapsed()"
+    (keydown.enter)="toggleCollapsed()"
+    (keydown.space)="toggleCollapsed(); $event.preventDefault()"
+    [title]="collapsed ? 'Afficher la zone' : 'Masquer la zone'"
+  >
+    <span class="card-icon">📅</span>
+    <h3 class="card-title">3. Planning &amp; Gantt Agenda par Développeur</h3>
+    <app-help-hint heading="3. Planning &amp; Gantt Agenda par Développeur">
+      <p>Planification du projet actif et suivi du temps réellement passé, à la demi-journée.</p>
+      <ul>
+        <li><strong>Vue jour</strong> : une ligne par développeur, une colonne par jour ; les tâches forment des barres continues.</li>
+        <li><strong>Vue mois</strong> : calendrier classique, toutes tâches du projet confondues.</li>
+        <li>Une tâche se <strong>déplace par glisser-déposer</strong> et s'<strong>ouvre au clic</strong>.</li>
+        <li>Les deux cases de chaque tuile valident la <strong>matinée</strong> et l'<strong>après-midi</strong> réellement travaillés.</li>
+        <li>En vue jour, chaque développeur affiche son nombre de tâches sur ce projet (total / terminées / en cours). Son nom passe en <strong>gras</strong> tant qu'il lui reste au moins une tâche en cours ou à venir.</li>
+      </ul>
+      <p><strong>Repères visuels :</strong></p>
+      <ul>
+        <li>Colonne jaune : aujourd'hui — Fond gris rayé de jaune : jour passé.</li>
+        <li>Colonne gris foncé : jour non travaillé (week-end ou férié exclu par le projet).</li>
+        <li>Rayures rouges : développeur absent — Tuile noire : jour passé non validé.</li>
+        <li>Liseré rouge en haut d'une barre : tâche à risque.</li>
+      </ul>
+      <p>Une demi-journée passée non validée prolonge automatiquement la tâche : le planning reflète le temps réel, pas seulement le temps prévu. Une tâche terminée est figée et ne se déplace plus.</p>
+    </app-help-hint>
+    <span class="btn-toggle-collapse" [class.collapsed]="collapsed">▾</span>
+  </div>
+
+  @if (!collapsed) {
+  <div class="card-body">
+    @if (selectedProject) {
+      <div class="project-header-banner">
+        <div class="banner-title">
+          <h2>{{ selectedProject.code }} - {{ selectedProject.name }}</h2>
+          <p>{{ selectedProject.description }}</p>
+        </div>
+        <div class="banner-meta">
+          <span><strong>Début :</strong> {{ selectedProject.dateStart | date: 'dd/MM/yyyy' }}</span>
+          <span><strong>Fin estimée :</strong> {{ selectedProject.dateEndEstimated | date: 'dd/MM/yyyy' }}</span>
+          @if (projectUnusedDaysCount > 0) {
+            <span class="unused-days-badge">📌 {{ projectUnusedDaysCount }} j. de retard cumulé(s)</span>
+          }
+          <button type="button" class="btn-export-csv" (click)="exportProjectTasksCsv()" title="Exporter les tâches de ce projet en CSV">
+            ⬇️ Exporter (CSV)
+          </button>
+          <button class="btn-primary-airbus" (click)="openCreateTaskModal()">
+            + Ajouter une tâche
+          </button>
+        </div>
+      </div>
+
+      <div class="gantt-schedule-card">
+        <div class="gantt-header-row">
+          <h4>Planning d'affectation des Développeurs (Grille en Demi-journées)</h4>
+          <!-- Grille CSS partagée par les deux lignes (colonnes ‹ / libellé / › / reste) : les
+               flèches précédent-suivant restent alignées verticalement d'une ligne à l'autre,
+               quelle que soit la largeur du libellé ou des contrôles de la 4e colonne — un simple
+               alignement "à droite" par ligne ne le garantit pas si les deux lignes n'ont pas la
+               même largeur totale de contenu. -->
+          <div class="planning-nav-bar">
+            <button
+              type="button"
+              class="btn-nav-arrow nav-col-prev"
+              (click)="previousRequested.emit()"
+              [title]="viewMode === 'month' ? 'Mois précédent' : 'Période précédente'"
+            >‹</button>
+            <span class="planning-nav-label nav-col-label">{{ viewRangeLabel }}</span>
+            <button
+              type="button"
+              class="btn-nav-arrow nav-col-next"
+              (click)="nextRequested.emit()"
+              [title]="viewMode === 'month' ? 'Mois suivant' : 'Période suivante'"
+            >›</button>
+            <div class="nav-col-extra">
+              <button type="button" class="btn-nav-today" (click)="todayRequested.emit()">Aujourd'hui</button>
+
+              <!-- Format d'affichage : grille Gantt par jour ou calendrier mensuel. -->
+              <div class="planning-view-switch" role="group" aria-label="Format d'affichage">
+                <button
+                  type="button"
+                  class="btn-view-mode"
+                  [class.active]="viewMode === 'days'"
+                  [attr.aria-pressed]="viewMode === 'days'"
+                  (click)="viewModeChanged.emit('days')"
+                  title="Affichage par jour (planning Gantt)"
+                >Jour</button>
+                <button
+                  type="button"
+                  class="btn-view-mode"
+                  [class.active]="viewMode === 'month'"
+                  [attr.aria-pressed]="viewMode === 'month'"
+                  (click)="viewModeChanged.emit('month')"
+                  title="Affichage par mois (calendrier)"
+                >Mois</button>
+              </div>
+
+              @if (viewMode === 'month') {
+                <!-- 1 ou 2 mois affichés côte à côte (voir monthDisplayCount) : le second mois est
+                     toujours celui qui suit le mois affiché à gauche (le mois de navigation). -->
+                <div class="planning-view-switch" role="group" aria-label="Nombre de mois affichés">
+                  <button
+                    type="button"
+                    class="btn-view-mode"
+                    [class.active]="monthDisplayCount === 1"
+                    [attr.aria-pressed]="monthDisplayCount === 1"
+                    (click)="monthDisplayCountChanged.emit(1)"
+                    title="Afficher un seul mois"
+                  >1 mois</button>
+                  <button
+                    type="button"
+                    class="btn-view-mode"
+                    [class.active]="monthDisplayCount === 2"
+                    [attr.aria-pressed]="monthDisplayCount === 2"
+                    (click)="monthDisplayCountChanged.emit(2)"
+                    title="Afficher ce mois et le suivant côte à côte"
+                  >2 mois</button>
+                </div>
+              }
+            </div>
+
+            @if (viewMode === 'days') {
+              <!-- Ligne 2 (vue jour uniquement) : pas fin d'un seul jour, dans les mêmes colonnes
+                   grille que la ligne 1 ci-dessus, donc alignée avec elle. -->
+              <button type="button" class="btn-nav-arrow nav-col-prev" (click)="previousDayRequested.emit()" title="Jour précédent">‹</button>
+              <span class="planning-nav-day-label nav-col-label">Jour</span>
+              <button type="button" class="btn-nav-arrow nav-col-next" (click)="nextDayRequested.emit()" title="Jour suivant">›</button>
+              <div class="nav-col-extra">
+                <div class="planning-nav-range">
+                  <label for="rangeSelect">Afficher :</label>
+                  <select id="rangeSelect" [ngModel]="selectedRangeIndex" (ngModelChange)="onRangeChanged($event)">
+                    @for (range of rangeOptions; track range.label; let i = $index) {
+                      <option [ngValue]="i">{{ range.label }}</option>
+                    }
+                  </select>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        @if (viewMode === 'month') {
+          <p class="dnd-hint">Glissez-déposez une tâche vers un autre jour pour la déplacer (le développeur assigné est conservé), ou cliquez dessus pour l'éditer.</p>
+        } @else {
+          <p class="dnd-hint">Glissez-déposez une tâche vers une autre case pour la déplacer, ou cliquez dessus pour l'éditer.</p>
+        }
+        @if (dropRejectionMessage) {
+          <div class="drop-rejection-banner">{{ dropRejectionMessage }}</div>
+        }
+
+        @if (viewMode === 'month') {
+          <div class="month-calendars-row" [class.is-dual]="monthDisplayCount === 2">
+            <div class="month-calendar-col">
+              @if (monthDisplayCount === 2) {
+                <h5 class="month-calendar-label">{{ monthCalendarLabel(agendaDays) }}</h5>
+              }
+              <ng-container *ngTemplateOutlet="monthCalendarTpl; context: { weeks: monthWeeks }"></ng-container>
+            </div>
+            @if (monthDisplayCount === 2) {
+              <div class="month-calendar-col">
+                <h5 class="month-calendar-label">{{ monthCalendarLabel(agendaDaysMonth2) }}</h5>
+                <ng-container *ngTemplateOutlet="monthCalendarTpl; context: { weeks: monthWeeksMonth2 }"></ng-container>
+              </div>
+            }
+          </div>
+
+          <!-- Contenu d'un calendrier mensuel, factorisé en template réutilisable pour éviter de
+               dupliquer toute cette section quand deux mois sont affichés côte à côte (voir
+               monthDisplayCount) : seule la variable `weeks` change entre les deux instances,
+               toute la logique (lanes, drag&drop, cases à cocher...) reste identique. -->
+          <ng-template #monthCalendarTpl let-weeks="weeks">
+            <div class="month-calendar">
+              <div class="month-weekday-row">
+                @for (label of monthWeekDayLabels; track $index) {
+                  <div class="month-weekday">{{ label }}</div>
+                }
+              </div>
+              @for (week of weeks; track $index) {
+                <div class="month-week-row">
+                  @for (day of week; track day.dateSql) {
+                    <div
+                      class="month-day-cell"
+                      [class.is-outside]="day.isOutsideMonth"
+                      [class.is-weekend]="showsExcludedWeekend(day)"
+                      [class.is-holiday]="showsExcludedHoliday(day)"
+                      [class.is-past]="day.isPast"
+                      [class.is-expanded]="isWeekExpanded(week)"
+                      cdkDropList
+                      [id]="monthCellId(day.dateSql)"
+                      [cdkDropListConnectedTo]="allCellIds"
+                      [cdkDropListData]="getTasksForDay(selectedProject, day.dateSql)"
+                      (cdkDropListDropped)="onMonthTaskDropped($event, day.dateSql)"
+                    >
+                      <div class="month-day-header">
+                        <span class="month-day-number" [class.is-today]="day.isToday">{{ day.dayNumber }}</span>
+                        @if (day.isHoliday) {
+                          <span class="month-day-holiday" title="Jour férié">férié</span>
+                        }
+                      </div>
+                      <div class="month-day-tasks">
+                        <!-- Une lane par rang d'empilement STABLE sur toute la semaine (comme les lanes
+                             de la grille Gantt) : une tâche garde ainsi la même ligne verticale d'un
+                             jour à l'autre au lieu de "remonter" dès qu'une tâche voisine se termine. -->
+                        @for (task of visibleTaskLanesForDay(selectedProject, week, day.dateSql); track task?.id ?? $index) {
+                          @if (task === null) {
+                            <div class="month-lane-empty"></div>
+                          } @else {
+                            <div
+                              class="month-task-chip"
+                              cdkDrag
+                              [cdkDragData]="task"
+                              [cdkDragDisabled]="isTaskDateLocked(task)"
+                              [class.has-risk]="task.isRisky"
+                              [class.status-non-commence]="task.status === 'NON_COMMENCE'"
+                              [class.status-en-attente]="task.status === 'EN_ATTENTE'"
+                              [class.status-en-cours]="task.status === 'EN_COURS'"
+                              [class.status-termine]="task.status === 'TERMINER'"
+                              [class.is-overdue]="isCardOverdue(task, day.dateSql)"
+                              [class.is-hovered]="hoveredTaskId === task.id"
+                              [style.border-bottom-color]="taskAccentColor(task)"
+                              [title]="monthChipTooltip(task)"
+                              (mouseenter)="onTaskHoverStart(task.id)"
+                              (mouseleave)="onTaskHoverEnd()"
+                            >
+                              <div class="chip-top" cdkDragHandle (click)="openEditTaskModal(task, $event)">
+                                @if (task.parentTaskId) {
+                                  <span class="task-blocking-badge" [title]="blockingTaskTooltip(task)">⛓️</span>
+                                }
+                                <span class="chip-name">{{ task.name }}</span>
+                              </div>
+                              @if (task.status === 'TERMINER') {
+                                <div class="chip-meta chip-meta-done">
+                                  <span class="task-done-label">✓ Terminé</span>
+                                </div>
+                              } @else {
+                                <div class="chip-meta" [class.is-day-validated]="isDayValidated(task, day.dateSql)">
+                                  <input
+                                    type="checkbox"
+                                    class="half-day-toggle"
+                                    [checked]="isHalfDayWorked(task, day.dateSql, 'AM')"
+                                    (change)="toggleHalfDay(task, day.dateSql, 'AM', $event)"
+                                    title="Matin travaillé sur cette tâche"
+                                  />
+                                  <span class="chip-duration">{{ remainingHalfDays(task) }} demi-j</span>
+                                  @if (isHalfDaySlotApplicable(task, day.dateSql, 'PM')) {
+                                    <input
+                                      type="checkbox"
+                                      class="half-day-toggle"
+                                      [checked]="isHalfDayWorked(task, day.dateSql, 'PM')"
+                                      (change)="toggleHalfDay(task, day.dateSql, 'PM', $event)"
+                                      title="Après-midi travaillé sur cette tâche"
+                                    />
+                                  } @else {
+                                    <span class="half-day-toggle-placeholder"></span>
+                                  }
+                                </div>
+                              }
+                            </div>
+                          }
+                        }
+                        @if (hiddenLaneTaskCountForDay(selectedProject, week, day.dateSql); as hiddenCount) {
+                          <button
+                            type="button"
+                            class="month-more-btn"
+                            (click)="toggleWeekExpanded(week, $event)"
+                          >+{{ hiddenCount }}</button>
+                        }
+                        @if (showCollapseButtonForDay(selectedProject, week, day.dateSql)) {
+                          <button
+                            type="button"
+                            class="month-more-btn"
+                            (click)="toggleWeekExpanded(week, $event)"
+                          >Réduire</button>
+                        }
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </ng-template>
+        } @else {
+        <div class="gantt-scroll-container" #ganttScrollContainer>
+          <table class="gantt-grid-table">
+            <thead>
+              <tr>
+                <th class="col-fixed-dev">Développeur</th>
+                @for (day of agendaDays; track day.dateSql) {
+                  <th
+                    class="col-day-cell"
+                    [style.width.px]="dayColumnPx"
+                    [class.is-weekend]="showsExcludedWeekend(day)"
+                    [class.is-holiday]="showsExcludedHoliday(day)"
+                    [class.is-today]="day.isToday"
+                    [class.is-past]="day.isPast"
+                  >
+                    <div class="day-name">{{ day.dayName }}</div>
+                    <div class="day-num">{{ day.dayNumber }}</div>
+                  </th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (dev of selectedProject.developers; track dev.id) {
+                <tr>
+                  <td class="col-fixed-dev">
+                    @if (devTaskStats(dev.id); as stats) {
+                      <span class="dev-name" [class.has-active-tasks]="stats.active > 0">{{ dev.firstname }} {{ dev.lastname }}</span>
+                      <div class="sub-text">Mat: {{ dev.matricule }}</div>
+                      <div
+                        class="dev-task-stats"
+                        [title]="stats.total + ' tâche(s) au total sur ce projet — ' + stats.completed + ' terminée(s), ' + stats.active + ' en cours ou à venir'"
+                      >
+                        {{ stats.total }} tâche(s)
+                        <span class="dev-stat-completed">{{ stats.completed }} terminée(s)</span>
+                        <span class="dev-stat-active" [class.is-zero]="stats.active === 0">{{ stats.active }} en cours</span>
+                      </div>
+                      @if (stats.total === 0) {
+                        <button
+                          type="button"
+                          class="btn-remove-dev-tile"
+                          title="Retirer {{ dev.firstname }} {{ dev.lastname }} du projet (aucune tâche assignée)"
+                          (click)="removeDevFromProject(dev.id)"
+                        >✕</button>
+                      }
+                    }
+                  </td>
+                  @for (day of agendaDays; track day.dateSql) {
+                    <td
+                      class="col-day-cell"
+                      [style.width.px]="dayColumnPx"
+                      [class.is-weekend]="showsExcludedWeekend(day)"
+                      [class.is-holiday]="showsExcludedHoliday(day)"
+                      [class.is-today]="day.isToday"
+                      [class.is-past]="day.isPast"
+                      [class.is-unavailable]="isDevUnavailable(dev.id, day.dateSql)"
+                      [title]="devUnavailabilityTooltip(dev.id, day.dateSql)"
+                      cdkDropList
+                      [id]="cellId(dev.id, day.dateSql)"
+                      [cdkDropListConnectedTo]="allCellIds"
+                      [cdkDropListData]="getTasksForDevAndDay(selectedProject, dev.id, day.dateSql)"
+                      (cdkDropListDropped)="onTaskDropped($event, dev.id, day.dateSql)"
+                    >
+                      @for (segment of getTaskSegmentsForDevAndDay(selectedProject, dev.id, day.dateSql); track $index) {
+                        @if (segment === null) {
+                          <div class="task-lane-empty"></div>
+                        } @else if (segment.isConnector) {
+                          <div
+                            class="task-connector-slot"
+                            [class.is-first]="segment.isFirstOfSpan"
+                            [class.is-last]="segment.isLastOfSpan"
+                            [class.has-risk]="segment.task.isRisky"
+                            [class.status-non-commence]="segment.task.status === 'NON_COMMENCE'"
+                            [class.status-en-attente]="segment.task.status === 'EN_ATTENTE'"
+                            [class.status-en-cours]="segment.task.status === 'EN_COURS'"
+                            [class.status-termine]="segment.task.status === 'TERMINER'"
+                            [class.is-unavailable]="isDevUnavailable(dev.id, day.dateSql)"
+                            [class.is-hovered]="hoveredTaskId === segment.task.id"
+                            (mouseenter)="onTaskHoverStart(segment.task.id)"
+                            (mouseleave)="onTaskHoverEnd()"
+                          ></div>
+                        } @else {
+                          <div
+                            class="task-card-slot"
+                            cdkDrag
+                            [cdkDragData]="segment.task"
+                            [cdkDragDisabled]="isTaskDateLocked(segment.task)"
+                            [class.is-compact]="isCompactDayColumn"
+                            [class.has-risk]="segment.task.isRisky"
+                            [class.status-non-commence]="segment.task.status === 'NON_COMMENCE'"
+                            [class.status-en-attente]="segment.task.status === 'EN_ATTENTE'"
+                            [class.status-en-cours]="segment.task.status === 'EN_COURS'"
+                            [class.status-termine]="segment.task.status === 'TERMINER'"
+                            [class.is-overdue]="isCardOverdue(segment.task, day.dateSql)"
+                            [class.is-unavailable]="isDevUnavailable(dev.id, day.dateSql)"
+                            [class.is-first]="segment.isFirstOfSpan"
+                            [class.is-last]="segment.isLastOfSpan"
+                            [class.is-hovered]="hoveredTaskId === segment.task.id"
+                            (mouseenter)="onTaskHoverStart(segment.task.id)"
+                            (mouseleave)="onTaskHoverEnd()"
+                          >
+                            <div class="task-card-top" cdkDragHandle (click)="openEditTaskModal(segment.task, $event)">
+                              @if (segment.showTitle) {
+                                <div class="task-title-flow" [style.width.px]="segment.titleWidthPx">
+                                  @if (segment.task.parentTaskId) {
+                                    <span class="task-blocking-badge" [title]="blockingTaskTooltip(segment.task)">⛓️</span>
+                                  }
+                                  <span class="task-name">{{ segment.task.name }}</span>
+                                  @if (segment.task.gitBranch) {
+                                    <span class="task-git-branch">🌿 {{ segment.task.gitBranch }}</span>
+                                  }
+                                </div>
+                              }
+                            </div>
+                            @if (segment.task.status === 'TERMINER') {
+                              <!-- Tâche Terminée : plus rien à pointer, les cases à cocher n'ont
+                                   plus lieu d'être (et seraient trompeuses, `remainingHalfDays`
+                                   pouvant rester > 0 pour une tâche close manuellement). -->
+                              <div class="task-meta task-meta-done">
+                                <span class="task-done-label">✓ Terminé</span>
+                              </div>
+                            } @else if (isDevUnavailable(dev.id, day.dateSql)) {
+                              <!-- Développeur absent ce jour-là (voir .is-unavailable sur la tuile) :
+                                   aucune case à cocher, ce jour ne peut pas être pointé. -->
+                              <div class="task-meta"></div>
+                            } @else {
+                              <div class="task-meta" [class.is-day-validated]="isDayValidated(segment.task, day.dateSql)">
+                                <input
+                                  type="checkbox"
+                                  class="half-day-toggle"
+                                  [checked]="isHalfDayWorked(segment.task, day.dateSql, 'AM')"
+                                  (change)="toggleHalfDay(segment.task, day.dateSql, 'AM', $event)"
+                                  title="Matin travaillé sur cette tâche"
+                                />
+                                <span class="task-duration">{{ remainingHalfDays(segment.task) }} demi-j</span>
+                                @if (isHalfDaySlotApplicable(segment.task, day.dateSql, 'PM')) {
+                                  <input
+                                    type="checkbox"
+                                    class="half-day-toggle"
+                                    [checked]="isHalfDayWorked(segment.task, day.dateSql, 'PM')"
+                                    (change)="toggleHalfDay(segment.task, day.dateSql, 'PM', $event)"
+                                    title="Après-midi travaillé sur cette tâche"
+                                  />
+                                } @else {
+                                  <span class="half-day-toggle-placeholder"></span>
+                                }
+                              </div>
+                            }
+                          </div>
+                        }
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        }
+      </div>
+    } @else {
+      <div class="no-project-selected">
+        <p>Veuillez sélectionner un projet dans la liste ci-dessus pour afficher son planning détaillé.</p>
+      </div>
+    }
+  </div>
+  }
+</div>
+
+<app-task-modal
+  [open]="taskModalOpen"
+  [task]="editingTask"
+  [users]="users"
+  [project]="selectedProject"
+  [projectId]="selectedProject?.id ?? null"
+  [unavailabilities]="unavailabilities"
+  (created)="onTaskCreated($event)"
+  (updated)="onTaskUpdated($event)"
+  (deleted)="onTaskDeleted($event)"
+  (closed)="onModalClosed()"
+></app-task-modal>
+
+@if (subtaskPopupTask; as spTask) {
+  <div class="modal-backdrop" (click)="closeSubtaskPopup()">
+    <div class="subtask-popup-panel" (click)="$event.stopPropagation()">
+      <div class="subtask-popup-header">
+        <h3>Sous-tâches — {{ spTask.name }}</h3>
+        <button type="button" class="btn-close" (click)="closeSubtaskPopup()">✕</button>
+      </div>
+      <p class="subtask-popup-hint">Pointez les sous-tâches terminées.</p>
+      <div class="subtask-popup-list">
+        @for (sub of spTask.subTasks; track sub.id) {
+          <label class="subtask-popup-row">
+            <input
+              type="checkbox"
+              [checked]="sub.status === 'TERMINER'"
+              (change)="toggleSubtaskDone(spTask, sub.id, $event)"
+            />
+            <span class="subtask-popup-title" [class.done]="sub.status === 'TERMINER'">{{ sub.title || '(sans titre)' }}</span>
+            @if (sub.status === 'TERMINER' && sub.dateEnd) {
+              <span class="subtask-popup-date">{{ sub.dateEnd | date: 'dd/MM/yyyy' }}</span>
+            }
+          </label>
+        }
+      </div>
+      <div class="subtask-popup-actions">
+        <button type="button" class="btn-submit-airbus" (click)="closeSubtaskPopup()">Fermer</button>
+      </div>
+    </div>
+  </div>
+}

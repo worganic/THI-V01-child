@@ -1,0 +1,156 @@
+<div class="card-section project-stats-card">
+  <div
+    class="card-header"
+    role="button"
+    tabindex="0"
+    [class.is-expanded]="!collapsed"
+    (click)="toggleCollapsed()"
+    (keydown.enter)="toggleCollapsed()"
+    (keydown.space)="toggleCollapsed(); $event.preventDefault()"
+    [title]="collapsed ? 'Afficher la zone' : 'Masquer la zone'"
+  >
+    <span class="card-icon">📈</span>
+    <h3 class="card-title">4. Statistiques du Projet</h3>
+    <app-help-hint heading="4. Statistiques du Projet">
+      <p>Indicateurs du <strong>projet actif</strong> (celui sélectionné en zone 2), recalculés à chaque validation de demi-journée.</p>
+      <ul>
+        <li><strong>Avancement global</strong> : part des demi-journées déjà validées sur l'ensemble des tâches.</li>
+        <li><strong>Demi-journées travaillées / restantes</strong> : temps consommé face au temps planifié.</li>
+        <li><strong>Demi-journées en retard</strong> : demi-journées de jours déjà passés qui n'ont jamais été validées. Ce sont elles qui prolongent automatiquement les tâches.</li>
+        <li><strong>Répartition par statut</strong> : proportion de tâches non commencées, en attente, en cours et terminées.</li>
+      </ul>
+    </app-help-hint>
+    <span class="btn-toggle-collapse" [class.collapsed]="collapsed">▾</span>
+  </div>
+
+  @if (!collapsed) {
+    <div class="card-body">
+      @if (project) {
+        <div class="stats-kpi-grid">
+          <div class="stats-kpi-card">
+            <span class="kpi-value">{{ totalTasks }}</span>
+            <span class="kpi-label">Tâches au total</span>
+          </div>
+          <div class="stats-kpi-card">
+            <span class="kpi-value">{{ globalProgressPercent }}%</span>
+            <span class="kpi-label">Avancement global</span>
+          </div>
+          <div class="stats-kpi-card">
+            <span class="kpi-value">{{ totalWorkedHalfDays }} / {{ totalPlannedHalfDays }}</span>
+            <span class="kpi-label">Demi-journées travaillées</span>
+          </div>
+          <div class="stats-kpi-card">
+            <span class="kpi-value">{{ totalRemainingHalfDays }}</span>
+            <span class="kpi-label">Demi-journées restantes</span>
+          </div>
+          <div class="stats-kpi-card" [class.kpi-alert]="totalLateHalfDays > 0">
+            <span class="kpi-value">{{ totalLateHalfDays }}</span>
+            <span class="kpi-label">Demi-journées en retard</span>
+          </div>
+        </div>
+
+        <div class="stats-section">
+          <h4>Répartition des tâches par statut</h4>
+          <div class="status-breakdown-bar">
+            @for (s of statusCounts; track s.status) {
+              @if (s.count > 0) {
+                <div
+                  class="status-segment"
+                  [ngClass]="'seg-' + s.status"
+                  [style.width.%]="s.percent"
+                  [title]="s.label + ' : ' + s.count"
+                ></div>
+              }
+            }
+          </div>
+          <div class="status-breakdown-legend">
+            @for (s of statusCounts; track s.status) {
+              <span class="legend-item">
+                <span class="legend-dot" [ngClass]="'seg-' + s.status"></span>
+                {{ s.label }} ({{ s.count }})
+              </span>
+            }
+          </div>
+        </div>
+
+        <div class="stats-section">
+          <div class="stats-section-header">
+            <h4>Charge de travail par développeur</h4>
+            <button type="button" class="btn-export-csv-inline" (click)="exportDevWorkloadCsv()" title="Exporter ce tableau en CSV">⬇️ Exporter (CSV)</button>
+          </div>
+          <div class="dev-stats-table-container">
+            <table class="airbus-data-table">
+              <thead>
+                <tr>
+                  <th>Développeur</th>
+                  <th>Tâches</th>
+                  <th>Prévu (demi-j)</th>
+                  <th>Travaillé</th>
+                  <th>Restant</th>
+                  <th>Avancement</th>
+                  <th>Retard</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (d of devStats; track d.dev.id) {
+                  <tr>
+                    <td><strong>{{ d.dev.firstname }} {{ d.dev.lastname }}</strong></td>
+                    <td>{{ d.taskCount }}</td>
+                    <td>{{ d.plannedHalfDays }}</td>
+                    <td>{{ d.workedHalfDays }}</td>
+                    <td>{{ d.remainingHalfDays }}</td>
+                    <td>
+                      <div class="progress-bar-wrapper">
+                        <div class="progress-bar-fill" [style.width.%]="d.progressPercent"></div>
+                        <span class="progress-text">{{ d.progressPercent }}%</span>
+                      </div>
+                    </td>
+                    <td>
+                      @if (d.lateHalfDays > 0) {
+                        <span class="late-badge">{{ d.lateHalfDays }} demi-j</span>
+                      } @else {
+                        <span class="ok-badge">À jour</span>
+                      }
+                    </td>
+                  </tr>
+                }
+                @if (devStats.length === 0) {
+                  <tr>
+                    <td colspan="7" class="no-data-cell">Aucun développeur affecté à ce projet.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="stats-section">
+          <h4>Comparaison de la charge (demi-journées prévues par développeur)</h4>
+          <div class="dev-chart">
+            @for (d of devStats; track d.dev.id) {
+              <div class="dev-chart-row">
+                <span class="dev-chart-label">{{ d.dev.firstname }} {{ d.dev.lastname }}</span>
+                <div class="dev-chart-bar-track">
+                  <div class="dev-chart-bar-worked" [style.width.%]="chartWorkedWidthPercent(d)"></div>
+                  <div class="dev-chart-bar-remaining" [style.width.%]="chartRemainingWidthPercent(d)"></div>
+                </div>
+                <span class="dev-chart-value">{{ d.plannedHalfDays }} demi-j</span>
+              </div>
+            }
+            @if (devStats.length === 0) {
+              <p class="subtasks-empty">Aucun développeur affecté à ce projet.</p>
+            }
+          </div>
+          <div class="status-breakdown-legend">
+            <span class="legend-item"><span class="legend-dot seg-worked"></span>Travaillé</span>
+            <span class="legend-item"><span class="legend-dot seg-remaining"></span>Restant</span>
+          </div>
+        </div>
+      } @else {
+        <div class="no-project-selected">
+          <p>Veuillez sélectionner un projet dans la liste ci-dessus pour afficher ses statistiques.</p>
+        </div>
+      }
+    </div>
+  }
+</div>

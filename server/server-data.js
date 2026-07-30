@@ -3550,6 +3550,14 @@ function getSessionUser(req) {
     return loadUsers().find(u => u.id === session.userId) || null;
 }
 
+// Routes Portail (sous-applications, groupes, métiers, droits) — déclarées ici
+// car elles ont besoin de getSessionUser, défini juste au-dessus.
+require('./modules/portal-apps').register(app, { pool, getSessionUser });
+
+// Routes des sous-applications montées dans le portail (/agenda et /recettes)
+require('./modules/appli-agenda').register(app, { pool, getSessionUser });
+require('./modules/appli-recettes').register(app, { pool, getSessionUser });
+
 app.post('/api/auth/register', async (req, res) => {
     const { username, email, password } = req.body;
     if (!username || !email || !password) return res.status(400).json({ error: 'Tous les champs sont requis' });
@@ -7775,6 +7783,75 @@ app.delete('/api/admin/help/:id', async (req, res) => {
         res.json({ success: true });
     } catch (e) {
         console.error('[HELP] Delete error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// ============================================================
+// Admin IA — Skills CRUD
+// ============================================================
+
+app.get('/api/admin/ia-skills', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    try {
+        const [rows] = await pool.query('SELECT * FROM admin_ia_skills ORDER BY updated_at DESC, id DESC');
+        res.json(rows);
+    } catch (e) {
+        console.error('[IA SKILLS] List error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+app.post('/api/admin/ia-skills', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    const { title, text, iaProvider, iaModel } = req.body;
+    if (!title || !title.trim()) return res.status(400).json({ error: 'Titre requis' });
+    if (!text || !text.trim()) return res.status(400).json({ error: 'Texte requis' });
+    try {
+        const [result] = await pool.query(
+            'INSERT INTO admin_ia_skills (title, text, ia_provider, ia_model, created_by, created_by_username) VALUES (?, ?, ?, ?, ?, ?)',
+            [title.trim(), text.trim(), (iaProvider || '').trim(), (iaModel || '').trim(), user.id, user.username]
+        );
+        const [rows] = await pool.query('SELECT * FROM admin_ia_skills WHERE id = ?', [result.insertId]);
+        res.json(rows[0]);
+    } catch (e) {
+        console.error('[IA SKILLS] Create error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+app.put('/api/admin/ia-skills/:id', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    const { title, text, iaProvider, iaModel } = req.body;
+    if (!title || !title.trim()) return res.status(400).json({ error: 'Titre requis' });
+    if (!text || !text.trim()) return res.status(400).json({ error: 'Texte requis' });
+    try {
+        const [existing] = await pool.query('SELECT id FROM admin_ia_skills WHERE id = ?', [req.params.id]);
+        if (!existing[0]) return res.status(404).json({ error: 'Introuvable' });
+        await pool.query(
+            'UPDATE admin_ia_skills SET title = ?, text = ?, ia_provider = ?, ia_model = ? WHERE id = ?',
+            [title.trim(), text.trim(), (iaProvider || '').trim(), (iaModel || '').trim(), req.params.id]
+        );
+        const [rows] = await pool.query('SELECT * FROM admin_ia_skills WHERE id = ?', [req.params.id]);
+        res.json(rows[0]);
+    } catch (e) {
+        console.error('[IA SKILLS] Update error:', e);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+app.delete('/api/admin/ia-skills/:id', async (req, res) => {
+    const user = getSessionUser(req);
+    if (!user || user.role !== 'admin') return res.status(403).json({ error: 'Admin requis' });
+    try {
+        const [result] = await pool.query('DELETE FROM admin_ia_skills WHERE id = ?', [req.params.id]);
+        if (result.affectedRows === 0) return res.status(404).json({ error: 'Introuvable' });
+        res.json({ success: true });
+    } catch (e) {
+        console.error('[IA SKILLS] Delete error:', e);
         res.status(500).json({ error: 'Erreur serveur' });
     }
 });
@@ -12106,6 +12183,9 @@ app.listen(PORT, async () => {
     // Initialisation PostgreSQL
     await loadUsersFromDB();
     await loadSessionsFromDB();
+    await require('./modules/portal-apps').ensureSchema(pool);
+    await require('./modules/appli-agenda').ensureSchema(pool);
+    await require('./modules/appli-recettes').ensureSchema(pool);
     await pool.query(`
         CREATE TABLE IF NOT EXISTS ticket_comments (
             id VARCHAR(64) PRIMARY KEY,
@@ -12127,6 +12207,20 @@ app.listen(PORT, async () => {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )
     `).catch(e => console.error('[DB] help_pages init error:', e.message));
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS admin_ia_skills (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            title VARCHAR(255) NOT NULL,
+            text LONGTEXT NOT NULL,
+            ia_provider VARCHAR(32) NOT NULL DEFAULT '',
+            ia_model VARCHAR(128) NOT NULL DEFAULT '',
+            created_by VARCHAR(64) DEFAULT NULL,
+            created_by_username VARCHAR(128) DEFAULT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )
+    `).catch(e => console.error('[DB] admin_ia_skills init error:', e.message));
 
     await pool.query(`
         CREATE TABLE IF NOT EXISTS doc_categories (

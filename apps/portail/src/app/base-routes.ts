@@ -70,4 +70,21 @@ export const BASE_ROUTES: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/trello/trello-page.component').then(m => m.TrelloPageComponent)
   },
+
+  // ─── Sous-applications montées dans le portail ────────────────────────────
+  // Leur code vit dans apps/appli-*/ (pas d'app Angular autonome, pas de port
+  // dédié) : elles sont chargées à la demande dans le shell du portail et
+  // héritent donc de son header, de son thème et de sa session.
+  // Les cartes correspondantes de la page d'accueil pointent sur ces routes
+  // internes (table `portal_apps`, colonne `url_path`).
+  {
+    path: 'agenda',
+    canActivate: [authGuard],
+    loadChildren: () => import('../../../appli-agenda/src/app/app.routes').then(m => m.appRoutes)
+  },
+  {
+    path: 'recettes',
+    canActivate: [authGuard],
+    loadChildren: () => import('../../../appli-recettes/src/app/app.routes').then(m => m.appRoutes)
+  },
 ];

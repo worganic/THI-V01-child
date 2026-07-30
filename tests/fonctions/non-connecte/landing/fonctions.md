@@ -62,7 +62,7 @@
 
 ---
 
-## `1-1-5` — Gestion d'erreur de la base de données
+## `1-1-5` — [modification] Gestion d'erreur de la base de données
 
 - **Affichage de la bannière** : affichage d'une bannière rouge d'erreur "Service indisponible" si l'état de la base de données est en erreur (`dbError`)
 - **Affichage IP du client** : affichage de l'IP du client obtenue via la route de health check `/api/health/db` ou via l'API publique de secours `ipify` si le serveur est inaccessible

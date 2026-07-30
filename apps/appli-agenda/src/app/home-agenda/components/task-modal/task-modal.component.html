@@ -1,0 +1,379 @@
+@if (open) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal-panel" [style.border-color]="modalAccentColor" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>{{ isReadOnlyMode ? 'Tâche terminée' : (isEditMode ? 'Modifier la tâche' : 'Nouvelle tâche') }}</h3>
+        <button type="button" class="btn-close" (click)="close()">✕</button>
+      </div>
+
+      @if (isReadOnlyMode) {
+        <div class="task-form task-info-view">
+          <p class="info-readonly-hint">✅ Tâche terminée — affichage en lecture seule. Cliquez sur « Modifier » pour la rouvrir en édition.</p>
+
+          @if (taskStats; as stats) {
+            <div class="task-stats-panel">
+              <div class="stat-block">
+                <span class="stat-label">Temps passé</span>
+                <span class="stat-value">{{ stats.workedHalfDays }} demi-j</span>
+              </div>
+              <div class="stat-progress-bar">
+                <div class="stat-progress-fill" [style.width.%]="stats.progressPercent"></div>
+              </div>
+              <div class="stat-block stat-block-right">
+                <span class="stat-label">Temps restant</span>
+                <span class="stat-value">{{ stats.remainingHalfDays }} demi-j</span>
+              </div>
+            </div>
+          }
+
+          <div class="info-row">
+            <span class="info-label">Nom</span>
+            <span class="info-value">{{ task?.name }}</span>
+          </div>
+          @if (task?.description) {
+            <div class="info-row">
+              <span class="info-label">Description</span>
+              <span class="info-value">{{ task?.description }}</span>
+            </div>
+          }
+          <div class="info-row">
+            <span class="info-label">Développeur</span>
+            <span class="info-value">{{ assignedDevLabel }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Dates</span>
+            <span class="info-value">{{ task?.dateStart | date: 'dd/MM/yyyy' }} → {{ task?.dateEnd | date: 'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Durée</span>
+            <span class="info-value">{{ task?.halfDaysDuration }} demi-journées</span>
+          </div>
+          @if (task?.gitBranch) {
+            <div class="info-row">
+              <span class="info-label">Branche Git</span>
+              <span class="info-value">🌿 {{ task?.gitBranch }}</span>
+            </div>
+          }
+          @if (task?.comments) {
+            <div class="info-row">
+              <span class="info-label">Commentaires</span>
+              <span class="info-value">{{ task?.comments }}</span>
+            </div>
+          }
+          @if (task?.isRisky) {
+            <div class="info-row">
+              <span class="info-label">Risque</span>
+              <span class="info-value">⚠️ Tâche à risque</span>
+            </div>
+          }
+
+          @if (extensionsList.length) {
+            <div class="subtasks-panel">
+              <h4>Historique des ajouts de jours</h4>
+              <ul class="extensions-log">
+                @for (ext of extensionsList; track ext.date + ext.comment) {
+                  <li>+{{ ext.addedDays }} j le {{ ext.date | date: 'dd/MM/yyyy' }} — {{ ext.comment }}</li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (taskHistoryMostRecentFirst.length > 0) {
+            <div class="subtasks-panel">
+              <h4>Historique de la tâche</h4>
+              <ul class="extensions-log">
+                @for (entry of taskHistoryMostRecentFirst; track entry.date + entry.message) {
+                  <li>{{ entry.date | date: 'dd/MM/yyyy' }} — {{ entry.message }}</li>
+                }
+              </ul>
+            </div>
+          }
+
+          @if (subTasksList.length > 0) {
+            <div class="subtasks-panel">
+              <h4>Sous-tâches</h4>
+              @for (sub of subTasksList; track sub.id) {
+                <div
+                  class="subtask-row subtask-row-saved"
+                  [class.status-non-commence]="sub.status === 'NON_COMMENCE'"
+                  [class.status-en-attente]="sub.status === 'EN_ATTENTE'"
+                  [class.status-en-cours]="sub.status === 'EN_COURS'"
+                  [class.status-termine]="sub.status === 'TERMINER'"
+                >
+                  <span class="subtask-saved-title" [class.done]="sub.status === 'TERMINER'">{{ sub.title }}</span>
+                  @if (sub.status === 'TERMINER' && sub.dateEnd) {
+                    <span class="subtask-saved-date">{{ sub.dateEnd | date: 'dd/MM/yyyy' }}</span>
+                  }
+                  <span class="subtask-saved-status">{{ subTaskStatusLabel(sub.status) }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <div class="form-actions">
+            <div class="form-actions-right">
+              <button type="button" class="btn-cancel" (click)="close()">Fermer</button>
+              <button type="button" class="btn-submit-airbus" (click)="unlockEdit()">Modifier</button>
+            </div>
+          </div>
+        </div>
+      } @else {
+      <form (ngSubmit)="onSubmit()" class="task-form">
+        @if (errorMessage) {
+          <div class="form-error">{{ errorMessage }}</div>
+        }
+
+        @if (taskStats; as stats) {
+          <div class="task-stats-panel">
+            <div class="stat-block">
+              <span class="stat-label">Temps passé</span>
+              <span class="stat-value">{{ stats.workedHalfDays }} demi-j</span>
+            </div>
+            <div class="stat-progress-bar">
+              <div class="stat-progress-fill" [style.width.%]="stats.progressPercent"></div>
+            </div>
+            <div class="stat-block stat-block-right">
+              <span class="stat-label">Temps restant</span>
+              <span class="stat-value">{{ stats.remainingHalfDays }} demi-j</span>
+            </div>
+          </div>
+          @if (stats.missingHalfDays > 0) {
+            <p class="unused-days-note">📌 {{ stats.missingHalfDays }} demi-journée(s) manquante(s) sur des jours déjà passés — la tâche a été prolongée en conséquence.</p>
+          }
+        }
+
+        <div class="form-group">
+          <label for="taskName">Nom de la tâche *</label>
+          <input id="taskName" type="text" [(ngModel)]="form.name" name="name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="taskDesc">Description</label>
+          <textarea id="taskDesc" [(ngModel)]="form.description" name="description" rows="2"></textarea>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label for="taskDev">Développeur assigné</label>
+            <select id="taskDev" [(ngModel)]="form.assignedUserId" name="assignedUserId" [disabled]="isTaskCompleted">
+              <option [ngValue]="null">-- Non assigné --</option>
+              @for (dev of users; track dev.id) {
+                <option [ngValue]="dev.id">{{ dev.firstname }} {{ dev.lastname }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="taskStatus">Statut</label>
+            <select id="taskStatus" [(ngModel)]="form.status" name="status">
+              <option value="NON_COMMENCE">Non commencé</option>
+              <option value="EN_ATTENTE">En attente</option>
+              <option value="EN_COURS">En cours</option>
+              <option value="TERMINER">Terminé</option>
+            </select>
+          </div>
+        </div>
+
+        @if (availableBlockingTasks.length > 0) {
+          <div class="form-group">
+            <label for="taskParent">Tâche prérequise (optionnel)</label>
+            <select id="taskParent" [(ngModel)]="form.parentTaskId" name="parentTaskId">
+              <option [ngValue]="null">-- Aucune --</option>
+              @for (t of availableBlockingTasks; track t.id) {
+                <option [ngValue]="t.id">{{ t.name }} ({{ subTaskStatusLabel(t.status) }})</option>
+              }
+            </select>
+          </div>
+          @if (blockingTaskWarning) {
+            <p class="unavailability-warning-note">⛓️ {{ blockingTaskWarning }}</p>
+          }
+        }
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="taskStart">Date Début *</label>
+            <input
+              id="taskStart"
+              type="date"
+              [(ngModel)]="form.dateStart"
+              name="dateStart"
+              required
+              [disabled]="areDatesLocked"
+              (ngModelChange)="onPlanInputChanged()"
+            />
+          </div>
+
+          <!-- Jamais saisie : déduite de la date de début et de la durée (voir computeDateEnd). -->
+          <div class="form-group">
+            <label for="taskEnd">Date Fin (calculée)</label>
+            <input id="taskEnd" type="date" [(ngModel)]="form.dateEnd" name="dateEnd" required disabled />
+          </div>
+
+          <div class="form-group">
+            <label for="taskDuration">Durée (demi-journées)</label>
+            <input
+              id="taskDuration"
+              type="number"
+              min="1"
+              [(ngModel)]="form.halfDaysDuration"
+              name="halfDaysDuration"
+              [disabled]="areDatesLocked"
+              (ngModelChange)="onPlanInputChanged()"
+            />
+          </div>
+        </div>
+
+        <!-- Jours ajoutés après coup (bouton « Ajouter des jours ») : même grille que la ligne
+             ci-dessus, en une seule ligne cumulant tous les ajouts. -->
+        @if (extensionsSummary; as ext) {
+          <div class="form-grid-3 extension-summary-row">
+            <div class="form-group">
+              <label>Jours ajoutés — début</label>
+              <input type="date" [value]="ext.dateStart" disabled />
+            </div>
+            <div class="form-group">
+              <label>Jours ajoutés — fin</label>
+              <input type="date" [value]="ext.dateEnd" disabled />
+            </div>
+            <div class="form-group">
+              <label>Total ajouté</label>
+              <input type="text" [value]="'+' + ext.totalDays + ' j'" disabled />
+            </div>
+          </div>
+        }
+        @if (isTaskCompleted) {
+          <p class="dates-locked-note">🔒 Tâche terminée : dates et développeur assigné sont figés. Repassez le statut à « En cours » pour la rouvrir — la dernière demi-journée validée sera automatiquement décochée.</p>
+        } @else if (isEditMode) {
+          <p class="dates-locked-note">🔒 Dates et durée sont fixées à la création. Utilisez « Ajouter des jours » ci-dessous pour prolonger le planning (avec commentaire, tracé dans la tâche).</p>
+        }
+        @if (assignedDevUnavailabilityWarning) {
+          <p class="unavailability-warning-note">🌴 {{ assignedDevUnavailabilityWarning }}</p>
+        }
+
+        @if (isEditMode) {
+          <div class="add-days-panel">
+            <!-- Prolonger une tâche terminée n'a pas de sens : son plan est acquis (voir isTaskCompleted). -->
+            @if (isTaskCompleted) {
+              <!-- rien : seul l'historique des extensions ci-dessous reste consultable -->
+            } @else if (!showAddDaysForm) {
+              <button type="button" class="btn-cancel" (click)="toggleAddDaysForm()">+ Ajouter des jours</button>
+            } @else {
+              <div class="add-days-form">
+                <div class="form-group">
+                  <label for="addDaysCount">Nombre de jours à ajouter</label>
+                  <input id="addDaysCount" type="number" min="1" [(ngModel)]="addDaysCount" [ngModelOptions]="{ standalone: true }" />
+                </div>
+                <div class="form-group">
+                  <label for="addDaysComment">Commentaire (obligatoire)</label>
+                  <textarea id="addDaysComment" [(ngModel)]="addDaysComment" [ngModelOptions]="{ standalone: true }" rows="2" placeholder="Raison de cet ajout de jours..."></textarea>
+                </div>
+                <div class="add-days-actions">
+                  <button type="button" class="btn-cancel" (click)="toggleAddDaysForm()">Annuler</button>
+                  <button type="button" class="btn-submit-airbus" [disabled]="!addDaysComment.trim()" (click)="confirmAddDays()">Valider l'ajout</button>
+                </div>
+              </div>
+            }
+            @if (extensionsList.length) {
+              <ul class="extensions-log">
+                @for (ext of extensionsList; track ext.date + ext.comment) {
+                  <li>+{{ ext.addedDays }} j le {{ ext.date | date: 'dd/MM/yyyy' }} — {{ ext.comment }}</li>
+                }
+              </ul>
+            }
+          </div>
+        }
+
+        @if (taskHistoryMostRecentFirst.length > 0) {
+          <div class="subtasks-panel">
+            <h4>Historique de la tâche</h4>
+            <ul class="extensions-log">
+              @for (entry of taskHistoryMostRecentFirst; track entry.date + entry.message) {
+                <li>{{ entry.date | date: 'dd/MM/yyyy' }} — {{ entry.message }}</li>
+              }
+            </ul>
+          </div>
+        }
+
+        <div class="form-group">
+          <label for="taskGitBranch">Branche Git</label>
+          <input id="taskGitBranch" type="text" [(ngModel)]="form.gitBranch" name="gitBranch" placeholder="ex: feat/agenda-drag-drop" />
+        </div>
+
+        <div class="form-group">
+          <label for="taskComments">Commentaires</label>
+          <textarea id="taskComments" [(ngModel)]="form.comments" name="comments" rows="2"></textarea>
+        </div>
+
+        <div class="form-group form-check">
+          <label>
+            <input type="checkbox" [(ngModel)]="form.isRisky" name="isRisky" />
+            Tâche à risque
+          </label>
+        </div>
+
+        @if (isEditMode) {
+          <div class="subtasks-panel">
+            <h4>Sous-tâches</h4>
+
+            @if (subTasksList.length === 0) {
+              <p class="subtasks-empty">Aucune sous-tâche pour l'instant.</p>
+            }
+            @for (sub of subTasksList; track sub.id) {
+              <div
+                class="subtask-row subtask-row-saved"
+                [class.status-non-commence]="sub.status === 'NON_COMMENCE'"
+                [class.status-en-attente]="sub.status === 'EN_ATTENTE'"
+                [class.status-en-cours]="sub.status === 'EN_COURS'"
+                [class.status-termine]="sub.status === 'TERMINER'"
+              >
+                <span class="subtask-saved-title" [class.done]="sub.status === 'TERMINER'">{{ sub.title }}</span>
+                @if (sub.status === 'TERMINER' && sub.dateEnd) {
+                  <span class="subtask-saved-date">{{ sub.dateEnd | date: 'dd/MM/yyyy' }}</span>
+                }
+                <span class="subtask-saved-status">{{ subTaskStatusLabel(sub.status) }}</span>
+                @if (sub.status === 'TERMINER') {
+                  <button type="button" class="btn-cancel-subtask" (click)="cancelSubTaskValidation(sub.id)" title="Annuler la validation (retour à faire)">↺</button>
+                }
+                <button type="button" class="btn-remove-subtask" (click)="deleteSubTask(sub.id)" title="Supprimer cette sous-tâche">✕</button>
+              </div>
+            }
+
+            <div class="subtask-row subtask-row-add">
+              <input
+                type="text"
+                class="subtask-title"
+                [(ngModel)]="newSubTask.title"
+                [ngModelOptions]="{ standalone: true }"
+                (keydown.enter)="$event.preventDefault()"
+                placeholder="Titre de la sous-tâche"
+              />
+              <button type="button" class="btn-submit-airbus" [disabled]="!newSubTask.title.trim()" (click)="addSubTask()">Valider</button>
+            </div>
+            <p class="subtasks-hint">La date et l'état se mettent à jour automatiquement en cochant la sous-tâche depuis le popup demi-journée.</p>
+          </div>
+        }
+
+        <div class="form-actions">
+          @if (isEditMode) {
+            @if (confirmingDelete) {
+              <div class="delete-confirm-group">
+                <span class="delete-confirm-text">Confirmer la suppression ?</span>
+                <button type="button" class="btn-cancel" (click)="cancelDelete()">Non</button>
+                <button type="button" class="btn-delete" (click)="onDelete()">Oui, supprimer</button>
+              </div>
+            } @else {
+              <button type="button" class="btn-delete" (click)="onDelete()">Supprimer</button>
+            }
+          }
+          <div class="form-actions-right">
+            <button type="button" class="btn-cancel" (click)="close()">Annuler</button>
+            <button type="submit" class="btn-submit-airbus">
+              {{ isEditMode ? 'Enregistrer' : 'Créer la tâche' }}
+            </button>
+          </div>
+        </div>
+      </form>
+      }
+    </div>
+  </div>
+}

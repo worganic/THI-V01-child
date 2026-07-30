@@ -1,0 +1,291 @@
+@if (currentBook) {
+<div class="sub-header-actions">
+  <button class="action-btn text-success border-success" (click)="duplicateBookStructure()"
+    title="Dupliquer le cahier complet (sans l'historique des résultats)">
+      Dupliquer le cahier
+  </button>
+  <button class="action-btn text-info border-info" (click)="openImportModal()">Importer (CSV / Texte)</button>
+  <button class="action-btn text-primary border-primary" (click)="exportBookData()"
+    title="Télécharger la structure au format texte">
+      Exporter (Texte)
+  </button>
+  <button class="action-btn text-warning border-warning" (click)="openAddCategory()">Catégorie +</button>
+</div>
+
+<div class="categories-container">
+  @for (cat of currentBook.categories; track cat.id) {
+  <div class="category-block mb-3">
+    <div class="cat-header" (click)="expandedCategories[cat.id] = !expandedCategories[cat.id]"
+      style="background-color: var(--surface-alt);">
+      <div class="d-flex align-items-center">
+        <span class="cat-title">Catégorie : {{ cat.name }}</span>
+        <!-- Modification contraste: #888 remplacé par #cccccc -->
+        <span style="color: var(--text-secondary); font-size: 13px; margin-left: 10px; font-weight: normal;">[{{ cat.applicatifs.length }} Applicatif(s) - {{ getCategoryTestCount(cat) }} Test(s)]</span>
+        @if(cat.comment) { <span class="cat-comment-text">- {{ cat.comment }}</span> }
+      </div>
+      <div class="cat-actions" (click)="$event.stopPropagation()">
+        <button class="btn-crud text-warning border-warning"
+          (click)="launchDirectExecution('CAT:' + cat.id, $event)">▶</button>
+        <button class="btn-crud text-success border-success" (click)="openAddApplicatif(cat, $event)">
+          Applicatif</button>
+        <button class="btn-crud" (click)="openEditCategory(cat, $event)">✎</button>
+        <button class="btn-crud text-danger" (click)="deleteCategory(cat.id, $event)">🗑</button>
+      </div>
+    </div>
+
+    @if (expandedCategories[cat.id]) {
+    <div class="p-3" style="background: var(--surface);">
+      @for (app of cat.applicatifs; track app.id) {
+      <div class="category-block mb-2 border-secondary">
+        <div class="cat-header" (click)="expandedApplicatifs[app.id] = !expandedApplicatifs[app.id]"
+          style="background-color: color-mix(in srgb, var(--surface-alt) 60%, var(--text-primary) 10%); padding: 8px 15px;">
+          <span class="text-info fw-bold">
+              Applicatif : {{ app.name }}
+            <span style="color: var(--text-secondary); font-size: 12px; margin-left: 8px; font-weight: normal;">[{{ app.sections.length }} Section(s) - {{ getApplicatifTestCount(app) }} Test(s)]</span>
+            <!-- Modification contraste: text-muted remplacé par text-light -->
+            <small class="text-light fst-italic ms-2" style="font-weight: normal;">{{ app.description }}</small>
+          </span>
+          <div class="cat-actions" (click)="$event.stopPropagation()">
+            <button class="btn-crud text-warning border-warning"
+              (click)="launchDirectExecution('APP:' + app.id, $event)">▶</button>
+            <button class="btn-crud text-success border-success" (click)="openAddSection(app, $event)">
+              Section</button>
+            <button class="btn-crud" (click)="openEditApplicatif(app, $event)">✎</button>
+            <button class="btn-crud text-danger" (click)="deleteApplicatif(cat, app.id, $event)">🗑</button>
+          </div>
+        </div>
+
+        @if (expandedApplicatifs[app.id]) {
+        <div class="p-2 sections-list" style="background: var(--page-bg);" cdkDropList (cdkDropListDropped)="onSectionDrop($event, app)">
+          @for (sec of app.sections; track sec.id) {
+          <div class="mb-2 rounded section-item" style="border: 1px dashed var(--border-color);" cdkDrag [cdkDragData]="sec">
+            <div class="cat-header" (click)="toggleSectionExpansion(sec)"
+              style="background-color: color-mix(in srgb, var(--surface-alt) 40%, var(--text-primary) 18%); padding: 6px 12px;">
+              <span class="text-warning fw-bold">
+                  <span class="grip-icon" cdkDragHandle (click)="$event.stopPropagation()">⠿</span>
+                  Section : {{ sec.name }}
+                <span style="color: var(--text-secondary); font-size: 12px; margin-left: 8px; font-weight: normal;">[{{ sec.tests.length }} Test(s)]</span>
+                <small class="text-light ms-2" style="font-weight: normal; font-size:11px;">{{ sec.description }}</small>
+              </span>
+              <div class="cat-actions" (click)="$event.stopPropagation()">
+                <button class="btn-crud text-warning border-warning"
+                  (click)="launchDirectExecution('SEC:' + sec.id, $event)">▶</button>
+                <button class="btn-crud text-success border-success" (click)="openAddTest(sec, $event)">Tests</button>
+                <button class="btn-crud" (click)="openEditSection(sec, $event)">✎</button>
+                <button class="btn-crud text-danger" (click)="deleteSection(app, sec.id, $event)">🗑</button>
+              </div>
+            </div>
+
+            @if (expandedSections[sec.id] && sec.tests && sec.tests.length > 0) {
+            <table class="tests-table">
+              <thead>
+                <tr>
+                  <th class="col-drag"></th>
+                  <th class="col-num">#</th>
+                  <th class="col-action">TESTS CONCERNÉS</th>
+                  <th class="col-url">URL TARGET</th>
+                  <th class="col-crit text-center">CRITICITÉ</th>
+                  <th class="col-steps text-center">TASKS</th>
+                  <th class="col-crud text-end">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody cdkDropList (cdkDropListDropped)="onTestDrop($event, sec)">
+                @for (test of sec.tests; track test.id; let idx = $index) {
+                <tr class="test-row" cdkDrag [cdkDragData]="test" (click)="toggleTestExpansion(test)">
+                  <td class="col-drag" cdkDragHandle (click)="$event.stopPropagation()"><span class="grip-icon">⠿</span></td>
+                  <td class="col-num text-light">{{ idx + 1 }}</td>
+                  <td>
+                    <div class="fw-bold text-white">
+                      {{ test.name }}
+                      <span style="color: var(--text-secondary); font-size: 11px; margin-left: 8px; font-weight: normal;">[{{ test.tasks.length }} Task(s)]</span>
+                    </div>
+                    <div class="text-light small mt-1">{{ test.description }}</div>
+                    @if(test.createdBy){<div style="font-size:10px; color: var(--text-secondary);">par : {{ test.createdBy }}</div>}
+                  </td>
+                  <td class="col-url text-warning">{{ test.url || '-' }}</td>
+                  <td class="col-crit text-center">
+                    <span class="badge" [ngClass]="{
+                      'bg-danger': test.criticality === 'Bloquant',
+                      'bg-warning text-dark': test.criticality === 'Majeur',
+                      'bg-secondary': test.criticality === 'Mineur'
+                    }">{{ test.criticality || 'Mineur' }}</span>
+                  </td>
+                  <td class="col-steps text-light text-center">{{ test.tasks.length }}</td>
+                  <td class="col-crud text-end" (click)="$event.stopPropagation()">
+                    <div class="test-actions">
+                      <button class="btn-crud text-warning border-warning"
+                        (click)="launchDirectExecution('TEST:' + test.id, $event)">▶</button>
+                      <button class="btn-crud" (click)="openEditTest(test, $event)">Éditer</button>
+                      <button class="btn-crud text-danger" (click)="deleteTest(sec, test.id, $event)">🗑</button>
+                    </div>
+                  </td>
+                </tr>
+                @if (expandedTests[test.id] && test.tasks && test.tasks.length > 0) {
+                <tr class="steps-container-row">
+                  <td colspan="7" class="p-0">
+                    <div class="steps-wrapper" style="padding-left: 40px; background: var(--page-bg);">
+                      <table class="steps-table">
+                        <tbody>
+                          @for (task of test.tasks; track task.id; let tIdx = $index) {
+                          <tr class="step-row">
+                            <td style="width: 50px;" class="text-light small">{{ idx+1 }}.{{ tIdx+1 }}</td>
+                            <td class="text-white">👉 {{ task.name }}</td>
+                          </tr>
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                  </td>
+                </tr>
+                }
+                }
+              </tbody>
+            </table>
+            }
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+  }
+</div>
+}
+@if (activeModal !== null) {
+<div class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 class="m-0 text-white">
+        {{ modalMode === 'add' ? 'Créer' : 'Modifier' }}
+        {{ activeModal === 'category' ? 'une Catégorie' : activeModal === 'applicatif' ? 'un Applicatif' : activeModal === 'section' ? 'une Section' : 'un Test' }}
+      </h3>
+      <button class="btn-close-modal" (click)="closeModal()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group mb-3">
+        <label>Nom / Titre <span class="text-danger">*</span></label>
+        <input type="text" class="dark-input" [(ngModel)]="formData.name" placeholder="Saisir l'intitulé..." required>
+      </div>
+      <div class="form-group mb-3">
+        <label>Description / Détails</label>
+        <textarea class="dark-textarea" [(ngModel)]="formData.description"
+          placeholder="Informations complémentaires..."></textarea>
+      </div>
+      <div class="form-group mb-3">
+        <label>URL associée</label>
+        <input type="text" class="dark-input" [(ngModel)]="formData.url" placeholder="ex: http://...">
+      </div>
+      @if (activeModal === 'test') {
+      <div class="form-group mb-3">
+        <label>Criticité du Test</label>
+        <select class="dark-select" [(ngModel)]="formData.criticality">
+          <option value="Bloquant">Bloquant (🔴)</option>
+          <option value="Majeur">Majeur (🟠)</option>
+          <option value="Mineur">Mineur (⚪)</option>
+        </select>
+      </div>
+      <div class="form-group mb-3 border-top border-dark pt-3">
+        <label class="text-warning">Ajouter des Tasks à ce Test</label>
+        <div class="d-flex gap-2 mt-1">
+          <input type="text" class="dark-input" [(ngModel)]="newTaskText" placeholder="Étape ou tâche à réaliser..."
+            (keyup.enter)="addTaskToTest()">
+          <button type="button" class="btn-save" style="width:50px; font-size:20px;"
+            (click)="addTaskToTest()">+</button>
+        </div>
+        @if (formTasks.length > 0) {
+        <div class="mt-2 p-2 rounded"
+          style="background: var(--page-bg); max-height: 160px; overflow-y: auto; border: 1px solid var(--border-color);">
+          @for (t of formTasks; track t.id; let i = $index) {
+          <div class="d-flex justify-content-between align-items-center mb-1 p-1 px-2 rounded"
+            style="background: var(--surface-alt);">
+            <div class="d-flex align-items-center flex-grow-1 me-2">
+              <span style="color: var(--text-secondary); width: 25px; font-weight: bold; font-size: 12px;">{{ i + 1 }}.</span>
+              <input type="text" class="inline-edit-input" [(ngModel)]="t.name" placeholder="Nom de la tâche">
+            </div>
+            <button type="button" class="btn-crud text-danger border-0 p-0" (click)="removeTaskFromTest(i)">🗑</button>
+          </div>
+          }
+        </div>
+        }
+      </div>
+      }
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()">Annuler</button>
+      <button class="btn-save" (click)="saveModal()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+}
+
+@if (showImportModal) {
+<div class="modal-overlay">
+  <div class="modal-card import-modal-card">
+    <div class="modal-header">
+      <h3 class="m-0 text-white">Importer des données (Masse / CSV)</h3>
+      <button class="btn-close-modal" (click)="showImportModal = false" [disabled]="isImporting">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="import-split-container">
+        <div class="import-split-left">
+          <p class="import-help-text small mb-2">Copiez-collez votre texte en respectant la syntaxe des 5 niveaux
+            (séparateur <code>|</code>) :</p>
+          <div class="import-example mb-3">
+            <span style="color: #facc15 !important; font-weight:bold;">#CAT:</span> Nom de la Catégorie |
+            Commentaire<br>
+            <span style="color: #38bdf8 !important; font-weight:bold;">#APP:</span> Nom de l'Applicatif | Description |
+            URL<br>
+            <span style="color: #fb923c !important; font-weight:bold;">#SEC:</span> Nom de la Section | Description |
+            URL<br>
+            <span style="color: #4ade80 !important; font-weight:bold;">#TEST:</span> Nom du Test | Description | URL |
+            Criticité<br>
+            <span style="color: var(--text-secondary) !important; font-weight:bold;">#TASK:</span> Intitulé de la sous-tâche<br>
+          </div>
+          <textarea class="dark-textarea" style="height: 250px; font-family: monospace; font-size: 12px;"
+            [(ngModel)]="importText" placeholder="#CAT: Mon Périmètre..." [disabled]="isImporting"></textarea>
+        </div>
+        <div class="import-split-right">
+          <div class="gem-help-box">
+            <div class="gem-help-title">🤖 Configuration de l'IA (Gem / GPT Custom)</div>
+            <p class="gem-help-text">Pour générer ou enrichir automatiquement ce texte à partir d'un cahier des charges,
+              créez un assistant IA avec ces paramètres :</p>
+            <div class="gem-field-group">
+              <label>Nom du Gem</label>
+              <div class="gem-field-value">Générateur d'Import de Tests (5 Niveaux)</div>
+            </div>
+            <div class="gem-field-group">
+              <label>Description</label>
+              <div class="gem-field-value">Traduit un cahier des charges en fichier structuré pour l'outil de recette.
+              </div>
+            </div>
+            <div class="gem-field-group">
+              <label>Instructions Système (Cliquez pour copier 📋)</label>
+              <textarea class="dark-textarea gem-prompt-textarea" readonly
+                style="height: 140px; font-size: 11px; font-family: monospace; line-height: 1.4;"
+                onclick="this.select(); document.execCommand('copy')"
+                title="Cliquez pour tout sélectionner et copier">Tu es un Ingénieur QA Senior. Ton rôle est de traduire une description en un fichier d'importation de tests au format texte structuré pour une application à 5 niveaux. ### SYNTAXE STRICTE À RESPECTER #CAT: Nom Catégorie | Commentaire #APP: Nom Applicatif | Description | URL #SEC: Nom Section | Description | URL #TEST: Nom Test | Description | URL | Criticité (Bloquant, Majeur, Mineur) #TASK: Intitulé ### SCÉNARIOS DE TRAITEMENT 1. Si vierge : Conçois une arborescence logique complète 2. Si existant fourni : Conserve à l'identique la structure existante (mêmes noms de #CAT, #APP, #SEC, #TEST) et insère la nouvelle fonctionnalité au bon endroit sans doublon. ### FORMAT DE SORTIE Renvoie UNIQUEMENT le résultat textuel brut dans un bloc de code Markdown (```text ... ```). Pas d'introduction ni de conclusion.</textarea>
+              <span class="import-help-text"
+                style="font-size: 10px; display: block; margin-top: 4px; font-style: italic;">👉 Un clic dans la zone
+                sélectionne et copie automatiquement le prompt.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="showImportModal = false" [disabled]="isImporting">Annuler</button>
+      <button class="btn-save" (click)="processImport()" [disabled]="isImporting">Lancer l'import</button>
+    </div>
+  </div>
+</div>
+}
+
+@if (isImporting) {
+<div class="global-loader-overlay">
+  <div class="center-spinner"></div>
+  <div class="loader-text">Importation de l'arborescence en cours... Veuillez patienter.</div>
+</div>
+}

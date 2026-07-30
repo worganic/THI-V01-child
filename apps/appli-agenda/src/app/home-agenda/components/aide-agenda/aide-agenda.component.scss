@@ -1,0 +1,150 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss) — mêmes variables et
+// même structure de carte que les autres zones de la page, pour que l'aide se lise comme une
+// zone de plus et non comme un encart rapporté.
+$border-color: var(--border-color);
+
+.aide-card {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  .card-header {
+    background: var(--surface-alt);
+    padding: 14px 20px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface-alt) 70%, var(--brand-secondary) 6%);
+    }
+
+    &.is-expanded {
+      background: color-mix(in srgb, var(--surface-alt) 60%, var(--brand-secondary) 16%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--surface-alt) 50%, var(--brand-secondary) 24%);
+      }
+    }
+
+    .card-icon {
+      font-size: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--heading-color);
+      margin: 0;
+    }
+
+    .btn-toggle-collapse {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--heading-color);
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.15s ease-in-out;
+
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+    color: var(--text-primary);
+  }
+
+  .aide-intro {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin: 0 0 18px 0;
+  }
+
+  // Rappel visuel de la pastille « ? » réelle, cité dans le texte d'introduction.
+  .aide-inline-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--brand-secondary);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    vertical-align: middle;
+  }
+
+  // Une colonne par zone tant que la place le permet : l'aide se parcourt en diagonale, pas en
+  // lisant un long bloc unique.
+  .aide-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .aide-block {
+    background: var(--surface-alt);
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.55;
+
+    h4 {
+      margin: 0 0 8px 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--heading-color);
+    }
+
+    p {
+      margin: 0 0 8px 0;
+    }
+
+    ul {
+      margin: 0 0 8px 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin-bottom: 5px;
+    }
+
+    strong {
+      color: var(--heading-color);
+    }
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  // Règle de gestion non devinable à l'écran : liseré pour la distinguer de la simple description.
+  .aide-note {
+    border-left: 3px solid var(--brand-secondary);
+    padding-left: 10px;
+    color: var(--text-secondary);
+    font-size: 12px;
+  }
+
+  .aide-block-wide {
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}

@@ -1,0 +1,175 @@
+@if (error()) {
+  <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="flex items-center justify-center py-16">
+    <span class="material-symbols-outlined text-3xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+  </div>
+}
+
+@if (!loading()) {
+
+  <!-- Formulaire application (création ou édition) -->
+  @if (showForm()) {
+    <div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-primary/30 dark:border-primary/20 overflow-hidden">
+      <div class="px-5 py-3 bg-light-primary/5 dark:bg-primary/5 border-b border-light-primary/20 dark:border-primary/10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-light-primary dark:text-primary">{{ editing() ? 'edit' : 'add' }}</span>
+          <span class="text-sm font-semibold text-light-text dark:text-white">
+            {{ editing() ? "Modifier l'application " + editing()!.nom : 'Nouvelle application' }}
+          </span>
+        </div>
+        <button (click)="closeForm()"
+                class="p-1.5 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-all">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+      <div class="px-5 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Code technique *</label>
+          <input type="text" [(ngModel)]="fCode" placeholder="appli-agenda"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+          <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-1">Nom du dossier dans apps/ — unique et stable.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Nom affiché *</label>
+          <input type="text" [(ngModel)]="fNom" placeholder="Agenda"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Description</label>
+          <input type="text" [(ngModel)]="fDescription" placeholder="Planification des projets et des tâches"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">URL ou route</label>
+          <input type="text" [(ngModel)]="fUrlPath" placeholder="http://localhost:4204 ou /documents"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+          <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-1">URL absolue (session transmise) ou route interne du portail.</p>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Icône (Material Symbols)</label>
+          <div class="flex items-center gap-2">
+            <input type="text" [(ngModel)]="fIcone" placeholder="calendar_month"
+                   class="flex-1 px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+            <div class="w-10 h-10 rounded-lg bg-light-primary/10 dark:bg-primary/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-light-primary dark:text-primary">{{ fIcone || 'apps' }}</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Ordre d'affichage</label>
+          <input type="number" [(ngModel)]="fOrdre"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div class="flex items-end">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <input type="checkbox" [(ngModel)]="fIsActive"
+                   class="w-4 h-4 rounded accent-light-primary dark:accent-primary" />
+            <span class="text-sm text-light-text dark:text-white">Application active</span>
+          </label>
+        </div>
+      </div>
+      <div class="px-5 py-3 border-t border-light-border dark:border-white/10 flex justify-end gap-3">
+        <button (click)="closeForm()"
+                class="px-4 py-2 rounded-lg text-sm font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-all">
+          Annuler
+        </button>
+        <button (click)="save()" [disabled]="!fCode.trim() || !fNom.trim() || saving()"
+                class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 disabled:opacity-50 shadow-sm shadow-light-primary/20 dark:shadow-primary/20">
+          @if (saving()) { <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> }
+          @else { <span class="material-symbols-outlined text-base">save</span> }
+          Enregistrer
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Tableau des applications -->
+  <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+    <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between">
+      <div>
+        <span class="text-sm font-semibold text-light-text dark:text-white">Sous-applications du portail</span>
+        <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">Affichées sur la page d'accueil selon les droits de chaque utilisateur.</p>
+      </div>
+      @if (!showForm()) {
+        <button (click)="openCreate()"
+                class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 shadow-sm shadow-light-primary/20 dark:shadow-primary/20">
+          <span class="material-symbols-outlined text-sm">add</span>
+          Nouvelle application
+        </button>
+      }
+    </div>
+
+    @if (apps().length === 0) {
+      <div class="text-center py-12 text-light-text-muted dark:text-white/40 text-sm">Aucune application</div>
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-light-border dark:border-white/10 text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30">
+              <th class="text-left px-5 py-3">Application</th>
+              <th class="text-left px-5 py-3">Code</th>
+              <th class="text-left px-5 py-3">URL / route</th>
+              <th class="text-left px-5 py-3">Ordre</th>
+              <th class="text-left px-5 py-3">État</th>
+              <th class="text-right px-5 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (app of apps(); track app.id) {
+              <tr class="border-b border-light-border/50 dark:border-white/5 hover:bg-light-primary/5 dark:hover:bg-primary/5 transition-colors">
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-light-primary/10 dark:bg-primary/10 flex items-center justify-center">
+                      <span class="material-symbols-outlined text-light-primary dark:text-primary text-base">{{ app.icone || 'apps' }}</span>
+                    </div>
+                    <div>
+                      <div class="font-medium text-light-text dark:text-white">{{ app.nom }}</div>
+                      <div class="text-[11px] text-light-text-muted dark:text-white/30">{{ app.description }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-5 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">{{ app.code }}</td>
+                <td class="px-5 py-3 font-mono text-xs text-light-text-muted dark:text-white/50 max-w-[220px] truncate">{{ app.urlPath || '—' }}</td>
+                <td class="px-5 py-3 text-light-text-muted dark:text-white/40">{{ app.ordre }}</td>
+                <td class="px-5 py-3">
+                  <button (click)="toggleActive(app)"
+                          class="text-[10px] font-bold px-2 py-0.5 rounded-full border transition-all"
+                          [class]="app.isActive
+                            ? 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30'
+                            : 'bg-light-surface dark:bg-white/5 text-light-text-muted dark:text-white/40 border-light-border dark:border-white/10'">
+                    {{ app.isActive ? 'Active' : 'Inactive' }}
+                  </button>
+                </td>
+                <td class="px-5 py-3">
+                  <div class="flex items-center gap-1 justify-end">
+                    <button (click)="openEdit(app)"
+                            class="p-1.5 rounded-lg hover:bg-light-primary/10 dark:hover:bg-primary/10 text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-all" title="Modifier">
+                      <span class="material-symbols-outlined text-sm">edit</span>
+                    </button>
+                    @if (deletingId() === app.id) {
+                      <div class="flex items-center gap-1">
+                        <span class="text-xs text-red-400">Confirmer ?</span>
+                        <button (click)="remove(app.id)"
+                                class="px-2 py-1 rounded text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-all">Oui</button>
+                        <button (click)="cancelDelete()"
+                                class="px-2 py-1 rounded text-xs font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 transition-all">Non</button>
+                      </div>
+                    } @else {
+                      <button (click)="confirmDelete(app.id)"
+                              class="p-1.5 rounded-lg hover:bg-red-500/10 text-light-text-muted dark:text-white/40 hover:text-red-400 transition-all" title="Supprimer">
+                        <span class="material-symbols-outlined text-sm">delete</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+}

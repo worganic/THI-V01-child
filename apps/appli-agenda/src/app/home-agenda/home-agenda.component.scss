@@ -1,0 +1,148 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-slate-bg
+// pointe maintenant vers --page-bg (même token que apps/portail-shell/src/app/app.scss, qui
+// posait jusqu'ici une valeur légèrement différente #f4f6f8 — unifié). $airbus-blue-primary ne
+// sert ici qu'en couleur de TEXTE → --heading-color.
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$airbus-slate-bg: var(--page-bg);
+$border-color: var(--border-color);
+
+.agenda-page-layout {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  background-color: $airbus-slate-bg;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text-primary);
+
+  .app-sub-header {
+    height: 48px;
+    background-color: var(--surface);
+    border-bottom: 2px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+
+    .sub-header-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 20px;
+    }
+
+    .sub-nav-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+    }
+  }
+
+  .agenda-main-content {
+    flex: 1;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  // Panne serveur réelle (distincte du mode démo silencieux d'origine) : bandeau ambre persistant
+  // tant que ProjectService.apiIssue$ signale un dernier appel non abouti.
+  .api-issue-banner {
+    background: var(--category-amber-bg);
+    border: 1px solid var(--category-amber-border);
+    color: var(--category-amber-text);
+    border-radius: 6px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  // Digest retard/échéances (tous projets confondus) : visible dès l'arrivée sur la page, replié
+  // par défaut — le résumé (chips) suffit la plupart du temps, le détail par tâche est au clic.
+  .digest-banner {
+    background: var(--surface);
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    overflow: hidden;
+
+    .digest-summary {
+      width: 100%;
+      background: none;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      cursor: pointer;
+      text-align: left;
+
+      &:hover {
+        background: var(--surface-alt);
+      }
+
+      .digest-icon {
+        font-size: 16px;
+      }
+
+      .digest-chip {
+        font-size: 12px;
+        font-weight: 700;
+        border-radius: 20px;
+        padding: 3px 10px;
+      }
+
+      .digest-chip-overdue {
+        background: var(--category-red-bg);
+        color: var(--category-red-text);
+        border: 1px solid var(--category-red-border);
+      }
+
+      .digest-chip-upcoming {
+        background: var(--category-amber-bg);
+        color: var(--category-amber-text);
+        border: 1px solid var(--category-amber-border);
+      }
+
+      .digest-toggle-hint {
+        margin-left: auto;
+        font-size: 11px;
+        color: var(--text-secondary);
+        font-weight: 600;
+      }
+    }
+
+    .digest-details {
+      border-top: 1px solid $border-color;
+      padding: 12px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+
+      .digest-group {
+        flex: 1;
+        min-width: 240px;
+
+        h4 {
+          margin: 0 0 6px 0;
+          font-size: 12px;
+          font-weight: 700;
+          color: $airbus-blue-primary;
+          text-transform: uppercase;
+        }
+
+        ul {
+          margin: 0;
+          padding-left: 18px;
+          font-size: 12px;
+          color: var(--text-primary);
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        }
+      }
+    }
+  }
+}

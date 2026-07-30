@@ -32,6 +32,9 @@
   </div>
 
   <!-- Contenu des onglets — base (liaisons @Output préservées) -->
+  @if (activeTab() === 'applications') {
+    <app-admin-portail />
+  }
   @if (activeTab() === 'users') {
     <app-admin-users (count)="usersCount.set($event)" />
   }
@@ -49,6 +52,9 @@
   }
   @if (activeTab() === 'memo') {
     <app-admin-memo (helpCount)="helpCount.set($event)" />
+  }
+  @if (activeTab() === 'ia') {
+    <app-admin-ia />
   }
 
   <!-- Contenu des onglets — child (rendu dynamique via NgComponentOutlet) -->

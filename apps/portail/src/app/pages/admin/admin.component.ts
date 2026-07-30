@@ -9,20 +9,24 @@ import { AdminThemeComponent } from './tabs/admin-theme/admin-theme.component';
 import { ConfigComponent } from '../user/config/config.component';
 import { AdminMegaOutilsComponent } from './tabs/admin-mega-outils/admin-mega-outils.component';
 import { AdminMemoComponent } from './tabs/admin-memo/admin-memo.component';
+import { AdminIaComponent } from './tabs/admin-ia/admin-ia.component';
+import { AdminPortailComponent } from './tabs/admin-portail/admin-portail.component';
 import { AdminTabsRegistryService, AdminTabDef } from '@worganic/portail-core/data-access';
 
 const BASE_ADMIN_TABS: AdminTabDef[] = [
+  { id: 'applications', label: 'Applications', icon: 'apps',          component: AdminPortailComponent,     order: 0 },
   { id: 'users',        label: 'Utilisateurs', icon: 'group',         component: AdminUsersComponent,       order: 1 },
   { id: 'deploiement',  label: 'Déploiement',  icon: 'rocket_launch', component: AdminDeploymentsComponent, order: 2 },
   { id: 'config',       label: 'Config',       icon: 'settings',      component: ConfigComponent,           order: 3 },
   { id: 'theme',        label: 'Thème',        icon: 'palette',       component: AdminThemeComponent,       order: 4 },
   { id: 'mega-outils',  label: 'Méga-outils',  icon: 'extension',     component: AdminMegaOutilsComponent,  order: 5 },
   { id: 'memo',         label: 'Mémo',         icon: 'menu_book',     component: AdminMemoComponent,        order: 6 },
+  { id: 'ia',           label: 'IA',           icon: 'smart_toy',     component: AdminIaComponent,          order: 7 },
 ];
 
 @Component({
     selector: 'app-admin',
-    imports: [CommonModule, NgComponentOutlet, AdminUsersComponent, AdminDeploymentsComponent, AdminThemeComponent, ConfigComponent, AdminMegaOutilsComponent, AdminMemoComponent],
+    imports: [CommonModule, NgComponentOutlet, AdminUsersComponent, AdminDeploymentsComponent, AdminThemeComponent, ConfigComponent, AdminMegaOutilsComponent, AdminMemoComponent, AdminIaComponent, AdminPortailComponent],
     templateUrl: './admin.component.html',
     styleUrl: './admin.component.scss'
 })

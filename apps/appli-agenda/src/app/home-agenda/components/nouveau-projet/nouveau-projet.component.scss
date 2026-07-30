@@ -1,0 +1,346 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-blue-primary
+// pointe vers --heading-color (texte) ; le seul usage en fond (.btn-toggle-airbus /
+// .btn-submit-airbus) référence --brand-primary directement.
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$airbus-green: var(--brand-green);
+$border-color: var(--border-color);
+
+// Variantes de couleur des 6 métiers (voir utils/metier-colors.ts) : réutilisées à la fois par les
+// cases à cocher métier du projet (.category-checkbox-label) et par le tag métier affiché sous
+// chaque développeur (.dev-metier-tag), pour éviter de dupliquer les 6 règles deux fois.
+@mixin metier-color-variants {
+  &.metier-blue { background: var(--category-blue-bg); color: var(--category-blue-text); border-color: var(--category-blue-border); }
+  &.metier-green { background: var(--category-green-bg); color: var(--category-green-text); border-color: var(--category-green-border); }
+  &.metier-purple { background: var(--category-purple-bg); color: var(--category-purple-text); border-color: var(--category-purple-border); }
+  &.metier-amber { background: var(--category-amber-bg); color: var(--category-amber-text); border-color: var(--category-amber-border); }
+  &.metier-slate { background: var(--category-slate-bg); color: var(--category-slate-text); border-color: var(--category-slate-border); }
+  &.metier-red { background: var(--category-red-bg); color: var(--category-red-text); border-color: var(--category-red-border); }
+}
+
+.nouveau-projet-card {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  .card-header {
+    background: var(--surface-alt);
+    padding: 14px 20px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .card-icon {
+        font-size: 18px;
+      }
+
+      .card-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: $airbus-blue-primary;
+        margin: 0;
+      }
+    }
+
+    .btn-toggle-airbus {
+      // Fond plein (pas texte) : --brand-primary directement, pas $airbus-blue-primary.
+      background: var(--brand-primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s ease-in-out;
+
+      &:hover {
+        background: $airbus-blue-secondary;
+      }
+
+      &.active {
+        background: #64748b;
+
+        &:hover {
+          background: #475569;
+        }
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+    animation: fadeIn 0.25s ease-in-out;
+
+    .project-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      label {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      // Date de début verrouillée (voir isDateStartLocked) ou date de fin calculée : icône
+      // discrète à côté du label, cohérente avec .dev-locked-icon de la liste des développeurs.
+      .date-locked-icon {
+        font-size: 11px;
+      }
+
+      input[type='text'],
+      input[type='number'],
+      input[type='date'],
+      select,
+      textarea {
+        padding: 8px 12px;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        font-size: 13px;
+        color: var(--text-primary);
+        background: var(--surface);
+
+        &:focus {
+          outline: none;
+          border-color: $airbus-blue-secondary;
+          box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-secondary) 15%, transparent);
+        }
+
+        // Date de début verrouillée par des demi-journées déjà validées, ou date de fin calculée
+        // (toujours désactivée) : grisées, curseur "verrouillé" plutôt que "texte".
+        &:disabled {
+          cursor: not-allowed;
+          background: var(--surface-alt);
+          color: var(--text-secondary);
+          opacity: 0.85;
+        }
+      }
+    }
+
+    .scheduling-rules-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 10px 14px;
+      background: var(--surface-alt);
+      border: 1px solid $border-color;
+      border-radius: 6px;
+
+      .rule-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        color: var(--text-primary);
+        cursor: pointer;
+      }
+    }
+
+    .devs-checkbox-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface-alt);
+      border: 1px solid $border-color;
+      border-radius: 6px;
+
+      .dev-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        // Non sélectionné : texte discret. Sélectionné (voir &.is-selected) : blanc/clair pour
+        // rester bien lisible parmi les développeurs non cochés, sur fond sombre comme clair.
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 4px 8px;
+        background: var(--surface);
+        border: 1px solid $border-color;
+        border-radius: 4px;
+
+        .dev-info {
+          display: flex;
+          flex-direction: column;
+          gap: 2px;
+        }
+
+        .dev-name-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+
+        .mat-badge {
+          color: var(--text-secondary);
+          font-size: 11px;
+        }
+
+        &.is-selected {
+          color: var(--text-primary);
+          border-color: $airbus-blue-secondary;
+        }
+
+        // Développeur ayant au moins une tâche assignée dans ce projet : ne peut plus être
+        // décoché (voir devHasAssignedTask). Case grisée, curseur "verrouillé" plutôt que "main".
+        &.is-locked {
+          cursor: not-allowed;
+          background: var(--surface-alt);
+          opacity: 0.85;
+
+          input[type="checkbox"] {
+            cursor: not-allowed;
+          }
+        }
+
+        .dev-locked-icon {
+          font-size: 11px;
+          margin-left: -2px;
+        }
+
+        // Métier du développeur, affiché sous son nom — mêmes teintes que les badges métier du
+        // projet ci-dessus (voir .metier-blue etc.), en plus petit pour rester secondaire par
+        // rapport au nom.
+        .dev-metier-tag {
+          display: inline-flex;
+          align-items: center;
+          align-self: flex-start;
+          padding: 1px 7px;
+          border-radius: 8px;
+          font-size: 10px;
+          font-weight: 700;
+          border: 1px solid transparent;
+          white-space: nowrap;
+
+          @include metier-color-variants;
+
+          &.dev-metier-none {
+            color: var(--text-secondary);
+            border-color: $border-color;
+            font-weight: 500;
+            font-style: italic;
+          }
+        }
+      }
+
+      .no-devs-alert {
+        color: #dc2626;
+        font-size: 12px;
+        margin: 0;
+      }
+    }
+
+    // Sélection multiple des catégories : mêmes cases à cocher que les développeurs ci-dessus,
+    // mais teintées par catégorie (voir utils/category-colors.ts) pour rester lisible d'un coup
+    // d'œil dans le formulaire, pas seulement une fois affichées en badge dans la liste des projets.
+    .categories-checkbox-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 14px;
+      background: var(--surface-alt);
+      border: 1px solid $border-color;
+      border-radius: 6px;
+
+      .category-checkbox-label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 4px 10px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+
+        @include metier-color-variants;
+      }
+
+      .no-devs-alert {
+        color: #dc2626;
+        font-size: 12px;
+        margin: 0;
+      }
+
+      .devs-filter-hint {
+        color: var(--text-secondary);
+        font-size: 11px;
+        font-style: italic;
+        margin: 2px 0 6px 0;
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+
+      .btn-cancel {
+        background: var(--surface-alt);
+        color: var(--text-primary);
+        border: none;
+        padding: 10px 18px;
+        border-radius: 4px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--border-color);
+        }
+      }
+
+      .btn-submit-airbus {
+        // Fond plein (pas texte) : --brand-primary directement, pas $airbus-blue-primary.
+        background: var(--brand-primary);
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 13px;
+        cursor: pointer;
+
+        &:hover {
+          background: $airbus-blue-secondary;
+        }
+      }
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

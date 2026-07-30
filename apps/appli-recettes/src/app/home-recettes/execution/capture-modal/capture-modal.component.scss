@@ -1,0 +1,199 @@
+// Bootstrap .text-white : utilisé dans ce template comme "texte principal" sur le fond sombre
+// fixe d'origine — invisible en thème clair une fois ce fond passé à --surface (clair).
+.text-white {
+  color: var(--text-primary) !important;
+}
+
+// Accents "pâles" : pensés pour contraster sur le fond sombre d'origine, à peine lisibles sur
+// --surface blanc en thème clair (voir signalement contraste). Assombris uniquement en thème
+// clair — voir cahier.component.scss pour le détail du mécanisme (:host-context).
+:host {
+  --accent-yellow: #facc15;
+}
+:host-context([data-theme="light"]) {
+  --accent-yellow: #a16207;
+}
+
+.text-warning {
+  color: var(--accent-yellow) !important;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.modal-card {
+  background-color: var(--surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.capture-modal-card {
+  width: 100%;
+  max-width: 920px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--surface-alt);
+  h3 {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  .btn-close-modal {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+    &:hover {
+      color: var(--text-primary);
+    }
+  }
+}
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+}
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  background-color: var(--surface-alt);
+  .btn-cancel {
+    background: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    &:hover {
+      background: var(--surface);
+      color: var(--text-primary);
+    }
+  }
+  .btn-save {
+    background: #facc15;
+    border: none;
+    color: black;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    &:hover:not(:disabled) {
+      background: #eab308;
+    }
+  }
+}
+
+.action-btn {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: bold;
+  &.text-warning {
+    color: var(--accent-yellow);
+    border-color: #eab308;
+    background: rgba(250, 204, 21, 0.1);
+  }
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  &:hover:not(:disabled) {
+    background: #eab308;
+    color: #000;
+  }
+}
+
+.color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  cursor: pointer;
+  padding: 0;
+  &.active {
+    border-color: var(--text-primary);
+    box-shadow: 0 0 0 2px var(--surface), 0 0 0 3px #facc15;
+  }
+}
+
+.width-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--page-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  span {
+    display: block;
+    border-radius: 50%;
+    background: var(--text-primary);
+  }
+  &.active {
+    border-color: var(--accent-yellow);
+    background: var(--surface-alt);
+  }
+}
+
+.canvas-wrapper {
+  position: relative;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  background: var(--page-bg);
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+
+  &.empty {
+    border-color: var(--accent-yellow);
+  }
+
+  canvas {
+    display: block;
+    cursor: crosshair;
+    touch-action: none;
+  }
+}
+
+.paste-placeholder {
+  position: absolute;
+  color: var(--text-secondary);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  pointer-events: none;
+}

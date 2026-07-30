@@ -1,0 +1,1260 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-blue-primary
+// pointe vers --heading-color (texte, majorité des usages ici) ; les 3 usages en FOND
+// (.btn-primary-airbus, .btn-view-mode.active, .btn-submit-airbus) référencent --brand-primary
+// directement plus bas, pas cette variable. $airbus-blue-secondary/$airbus-green ne servent qu'en
+// fonds (boutons, statuts métier "En cours"/"Terminé") → --brand-* (invariant entre les deux
+// thèmes, donc aucune couleur de statut/tuile ne change avec le thème).
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$airbus-green: var(--brand-green);
+$border-color: var(--border-color);
+
+.planning-agenda-card {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  // Toute la barre est cliquable (pas seulement le chevron) pour masquer/afficher la zone : cible
+  // trop petite sinon, voir toggleCollapsed() sur le composant.
+  .card-header {
+    background: var(--surface-alt);
+    padding: 14px 20px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface-alt) 70%, var(--brand-secondary) 6%);
+    }
+
+    // Zone dépliée : fond plus prononcé pour repérer d'un coup d'œil quelles sections sont
+    // ouvertes parmi toute la liste (surtout utile une fois plusieurs sections repliées).
+    &.is-expanded {
+      background: color-mix(in srgb, var(--surface-alt) 60%, var(--brand-secondary) 16%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--surface-alt) 50%, var(--brand-secondary) 24%);
+      }
+    }
+
+    .card-icon {
+      font-size: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+      margin: 0;
+    }
+
+    .btn-toggle-collapse {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: $airbus-blue-primary;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.15s ease-in-out;
+
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+
+      &:hover {
+        color: $airbus-blue-secondary;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .project-header-banner {
+    background: var(--surface-alt);
+    padding: 16px 20px;
+    border-radius: 6px;
+    border: 1px solid $border-color;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+
+    .banner-title {
+      h2 {
+        font-size: 18px;
+        font-weight: 800;
+        color: $airbus-blue-primary;
+        margin: 0 0 4px 0;
+      }
+
+      p {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+    }
+
+    .banner-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+
+      .unused-days-badge {
+        background: #fef3c7;
+        color: #92400e;
+        border: 1px solid #fde68a;
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .btn-primary-airbus {
+        // Fond plein (pas texte) : --brand-primary directement, pas $airbus-blue-primary
+        // (--heading-color) — un bouton plein reste lisible avec du texte blanc quel que soit le
+        // thème, inutile de l'éclaircir en sombre comme pour du texte sur carte.
+        background: var(--brand-primary);
+        color: #ffffff;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 4px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover {
+          background: $airbus-blue-secondary;
+        }
+      }
+
+      // Action secondaire (pas de couleur pleine, contrairement à "+ Ajouter une tâche") : exporter
+      // n'est pas l'action principale de cette barre, juste une commodité de reporting.
+      .btn-export-csv {
+        background: var(--surface);
+        color: $airbus-blue-primary;
+        border: 1px solid $border-color;
+        padding: 8px 14px;
+        border-radius: 4px;
+        font-weight: 700;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--surface-alt);
+        }
+      }
+    }
+  }
+
+  .gantt-schedule-card {
+    .gantt-header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 4px;
+
+      h4 {
+        margin: 0;
+        white-space: nowrap;
+      }
+    }
+
+    // Grille CSS (pas flexbox) : les colonnes ‹ / libellé / › / reste sont partagées par la ligne 1
+    // (période précédent-suivant) et la ligne 2 (pas d'un jour, vue jour uniquement). Deux flex-rows
+    // indépendamment alignées "à droite" ne garantissent PAS que leurs flèches tombent à la même
+    // position si les deux lignes n'ont pas la même largeur totale de contenu (ex: "Aujourd'hui +
+    // Jour/Mois" est plus large que "Afficher : 15 jours") — la grille, elle, fixe des colonnes de
+    // largeur identique sur toutes les lignes, donc les flèches s'alignent quel que soit le contenu
+    // des autres colonnes.
+    .planning-nav-bar {
+      background: var(--surface-alt);
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      padding: 8px 14px;
+      display: grid;
+      grid-template-columns: 32px minmax(160px, auto) 32px 1fr;
+      align-items: center;
+      column-gap: 12px;
+      row-gap: 8px;
+      margin-left: auto;
+
+      // Boutons flèche partagés par la ligne 1 (période/mois précédent-suivant) et la ligne 2
+      // (pas fin d'un jour) : mêmes dimensions partout, et bien dans les colonnes 1/3 de la grille.
+      .btn-nav-arrow {
+        background: var(--surface-alt);
+        border: 1px solid $border-color;
+        color: $airbus-blue-primary;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+        line-height: 1;
+
+        &:hover {
+          background: var(--category-blue-bg);
+        }
+      }
+
+      .nav-col-prev {
+        grid-column: 1;
+      }
+
+      .nav-col-next {
+        grid-column: 3;
+      }
+
+      .nav-col-label {
+        grid-column: 2;
+      }
+
+      .planning-nav-label {
+        font-size: 14px;
+        font-weight: 700;
+        color: $airbus-blue-primary;
+        text-align: center;
+      }
+
+      .planning-nav-day-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      // 4e colonne : contrôles secondaires de chaque ligne (Aujourd'hui + switch Jour/Mois sur la
+      // ligne 1, sélecteur de plage sur la ligne 2), toujours alignés à droite de la grille.
+      .nav-col-extra {
+        grid-column: 4;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+
+      .btn-nav-today {
+        background: none;
+        border: 1px solid $border-color;
+        color: var(--text-secondary);
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+
+        &:hover {
+          background: var(--surface-alt);
+        }
+      }
+
+      // Sélecteur de format d'affichage (Jour / Mois) : deux boutons accolés en "segmented
+      // control", le format actif reprenant le bleu plein des boutons d'action de l'appli.
+      .planning-view-switch {
+        display: flex;
+        border: 1px solid $border-color;
+        border-radius: 6px;
+        overflow: hidden;
+
+        .btn-view-mode {
+          background: var(--surface);
+          border: none;
+          color: var(--text-secondary);
+          padding: 6px 14px;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+
+          & + .btn-view-mode {
+            border-left: 1px solid $border-color;
+          }
+
+          &:hover:not(.active) {
+            background: var(--surface-alt);
+          }
+
+          // Fond plein (pas texte) : --brand-primary directement, comme .btn-primary-airbus plus haut.
+          &.active {
+            background: var(--brand-primary);
+            color: #ffffff;
+          }
+        }
+      }
+
+      .planning-nav-range {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        label {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--text-secondary);
+        }
+
+        select {
+          padding: 6px 10px;
+          border: 1px solid $border-color;
+          border-radius: 4px;
+          font-size: 13px;
+        }
+      }
+    }
+
+    h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .dnd-hint {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin: 0 0 12px 0;
+    }
+
+    .drop-rejection-banner {
+      background: color-mix(in srgb, var(--surface) 85%, var(--category-red-border) 15%);
+      color: var(--category-red-text);
+      border: 1px solid var(--category-red-border);
+      border-radius: 4px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+    }
+
+    .gantt-scroll-container {
+      overflow-x: auto;
+      border: 1px solid $border-color;
+      border-radius: 6px;
+    }
+
+    .gantt-grid-table {
+      width: 100%;
+      // Layout fixe : sans ça, un titre de tâche non tronqué (white-space: nowrap) élargit sa
+      // colonne au-delà des autres jours, cassant l'alignement de la barre continue.
+      table-layout: fixed;
+      border-collapse: collapse;
+
+      th,
+      td {
+        border: 1px solid $border-color;
+        padding: 8px;
+        text-align: center;
+      }
+
+      .col-fixed-dev {
+        width: 195px;
+        min-width: 195px;
+        text-align: left;
+        background: var(--surface-alt);
+        color: var(--text-primary);
+        position: relative;
+
+        // Retrait rapide d'un développeur sans tâche sur ce projet (voir removeDevFromProject) :
+        // positionné dans le coin de la tuile plutôt qu'en ligne, pour ne pas perturber
+        // l'alignement du nom/matricule/stats avec les tuiles des autres développeurs.
+        .btn-remove-dev-tile {
+          position: absolute;
+          right: 8px;
+          bottom: 8px;
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          border: none;
+          background: #dc2626;
+          color: #ffffff;
+          font-size: 11px;
+          font-weight: 700;
+          line-height: 1;
+          cursor: pointer;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          opacity: 0.85;
+
+          &:hover {
+            opacity: 1;
+            background: #b91c1c;
+          }
+        }
+
+        .sub-text {
+          font-size: 11px;
+          color: var(--text-secondary);
+        }
+
+        // Nom en gras seulement s'il reste des tâches en cours/à venir sur ce projet (voir
+        // devTaskStats) : un développeur qui n'a plus rien à faire ici ne doit pas ressortir
+        // visuellement au même titre que ceux encore sollicités.
+        .dev-name {
+          font-weight: 400;
+
+          &.has-active-tasks {
+            font-weight: 700;
+          }
+        }
+
+        .dev-task-stats {
+          font-size: 12px;
+          color: var(--text-secondary);
+          margin-top: 4px;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          align-items: center;
+        }
+
+        .dev-stat-completed {
+          color: $airbus-green;
+          font-weight: 600;
+        }
+
+        .dev-stat-active {
+          color: var(--brand-secondary);
+          font-weight: 700;
+          font-size: 12.5px;
+
+          &.is-zero {
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 12px;
+          }
+        }
+      }
+
+      // Largeur posée dynamiquement en inline-style (voir dayColumnPx) pour que tous les jours
+      // affichés tiennent sur l'écran sans ascenseur horizontal, quelle que soit la plage choisie.
+      // width/min-width ici ne servent que de repli avant le premier calcul JS.
+      .col-day-cell {
+        width: 60px;
+        min-width: 42px;
+        // Fond/texte de base explicites (pas seulement hérités) : sans ça, les jours "normaux"
+        // (aucun modificateur is-weekend/is-past/...) gardaient un fond blanc et un texte sombre
+        // même en thème sombre — repris ci-dessous par les modificateurs métier quand ils
+        // s'appliquent (leurs couleurs restent fixes, volontairement non affectées par le thème).
+        background: var(--surface);
+        color: var(--text-primary);
+
+        .day-name {
+          font-size: 11px;
+          font-weight: 600;
+        }
+
+        .day-num {
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        // Grisé seulement si CE projet exclut le week-end de la planification (voir
+        // [class.is-weekend] dans le template, combiné à selectedProject.excludeWeekends) : gris
+        // volontairement soutenu (#64748b) pour bien se détacher du fond, identique en clair et en
+        // sombre — assez foncé pour repasser le texte en blanc (cf. règle fond foncé → texte blanc).
+        &.is-weekend {
+          background: #64748b;
+          color: #ffffff;
+        }
+
+        &.is-holiday {
+          background: #fef3c7;
+          color: #0f172a;
+        }
+
+        // Jour antérieur à aujourd'hui : rayures jaunes en diagonale (sans fond gris, retiré pour
+        // laisser transparaître le fond normal du thème), prioritaire sur weekend/férié (déclaré
+        // après eux dans la cascade) pour bien distinguer visuellement le passé, quel que soit le
+        // type de jour. Jamais combiné à .is-today (mutuellement exclusifs par construction).
+        // Priorité à .is-unavailable (déclaré après) si le jour est aussi une absence du développeur.
+        &.is-past {
+          background-image: repeating-linear-gradient(
+            45deg,
+            rgba(234, 179, 8, 0.4),
+            rgba(234, 179, 8, 0.4) 5px,
+            transparent 5px,
+            transparent 11px
+          );
+        }
+
+        // Congé/absence du développeur de cette ligne (voir isDevUnavailable) : fond gris + rayures
+        // rouges horizontales, déclaré après .is-past pour rester prioritaire si les deux
+        // s'appliquent en même temps (jour passé pendant lequel le développeur était absent).
+        &.is-unavailable {
+          background-color: #cbd5e1;
+          background-image: repeating-linear-gradient(
+            0deg,
+            rgba(220, 38, 38, 0.4),
+            rgba(220, 38, 38, 0.4) 4px,
+            transparent 4px,
+            transparent 8px
+          );
+          color: #0f172a;
+        }
+
+        // Aujourd'hui : fond jaune, prioritaire sur weekend/férié pour rester repérable au premier
+        // coup d'œil dans la grille (l'ancien bleu clair se distinguait mal des autres colonnes).
+        &.is-today {
+          background: #fde047;
+          color: #0f172a;
+        }
+      }
+
+      // Les cases jours (données, pas l'en-tête) perdent leur padding : les segments de tâche
+      // (cartes + connecteurs gris) doivent aller jusqu'au bord pour former une barre continue
+      // d'une colonne à l'autre, sans espace visible entre deux jours de la même tâche.
+      td.col-day-cell {
+        padding: 0;
+        vertical-align: top;
+      }
+
+      // Lane réservée mais inoccupée ce jour-là (une autre tâche de ce développeur utilise cette
+      // lane un autre jour de la vue courante) : garde la hauteur pour que les lanes voisines
+      // restent alignées d'une colonne à l'autre, sans qu'une tâche ne "remonte" quand une autre
+      // au-dessus d'elle se termine.
+      // Hauteur FIXE (pas min-height) et identique aux deux autres règles ci-dessous : avec une
+      // simple min-height, une tâche à risque (bordure rouge en plus) rendait naturellement plus
+      // haute qu'une case vide ou une tâche normale, décalant la lane suivante selon les jours.
+      .task-lane-empty {
+        box-sizing: border-box;
+        height: 52px;
+        margin-bottom: 4px;
+      }
+
+      .task-card-slot,
+      .task-connector-slot {
+        box-sizing: border-box;
+        height: 52px;
+        border-radius: 0;
+        margin-bottom: 4px;
+        transition: box-shadow 0.1s ease-in-out;
+
+        &.is-first {
+          border-top-left-radius: 4px;
+          border-bottom-left-radius: 4px;
+        }
+
+        &.is-last {
+          border-top-right-radius: 4px;
+          border-bottom-right-radius: 4px;
+        }
+
+        // Liseré haut systématique : blanc par défaut, rouge quand la tâche est à risque. Le
+        // porter aussi sur les tâches sans risque garde toutes les barres à la même hauteur utile
+        // et au même alignement vertical — sans lui, seules les tâches à risque perdaient 4px de
+        // contenu (box-sizing: border-box) et se décalaient par rapport à leurs voisines.
+        border-top: 4px solid #ffffff;
+
+        // Tâche à risque : liseré rouge en haut de la barre, continu sur toute sa largeur (y
+        // compris les passages gris), plutôt qu'un repère répété sur le bord gauche de chaque tuile.
+        &.has-risk {
+          border-top-color: #ef4444;
+        }
+
+        // Survol : TOUS les segments de la tâche survolée s'assombrissent ensemble (pas seulement
+        // la tuile sous le curseur), pour repérer d'un coup d'œil l'étendue complète de la barre.
+        // Un box-shadow inset (pas filter: brightness) : filter crée un nouveau contexte d'empilement
+        // sur CHAQUE tuile survolée, ce qui faisait passer le fond de chaque tuile suivante AU-DESSUS
+        // du titre en surimpression (.task-title-flow, positionné en absolu depuis la 1ère tuile),
+        // le rendant invisible sur toutes les tuiles sauf la première.
+        &.is-hovered {
+          // Assombrissement renforcé (0.22 -> 0.45) + halo cyan externe en plus de l'assombri
+          // interne : deux box-shadow cumulés (le 2e, non-inset, déborde à l'extérieur de la
+          // tuile). Cyan plutôt que noir : contraste faible sur les fonds déjà sombres (bleu
+          // "en cours", vert "terminé", noir "en retard") — le cyan tranche sur toutes ces
+          // teintes, et reste distinct du jaune (aujourd'hui) et du rouge (risque) déjà utilisés.
+          box-shadow:
+            inset 0 0 0 200px rgba(0, 0, 0, 0.45),
+            0 0 10px 2px rgba(34, 211, 238, 0.65);
+          cursor: pointer;
+          // Cadre autour de la barre entière (pas juste la tuile survolée) : bas sur chaque tuile
+          // (les tuiles se touchant bord à bord, la ligne reste continue sur toute la largeur) +
+          // gauche/droite seulement sur la 1ère/dernière tuile — sinon chaque jour recevrait sa
+          // propre bordure verticale, donnant une grille de cases plutôt qu'un contour unique.
+          // border-top intentionnellement absent d'ici : il reste réservé au liseré blanc/rouge
+          // (risque) déjà posé plus haut, box-sizing: border-box évitant tout conflit de layout.
+          border-bottom: 4px solid #22d3ee;
+
+          &.is-first {
+            border-left: 4px solid #22d3ee;
+          }
+
+          &.is-last {
+            border-right: 4px solid #22d3ee;
+          }
+        }
+      }
+
+      // Passage gris : portion d'une tâche multi-jours tombant un week-end/jour férié exclu par
+      // le projet. Pas de contenu interactif, juste la continuité visuelle de la barre.
+      .task-connector-slot {
+        background: #cbd5e1;
+
+        &.is-unavailable {
+          background-image: repeating-linear-gradient(
+            0deg,
+            rgba(220, 38, 38, 0.6),
+            rgba(220, 38, 38, 0.6) 1px,
+            transparent 1px,
+            transparent 4px
+          );
+        }
+      }
+
+      // Week-end exclu : le connecteur (passage gris d'une tâche multi-jours non traitée ce
+      // jour-là) doit reprendre le même gris soutenu que la cellule, pas son gris clair par
+      // défaut — sinon la colonne week-end perd sa continuité visuelle dès qu'une tâche la
+      // traverse. Spécificité (2 classes) suffisante pour primer sur la règle générique ci-dessus.
+      .col-day-cell.is-weekend .task-connector-slot {
+        background: #64748b;
+      }
+
+      .task-card-slot {
+        // Couleur par défaut (filet de sécurité) : recouverte par les classes de statut ci-dessous.
+        background: #94a3b8;
+        color: #ffffff;
+        padding: 6px;
+        font-size: 11px;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+
+        // Zone haute : glisser-déposer (cdkDragHandle) + clic pour éditer. Curseur "main" limité
+        // à cette zone, pour ne pas laisser croire que la zone du bas (cases à cocher) se déplace.
+        // Hauteur réservée même quand le titre est masqué (jours autres que le premier de la
+        // semaine), pour que la ligne des cases reste alignée d'une colonne à l'autre.
+        // position:relative sert d'ancre pour le titre "flottant" (.task-title-flow) qui déborde
+        // par-dessus les tuiles suivantes, afin qu'il n'y ait pas de coupure visuelle du texte.
+        .task-card-top {
+          cursor: grab;
+          min-height: 14px;
+          position: relative;
+        }
+
+        // Titre en surimpression : largeur calculée en JS (nombre de tuiles à couvrir), positionné
+        // par-dessus les cases suivantes sans interrompre leur propre rendu (pointer-events: none
+        // pour laisser passer les clics/glissers vers la case réellement sous le curseur).
+        .task-title-flow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          overflow: hidden;
+          pointer-events: none;
+          z-index: 2;
+        }
+
+        // Non commencé : gris clair.
+        &.status-non-commence {
+          background: #94a3b8;
+          color: #ffffff;
+        }
+
+        // En attente : gris.
+        &.status-en-attente {
+          background: #64748b;
+          color: #ffffff;
+        }
+
+        // En cours : bleu.
+        &.status-en-cours {
+          background: $airbus-blue-secondary;
+          color: #ffffff;
+        }
+
+        // Terminé : vert.
+        &.status-termine {
+          background: $airbus-green;
+          color: #ffffff;
+
+          // Plan acquis : le glisser est désactivé (cdkDragDisabled), le curseur ne doit donc plus
+          // suggérer un déplacement — la tuile reste cliquable pour ouvrir le détail.
+          .task-card-top {
+            cursor: pointer;
+          }
+        }
+
+        // Jour passé non validé (demi-journée matin et/ou après-midi non cochée) : noir, prioritaire
+        // sur la couleur de statut pour signaler visuellement le retard non traité.
+        &.is-overdue {
+          background: #000000;
+          color: #ffffff;
+        }
+
+        // Développeur absent ce jour-là (voir isDevUnavailable) : simple surimpression de fines
+        // rayures rouges horizontales, SANS toucher au fond ni au texte de la tuile (couleur de
+        // statut et texte blanc inchangés) — juste background-image (pas le raccourci `background`,
+        // qui écraserait le fond hérité de la règle de statut ci-dessus). Déclaré après .is-overdue
+        // pour rester prioritaire même si la tâche est aussi en retard ce jour-là — les cases à
+        // cocher sont masquées pour ce jour (voir template), pas de zone .task-meta à couvrir.
+        &.is-unavailable {
+          background-image: repeating-linear-gradient(
+            0deg,
+            rgba(220, 38, 38, 0.6),
+            rgba(220, 38, 38, 0.6) 1px,
+            transparent 1px,
+            transparent 4px
+          );
+        }
+
+        .half-day-toggle {
+          cursor: pointer;
+          width: 11px;
+          height: 11px;
+          margin: 0;
+          flex-shrink: 0;
+        }
+
+        // Occupe la place de la case après-midi quand celle-ci n'est pas due (dernier jour d'une
+        // extension ne remboursant qu'une demi-journée), pour garder les cases matin alignées.
+        .half-day-toggle-placeholder {
+          width: 11px;
+          height: 11px;
+          flex-shrink: 0;
+        }
+
+        .task-duration {
+          flex: 1;
+          text-align: center;
+        }
+
+        .task-name {
+          font-weight: 700;
+          flex: 1;
+          min-width: 0; // sans ça, un flex-item ne rétrécit pas sous sa largeur intrinsèque : l'ellipse ne se déclenche jamais
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        // Repère "cette tâche dépend d'une autre" (parentTaskId) : icône seule, le détail (nom +
+        // état de la tâche prérequise) est dans l'infobulle (blockingTaskTooltip).
+        .task-blocking-badge {
+          flex-shrink: 0;
+          font-size: 10px;
+        }
+
+        .task-git-branch {
+          flex-shrink: 0;
+          font-size: 9px;
+          opacity: 0.85;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .task-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 4px;
+          padding: 2px 3px;
+          border-radius: 3px;
+          font-size: 10px;
+          gap: 4px;
+          transition: background-color 0.15s ease-in-out;
+
+          // Journée validée (toutes les demi-journées dues ce jour-là sont cochées) : la zone
+          // basse de la tuile passe en vert, indépendamment de la couleur de statut de la tâche.
+          &.is-day-validated {
+            background: rgba(132, 189, 0, 0.9); // $airbus-green, semi-opaque pour rester lisible sur tous les fonds de statut
+          }
+
+          // Tâche Terminée : plus de cases à cocher (remainingHalfDays n'a plus de sens une fois
+          // le statut clos manuellement), juste un repère de complétion centré.
+          &.task-meta-done {
+            justify-content: center;
+          }
+        }
+
+        .task-done-label {
+          font-weight: 700;
+          opacity: 0.9;
+        }
+
+        // Colonne trop étroite (voir isCompactDayColumn) pour case à cocher + "X demi-j" + case à
+        // cocher sur la même ligne : le texte est retiré, seules les deux cases restent, centrées.
+        // Le titre reste lisible mais en police réduite pour laisser un peu plus de place au texte.
+        &.is-compact {
+          .task-duration {
+            display: none;
+          }
+
+          .task-meta {
+            justify-content: center;
+            gap: 6px;
+          }
+
+          .task-name {
+            font-size: 9px;
+          }
+        }
+      }
+
+      // Case survolée pendant un glisser-déposer (CDK ajoute cette classe au drop-list cible).
+      .cdk-drop-list-dragging .col-day-cell,
+      td.cdk-drop-list-receiving {
+        background: var(--category-blue-bg);
+      }
+    }
+
+    // ========================================================================
+    // VUE MOIS (calendrier) : 7 colonnes, une case par jour. Les tâches y sont représentées par
+    // des pastilles compactes reprenant les couleurs de statut de la grille Gantt.
+    // ========================================================================
+
+    // 1 ou 2 mois côte à côte (voir monthDisplayCount) : chaque calendrier se partage la largeur
+    // disponible à parts égales (flex: 1), sa grille interne (7 colonnes en 1fr) rétrécit d'elle-même.
+    .month-calendars-row {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .month-calendar-col {
+      flex: 1 1 0;
+      min-width: 0; // sans ça, une grille CSS ne rétrécit pas sous la largeur de son contenu
+    }
+
+    .month-calendar-label {
+      margin: 0 0 6px 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+      text-align: center;
+    }
+
+    .month-calendar {
+      border: 1px solid $border-color;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .month-weekday-row,
+    .month-week-row {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+    }
+
+    .month-weekday-row {
+      background: var(--surface-alt);
+      border-bottom: 1px solid $border-color;
+
+      .month-weekday {
+        padding: 8px 4px;
+        text-align: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+      }
+    }
+
+    .month-day-cell {
+      min-height: 132px;
+      padding: 6px;
+      border-right: 1px solid $border-color;
+      border-bottom: 1px solid $border-color;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--surface);
+      color: var(--text-primary);
+
+      &:nth-child(7n) {
+        border-right: none;
+      }
+
+      // Jours de complément (mois précédent/suivant) : présents pour compléter les semaines,
+      // volontairement en retrait pour ne pas concurrencer le mois affiché. Déclaré AVANT
+      // is-weekend/is-holiday pour que le grisé "jour non travaillé" reste visible et prioritaire
+      // même sur un jour hors-mois (sinon un week-end/férié du mois adjacent perdait son grisé,
+      // repassant à tort pour un jour travaillé) — seuls le numéro et les tâches restent atténués.
+      &.is-outside {
+        background: #fbfcfe;
+
+        .month-day-number {
+          color: #cbd5e1;
+        }
+
+        .month-task-chip {
+          opacity: 0.55;
+        }
+      }
+
+      // Grisé seulement si CE projet exclut le week-end de la planification (voir
+      // [class.is-weekend] dans le template, combiné à selectedProject.excludeWeekends) : même gris
+      // soutenu (#64748b) que la vue Gantt, identique en clair et en sombre.
+      &.is-weekend {
+        background: #64748b;
+      }
+
+      &.is-holiday {
+        background: #fef3c7;
+      }
+
+      // Jour antérieur à aujourd'hui : rayures jaunes en diagonale (sans fond gris, retiré pour
+      // laisser transparaître le fond normal du thème), prioritaire sur weekend/férié/hors-mois
+      // (déclaré en dernier dans la cascade) pour bien distinguer visuellement le passé, quel que
+      // soit le type de jour. Jamais combiné à .is-today (mutuellement exclusifs par construction).
+      &.is-past {
+        background-image: repeating-linear-gradient(
+          45deg,
+          rgba(234, 179, 8, 0.4),
+          rgba(234, 179, 8, 0.4) 5px,
+          transparent 5px,
+          transparent 11px
+        );
+      }
+
+      &.cdk-drop-list-receiving {
+        background: var(--category-blue-bg);
+      }
+    }
+
+    .month-week-row:last-child .month-day-cell {
+      border-bottom: none;
+    }
+
+    .month-day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 4px;
+
+      .month-day-number {
+        font-size: 13px;
+        font-weight: 700;
+        color: $airbus-blue-primary;
+        width: 24px;
+        height: 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        // Aujourd'hui : pastille pleine, repère immédiat dans la grille du mois.
+        &.is-today {
+          background: #dc2626;
+          color: #ffffff;
+          border-radius: 50%;
+        }
+      }
+
+      .month-day-holiday {
+        font-size: 9px;
+        font-weight: 700;
+        color: #92400e;
+        text-transform: uppercase;
+      }
+    }
+
+    // Fond is-weekend désormais soutenu (#64748b, cf. plus haut) : texte blanc pour rester lisible.
+    .month-day-cell.is-weekend .month-day-number:not(.is-today) {
+      color: #ffffff;
+    }
+
+    // Fond is-holiday toujours clair (même en thème sombre, voir plus haut) : le numéro doit
+    // rester foncé, sinon il hérite de var(--heading-color) qui s'éclaircit en thème sombre et
+    // devient illisible sur ce fond clair. is-past n'a plus de fond propre (retiré, voir plus
+    // haut) : son numéro garde la couleur par défaut de .month-day-number, adaptée au thème.
+    .month-day-cell.is-holiday .month-day-number:not(.is-today) {
+      color: #0f172a;
+    }
+
+    .month-day-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      min-height: 0;
+    }
+
+    // Lane réservée mais inoccupée ce jour-là (une autre tâche de la semaine utilise cette lane un
+    // autre jour de la semaine affichée) : garde la hauteur pour que les lanes voisines restent
+    // alignées d'un jour à l'autre, sans qu'une tâche ne "remonte" quand une autre au-dessus
+    // d'elle se termine. Même principe que .task-lane-empty dans la grille Gantt.
+    .month-lane-empty {
+      box-sizing: border-box;
+      height: 40px;
+      flex-shrink: 0;
+    }
+
+    // Même format que les tuiles de la grille Gantt (.task-card-slot) : zone haute = titre +
+    // glisser-déposer, zone basse = cases à cocher matin/après-midi + "X demi-j" restantes.
+    // Reproduit ici en plus compact (cellule du mois plus étroite qu'une colonne jour).
+    // Hauteur FIXE (comme .task-card-slot) plutôt que dictée par le contenu : sinon une tâche à
+    // risque (bordure en plus) serait naturellement plus haute qu'une lane vide voisine.
+    .month-task-chip {
+      box-sizing: border-box;
+      height: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #ffffff;
+      background: #94a3b8; // filet de sécurité, recouvert par les classes de statut
+      overflow: hidden;
+      flex-shrink: 0;
+      // Bandeau de couleur propre à la tâche (voir taskAccentColor) : distinct de la couleur de
+      // statut du fond, pour repérer une tâche précise d'un jour à l'autre même quand deux tâches
+      // partagent le même statut. Couleur posée via [style.border-bottom-color] en template.
+      border-bottom: 4px solid transparent;
+
+      .chip-top {
+        cursor: grab;
+        padding: 3px 5px 0 5px;
+        min-height: 13px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+
+        .task-blocking-badge {
+          flex-shrink: 0;
+          font-size: 9px;
+        }
+      }
+
+      .chip-name {
+        font-weight: 700;
+        flex: 1;
+        min-width: 0; // sans ça, l'ellipse ne se déclenche jamais dans un flex-item (voir .task-name)
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .chip-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 3px 3px 3px;
+        padding: 1px 3px;
+        border-radius: 3px;
+        gap: 3px;
+        transition: background-color 0.15s ease-in-out;
+
+        // Journée validée (toutes les demi-journées dues ce jour-là sont cochées) : même code
+        // couleur vert que la zone basse des tuiles de la vue jour.
+        &.is-day-validated {
+          background: rgba(132, 189, 0, 0.9);
+        }
+
+        // Tâche Terminée : plus de cases à cocher, juste un repère de complétion centré.
+        &.chip-meta-done {
+          justify-content: center;
+        }
+      }
+
+      .task-done-label {
+        font-weight: 700;
+        opacity: 0.9;
+      }
+
+      .half-day-toggle {
+        cursor: pointer;
+        width: 9px;
+        height: 9px;
+        margin: 0;
+        flex-shrink: 0;
+      }
+
+      .half-day-toggle-placeholder {
+        width: 9px;
+        height: 9px;
+        flex-shrink: 0;
+      }
+
+      .chip-duration {
+        flex: 1;
+        text-align: center;
+        font-size: 9px;
+      }
+
+      // Mêmes couleurs de statut que les tuiles de la grille Gantt.
+      &.status-non-commence {
+        background: #94a3b8;
+      }
+
+      &.status-en-attente {
+        background: #64748b;
+      }
+
+      &.status-en-cours {
+        background: $airbus-blue-secondary;
+      }
+
+      &.status-termine {
+        background: $airbus-green;
+
+        // Glisser désactivé sur une tâche terminée (cdkDragDisabled) : le curseur suit.
+        .chip-top {
+          cursor: pointer;
+        }
+      }
+
+      // Jour passé non validé : noir, prioritaire sur la couleur de statut (comme en vue jour).
+      &.is-overdue {
+        background: #000000;
+      }
+
+      // Tâche à risque : liseré rouge en haut de la tuile, comme sur les barres de la vue jour.
+      &.has-risk {
+        border-top: 3px solid #ef4444;
+      }
+
+      // Survol : toutes les tuiles de la même tâche s'assombrissent, sur tous ses jours. Contour
+      // sur les 4 côtés de CHAQUE tuile (pas seulement gauche/droite comme en vue jour) :
+      // contrairement à la grille Gantt, une tuile de la vue mois est une case autonome par jour,
+      // pas un fragment d'une barre continue bord à bord — un simple haut/bas ne suffirait pas à
+      // la distinguer des cases voisines. Cyan + halo, même choix qu'en vue jour (voir plus haut) :
+      // contraste faible du noir sur les fonds déjà sombres (bleu/vert/noir de statut).
+      &.is-hovered {
+        box-shadow:
+          inset 0 0 0 200px rgba(0, 0, 0, 0.45),
+          0 0 10px 2px rgba(34, 211, 238, 0.65);
+        border: 3px solid #22d3ee;
+      }
+    }
+
+    .month-more-btn {
+      align-self: flex-start;
+      background: none;
+      border: none;
+      padding: 0 2px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      cursor: pointer;
+
+      &:hover {
+        color: $airbus-blue-primary;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .no-project-selected {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-secondary);
+  }
+}
+
+// Popup "sous-tâches" (ouvert quand on coche une demi-journée sur une tâche qui en a).
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.subtask-popup-panel {
+  background: var(--surface);
+  border-radius: 8px;
+  width: min(420px, 92vw);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  padding: 16px 20px;
+}
+
+.subtask-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+
+  h3 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: $airbus-blue-primary;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    font-size: 15px;
+    color: var(--text-secondary);
+    cursor: pointer;
+  }
+}
+
+.subtask-popup-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 0 0 12px 0;
+}
+
+.subtask-popup-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.subtask-popup-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 8px;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+
+  .subtask-popup-title {
+    flex: 1;
+    color: var(--text-primary);
+
+    &.done {
+      text-decoration: line-through;
+      color: var(--text-secondary);
+    }
+  }
+
+  .subtask-popup-date {
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+}
+
+.subtask-popup-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  .btn-submit-airbus {
+    // Fond plein (pas texte) : --brand-primary directement, comme .btn-primary-airbus plus haut.
+    background: var(--brand-primary);
+    color: #ffffff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+
+    &:hover {
+      background: $airbus-blue-secondary;
+    }
+  }
+}

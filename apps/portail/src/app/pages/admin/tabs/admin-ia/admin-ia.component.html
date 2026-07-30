@@ -1,0 +1,151 @@
+<div class="space-y-6">
+
+  <div class="flex items-center justify-between">
+    <div>
+      <h2 class="text-base font-semibold text-light-text dark:text-white mb-1">IA — Skills</h2>
+      <p class="text-sm text-light-text-muted dark:text-white/40">Documents Skill : titre, contenu markdown, IA associée (Config › Intelligence Artificielle › Outils CLI).</p>
+    </div>
+    <button (click)="openNew()"
+            class="flex items-center gap-1.5 text-sm font-semibold px-3 py-2 rounded-lg bg-light-primary dark:bg-primary text-black hover:opacity-90 transition-opacity">
+      <span class="material-symbols-outlined text-base">add</span>
+      Nouveau skill
+    </button>
+  </div>
+
+  @if (error()) {
+    <div class="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-sm text-red-400">{{ error() }}</div>
+  }
+
+  @if (loading()) {
+    <p class="text-sm text-light-text-muted dark:text-white/40">Chargement…</p>
+  } @else if (skills().length === 0) {
+    <div class="flex flex-col items-center justify-center gap-3 py-16 text-center border border-dashed border-light-border dark:border-white/10 rounded-xl">
+      <span class="material-symbols-outlined text-4xl text-light-text-muted dark:text-white/30">smart_toy</span>
+      <p class="text-sm text-light-text-muted dark:text-white/40">Aucun skill pour l'instant.</p>
+    </div>
+  } @else {
+    <div class="overflow-x-auto rounded-xl border border-light-border dark:border-white/10">
+      <table class="w-full text-sm">
+        <thead class="bg-light-surface dark:bg-surface text-left">
+          <tr>
+            <th class="px-4 py-2.5 font-semibold text-light-text-muted dark:text-white/50">Titre</th>
+            <th class="px-4 py-2.5 font-semibold text-light-text-muted dark:text-white/50">IA</th>
+            <th class="px-4 py-2.5 font-semibold text-light-text-muted dark:text-white/50">Mis à jour</th>
+            <th class="px-4 py-2.5 font-semibold text-light-text-muted dark:text-white/50 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (skill of skills(); track skill.id) {
+            <tr class="border-t border-light-border dark:border-white/10">
+              <td class="px-4 py-2.5 text-light-text dark:text-white font-medium">{{ skill.title }}</td>
+              <td class="px-4 py-2.5">
+                @if (skill.ia_provider) {
+                  <span class="text-xs px-1.5 py-0.5 rounded bg-light-primary/10 dark:bg-primary/10 text-light-primary dark:text-primary">
+                    {{ providerLabels[skill.ia_provider] }}{{ skill.ia_model ? ' · ' + skill.ia_model : '' }}
+                  </span>
+                } @else {
+                  <span class="text-xs text-light-text-muted dark:text-white/30">—</span>
+                }
+              </td>
+              <td class="px-4 py-2.5 text-light-text-muted dark:text-white/40 text-xs">{{ formatDate(skill.updated_at) }}</td>
+              <td class="px-4 py-2.5">
+                <div class="flex items-center justify-end gap-1">
+                  @if (deletingId() === skill.id) {
+                    <button (click)="deleteSkill(skill.id)" class="text-xs px-2 py-1 rounded-md bg-red-500/15 border border-red-500/30 text-red-400 font-semibold hover:bg-red-500/25 transition-colors">Confirmer</button>
+                    <button (click)="cancelDelete()" class="text-xs px-2 py-1 rounded-md border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white transition-colors">Annuler</button>
+                  } @else {
+                    <button (click)="openEdit(skill)" title="Modifier" class="w-8 h-8 flex items-center justify-center rounded-md text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary hover:bg-light-primary/10 dark:hover:bg-primary/10 transition-colors">
+                      <span class="material-symbols-outlined text-base">edit</span>
+                    </button>
+                    <button (click)="confirmDelete(skill.id)" title="Supprimer" class="w-8 h-8 flex items-center justify-center rounded-md text-light-text-muted dark:text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-colors">
+                      <span class="material-symbols-outlined text-base">delete</span>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <!-- Popup : création / édition d'un skill -->
+  @if (showForm()) {
+    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div class="bg-white dark:bg-background border border-light-border dark:border-white/10 rounded-xl w-full max-w-2xl max-h-[85vh] flex flex-col">
+
+        <div class="flex items-center justify-between px-5 py-4 border-b border-light-border dark:border-white/10">
+          <h3 class="font-bold text-light-text dark:text-white">{{ editing() ? 'Modifier le skill' : 'Nouveau skill' }}</h3>
+          <button type="button" (click)="closeForm()" class="w-8 h-8 flex items-center justify-center rounded-md text-light-text-muted dark:text-white/40 hover:text-light-text dark:hover:text-white transition-colors">
+            <span class="material-symbols-outlined text-base">close</span>
+          </button>
+        </div>
+
+        <div class="px-5 py-4 space-y-4 overflow-y-auto">
+          <div>
+            <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1">Titre</label>
+            <input type="text" [(ngModel)]="formTitle" placeholder="Titre du skill"
+                   class="w-full px-3 py-2 rounded-lg border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1">IA (Outils CLI)</label>
+              <select [(ngModel)]="formProvider" (ngModelChange)="onProviderChange()"
+                      class="w-full px-3 py-2 rounded-lg border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface text-light-text dark:text-white text-sm dark:[color-scheme:dark] focus:outline-none focus:border-light-primary dark:focus:border-primary">
+                <option value="">Aucune</option>
+                <option value="claude">Claude Code</option>
+                <option value="antigravity">Antigravity CLI</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1">Modèle</label>
+              @if (modelsFor(formProvider).length) {
+                <select [(ngModel)]="formModel"
+                        class="w-full px-3 py-2 rounded-lg border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface text-light-text dark:text-white text-sm dark:[color-scheme:dark] focus:outline-none focus:border-light-primary dark:focus:border-primary">
+                  <option value="">Par défaut</option>
+                  @for (m of modelsFor(formProvider); track m.value) {
+                    <option [value]="m.value">{{ m.label }}</option>
+                  }
+                </select>
+              } @else {
+                <input type="text" [(ngModel)]="formModel" [disabled]="!formProvider" placeholder="Modèle (optionnel)"
+                       class="w-full px-3 py-2 rounded-lg border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface text-light-text dark:text-white text-sm disabled:opacity-40 focus:outline-none focus:border-light-primary dark:focus:border-primary" />
+              }
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50">Texte (markdown)</label>
+              <button type="button" (click)="previewMode.set(!previewMode())"
+                      class="text-xs font-medium text-light-primary dark:text-primary hover:opacity-80 transition-opacity">
+                {{ previewMode() ? 'Éditer' : 'Aperçu' }}
+              </button>
+            </div>
+            @if (previewMode()) {
+              <div class="w-full min-h-[220px] px-3 py-2 rounded-lg border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface text-light-text dark:text-white text-sm overflow-y-auto" [innerHTML]="renderMarkdown(formText)"></div>
+            } @else {
+              <textarea [(ngModel)]="formText" rows="10" placeholder="# Titre&#10;&#10;Contenu markdown du skill…"
+                        class="w-full px-3 py-2 rounded-lg border border-light-border dark:border-white/10 bg-light-surface dark:bg-surface text-light-text dark:text-white text-sm font-mono focus:outline-none focus:border-light-primary dark:focus:border-primary"></textarea>
+            }
+          </div>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 px-5 py-4 border-t border-light-border dark:border-white/10">
+          <button type="button" (click)="closeForm()"
+                  class="text-sm font-medium px-4 py-2 rounded-lg border border-light-border dark:border-white/15 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-colors">
+            Annuler
+          </button>
+          <button type="button" (click)="saveSkill()" [disabled]="saving() || !formTitle.trim() || !formText.trim()"
+                  class="text-sm font-semibold px-4 py-2 rounded-lg bg-light-primary dark:bg-primary text-black hover:opacity-90 disabled:opacity-40 transition-opacity">
+            {{ saving() ? 'Enregistrement…' : 'Enregistrer' }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

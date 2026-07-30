@@ -1,0 +1,814 @@
+<div class="matrix-container">
+  <!-- Barre de filtrage dynamique avec compteurs d'environnements & Bouton Tendances -->
+  <div class="env-filter-bar mb-2 d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <span class="filter-label">Environnement cible :</span>
+      <button class="env-btn all" [class.active]="selectedEnvironment === 'ALL'" [disabled]="envCounts.ALL === 0" (click)="changeEnvironment('ALL')">Tous ({{ envCounts.ALL }})</button>
+      <button class="env-btn dev" [class.active]="selectedEnvironment === 'DEV'" [disabled]="envCounts.DEV === 0" (click)="changeEnvironment('DEV')"><span class="dot"></span> DEV ({{ envCounts.DEV }})</button>
+      <button class="env-btn val" [class.active]="selectedEnvironment === 'VAL'" [disabled]="envCounts.VAL === 0" (click)="changeEnvironment('VAL')"><span class="dot"></span> VAL ({{ envCounts.VAL }})</button>
+      <button class="env-btn preprod" [class.active]="selectedEnvironment === 'PREPROD'" [disabled]="envCounts.PREPROD === 0" (click)="changeEnvironment('PREPROD')"><span class="dot"></span> PREPROD ({{ envCounts.PREPROD }})</button>
+      <button class="env-btn prod" [class.active]="selectedEnvironment === 'PROD'" [disabled]="envCounts.PROD === 0" (click)="changeEnvironment('PROD')"><span class="dot"></span> PROD ({{ envCounts.PROD }})</button>
+    </div>
+
+    <button type="button" class="btn-toggle-trend" [class.active]="showTrendDashboard" (click)="showTrendDashboard = !showTrendDashboard">
+      📈 <span class="ms-1">{{ showTrendDashboard ? 'Masquer les Tendances' : 'Historique & Tendances Qualité' }}</span>
+    </button>
+  </div>
+
+  <!-- PHASE 3 : DASHBOARD HISTORIQUE & TENDANCES TEMPPORELLES DE QUALITÉ -->
+  @if (showTrendDashboard) {
+    @let points = getTrendPoints();
+    <div class="trend-dashboard-panel mb-4 p-4 rounded-3 text-white border border-primary border-opacity-30 shadow-lg">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4 border-bottom border-white border-opacity-10 pb-3">
+        <div>
+          <h4 class="m-0 text-primary-light fw-bold d-flex align-items-center gap-2">
+            <span>📈 Analyse Temporelle &amp; Historique Qualité</span>
+            <span class="badge bg-primary bg-opacity-20 text-primary border border-primary border-opacity-30 fs-7">Release Gate Analytics</span>
+          </h4>
+          <p class="text-white-50 small m-0 mt-1">Suivi de l'évolution du taux de succès et convergence des campagnes de recette au fil des livraisons</p>
+        </div>
+
+        <!-- Filtres de tendance -->
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-secondary" [class.active]="trendPeriodFilter === 'ALL'" (click)="trendPeriodFilter = 'ALL'">Toutes</button>
+            <button class="btn btn-outline-secondary" [class.active]="trendPeriodFilter === '30D'" (click)="trendPeriodFilter = '30D'">30 Derniers Jours</button>
+            <button class="btn btn-outline-secondary" [class.active]="trendPeriodFilter === '7D'" (click)="trendPeriodFilter = '7D'">7 Jours</button>
+          </div>
+
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-secondary" [class.active]="trendTypeFilter === 'ALL'" (click)="trendTypeFilter = 'ALL'">Tous les types</button>
+            <button class="btn btn-outline-secondary" [class.active]="trendTypeFilter === 'SOLO'" (click)="trendTypeFilter = 'SOLO'">Sessions</button>
+            <button class="btn btn-outline-secondary" [class.active]="trendTypeFilter === 'GROUP'" (click)="trendTypeFilter = 'GROUP'">Groupes</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="row g-3 mb-4">
+        <div class="col-md-3">
+          <div class="kpi-card p-3 rounded-3 bg-dark bg-opacity-40 border border-white border-opacity-10">
+            <div class="text-white-50 small text-uppercase fw-semibold mb-1">Taux de Succès Moyen</div>
+            <div class="d-flex align-items-baseline gap-2">
+              <span class="fs-2 fw-bold text-success">{{ getAverageTrendRate(points) }}%</span>
+              @let delta = getLatestDelta(points);
+              @if (delta > 0) {
+                <span class="badge bg-success bg-opacity-20 text-success small">↗️ +{{ delta }}%</span>
+              } @else if (delta < 0) {
+                <span class="badge bg-danger bg-opacity-20 text-danger small">↘️ {{ delta }}%</span>
+              }
+            </div>
+            <div class="text-white-50 fs-8 mt-1">Moyenne sur {{ points.length }} exécution(s)</div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="kpi-card p-3 rounded-3 bg-dark bg-opacity-40 border border-white border-opacity-10">
+            <div class="text-white-50 small text-uppercase fw-semibold mb-1">Stabilité Quality Gate</div>
+            <div class="fs-2 fw-bold text-info">{{ getGoSuccessRatio(points) }}%</div>
+            <div class="text-white-50 fs-8 mt-1">Taux d'approbation GO / GO Conditionnel</div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="kpi-card p-3 rounded-3 bg-dark bg-opacity-40 border border-white border-opacity-10">
+            <div class="text-white-50 small text-uppercase fw-semibold mb-1">Dernière Variation (Delta)</div>
+            @let latestD = getLatestDelta(points);
+            <div class="fs-2 fw-bold" [class.text-success]="latestD >= 0" [class.text-danger]="latestD < 0">
+              {{ latestD >= 0 ? '+' + latestD : latestD }}%
+            </div>
+            <div class="text-white-50 fs-8 mt-1">Par rapport à la livraison précédente</div>
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <div class="kpi-card p-3 rounded-3 bg-dark bg-opacity-40 border border-white border-opacity-10">
+            <div class="text-white-50 small text-uppercase fw-semibold mb-1">Exécutions Historiques</div>
+            <div class="fs-2 fw-bold text-warning">{{ points.length }}</div>
+            <div class="text-white-50 fs-8 mt-1">Jalons enregistrés en base</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphique Temporel SVG (Courbe de Taux de Succès + Points d'Exécution) -->
+      @if (points.length > 0) {
+      <div class="chart-container-card p-3 rounded-3 bg-dark bg-opacity-60 border border-white border-opacity-10 mb-4">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="text-white-50 small fw-bold text-uppercase">Courbe d'Évolution de la Qualité (%)</span>
+          <div class="legend d-flex align-items-center gap-3 fs-8">
+            <span class="d-flex align-items-center gap-1"><span class="legend-dot go"></span> Validé (GO)</span>
+            <span class="d-flex align-items-center gap-1"><span class="legend-dot no-go"></span> Bloqué (NO-GO)</span>
+          </div>
+        </div>
+
+        <div class="svg-wrapper position-relative" style="overflow-x: auto;">
+          <svg viewBox="0 0 840 160" preserveAspectRatio="none" style="width: 100%; height: 180px;">
+            <defs>
+              <linearGradient id="rateGradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#10b981" stop-opacity="0.3" />
+                <stop offset="100%" stop-color="#10b981" stop-opacity="0.0" />
+              </linearGradient>
+            </defs>
+
+            <!-- Lignes de grille (0%, 25%, 50%, 75%, 100%) -->
+            <line x1="40" y1="20" x2="800" y2="20" stroke="rgba(255,255,255,0.06)" stroke-dasharray="4" />
+            <text x="10" y="24" fill="rgba(255,255,255,0.3)" font-size="10">100%</text>
+
+            <line x1="40" y1="52.5" x2="800" y2="52.5" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4" />
+            <text x="10" y="56" fill="rgba(255,255,255,0.3)" font-size="10">75%</text>
+
+            <line x1="40" y1="85" x2="800" y2="85" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4" />
+            <text x="10" y="89" fill="rgba(255,255,255,0.3)" font-size="10">50%</text>
+
+            <line x1="40" y1="117.5" x2="800" y2="117.5" stroke="rgba(255,255,255,0.04)" stroke-dasharray="4" />
+            <text x="10" y="121" fill="rgba(255,255,255,0.3)" font-size="10">25%</text>
+
+            <line x1="40" y1="130" x2="800" y2="130" stroke="rgba(255,255,255,0.1)" />
+            <text x="10" y="134" fill="rgba(255,255,255,0.3)" font-size="10">0%</text>
+
+            <!-- Zone ombragée sous la courbe -->
+            <path [attr.d]="getTrendAreaD(points)" fill="url(#rateGradient)" />
+
+            <!-- Courbe principale -->
+            <path [attr.d]="getTrendPathD(points)" fill="none" stroke="#10b981" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+
+            <!-- Points d'exécutions -->
+            @for (p of points; track p.id) {
+            <g class="chart-point-group" (mouseenter)="hoveredTrendPoint = p" (mouseleave)="hoveredTrendPoint = null" style="cursor: pointer;">
+              <circle [attr.cx]="p.svgX" [attr.cy]="p.svgY" r="10" fill="transparent" />
+              <circle [attr.cx]="p.svgX" [attr.cy]="p.svgY" r="5"
+                      [attr.fill]="p.status === 'GO' ? '#10b981' : (p.status === 'GO-CONDITIONAL' ? '#f59e0b' : '#ef4444')"
+                      stroke="#ffffff" stroke-width="2" />
+              <text [attr.x]="p.svgX" y="148" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">
+                {{ p.shortDateStr }}
+              </text>
+            </g>
+            }
+          </svg>
+
+          <!-- Tooltip interactif au survol d'un point -->
+          @if (hoveredTrendPoint; as tp) {
+          <div class="chart-tooltip p-3 rounded shadow-lg bg-black border border-secondary"
+               [style.left.px]="tp.svgX" [style.top.px]="tp.svgY - 90">
+            <div class="fw-bold text-white small">{{ tp.title }}</div>
+            <div class="text-white-50 fs-8">{{ tp.dateStr }} • Env: {{ tp.environment }}</div>
+            <div class="d-flex align-items-center gap-2 mt-2">
+              <span class="badge" [ngClass]="tp.status === 'GO' ? 'bg-success' : 'bg-danger'">{{ tp.status }}</span>
+              <span class="fw-bold text-light">{{ tp.successRate }}% Réussite</span>
+            </div>
+            <div class="mt-1 fs-8 text-white-50">
+              Anomalies KO : <span class="text-danger fw-bold">{{ tp.bloquantKO }} Bloquant(s)</span>, <span class="text-warning fw-bold">{{ tp.majeurKO }} Majeur(s)</span>
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="text-center text-muted p-4">Aucune donnée disponible pour la période et les filtres sélectionnés.</div>
+      }
+
+      <!-- Tableau Chronologique d'Historique des Livraisons -->
+      <div class="history-table-container">
+        <h6 class="text-white-50 small fw-bold text-uppercase mb-2">Historique Chronologique des Livraisons (Release History)</h6>
+        <div class="table-responsive">
+          <table class="table table-dark table-hover align-middle mb-0 small border border-white border-opacity-10 rounded">
+            <thead>
+              <tr class="text-uppercase text-white-50 fs-8">
+                <th>Date &amp; Heure</th>
+                <th>Jalon / Session</th>
+                <th class="text-center">Environnement</th>
+                <th class="text-center">Quality Gate</th>
+                <th class="text-center">Taux Succès</th>
+                <th class="text-center">Variation (Delta)</th>
+                <th class="text-center">Anomalies KO</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of points; track p.id) {
+              <tr>
+                <td class="text-white-50">{{ p.dateStr }}</td>
+                <td class="fw-bold text-white">
+                  @if (p.isCampaign) {
+                    <span class="badge bg-warning text-dark me-1" style="font-size: 8px;">GROUPE</span>
+                  }
+                  {{ p.title }}
+                </td>
+                <td class="text-center">
+                  <span class="badge bg-dark border border-secondary text-uppercase" style="font-size: 9px;">{{ p.environment }}</span>
+                </td>
+                <td class="text-center">
+                  <span class="badge" [ngClass]="p.status === 'GO' ? 'bg-success' : (p.status === 'GO-CONDITIONAL' ? 'bg-warning text-dark' : 'bg-danger')">
+                    {{ p.status }}
+                  </span>
+                </td>
+                <td class="text-center fw-bold text-white">{{ p.successRate }}%</td>
+                <td class="text-center">
+                  @if (p.deltaRate > 0) {
+                    <span class="text-success fw-bold">↗️ +{{ p.deltaRate }}%</span>
+                  } @else if (p.deltaRate < 0) {
+                    <span class="text-danger fw-bold">↘️ {{ p.deltaRate }}%</span>
+                  } @else {
+                    <span class="text-muted">=</span>
+                  }
+                </td>
+                <td class="text-center">
+                  @if (p.totalKO > 0) {
+                    <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-30">
+                      {{ p.bloquantKO }} Bloq / {{ p.majeurKO }} Maj
+                    </span>
+                  } @else {
+                    <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-30">0 KO</span>
+                  }
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (getLatestQualityGate(); as gate) {
+  <div class="quality-gate-panel mb-2 p-3 rounded-3 text-white border border-secondary shadow-lg"
+       [ngClass]="{
+         'gate-go': gate.status === 'GO',
+         'gate-conditional': gate.status === 'GO-CONDITIONAL',
+         'gate-no-go': gate.status === 'NO-GO'
+       }">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-2 border-bottom pb-2 border-secondary border-opacity-25">
+      <div class="d-flex align-items-center gap-3">
+        <div class="gate-status-badge px-3 py-2 rounded-3 text-uppercase fw-bold fs-5 d-flex align-items-center gap-2">
+          @if (gate.status === 'GO') {
+            <span>🟢 GO — LIVRAISON AUTORISÉE</span>
+          } @else if (gate.status === 'GO-CONDITIONAL') {
+            <span>🟠 GO CONDITIONNEL — SOUS RÉSERVE</span>
+          } @else {
+            <span>🔴 NO-GO — LIVRAISON BLOQUÉE</span>
+          }
+        </div>
+        <span class="badge bg-dark bg-opacity-50 text-light border border-light border-opacity-25 px-2 py-1">
+          ENVIRONNEMENT CIBLE : {{ gate.environment }}
+        </span>
+      </div>
+      <div class="d-flex align-items-center gap-3 text-white-50 fs-7">
+        <span>Taux de Succès : <strong class="text-white">{{ gate.successRate }}%</strong></span>
+        <span>•</span>
+        <span>Couverture Cahier : <strong class="text-white">{{ gate.coverageRate }}%</strong></span>
+      </div>
+    </div>
+
+    <!-- Counters row -->
+    <div class="row g-2 mb-2">
+      <div class="col-md-3">
+        <div class="stat-card p-2 rounded bg-black bg-opacity-30 border border-white border-opacity-10 text-center">
+          <div class="fs-4 fw-bold" [class.text-danger]="gate.bloquantFailedCount > 0" [class.text-success]="gate.bloquantFailedCount === 0">
+            {{ gate.bloquantFailedCount }}
+          </div>
+          <div class="small text-white-50">Tests Bloquants KO</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card p-2 rounded bg-black bg-opacity-30 border border-white border-opacity-10 text-center">
+          <div class="fs-4 fw-bold" [class.text-warning]="gate.majeurFailedCount > 0" [class.text-success]="gate.majeurFailedCount === 0">
+            {{ gate.majeurFailedCount }}
+          </div>
+          <div class="small text-white-50">Tests Majeurs KO</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card p-2 rounded bg-black bg-opacity-30 border border-white border-opacity-10 text-center">
+          <div class="fs-4 fw-bold text-info">
+            {{ gate.mineurFailedCount }}
+          </div>
+          <div class="small text-white-50">Tests Mineurs KO</div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="stat-card p-2 rounded bg-black bg-opacity-30 border border-white border-opacity-10 text-center">
+          <div class="fs-4 fw-bold text-light">
+            {{ gate.totalPassed }} / {{ gate.totalExecuted }}
+          </div>
+          <div class="small text-white-50">Tests Exécutés OK</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reasons & Recommendations -->
+    <div class="reasons-list">
+      @for (reason of gate.reasons; track reason) {
+        <div class="reason-item small mb-1">{{ reason }}</div>
+      }
+      @for (rec of gate.recommendations; track rec) {
+        <div class="recommendation-item small text-info mb-1">💡 {{ rec }}</div>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- Barre de filtrage par statut de tests (déplacée SOUS la zone GO / NO-GO) -->
+  <div class="status-filter-bar mb-2 d-flex align-items-center flex-wrap gap-2">
+    <span class="filter-label"><i class="fa-solid fa-filter"></i> Filtre Statut Tests :</span>
+
+    <button class="status-btn all" 
+            [class.active]="selectedStatusFilter === 'ALL'" 
+            (click)="setStatusFilter('ALL')">
+      Tous ({{ statusCounts.ALL }})
+    </button>
+
+    <button class="status-btn passed" 
+            [class.active]="selectedStatusFilter === 'PASSED'" 
+            (click)="setStatusFilter('PASSED')">
+      <span class="dot green"></span> Tests OK ({{ statusCounts.PASSED }})
+    </button>
+
+    <button class="status-btn failed" 
+            [class.active]="selectedStatusFilter === 'FAILED'" 
+            (click)="setStatusFilter('FAILED')">
+      <span class="dot red"></span> Tests KO ({{ statusCounts.FAILED }})
+    </button>
+
+    <button class="status-btn pending" 
+            [class.active]="selectedStatusFilter === 'PENDING'" 
+            (click)="setStatusFilter('PENDING')">
+      <span class="dot yellow"></span> Non exécutés / En attente ({{ statusCounts.PENDING }})
+    </button>
+
+    <button class="status-btn bloquant" 
+            [class.active]="selectedStatusFilter === 'BLOQUANT'" 
+            (click)="setStatusFilter('BLOQUANT')">
+      <span class="dot dark-red"></span> Bloquants uniquement ({{ statusCounts.BLOQUANT }})
+    </button>
+  </div>
+
+  @if (sessions.length === 0) {
+  <div class="text-center text-muted p-5 mt-5">
+    Aucun historique de recette disponible pour l'environnement sélectionné.
+  </div>
+  } @else {
+  <div class="matrix-wrapper">
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th class="sticky-col col-launch-session text-center" style="width: 85px;" title="Lancer une nouvelle session individuelle">▶️ Session</th>
+          <th class="sticky-col main-title">Tests</th>
+          <th class="main-title text-center" style="width: 100px;">Criticité</th>
+          @for (session of sessions; track session.id || $index) {
+          <th class="session-header"
+              [attr.colspan]="session.isCampaignAggregated ? 3 : 1"
+              [ngClass]="isSessionCriticalFailed(session) ? 'bg-rate-bad' : getRateBgClass(getResultStats(session).rate)">
+            <div class="header-row date-row">
+              {{ session.dateExecuted | date:'dd/MM HH:mm' }}
+            </div>
+            <div class="badge-placeholder d-flex flex-column gap-1 align-items-center">
+              @if (session.isCampaignAggregated) {
+              <span class="campaign-badge">CAMPAGNE</span>
+              }
+              <span class="env-tag-badge px-2 py-0.5 rounded text-uppercase fw-bold"
+                    style="font-size: 9px; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                {{ session.environment }}
+              </span>
+            </div>
+            <div class="header-row title-row">
+              {{ session.title || session.testerName }}
+            </div>
+            <div class="header-row operator-row" [title]="session.testerName">
+              @if (session.title) {
+              <span>{{ session.isCampaignAggregated ? 'Équipe QA' : session.testerName }}</span>
+              } @else {
+              <span class="empty-placeholder">&nbsp;</span>
+              }
+            </div>
+            <div class="header-row rate-row" title="Taux de réussite sur le périmètre exécuté">
+              {{ getResultStats(session).rate }}%
+            </div>
+            <div class="header-row untested-row" title="Pourcentage du cahier de recette non couvert par cette session">
+              Non testé : {{ getResultStats(session).untestedRate }}%
+            </div>
+            <div class="header-row action-row d-flex flex-column align-items-center gap-1">
+              <button class="btn-pdf-export" (click)="exportSessionToPDF(session); $event.stopPropagation()"
+                      title="Exporter au format PDF">
+                PDF
+              </button>
+
+              @if (session.isCampaignAggregated) {
+                <div class="d-flex justify-content-center w-100 mt-1">
+                  <select class="form-select form-select-sm campaign-session-select text-truncate"
+                          [value]="selectedSessionFilter || ''"
+                          (change)="onSelectSessionForCampaign($event, session)"
+                          (click)="$event.stopPropagation()"
+                          title="Sélectionner une session pour isoler ses tests (ou '-- Toutes les sessions --' pour tout afficher)">
+                    <option value="">-- Toutes les sessions --</option>
+                    @for (indSess of getIndividualSessionsForCampaign(session); track indSess.id || $index) {
+                      @let completed = isSessionCompleted(indSess);
+                      <option [value]="indSess.id" [disabled]="!completed">
+                        {{ completed ? '✓' : '⏳' }} {{ getCleanTitle(indSess.title || indSess.testerName) }} ({{ completed ? 'Terminé' : 'Non terminé' }})
+                      </option>
+                    }
+                  </select>
+                </div>
+              }
+            </div>
+          </th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (cat of categoriesTree; track cat.id || $index) {
+        @if (hasVisibleTestsInCategory(cat)) {
+        <!-- BANIÈRE EN-TÊTE CATÉGORIE -->
+        <tr class="matrix-cat-row">
+          <td class="sticky-col action-col-cell col-launch-session text-center cat-banner">
+            <button type="button" class="btn-launch-run session" title="Lancer une session individuelle pour toute cette catégorie"
+                    (click)="onLaunchSession('CAT:' + cat.id); $event.stopPropagation()">
+              ▶️ <span class="d-none d-md-inline ms-1">Session</span>
+            </button>
+          </td>
+          <td class="sticky-col test-name-cell cat-banner">
+            <span class="banner-title">📁 Catégorie : {{ cat.name }}</span>
+            <span class="banner-subtext">[{{ cat.applicatifs.length }} Applicatif(s)]</span>
+          </td>
+          <td class="cat-banner"></td>
+          @for (session of sessions; track session.id || $index) {
+          @if (session.isCampaignAggregated) {
+          <td class="action-col-cell group-action-cell text-center border-end cat-banner">
+            <button type="button" class="btn-launch-run group"
+                    [disabled]="isCategoryTestedInSpecificCampaign(cat, session)"
+                    [title]="isCategoryTestedInSpecificCampaign(cat, session) ? 'Catégorie déjà testée dans cette campagne' : 'Rattacher une session à cette campagne pour toute cette catégorie'"
+                    (click)="onLaunchGroupSession('CAT:' + cat.id, session.id); $event.stopPropagation()">
+              👥 <span class="d-none d-xl-inline ms-1">Groupe</span>
+            </button>
+          </td>
+          }
+          <td class="cat-banner"></td>
+          @if (session.isCampaignAggregated) {
+            @let block = getSubsessionBlockSpan('CAT_' + cat.id, session);
+            @if (block.isStart) {
+              <td class="subsession-info-cell text-start align-middle px-2 py-1"
+                  [class.subsession-empty]="!block.execInfo"
+                  [class.border-start]="!!block.execInfo"
+                  [attr.rowspan]="block.rowspan"
+                  (mouseenter)="showTooltip($event, block.execInfo)"
+                  (mouseleave)="hideTooltip()">
+                @if (block.execInfo) {
+                  <div class="subsession-card">
+                    <div class="subsession-title text-warning fw-bold text-truncate">{{ block.execInfo.title }}</div>
+                    <div class="subsession-user text-muted fst-italic text-truncate" style="font-size: 11px;">{{ block.execInfo.tester }}</div>
+                  </div>
+                }
+              </td>
+            }
+          }
+          }
+        </tr>
+
+        @for (app of cat.applicatifs; track app.id || $index) {
+        @if (hasVisibleTestsInApplicatif(app)) {
+        <!-- BANIÈRE EN-TÊTE APPLICATIF -->
+        <tr class="matrix-app-row">
+          <td class="sticky-col action-col-cell col-launch-session text-center app-banner">
+            <button type="button" class="btn-launch-run session" title="Lancer une session individuelle pour tout cet applicatif"
+                    (click)="onLaunchSession('APP:' + app.id); $event.stopPropagation()">
+              ▶️ <span class="d-none d-md-inline ms-1">Session</span>
+            </button>
+          </td>
+          <td class="sticky-col test-name-cell app-banner">
+            <span class="banner-title level-app-indent">💻 Applicatif : {{ app.name }}</span>
+            <span class="banner-subtext">[{{ app.sections.length }} Section(s)]</span>
+            @if (app.description) {
+              <small class="ms-2 opacity-75 fw-normal text-white-50">{{ app.description }}</small>
+            }
+          </td>
+          <td class="app-banner"></td>
+          @for (session of sessions; track session.id || $index) {
+          @if (session.isCampaignAggregated) {
+          <td class="action-col-cell group-action-cell text-center border-end app-banner">
+            <button type="button" class="btn-launch-run group"
+                    [disabled]="isApplicatifTestedInSpecificCampaign(app, session)"
+                    [title]="isApplicatifTestedInSpecificCampaign(app, session) ? 'Applicatif déjà testé dans cette campagne' : 'Rattacher une session à cette campagne pour tout cet applicatif'"
+                    (click)="onLaunchGroupSession('APP:' + app.id, session.id); $event.stopPropagation()">
+              👥 <span class="d-none d-xl-inline ms-1">Groupe</span>
+            </button>
+          </td>
+          }
+          <td class="app-banner"></td>
+          @if (session.isCampaignAggregated) {
+            @let block = getSubsessionBlockSpan('APP_' + app.id, session);
+            @if (block.isStart) {
+              <td class="subsession-info-cell text-start align-middle px-2 py-1"
+                  [class.subsession-empty]="!block.execInfo"
+                  [class.border-start]="!!block.execInfo"
+                  [attr.rowspan]="block.rowspan"
+                  (mouseenter)="showTooltip($event, block.execInfo)"
+                  (mouseleave)="hideTooltip()">
+                @if (block.execInfo) {
+                  <div class="subsession-card">
+                    <div class="subsession-title text-warning fw-bold text-truncate">{{ block.execInfo.title }}</div>
+                    <div class="subsession-user text-muted fst-italic text-truncate" style="font-size: 11px;">{{ block.execInfo.tester }}</div>
+                  </div>
+                }
+              </td>
+            }
+          }
+          }
+        </tr>
+
+        @for (sec of app.sections; track sec.id || $index) {
+        @if (hasVisibleTestsInSection(sec)) {
+        <!-- BANIÈRE EN-TÊTE SECTION -->
+        <tr class="matrix-sec-row">
+          <td class="sticky-col action-col-cell col-launch-session text-center sec-banner">
+            <button type="button" class="btn-launch-run session" title="Lancer une session individuelle pour toute cette section"
+                    (click)="onLaunchSession('SEC:' + sec.id); $event.stopPropagation()">
+              ▶️ <span class="d-none d-md-inline ms-1">Session</span>
+            </button>
+          </td>
+          <td class="sticky-col test-name-cell sec-banner">
+            <span class="banner-title level-sec-indent">🔹 Section : {{ sec.name }}</span>
+            <span class="banner-subtext">[{{ sec.tests.length }} Fiche(s) de test]</span>
+            @if (sec.description) {
+              <small class="ms-2 opacity-75 fw-normal text-white-50">{{ sec.description }}</small>
+            }
+          </td>
+          <td class="sec-banner"></td>
+          @for (session of sessions; track session.id || $index) {
+          @if (session.isCampaignAggregated) {
+          <td class="action-col-cell group-action-cell text-center border-end sec-banner">
+            <button type="button" class="btn-launch-run group"
+                    [disabled]="isSectionTestedInSpecificCampaign(sec, session)"
+                    [title]="isSectionTestedInSpecificCampaign(sec, session) ? 'Section déjà testée dans cette campagne' : 'Rattacher une session à cette campagne pour toute cette section'"
+                    (click)="onLaunchGroupSession('SEC:' + sec.id, session.id); $event.stopPropagation()">
+              👥 <span class="d-none d-xl-inline ms-1">Groupe</span>
+            </button>
+          </td>
+          }
+          <td class="sec-banner"></td>
+          @if (session.isCampaignAggregated) {
+            @let block = getSubsessionBlockSpan('SEC_' + sec.id, session);
+            @if (block.isStart) {
+              <td class="subsession-info-cell text-start align-middle px-2 py-1"
+                  [class.subsession-empty]="!block.execInfo"
+                  [class.border-start]="!!block.execInfo"
+                  [attr.rowspan]="block.rowspan"
+                  (mouseenter)="showTooltip($event, block.execInfo)"
+                  (mouseleave)="hideTooltip()">
+                @if (block.execInfo) {
+                  <div class="subsession-card">
+                    <div class="subsession-title text-warning fw-bold text-truncate">{{ block.execInfo.title }}</div>
+                    <div class="subsession-user text-muted fst-italic text-truncate" style="font-size: 11px;">{{ block.execInfo.tester }}</div>
+                  </div>
+                }
+              </td>
+            }
+          }
+          }
+        </tr>
+
+        @for (test of sec.tests; track test.id || $index) {
+        @if (shouldDisplayTest(test)) {
+        <tr class="test-header-row">
+          <td class="sticky-col action-col-cell col-launch-session text-center">
+            <button type="button" class="btn-launch-run session" title="Lancer une session individuelle pour cette section"
+                    (click)="onLaunchSession('SEC:' + sec.id); $event.stopPropagation()">
+              ▶️ <span class="d-none d-md-inline ms-1">Session</span>
+            </button>
+          </td>
+          <td class="sticky-col test-name-cell level-test-indent">
+            <span class="test-type-icon me-1" style="color: #60a5fa;">📋</span> {{ test.name }}
+          </td>
+          <td class="text-center crit-col-cell" [ngClass]="test.criticality.toLowerCase() || ''">
+            <span class="badge-crit" [ngClass]="test.criticality.toLowerCase() || ''">{{ test.criticality }}</span>
+          </td>
+          @for (session of sessions; track session.id || $index) {
+          @if (session.isCampaignAggregated) {
+          <td class="action-col-cell group-action-cell text-center border-end">
+            <button type="button" class="btn-launch-run group"
+                    [disabled]="isSectionTestedInSpecificCampaign(sec, session)"
+                    [title]="isSectionTestedInSpecificCampaign(sec, session) ? 'Section déjà testée dans cette campagne' : 'Rattacher une session à cette campagne pour cette section'"
+                    (click)="onLaunchGroupSession('SEC:' + sec.id, session.id); $event.stopPropagation()">
+              👥 <span class="d-none d-xl-inline ms-1">Groupe</span>
+            </button>
+          </td>
+          }
+          <td class="test-rate-cell"
+              [class.pending-contrast]="isTestResultPending(test, session)"
+              [ngClass]="isTestCriticalFailed(test, session) ? 'bg-summary-ko' : 'bg-summary-ok'">
+            <div class="rate-cell-flex">
+              <div class="cell-left d-flex align-items-center gap-1">
+                @if (hasDetailComment(test, session)) {
+                  <button type="button" class="btn-note-indicator" title="Voir le commentaire"
+                          (click)="openDetail(test, session); $event.stopPropagation()">📝</button>
+                }
+                @if (hasDetailCapture(test, session)) {
+                  <button type="button" class="btn-note-indicator" title="Voir la capture"
+                          (click)="openDetail(test, session); $event.stopPropagation()">📷</button>
+                }
+              </div>
+
+              <div class="cell-main text-center flex-grow-1">
+                @let testSt = getDirectTestStatusInSession(test, session);
+                @if (testSt === 'OK') {
+                  <span class="badge-matrix ok">OK</span>
+                } @else if (testSt === 'KO') {
+                  <span class="badge-matrix ko">KO</span>
+                } @else if (testSt === 'SKIPPED') {
+                  <span class="badge-matrix skipped">IGNORÉ</span>
+                } @else {
+                  <span class="badge-matrix empty"></span>
+                }
+              </div>
+
+              <div class="cell-right text-end">
+                @if (isTestSectionCompleted(test, session)) {
+                <span class="rate-badge">
+                  {{ getTestSuccessRateInSession(test, session) }}
+                </span>
+                }
+              </div>
+            </div>
+          </td>
+
+          @if (session.isCampaignAggregated) {
+            @let block = getSubsessionBlockSpan('TEST_' + test.id, session);
+            @if (block.isStart) {
+              <td class="subsession-info-cell text-start align-middle px-2 py-1"
+                  [class.subsession-empty]="!block.execInfo"
+                  [class.border-start]="!!block.execInfo"
+                  [attr.rowspan]="block.rowspan"
+                  (mouseenter)="showTooltip($event, block.execInfo)"
+                  (mouseleave)="hideTooltip()">
+                @if (block.execInfo) {
+                  <div class="subsession-card">
+                    <div class="subsession-title text-warning fw-bold text-truncate">{{ block.execInfo.title }}</div>
+                    <div class="subsession-user text-muted fst-italic text-truncate" style="font-size: 11px;">{{ block.execInfo.tester }}</div>
+                  </div>
+                }
+              </td>
+            }
+          }
+          }
+        </tr>
+        @for (task of test.tasks; track task.id || $index) {
+        @if (shouldDisplayTask(task, test)) {
+        <tr class="task-row">
+          <td class="sticky-col action-col-cell col-launch-session text-center"></td>
+          <td class="sticky-col task-name-cell level-task-indent">
+            <span class="task-bullet">•</span> {{ task.name }}
+          </td>
+          <td class="text-center crit-col-cell" [ngClass]="test.criticality.toLowerCase() || ''">
+            <span class="badge-crit" [ngClass]="test.criticality.toLowerCase() || ''">{{ test.criticality }}</span>
+          </td>
+          @for (session of sessions; track session.id || $index) {
+          @if (session.isCampaignAggregated) {
+          <td class="action-col-cell group-action-cell text-center border-end"></td>
+          }
+          <td class="text-center status-cell" [class.pending-contrast]="isTaskResultPending(task, test, session)">
+            @let status = getTaskStatusInSession(task.id, session);
+            <div class="status-cell-flex d-flex align-items-center justify-content-between gap-1">
+              <div class="cell-left d-flex align-items-center gap-1">
+                @if (hasTaskComment(task, session)) {
+                  <button type="button" class="btn-note-indicator" title="Voir le commentaire"
+                          (click)="openTaskDetail(task, session); $event.stopPropagation()">📝</button>
+                }
+                @if (hasTaskCapture(task, session)) {
+                  <button type="button" class="btn-note-indicator" title="Voir la capture"
+                          (click)="openTaskDetail(task, session); $event.stopPropagation()">📷</button>
+                }
+              </div>
+              <div class="cell-main text-center flex-grow-1">
+                @if (status === 'OK') {
+                <span class="badge-matrix ok">OK</span>
+                } @else if (status === 'KO') {
+                <span class="badge-matrix ko">KO</span>
+                } @else if (status === 'SKIPPED') {
+                <span class="badge-matrix skipped">IGNORÉ</span>
+                } @else {
+                <span class="badge-matrix empty"></span>
+                }
+              </div>
+              <div class="cell-right"></div>
+            </div>
+          </td>
+
+          @if (session.isCampaignAggregated) {
+            @let block = getSubsessionBlockSpan('TASK_' + test.id + '_' + task.id, session);
+            @if (block.isStart) {
+              <td class="subsession-info-cell text-start align-middle px-2 py-1"
+                  [class.subsession-empty]="!block.execInfo"
+                  [class.border-start]="!!block.execInfo"
+                  [attr.rowspan]="block.rowspan"
+                  (mouseenter)="showTooltip($event, block.execInfo)"
+                  (mouseleave)="hideTooltip()">
+                @if (block.execInfo) {
+                  <div class="subsession-card">
+                    <div class="subsession-title text-warning fw-bold text-truncate">{{ block.execInfo.title }}</div>
+                    <div class="subsession-user text-muted fst-italic text-truncate" style="font-size: 11px;">{{ block.execInfo.tester }}</div>
+                  </div>
+                }
+              </td>
+            }
+          }
+          }
+        </tr>
+        }
+        }
+        }
+        }
+        }
+        }
+        }
+        }
+        }
+        }
+        <tr class="footer-action-row">
+          <td class="sticky-col footer-label-cell" colspan="3">
+            <span class="text-muted small fw-bold text-uppercase">Actions de session</span>
+          </td>
+          @for (session of sessions; track session.id || $index) {
+          @if (session.isCampaignAggregated) {
+          <td class="group-action-cell border-end"></td>
+          }
+          <td class="text-center danger-cell">
+            <button class="btn-delete-result text-danger" (click)="deleteResult(session); $event.stopPropagation()"
+                    [title]="session.isCampaignAggregated ? 'Efface les résultats de test (la session et le groupe sont conservés)' : 'Supprime cette session et tous ses résultats (irréversible)'">
+              {{ session.isCampaignAggregated ? 'Effacer les résultats' : 'Supprimer la session' }}
+            </button>
+          </td>
+          @if (session.isCampaignAggregated) {
+            @let block = getSubsessionBlockSpan('FOOTER', session);
+            @if (block.isStart) {
+              <td class="subsession-info-cell text-start align-middle px-2 py-1"
+                  [class.subsession-empty]="!block.execInfo"
+                  [class.border-start]="!!block.execInfo"
+                  [attr.rowspan]="block.rowspan"
+                  (mouseenter)="showTooltip($event, block.execInfo)"
+                  (mouseleave)="hideTooltip()">
+                @if (block.execInfo) {
+                  <div class="subsession-card">
+                    <div class="subsession-title text-warning fw-bold text-truncate">{{ block.execInfo.title }}</div>
+                    <div class="subsession-user text-muted fst-italic text-truncate" style="font-size: 11px;">{{ block.execInfo.tester }}</div>
+                  </div>
+                }
+              </td>
+            }
+          }
+          }
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  }
+</div>
+
+@if (activeTooltip) {
+  <div class="custom-subsession-tooltip"
+       [style.left.px]="activeTooltip.x"
+       [style.top.px]="activeTooltip.y">
+    <div class="tooltip-title">{{ activeTooltip.title }}</div>
+    <div class="tooltip-user"><span class="opacity-75">Opérateur :</span> {{ activeTooltip.tester }}</div>
+  </div>
+}
+
+@if (viewingDetail) {
+<div class="modal-overlay" (click)="closeDetail()">
+  <div class="modal-card detail-modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3 class="m-0 text-white">{{ viewingDetail.testName }}</h3>
+      <button class="btn-close-modal" (click)="closeDetail()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="text-muted small mb-3">{{ viewingDetail.sessionLabel }}</div>
+      @if (viewingDetail.notes) {
+        <div class="form-group mb-3">
+          <label class="text-muted small mb-1 d-block">Rapport d'erreur / Commentaires :</label>
+          <div class="detail-notes-box">{{ viewingDetail.notes }}</div>
+        </div>
+      }
+      @if (viewingDetail.capturePath) {
+        <div class="form-group mb-3">
+          <label class="text-muted small mb-1 d-block">Capture jointe :</label>
+          <a [href]="viewingDetail.capturePath" target="_blank">
+            <img [src]="viewingDetail.capturePath" alt="Capture d'écran" class="detail-capture-img">
+          </a>
+        </div>
+      }
+      @for (taskDetail of viewingDetail.taskDetails; track taskDetail.taskName) {
+        <div class="form-group mb-3 pt-2 border-top border-dark">
+          <label class="text-warning small mb-1 d-block">• {{ taskDetail.taskName }}</label>
+          @if (taskDetail.notes) {
+            <div class="detail-notes-box mb-2">{{ taskDetail.notes }}</div>
+          }
+          @if (taskDetail.capturePath) {
+            <a [href]="taskDetail.capturePath" target="_blank">
+              <img [src]="taskDetail.capturePath" alt="Capture d'écran" class="detail-capture-img">
+            </a>
+          }
+        </div>
+      }
+      @if (!viewingDetail.notes && !viewingDetail.capturePath && viewingDetail.taskDetails.length === 0) {
+        <div class="text-muted small">Aucun détail disponible.</div>
+      }
+    </div>
+  </div>
+</div>
+}

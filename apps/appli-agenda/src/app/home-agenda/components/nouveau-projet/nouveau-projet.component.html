@@ -1,0 +1,225 @@
+<div class="card-section nouveau-projet-card">
+  <div class="card-header">
+    <div class="header-title-group">
+      <span class="card-icon">{{ isEditMode ? '✏️' : '➕' }}</span>
+      <h3 class="card-title">{{ isEditMode ? 'Modifier le Projet' : '1. Créer un Nouveau Projet' }}</h3>
+      <app-help-hint heading="1. Créer / Modifier un Projet">
+        <p>Crée un projet SI (code, nom, niveau de risque, métiers, dates, charge estimée) et lui affecte les développeurs qui apparaîtront ensuite comme lignes du planning.</p>
+        <p>La <strong>date de fin estimée</strong> n'est plus saisie librement : elle est calculée à partir de la date de début et de l'estimation en jours. Une fois qu'au moins une demi-journée est validée sur ce projet, la <strong>date de début est verrouillée</strong> — la déplacer décalerait tout le projet dans l'agenda et désynchroniserait le travail déjà réellement effectué.</p>
+        <p>Les <strong>métiers</strong> (Dev/Infra/Media...) se gèrent depuis Administration &gt; Métiers. Un projet peut en cocher plusieurs à la fois, ou aucun.</p>
+        <p><strong>Contraintes de planification</strong> — deux options interdisent de planifier des tâches le week-end et/ou les jours fériés. Les jours exclus apparaissent grisés dans le planning et les tâches les enjambent sans y consommer de temps.</p>
+        <p>Activer une contrainte sur un projet <strong>déjà en cours ne réécrit jamais le passé</strong> : elle ne prend effet qu'à partir du lendemain. Les jours déjà travaillés — et aujourd'hui — gardent leurs tâches et leurs demi-journées validées ; seule la suite du planning est décalée.</p>
+      </app-help-hint>
+    </div>
+
+    <!-- BOUTON D'AFFICHAGE / MASQUAGE DU FORMULAIRE -->
+    <button
+      type="button"
+      class="btn-toggle-airbus"
+      [class.active]="isFormVisible"
+      (click)="toggleForm()"
+    >
+      @if (isEditMode) {
+        <span>✕ Annuler la modification</span>
+      } @else if (!isFormVisible) {
+        <span>+ Nouveau Projet</span>
+      } @else {
+        <span>− Masquer le formulaire</span>
+      }
+    </button>
+  </div>
+
+  <!-- CORPS DU FORMULAIRE DÉROULANT (MASQUÉ PAR DÉFAUT) -->
+  @if (isFormVisible) {
+    <div class="card-body">
+      <form (ngSubmit)="onSubmit()" class="project-form">
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="projCode">Code Projet *</label>
+            <input
+              id="projCode"
+              type="text"
+              [(ngModel)]="form.code"
+              name="code"
+              placeholder="Ex: PRJ-SI-00X"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="projName">Nom du Projet *</label>
+            <input
+              id="projName"
+              type="text"
+              [(ngModel)]="form.name"
+              name="name"
+              placeholder="Intitulé du projet"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="projRisk">Niveau de Risque</label>
+            <select id="projRisk" [(ngModel)]="form.riskLevel" name="riskLevel">
+              <option value="FAIBLE">FAIBLE</option>
+              <option value="MOYEN">MOYEN</option>
+              <option value="ELEVE">ÉLEVÉ</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="form-group">
+          <label for="projDesc">Description du projet</label>
+          <textarea
+            id="projDesc"
+            [(ngModel)]="form.description"
+            name="description"
+            rows="2"
+            placeholder="Résumé des objectifs métiers..."
+          ></textarea>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label for="projEstimation">Estimation (Jours)</label>
+            <input
+              id="projEstimation"
+              type="number"
+              [(ngModel)]="form.estimatedTimeDays"
+              name="estimatedTimeDays"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="projStart">
+              Date Début
+              @if (isDateStartLocked) {
+                <span class="date-locked-icon" aria-hidden="true">🔒</span>
+              }
+            </label>
+            <input
+              id="projStart"
+              type="date"
+              [(ngModel)]="form.dateStart"
+              name="dateStart"
+              [disabled]="isDateStartLocked"
+              [title]="isDateStartLocked
+                ? 'Au moins une demi-journée est déjà validée sur ce projet : impossible de déplacer sa date de début.'
+                : ''"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="projEnd">Date Fin Estimée (calculée)</label>
+            <input
+              id="projEnd"
+              type="date"
+              [ngModel]="computedDateEndEstimated"
+              name="dateEndEstimated"
+              disabled
+              title="Calculée automatiquement à partir de la date de début et de l'estimation en jours."
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Métiers (optionnel)</label>
+          <div class="categories-checkbox-container">
+            @for (metier of metiers; track metier.id) {
+              <label class="category-checkbox-label" [ngClass]="badgeClass(metier.color)">
+                <input
+                  type="checkbox"
+                  [checked]="isMetierSelected(metier.id)"
+                  (change)="toggleMetierSelection(metier.id)"
+                />
+                {{ metier.nom }}
+              </label>
+            }
+            @if (metiers.length === 0) {
+              <p class="no-devs-alert">Aucun métier créé pour l'instant (Administration &gt; Métiers).</p>
+            }
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contraintes de planification</label>
+          <div class="scheduling-rules-container">
+            <label class="rule-checkbox-label">
+              <input type="checkbox" [(ngModel)]="form.excludeWeekends" name="excludeWeekends" />
+              Ne pas planifier de tâches le week-end
+            </label>
+            <label class="rule-checkbox-label">
+              <input type="checkbox" [(ngModel)]="form.excludeHolidays" name="excludeHolidays" />
+              Ne pas planifier de tâches les jours fériés
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Affecter des Développeurs (Groupe Développeur - poportail.users)</label>
+          @if (metiers.length > 0) {
+            <p class="devs-filter-hint">
+              @if (form.selectedMetierIds.length === 0) {
+                Tous les développeurs sont proposés — cochez un ou plusieurs métiers ci-dessus pour filtrer cette liste.
+              } @else {
+                Filtré sur le(s) métier(s) coché(s) — tous les utilisateurs correspondants apparaissent, même
+                hors du groupe "Developpeur". Un développeur retiré de la liste est automatiquement désaffecté
+                du projet, sauf s'il a déjà une tâche assignée ici.
+              }
+            </p>
+          }
+          <div class="devs-checkbox-container">
+            @for (dev of visibleUsers; track dev.id) {
+              <label
+                class="dev-checkbox-label"
+                [class.is-selected]="isDevSelected(dev.id)"
+                [class.is-locked]="isDevSelected(dev.id) && devHasAssignedTask(dev.id)"
+                [title]="isDevSelected(dev.id) && devHasAssignedTask(dev.id)
+                  ? 'Au moins une tâche de ce projet lui est assignée : impossible de le retirer.'
+                  : ''"
+              >
+                <input
+                  type="checkbox"
+                  [checked]="isDevSelected(dev.id)"
+                  [disabled]="isDevSelected(dev.id) && devHasAssignedTask(dev.id)"
+                  (change)="toggleDevSelection(dev.id)"
+                />
+                <span class="dev-info">
+                  <span class="dev-name-row">
+                    <strong>{{ dev.firstname }} {{ dev.lastname }}</strong>
+                    <span class="mat-badge">({{ dev.matricule }})</span>
+                    @if (isDevSelected(dev.id) && devHasAssignedTask(dev.id)) {
+                      <span class="dev-locked-icon" aria-hidden="true">🔒</span>
+                    }
+                  </span>
+                  <span class="dev-metier-row">
+                    @if (metierFor(dev); as devMetier) {
+                      <span class="dev-metier-tag" [ngClass]="badgeClass(devMetier.color)">{{ devMetier.nom }}</span>
+                    } @else {
+                      <span class="dev-metier-tag dev-metier-none">Aucun métier</span>
+                    }
+                  </span>
+                </span>
+              </label>
+            }
+            @if (visibleUsers.length === 0) {
+              @if (users.length === 0 && form.selectedMetierIds.length === 0) {
+                <p class="no-devs-alert">Aucun développeur enregistré trouvé dans le groupe "Developpeur".</p>
+              } @else {
+                <p class="no-devs-alert">Aucun développeur ne correspond au(x) métier(s) sélectionné(s).</p>
+              }
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="toggleForm()">Annuler</button>
+          <button type="submit" class="btn-submit-airbus">
+            {{ isEditMode ? 'Modifier le projet' : 'Enregistrer le projet' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -27,3 +27,5 @@ export * from './lib/tests-outil.service';
 export * from './lib/agenda-outil.models';
 export * from './lib/agenda-outil.service';
 export * from './lib/ai-execute.service';
+export * from './lib/portal-apps.models';
+export * from './lib/portal-apps.service';

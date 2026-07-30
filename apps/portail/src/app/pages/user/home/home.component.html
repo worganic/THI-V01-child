@@ -1,1 +1,103 @@
-<!-- Redirection automatique vers l'app projets -->
+<div class="max-w-6xl mx-auto px-6 py-10">
+
+  <!-- En-tête -->
+  <div class="flex items-start justify-between gap-4 mb-10">
+    <div class="flex items-center gap-4">
+      <div class="w-11 h-11 rounded-xl bg-light-primary/10 dark:bg-primary/10 border border-light-primary/20 dark:border-primary/20 flex items-center justify-center">
+        <span class="material-symbols-outlined text-light-primary dark:text-primary text-2xl">{{ appConfig.logoIcon() }}</span>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-light-text dark:text-white tracking-tight">
+          {{ appConfig.homeConfig().welcomeTitle || 'Bienvenue' }}
+        </h1>
+        <p class="text-sm text-light-text-muted dark:text-white/40 mt-0.5">
+          {{ appConfig.homeConfig().welcomeSubtitle || 'Vos applications disponibles' }}
+        </p>
+      </div>
+    </div>
+
+    @if (isAdmin) {
+      <button (click)="goToAdmin()"
+              class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border border-red-400/20 text-red-400 hover:bg-red-500/10 hover:border-red-400/40 transition-all">
+        <span class="material-symbols-outlined text-base">admin_panel_settings</span>
+        Gérer les applications
+      </button>
+    }
+  </div>
+
+  <!-- Chargement -->
+  @if (loading()) {
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="h-32 rounded-xl bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 animate-pulse"></div>
+      }
+    </div>
+  }
+
+  <!-- Erreur -->
+  @if (!loading() && error()) {
+    <div class="flex items-center gap-3 p-4 rounded-xl border border-red-400/30 bg-red-500/5">
+      <span class="material-symbols-outlined text-red-400">error</span>
+      <p class="text-sm text-red-400">{{ error() }}</p>
+      <button (click)="loadDashboard()"
+              class="ml-auto px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-400/30 text-red-400 hover:bg-red-500/10 transition-colors">
+        Réessayer
+      </button>
+    </div>
+  }
+
+  <!-- Groupes d'applications -->
+  @if (!loading() && !error()) {
+    @for (groupe of groupes(); track groupe.id) {
+      <section class="mb-10">
+        <div class="flex items-baseline gap-3 mb-4">
+          <h2 class="text-sm font-bold uppercase tracking-widest text-light-text dark:text-white/70">{{ groupe.nom }}</h2>
+          <span class="text-[10px] text-light-text-muted dark:text-white/30 font-mono">{{ groupe.apps.length }}</span>
+        </div>
+
+        @if (groupe.description) {
+          <p class="text-sm text-light-text-muted dark:text-white/40 -mt-2 mb-4">{{ groupe.description }}</p>
+        }
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          @for (app of groupe.apps; track app.id) {
+            <button (click)="openApp(app)"
+                    class="group text-left p-5 rounded-xl bg-white dark:bg-surface border border-light-border dark:border-white/10 hover:border-light-primary/40 dark:hover:border-primary/40 hover:shadow-md transition-all">
+              <div class="flex items-start gap-4">
+                <div class="w-11 h-11 flex-shrink-0 rounded-lg bg-light-primary/10 dark:bg-primary/10 border border-light-primary/20 dark:border-primary/20 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-light-primary dark:text-primary text-xl">{{ app.icone || 'apps' }}</span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2">
+                    <h3 class="text-base font-semibold text-light-text dark:text-white truncate">{{ app.nom }}</h3>
+                    <span class="material-symbols-outlined text-sm text-light-text-muted dark:text-white/30 opacity-0 group-hover:opacity-100 transition-opacity">arrow_outward</span>
+                  </div>
+                  <p class="text-xs text-light-text-muted dark:text-white/40 mt-1 line-clamp-2">{{ app.description }}</p>
+                  @if (app.droits && app.droits !== 'lecture') {
+                    <span class="inline-block mt-2 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-light-primary/30 dark:border-primary/30 text-light-primary dark:text-primary">
+                      {{ app.droits }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Aucune application accessible -->
+    @if (totalApps === 0) {
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 flex items-center justify-center mb-4">
+          <span class="material-symbols-outlined text-light-text-muted dark:text-white/30 text-2xl">apps</span>
+        </div>
+        <p class="text-sm font-semibold text-light-text dark:text-white">Aucune application disponible</p>
+        <p class="text-xs text-light-text-muted dark:text-white/40 mt-1 max-w-sm">
+          Aucune application n'est encore rattachée à votre profil. Contactez un administrateur pour obtenir un accès.
+        </p>
+      </div>
+    }
+  }
+
+</div>

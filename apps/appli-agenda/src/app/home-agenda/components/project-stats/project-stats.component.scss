@@ -1,0 +1,352 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). Dans ce fichier,
+// $airbus-blue-primary ne sert qu'en couleur de TEXTE → --heading-color. $airbus-blue-secondary
+// et $airbus-green ne servent qu'en fonds (segments de statut, barres de progression) →
+// --brand-* (invariant entre les deux thèmes, donc aucune couleur de statut ne bouge).
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$airbus-green: var(--brand-green);
+$border-color: var(--border-color);
+
+.project-stats-card {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  // Toute la barre est cliquable (pas seulement le chevron) pour masquer/afficher la zone : cible
+  // trop petite sinon, voir toggleCollapsed() sur le composant.
+  .card-header {
+    background: var(--surface-alt);
+    padding: 14px 20px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface-alt) 70%, var(--brand-secondary) 6%);
+    }
+
+    // Zone dépliée : fond plus prononcé pour repérer d'un coup d'œil quelles sections sont
+    // ouvertes parmi toute la liste (surtout utile une fois plusieurs sections repliées).
+    &.is-expanded {
+      background: color-mix(in srgb, var(--surface-alt) 60%, var(--brand-secondary) 16%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--surface-alt) 50%, var(--brand-secondary) 24%);
+      }
+    }
+
+    .card-icon {
+      font-size: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+      margin: 0;
+    }
+
+    .btn-toggle-collapse {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: $airbus-blue-primary;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.15s ease-in-out;
+
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+
+      &:hover {
+        color: $airbus-blue-secondary;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .no-project-selected {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-secondary);
+  }
+
+  // ==========================================================================
+  // KPI (indicateurs-clés) : gros chiffres en tête de zone.
+  // ==========================================================================
+  .stats-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .stats-kpi-card {
+    background: var(--surface-alt);
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    .kpi-value {
+      font-size: 24px;
+      font-weight: 800;
+      color: $airbus-blue-primary;
+    }
+
+    .kpi-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+
+    &.kpi-alert {
+      background: #fef3c7;
+      border-color: #fde68a;
+
+      .kpi-value {
+        color: #92400e;
+      }
+    }
+  }
+
+  // ==========================================================================
+  // Sections génériques (titre + contenu).
+  // ==========================================================================
+  .stats-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    h4 {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+  }
+
+  .stats-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .btn-export-csv-inline {
+    background: none;
+    border: 1px solid $border-color;
+    color: $airbus-blue-primary;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface-alt) 70%, var(--brand-secondary) 6%);
+    }
+
+    // Zone dépliée : fond plus prononcé pour repérer d'un coup d'œil quelles sections sont
+    // ouvertes parmi toute la liste (surtout utile une fois plusieurs sections repliées).
+    &.is-expanded {
+      background: color-mix(in srgb, var(--surface-alt) 60%, var(--brand-secondary) 16%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--surface-alt) 50%, var(--brand-secondary) 24%);
+      }
+    }
+  }
+
+  // ==========================================================================
+  // Barre de répartition des statuts (empilement horizontal) + légende.
+  // ==========================================================================
+  .status-breakdown-bar {
+    display: flex;
+    height: 22px;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--border-color);
+  }
+
+  .status-segment,
+  .legend-dot {
+    &.seg-NON_COMMENCE { background: #94a3b8; }
+    &.seg-EN_ATTENTE { background: #64748b; }
+    &.seg-EN_COURS { background: $airbus-blue-secondary; }
+    &.seg-TERMINER { background: $airbus-green; }
+    &.seg-worked { background: $airbus-green; }
+    &.seg-remaining { background: #cbd5e1; }
+  }
+
+  .status-breakdown-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+  }
+
+  // ==========================================================================
+  // Tableau de charge par développeur (réutilise le style de la liste des projets).
+  // ==========================================================================
+  .dev-stats-table-container {
+    overflow-x: auto;
+  }
+
+  .airbus-data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th {
+      background-color: var(--surface-alt);
+      color: $airbus-blue-primary;
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 700;
+      border-bottom: 2px solid $border-color;
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid $border-color;
+    }
+
+    .no-data-cell {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-secondary);
+    }
+  }
+
+  .progress-bar-wrapper {
+    position: relative;
+    background: var(--border-color);
+    height: 18px;
+    width: 120px;
+    border-radius: 9px;
+    overflow: hidden;
+
+    .progress-bar-fill {
+      background: $airbus-green;
+      height: 100%;
+    }
+
+    .progress-text {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+  }
+
+  .late-badge {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .ok-badge {
+    background: #dcfce7;
+    color: #166534;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  // ==========================================================================
+  // Graphique de comparaison de charge (barres horizontales empilées travaillé/restant).
+  // ==========================================================================
+  .dev-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .dev-chart-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 90px;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .dev-chart-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .dev-chart-bar-track {
+    display: flex;
+    height: 16px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--surface-alt);
+    border: 1px solid $border-color;
+  }
+
+  .dev-chart-bar-worked {
+    background: $airbus-green;
+    height: 100%;
+  }
+
+  .dev-chart-bar-remaining {
+    background: #cbd5e1;
+    height: 100%;
+  }
+
+  .dev-chart-value {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-align: right;
+  }
+
+  .subtasks-empty {
+    margin: 0;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+}

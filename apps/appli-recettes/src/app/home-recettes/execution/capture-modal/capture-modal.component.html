@@ -1,0 +1,56 @@
+<div class="modal-overlay">
+  <div class="modal-card capture-modal-card">
+    <div class="modal-header">
+      <h3 class="m-0 text-white">📷 Capture d'écran</h3>
+      <button class="btn-close-modal" (click)="close()">✖</button>
+    </div>
+
+    <div class="modal-body">
+      <div class="toolbar d-flex align-items-center gap-3 mb-3 flex-wrap">
+        <div class="d-flex align-items-center gap-1">
+          <span class="text-muted small me-1">Couleur :</span>
+          @for (c of colors; track c.value) {
+            <button type="button" class="color-swatch" [class.active]="currentColor === c.value"
+              [style.background]="c.value" [title]="c.label" (click)="currentColor = c.value"></button>
+          }
+        </div>
+        <div class="d-flex align-items-center gap-1">
+          <span class="text-muted small me-1">Épaisseur :</span>
+          @for (w of widths; track w) {
+            <button type="button" class="width-swatch" [class.active]="currentWidth === w" (click)="currentWidth = w">
+              <span [style.width.px]="w" [style.height.px]="w"></span>
+            </button>
+          }
+        </div>
+        <button type="button" class="action-btn text-warning border-warning ms-auto" [disabled]="!hasImage" (click)="clearAnnotations()">
+          Effacer les annotations
+        </button>
+      </div>
+
+      <div class="canvas-wrapper" [class.empty]="!hasImage">
+        @if (!hasImage) {
+          <div class="paste-placeholder">
+            Collez ici une capture d'écran copiée dans le presse-papiers<br>
+            <span class="font-monospace">(Ctrl+V)</span>
+          </div>
+        }
+        <canvas #canvas
+          (pointerdown)="onPointerDown($event)"
+          (pointermove)="onPointerMove($event)"
+          (pointerup)="onPointerUp()"
+          (pointerleave)="onPointerUp()"></canvas>
+      </div>
+
+      @if (errorMessage) {
+        <div class="text-danger small mt-2">{{ errorMessage }}</div>
+      }
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="close()">Annuler</button>
+      <button class="btn-save" [disabled]="!hasImage || isSaving" (click)="save()">
+        {{ isSaving ? 'Enregistrement...' : 'Enregistrer la capture' }}
+      </button>
+    </div>
+  </div>
+</div>

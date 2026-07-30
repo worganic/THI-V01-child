@@ -1,0 +1,199 @@
+<div class="card-section liste-projets-card">
+  <div
+    class="card-header"
+    role="button"
+    tabindex="0"
+    [class.is-expanded]="!collapsed"
+    (click)="toggleCollapsed()"
+    (keydown.enter)="toggleCollapsed()"
+    (keydown.space)="toggleCollapsed(); $event.preventDefault()"
+    [title]="collapsed ? 'Afficher la zone' : 'Masquer la zone'"
+  >
+    <span class="card-icon">📊</span>
+    <h3 class="card-title">2. Liste des Projets SI</h3>
+    <app-help-hint heading="2. Liste des Projets SI">
+      <p>Inventaire de tous les projets SI, avec leur avancement calculé à partir des tâches.</p>
+      <ul>
+        <li>Le projet <strong>sélectionné ici devient le projet actif</strong> : c'est lui qu'affichent le planning (zone 3) et les statistiques (zone 4).</li>
+        <li>Le bouton de modification rouvre le formulaire de la zone 1, pré-rempli.</li>
+        <li>Se filtre par statut, développeur ou <strong>catégorie</strong> (toutes ou une seule à la fois).</li>
+        <li>Le badge sur chaque développeur affecté indique son nombre de tâches <strong>en cours ou à venir</strong> sur ce projet (les tâches déjà terminées ne comptent pas).</li>
+      </ul>
+      <p>Le planning et les statistiques restent vides tant qu'aucun projet n'est sélectionné.</p>
+    </app-help-hint>
+    <span class="btn-toggle-collapse" [class.collapsed]="collapsed">▾</span>
+  </div>
+
+  @if (!collapsed) {
+  <div class="card-body">
+    <!-- FILTRES -->
+    <div class="filter-card-bar">
+      <div class="filter-group">
+        <label>Statut :</label>
+        <button
+          class="chip-filter"
+          [class.selected]="activeStatusFilter === 'ALL'"
+          (click)="setStatusFilter('ALL')"
+        >
+          Tous ({{ allProjectsCount }})
+        </button>
+        <button
+          class="chip-filter"
+          [class.selected]="activeStatusFilter === 'EN_COURS'"
+          (click)="setStatusFilter('EN_COURS')"
+        >
+          En cours ({{ inProgressCount }})
+        </button>
+        <button
+          class="chip-filter"
+          [class.selected]="activeStatusFilter === 'A_FAIRE'"
+          (click)="setStatusFilter('A_FAIRE')"
+        >
+          À faire ({{ todoCount }})
+        </button>
+        <button
+          class="chip-filter"
+          [class.selected]="activeStatusFilter === 'TERMINER'"
+          (click)="setStatusFilter('TERMINER')"
+        >
+          Terminés ({{ completedCount }})
+        </button>
+      </div>
+
+      <div class="filter-group">
+        <label for="devFilterList">Personnel :</label>
+        <select
+          id="devFilterList"
+          [ngModel]="selectedDevFilterId"
+          (ngModelChange)="filterByDeveloper($event)"
+        >
+          <option [value]="null">Tout le personnel</option>
+          @for (dev of assignedPersonnel; track dev.id) {
+            <option [value]="dev.id">
+              {{ dev.firstname }} {{ dev.lastname }} ({{ dev.matricule }})
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="categoryFilterList">Métier :</label>
+        <select
+          id="categoryFilterList"
+          [ngModel]="selectedMetierFilterId"
+          (ngModelChange)="setMetierFilter($event)"
+        >
+          <option [ngValue]="null">Tous les métiers</option>
+          @for (metier of metiers; track metier.id) {
+            <option [value]="metier.id">{{ metier.nom }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchQuery"
+          placeholder="Rechercher par code, nom..."
+        />
+      </div>
+    </div>
+
+    <!-- TABLEAU DE DONNÉES -->
+    <div class="projects-table-container">
+      <table class="airbus-data-table">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Intitulé du Projet</th>
+            <th>Métier</th>
+            <th>Risque</th>
+            <th>Personnels Affectés</th>
+            <th>Avancement</th>
+            <th>Dates Prévisionnelles</th>
+            <th>Statut</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (project of filteredProjects; track project.id) {
+            <tr
+              class="clickable-row"
+              [class.selected-row]="project.id === selectedProjectId"
+              (click)="onSelectProject(project)"
+            >
+              <td><strong>{{ project.code }}</strong></td>
+              <td>
+                <span class="project-title-link">{{ project.name }}</span>
+                <p class="project-desc-mini">{{ project.description }}</p>
+              </td>
+              <td>
+                @if (project.metiers?.length) {
+                  <div class="category-badge-list">
+                    @for (metier of project.metiers; track metier.id) {
+                      <span class="category-badge" [ngClass]="badgeClass(metier.color)">{{ metier.nom }}</span>
+                    }
+                  </div>
+                } @else {
+                  <span class="no-category-label">—</span>
+                }
+              </td>
+              <td>
+                <span class="risk-badge" [ngClass]="getRiskClass(project.riskLevel)">
+                  {{ project.riskLevel }}
+                </span>
+              </td>
+              <td>
+                <div class="devs-list">
+                  @for (dev of project.developers; track dev.id) {
+                    <span
+                      class="dev-chip"
+                      [title]="dev.email + ' — ' + devActiveTaskCount(project, dev.id) + ' tâche(s) en cours ou à venir sur ce projet'"
+                    >
+                      {{ dev.firstname }} {{ dev.lastname }}
+                      @if (devActiveTaskCount(project, dev.id); as taskCount) {
+                        <span class="dev-task-count">{{ taskCount }}</span>
+                      }
+                    </span>
+                  }
+                </div>
+              </td>
+              <td>
+                <div class="progress-bar-wrapper">
+                  <div
+                    class="progress-bar-fill"
+                    [style.width.%]="project.progressPercent || 0"
+                  ></div>
+                  <span class="progress-text">{{ project.progressPercent || 0 }}%</span>
+                </div>
+              </td>
+              <td>
+                {{ project.dateStart | date: 'dd/MM/yyyy' }} &rarr;
+                {{ project.dateEndEstimated | date: 'dd/MM/yyyy' }}
+              </td>
+              <td>
+                <span class="status-badge" [ngClass]="getProjectStatusClass(project.status)">
+                  {{ getProjectStatusLabel(project.status) }}
+                </span>
+              </td>
+              <td>
+                <button class="btn-secondary-airbus" (click)="onEditProject(project, $event)">
+                  Modifier
+                </button>
+              </td>
+            </tr>
+          }
+          @if (filteredProjects.length === 0) {
+            <tr>
+              <td colspan="9" class="no-data-cell">
+                Aucun projet ne correspond aux critères sélectionnés.
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  }
+</div>

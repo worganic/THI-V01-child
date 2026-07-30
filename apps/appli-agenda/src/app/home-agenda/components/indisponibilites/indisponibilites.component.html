@@ -1,0 +1,81 @@
+<div class="card-section indispo-card">
+  <div
+    class="card-header"
+    role="button"
+    tabindex="0"
+    [class.is-expanded]="!collapsed"
+    (click)="toggleCollapsed()"
+    (keydown.enter)="toggleCollapsed()"
+    (keydown.space)="toggleCollapsed(); $event.preventDefault()"
+    [title]="collapsed ? 'Afficher la zone' : 'Masquer la zone'"
+  >
+    <span class="card-icon">🌴</span>
+    <h3 class="card-title">6. Indisponibilités Développeur (Congés / Absences)</h3>
+    <app-help-hint heading="6. Indisponibilités Développeur">
+      <p>Périodes de congés ou d'absence, saisies par développeur et <strong>indépendantes de tout projet</strong> : elles valent pour l'ensemble des plannings.</p>
+      <ul>
+        <li>Sur le planning, un jour d'absence s'affiche en <strong>rayures rouges</strong>.</li>
+        <li>Affecter une tâche à un développeur absent sur la période déclenche un <strong>avertissement</strong> dans le formulaire de tâche.</li>
+      </ul>
+      <p>Cet avertissement n'est pas bloquant : une affectation reste possible, elle est seulement signalée.</p>
+    </app-help-hint>
+    <span class="btn-toggle-collapse" [class.collapsed]="collapsed">▾</span>
+  </div>
+
+  @if (!collapsed) {
+    <div class="card-body">
+      <p class="indispo-hint">
+        Périodes d'indisponibilité par développeur, indépendantes de tout projet : affichées en
+        grisé sur le planning et signalées par un avertissement lors de l'assignation d'une tâche.
+      </p>
+
+      <form class="indispo-form" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label for="indispoDev">Développeur</label>
+          <select id="indispoDev" [(ngModel)]="form.userId" name="userId" required>
+            <option [ngValue]="null">-- Choisir --</option>
+            @for (dev of users; track dev.id) {
+              <option [ngValue]="dev.id">{{ dev.firstname }} {{ dev.lastname }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Période</label>
+          <app-date-range-picker
+            [start]="form.dateStart || null"
+            [end]="form.dateEnd || null"
+            (rangeChange)="onRangeChange($event)"
+          ></app-date-range-picker>
+        </div>
+        <div class="form-group form-group-reason">
+          <label for="indispoReason">Raison (optionnel)</label>
+          <input id="indispoReason" type="text" [(ngModel)]="form.reason" name="reason" placeholder="ex: Congés annuels" />
+        </div>
+        @if (editingId !== null) {
+          <button type="button" class="btn-cancel-edit" (click)="cancelEdit()">Annuler</button>
+        }
+        <button type="submit" class="btn-submit-airbus">{{ editingId !== null ? 'Enregistrer' : '+ Ajouter' }}</button>
+      </form>
+
+      @if (sortedUnavailabilities.length === 0) {
+        <p class="indispo-empty">Aucune période d'indisponibilité enregistrée.</p>
+      } @else {
+        <div class="indispo-list">
+          @for (period of sortedUnavailabilities; track period.id) {
+            <div class="indispo-row" [class.is-editing]="editingId === period.id">
+              <span class="indispo-dev">{{ devLabel(period.userId) }}</span>
+              <span class="indispo-dates">{{ period.dateStart | date: 'dd/MM/yyyy' }} → {{ period.dateEnd | date: 'dd/MM/yyyy' }}</span>
+              @if (period.reason) {
+                <span class="indispo-reason">{{ period.reason }}</span>
+              }
+              <div class="indispo-actions">
+                <button type="button" class="btn-edit-indispo" (click)="startEdit(period)" title="Modifier cette période">✎ Modifier</button>
+                <button type="button" class="btn-remove-indispo" (click)="onDelete(period.id)" title="Supprimer cette période">✕</button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

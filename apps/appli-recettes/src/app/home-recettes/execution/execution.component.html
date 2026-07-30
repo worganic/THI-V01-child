@@ -1,0 +1,559 @@
+<!-- Airbus Helicopters Toast Notification Popup (Charte L3.6.3) --> 
+@if (notification) {
+    <div class="airbus-toast-container position-fixed top-0 end-0 p-3" style="z-index: 10050; margin-top: 70px;">
+        <div class="toast show border-0 shadow-lg" [ngClass]="{
+            'bg-success-airbus text-white': notification.type === 'success',
+            'bg-info-airbus text-dark': notification.type === 'info',
+            'bg-danger-airbus text-white': notification.type === 'danger',
+            'bg-warning-airbus text-dark': notification.type === 'warning'
+        }" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-body d-flex justify-content-between align-items-center p-3 fw-bold">
+                <span>{{ notification.message }}</span>
+                <button type="button" class="btn-close ms-2" [class.btn-close-white]="notification.type === 'success' || notification.type === 'danger'" (click)="notification = null"></button>
+            </div>
+        </div>
+    </div>
+}
+<div class="execution-container p-4">
+    <!-- BANNER D'ERREUR DE FORMULAIRE CENTRALISÉ -->
+    @if (formError) {
+        <div class="alert alert-danger border-danger bg-dark text-danger rounded mb-4 p-3 d-flex justify-content-between align-items-center animate-pulse">
+            <span><strong>Erreur système :</strong> {{ formError }}</span>
+            <button type="button" class="btn-close btn-close-white" (click)="clearFormError()"></button>
+        </div>
+    }
+
+    <!-- HEADER SECONDAIRE SPÉCIFIQUE À L'APPLICATION (Deuxième Ligne de Navigation L2) -->
+    <div class="sub-header-appli mb-4 p-3 bg-black border border-dark rounded d-flex justify-content-between align-items-center" style="background-color: var(--surface); border-color: var(--border-color);">
+        <div class="d-flex align-items-center gap-3">
+            <span class="text-warning fw-bold fs-5">Module d'Exécution</span>
+            <span class="text-muted small">Cahier actif : <strong class="text-white">{{ currentBook.name }}</strong></span>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" [class.active]="executionPhase === 'idle'" (click)="executionPhase = 'idle'; activeCampaign = null;">Dashboard</button>
+            <button class="btn btn-sm btn-outline-info" [class.active]="executionPhase === 'campaign-list' || executionPhase === 'campaign-detail' || executionPhase === 'campaign-create'" (click)="openCampaignList()">Campagnes d'équipe</button>
+        </div>
+    </div>
+
+    <!-- PHASE 1 : IDLE / TABLEAU DE BORD DE CHOIX -->
+    @if (executionPhase === 'idle') {
+        <div class="execution-dashboard text-center py-5 mx-auto" style="max-width: 600px;">
+            <h3 class="text-white mb-3">Centre d'Exécution des Fiches de Recette</h3>
+            <p class="text-muted small mb-5">Sélectionnez le type de campagne ou reprenez un travail en cours d'exécution.</p>
+
+            <div class="d-flex flex-column gap-3">
+                <button class="action-btn text-success border-success py-3 fs-6 fw-bold" (click)="openRunSetup(false)">
+                    Lancer une Nouvelle Session Individuelle
+                </button>
+                @if (hasPausedSession && !pausedInfo.isGroup) {
+                    <div class="alert bg-black border border-warning rounded p-3 text-center animate-pulse">
+                        <p class="text-warning m-0 fw-bold fs-6">⚠️ Session individuelle suspendue détectée</p>
+                        @if (pausedInfo.sessionTitle || pausedInfo.testerName) {
+                            <p class="text-white small my-1">
+                                @if (pausedInfo.sessionTitle) {
+                                    Session : <strong class="text-warning">{{ pausedInfo.sessionTitle }}</strong>
+                                }
+                                @if (pausedInfo.testerName) {
+                                    <span class="ms-2">| Opérateur : <strong class="text-info">{{ pausedInfo.testerName }}</strong></span>
+                                }
+                            </p>
+                        }
+                        <p class="text-muted small my-1">Progression sauvegardée : test {{ pausedInfo.index + 1 }} sur {{ pausedInfo.total }}</p>
+                        <button class="action-btn text-warning border-warning px-3 py-1.5 mt-1 small font-monospace" (click)="resumeSession()">
+                            Reprendre la session suspendue
+                        </button>
+                    </div>
+                }
+
+                <button class="action-btn text-info border-info py-3 fs-6 fw-bold" (click)="openCampaignList()">
+                    Gérer les Campagnes Groupées (Équipe QA)
+                </button>
+                @if (hasPausedSession && pausedInfo.isGroup) {
+                    <div class="alert bg-black border border-warning rounded p-3 text-center animate-pulse">
+                        <p class="text-warning m-0 fw-bold fs-6">⚠️ Session de groupe suspendue détectée</p>
+                        @if (pausedInfo.sessionTitle || pausedInfo.testerName) {
+                            <p class="text-white small my-1">
+                                @if (pausedInfo.sessionTitle) {
+                                    Session : <strong class="text-warning">{{ pausedInfo.sessionTitle }}</strong>
+                                }
+                                @if (pausedInfo.testerName) {
+                                    <span class="ms-2">| Opérateur : <strong class="text-info">{{ pausedInfo.testerName }}</strong></span>
+                                }
+                            </p>
+                        }
+                        <p class="text-muted small my-1">
+                            @if (pausedInfo.campaignName) {
+                                Groupe : <strong class="text-info">{{ pausedInfo.campaignName }}</strong> — 
+                            }
+                            Progression sauvegardée : test {{ pausedInfo.index + 1 }} sur {{ pausedInfo.total }}
+                        </p>
+                        <button class="action-btn text-warning border-warning px-3 py-1.5 mt-1 small font-monospace" (click)="resumeSession()">
+                            Reprendre la session de groupe suspendue
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- PHASE 2 : FORMULAIRE DE CONFIGURATION (SETUP) -->
+    @if (executionPhase === 'setup') {
+        <div class="form-card" style="background: var(--surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 24px; max-width: 650px; margin: 0 auto;">
+            <div class="form-header mb-4 border-bottom border-dark pb-3">
+                <h4 class="text-white m-0 d-flex align-items-center gap-2">
+                    Configuration du périmètre de test
+                </h4>
+                @if (activeCampaign) {
+                    <span class="badge bg-info text-dark mt-2">Rattaché à la campagne collective : {{ activeCampaign.name }}</span>
+                }
+            </div>
+            <div class="form-body">
+                <div class="form-group mb-3">
+                    <label class="text-white small fw-bold mb-1">Titre de la session de test <span class="text-danger">*</span></label>
+                    <input type="text" class="dark-input w-100" [class.border-danger-airbus]="!sessionForm.title.trim()" [(ngModel)]="sessionForm.title" placeholder="Ex: Recette correctif SI - Sprint 4">
+                </div>
+                <div class="form-group mb-3">
+                    <label class="text-white small fw-bold mb-1">Nom du testeur / Opérateur <span class="text-danger">*</span></label>
+                    <select class="dark-input w-100 dark-select" [class.border-danger-airbus]="!sessionForm.testerName.trim()" [(ngModel)]="sessionForm.testerName" style="background-color: var(--page-bg); color: var(--text-primary); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; outline: none;">
+                        <option value="" disabled>-- Sélectionner un opérateur enregistré --</option>
+                        @for (u of users(); track u.id) {
+                            <option [value]="u.nom + ' ' + u.prenom + ' (' + u.matricule + ')'">
+                                {{ u.nom }} {{ u.prenom }} ({{ u.matricule }})
+                            </option>
+                        }
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="text-white small fw-bold mb-1">Périmètre applicatif ciblé</label>
+                    <select class="dark-input w-100" [(ngModel)]="runSetup.target" style="background-color: var(--page-bg); color: var(--text-primary);">
+                        <option value="ALL" [disabled]="isScopeDisabled('ALL', '')" [style.color]="getOptionColor('ALL', '')">
+                            Tout le cahier de recette (Intégral) ({{ getTestCount('ALL', '') }} tests) {{ hasTakenTests('ALL', '') ? ' ' + getCollisionInfo('ALL', '') : (getTestCount('ALL', '') === 0 ? ' (Vide)' : '') }}
+                        </option>
+                        @for (cat of currentBook.categories; track cat.id) {
+                            <optgroup [label]="' Catégorie : ' + cat.name + ' (' + getTestCount('CAT', cat.id) + ' tests)'">
+                                <option value="CAT:{{ cat.id }}" [disabled]="isScopeDisabled('CAT', cat.id)" [style.color]="getOptionColor('CAT', cat.id)">
+                                    Toute la catégorie ({{ getTestCount('CAT', cat.id) }} tests) {{ hasTakenTests('CAT', cat.id) ? ' ' + getCollisionInfo('CAT', cat.id) : (getTestCount('CAT', cat.id) === 0 ? ' (Vide)' : '') }}
+                                </option>
+                                @for (ap of cat.applicatifs; track ap.id) {
+                                    <option value="APP:{{ ap.id }}" [disabled]="isScopeDisabled('APP', ap.id)" [style.color]="getOptionColor('APP', ap.id)">
+                                        &nbsp;&nbsp; App : {{ ap.name }} ({{ getTestCount('APP', ap.id) }} tests) {{ hasTakenTests('APP', ap.id) ? ' ' + getCollisionInfo('APP', ap.id) : (getTestCount('APP', ap.id) === 0 ? ' (Vide)' : '') }}
+                                    </option>
+                                    @for (se of ap.sections; track se.id) {
+                                        <option value="SEC:{{ se.id }}" [disabled]="isScopeDisabled('SEC', se.id)" [style.color]="getOptionColor('SEC', se.id)">
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Section : {{ se.name }} ({{ getTestCount('SEC', se.id) }} tests) {{ hasTakenTests('SEC', se.id) ? ' ' + getCollisionInfo('SEC', se.id) : (getTestCount('SEC', se.id) === 0 ? ' (Vide)' : '') }}
+                                        </option>
+                                    }
+                                }
+                            </optgroup>
+                        }
+                    </select>
+                </div>
+                <div class="form-group mb-3">
+                    <label class="text-white small fw-bold mb-1">Mode de passage</label>
+                    <select class="dark-input w-100" [(ngModel)]="sessionForm.mode">
+                        <option value="Manuel">Manuel</option>
+                        <option value="Automatique">Automatique</option>
+                    </select>
+                </div>
+                <div class="form-group mb-4 mt-4" style="background: rgba(202, 138, 4, 0.08); padding: 16px; border-radius: 4px; border: 1px dashed #ca8a04;">
+                    <label class="text-white small fw-bold d-block mb-2" style="color: #ca8a04 !important;">
+                        Environnement plateforme cible <span class="text-danger">*</span>
+                    </label>
+                    <select class="dark-input w-100" [(ngModel)]="sessionForm.environment" name="sessionEnv" style="border-color: #ca8a04; background-color: var(--page-bg);" [disabled]="!!activeCampaign">
+                        <option value="DEV">DEV (Développement / Sandbox)</option>
+                        <option value="VAL">VAL (Validation / Recette Intégration)</option>
+                        <option value="PREPROD">PREPROD (Pré-production / Staging)</option>
+                        <option value="PROD">PROD (Production Officielle Airbus)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-footer d-flex justify-content-end gap-2 mt-4 border-top border-dark pt-3">
+                <button class="btn-cancel px-4 py-2" (click)="cancelExecution()">Annuler</button>
+                <button class="btn-save px-4 py-2 text-warning border-warning" [disabled]="!sessionForm.title.trim() || !sessionForm.testerName.trim()" (click)="launchSession()" style="background: transparent; font-weight: bold;">
+                    {{ activeCampaign ? 'Préparer et Enregistrer la Session' : 'Lancer la session' }}
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- PHASE 3 : RUNNING / EXÉCUTION EN COURS -->
+    @if (executionPhase === 'running') {
+        @let currentContext = runTests[currentTestIndex];
+        
+        <div class="runner-card bg-dark border border-secondary rounded p-4 mx-auto" style="max-width: 800px;">
+            @let progress = getRunProgress();
+            <div class="progress-container mb-4">
+                <div class="d-flex justify-content-between text-muted small mb-1">
+                    <span>Avancement de la session : <strong>{{ progress.answered }} / {{ progress.total }}</strong> points vérifiés</span>
+                    <span class="text-warning fw-bold">{{ progress.percentage | number:'1.0-0' }}%</span>
+                </div>
+                <div class="progress" style="height: 6px; background: var(--border-color); border-radius: 3px;">
+                    <div class="progress-bar bg-warning" [style.width.%]="progress.percentage"></div>
+                </div>
+            </div>
+
+            @if (currentContext) {
+                <div class="text-muted small text-uppercase mb-2" style="color: #ca8a04 !important; letter-spacing: 0.5px;">
+                    {{ currentContext.categoryName }} &gt; {{ currentContext.applicatifName }} &gt; {{ currentContext.sectionName }}
+                </div>
+                
+                <div class="test-execution-block border-bottom border-dark pb-4 mb-4">
+                    <h4 class="text-white fw-bold mb-2">
+                        <span class="text-muted me-2">Fiche unitaire {{ currentTestIndex + 1 }} :</span> {{ currentContext.test.name }}
+                    </h4>
+                    <h5 class="text-muted small mb-3">Auteur/Matricule : {{ currentContext.test.createdBy || 'SYSTEM QA' }}</h5>
+                    
+                    <p class="text-muted bg-black p-3 rounded border border-dark mb-3" style="white-space: pre-line; line-height: 1.5; font-size: 13px;">
+                        {{ currentContext.test.description }}
+                    </p>
+                    
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge-crit text-uppercase small" [ngClass]="currentContext.test.criticality.toLowerCase()">
+                            {{ currentContext.test.criticality }}
+                        </span>
+                        @if (currentContext.test.url) {
+                            <a [href]="currentContext.test.url" target="_blank" class="text-info small font-monospace"> URL Fiche Spécification</a>
+                        }
+                    </div>
+                </div>
+
+                @if (currentContext.test.tasks && currentContext.test.tasks.length > 0) {
+                    <div class="tasks-execution-zone mb-4">
+                        <h5 class="text-white mb-2 small text-uppercase text-muted fw-bold">Sous-tâches requises :</h5>
+                        <div class="d-flex flex-column gap-2">
+                            @for (task of currentContext.test.tasks; track task.id) {
+                                <div class="task-row-run d-flex align-items-center justify-content-between p-3 rounded" style="background: var(--surface-alt); border: 1px solid var(--border-color);">
+                                    <span class="text-white font-monospace small"> {{ task.name }}</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (getTaskCapture(task.id); as taskCapturePath) {
+                                            <a [href]="taskCapturePath" target="_blank" class="d-flex align-items-center text-decoration-none" title="Capture jointe">
+                                                <img [src]="taskCapturePath" alt="Capture jointe" style="height: 24px; border-radius: 4px; border: 1px solid #444;">
+                                            </a>
+                                        }
+                                        @if (getTaskResponse(task.id)?.status === 'FAILED') {
+                                            <button type="button" class="btn btn-sm btn-outline-info font-monospace" title="Ajouter une capture d'écran" (click)="openCaptureModal('task', task.id)"> </button>
+                                        }
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-sm btn-outline-success font-monospace px-3" [class.active]="getTaskResponse(task.id)?.status === 'PASSED'" (click)="answerTask(currentContext.test.id, task.id, 'PASSED')">OK</button>
+                                            <button class="btn btn-sm btn-outline-danger font-monospace px-3" [class.active]="getTaskResponse(task.id)?.status === 'FAILED'" (click)="answerTask(currentContext.test.id, task.id, 'FAILED')">KO</button>
+                                            <button class="btn btn-sm btn-outline-secondary font-monospace text-muted" [class.active]="getTaskResponse(task.id)?.status === 'SKIPPED'" (click)="answerTask(currentContext.test.id, task.id, 'SKIPPED')">Passer</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                } @else {
+                    <div class="test-direct-actions text-center py-4 bg-black rounded border border-dark mb-4">
+                        <p class="text-muted small mb-3">Évaluation de conformité de la fiche :</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-outline-success px-4 py-2 fw-bold" [class.active]="currentSession.responses[currentContext.test.id]?.status === 'PASSED'" (click)="answerCurrentTest('PASSED')">Conforme (PASSED)</button>
+                            <button class="btn btn-outline-danger px-4 py-2 fw-bold" [class.active]="currentSession.responses[currentContext.test.id]?.status === 'FAILED'" (click)="answerCurrentTest('FAILED')">Échec (FAILED)</button>
+                            <button class="btn btn-outline-secondary px-3 py-2 text-muted" [class.active]="currentSession.responses[currentContext.test.id]?.status === 'SKIPPED'" (click)="answerCurrentTest('SKIPPED')">Ignorer</button>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group mb-4">
+                    <label class="text-muted small mb-1">Rapport d'erreur / Commentaires d'exécution :</label>
+                    <textarea class="dark-textarea w-100" rows="2" [(ngModel)]="currentSession.responses[currentContext.test.id].notes" (blur)="saveCurrentTestNotes()" placeholder="Optionnel. Renseignez l'anomalie constatée..."></textarea>
+                    @if (!currentContext.test.tasks || currentContext.test.tasks.length === 0) {
+                        @if (getTestCapture(currentContext.test.id) || currentSession.responses[currentContext.test.id]?.status === 'FAILED') {
+                            <div class="d-flex justify-content-end align-items-center gap-2 mt-2">
+                                @if (getTestCapture(currentContext.test.id); as capturePath) {
+                                    <a [href]="capturePath" target="_blank" class="d-flex align-items-center gap-2 text-decoration-none">
+                                        <img [src]="capturePath" alt="Capture jointe" style="height: 32px; border-radius: 4px; border: 1px solid #444;">
+                                        <span class="text-info small">Capture jointe</span>
+                                    </a>
+                                }
+                                @if (currentSession.responses[currentContext.test.id]?.status === 'FAILED') {
+                                    <button type="button" class="btn btn-sm btn-outline-info" (click)="openCaptureModal('test', currentContext.test.id)"> Capture</button>
+                                }
+                            </div>
+                        }
+                    }
+                </div>
+            }
+            
+            <div class="d-flex justify-content-between align-items-center border-top border-dark pt-3 mt-4">
+                <button class="btn btn-sm btn-outline-secondary" [disabled]="currentTestIndex === 0" (click)="currentTestIndex = currentTestIndex - 1">Précédent</button>
+                <button class="btn btn-sm btn-warning text-dark fw-bold" (click)="pauseSession()"> Suspendre & Sauvegarder</button>
+                <div class="d-flex gap-2">
+                    @if (currentTestIndex < runTests.length - 1) {
+                        <button class="btn btn-sm px-3" 
+                            [class.btn-outline-secondary]="currentSession.responses[currentContext.test.id]?.status !== 'FAILED'"
+                            [class.btn-danger]="currentSession.responses[currentContext.test.id]?.status === 'FAILED'"
+                            [class.fw-bold]="currentSession.responses[currentContext.test.id]?.status === 'FAILED'"
+                            (click)="currentTestIndex = currentTestIndex + 1">Suivant</button>
+                    }
+                    <button class="btn btn-sm btn-success px-4 fw-bold" (click)="finishSession()" title="Valider définitivement les résultats de cette session de test">
+                        ✅ Valider la Session
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- PHASE 4 : LISTE DES CAMPAGNES COLLECTIVES -->
+    @if (executionPhase === 'campaign-list') {
+        <div class="campaign-management">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="text-white m-0"> Liste des Campagnes Collectives</h4>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-outline-secondary btn-sm" (click)="executionPhase = 'idle'">Retour</button>
+                    <button class="action-btn text-warning border-warning px-3 py-1.5 small" (click)="openCampaignCreate()">Créer un Groupe</button>
+                </div>
+            </div>
+
+            <div class="table-responsive bg-dark border border-secondary rounded">
+                <table class="table table-dark table-hover m-0 small">
+                    <thead>
+                        <tr>
+                            <th>Nom de la campagne</th>
+                            <th>Environnement</th>
+                            <th>Responsable</th>
+                            <th>Date de création</th>
+                            <th>Statut</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (camp of campaigns; track camp.id) {
+                            <tr style="cursor: pointer;" (click)="openCampaignDetail(camp)">
+                                <td class="text-warning fw-bold">{{ camp.name }}</td>
+                                <td><span class="badge bg-black border border-dark text-uppercase font-monospace px-2 py-1">{{ camp.environment }}</span></td>
+                                <td class="text-muted">{{ camp.createdBy }}</td>
+                                <td>{{ camp.dateCreated | date:'dd/MM/yyyy HH:mm' }}</td>
+                                <td>
+                                    <span class="small font-monospace" [class.text-success]="camp.status === 'COMPLETED'" [class.text-warning]="camp.status === 'IN_PROGRESS'">
+                                        {{ camp.status === 'COMPLETED' ? 'Terminée' : 'En cours' }}
+                                    </span>
+                                </td>
+                                <td class="text-end" (click)="$event.stopPropagation()">
+                                    <button class="btn btn-sm btn-icon text-danger" (click)="deleteCampaign(camp.id, $event)"> </button>
+                                </td>
+                            </tr>
+                        } @empty {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted p-5">Aucune campagne groupée enregistrée dans ce cahier.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <!-- PHASE 4.5 : CRÉATION D'UNE CAMPAGNE COLLECTIVE -->
+    @if (executionPhase === 'campaign-create') {
+        <div class="form-card" style="background: var(--surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 24px; max-width: 650px; margin: 0 auto;">
+            <div class="form-header mb-4 border-bottom border-dark pb-3">
+                <h4 class="text-white m-0 d-flex align-items-center gap-2">
+                    Création d'un Groupe de Campagne
+                </h4>
+            </div>
+            <div class="form-body">
+                <div class="form-group mb-3">
+                    <label class="text-white small fw-bold mb-1">Nom de la campagne <span class="text-danger">*</span></label>
+                    <input type="text" class="dark-input w-100" [class.border-danger-airbus]="!campaignForm.name.trim()" [(ngModel)]="campaignForm.name" placeholder="Ex: Campagne de Non-Régression V3">
+                </div>
+                <div class="form-group mb-3">
+                    <label class="text-white small fw-bold mb-1">Responsable</label>
+                    <input type="text" class="dark-input w-100" [(ngModel)]="campaignForm.createdBy" disabled style="background-color: var(--page-bg); color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px; border-radius: 6px; outline: none;">
+                </div>
+                <div class="form-group mb-4 mt-4" style="background: rgba(202, 138, 4, 0.08); padding: 16px; border-radius: 4px; border: 1px dashed #ca8a04;">
+                    <label class="text-white small fw-bold d-block mb-2" style="color: #ca8a04 !important;">
+                        Environnement plateforme cible <span class="text-danger">*</span>
+                    </label>
+                    <select class="dark-input w-100" [(ngModel)]="campaignForm.environment" style="border-color: #ca8a04; background-color: var(--page-bg); color: var(--text-primary); padding: 12px; border-radius: 6px; outline: none;">
+                        <option value="DEV">DEV (Développement / Sandbox)</option>
+                        <option value="VAL">VAL (Validation / Recette Intégration)</option>
+                        <option value="PREPROD">PREPROD (Pré-production / Staging)</option>
+                        <option value="PROD">PROD (Production Officielle Airbus)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-footer d-flex justify-content-end gap-2 mt-4 border-top border-dark pt-3">
+                <button class="btn btn-cancel px-4 py-2 text-white border-secondary" (click)="cancelExecution()" style="background: transparent;">Annuler</button>
+                <button class="btn btn-save px-4 py-2 text-warning border-warning" [disabled]="!campaignForm.name.trim()" (click)="saveCampaign()" style="background: transparent; font-weight: bold;">
+                    Créer la Campagne
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- PHASE 5 : DÉTAIL D'UNE CAMPAGNE ACTIVE AVEC LES SOUS-SESSIONS SYNCHRONISÉES -->
+    @if (executionPhase === 'campaign-detail' && activeCampaign) {
+        <div class="campaign-detail-view">
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-dark pb-3">
+                <div>
+                    <span class="badge bg-warning text-dark text-uppercase font-monospace px-2 py-1 small me-2">{{ activeCampaign.environment }}</span>
+                    <h3 class="text-white d-inline-block m-0">{{ activeCampaign.name }}</h3>
+                    <p class="text-muted small m-0 mt-1">Superviseur : {{ activeCampaign.createdBy }} | Initialisé le : {{ activeCampaign.dateCreated | date:'dd/MM/yyyy HH:mm' }}</p>
+                </div>
+                <button class="btn btn-outline-secondary btn-sm" (click)="openCampaignList()"> Liste des campagnes</button>
+            </div>
+            
+            @let campProgress = getCampaignProgress();
+            <div class="bg-black border border-dark p-3 rounded mb-4">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                    <span>Progression des questions répondues par le collectif :</span>
+                    <span class="text-warning fw-bold">{{ campProgress.answered }} / {{ campProgress.total }} questions répondues ({{ campProgress.percentage | number:'1.0-0' }}%)</span>
+                </div>
+                <div class="progress" style="height: 4px; background: var(--border-color); border-radius: 2px;">
+                    <div class="progress-bar bg-warning" [style.width.%]="campProgress.percentage"></div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white m-0 small text-uppercase text-muted fw-bold">Sous-sessions synchronisées :</h5>
+                <button class="action-btn text-warning border-warning btn-sm py-1 px-3 small animate-pulse" (click)="openRunSetup(true)">
+                      Lancer ma session sur cette campagne
+                </button>
+            </div>
+
+            <div class="table-responsive bg-dark border border-secondary rounded">
+                <table class="table table-dark table-hover m-0 small sessions-table">
+                    <colgroup>
+                        <col style="width: 19%;">
+                        <col style="width: 15%;">
+                        <col style="width: 17%;">
+                        <col style="width: 12%;">
+                        <col style="width: 10%;">
+                        <col style="width: 8%;">
+                        <col style="width: 6%;">
+                        <col style="width: 13%;">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Nom (Titre)</th>
+                            <th>Opérateur (User)</th>
+                            <th>Périmètre</th>
+                            <th>État des questions</th>
+                            <th>Horodatage</th>
+                            <th>Décision</th>
+                            <th class="text-center">%</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (sess of campaignSessions; track sess.id) {
+                            <tr class="session-row" style="cursor: pointer;" [class.table-active]="expandedSessions[sess.id]" (click)="toggleSessionExpansion(sess)">
+                                <td class="text-warning fw-bold">{{ getCleanTitle(sess.title) }}</td>
+                                <td class="fw-bold text-white"> {{ sess.testerName }}</td>
+                                <td class="text-info font-monospace small">{{ getPerimeterLabel(sess) }}</td>
+                                <td class="text-light fw-bold">{{ getSessionProgress(sess) }}</td>
+                                <td>{{ sess.dateExecuted | date:'dd/MM HH:mm' }}</td>
+                                <td>
+                                    <span class="badge px-2 py-1 font-monospace" [ngClass]="{
+                                        'bg-success': getSessionDecision(sess) === 'GO',
+                                        'bg-danger': getSessionDecision(sess) === 'NO-GO',
+                                        'bg-warning text-dark': getSessionDecision(sess) === 'PENDING'
+                                    }">
+                                        {{ getSessionDecision(sess) }}
+                                    </span>
+                                </td>
+                                <td class="text-center text-light fw-bold">{{ getSessionSuccessPercentage(sess) }}</td>
+                                <td class="text-end" (click)="$event.stopPropagation()">
+                                    <div class="d-flex justify-content-end gap-2">
+                                        @if (getSessionDecision(sess) === 'PENDING' || isPausedSession(sess)) {
+                                            <button class="btn btn-sm px-3 fw-bold"
+                                                    [class.btn-primary]="isSessionStarted(sess)"
+                                                    [class.btn-success]="!isSessionStarted(sess)"
+                                                    (click)="playPreparedSession(sess)">
+                                                {{ isSessionStarted(sess) ? 'Continuer' : 'Lancer' }}
+                                            </button>
+                                        }
+                                        @if (canRestartSession(sess) && getSessionDecision(sess) !== 'PENDING') {
+                                            <button class="btn btn-sm btn-outline-warning px-3 fw-bold" (click)="restartSession(sess)" title="Annuler et réinitialiser les résultats de cette session de test">
+                                                Relancer
+                                            </button>
+                                        }
+                                        <button class="btn btn-sm text-danger btn-icon" (click)="deleteCampaignSession(sess.id)">Retirer</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @if (expandedSessions[sess.id]) {
+                                <tr class="session-questions-row">
+                                    <td colspan="8" class="p-0" style="background: var(--page-bg);">
+                                        <table class="table table-dark table-sm m-0 small questions-subtable">
+                                            <colgroup>
+                                                <col style="width: 3%;">
+                                                <col style="width: 16%;">
+                                                <col style="width: 15%;">
+                                                <col style="width: 9%;">
+                                                <col style="width: 8%;">
+                                                <col style="width: 6%;">
+                                                <col style="width: 6%;">
+                                                <col style="width: 10%;">
+                                                <col style="width: 8%;">
+                                                <col style="width: 6%;">
+                                                <col style="width: 13%;">
+                                            </colgroup>
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Question (Test)</th>
+                                                    <th>Catégorie</th>
+                                                    <th>Applicatif</th>
+                                                    <th>Section</th>
+                                                    <th class="text-center">Tasks</th>
+                                                    <th class="text-center">Criticité</th>
+                                                    <th></th>
+                                                    <th class="text-center">Statut</th>
+                                                    <th class="text-center">%</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (q of sessionQuestionsMap[sess.id] || []; track $index; let qIdx = $index) {
+                                                    @let qStatus = getQuestionStatus(q, sess);
+                                                    <tr [ngClass]="{
+                                                        'row-status-passed': qStatus === 'PASSED',
+                                                        'row-status-failed': qStatus === 'FAILED',
+                                                        'row-status-pending': qStatus === 'PENDING',
+                                                        'row-status-skipped': qStatus === 'SKIPPED'
+                                                    }">
+                                                        <td class="text-muted">{{ qIdx + 1 }}</td>
+                                                        <td class="text-white">{{ q.test.name }}</td>
+                                                        <td class="text-info small">{{ q.categoryName }}</td>
+                                                        <td class="text-info small">{{ q.applicatifName }}</td>
+                                                        <td class="text-info small">{{ q.sectionName }}</td>
+                                                        <td class="text-center text-light">{{ q.test.tasks.length }}</td>
+                                                        <td class="text-center">
+                                                            <span class="badge" [class.bg-danger]="q.test.criticality === 'Bloquant'" [class.bg-warning]="q.test.criticality === 'Majeur'" [class.bg-secondary]="q.test.criticality === 'Mineur'" [class.text-dark]="q.test.criticality === 'Majeur'">
+                                                                {{ q.test.criticality }}
+                                                            </span>
+                                                        </td>
+                                                        <td></td>
+                                                        <td class="text-center">
+                                                            <span class="badge" [class.bg-success]="qStatus === 'PASSED'" [class.bg-danger]="qStatus === 'FAILED'" [class.bg-secondary]="qStatus === 'SKIPPED'" [class.bg-warning]="qStatus === 'PENDING'" [class.text-dark]="qStatus === 'PENDING'">
+                                                                {{ qStatus === 'PENDING' ? 'NON TERMINÉ' : qStatus }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center text-light fw-bold">{{ getTestSuccessPercentage(q, sess) }}</td>
+                                                        <td></td>
+                                                    </tr>
+                                                } @empty {
+                                                    <tr><td colspan="11" class="text-center text-muted p-3">Aucune question rattachée à cette session.</td></tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                        } @empty {
+                            <tr>
+                                <td colspan="8" class="text-center text-muted p-4">Aucun opérateur n'a encore rattaché de résultats à cette campagne.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@if (showCaptureModal) {
+    <app-capture-modal (saved)="onCaptureSaved($event)" (closed)="onCaptureClosed()"></app-capture-modal>
+}

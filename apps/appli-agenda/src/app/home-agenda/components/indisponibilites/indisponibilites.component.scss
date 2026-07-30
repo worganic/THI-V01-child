@@ -1,0 +1,243 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-blue-primary
+// pointe vers --heading-color (texte), pas --brand-primary (voir commentaire dans
+// global-design.scss) : le seul usage en fond (.btn-submit-airbus) référence --brand-primary
+// directement plus bas.
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$border-color: var(--border-color);
+
+.indispo-card {
+  background: var(--surface);
+  border-radius: 8px;
+  border: 1px solid $border-color;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 24px;
+  overflow: hidden;
+
+  // Toute la barre est cliquable (pas seulement le chevron) pour masquer/afficher la zone : cible
+  // trop petite sinon, voir toggleCollapsed() sur le composant.
+  .card-header {
+    background: var(--surface-alt);
+    padding: 14px 20px;
+    border-bottom: 1px solid $border-color;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--surface-alt) 70%, var(--brand-secondary) 6%);
+    }
+
+    // Zone dépliée : fond plus prononcé pour repérer d'un coup d'œil quelles sections sont
+    // ouvertes parmi toute la liste (surtout utile une fois plusieurs sections repliées).
+    &.is-expanded {
+      background: color-mix(in srgb, var(--surface-alt) 60%, var(--brand-secondary) 16%);
+
+      &:hover {
+        background: color-mix(in srgb, var(--surface-alt) 50%, var(--brand-secondary) 24%);
+      }
+    }
+
+    .card-icon {
+      font-size: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: $airbus-blue-primary;
+      margin: 0;
+    }
+
+    .btn-toggle-collapse {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: $airbus-blue-primary;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.15s ease-in-out;
+
+      &.collapsed {
+        transform: rotate(-90deg);
+      }
+
+      &:hover {
+        color: $airbus-blue-secondary;
+      }
+    }
+  }
+
+  .card-body {
+    padding: 20px;
+  }
+
+  .indispo-hint {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 0 0 14px 0;
+  }
+
+  .indispo-form {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px;
+    background: var(--surface-alt);
+    border: 1px solid $border-color;
+    border-radius: 6px;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-secondary);
+      }
+
+      select,
+      input {
+        padding: 6px 10px;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+    }
+
+    .form-group-reason {
+      flex: 1;
+      min-width: 160px;
+    }
+
+    .btn-submit-airbus {
+      background: var(--brand-primary);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover {
+        background: $airbus-blue-secondary;
+      }
+    }
+
+    .btn-cancel-edit {
+      background: var(--surface);
+      color: var(--text-secondary);
+      border: 1px solid $border-color;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      white-space: nowrap;
+
+      &:hover {
+        background: var(--surface-alt);
+      }
+    }
+  }
+
+  .indispo-empty {
+    text-align: center;
+    padding: 16px;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .indispo-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .indispo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border: 1px solid $border-color;
+    border-radius: 4px;
+    font-size: 13px;
+
+    // Édition en cours (voir startEdit) : repère visuel pour retrouver la ligne dont le formulaire
+    // du dessus reprend les valeurs, sans quoi rien ne distingue "modification" de "création".
+    &.is-editing {
+      border-color: $airbus-blue-secondary;
+      background: color-mix(in srgb, var(--surface) 85%, var(--brand-secondary) 15%);
+    }
+
+    .indispo-dev {
+      font-weight: 700;
+      color: $airbus-blue-primary;
+      min-width: 160px;
+    }
+
+    .indispo-dates {
+      color: var(--text-primary);
+    }
+
+    .indispo-reason {
+      flex: 1;
+      color: var(--text-secondary);
+      font-style: italic;
+    }
+
+    // Toujours plaquées à droite via margin-left: auto (pas flex:1 sur .indispo-reason, qui ne
+    // pousse le groupe que lorsqu'une raison est renseignée — sans raison, les boutons se
+    // retrouvaient collés juste après les dates, désalignés d'une ligne à l'autre).
+    .indispo-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-left: auto;
+    }
+
+    .btn-edit-indispo {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+
+      &:hover {
+        color: $airbus-blue-secondary;
+        background: var(--surface-alt);
+      }
+    }
+
+    .btn-remove-indispo {
+      background: none;
+      border: none;
+      // Contraste renforcé (#94a3b8 était trop clair sur fond blanc) : couleur par défaut déjà
+      // suffisamment lisible sans attendre le survol.
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      padding: 4px 8px;
+      border-radius: 4px;
+
+      &:hover {
+        color: #dc2626;
+        background: color-mix(in srgb, var(--surface) 85%, #dc2626 15%);
+      }
+    }
+  }
+}

@@ -28,7 +28,9 @@
 worganic-monorepo/
 ├── apps/
 │   ├── portail/               # App principale (port 4202)
-│   └── projets/               # Sous-app projets (port 4203)
+│   ├── projets/               # Sous-app projets (port 4203, app autonome)
+│   ├── appli-agenda/          # Sous-app agenda   → montée dans le portail sur /agenda
+│   └── appli-recettes/        # Sous-app recettes → montée dans le portail sur /recettes
 ├── libs/
 │   ├── shared/ui/             # Composants graphiques partagés
 │   └── portail-core/
@@ -187,6 +189,10 @@ Question 3 : "Titre du commit ?"
 | Admin › Config | `connecte/admin/config/` |
 | Admin › Thème | `connecte/admin/theme/` |
 | Admin › Tests | `connecte/admin/tests/` |
+| Admin › Applications | `connecte/admin/applications/` |
+| Page d'accueil (`/home`) | `connecte/accueil/` |
+| Agenda (`/agenda`) | `connecte/agenda/` |
+| Recettes (`/recettes`) | `connecte/recettes/` |
 | Page Config utilisateur | `connecte/config/` |
 | Page Déploiements | `connecte/deploiements/` |
 | Outil Tchat IA | `connecte/outils/tchat-ia/` |

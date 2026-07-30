@@ -1,0 +1,24 @@
+<button
+  type="button"
+  class="help-hint-btn"
+  [class.is-open]="open"
+  (click)="toggle($event)"
+  [attr.aria-expanded]="open"
+  [attr.aria-label]="'Aide : ' + heading"
+  title="À quoi sert cette zone ?"
+>?</button>
+
+@if (open) {
+  <!-- Le backdrop capture aussi les clics pour ne pas les laisser filer vers l'en-tête replié. -->
+  <div class="help-hint-backdrop" (click)="close($event)">
+    <div class="help-hint-panel" (click)="$event.stopPropagation()" role="dialog" [attr.aria-label]="heading">
+      <div class="help-hint-header">
+        <h4>{{ heading }}</h4>
+        <button type="button" class="help-hint-close" (click)="close($event)" aria-label="Fermer">✕</button>
+      </div>
+      <div class="help-hint-body">
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+}

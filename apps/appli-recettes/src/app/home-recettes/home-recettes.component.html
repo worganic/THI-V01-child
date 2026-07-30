@@ -1,0 +1,203 @@
+<!-- bs-scope : active Bootstrap, confiné à ce sous-arbre (voir apps/portail/src/styles-sous-apps.scss) -->
+<div class="dark-theme-wrapper bs-scope">
+  <!-- ÉCRAN DE SYNCHRONISATION -->
+  @if (isRouteResolving) {
+  <div class="d-flex flex-column justify-content-center align-items-center" style="height: 50vh;">
+    <div class="spinner-border text-warning mb-3" style="width: 3rem; height: 3rem;" role="status"></div>
+    <div class="text-muted small font-monospace">Synchronisation de l'espace recette...</div>
+  </div>
+  } @else {
+
+  <!-- VUE 1 : ACCUEIL -->
+  @if (!selectedBook) {
+  <header class="top-nav px-4 py-3 border-bottom border-dark">
+    <h2 class="text-white m-0"><i class="icon">📚</i> Mes Cahiers de Recettes</h2>
+  </header>
+
+  <main class="main-content">
+    <div class="mb-4">
+      <button class="action-btn text-warning border-warning px-4 py-2 fs-6" (click)="openCreateModal()">
+        ➕ Créer un nouveau cahier
+      </button>
+    </div>
+
+    <!-- Bandeau d'alerte : le cahier NO-GO le plus critique, s'il y en a un -->
+    @if (heroNoGoBook(); as hero) {
+    <div class="hero-alert">
+      <span class="icon">🚨</span>
+      <div>
+        <h2>1 cahier bloque une mise en production</h2>
+        <p>
+          {{ hero.book.name }} — {{ hero.failedCount }} test(s) bloquant(s) en échec,
+          {{ hero.quality.successRate }}% de réussite (seuil {{ hero.environment }} : {{ hero.thresholdLabel }}).
+        </p>
+      </div>
+      <button class="cta" (click)="openBookById(hero.book.id)">Voir le cahier →</button>
+    </div>
+    }
+
+    <div class="home-split">
+      <div class="home-main-col">
+        <h3 class="section-title">Tous les cahiers</h3>
+        <div class="books-grid">
+          @for (book of books(); track book.id) {
+          <div class="book-card" (click)="openBook(book)">
+            <div class="card-header-flex">
+              <h3 class="text-white fw-bold m-0">{{ book.name }}</h3>
+              <div class="card-actions">
+                <button class="btn-icon" title="Modifier le cahier" (click)="openEditModal(book, $event)">✏️</button>
+                <button class="btn-icon text-danger" title="Supprimer le cahier"
+                  (click)="deleteBook(book.id, $event)">🗑️</button>
+              </div>
+            </div>
+            <p class="text-muted mt-3 mb-4 flex-grow-1">{{ book.description || 'Aucune description' }}</p>
+            <div class="card-stats-row">
+              <span class="stat-pill stat-tests" title="Nombre total de tests">🧪 {{ getStats(book.id).tests }} Test(s)</span>
+              <span class="stat-pill stat-campaigns" title="Nombre de campagnes">🏁 {{ getStats(book.id).campaigns }} Campagne(s)</span>
+              <span class="stat-pill stat-sessions" title="Nombre de sessions">👤 {{ getStats(book.id).sessions }} Session(s)</span>
+            </div>
+            <div class="card-verdict-row">
+              <span class="verdict-pill" [class]="verdictClass(getQuality(book.id).verdict)">
+                <span class="dot"></span>{{ verdictLabel(getQuality(book.id).verdict) }}
+              </span>
+              <span class="text-muted small">{{ getQuality(book.id).successRate }}% réussite</span>
+            </div>
+            <div class="progress-track">
+              <div class="progress-fill" [class]="verdictClass(getQuality(book.id).verdict)"
+                   [style.width.%]="getQuality(book.id).verdict === 'PENDING' ? 2 : getQuality(book.id).successRate"></div>
+            </div>
+            <div class="card-footer-flex text-muted small">
+              <span>📅 {{ formatBookDate(book.dateCreated) }}</span>
+              <span>📂 {{ getStats(book.id).categories }} Catégorie(s)</span>
+            </div>
+          </div>
+          } @empty {
+          <div class="text-center text-muted p-5 w-100">Aucun cahier de recette créé pour le moment.</div>
+          }
+        </div>
+      </div>
+
+      <aside class="side-panel">
+        <h4>Vue globale</h4>
+        @if (verdictDistribution(); as vd) {
+        <div class="verdict-bar">
+          @if (vd.go > 0) { <span class="seg-go" [style.width.%]="(vd.go / (vd.go + vd.cond + vd.nogo || 1)) * 100">{{ vd.go }}</span> }
+          @if (vd.cond > 0) { <span class="seg-cond" [style.width.%]="(vd.cond / (vd.go + vd.cond + vd.nogo || 1)) * 100">{{ vd.cond }}</span> }
+          @if (vd.nogo > 0) { <span class="seg-nogo" [style.width.%]="(vd.nogo / (vd.go + vd.cond + vd.nogo || 1)) * 100">{{ vd.nogo }}</span> }
+        </div>
+        }
+        <div class="verdict-legend">
+          <span><i class="legend-dot go"></i>GO</span>
+          <span><i class="legend-dot cond"></i>GO-COND.</span>
+          <span><i class="legend-dot nogo"></i>NO-GO</span>
+        </div>
+
+        <div class="mini-kpi-grid">
+          <div class="mini-kpi"><div class="kpi-value">{{ globalKpis().globalSuccessRate }}%</div><div class="kpi-label">Réussite globale</div></div>
+          <div class="mini-kpi"><div class="kpi-value">{{ globalKpis().totalTests }}</div><div class="kpi-label">Tests au total</div></div>
+          <div class="mini-kpi"><div class="kpi-value">{{ globalKpis().enCoursCount }}</div><div class="kpi-label">Cahiers en cours</div></div>
+          <div class="mini-kpi"><div class="kpi-value">{{ globalKpis().sessionsThisMonth }}</div><div class="kpi-label">Sessions ce mois</div></div>
+        </div>
+
+        @if (vigilanceItems().length > 0) {
+        <h4>Points de vigilance</h4>
+        <ul class="vigilance-list">
+          @for (item of vigilanceItems(); track item.bookId + item.label) {
+          <li [class.majeur]="item.criticality === 'Majeur'" (click)="openBookById(item.bookId)">
+            {{ item.label }}
+            <span class="book-ref">{{ item.criticality === 'Bloquant' ? '🔴' : '🟠' }} {{ item.criticality }} — {{ item.bookName }}</span>
+          </li>
+          }
+        </ul>
+        }
+
+        @if (activityFeed().length > 0) {
+        <h4>Activité récente</h4>
+        <ul class="activity-feed">
+          @for (act of activityFeed(); track act.bookId + act.dateExecuted) {
+          <li>
+            <span class="dot" [class]="verdictClass(act.status)"></span>
+            <div>
+              Session {{ verdictLabel(act.status) }} — {{ act.bookName }}
+              <div class="when">{{ act.testerName }} · {{ formatRelativeDate(act.dateExecuted) }}</div>
+            </div>
+          </li>
+          }
+        </ul>
+        }
+      </aside>
+    </div>
+  </main>
+
+  <!-- VUE 2 : DÉTAIL DU CAHIER -->
+  } @else {
+  <header class="top-nav d-flex align-items-center">
+    <button class="btn-back-home" (click)="closeBook()">⬅ Retour à l'accueil</button>
+    <div class="nav-divider"></div>
+    <div class="d-flex align-items-center me-4 pe-3 border-end border-dark">
+      <span class="text-warning fw-bold fs-5">{{ selectedBook.name }}</span>
+    </div>
+    <div class="nav-tabs">
+      <button class="tab-btn" [class.active]="activeTab === 'cahier'" (click)="switchTab('cahier')">
+        <i class="icon">📝</i> Cahier de recette
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'execution'" [disabled]="!hasTests(selectedBook)"
+        [title]="!hasTests(selectedBook) ? 'Ajoutez au moins un test pour activer' : ''"
+        (click)="switchTab('execution')">
+        <i class="icon">▶️</i> Exécution
+      </button>
+      <button class="tab-btn" [class.active]="activeTab === 'resultats'" [disabled]="!hasTests(selectedBook)"
+        [title]="!hasTests(selectedBook) ? 'Ajoutez au moins un test pour activer' : ''"
+        (click)="switchTab('resultats')">
+        <i class="icon">📊</i> Résultats
+      </button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    @if (activeTab === 'cahier') {
+    <app-cahier [currentBook]="selectedBook" (requestExecution)="handleLaunchExecution($event)"></app-cahier>
+    }
+    @if (activeTab === 'execution') {
+    <app-execution [currentBook]="selectedBook"
+                   [initialTarget]="executionTarget"
+                   [initialCampaignId]="executionCampaignId"
+                   (sessionFinished)="switchTab('resultats')"></app-execution>
+    }
+    @if (activeTab === 'resultats') {
+    <app-resultats [currentBook]="selectedBook"
+                   (launchExecution)="handleLaunchExecution($event)"></app-resultats>
+    }
+  </main>
+  }
+
+  <!-- MODALE COMMUNE -->
+  @if (showModal) {
+  <div class="modal-overlay">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 class="m-0 text-white">{{ modalMode === 'add' ? 'Créer un cahier' : 'Modifier le cahier' }}</h3>
+        <button class="btn-close-modal" (click)="showModal = false">✖</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group mb-3">
+          <label>Nom du cahier <span class="text-danger">*</span></label>
+          <!-- 🪄 FIX NG5002 : Auto-fermeture stricte de la balise input -->
+          <input type="text" class="dark-input" [(ngModel)]="bookForm.name" placeholder="Ex: V3.5.5" />
+        </div>
+        <div class="form-group mb-3">
+          <label>Description</label>
+          <textarea class="dark-textarea" [(ngModel)]="bookForm.description"
+            placeholder="Contexte du cahier..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancel" (click)="showModal = false">Annuler</button>
+        <button class="btn-save" (click)="saveBook()">Enregistrer</button>
+      </div>
+    </div>
+  </div>
+  }
+
+  }
+</div>

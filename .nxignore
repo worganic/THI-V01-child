@@ -1,0 +1,3 @@
+# Dépôt de référence copié localement (portail d'exemple) : ses apps/libs portent
+# les mêmes noms que celles du monorepo et cassent le graphe de projets NX.
+portail-exemple

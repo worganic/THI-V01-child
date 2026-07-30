@@ -1,0 +1,137 @@
+// Design system centralisé (voir libs/shared-ui/src/global-design.scss). $airbus-blue-primary
+// pointe vers --heading-color (pas --brand-primary) : ici il ne sert qu'en couleur de TEXTE sur
+// fond clair/sombre (voir commentaire dans global-design.scss).
+$airbus-blue-primary: var(--heading-color);
+$airbus-blue-secondary: var(--brand-secondary);
+$border-color: var(--border-color);
+
+.date-range-picker {
+  position: relative;
+  display: inline-block;
+}
+
+.drp-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: 1px solid $border-color;
+  border-radius: 4px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  white-space: nowrap;
+
+  &:hover {
+    border-color: $airbus-blue-secondary;
+  }
+
+  .drp-icon {
+    font-size: 13px;
+  }
+
+  .drp-label.is-placeholder {
+    color: var(--text-secondary);
+  }
+}
+
+// position:fixed (coordonnées calculées en JS, voir updatePopupPosition) plutôt qu'absolute : la
+// carte contenant ce champ (.indispo-card) a overflow:hidden pour arrondir ses coins, ce qui coupait
+// le calendrier dès qu'il dépassait le bas de la carte. En fixed, le popup s'affiche par-dessus
+// toute la page sans être rogné par un ancêtre — top/left posés dynamiquement via [style.*.px].
+.drp-popup {
+  position: fixed;
+  z-index: 2000;
+  width: 260px;
+  background: var(--surface);
+  border: 1px solid $border-color;
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  padding: 12px;
+}
+
+.drp-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+
+  .drp-month-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: $airbus-blue-primary;
+  }
+
+  .drp-nav-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    line-height: 1;
+    color: $airbus-blue-primary;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+
+    &:hover {
+      background: color-mix(in srgb, var(--brand-secondary) 8%, transparent);
+    }
+  }
+}
+
+.drp-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+
+  .drp-weekday {
+    text-align: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+}
+
+.drp-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.drp-day {
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1;
+  border: none;
+  background: none;
+  font-size: 12px;
+  color: var(--text-primary);
+  cursor: pointer;
+  border-radius: 4px;
+
+  &.is-outside {
+    color: color-mix(in srgb, var(--text-secondary) 60%, transparent);
+  }
+
+  &.is-in-range {
+    background: var(--category-blue-bg);
+    border-radius: 0;
+  }
+
+  &.is-edge {
+    background: var(--brand-primary);
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 4px;
+  }
+
+  &:hover:not(.is-edge) {
+    background: color-mix(in srgb, var(--category-blue-bg) 60%, var(--category-blue-border) 40%);
+  }
+}
+
+.drp-hint {
+  margin: 8px 0 0 0;
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-align: center;
+}
