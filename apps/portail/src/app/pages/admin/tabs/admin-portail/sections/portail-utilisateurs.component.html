@@ -227,10 +227,7 @@
           <div class="px-5 py-3 border-b border-light-border dark:border-white/10">
             <span class="text-sm font-semibold text-light-text dark:text-white">Groupes</span>
             <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">
-              L'utilisateur voit sur sa page d'accueil toutes les applications des groupes cochés.
-              @if (selectedUser()!.role === 'admin') {
-                <span class="text-amber-500 dark:text-amber-400"> Un administrateur voit de toute façon tous les groupes actifs.</span>
-              }
+              L'utilisateur voit sur sa page d'accueil toutes les applications des groupes cochés — y compris un administrateur, dont le rôle donne accès au panneau /admin mais n'accorde aucun groupe/accès direct supplémentaire.
             </p>
           </div>
           @if (groupes().length === 0) {

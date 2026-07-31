@@ -20,7 +20,7 @@
  * Montage : require('../apps/appli-agenda/server').register(app, { pool, getSessionUser })
  */
 
-const { upsertCatalogEntry } = require('../../../server/modules/portal-apps');
+const { upsertCatalogEntry, markAppMounted } = require('../../../server/modules/portal-apps');
 
 // Entrée de catalogue `portal_apps` propre à l'agenda (voir upsertCatalogEntry
 // ci-dessous) : ce module n'a plus besoin d'être connu par son nom dans
@@ -117,6 +117,9 @@ async function ensureSchema(pool) {
 }
 
 function register(app, { pool, getSessionUser }) {
+    // Preuve que ce module (donc le dossier apps/appli-agenda/) est bien présent
+    // dans cette installation — voir markAppMounted/isAppAvailable dans portal-apps.js.
+    markAppMounted(CATALOG_ENTRY.code);
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 

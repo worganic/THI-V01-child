@@ -12,7 +12,7 @@
 - Vérifier qu'une ligne de heading markdown avec l'identifiant stable {{SID:folderId}} est insérée à la fin de la section active.
 - Vérifier que le nouveau titre s'affiche correctement dans l'arborescence de structure et la zone d'édition.
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `libs/shared/ui/src/lib/editor/title-create-dialog.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `libs/shared/ui/src/lib/editor/title-create-dialog.component.ts`
 
 ---
 
@@ -25,7 +25,7 @@
 - Vérifier que la section donneuse perd son statut dirty pour empêcher le doublement de texte au re-render.
 - Vérifier le déclenchement d'une sauvegarde automatique immédiate.
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -37,7 +37,7 @@
 - Confirmer la création d'un titre de sous-section.
 - Vérifier que la ligne de heading est correctement insérée positionnellement après la section d'ancrage et que le re-parentage s'exécute de manière cohérente.
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -49,7 +49,7 @@
 - Vérifier que descendre d'un niveau (+1) niche la section sous son frère précédent direct.
 - Vérifier que l'action est bloquée si les limites de niveau (H1 à H4) ou l'absence de frère précédent l'empêchent.
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -62,7 +62,7 @@
 - En mode focus, vérifier que la fusion applique le changement au document complet, sort du focus et retourne à la vue globale.
 - Vérifier que la fusion est désactivée et impossible pour la toute première section du document.
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
 
 ---
 
@@ -72,7 +72,7 @@
 - Vérifier que le nouveau texte remplace l'ancien dans le heading markdown en préservant le marqueur {{SID:folderId}}.
 - Vérifier qu'au blur ou à la sauvegarde, le nom du dossier physique correspondant est mis à jour en BDD pour correspondre au nouveau libellé.
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -83,7 +83,7 @@
 - Vérifier dans une section H1 que seuls H2, H3 et H4 sont proposés.
 - Valider qu'un clic sur une commande de titre filtrée ouvre correctement le popup pré-rempli au bon niveau.
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
 
 ---
 

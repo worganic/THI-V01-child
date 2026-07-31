@@ -1,6 +1,6 @@
 # Admin › Déploiements — Fonctions métier
 
-Route : `/admin` onglet "Déploiement"  
+Route : `/admin/deploiement` (catégorie **Portail**, onglet "Déploiement" — administration transverse, non spécifique à une sous-application ; voir `2-1-9-7`)  
 Composant : `AdminDeploymentsComponent`  
 Accès : admin uniquement
 

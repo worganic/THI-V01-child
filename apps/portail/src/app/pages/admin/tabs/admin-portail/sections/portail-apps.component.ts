@@ -35,6 +35,10 @@ export class PortailAppsSectionComponent implements OnInit {
     this.error.set('');
     try {
       this.apps.set(await this.service.getApps());
+      // Rafraîchit aussi les apps autorisées pour l'utilisateur courant (signal partagé lu
+      // par NavComponent) : sans ça, un admin qui active/désactive une app ne verrait le
+      // changement dans son propre menu qu'après un rechargement de page.
+      await this.service.getHomeDashboard();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur chargement des applications');
     } finally {

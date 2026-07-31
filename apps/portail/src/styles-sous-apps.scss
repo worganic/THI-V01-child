@@ -66,17 +66,15 @@
 
 // ── 2. Bootstrap confiné aux recettes ────────────────────────────────────────
 //
-// Import imbriqué volontaire : toutes les règles générées sont préfixées par
-// `.bs-scope`, si bien que Bootstrap n'atteint jamais les écrans Tailwind du
-// portail. La classe est posée sur le conteneur racine de HomeRecettesComponent.
-.bs-scope {
-    @import 'bootstrap/scss/bootstrap';
-}
+// Le contenu vit désormais dans apps/appli-recettes/src/styles-recettes.scss
+// (contrat "sous-application", voir docs/architecture-sous-applications.md) —
+// une seule ligne de câblage ici, comme pour les routes ou l'onglet admin.
+@import '../../appli-recettes/src/styles-recettes.scss';
 
 // Note : le correctif des champs de formulaire natifs (select/input/textarea)
 // spécifique à l'agenda a été déplacé dans le style scopé de son propre
-// composant (apps/appli-agenda/src/app/home/home-agenda.component.scss) —
-// contrat "sous-application", voir docs/architecture-sous-applications.md.
-// Les variables de la section 1 ci-dessus restent partagées avec recettes
-// pour l'instant (état transitoire, à revisiter quand recettes migrera à son
-// tour vers le même contrat).
+// composant (apps/appli-agenda/src/app/home/home-agenda.component.scss).
+// Les variables de la section 1 ci-dessus restent partagées entre agenda et
+// recettes pour l'instant (état transitoire — chaque sous-appli consomme ces
+// noms de variable dans ses templates, les dupliquer par sous-appli est un
+// futur pas possible mais pas encore fait).

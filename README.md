@@ -187,4 +187,5 @@ Un fichier `sync-from-base.bat` est présent à la racine de chaque child. Il :
 ```
 
 
-claude --dangerously-skip-permissions
+
+mode --output-format stream-json --dangerously-skip-permissions

@@ -1,5 +1,8 @@
 # Éditeur › Zone 4 — Mode Code — Fonctions métier
 
+> Note (2026-07-31) : le backend de ces fonctions a été déplacé de `server/server-data.js` vers `apps/appli-projets/server/index.js` (contrat "sous-application", voir `docs/architecture-sous-applications.md`) — déplacement pur, aucun changement de comportement observable, non retesté systématiquement à ce titre.
+
+
 Composant : `ProjetEditorZoneComponent` — onglet "Code"  
 Vue : textarea Markdown à gauche, rendu HTML miroir à droite
 
@@ -197,7 +200,7 @@ Via les boutons de la toolbar (voir toolbar/fonctions.md) ou raccourcis :
 
 Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour l'IA, et déporter les styles non-markdown (couleur, surlignage, taille, soulignage, alignement) dans un **jumeau `contenu-css.md`**.
 
-- **Invariant** : `stripStyleMarkdown(contenu-css.md)` == `contenu.md` (texte affiché identique). Utilitaires dans `apps/projets/src/app/pages/projet-editor/content-style.util.ts` : `stripStyleMarkdown`, `mergeCleanIntoStyled`, `cssTwinName`, `isCssTwinName`.
+- **Invariant** : `stripStyleMarkdown(contenu-css.md)` == `contenu.md` (texte affiché identique). Utilitaires dans `apps/appli-projets/src/app/pages/projet-editor/content-style.util.ts` : `stripStyleMarkdown`, `mergeCleanIntoStyled`, `cssTwinName`, `isCssTwinName`.
 - **Master = stylisé** : le buffer (`unifiedContent`) provient du jumeau `-css.md` (`buildDocSections`). Le Markdown standard (`**`, `*`, `#`, listes, liens, code) reste dans le contenu ; seul le HTML de style va dans le jumeau.
 - **Images en Markdown standard** (vB-0.284) : dans le fichier propre (`contenu.md`, vu par l'IA en mode Code), les marqueurs `{{IMG:id}}` sont convertis en image Markdown `![alt](nom-fichier)` (chemin = nom du fichier image, situé dans le dossier de la section ; alt = légende ou nom sans extension). Géré par `stripStyleMarkdown(md, imgResolver)` (résolveur `cleanImgResolver` côté zone et parent). Le jumeau stylisé garde `{{IMG:id}}` ; le round-trip est assuré par `mergeCleanIntoStyled` (mapping ligne clean ↔ styled).
 - **Styles markdown-compatibles toujours en Markdown** : gras `**…**`, italique `*…*`, barré `~~…~~` sont écrits en **Markdown dans les deux fichiers** (jamais en `<b>`/`<span style="font-weight">`). `normalizeStyledMarkdown` convertit toute balise `<b>/<strong>/<i>/<em>/<s>/<del>` en Markdown avant écriture du jumeau et au chargement. Le `-css.md` n'ajoute du HTML que pour les styles **sans** équivalent Markdown (couleur, surlignage, taille, soulignage, alignement). Exemple : `<span style="color:purple">**gras**</span>`.
@@ -563,7 +566,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Action B — « Générer le livrable maintenant »** : `onFormSecondary(entry)` → `onForceGenerateFromCadrage(entry)` → pousse les réponses comme message utilisateur AVANT `sendPromptTurn(..., 'generate')` → `buildGenerateUserPrompt()` inclut tout le transcript (réponses comprises) + `[État actuel du projet]`.
 - **Résultat attendu** : dans les deux cas, le prompt utilisateur envoyé à la génération contient les réponses de cadrage (transcript complet du fil, plus long que le prompt initial). L'IA reçoit les réponses et produit un livrable cohérent.
 - **À vérifier** : remplir le formulaire de cadrage inline, cliquer « Générer le livrable maintenant » → le livrable généré reflète les réponses saisies (comparer avec/sans réponses sur un prompt de test).
-- **Composants:** `form-execution-popup.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`
+- **Composants:** `form-execution-popup.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`
 
 ---
 
@@ -645,7 +648,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Résultat attendu** : tant qu'au moins un fichier reste en échec (`ProjetCollabService.unsavedSince`), une bannière discrète "Non sauvegardé depuis Xs" s'affiche (ambre à 10s, rouge à 60s) et la fermeture d'onglet est bloquée par une confirmation navigateur (`beforeunload`). Au retour de connexion (event `online`), un nouvel essai est déclenché immédiatement pour les fichiers restés en échec (`onlineRestored$` → `retryUnsavedDrafts()`), sans attendre la prochaine frappe.
 - **Limite assumée (v1)** : file d'attente en mémoire seulement, pas d'IndexedDB — un refresh de page ou une fermeture forcée pendant une coupure prolongée peut perdre les frappes non retentées (le `beforeunload` réduit ce risque sans l'éliminer).
 - **À vérifier** : couper le réseau (DevTools offline) pendant l'édition → bannière "Non sauvegardé" apparaît après ~10s → rétablir le réseau → la bannière disparaît sans action utilisateur (retry automatique) et sans perte de texte.
-- **Composants:** `libs/portail-core/data-access/src/lib/project-files.service.ts`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts`, `projet-update-banner.component.html`
+- **Composants:** `libs/portail-core/data-access/src/lib/project-files.service.ts`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts`, `projet-update-banner.component.html`
 
 ---
 
@@ -655,7 +658,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Action** : clic sur "Enregistrer et partager" (n'importe lequel des points d'entrée : Code, cross-mode, `publishSection`, mode focus).
 - **Résultat attendu** : `writeSectionStyled` checkpointe désormais aussi chaque fichier additionnel (`updateFile(..., publish:true, checkpoint:true)`) en plus du fichier principal et de son jumeau CSS. Auparavant, ces fichiers ne transitaient que par le brouillon privé (`projet_local_draft`), jamais promus en version BDD partagée (`projet_content_version`) — invisibles aux autres utilisateurs tant qu'aucune autre action ne les touchait, et absents de l'historique de versions.
 - **À vérifier** : modifier le contenu d'un bloc Prompt/Trello dans une section, cliquer "Enregistrer et partager" → l'onglet Historique → "Versions de cette section" (`2-5-2-8-13`) liste désormais aussi une version pour ce fichier additionnel.
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
 
 ---
 
@@ -670,7 +673,7 @@ Objectif : garder un `contenu.md` **propre** (Markdown standard uniquement) pour
 - **Découvrabilité** : `ProjetUpdateBannerComponent` distingue les conflits live (bannière ambre dédiée, bouton "Voir" qui active la section concernée) des mises à jour normales (bannière neutre existante, bouton "Mettre à jour").
 - **Résultat à redouter** : carte qui reste affichée après résolution (fuite de state), heading dupliqué comme ligne de corps après Insérer/Appliquer (désalignement heading vs corps entre les 2 sources de contenu), ou perte silencieuse de la frappe de A pendant la fusion.
 - **À vérifier** : 2 sessions (A et B) sur le même projet, B publie sur une section que A édite → carte visible côté A sans interruption de frappe ni décalage de lignes. Insérer → fusion correcte + save immédiat. Voir le diff → panneaux corrects, Appliquer route en local (pas d'appel réseau vers `resolve-conflict`). Rejeter → texte de A intact, publication suivante réussit sans 409. Tenter "Enregistrer et partager" sans résoudre → publication bloquée avec message explicite.
-- **Composants:** `apps/projets/src/app/pages/projet-editor/services/projet-incoming-change.service.ts`, `apps/projets/src/app/pages/projet-editor/utils/compute-tri-diff.ts` (`mergeThreeWay`), `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts` (+ `.html`/`.scss`), `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts` (+ `.html`/`.scss`)
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/services/projet-incoming-change.service.ts`, `apps/appli-projets/src/app/pages/projet-editor/utils/compute-tri-diff.ts` (`mergeThreeWay`), `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts` (+ `.html`/`.scss`), `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/outils/edition/edition-outil.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-update-banner/projet-update-banner.component.ts` (+ `.html`/`.scss`)
 
 ---
 

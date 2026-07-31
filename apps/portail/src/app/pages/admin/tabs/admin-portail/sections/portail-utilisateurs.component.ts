@@ -8,6 +8,7 @@ import {
   PortalGroupe,
   PortalMetier,
   PortalUser,
+  PortalGroupeApp,
   PortalUserGroupe,
   PortalUserApp,
   PortalDroit,
@@ -35,6 +36,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
   groupes     = signal<PortalGroupe[]>([]);
   apps        = signal<PortalApp[]>([]);
   metiers     = signal<PortalMetier[]>([]);
+  groupeApps  = signal<PortalGroupeApp[]>([]);
   userGroupes = signal<PortalUserGroupe[]>([]);
   userApps    = signal<PortalUserApp[]>([]);
   loading     = signal(true);
@@ -77,15 +79,33 @@ export class PortailUtilisateursSectionComponent implements OnInit {
 
   ngOnInit() { this.load(); }
 
+  /** Premier chargement — affiche le spinner plein panneau (`@if (loading())`). */
   async load() {
     this.loading.set(true);
     this.error.set('');
     try {
-      const [users, groupes, apps, metiers, userGroupes, userApps] = await Promise.all([
+      await this.refresh();
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  /**
+   * Rechargement des données après une action (bascule groupe/accès, métier,
+   * compte…) — ne touche jamais `loading` : le panneau détail reste monté tel
+   * quel, seules les valeurs des signaux changent. Basculer `loading` ici
+   * démontait/remontait tout le panneau à chaque clic (via `@if (loading())`
+   * dans le template), ce qui faisait sauter le scroll de la page.
+   */
+  async refresh() {
+    this.error.set('');
+    try {
+      const [users, groupes, apps, metiers, groupeApps, userGroupes, userApps] = await Promise.all([
         this.service.getUsers(),
         this.service.getGroupes(),
         this.service.getApps(),
         this.service.getMetiers(),
+        this.service.getGroupeApps(),
         this.service.getUserGroupes(),
         this.service.getUserApps(),
       ]);
@@ -93,6 +113,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
       this.groupes.set(groupes);
       this.apps.set(apps);
       this.metiers.set(metiers);
+      this.groupeApps.set(groupeApps);
       this.userGroupes.set(userGroupes);
       this.userApps.set(userApps);
       if (!this.selectedUserId() || !users.some(u => u.id === this.selectedUserId())) {
@@ -100,8 +121,6 @@ export class PortailUtilisateursSectionComponent implements OnInit {
       }
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur chargement des utilisateurs');
-    } finally {
-      this.loading.set(false);
     }
   }
 
@@ -122,9 +141,23 @@ export class PortailUtilisateursSectionComponent implements OnInit {
   async toggleGroupe(groupeId: number) {
     const userId = this.selectedUserId();
     if (!userId) return;
+    const linking = !this.isInGroupe(groupeId);
     try {
-      await this.service.toggleUserGroupe(userId, groupeId, !this.isInGroupe(groupeId));
-      await this.load();
+      await this.service.toggleUserGroupe(userId, groupeId, linking);
+      // Par défaut, associer un groupe coche aussi ses applications dans "Accès
+      // directs" — purement indicatif pour l'admin (l'accès réel vient déjà du
+      // groupe), mais évite d'avoir à recocher une à une les mêmes apps. On ne
+      // décoche jamais automatiquement au retrait du groupe : un accès direct
+      // laissé coché reste un choix explicite de l'admin.
+      if (linking) {
+        const appIds = this.groupeApps().filter(ga => ga.groupeId === groupeId).map(ga => ga.appId);
+        for (const appId of appIds) {
+          if (!this.hasDirectApp(appId)) {
+            await this.service.toggleUserApp(userId, appId, true, 'lecture');
+          }
+        }
+      }
+      await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur mise à jour du groupe');
     }
@@ -145,7 +178,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
     if (!userId) return;
     try {
       await this.service.toggleUserApp(userId, appId, !this.hasDirectApp(appId), this.directDroits(appId));
-      await this.load();
+      await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur mise à jour de l\'accès direct');
     }
@@ -156,7 +189,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
     if (!userId) return;
     try {
       await this.service.toggleUserApp(userId, appId, true, droits as PortalDroit);
-      await this.load();
+      await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur mise à jour du niveau de droit');
     }
@@ -167,7 +200,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
     if (!userId) return;
     try {
       await this.service.setUserMetier(userId, metierId ? Number(metierId) : null);
-      await this.load();
+      await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur mise à jour du métier');
     }
@@ -205,7 +238,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
       if (this.editPassword) data.password = this.editPassword;
       await this.authService.updateUser(user.id, data);
       this.editingAccount.set(false);
-      await this.load();
+      await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur sauvegarde du compte');
     } finally {
@@ -221,7 +254,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
       await this.authService.deleteUser(id);
       this.deletingUserId.set(null);
       if (this.selectedUserId() === id) this.selectedUserId.set(null);
-      await this.load();
+      await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur suppression utilisateur');
       this.deletingUserId.set(null);
@@ -259,7 +292,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
         await this.authService.updateUser(data.user.id, { role: 'admin' });
       }
       this.closeNewUserModal();
-      await this.load();
+      await this.refresh();
       this.selectedUserId.set(data.user.id);
     } catch (e: any) {
       this.error.set(e?.message || 'Erreur création utilisateur');

@@ -38,6 +38,26 @@ apps/appli-<nom>/
                                      + sa propre entrée de catalogue portal_apps
 ```
 
+## Deux modes de sous-application
+
+- **Mode intégré** (`appli-agenda`, `appli-recettes`) : le code source de la
+  sous-appli est compilé dans le même bundle Angular que le portail (routes
+  chargées à la demande par chemin relatif). C'est ce qui permet à son admin
+  de contribuer un composant directement au `AdminTabsRegistryService` du
+  portail (mécanisme 2 ci-dessous) : le composant existe dans le même bundle,
+  donc `NgComponentOutlet` peut le rendre.
+- **Mode autonome** (`apps/appli-projets`) : application NX séparée, son propre
+  build, son propre port, son propre bundle. Son admin ne peut **pas**
+  contribuer un composant au portail de la même façon — un composant compilé
+  dans le bundle de `apps/appli-projets` n'existe pas dans celui du portail au
+  runtime. C'est pourquoi son admin reste un onglet géré côté portail
+  (`apps/portail/src/app/child/child-admin-tabs.ts`), qui se contente de
+  lister/rediriger vers l'app autonome plutôt que de rendre un composant
+  venu de son propre dossier. En revanche, tout le reste du contrat
+  s'applique normalement : backend co-localisé (`apps/appli-projets/server/`),
+  catalogue `portal_apps` auto-porté, tokens DI déjà découplés (elle a
+  toujours été une app NX à part, avec son propre `app.config.ts`).
+
 ## Les mécanismes de contrat
 
 ### 1. Montage dans le portail (routing)
@@ -50,7 +70,7 @@ Une ligne dans `apps/portail/src/app/base-routes.ts` :
 
 La sous-appli est chargée à la demande dans le shell du portail : elle hérite
 donc automatiquement de son header, de son thème et de sa session (pas de
-pont cross-origin nécessaire, contrairement à `apps/projets` qui est une
+pont cross-origin nécessaire, contrairement à `apps/appli-projets` qui est une
 application séparée sur son propre port).
 
 ### 2. Admin plug-in (`AdminTabsRegistryService`)
@@ -63,6 +83,14 @@ remplacent pas). Chaque sous-appli fournit son propre
 `apps/portail/src/app/app.config.ts` l'ajoute au tableau `providers` — la
 définition de l'onglet appartient au dossier de la sous-appli, pas au portail.
 
+Chaque `AdminTabDef` porte un champ `group` (`'portail' | 'applications' |
+'autres'`) : la page `/admin` (`AdminComponent`) affiche ces 3 catégories,
+déduites automatiquement des onglets enregistrés. Un onglet de sous-appli
+(ex. `provide-agenda-admin-tab.ts`) déclare `group: 'applications'` — il
+apparaît alors dans la catégorie « Applications », regroupé avec l'admin des
+autres sous-applications, séparé de l'admin transverse du portail (catégorie
+« Portail »). Tout ce qui n'est pas encore catégorisé reste dans « Autres ».
+
 ### 3. Catalogue `portal_apps` auto-porté
 
 `server/modules/portal-apps.js` expose `upsertCatalogEntry(pool, entry)` :
@@ -72,6 +100,17 @@ Admin › Portail). Chaque module serveur de sous-appli appelle cette fonction
 depuis son propre `ensureSchema()` avec sa propre constante `CATALOG_ENTRY`
 (voir `apps/appli-agenda/server/index.js`) — `portal-apps.js` n'a plus besoin
 de connaître le nom de chaque sous-appli existante.
+
+**Vérification de présence au démarrage** : `portal-apps.js` maintient aussi
+un ensemble `MOUNTED_APP_CODES`, alimenté par `markAppMounted(code)` que
+chaque module de sous-appli appelle en tête de son propre `register()` (qui
+s'exécute à chaque démarrage — son exécution sans erreur prouve que le code
+est bien présent). Le calcul `isAvailable` (exposé sur chaque `PortalApp`)
+compare le catalogue à cet ensemble : une entrée `portal_apps` pointant vers
+une route interne dont le code n'a pas été monté à ce démarrage (dossier
+retiré) est `isAvailable: false`, et le front (page d'accueil, voir `2-6-2`
+dans `tests/fonctions/connecte/accueil/fonctions.md`) ne l'affiche pas. Une
+application externe (URL absolue) est toujours considérée disponible.
 
 ### 4. Backend co-localisé
 
@@ -102,15 +141,32 @@ de son propre composant, pas dans un fichier de pont global.
 
 ## État transitoire (2026-07-31)
 
-- **`appli-agenda`** suit le contrat complet ci-dessus (pilote).
-- **`appli-recettes`** et **`apps/projets`** n'y sont pas encore alignés :
-  - `appli-recettes` reste montée comme avant (pas de dossier `admin/`, backend
-    encore dans `server/modules/appli-recettes.js`, catalogue encore dans
-    `SEED_APPS`/`URL_MIGRATIONS` de `portal-apps.js`, alias CSS encore partagés
-    dans `apps/portail/src/styles-sous-apps.scss`).
-  - `apps/projets` est une application NX séparée (port dédié, pont
-    cross-origin token/thème déjà en place) mais ses onglets admin sont encore
-    déclarés dans `apps/portail/src/app/child/child-admin-tabs.ts` plutôt que
-    dans son propre dossier.
-- Ces deux alignements sont prévus dans un prompt de suivi, une fois le modèle
-  validé en usage réel sur l'agenda.
+- **`appli-agenda`**, **`appli-recettes`** et **`appli-documents`** suivent le
+  contrat complet ci-dessus (dossier `admin/` propre, backend co-localisé dans
+  leur propre `server/index.js`, catalogue `portal_apps` auto-porté). Pour les
+  recettes, Bootstrap vit dans `apps/appli-recettes/src/styles-recettes.scss`,
+  importé par une seule ligne depuis le bridge global. `appli-documents` est
+  la première à ne dépendre d'aucun bridge de compatibilité (Tailwind natif,
+  aucune variable CSS legacy à réconcilier) — elle a été extraite de
+  `apps/portail/src/app/pages/user/documents/` (où elle vivait directement
+  dans le code du portail) plutôt que reprise d'un autre portail comme
+  agenda/recettes ; son composant `MarkdownEditorComponent` a été déplacé vers
+  `libs/shared/ui` (partagé avec la page `/editor`, un aperçu Markdown
+  autonome resté dans le portail). Les variables CSS génériques (`--surface`,
+  `--text-dark`, etc.) restent partagées entre agenda et recettes dans
+  `apps/portail/src/styles-sous-apps.scss` (état transitoire — les dupliquer
+  par sous-appli est un futur pas possible mais pas encore fait).
+- **`apps/appli-projets`** (Mode autonome, voir ci-dessus) suit désormais le contrat
+  backend : son code serveur (Mes Projets, éditeur de fichiers-projets,
+  commentaires F6, conversations Zone 5, collaboration temps réel, git par
+  projet, Méga-Outils, outil de tests par projet) a été extrait de
+  `server/server-data.js` vers `apps/appli-projets/server/index.js`
+  (`register`/`ensureSchema` + catalogue `portal_apps` auto-porté, comme
+  agenda/recettes). Au passage, un bloc de code mort (~1640 lignes, ancien
+  système `/api/projects` sur fichiers JSON, prédécesseur du système actuel
+  basé sur git, sans plus aucun appelant frontend) a été supprimé de
+  `server-data.js`. Ses onglets admin restent déclarés dans
+  `apps/portail/src/app/child/child-admin-tabs.ts` — ce n'est pas un
+  alignement restant à faire, mais une conséquence structurelle du Mode
+  autonome (voir ci-dessus) : un composant compilé dans le bundle
+  `apps/appli-projets` ne peut pas être rendu par le portail.

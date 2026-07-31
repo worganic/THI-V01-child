@@ -263,7 +263,7 @@ Vue : éditeur type Google Docs — rendu HTML des sections éditables (contente
 - **État plié** : icône `chevron_right` en vert (`--folded`), texte masqué.
 - **[modification] Position entre le badge de niveau et le titre (bug corrigé)** : le bouton était positionné **au-dessus** du badge de niveau (`top: -1.15em`), à la même position horizontale (`left: -3.2rem`) — empilement visuel gênant, les deux éléments se chevauchant dans l'étroite gouttière gauche. Corrigé : le bouton (réduit à 18px, icône 14px) est désormais aligné sur la **même ligne** que le badge de niveau (`top: 0.5em`, identique), positionné juste après lui (`left: -1.15rem`, contre `-3.2rem` pour le badge) — ordre horizontal : badge de niveau, puis accordéon, puis titre.
 - **À vérifier** : chaque titre de section affiche, dans sa gouttière gauche, le badge `H1`-`H4` suivi immédiatement du chevron d'accordéon sur la même ligne, sans chevauchement ni décalage vertical entre les deux.
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.scss`
 
 ---
 

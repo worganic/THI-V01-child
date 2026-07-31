@@ -1,5 +1,8 @@
 # Éditeur › Sidebar (Zone 3) — Fonctions métier
 
+> Note (2026-07-31) : le backend de ces fonctions a été déplacé de `server/server-data.js` vers `apps/appli-projets/server/index.js` (contrat "sous-application", voir `docs/architecture-sous-applications.md`) — déplacement pur, aucun changement de comportement observable, non retesté systématiquement à ce titre.
+
+
 <!-- worganic:meta updatedAt="2026-06-21T19:52:06.229Z" updatedBy="Antigravity CLI (agy) / Gemini 3 Pro" -->
 
 ---
@@ -15,7 +18,7 @@
 - Gestion des classes et états visuels du nœud actif (activeFileId) et du survol en drag-and-drop
 - Affichage des images imbriquées sous leur document parent
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -26,7 +29,7 @@
 - Affichage d'un cadenas jaune avec texte de la section en rouge/orange si modifications locales en attente non partagées (brouillon local propre à l'utilisateur, jamais partagé tant que "Enregistrer et partager" n'a pas été cliqué)
 - Affichage d'une icône forum clignotante/pulsante (badge conversation) si la section possède des commentaires
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`
 
 ---
 
@@ -36,7 +39,7 @@
 - Affichage d'une icône de synchronisation animée en bleu (spinning) en statut syncing
 - Affichage d'une icône d'erreur rouge en statut error
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -53,7 +56,7 @@
 - **[modification] Renommage automatique par devinette de position retiré (3e incident, cause racine)** : au-delà de la suppression, `processSectionsChange` contenait une seconde logique dite de "renommage par position hiérarchique" — quand un dossier "orphelin" (sans `{{SID}}` retrouvé dans le texte) et une "section non matchée" du même niveau sous le même parent coexistaient, ils étaient appariés par simple **position d'index** dans leurs listes respectives, dès que les comptes coïncidaient, sans aucune garantie qu'ils se correspondent réellement. C'est cette logique — pas la suppression — qui causait le 3e incident observé : supprimer un Prompt placé dans « Pr - Questions » pendant que « Pr - Ideation » existe au même niveau faisait apparaître le contenu à tort dans « Pr - Ideation » (appariement erroné → contenu écrit dans le mauvais fichier, effet visuel de "copie"/déplacement non demandé). Cette logique appelait aussi `pendingFolderNames.delete()` sur le mauvais dossier, levant à tort sa protection anti-suppression (ce qui avait déjà permis au 2e incident de contourner le premier correctif). Retirée entièrement : seul le renommage par `{{SID}}` explicite (identifiant stable, zéro devinette) reste actif. Un renommage de titre tapé à la main sans SID crée désormais un nouveau dossier au lieu de renommer l'existant (le dossier "orphelin" reste inoffensif en l'état, plus jamais fusionné/déplacé/supprimé à tort) — compromis assumé : sûreté des données plutôt que confort d'édition.
 - **À vérifier** : créer un dossier, y ajouter un Prompt/Trello/Array quelques secondes ou minutes après, sauvegarder plusieurs fois → le dossier n'est jamais supprimé ni son contenu déplacé automatiquement, quel que soit le délai. Supprimer un Prompt placé dans un dossier ayant un frère au même niveau (ex. « Pr - Questions » à côté de « Pr - Ideation ») → le contenu du frère (« Pr - Ideation ») n'est jamais modifié ni "copié".
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`
 
 ---
 
@@ -66,7 +69,7 @@
 - Annulation via Escape
 - Enregistrement de la création dans l'historique d'annulation (Undo)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -78,7 +81,7 @@
 - Annulation via Escape
 - Enregistrement du renommage dans l'historique d'annulation (Undo) pour les fichiers
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -90,7 +93,7 @@
 - Clic sur "Annuler" : fermeture du modal
 - **[modification] Corbeille (soft-delete)** : la ressource (et ses enfants pour un dossier) n'est plus supprimée physiquement — elle est déplacée vers `.trash/<horodatage>-<id>/` (jamais commité vers le remote git) et un snapshot restaurable est conservé 30 jours en base (`projet_trash_entry`). Restaurable depuis l'onglet Historique → groupe "Corbeille" (voir `2-5-2-8-14`) ou via le bouton "Annuler" (↺) de l'entrée de suppression dans la timeline.
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `server/modules/projet-git.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `server/modules/projet-git.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -102,7 +105,7 @@
 - Envoi des requêtes POST /api/file-projects/{name}/move-file ou POST /api/file-projects/{name}/move-folder
 - Mise à jour physique des fichiers, réorganisation dans config.json et rafraîchissement de l'arbre
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -114,7 +117,7 @@
 - Options de verrous dynamiques (Partager, Annuler, Déverrouiller, Verrouiller, ou Affichage info verrou)
 - Fermeture du menu lors d'un clic à l'extérieur (document:click)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
 
 ---
 
@@ -128,7 +131,7 @@
 - Récupération et formattage des détails de présence (qui et depuis quand, un ou plusieurs noms) dans le tooltip (`getLockTooltip`) — badge sidebar bascule sur l'icône `groups` quand plusieurs autres utilisateurs sont présents
 - Verrouillage automatique lors de la prise de focus en édition d'une section
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `server/server-data.js`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `server/server-data.js`
 
 ---
 
@@ -143,7 +146,7 @@
 - Création d'un outil via POST /api/file-projects/{name}/outils
 - Rangement physique des fichiers sous le répertoire propre à l'outil (edition, tests, agenda)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `server/server-data.js`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -153,7 +156,7 @@
 - Mode réduit limitant la largeur et n'affichant que la bande gauche des icônes
 - Mode étendu affichant l'ensemble de l'arborescence
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
 
 ---
 
@@ -166,7 +169,7 @@
 - Guidage visuel pour le drag-and-drop
 - Panneau réduit affichant uniquement les icônes
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
 
 ---
 
@@ -176,7 +179,7 @@
 - Badge avec le décompte des instances Trello de l'outil
 - Clic émettant trelloListClick pour ouvrir la vue liste de Trello dans la zone centrale
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
 
 ---
 
@@ -189,7 +192,7 @@
 - Conditions de disponibilité canPromoteNode et canDemoteNode (profondeur max de sous-arbre <= 6)
 - Émission de nodeLevelChange vers la zone d'édition pour appliquer le traitement
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
 
 ---
 
@@ -201,7 +204,7 @@
 - Prise en charge de la sortie du mode focus et réinjection du contenu avant fusion
 - Émission de titleMerge pour déléguer l'opération à la zone d'édition
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`
 
 ---
 
@@ -211,7 +214,7 @@
 - Badge avec le décompte des maquettes/mockups présents dans l'outil
 - Clic émettant mockupListClick pour ouvrir la vue liste de maquettes dans la zone centrale
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.html`
 
 ---
 
@@ -221,7 +224,7 @@
 - Déclaration du statut annulable (undoable) et de la payload de rollback (undoAction)
 - **[modification]** : la suppression de fichier **et de dossier** est désormais tracée et `undoable: true` (auparavant `undoable: false` pour les fichiers, et pas tracée du tout pour les dossiers) — l'`undoAction` pointe vers la route de restauration depuis la corbeille (`POST /api/file-projects/:name/trash/:trashId/restore`, voir `2-5-2-2-7` et `2-5-2-8-14`)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/wo-action-history.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/wo-action-history.service.ts`
 
 ---
 
@@ -233,7 +236,7 @@
 - Chargement indépendant via `AgendaOutilService.getEvents` (l'outil agenda n'est monté que s'il est actif) ; rechargé sur changement d'`outils`/`projectName` et après une modif dans l'agenda (`reloadAgendaEvents` appelée par le parent sur `eventsChanged`)
 - Clic sur un événement : émet `agendaEventSelect({ outilId, event })` → le parent active l'outil agenda et ouvre l'événement (voir agenda `2-5-2-10-6`)
 - **Priorité:** majeure
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`
 
 ---
 
@@ -244,7 +247,7 @@
 - **Résultat attendu** : la largeur du panneau suit le curseur en direct (`ProjetSidebarComponent.treeWidth` / `ProjetEditorComponent.zone5Width`, signaux liés en `[style.width.px]`, mis à jour via `@HostListener('document:mousemove')` pendant le drag). Bornes : arbre 180–480px (défaut 224px = `w-56`), volet Conversation 240–640px (défaut 320px = `w-80`). Le relâchement (`document:mouseup`) persiste la largeur dans `localStorage` (`wo-sidebar-tree-width` / `wo-zone5-width`) ; elle est restaurée telle quelle à la prochaine ouverture du projet (tant que le `localStorage` du navigateur n'est pas vidé).
 - **Résultat à redouter** : `localStorage` indisponible (navigation privée stricte) → lecture/écriture entourées d'un `try/catch` silencieux, la largeur retombe simplement sur la valeur par défaut sans erreur.
 - **À vérifier** : glisser chaque poignée dans les deux sens jusqu'aux bornes (180/480 pour l'arbre, 240/640 pour Conversation) → le panneau ne dépasse jamais ces limites. Recharger la page → les deux largeurs sont conservées. Volet Conversation réduit (`zone5Collapsed`) → sa poignée disparaît (pas de redimensionnement d'un volet invisible).
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.html`
 
 ---
 
@@ -256,4 +259,4 @@
 - **Résultat attendu — seules des sous-sections sont modifiées** (la section elle-même ne l'est pas) : seuls les boutons "Enregistrer les sous-sections" / "Annuler les sous-sections" apparaissent (cascade uniquement, rien à faire sur la section elle-même) — évite d'avoir à ouvrir et publier chaque sous-section modifiée une par une.
 - **Mécanisme** : `ProjetSidebarComponent.hasPendingDescendants(node)` parcourt récursivement `node.children` et teste `collab.isLocalPending(id)` sur chaque descendant (dossier ou fichier). `publishSection`/`cancelSection` transmettent `includeDescendants` à `ProjetCollabService.requestPublishSection/requestCancelSection(sectionId, includeDescendants)`, qui l'embarque dans le payload de `publishSectionRequest$`/`cancelSectionRequest$` (`{ sectionId, includeDescendants }`). La zone d'édition (`projet-editor-zone.component.ts`) le reçoit et l'applique dans `collectSectionPublishIds(sectionId, includeDescendants)` (voir `2-5-2-4-9`) : `includeDescendants=false` limite le périmètre à la section seule (+ ses propres entités granulaires verrouillées), `includeDescendants=true` (comportement par défaut, inchangé) ajoute tous les descendants `isLocalPending`.
 - **À vérifier** : éditer une section ET une de ses sous-sections (deux brouillons locaux distincts) → clic droit sur la section parente affiche les 4 boutons ; "Enregistrer cette section" ne publie QUE le parent (la sous-section reste avec son cadenas) ; "Enregistrer + sous-sections" publie les deux et retire les deux cadenas. Éditer uniquement une sous-section (parent intact) → clic droit sur le parent n'affiche que "Enregistrer/Annuler les sous-sections" (pas de variante "cette section").
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html`, `libs/portail-core/data-access/src/lib/projet-collab.service.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`

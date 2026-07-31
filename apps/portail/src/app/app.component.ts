@@ -14,7 +14,7 @@ import {
   WoTchatIaWidgetComponent, WoActionsWidgetComponent,
   WoToolsPanelComponent
 } from '@worganic/shared/ui';
-import { navigateToProjets } from './shared/utils/navigate-to-projets';
+import { navigateToApp } from './shared/utils/navigate-to-projets';
 import { WorgHelpDrawerComponent } from './shared/help/worg-help-drawer.component';
 
 @Component({
@@ -35,7 +35,8 @@ import { WorgHelpDrawerComponent } from './shared/help/worg-help-drawer.componen
 })
 export class AppComponent implements OnInit {
   @ViewChild(WoToolsPanelComponent) toolsPanel?: WoToolsPanelComponent;
-  navigateToProjets = navigateToProjets;
+  /** Callback générique pour le clic sur une sous-appli externe dans la nav (voir NavComponent.onAppClick). */
+  onAppClick = (url: string) => navigateToApp(url);
 
   constructor(
     private themeService: ThemeService,

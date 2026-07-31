@@ -1,6 +1,6 @@
 # Admin › Config — Fonctions métier
 
-Route : `/admin` onglet "Config" (réutilise `ConfigComponent`)  
+Route : `/admin/config` (catégorie **Portail**, onglet "Config" — administration transverse ; voir `2-1-9-7` — réutilise `ConfigComponent`)  
 Voir aussi : `connecte/config/fonctions.md` pour la version standalone  
 Accès : admin uniquement dans ce contexte
 

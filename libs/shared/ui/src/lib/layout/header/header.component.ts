@@ -17,7 +17,9 @@ import {
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() externalBaseUrl?: string;
   @Input() activeExternalRoute = '';
-  @Input() onProjetsClick?: () => void;
+  /** Callback appelé quand une sous-application externe (URL absolue) est cliquée
+   * dans la navigation — transmet la session (token/thème) via navigateToApp(url). */
+  @Input() onAppClick?: (url: string) => void;
   @Input() logoutRedirectUrl?: string;
 
   private apiUrl = inject(API_DATA_URL);
@@ -199,6 +201,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
       window.location.href = `${this.externalBaseUrl}/admin`;
     } else {
       this.router.navigate(['/admin'], { queryParams: { tab: 'deploiement' } });
+    }
+  }
+
+  goToAdmin(): void {
+    if (this.externalBaseUrl) {
+      window.location.href = `${this.externalBaseUrl}/admin`;
+    } else {
+      this.router.navigate(['/admin']);
     }
   }
 }

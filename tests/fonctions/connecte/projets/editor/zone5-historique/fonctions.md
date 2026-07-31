@@ -1,5 +1,8 @@
 # Éditeur › Zone 5 — Historique — Fonctions métier
 
+> Note (2026-07-31) : le backend de ces fonctions a été déplacé de `server/server-data.js` vers `apps/appli-projets/server/index.js` (contrat "sous-application", voir `docs/architecture-sous-applications.md`) — déplacement pur, aucun changement de comportement observable, non retesté systématiquement à ce titre.
+
+
 Composant : `ProjetHistoryComponent`  
 Position : panneau inférieur, onglet "Historique"  
 Données : via `ProjetCollabService`, temps réel SSE (Server-Sent Events — `EventSource`, unidirectionnel serveur→client, pas de WebSocket)

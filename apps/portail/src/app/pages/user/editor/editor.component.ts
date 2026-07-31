@@ -3,7 +3,7 @@ import { Component, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { marked } from 'marked';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { MarkdownEditorComponent } from '../../../shared/ui/markdown-editor/markdown-editor.component';
+import { MarkdownEditorComponent } from '@worganic/shared/ui';
 
 @Component({
     selector: 'app-editor',

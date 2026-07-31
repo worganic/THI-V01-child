@@ -1,6 +1,6 @@
 # Admin › Thème — Fonctions métier
 
-Route : `/admin` onglet "Thème"  
+Route : `/admin/theme` (catégorie **Portail**, onglet "Thème" — administration transverse ; voir `2-1-9-7`)  
 Composant : `AdminThemeComponent`  
 Accès : admin uniquement
 

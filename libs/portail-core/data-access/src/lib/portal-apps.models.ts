@@ -16,6 +16,14 @@ export interface PortalApp {
   icone: string;
   ordre: number;
   isActive: boolean;
+  /**
+   * Calculé côté serveur au démarrage (jamais stocké) : `false` si l'entrée
+   * pointe vers une route interne dont le module backend n'a pas été monté
+   * (dossier de la sous-application absent de cette installation) — voir
+   * markAppMounted/isAppAvailable dans server/modules/portal-apps.js. Les
+   * applications externes (URL absolue) sont toujours considérées disponibles.
+   */
+  isAvailable?: boolean;
   /** Renseigné uniquement par le dashboard d'accueil. */
   droits?: PortalDroit;
 }

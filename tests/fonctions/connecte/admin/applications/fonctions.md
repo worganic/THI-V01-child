@@ -73,10 +73,12 @@ endroit pour tout ce qui concerne un utilisateur.
 - **Suppression de compte** : DELETE `/api/auth/users/{id}`
 - **Métier** : sélecteur → PUT `/api/portal/users/{id}/metier` `{ metierId }` (valeur vide = aucun métier)
 - **Groupes** : case à cocher par groupe → POST `/api/portal/user-groupes` `{ userId, groupeId, linked }`
+- **Auto-cochage des accès directs à l'association d'un groupe** : associer un groupe coche automatiquement, dans « Accès directs », les applications rattachées à ce groupe (`portal_groupe_apps`) qui n'étaient pas déjà cochées individuellement (droit `lecture` par défaut) — simple confort admin, l'accès réel provient déjà du groupe. Le retrait du groupe ne décoche jamais ces accès directs (choix explicite conservé)
 - **Accès directs** : case à cocher par application → POST `/api/portal/user-apps` ; quand l'accès est actif, un sélecteur permet de choisir le niveau (`lecture` / `ecriture` / `admin`)
-- **Cas admin** : rappel affiché — un administrateur voit de toute façon tous les groupes actifs sur son accueil
+- **Cas admin** : le rôle admin donne accès au panneau `/admin` mais n'accorde plus aucun bypass sur l'accueil/le menu — un admin ne voit que ses propres groupes cochés et accès directs, comme tout autre utilisateur (voir mod-601)
+- **Pas de scroll intempestif** : la bascule d'un groupe/accès direct/métier/compte ne relance pas l'état de chargement plein panneau (spinner) — seules les valeurs sous-jacentes sont rafraîchies, le panneau détail reste monté et la position de défilement ne saute plus
 - **Priorité:** bloquant
-- **Composants:** `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts`, `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html`, `libs/portail-core/data-access/src/lib/portal-apps.models.ts`, `server/modules/portal-apps.js`, `server/server-data.js`
+- **Composants:** `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts`, `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html`, `libs/portail-core/data-access/src/lib/portal-apps.models.ts`, `libs/portail-core/data-access/src/lib/portal-apps.service.ts`, `server/modules/portal-apps.js`, `server/server-data.js`
 
 ---
 
@@ -88,3 +90,24 @@ endroit pour tout ce qui concerne un utilisateur.
 - **Écriture** : POST / PUT / DELETE réservés au rôle admin (403 sinon)
 - **Priorité:** bloquant
 - **Composants:** `server/modules/portal-apps.js`, `server/init-db.js`, `server/server-data.js`
+
+---
+
+## `2-1-9-7` — [modification] Catégories de la zone Admin (Portail / Applications / Autres)
+
+La page `/admin` (`AdminComponent`, hôte de tous les onglets — Portail comme
+les autres) affiche 3 catégories, calculées depuis le champ `group` de
+chaque onglet enregistré dans `AdminTabsRegistryService` :
+
+- **Portail** : administration transverse du système — non spécifique à une sous-application. Sous-onglets : « Système » (`AdminPortailComponent`, id `portail` — renommé pour ne pas doublonner le nom de la catégorie ; `2-1-9-1` à `2-1-9-6` ci-dessus, avec son propre sous-menu Utilisateurs/Applications/Groupes/Métiers), « Déploiement » (`2-1-2-*`), « Config » (`2-1-1-*`), « Thème » (`2-1-3-*`), « Outils » (`2-1-10-1`)
+- **Applications** : un onglet par sous-application ayant fourni sa propre
+  admin (ex. `2-7-7` — Agenda) ; message « Aucune sous-application n'a encore
+  d'admin propre » si aucune n'en fournit
+- **Autres** : tout ce qui n'est pas encore rangé dans les deux zones
+  ci-dessus (Méga-outils, Mémo, IA, Projets, Tests) — zone provisoire, à
+  démembrer au fur et à mesure
+- **Sélection d'une catégorie** : bascule sur son premier onglet (triés par
+  `order`) ; l'URL (`/admin/{tab}`) reste la source de vérité, la catégorie
+  active est déduite de l'onglet actif (pas d'état à synchroniser séparément)
+- **Priorité:** majeur
+- **Composants:** `apps/portail/src/app/pages/admin/admin.component.ts`, `apps/portail/src/app/pages/admin/admin.component.html`, `libs/portail-core/data-access/src/lib/admin-tabs-registry.service.ts`, `apps/portail/src/app/child/child-admin-tabs.ts`, `apps/appli-agenda/src/app/admin/provide-agenda-admin-tab.ts`

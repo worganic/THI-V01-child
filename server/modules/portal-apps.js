@@ -65,29 +65,16 @@ const SCHEMA = [
     )`,
 ];
 
-// Sous-applications du monorepo (apps/*), insérées au premier démarrage.
-// `projets` est une application Angular autonome (port 4203) : URL absolue.
-// `appli-recettes` est montée dans le portail lui-même (route chargée à la
-// demande, voir apps/portail/src/app/base-routes.ts) : route interne, donc
-// pas de port ni de transfert de session à prévoir.
-// `appli-agenda` ne figure plus ici : elle porte sa propre entrée de
-// catalogue (voir apps/appli-agenda/server/index.js, CATALOG_ENTRY +
-// upsertCatalogEntry) — contrat "sous-application", voir
-// docs/architecture-sous-applications.md. Recettes/projets seront alignés de
-// la même façon dans un prompt suivant ; en attendant, ils restent seedés ici.
-const SEED_APPS = [
-    { code: 'projets',        nom: 'Projets',  description: 'Éditeur de projets et de documentation',  url_path: 'http://localhost:4203', icone: 'folder_open',     ordre: 1 },
-    { code: 'appli-recettes', nom: 'Recettes', description: 'Cahiers de recette et campagnes de test', url_path: '/recettes',            icone: 'restaurant_menu', ordre: 3 },
-];
+// Sous-applications du monorepo (apps/*). `appli-agenda`, `appli-recettes` et
+// `projets` portent désormais chacune leur propre entrée de catalogue (voir
+// leur CATALOG_ENTRY + upsertCatalogEntry, appelé depuis leur propre
+// ensureSchema()) — contrat "sous-application", voir
+// docs/architecture-sous-applications.md. Ce tableau ne connaît donc plus
+// aucune sous-application par son nom ; il reste prêt à ré-accueillir une
+// future sous-appli qui n'aurait pas encore migré vers ce contrat.
+const SEED_APPS = [];
 
-// Corrections d'URL rejouées à chaque démarrage : les bases amorcées avant
-// l'intégration des recettes pointaient sur un port dédié (4205) qui n'a
-// jamais existé — cette application vit désormais dans le portail. Ciblé sur
-// l'ancienne valeur exacte : une URL modifiée à la main dans Admin › Portail
-// n'est jamais écrasée.
-const URL_MIGRATIONS = [
-    { code: 'appli-recettes', from: 'http://localhost:4205', to: '/recettes' },
-];
+const URL_MIGRATIONS = [];
 
 /**
  * Insère l'entrée de catalogue d'une sous-application si son `code` n'existe
@@ -103,6 +90,33 @@ async function upsertCatalogEntry(pool, entry) {
          VALUES (?,?,?,?,?,?)`,
         [entry.code, entry.nom, entry.description, entry.url_path, entry.icone, entry.ordre]
     );
+}
+
+// Codes des sous-applications dont le backend est réellement monté dans ce
+// process (chaque module appelle markAppMounted() au début de son register(),
+// qui s'exécute à chaque démarrage — son exécution sans erreur prouve que le
+// code de la sous-application est bien présent dans ce dossier apps/). Une
+// entrée `portal_apps` dont le code n'y figure pas (et qui pointe vers une
+// route interne) signale une sous-application référencée en base mais dont le
+// dossier a été retiré : ses cartes/menus ne doivent pas s'afficher côté front
+// (voir isAppAvailable ci-dessous et docs/architecture-sous-applications.md).
+const MOUNTED_APP_CODES = new Set();
+
+function markAppMounted(code) {
+    MOUNTED_APP_CODES.add(code);
+}
+
+/**
+ * Une application externe (URL absolue, ex: `projets` sur son propre port) est
+ * un process indépendant : on ne peut pas vérifier sa présence à peu de frais
+ * au démarrage du portail, donc toujours considérée disponible (si elle est
+ * injoignable, c'est un problème réseau, pas un dossier manquant). Une
+ * application interne (route `/agenda`…) doit en revanche avoir appelé
+ * markAppMounted() à ce démarrage.
+ */
+function isAppAvailable(code, urlPath) {
+    if (/^https?:\/\//i.test(urlPath || '')) return true;
+    return MOUNTED_APP_CODES.has(code);
 }
 
 /**
@@ -181,7 +195,8 @@ function register(app, { pool, getSessionUser }) {
     const mapApp = r => ({
         id: r.id, code: r.code, nom: r.nom, description: r.description || '',
         urlPath: r.url_path || '', icone: r.icone || 'apps',
-        ordre: r.ordre || 0, isActive: toBool(r.is_active)
+        ordre: r.ordre || 0, isActive: toBool(r.is_active),
+        isAvailable: isAppAvailable(r.code, r.url_path)
     });
 
     const mapGroupe = r => ({
@@ -488,7 +503,10 @@ function register(app, { pool, getSessionUser }) {
             const appsById     = new Map(apps.map(a => [a.id, mapApp(a)]));
             const droitsByApp  = new Map(userApps.map(ua => [ua.app_id, ua.droits]));
 
-            const visibles = groupes.filter(g => isAdmin || allowedGrps.has(g.id));
+            // Le rôle admin donne accès au panneau /admin, mais n'accorde plus de bypass ici :
+            // le menu/accueil d'un admin reflète ses propres groupes/accès directs, comme
+            // n'importe quel autre utilisateur (voir mod-601).
+            const visibles = groupes.filter(g => allowedGrps.has(g.id));
 
             const result = visibles
                 .map(g => ({
@@ -497,7 +515,7 @@ function register(app, { pool, getSessionUser }) {
                         .filter(ga => ga.groupe_id === g.id)
                         .map(ga => appsById.get(ga.app_id))
                         .filter(Boolean)
-                        .map(a => ({ ...a, droits: isAdmin ? 'admin' : (droitsByApp.get(a.id) || 'lecture') }))
+                        .map(a => ({ ...a, droits: droitsByApp.get(a.id) || 'lecture' }))
                 }))
                 .filter(g => g.apps.length > 0);
 
@@ -521,4 +539,4 @@ function register(app, { pool, getSessionUser }) {
     console.log('[Portal] Routes /api/portal/* montées');
 }
 
-module.exports = { register, ensureSchema, upsertCatalogEntry };
+module.exports = { register, ensureSchema, upsertCatalogEntry, markAppMounted };

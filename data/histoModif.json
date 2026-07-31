@@ -15208,6 +15208,348 @@
       "prompt": "je voudrais que tu reflechisse et me propose une solution pour séparé le plus possible le portail aux sous application. Le portail doit géré le système en lui même : user, groupes, metiers, liste des applications, design (couleur, thème), logs, config général, deploiement et tous le reste lié à des sous applications (projets, documents, agenda, recette etc. Le portails doit géré l'ensemble du système et les sous app doivent être le plus indépendamment possible et ce raccroché aux données du portails pour certaine data comme les users, le design général (css), groupe, métiers etc. On doit pouvoir quasiement prendre un dossier avec la sous appli et la mettre dans un autres portails sans problème. [...] Chaque sous appli devra avoir le même type de fonctionnement, même structure de dossier et même nom pour les éléments que l'on retrouve dans toutes les sous appli, exemple l'admin, le sous design, page d'accueil etc.",
       "startedAt": "2026-07-31T08:35:00.000Z",
       "completedAt": "2026-07-31T09:00:00.000Z"
+    },
+    {
+      "id": "mod-591",
+      "version": "B-0.338",
+      "date": "2026-07-31T09:30:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "server",
+        "system"
+      ],
+      "features": "portail:header,portail:admin,portail:accueil,portail:agenda,portail:recettes",
+      "title": "Vérification de présence des sous-apps + réorganisation de l'admin (Portail/Applications/Autres)",
+      "description": "Ajoute une vérification de présence des sous-applications au démarrage du serveur : chaque module (appli-agenda, appli-recettes) déclare qu'il est monté via markAppMounted(code), et portal-apps.js expose isAvailable sur chaque PortalApp (toujours vrai pour les applications externes en URL absolue, sinon dépend du markAppMounted) — la page d'accueil filtre désormais les cartes des applications indisponibles (catalogue référencé mais code absent). Déplace le bouton Admin de la barre de navigation vers la première ligne du header (à côté du bascule de thème). Réorganise la zone /admin en 3 catégories calculées depuis un nouveau champ group sur AdminTabDef : Portail (admin transverse, un seul onglet qui affiche son propre sous-menu), Applications (admin propre à chaque sous-application, ex. Agenda), Autres (tout ce qui n'est pas encore catégorisé — Déploiement, Config, Thème, Méga-outils, Mémo, IA, Projets, Outils, Tests). La catégorie active est déduite de l'onglet actif, sans état à synchroniser séparément.",
+      "files": [
+        "server/modules/portal-apps.js",
+        "apps/appli-agenda/server/index.js",
+        "server/modules/appli-recettes.js",
+        "libs/portail-core/data-access/src/lib/portal-apps.models.ts",
+        "apps/portail/src/app/pages/user/home/home.component.ts",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.html",
+        "libs/shared/ui/src/lib/layout/header/header.component.ts",
+        "libs/shared/ui/src/lib/layout/header/header.component.html",
+        "libs/portail-core/data-access/src/lib/admin-tabs-registry.service.ts",
+        "apps/portail/src/app/pages/admin/admin.component.ts",
+        "apps/portail/src/app/pages/admin/admin.component.html",
+        "apps/portail/src/app/child/child-admin-tabs.ts",
+        "apps/appli-agenda/src/app/admin/provide-agenda-admin-tab.ts",
+        "docs/architecture-sous-applications.md",
+        "tests/fonctions/connecte/accueil/fonctions.md",
+        "tests/fonctions/connecte/admin/applications/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je voudrais qu'a chaque démarrage du site, l'application verifi si toutes les applications référencer dans le portail son bien présente, si ce n'est pas le cas, les menus lié à ce portail ne doivent pas s'affiché. Il faudrait aussi différencier la zone admin portail doit être à part et les admin de chaque outils doivent être ensemble. Sur le header deplace le bouton Admin dans le header du haut [Image #9]. Dans la section /admin il faudrait un menu principal avec Portail et Applications et lorsqu'on clique sur application on à la liste des admin de chaque application et lorsqu'on clique sur Portail on à le sous menu du portail. Les menus non orginisé doivent être pour le moment dans un autre menu Autres (Portail/Applications/Autres). Le but est de bien différencier les différentes zone",
+      "startedAt": "2026-07-31T09:05:00.000Z",
+      "completedAt": "2026-07-31T09:30:00.000Z"
+    },
+    {
+      "id": "mod-592",
+      "version": "B-0.338",
+      "date": "2026-07-31T09:45:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "system"
+      ],
+      "features": "portail:admin",
+      "title": "Déploiement/Config/Thème/Outils déplacés dans la catégorie Portail",
+      "description": "Vérifié que ces 4 écrans pilotent bien des données transverses du système (AdminDeploymentsComponent : version.json et historique de déploiement ; ConfigComponent : config générale de l'app ; AdminThemeComponent : variables CSS du thème général ; AdminToolsComponent/WoToolsAdminComponent : visibilité des outils flottants via ConfigService) et non une sous-application en particulier — passage de leur champ group de 'autres' à 'portail'. L'onglet 'portail' (AdminPortailComponent) est renommé 'Système' pour ne plus doublonner le nom de la catégorie. La catégorie Portail affiche désormais une rangée de sous-onglets (Système/Déploiement/Config/Thème/Outils) comme les autres catégories, au lieu du cas particulier précédent qui l'affichait seule.",
+      "files": [
+        "apps/portail/src/app/pages/admin/admin.component.ts",
+        "apps/portail/src/app/pages/admin/admin.component.html",
+        "apps/portail/src/app/child/child-admin-tabs.ts",
+        "tests/fonctions/_registry.json",
+        "tests/fonctions/connecte/admin/outils/fonctions.md",
+        "tests/fonctions/connecte/admin/deploiements/fonctions.md",
+        "tests/fonctions/connecte/admin/config/fonctions.md",
+        "tests/fonctions/connecte/admin/theme/fonctions.md",
+        "tests/fonctions/connecte/admin/applications/fonctions.md",
+        "CLAUDE.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "la section deploiement doit être deplacer dans le menu portails, verifié si le code fait bien partie du portail. idem pour thème, outils, config",
+      "startedAt": "2026-07-31T09:35:00.000Z",
+      "completedAt": "2026-07-31T09:45:00.000Z"
+    },
+    {
+      "id": "mod-593",
+      "version": "B-0.338",
+      "date": "2026-07-31T10:15:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "server",
+        "system"
+      ],
+      "features": "portail:recettes,portail:admin",
+      "title": "appli-recettes migrée vers le contrat sous-application (comme appli-agenda)",
+      "description": "Applique à appli-recettes le même contrat que le pilote appli-agenda (voir docs/architecture-sous-applications.md) : restructuration de dossier (environments/ -> src/environments/, models/services -> src/app/core/{models,services}, home-recettes/ -> home/), découplage de l'environment (retrait de l'import relatif vers apps/portail/src/app/runtime-env, injection du token API_DATA_URL dans recipe.service.ts — ~45 usages de environment.serviceVal remplacés par this.apiDataUrl), nouvel onglet admin propre (src/app/admin/, provide-recettes-admin-tab.ts, apparaît à côté d'Agenda dans la catégorie Applications), backend déménagé de server/modules/appli-recettes.js vers apps/appli-recettes/server/index.js (avec sa propre entrée de catalogue auto-enregistrée via upsertCatalogEntry, retirée de SEED_APPS/URL_MIGRATIONS de portal-apps.js — correction au passage du chemin CAPTURES_DIR, dont la profondeur relative à __dirname changeait avec le déménagement), et le style Bootstrap scopé (.bs-scope) sorti du bridge global styles-sous-apps.scss vers apps/appli-recettes/src/styles-recettes.scss (propre à la sous-appli, importé par une ligne).",
+      "files": [
+        "apps/appli-recettes/src/environments/environment.ts",
+        "apps/appli-recettes/src/app/core/services/recipe.service.ts",
+        "apps/appli-recettes/src/app/core/models/recipe.model.ts",
+        "apps/appli-recettes/src/app/home/*",
+        "apps/appli-recettes/src/app/admin/admin-recettes.component.ts",
+        "apps/appli-recettes/src/app/admin/provide-recettes-admin-tab.ts",
+        "apps/appli-recettes/server/index.js",
+        "apps/appli-recettes/src/styles-recettes.scss",
+        "apps/portail/src/app/app.config.ts",
+        "apps/portail/src/styles-sous-apps.scss",
+        "server/modules/portal-apps.js",
+        "server/server-data.js",
+        "docs/architecture-sous-applications.md",
+        "CLAUDE.md",
+        "tests/fonctions/connecte/recettes/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "fait comme pour l'outils agenda, passe la sous appli recette en mode totalement indépendant, fait en suite la même chose pour \"projets\"",
+      "startedAt": "2026-07-31T09:50:00.000Z",
+      "completedAt": "2026-07-31T10:15:00.000Z"
+    },
+    {
+      "id": "mod-594",
+      "version": "B-0.338",
+      "date": "2026-07-31T11:30:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "server",
+        "system"
+      ],
+      "features": "portail:projets,portail:admin",
+      "title": "Backend de apps/projets extrait vers apps/projets/server (contrat sous-application)",
+      "description": "Extrait le backend de apps/projets (Mes Projets, éditeur de fichiers-projets, commentaires F6, conversations Zone 5, collaboration temps réel, git par projet, Méga-Outils, outil de tests par projet) de server/server-data.js (12824 lignes) vers apps/projets/server/index.js (register/ensureSchema + catalogue portal_apps auto-porté via upsertCatalogEntry, comme agenda/recettes) — server-data.js passe à 5739 lignes. Supprime au passage un bloc de code mort (~1640 lignes, ancien système /api/projects sur fichiers JSON, prédécesseur du système actuel basé sur git, sans plus aucun appelant frontend), en préservant la seule route encore utilisée à l'intérieur (GET /read-file, consommée par Admin > Portail > Thème, relocalisée dans server-data.js). apps/projets étant une application NX séparée (Mode autonome, pas Mode intégré comme agenda/recettes — voir docs/architecture-sous-applications.md), ses onglets admin restent déclarés côté portail (apps/portail/src/app/child/child-admin-tabs.ts) : un composant compilé dans le bundle apps/projets ne peut pas être rendu par NgComponentOutlet dans le bundle du portail, ce n'est donc pas un alignement restant à faire mais une conséquence structurelle documentée. Fonctions transverses restées partagées (logEdition, insertContentVersion/getLatestVersion/getLatestVersionsMap/computeEditionDiff — aussi utilisées par WO Action History pour l'undo, getPlatformSetting/setPlatformSetting) passées au nouveau module via les paramètres de register(). Vérifié par build complet, démarrage réel du serveur contre la base MySQL Hostinger (les 4 ensureSchema s'exécutent sans erreur), et test de chaque groupe de routes (401 attendu, pas 404).",
+      "files": [
+        "server/server-data.js",
+        "apps/projets/server/index.js",
+        "server/modules/portal-apps.js",
+        "docs/architecture-sous-applications.md",
+        "CLAUDE.md",
+        "tests/fonctions/connecte/projets/editor/sidebar/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/toolbar/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone-code/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-conversation/fonctions.md",
+        "tests/fonctions/connecte/projets/editor/zone5-historique/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "fait comme pour l'outils agenda, passe la sous appli recette en mode totalement indépendant, fait en suite la même chose pour \"projets\" (suite : extraction du backend projets, option choisie après audit de risque)",
+      "startedAt": "2026-07-31T10:20:00.000Z",
+      "completedAt": "2026-07-31T11:30:00.000Z"
+    },
+    {
+      "id": "mod-595",
+      "version": "B-0.338",
+      "date": "2026-07-31T12:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "server",
+        "system"
+      ],
+      "features": "portail:admin,portail:projets",
+      "title": "Onglet admin Projets déplacé dans Applications + dossier apps/projets renommé apps/appli-projets",
+      "description": "Corrige un oubli : l'onglet admin de la sous-application projets était catégorisé 'autres' au lieu de 'applications' (groupe group du AdminTabDef dans child-admin-tabs.ts) — Projets apparaît désormais à côté d'Agenda/Recettes dans la catégorie Applications, alors que le composant lui-même reste un simple redirect vers l'app externe (Mode autonome, voir docs/architecture-sous-applications.md). Renomme le dossier apps/projets en apps/appli-projets pour la cohérence de nommage avec appli-agenda/appli-recettes, SANS renommer le nom du projet NX lui-même (reste 'projets' — décision explicite pour limiter le risque sur les commandes npx nx serve/build projets, package.json, launcher.js, CI). Mis à jour : project.json (sourceRoot/outputPath/tsConfig/assets/styles/jestConfig), jest.config.ts (coverageDirectory), les chemins require() dans server/server-data.js vers apps/appli-projets/server, les commentaires du nouveau module serveur, et toutes les références de chemin dans CLAUDE.md, docs/architecture-sous-applications.md, docs/outils.md et l'ensemble des fonctions.md sous tests/fonctions/connecte/projets/ et tests/fonctions/connecte/admin/outils/.",
+      "files": [
+        "apps/portail/src/app/child/child-admin-tabs.ts",
+        "apps/portail/src/app/child/child-routes.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-memo/admin-memo.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-memo/admin-memo.component.ts",
+        "apps/appli-projets/project.json",
+        "apps/appli-projets/jest.config.ts",
+        "apps/appli-projets/server/index.js",
+        "server/server-data.js",
+        "CLAUDE.md",
+        "docs/architecture-sous-applications.md",
+        "docs/outils.md",
+        "tests/fonctions/connecte/admin/outils/fonctions.md",
+        "tests/fonctions/connecte/projets/**/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "L'application projet (qui doit être renommé dans le repertoir en appli-projets) n'est pas repertorier en application, il faut la mettre comme agenda et recette pour le code",
+      "startedAt": "2026-07-31T11:35:00.000Z",
+      "completedAt": "2026-07-31T12:00:00.000Z"
+    },
+    {
+      "id": "mod-596",
+      "version": "B-0.338",
+      "date": "2026-07-31T12:20:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail",
+        "libs"
+      ],
+      "features": "portail:accueil,portail:admin",
+      "title": "Item de navigation « Projets » masqué si l'app est inactive/indisponible",
+      "description": "L'item « Projets » de la barre de navigation (issu de data/child/nav.json, indépendant du catalogue portal_apps) restait affiché même quand l'application était désactivée dans Admin > Portail > Système > Applications — seules les cartes de la page d'accueil respectaient déjà isActive/isAvailable. NavComponent charge désormais la liste des apps (PortalAppsService.getApps()) au démarrage et masque l'item Projets si son entrée portal_apps (code 'projets') est isActive: false ou isAvailable: false.",
+      "files": [
+        "libs/shared/ui/src/lib/layout/nav/nav.component.ts",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.html",
+        "tests/fonctions/connecte/accueil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "lorsqu'une application est indiqué inactive dans l'admin/système/application, il ne faut pas l'affiché dans le menu du site",
+      "startedAt": "2026-07-31T12:05:00.000Z",
+      "completedAt": "2026-07-31T12:20:00.000Z"
+    },
+    {
+      "id": "mod-597",
+      "version": "B-0.338",
+      "date": "2026-07-31T12:35:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail",
+        "libs"
+      ],
+      "features": "portail:accueil,portail:admin",
+      "title": "Masquage de l'item Projets réactif en direct (signal partagé)",
+      "description": "Le masquage de l'item de navigation Projets (mod-596) ne se mettait à jour qu'au premier chargement de NavComponent, pas en direct si l'app était activée/désactivée pendant la session. PortalAppsService expose désormais un signal partagé (providedIn: 'root') apps, mis à jour par getApps() (donc à chaque chargement/rechargement de l'admin des applications) ; NavComponent en dérive un computed hiddenAppCodes au lieu d'une copie locale figée au chargement. Toute bascule Actif/Inactif dans Admin > Portail > Système > Applications se répercute donc immédiatement dans le menu de navigation, sans rechargement de page. Vérifié en direct dans le navigateur (bascule Active/Inactive de Projets, dans les deux sens).",
+      "files": [
+        "libs/portail-core/data-access/src/lib/portal-apps.service.ts",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.ts",
+        "tests/fonctions/connecte/accueil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je veux que cela fonctionne en live quand je desactive je veux que le menu soi caché ou s'affiche directement, utilise les signals pour faire cette fonction",
+      "startedAt": "2026-07-31T12:25:00.000Z",
+      "completedAt": "2026-07-31T12:35:00.000Z"
+    },
+    {
+      "id": "mod-598",
+      "version": "B-0.338",
+      "date": "2026-07-31T13:15:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "server",
+        "system"
+      ],
+      "features": "portail:documents,portail:admin,portail:accueil",
+      "title": "Documents extrait du code portail vers une nouvelle sous-application appli-documents",
+      "description": "La fonctionnalité Documents (catégories + documents Markdown) était intégrée directement dans le code du portail (apps/portail/src/app/pages/user/documents/), sans entrée portal_apps ni admin propre. Extraite en sous-application appli-documents suivant le même contrat qu'agenda/recettes : frontend déplacé vers apps/appli-documents/src/app/home/ (découplé — inject(API_DATA_URL) au lieu de lire environment.apiDataUrl), nouvel app.routes.ts, nouvel admin propre (src/app/admin/, provide-documents-admin-tab.ts, apparaît dans la catégorie Applications à côté d'Agenda/Recettes/Projets), backend extrait de server-data.js vers apps/appli-documents/server/index.js (routes /api/doc-categories et /api/documents + schéma doc_categories/documents, catalogue portal_apps auto-porté via upsertCatalogEntry). MarkdownEditorComponent (utilisé aussi par la page /editor, un aperçu Markdown autonome) déplacé de apps/portail vers libs/shared/ui pour rester partagé sans couplage cross-app. L'item de navigation « Documents » (jusque-là toujours affiché) respecte désormais isActive/isAvailable comme l'item « Projets » (généralisation de isNavItemVisible en isAppVisible(code) dans NavComponent, réactif en direct via le signal partagé PortalAppsService.apps). Nouvelle doc tests/fonctions/connecte/documents/fonctions.md (2-9-*), la fonctionnalité n'était jusqu'ici pas du tout documentée/testée dans ce système.",
+      "files": [
+        "apps/appli-documents/src/app/home/documents.component.ts",
+        "apps/appli-documents/src/app/home/documents.component.html",
+        "apps/appli-documents/src/app/home/documents.component.scss",
+        "apps/appli-documents/src/app/app.routes.ts",
+        "apps/appli-documents/src/app/admin/admin-documents.component.ts",
+        "apps/appli-documents/src/app/admin/provide-documents-admin-tab.ts",
+        "apps/appli-documents/server/index.js",
+        "libs/shared/ui/src/lib/markdown-editor/markdown-editor.component.ts",
+        "libs/shared/ui/src/index.ts",
+        "apps/portail/src/app/pages/user/editor/editor.component.ts",
+        "apps/portail/src/app/base-routes.ts",
+        "apps/portail/src/app/app.config.ts",
+        "server/server-data.js",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.ts",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.html",
+        "tests/fonctions/_registry.json",
+        "tests/fonctions/connecte/documents/fonctions.md",
+        "tests/fonctions/connecte/accueil/fonctions.md",
+        "docs/architecture-sous-applications.md",
+        "CLAUDE.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans la liste des sous applications met en place la sous appli document, cette appli était peut ètre intégré au code du portail, si c'est le cas retire le et met le dans une nouvelle sous appli : appli-documents.",
+      "startedAt": "2026-07-31T12:40:00.000Z",
+      "completedAt": "2026-07-31T13:15:00.000Z"
+    },
+    {
+      "id": "mod-599",
+      "version": "B-0.338",
+      "date": "2026-07-31T13:45:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs"
+      ],
+      "features": "portail:accueil,portail:admin",
+      "title": "Menu de navigation entièrement dérivé du catalogue portal_apps",
+      "description": "La barre de navigation ne montrait que 2 sous-applications câblées en dur/via config statique (Documents, Projets) — Agenda et Recettes n'y apparaissaient jamais (accessibles seulement via les cartes de la page d'accueil). NavComponent liste désormais TOUTES les sous-applications actives et disponibles du catalogue portal_apps (signal partagé PortalAppsService.apps, providedIn: 'root'), triées par ordre puis nom : toute nouvelle sous-appli enregistrée apparaît automatiquement dans le menu, sans modification de code, dès qu'elle est marquée active. Généralisé le callback de clic pour une sous-appli externe (URL absolue) : onProjetsClick (spécifique à projets) devient onAppClick(url) sur NavComponent/HeaderComponent, câblé génériquement à navigateToApp(url) dans apps/portail/src/app/app.component.ts. data/child/nav.json vidé de son entrée Projets, désormais redondante avec le catalogue (le mécanisme reste disponible pour d'éventuels items statiques futurs hors catalogue). Vérifié en direct : Agenda et Recettes apparaissent bien dans le menu (jamais vu avant), bascule Actif/Inactif de Projets répercutée immédiatement dans le menu (ordre respecté), build à froid sans erreur.",
+      "files": [
+        "libs/shared/ui/src/lib/layout/nav/nav.component.ts",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.html",
+        "libs/shared/ui/src/lib/layout/header/header.component.ts",
+        "libs/shared/ui/src/lib/layout/header/header.component.html",
+        "apps/portail/src/app/app.component.ts",
+        "apps/portail/src/app/app.component.html",
+        "data/child/nav.json",
+        "tests/fonctions/connecte/accueil/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "le menu connecté (non admin) doit faire apparaitre TOUTES les sous applications enregistré et active. A chaque fois qu'on rajoute une appli le menu doit être à jour automatiquement suivant l'admin Portail/système/application",
+      "startedAt": "2026-07-31T13:20:00.000Z",
+      "completedAt": "2026-07-31T13:45:00.000Z"
+    },
+    {
+      "id": "mod-600",
+      "version": "B-0.338",
+      "date": "2026-07-31T14:00:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "data"
+      ],
+      "features": "portail:accueil",
+      "title": "Doublon Projets dans le menu — cache navigateur",
+      "description": "L'utilisateur voyait 'Projets' deux fois dans le menu de navigation. Cause : data/child/nav.json contenait encore une entrée statique 'Projets' héritée de l'ancien mécanisme, en plus de l'entrée désormais dérivée automatiquement du catalogue portal_apps (mod-599). L'onglet déjà ouvert avait aussi mis en cache l'ancienne config (AppConfigService.childNavItems() chargée une fois au bootstrap, non re-fetchée après le nettoyage serveur). Entrée 'Projets' retirée de data/child/nav.json ; un rechargement complet (Ctrl+Shift+R) de la page suffit à faire disparaître le doublon, sans changement de code.",
+      "files": [
+        "data/child/nav.json"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "on a 2 fois projet",
+      "startedAt": "2026-07-31T13:50:00.000Z",
+      "completedAt": "2026-07-31T14:00:00.000Z"
+    },
+    {
+      "id": "mod-601",
+      "version": "B-0.338",
+      "date": "2026-07-31T15:10:00.000Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail",
+        "libs"
+      ],
+      "features": "portail:accueil,portail:admin",
+      "title": "Menu limité aux apps autorisées + auto-cochage groupe + fin du scroll intempestif",
+      "description": "Trois correctifs liés aux permissions dans Admin Portail. (1) Régression introduite par mod-599 : le menu de navigation utilisait PortalAppsService.apps (catalogue brut admin, toutes les apps actives sans filtrage) au lieu de authorizedApps (nouveau signal dérivé de /api/portal/home, mêmes règles groupes/accès directs que la page d'accueil) — tout utilisateur voyait toutes les apps actives, pas seulement celles autorisées pour lui. (2) Dans Admin Portail Utilisateurs, associer un groupe à un utilisateur coche désormais automatiquement les applications de ce groupe dans Accès directs (confort admin, jamais l'inverse au retrait du groupe). (3) Bascule d'un groupe/accès direct ne provoque plus de saut de scroll : load() (montage initial, spinner) séparé de refresh() (rechargement silencieux après mutation, ne touche jamais le signal loading, évite le démontage/remontage du panneau via @if).",
+      "files": [
+        "libs/portail-core/data-access/src/lib/portal-apps.service.ts",
+        "libs/shared/ui/src/lib/layout/nav/nav.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-apps.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts",
+        "tests/fonctions/connecte/accueil/fonctions.md",
+        "tests/fonctions/connecte/admin/applications/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans l'admin/portail/user, on affiche les groupes lié à un user, il faut affiché sur le front/connecté uniquement les groupes et les applications lié et autorisé pour un user. Dans l'admin/portail/groupe on a une liste d'application, par defaut lorsqu'on associ un groupe à un user cela doit selectionné directement les applications lié au groupe selectionné. Lorsque je selection un groupe dans admin/portail/user cela ne doit pas scroller dans l'écran.",
+      "startedAt": "2026-07-31T14:30:00.000Z",
+      "completedAt": "2026-07-31T15:10:00.000Z"
     }
   ]
 }

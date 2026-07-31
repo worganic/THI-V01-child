@@ -1,5 +1,8 @@
 # Éditeur › Toolbar — Fonctions métier
 
+> Note (2026-07-31) : le backend de ces fonctions a été déplacé de `server/server-data.js` vers `apps/appli-projets/server/index.js` (contrat "sous-application", voir `docs/architecture-sous-applications.md`) — déplacement pur, aucun changement de comportement observable, non retesté systématiquement à ce titre.
+
+
 <!-- worganic:meta updatedAt="2026-06-21T20:01:59.106Z" updatedBy="Antigravity CLI (agy) / Gemini 3 Pro" -->
 
 ---
@@ -12,7 +15,7 @@
 - Projets : clic sur le lien "Projets" dans le fil d'Ariane redirige vers la route /projets
 - Breadcrumb : affichage du fil d'Ariane "Projets > {nom projet}" avec le nom du projet non éditable dans la toolbar
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-toolbar/projet-toolbar.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-toolbar/projet-toolbar.component.html`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-toolbar/projet-toolbar.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-toolbar/projet-toolbar.component.html`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.html`
 
 ---
 
@@ -24,7 +27,7 @@
 - Statut "Erreur" (error) : message rouge avec icône error affiché en bas de l'éditeur
 - Clic sur "Non sauvegardé" : déclenche forceSave() qui déplie les sections (unfoldAll()) et effectue une sauvegarde immédiate (saveAll())
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -39,7 +42,7 @@
 - Backup Google Drive : affichage du badge vert "Drive" avec icône add_to_drive si configuré
 - Aucun backup : pas de badge affiché
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -53,7 +56,7 @@
 - Bascule externe : l'Input `modeRequest` ({ mode, token }) déclenche `setMode` sans clic (ex: agenda « Ouvrir la séance » → mode Edition). Le token force le re-déclenchement même mode identique.
 - **[modification] Mode par défaut à l'ouverture d'un projet** : `mode` vaut désormais `'visu'` (onglet Edition) au chargement, au lieu de `'edit'` (Code). En mode Code sans section sélectionnée (`!focusedHandle && !activeNodeId`), un overlay « Sélectionnez une section dans la barre latérale pour l'éditer » recouvrait la vue assemblée dès l'ouverture du projet (aucune section n'étant encore choisie) ; le mode Edition affiche directement la vue assemblée du document sans nécessiter de sélection ni afficher ce message. L'overlay reste inchangé pour le mode Code lui-même (toujours pertinent si l'utilisateur y bascule manuellement sans sélectionner de section).
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -68,7 +71,7 @@
 - Effacer la mise en forme : bouton codeClearFormat() nettoie les marqueurs Markdown/HTML de la sélection
 - Extras Code (droite) : boutons pour insérer un bloc de code vide, un tableau markdown 2x2, ou un séparateur horizontal (---)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -80,7 +83,7 @@
 - Ouverture OS : le serveur ouvre le dossier dans l'explorateur natif (explorer.exe / open / xdg-open)
 - Gestion d'erreur : retour du code HTTP 404 avec message d'erreur si la section n'est pas clonée localement
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`, `server/server-data.js`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`, `server/server-data.js`
 
 ---
 
@@ -92,7 +95,7 @@
 - Clic Partager Structure : publie les changements de structure au serveur via publishStructureEdit() et broadcast SSE
 - Mode Preview : aucun bandeau n'est affiché (les actions d'annulation ou de partage de modifications de preview sont déportées sur la sidebar)
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -104,7 +107,7 @@
 - Bandeau pending : fond bleu/violet pour modifications locales en attente en bas de l'éditeur
 - Overlay de publication : écran de blocage flou avec spinner jaune progress_activity lors de la publication/téléversement d'image
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -118,7 +121,7 @@
 - Clic "Liaison" (Mockup uniquement) : ouvre la popup permettant d'associer un Mockup existant à la section courante
 - Interrupteur "Sync auto" (Trello uniquement) : active/désactive la synchronisation automatique des cartes de colonne Trello dans le code markdown
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -129,7 +132,7 @@
 - Surlignage : menu déroulant Swatch (icône highlighter) propose la palette de couleurs de fond pastilles (hiliteColor)
 - Comportement d'ouverture/fermeture : ouverture via mousedown avec preventDefault pour conserver la sélection de texte courante, fermeture au clic extérieur
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -141,7 +144,7 @@
 - Insertion : confirmation du dialogue appelle createTitleSection() qui insère un heading markdown avec le niveau (ex: ### Titre) à la ligne d'insertion
 - Réorganisation parent : le parent exécute processSectionsChange, crée le dossier physique, réorganise l'ordre et re-parente les sous-sections
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -155,7 +158,7 @@
 - Liaison Mockup : clic sur "Liaison" ouvre la popup de sélection des mockups du projet, clic sur un mockup existant insère sa liaison
 - Validation des formulaires : vérification de la non-vacuité du nom et gestion d'erreurs d'unicité (ex: mockupNameError, promptNameError)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -167,7 +170,7 @@
 - Insertion automatique : insère le marqueur {{IMG:nodeId}} à l'emplacement du curseur dans le document unifié
 - Historique & sauvegarde : enregistrement de l'action dans l'historique d'annulation (woHistory.track), exécution immédiate de saveAll() et passage en état localDirty = true
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/project-files.service.ts`
 
 ---
 
@@ -177,7 +180,7 @@
 - Affichage : affiche une bannière d'information bleue en haut de la zone d'édition "Synchronisation FTP en cours — lecture seule jusqu'à la mise à jour"
 - Blocage de saisie : les zones d'éditions du corps de section et les boutons d'action d'édition/formatage sont verrouillés
 - **Priorité:** bloquant
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -188,7 +191,7 @@
 - Popup d'édition : modifier le lien ouvre showLinkEditPopup, permet de saisir la nouvelle URL et met à jour l'attribut href du lien sur validation
 - Suppression de lien : l'action supprimer retire la balise lien <a> tout en conservant son contenu textuel brut
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -200,7 +203,7 @@
 - Sélection au clavier : flèches Haut/Bas pour naviguer entre les commandes, Échap pour fermer, Entrée pour valider
 - Insertion et nettoyage : la validation supprime automatiquement le "/" saisi et insère le bloc ou le formatage correspondant (ex: note info, tableau 2x2, mockup, trello, citation)
 - **Priorité:** mineur
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/slash-command-menu/slash-command-menu.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/appli-projets/src/app/pages/projet-editor/components/slash-command-menu/slash-command-menu.component.ts`
 
 ---
 
@@ -219,7 +222,7 @@
 - Historique : chaque exécution est enregistrée en base (table mega_outil_prompt_history) et visible dans PromptAdminComponent
 - Prompt de base global : configurable dans Admin › Mega-outils › Prompt ; stocké en BDD (table mega_outil_prompt_config) ; combiné avec le system prompt de section à l'exécution
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `server/server-data.js`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `server/server-data.js`
 
 ---
 
@@ -235,7 +238,7 @@
 - Rendu basé sur la balise : les forms sont détectés via le marqueur ` ```FORM: NOM ` dans le texte de la section (pas via une instance DB), ce qui permet de rendre aussi les formulaires auto-convertis ; `docSections.textContent` est synchronisé depuis `unifiedContent` (`syncDocSectionsTextFromContent`) pour un affichage immédiat sans attendre la sauvegarde
 - Stats : pour chaque option, comptage du nombre de sélections parmi toutes les réponses avec barre de progression proportionnelle ; les options à champ libre (`______`) sont matchées sur le préfixe avant le champ
 - **Priorité:** important
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/form/form-board.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/appli-projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/form/form-board.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`
 
 ---
 
@@ -258,7 +261,7 @@
 - Config : méta-prompts cadrage + génération stockés en BDD (`mega_outil_prompt_config` clés `workflow_clarify_prompt` / `workflow_generate_prompt`), éditables dans Admin › Mega-outils › Prompt ; valeurs par défaut servies par le serveur si absentes
 - Suppression cascade du résultat : bouton « Supprimer le résultat » (icône `delete_sweep`) affiché sous la carte prompt en mode Edition quand une section « Résultat du prompt » existe (`getPromptResultSectionText`) ; confirmation requise ; `deletePromptResult` supprime en cascade : instances Trello/Array dont le nom est dans la section, événements agenda matchant les lignes `- **date** — Titre`, puis retire la section du markdown
 - **Priorité:** important
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.service.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `server/server-data.js`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-conversation/projet-conversation.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `apps/appli-projets/src/app/pages/projet-editor/components/form-execution-popup/form-execution-popup.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-board.component.ts`, `libs/shared/ui/src/lib/mega-outils/prompt/prompt-admin.component.ts`, `libs/portail-core/data-access/src/lib/mega-outils.service.ts`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `server/server-data.js`
 
 ---
 
@@ -272,7 +275,7 @@
 - Strip HTML : le fence est retiré du rendu HTML brut (`buildVisuSectionHtml`) comme les autres MO ; rendu par composant Angular
 - Matérialisation depuis workflow guidé : CHART n'a pas d'instance DB, laissé en fence ; les données vives sont lues depuis `visuArrayGrids`
 - **Priorité:** important
-- **Composants:** `libs/shared/ui/src/lib/mega-outils/chart/chart-board.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `libs/shared/ui/src/index.ts`
+- **Composants:** `libs/shared/ui/src/lib/mega-outils/chart/chart-board.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/mega-outils.models.ts`, `libs/shared/ui/src/index.ts`
 
 ---
 
@@ -286,7 +289,7 @@
 - Suppression cascade améliorée : `deletePromptResult` extrait le `groupId` du commentaire HTML et appelle `deleteEventGroup` ; fallback titre+date pour anciens événements sans groupId
 - Lien séance (cours vivant) : un événement dont le titre commence par « Séance » (`isSeanceEvent`) affiche un bouton « Ouvrir la séance » dans sa popup ; émet `navigateToSection` ; le parent `onAgendaNavigateToSection` retrouve le dossier par titre (`findFolderByTitleLike`, match exact/préfixe puis par numéro de séance), bascule sur l'outil propriétaire et scrolle vers la section
 - **Priorité:** important
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/projets/src/app/pages/projet-editor/projet-editor.component.html`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.models.ts`, `server/server-data.js`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/outils/agenda/agenda-outil.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.html`, `libs/portail-core/data-access/src/lib/agenda-outil.service.ts`, `libs/portail-core/data-access/src/lib/agenda-outil.models.ts`, `server/server-data.js`
 
 ---
 
@@ -311,7 +314,7 @@
 - Mise à jour des notes : `updateNotesRowForQcm` remplit la ligne du tableau « Suivi des notes » correspondant à la séance (match par numéro de séance, sinon 1re ligne sans note) ; colonnes Note/Max remplies ; `updateArrayGrid` + sync inline + `recomputeAll` → le CHART de progression se met à jour automatiquement
 - Indicateur visuel : badge « Correction IA en cours… » sous le formulaire pendant le traitement (`qcmCorrecting`)
 - **Priorité:** important
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `server/server-data.js`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`, `libs/portail-core/data-access/src/lib/ai-execute.service.ts`, `server/server-data.js`
 
 ---
 
@@ -327,7 +330,7 @@
 - Nom de section dans la liste : `recomputePromptSections` alimente la map `promptSections()` (folderId + nom du dossier) ; la carte de la « Liste des prompts » affiche le vrai nom de section et navigue via `goToPromptSection`
 - Navigation depuis la barre MO : `selectMegaOutil` gère le type prompt (focus du fichier `prompt-NOM` en mode Code via `findPromptFileNode`, sinon la section)
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`, `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.html`
 
 ---
 
@@ -343,4 +346,4 @@
 - Suppression depuis le menu = suppression totale : `reconcileDeletedMoFiles` (suivi des fichiers MO par **id de nœud** → MOID via `computeMoFiles`, insensible au renommage) détecte qu'un fichier MO a disparu → retire sa fence du document par MOID (`removeFenceByMoid`) et supprime l'instance DB **seulement si plus aucun fichier ne porte ce MOID** (sinon une copie subsiste ailleurs). S'exécute **aussi en mode focus** (opère sur la section focalisée, `saveAll` fusionne dans le document complet) → la synchro (heal/ensure/reconstruct) ne recrée plus l'entrée
 - Pas de double stockage : l'extraction retire désormais les fences `PROMPT` de `contenu.md` (comme `TRELLO`/`ARRAY`) → le fichier `prompt-NOM` est la source unique, plus de fence résiduelle inline qui ressuscitait le MO supprimé
 - **Priorité:** critique
-- **Composants:** `apps/projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`
+- **Composants:** `apps/appli-projets/src/app/pages/projet-editor/components/projet-editor-zone/projet-editor-zone.component.ts`

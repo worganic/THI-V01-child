@@ -9,6 +9,8 @@ import { authInterceptor } from '@worganic/portail-core/auth';
 import { DbStatusService, AppConfigService, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING } from '@worganic/portail-core/data-access';
 import { CHILD_ADMIN_TABS_PROVIDERS } from './child/child-admin-tabs';
 import { provideAgendaAdminTab } from '../../../appli-agenda/src/app/admin/provide-agenda-admin-tab';
+import { provideRecettesAdminTab } from '../../../appli-recettes/src/app/admin/provide-recettes-admin-tab';
+import { provideDocumentsAdminTab } from '../../../appli-documents/src/app/admin/provide-documents-admin-tab';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,6 +33,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(DbStatusService).check()),
     provideAppInitializer(() => inject(AppConfigService).load()),
     ...CHILD_ADMIN_TABS_PROVIDERS,
-    ...provideAgendaAdminTab()
+    ...provideAgendaAdminTab(),
+    ...provideRecettesAdminTab(),
+    ...provideDocumentsAdminTab()
   ]
 };

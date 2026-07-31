@@ -114,7 +114,7 @@ export class AdminMemoComponent implements OnInit {
     { label: 'Marqueur Trello dans contenu', value: '{{TRELLO:instanceId}}' },
     { label: 'Composants réutilisables',     value: 'libs/shared/ui/src/lib/' },
     { label: 'Méga-outils partagés',         value: 'libs/shared/ui/src/lib/mega-outils/' },
-    { label: 'Outils projet',               value: 'apps/projets/.../outils/' },
+    { label: 'Outils projet',               value: 'apps/appli-projets/.../outils/' },
     { label: 'Données JSON',                value: 'data/' },
     { label: 'Fonctions testables',         value: 'tests/fonctions/' },
   ];

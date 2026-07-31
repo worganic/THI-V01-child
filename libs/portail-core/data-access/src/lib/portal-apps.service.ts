@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { API_DATA_URL } from './tokens';
@@ -30,14 +30,42 @@ export class PortalAppsService {
 
   // ── Page d'accueil ─────────────────────────────────────────────────────────
 
-  getHomeDashboard(): Promise<PortalHomeDashboard> {
-    return firstValueFrom(this.http.get<PortalHomeDashboard>(this.url('/home'), { headers: this.h() }));
+  /**
+   * Applications réellement autorisées pour l'utilisateur connecté (groupes +
+   * accès directs — même filtrage que `/home`, un admin voit tout). Dérivées
+   * de chaque appel à `getHomeDashboard()`, partagées par toute la session
+   * (service `providedIn: 'root'`) : la barre de navigation (`NavComponent`)
+   * doit lire CE signal, pas `apps` ci-dessous, qui est le catalogue brut
+   * (toutes les apps actives, sans égard aux permissions de l'utilisateur) —
+   * ne sert qu'à l'admin des applications.
+   */
+  private authorizedAppsSignal = signal<PortalApp[]>([]);
+  readonly authorizedApps = this.authorizedAppsSignal.asReadonly();
+
+  async getHomeDashboard(): Promise<PortalHomeDashboard> {
+    const dashboard = await firstValueFrom(this.http.get<PortalHomeDashboard>(this.url('/home'), { headers: this.h() }));
+    const byCode = new Map<string, PortalApp>();
+    for (const g of dashboard.groupes) for (const a of g.apps) byCode.set(a.code, a);
+    this.authorizedAppsSignal.set([...byCode.values()]);
+    return dashboard;
   }
 
   // ── Applications ───────────────────────────────────────────────────────────
 
-  getApps(): Promise<PortalApp[]> {
-    return firstValueFrom(this.http.get<PortalApp[]>(this.url('/apps'), { headers: this.h() }));
+  /**
+   * Catalogue brut de TOUTES les sous-applications (actives ou non), tenu à
+   * jour par chaque appel à getApps() — réservé à l'admin des applications
+   * (CRUD, activer/désactiver). Ne pas utiliser pour un menu utilisateur :
+   * ne reflète pas les permissions (groupes/accès directs), voir
+   * `authorizedApps` ci-dessus.
+   */
+  private appsSignal = signal<PortalApp[]>([]);
+  readonly apps = this.appsSignal.asReadonly();
+
+  async getApps(): Promise<PortalApp[]> {
+    const apps = await firstValueFrom(this.http.get<PortalApp[]>(this.url('/apps'), { headers: this.h() }));
+    this.appsSignal.set(apps);
+    return apps;
   }
 
   createApp(app: Partial<PortalApp>): Promise<PortalApp> {

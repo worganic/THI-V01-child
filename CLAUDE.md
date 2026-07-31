@@ -28,11 +28,17 @@
 worganic-monorepo/
 ├── apps/
 │   ├── portail/               # App principale (port 4202)
-│   ├── projets/               # Sous-app projets (port 4203, app autonome)
+│   ├── appli-projets/         # Sous-app projets (port 4203, app NX autonome — projet NX nommé "projets")
+│   │   └── server/            #   backend co-localisé (register + ensureSchema)
 │   ├── appli-agenda/          # Sous-app agenda   → montée dans le portail sur /agenda
 │   │   ├── src/app/home/      #   page d'accueil ; src/app/admin/ ; src/app/core/{models,services,utils}
 │   │   └── server/            #   backend co-localisé (register + ensureSchema), voir doc ci-dessous
-│   └── appli-recettes/        # Sous-app recettes → montée dans le portail sur /recettes (pas encore alignée)
+│   ├── appli-recettes/        # Sous-app recettes → montée dans le portail sur /recettes
+│   │   ├── src/app/home/      #   page d'accueil ; src/app/admin/ ; src/app/core/{models,services}
+│   │   └── server/            #   backend co-localisé (register + ensureSchema)
+│   └── appli-documents/       # Sous-app documents → montée dans le portail sur /documents
+│       ├── src/app/home/      #   page d'accueil ; src/app/admin/
+│       └── server/            #   backend co-localisé (register + ensureSchema)
 ├── libs/
 │   ├── shared/ui/             # Composants graphiques partagés
 │   └── portail-core/
@@ -53,8 +59,10 @@ admin propre, config propre, sous-design scopé — reliée au portail uniquemen
 via des points de contrat explicites (tokens DI, `registerChild` pour l'admin,
 `upsertCatalogEntry` pour le catalogue `portal_apps`). Contrat complet et état
 d'avancement par sous-application : voir `docs/architecture-sous-applications.md`.
-`appli-agenda` est la première à suivre ce contrat ; `appli-recettes` et
-`apps/projets` restent à aligner.
+`appli-agenda`, `appli-recettes` et `apps/appli-projets` (backend) suivent ce
+contrat — `apps/appli-projets` étant une app NX séparée (Mode autonome), son admin
+reste déclarée côté portail par nécessité structurelle, pas par manque
+d'alignement (voir le document pour le détail).
 
 ### Commandes clés
 ```bash
@@ -149,7 +157,7 @@ Aucune ligne → OK. Des lignes → corriger avant de continuer.
 
 ### Scopes (déduits depuis les fichiers modifiés)
 - `apps/portail/` → `"portail"`
-- `apps/projets/` → `"projets"`
+- `apps/appli-projets/` → `"projets"`
 - `libs/shared/` → `"libs"`
 - `server/` → `"server"`
 - `data/` → `"data"`
@@ -226,14 +234,16 @@ Question 3 : "Titre du commit ?"
 
 | Composant / Zone | Fichier |
 |-----------------|---------|
-| Admin › Portail (Utilisateurs, Applications, Groupes, Métiers) | `connecte/admin/applications/` |
-| Admin › Déploiements | `connecte/admin/deploiements/` |
-| Admin › Config | `connecte/admin/config/` |
-| Admin › Thème | `connecte/admin/theme/` |
+| Admin › Portail › Système (Utilisateurs, Applications, Groupes, Métiers) | `connecte/admin/applications/` |
+| Admin › Portail › Déploiements | `connecte/admin/deploiements/` |
+| Admin › Portail › Config | `connecte/admin/config/` |
+| Admin › Portail › Thème | `connecte/admin/theme/` |
+| Admin › Portail › Outils | `connecte/admin/outils/` |
 | Admin › Tests | `connecte/admin/tests/` |
 | Page d'accueil (`/home`) | `connecte/accueil/` |
 | Agenda (`/agenda`) | `connecte/agenda/` |
 | Recettes (`/recettes`) | `connecte/recettes/` |
+| Documents (`/documents`) | `connecte/documents/` |
 | Page Config utilisateur | `connecte/config/` |
 | Page Déploiements | `connecte/deploiements/` |
 | Outil Tchat IA | `connecte/outils/tchat-ia/` |

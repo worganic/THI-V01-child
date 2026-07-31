@@ -37,7 +37,13 @@ export class HomeComponent implements OnInit {
     this.error.set('');
     try {
       const data = await this.portalApps.getHomeDashboard();
-      this.groupes.set(data.groupes || []);
+      // Une application référencée en base mais dont le dossier est absent de
+      // cette installation (isAvailable === false, voir portal-apps.js) ne doit
+      // pas apparaître : ni carte cliquable, ni groupe vide en résultant.
+      const groupes = (data.groupes || [])
+        .map(g => ({ ...g, apps: g.apps.filter(a => a.isAvailable !== false) }))
+        .filter(g => g.apps.length > 0);
+      this.groupes.set(groupes);
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Impossible de charger vos applications.');
     } finally {

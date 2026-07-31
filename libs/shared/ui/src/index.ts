@@ -6,6 +6,7 @@ export * from './lib/editor/title-create-dialog.component';
 export * from './lib/layout/header/header.component';
 export * from './lib/layout/footer/footer.component';
 export * from './lib/layout/nav/nav.component';
+export * from './lib/markdown-editor/markdown-editor.component';
 
 // Tools
 export * from './lib/tools/action-report-modal/action-report-modal.component';

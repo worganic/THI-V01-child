@@ -8,7 +8,7 @@ Caractéristiques :
 - **Contextuel** : lié à un projet spécifique, géré dans `config.outils[]`
 - **Multi-instance** : plusieurs outils du même type peuvent coexister dans un projet
 - **Scope fichiers** : chaque instance gère un sous-ensemble de fichiers via `rootFolderIds`
-- **Vue autonome** : propre composant dans `apps/projets/.../outils/{nom}/`
+- **Vue autonome** : propre composant dans `apps/appli-projets/.../outils/{nom}/`
 - **Indépendant** : chaque outil est une "vue" différente sur les fichiers du projet
 
 ## Différence outil vs méga-outil
@@ -26,13 +26,13 @@ Caractéristiques :
 ## Arborescence type
 
 ```
-apps/projets/src/app/pages/projet-editor/outils/
+apps/appli-projets/src/app/pages/projet-editor/outils/
 ├── edition/
 │   └── edition-outil.component.ts    ← outil existant (référence)
 └── {nom}/
     └── {nom}-outil.component.ts      ← nouveau composant à créer
 
-apps/projets/src/app/pages/projet-editor/
+apps/appli-projets/src/app/pages/projet-editor/
 ├── projet-editor.component.ts        ← orchestrateur (charger le composant au switch)
 ├── projet-editor.component.html      ← template (ajouter le @if activeOutil().type)
 └── components/projet-sidebar/
@@ -64,7 +64,7 @@ export interface Outil {
 
 **Sélecteur :** `app-{nom}-outil`
 **Standalone :** `true`
-**Chemin :** `apps/projets/src/app/pages/projet-editor/outils/{nom}/{nom}-outil.component.ts`
+**Chemin :** `apps/appli-projets/src/app/pages/projet-editor/outils/{nom}/{nom}-outil.component.ts`
 
 ### Inputs obligatoires (hérités d'EditionOutilComponent)
 ```typescript
@@ -103,7 +103,7 @@ export interface Outil {
 
 ## Intégration dans le Sidebar
 
-Dans `apps/projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html` :
+Dans `apps/appli-projets/src/app/pages/projet-editor/components/projet-sidebar/projet-sidebar.component.html` :
 
 ```html
 <!-- Dans le popup "AJOUTER UN OUTIL" -->
@@ -127,7 +127,7 @@ Dans `projet-sidebar.component.ts`, la méthode `onAddOutil(type: string)` est d
 
 ## Intégration dans l'Éditeur
 
-Dans `apps/projets/src/app/pages/projet-editor/projet-editor.component.html` :
+Dans `apps/appli-projets/src/app/pages/projet-editor/projet-editor.component.html` :
 
 ```html
 <!-- Ajouter après le bloc @if edition -->
@@ -185,7 +185,7 @@ DELETE /api/file-projects/:name/outils/:id
 - [ ] Ajouter `'{nom}'` dans l'union de types `Outil.type` dans `project-files.service.ts`
 
 ### Phase 2 — Composant
-- [ ] Créer `apps/projets/src/app/pages/projet-editor/outils/{nom}/{nom}-outil.component.ts`
+- [ ] Créer `apps/appli-projets/src/app/pages/projet-editor/outils/{nom}/{nom}-outil.component.ts`
 - [ ] Implémenter les Inputs/Outputs obligatoires (voir section ci-dessus)
 - [ ] Implémenter la logique d'affichage/édition spécifique
 

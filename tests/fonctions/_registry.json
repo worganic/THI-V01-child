@@ -12,6 +12,7 @@
   "2-1-7": "connecte/admin/mega-outils",
   "2-1-8": "connecte/admin/ia",
   "2-1-9": "connecte/admin/applications",
+  "2-1-10": "connecte/admin/outils",
   "2-2": "connecte/config",
   "2-3": "connecte/deploiements",
   "2-4": "connecte/outils",
@@ -37,5 +38,6 @@
   "2-5-3": "connecte/projets/prrojet-edition-bar-de-style",
   "2-6": "connecte/accueil",
   "2-7": "connecte/agenda",
-  "2-8": "connecte/recettes"
+  "2-8": "connecte/recettes",
+  "2-9": "connecte/documents"
 }

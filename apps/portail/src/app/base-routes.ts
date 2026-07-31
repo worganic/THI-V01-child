@@ -19,11 +19,6 @@ export const BASE_ROUTES: Routes = [
     loadComponent: () => import('./pages/user/editor/editor.component').then(m => m.EditorComponent)
   },
   {
-    path: 'documents',
-    canActivate: [authGuard],
-    loadComponent: () => import('./pages/user/documents/documents.component').then(m => m.DocumentsComponent)
-  },
-  {
     path: 'config',
     canActivate: [authGuard],
     loadComponent: () => import('./pages/user/config/config.component').then(m => m.ConfigComponent)
@@ -86,5 +81,10 @@ export const BASE_ROUTES: Routes = [
     path: 'recettes',
     canActivate: [authGuard],
     loadChildren: () => import('../../../appli-recettes/src/app/app.routes').then(m => m.appRoutes)
+  },
+  {
+    path: 'documents',
+    canActivate: [authGuard],
+    loadChildren: () => import('../../../appli-documents/src/app/app.routes').then(m => m.appRoutes)
   },
 ];

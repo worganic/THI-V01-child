@@ -11,9 +11,23 @@
     </div>
   </div>
 
-  <!-- Onglets — générés depuis le registre (base + child) -->
+  <!-- Catégories — Portail (système transverse) / Applications (admin propre à chaque sous-appli) / Autres -->
+  <div class="flex gap-1 mb-4 p-1 bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 rounded-xl w-fit">
+    @for (cat of categories; track cat.id) {
+      <button (click)="setCategory(cat.id)"
+              class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all"
+              [class]="activeCategory() === cat.id
+                ? 'bg-white dark:bg-background text-light-primary dark:text-primary shadow-sm border border-light-border dark:border-white/10'
+                : 'text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white'">
+        <span class="material-symbols-outlined text-base">{{ cat.icon }}</span>
+        {{ cat.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Sous-onglets de la catégorie active -->
   <div class="flex gap-1 mb-6 p-1 bg-light-surface dark:bg-surface border border-light-border dark:border-white/10 rounded-xl w-fit">
-    @for (tab of tabsRegistry.allTabs(); track tab.id) {
+    @for (tab of tabsInCategory(); track tab.id) {
       <button (click)="setTab(tab.id)"
               class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-semibold transition-all"
               [class]="activeTab() === tab.id
@@ -28,6 +42,9 @@
           <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
         }
       </button>
+    }
+    @if (tabsInCategory().length === 0) {
+      <span class="px-3 py-2 text-sm text-light-text-muted dark:text-white/40">Aucune sous-application n'a encore d'admin propre.</span>
     }
   </div>
 

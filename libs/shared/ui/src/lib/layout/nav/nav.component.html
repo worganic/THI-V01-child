@@ -16,23 +16,6 @@
     </a>
   }
 
-  <!-- Item Documents -->
-  @if (isExternal) {
-    <button (click)="handleExternalRoute('/documents')"
-       [class]="isActiveExternal('/documents') ? 'text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5' : ''"
-       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
-      <span class="material-symbols-outlined text-sm">description</span>
-      Documents
-    </button>
-  } @else {
-    <a routerLink="/documents"
-       routerLinkActive="text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5"
-       class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
-      <span class="material-symbols-outlined text-sm">description</span>
-      Documents
-    </a>
-  }
-
   <!-- Historique des actions (configurable via admin/outils) -->
   @if (configService.woActionHistoryNavEnabled()) {
     @if (isExternal) {
@@ -51,56 +34,57 @@
     }
   }
 
-  <!-- Items child (depuis data/child/nav.json) -->
-  @for (item of appConfig.childNavItems(); track item.route) {
-    @if (isProjetsRoute(item)) {
-      @if (isExternal) {
-        <!-- En mode externe (projets app) : item actif non cliquable -->
-        <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5">
-          <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
-          {{ item.label }}
-        </span>
-      } @else {
-        <!-- En mode portail : appelle le callback (navigateToProjets) -->
-        <button (click)="handleProjetsClick()"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
-          <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
-          {{ item.label }}
-        </button>
-      }
+  <!-- Sous-applications — dérivées en direct du catalogue portal_apps (Admin › Portail ›
+       Système › Applications), filtrées Actif/Disponible, triées par ordre. Toute nouvelle
+       sous-appli enregistrée apparaît ici automatiquement, sans modification de ce fichier. -->
+  @for (app of visibleApps(); track app.code) {
+    @if (isExternalApp(app) && isCurrentApp(app)) {
+      <!-- Nav rendu depuis cette app externe elle-même : indicateur actif, non cliquable -->
+      <span class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5">
+        <span class="material-symbols-outlined text-sm">{{ app.icone }}</span>
+        {{ app.nom }}
+      </span>
+    } @else if (isExternalApp(app)) {
+      <!-- Sous-appli autonome (URL absolue) : redirection avec transmission de session -->
+      <button (click)="openExternalApp(app)"
+         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-sm">{{ app.icone }}</span>
+        {{ app.nom }}
+      </button>
+    } @else if (isExternal) {
+      <button (click)="handleExternalRoute(app.urlPath)"
+         [class]="isActiveExternal(app.urlPath) ? 'text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5' : ''"
+         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-sm">{{ app.icone }}</span>
+        {{ app.nom }}
+      </button>
     } @else {
-      @if (isExternal) {
-        <button (click)="handleExternalRoute(item.route)"
-           [class]="isActiveExternal(item.route) ? 'text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5' : ''"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
-          <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
-          {{ item.label }}
-        </button>
-      } @else {
-        <a [routerLink]="item.route"
-           routerLinkActive="text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
-          <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
-          {{ item.label }}
-        </a>
-      }
+      <a [routerLink]="app.urlPath"
+         routerLinkActive="text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5"
+         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-sm">{{ app.icone }}</span>
+        {{ app.nom }}
+      </a>
     }
   }
 
-  <!-- Admin toujours en dernier -->
-  @if (auth.currentUser()?.role === 'admin') {
+  <!-- Items child (data/child/nav.json) — mécanisme générique pour d'éventuels items
+       statiques hors catalogue portal_apps ; vide aujourd'hui (Projets vient désormais
+       de la boucle ci-dessus). -->
+  @for (item of appConfig.childNavItems(); track item.route) {
     @if (isExternal) {
-      <button (click)="handleExternalRoute('/admin')"
-         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-400/20 text-red-400 hover:bg-red-500/10 hover:border-red-400/40 transition-all">
-        <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-        Admin
+      <button (click)="handleExternalRoute(item.route)"
+         [class]="isActiveExternal(item.route) ? 'text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5' : ''"
+         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
+        {{ item.label }}
       </button>
     } @else {
-      <a routerLink="/admin"
-         routerLinkActive="bg-red-500/10 border-red-400/40"
-         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-red-400/20 text-red-400 hover:bg-red-500/10 hover:border-red-400/40 transition-all">
-        <span class="material-symbols-outlined text-sm">admin_panel_settings</span>
-        Admin
+      <a [routerLink]="item.route"
+         routerLinkActive="text-light-primary dark:text-primary border-light-primary/30 dark:border-primary/30 bg-light-primary/5 dark:bg-primary/5"
+         class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-transparent text-light-text-muted dark:text-white/50 hover:border-light-border dark:hover:border-white/10 hover:text-light-text dark:hover:text-white transition-all">
+        <span class="material-symbols-outlined text-sm">{{ item.icon }}</span>
+        {{ item.label }}
       </a>
     }
   }

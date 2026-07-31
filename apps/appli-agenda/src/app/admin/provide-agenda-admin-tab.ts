@@ -3,7 +3,7 @@ import { AdminTabsRegistryService, AdminTabDef } from '@worganic/portail-core/da
 import { AdminAgendaComponent } from './admin-agenda.component';
 
 const AGENDA_ADMIN_TAB: AdminTabDef = {
-  id: 'agenda', label: 'Agenda', icon: 'calendar_month', component: AdminAgendaComponent, order: 20
+  id: 'agenda', label: 'Agenda', icon: 'calendar_month', component: AdminAgendaComponent, order: 20, group: 'applications'
 };
 
 /**

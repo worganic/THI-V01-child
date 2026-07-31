@@ -1,0 +1,12 @@
+// Bootstrap 5, confiné au sous-arbre `.bs-scope` (posé sur le conteneur racine
+// de HomeRecettesComponent) pour qu'il ne déborde jamais sur le reste du
+// portail, qui est en Tailwind. Import imbriqué volontaire : toutes les
+// règles générées sont préfixées par `.bs-scope`.
+//
+// Propre aux recettes (contrat "sous-application", voir
+// docs/architecture-sous-applications.md) — importé par
+// apps/portail/src/styles-sous-apps.scss (une seule ligne de câblage, comme
+// les routes ou l'onglet admin).
+.bs-scope {
+    @import 'bootstrap/scss/bootstrap';
+}
