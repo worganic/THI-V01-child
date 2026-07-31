@@ -34,6 +34,11 @@ export class ThemeService {
     } else if (theme === 'pink') {
       root.classList.add('dark', 'pink');
     }
+    // En plus de la classe (dont Tailwind a besoin), on pose l'attribut
+    // data-theme : c'est le sélecteur du contrat de tokens, commun aux deux
+    // portails, sur lequel s'appuie le SCSS des sous-applications.
+    // Voir libs/shared/ui/src/portal-tokens.scss.
+    root.setAttribute('data-theme', theme);
   }
 
   getThemeIcon(): string {

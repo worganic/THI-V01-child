@@ -221,8 +221,12 @@ textarea {
 }
 
 /* ============================================
-   Sous-applications montées dans le portail
-   (agenda, recettes) — variables de compatibilité
-   + Bootstrap confiné. Voir styles-sous-apps.scss.
+   Contrat de tokens du portail : les noms de variables que les
+   sous-applications consomment, présents au même chemin et sous les mêmes
+   noms dans les deux monorepos (seules les valeurs diffèrent).
+   Chargé APRÈS le thème Lavande ci-dessus, dont il dérive ses valeurs.
    ============================================ */
+@import '../../../libs/shared/ui/src/portal-tokens.scss';
+
+/* Câblage des sous-applications (Bootstrap confiné aux recettes). */
 @import './styles-sous-apps.scss';

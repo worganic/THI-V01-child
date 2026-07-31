@@ -1,0 +1,85 @@
+// =============================================================================
+// CONTRAT DE TOKENS DU PORTAIL
+// -----------------------------------------------------------------------------
+// Ce fichier existe au meme chemin dans les deux monorepos et y declare
+// EXACTEMENT LES MEMES NOMS DE VARIABLES. Seules les VALEURS different : c'est
+// ce qui donne a chaque portail son identite (ici Lavande, violet ; la-bas
+// Airbus, bleu marine) tout en rendant les sous-applications portables.
+//
+// Regle pour une sous-application (apps/appli-<nom>/) :
+//   - elle n'utilise QUE du SCSS scope a ses propres composants ;
+//   - pour les couleurs, elle ne consomme QUE les variables listees ci-dessous ;
+//   - elle ne suppose ni Bootstrap ni Tailwind : l'un et l'autre sont un detail
+//     interne du portail hote.
+// Une sous-application respectant cette regle herite automatiquement du theme
+// (clair / sombre / rose) et des couleurs du portail dans lequel on la depose.
+// Voir docs/architecture-sous-applications.md, section « Design ».
+//
+// Le theme sombre est selectionne par l'attribut :root[data-theme="dark"], pose
+// par le ThemeService. Les deux portails posent aussi une classe .dark sur
+// <html> (Tailwind en a besoin de ce cote) : une sous-application peut donc
+// s'appuyer indifferemment sur l'un ou l'autre.
+//
+// Vocabulaire (identique des deux cotes) :
+//   --brand-primary --brand-secondary --brand-green
+//   --surface --surface-alt --page-bg
+//   --heading-color --text-primary --text-secondary --border-color --shadow-card
+//   --category-{blue,green,purple,amber,slate,red}-{bg,text,border}
+// =============================================================================
+//
+// Valeurs de CE portail. Contrairement a l'autre portail, elles ne sont pas
+// ecrites en dur : elles sont derivees des variables du theme Lavande definies
+// dans apps/portail/src/styles.scss (--accent-color, --bg-surface...). Comme ce
+// sont des variables CSS, les tokens ci-dessous suivent automatiquement les
+// bascules clair / sombre / rose sans avoir a etre redeclares par theme.
+//
+// --text-primary, --text-secondary et --border-color sont deja definis par
+// styles.scss avec exactement ces noms et ces roles : on ne les redeclare pas.
+
+:root {
+    --brand-primary: var(--accent-color);
+    --brand-secondary: var(--accent-light);
+    --brand-green: #22c55e;
+
+    --surface: var(--bg-surface);
+    --surface-alt: var(--bg-surface-hover);
+    --page-bg: var(--bg-primary);
+    --bg-card: var(--bg-surface);
+    --heading-color: var(--accent-color);
+    --text-dark: var(--text-primary);
+    --text-muted: var(--text-secondary);
+    --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.15);
+
+    // Couleurs de statut (taches, criticites) : volontairement identiques dans
+    // tous les themes — ce sont des couleurs metier, pas du chrome.
+    --accent-blue: #3b82f6;
+    --accent-green: #22c55e;
+    --accent-amber: #f59e0b;
+    --accent-yellow: #eab308;
+    --accent-orange: #f97316;
+    --accent-red-light: #ef4444;
+
+    // Badges pastel (metiers, categories) — version claire
+    --category-blue-bg: #dbeafe;   --category-blue-text: #1e40af;   --category-blue-border: #93c5fd;
+    --category-green-bg: #dcfce7;  --category-green-text: #166534;  --category-green-border: #86efac;
+    --category-purple-bg: #e9d5ff; --category-purple-text: #581c87; --category-purple-border: #c084fc;
+    --category-amber-bg: #fef3c7;  --category-amber-text: #92400e;  --category-amber-border: #fcd34d;
+    --category-slate-bg: #e2e8f0;  --category-slate-text: #1e293b;  --category-slate-border: #cbd5e1;
+    --category-red-bg: #fee2e2;    --category-red-text: #b91c1c;    --category-red-border: #fca5a5;
+}
+
+// Les trois selecteurs sont acceptes pour que le SCSS d'une sous-application
+// fonctionne a l'identique dans les deux portails (voir l'en-tete du fichier).
+:root[data-theme="dark"],
+.dark,
+.pink {
+    --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.45);
+
+    // Badges pastel — version sombre (fond profond, texte clair)
+    --category-blue-bg: #1e3a8a;   --category-blue-text: #bfdbfe;   --category-blue-border: #3b82f6;
+    --category-green-bg: #14532d;  --category-green-text: #bbf7d0;  --category-green-border: #22c55e;
+    --category-purple-bg: #4c1d95; --category-purple-text: #e9d5ff; --category-purple-border: #a855f7;
+    --category-amber-bg: #78350f;  --category-amber-text: #fde68a;  --category-amber-border: #d97706;
+    --category-slate-bg: #334155;  --category-slate-text: #e2e8f0;  --category-slate-border: #64748b;
+    --category-red-bg: #7f1d1d;    --category-red-text: #fecaca;    --category-red-border: #ef4444;
+}

@@ -1,80 +1,16 @@
 // =============================================================================
-// Feuille de compatibilité des sous-applications montées dans le portail
-// (apps/appli-agenda → /agenda, apps/appli-recettes → /recettes).
+// Câblage des sous-applications montées dans le portail.
 //
-// Ces applications viennent d'un autre portail : leurs styles s'appuient sur un
-// design system à base de variables CSS (--surface, --brand-*, --category-*…) et,
-// pour les recettes uniquement, sur Bootstrap 5. Plutôt que de réécrire ~20 000
-// lignes de gabarits, on fournit ici les deux :
+// Le design system consommé par les sous-applications (--surface, --brand-*,
+// --category-*…) ne vit plus ici : il a été promu en contrat partagé dans
+// libs/shared/ui/src/portal-tokens.scss, présent au même chemin et sous les
+// mêmes noms de variables dans les deux monorepos. Voir son en-tête et
+// docs/architecture-sous-applications.md, section « Design ».
 //
-//  1. les variables attendues, remappées sur le thème du portail — les écrans
-//     suivent donc automatiquement les modes clair / sombre / rose ;
-//  2. Bootstrap, confiné au sous-arbre `.bs-scope` (posé sur le composant racine
-//     des recettes) pour qu'il ne déborde jamais sur le reste du portail, qui est
-//     en Tailwind.
+// Il ne reste donc ici que ce qui est propre à une sous-application précise :
+// Bootstrap, confiné au sous-arbre `.bs-scope` (posé sur le composant racine
+// des recettes) pour qu'il ne déborde jamais sur le reste du portail, qui est
+// en Tailwind. Une ligne de câblage, comme pour les routes ou l'onglet admin.
 // =============================================================================
 
-// ── 1. Design system des sous-applications, adossé au thème du portail ───────
-//
-// --text-primary, --text-secondary et --border-color sont déjà définis par
-// styles.scss (mêmes rôles) : on ne les redéfinit pas, ils suivent déjà le thème.
-
-:root {
-    --brand-primary: var(--accent-color);
-    --brand-secondary: var(--accent-light);
-    --brand-green: #22c55e;
-
-    --surface: var(--bg-surface);
-    --surface-alt: var(--bg-surface-hover);
-    --page-bg: var(--bg-primary);
-    --bg-card: var(--bg-surface);
-    --heading-color: var(--accent-color);
-    --text-dark: var(--text-primary);
-    --text-muted: var(--text-secondary);
-    --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.15);
-
-    // Couleurs de statut (tâches, criticités) : volontairement identiques dans
-    // tous les thèmes — ce sont des couleurs métier, pas du chrome.
-    --accent-blue: #3b82f6;
-    --accent-green: #22c55e;
-    --accent-amber: #f59e0b;
-    --accent-yellow: #eab308;
-    --accent-orange: #f97316;
-    --accent-red-light: #ef4444;
-
-    // Badges pastel (métiers, catégories) — version claire
-    --category-blue-bg: #dbeafe;   --category-blue-text: #1e40af;   --category-blue-border: #93c5fd;
-    --category-green-bg: #dcfce7;  --category-green-text: #166534;  --category-green-border: #86efac;
-    --category-purple-bg: #e9d5ff; --category-purple-text: #581c87; --category-purple-border: #c084fc;
-    --category-amber-bg: #fef3c7;  --category-amber-text: #92400e;  --category-amber-border: #fcd34d;
-    --category-slate-bg: #e2e8f0;  --category-slate-text: #1e293b;  --category-slate-border: #cbd5e1;
-    --category-red-bg: #fee2e2;    --category-red-text: #b91c1c;    --category-red-border: #fca5a5;
-}
-
-.dark,
-.pink {
-    --shadow-card: 0 2px 6px rgba(0, 0, 0, 0.45);
-
-    // Badges pastel — version sombre (fond profond, texte clair)
-    --category-blue-bg: #1e3a8a;   --category-blue-text: #bfdbfe;   --category-blue-border: #3b82f6;
-    --category-green-bg: #14532d;  --category-green-text: #bbf7d0;  --category-green-border: #22c55e;
-    --category-purple-bg: #4c1d95; --category-purple-text: #e9d5ff; --category-purple-border: #a855f7;
-    --category-amber-bg: #78350f;  --category-amber-text: #fde68a;  --category-amber-border: #d97706;
-    --category-slate-bg: #334155;  --category-slate-text: #e2e8f0;  --category-slate-border: #64748b;
-    --category-red-bg: #7f1d1d;    --category-red-text: #fecaca;    --category-red-border: #ef4444;
-}
-
-// ── 2. Bootstrap confiné aux recettes ────────────────────────────────────────
-//
-// Le contenu vit désormais dans apps/appli-recettes/src/styles-recettes.scss
-// (contrat "sous-application", voir docs/architecture-sous-applications.md) —
-// une seule ligne de câblage ici, comme pour les routes ou l'onglet admin.
 @import '../../appli-recettes/src/styles-recettes.scss';
-
-// Note : le correctif des champs de formulaire natifs (select/input/textarea)
-// spécifique à l'agenda a été déplacé dans le style scopé de son propre
-// composant (apps/appli-agenda/src/app/home/home-agenda.component.scss).
-// Les variables de la section 1 ci-dessus restent partagées entre agenda et
-// recettes pour l'instant (état transitoire — chaque sous-appli consomme ces
-// noms de variable dans ses templates, les dupliquer par sous-appli est un
-// futur pas possible mais pas encore fait).
