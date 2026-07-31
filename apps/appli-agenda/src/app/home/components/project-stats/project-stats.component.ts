@@ -1,10 +1,10 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HelpHintComponent } from '../help-hint/help-hint.component';
-import { Project, ProjectTask, TaskStatus, User } from '../../../../models/project.model';
-import { recomputeTaskSchedule } from '../../../../utils/task-progress';
-import { toCsv, downloadCsv } from '../../../../utils/csv-export';
-import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../../utils/local-cache';
+import { Project, ProjectTask, TaskStatus, User } from '../../../core/models/project.model';
+import { recomputeTaskSchedule } from '../../../core/utils/task-progress';
+import { toCsv, downloadCsv } from '../../../core/utils/csv-export';
+import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../core/utils/local-cache';
 
 interface StatusCount {
   status: TaskStatus;

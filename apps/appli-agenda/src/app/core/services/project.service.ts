@@ -2,7 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { catchError, map, retry, tap } from 'rxjs/operators';
-import { environment } from '../../environments/environment';
+import { API_DATA_URL } from '@worganic/portail-core/data-access';
+import { environment } from '../../../environments/environment';
 import { Project, User, CreateProjectPayload, UpdateProjectPayload, ProjectTask, CreateTaskPayload, UpdateTaskPayload, UnavailabilityPeriod, CreateUnavailabilityPayload, ProjectMetier } from '../models/project.model';
 import { calculateProjectsProgress } from '../utils/project-progress';
 import { getInitialMockProjects, getInitialMockUsers } from './project-mock-data';
@@ -22,6 +23,7 @@ const UNAVAILABILITIES_CACHE_KEY = 'agenda:local-cache:unavailabilities';
 })
 export class ProjectService {
   private http = inject(HttpClient);
+  private apiDataUrl = inject(API_DATA_URL);
 
   // L'API d'origine exigeait des en-têtes IDUSER/IDAPPEL/IDTRANSACTION : ils ont été retirés
   // lors de l'intégration au portail. Ils n'y ont aucun sens (l'authentification passe par le
@@ -33,21 +35,20 @@ export class ProjectService {
     'Content-Type': 'application/json'
   });
 
-  // 🔧 CORRECTIF : comme les autres services (admin.service.ts, recipe.service.ts...),
-  // les chemins relatifs doivent être préfixés par serviceVal ("/val/v2") pour passer par
-  // le proxy Angular. Sans ce préfixe, les requêtes visaient directement le dev-server
-  // (404 immédiat, jamais transmis au mock ni à l'API réelle).
-  private readonly apiUrl = environment.serviceVal + (environment.serviceAgenda || '/agenda');
-  private readonly usersUrl = environment.serviceVal + (environment.serviceUsers || '/POPORTAIL/users/');
+  // Base de l'API portail injectée via API_DATA_URL (token DI, @worganic/portail-core/data-access)
+  // plutôt que lue depuis le runtime-env du portail : l'agenda n'a plus besoin de connaître
+  // l'app qui l'héberge, seulement le contrat de token partagé par toutes les sous-applis.
+  private readonly apiUrl = this.apiDataUrl + (environment.serviceAgenda || '/agenda');
+  private readonly usersUrl = this.apiDataUrl + (environment.serviceUsers || '/POPORTAIL/users/');
   // Appartenance aux groupes portail (table de jointure user_id/groupe_id) : c'est la source
   // réelle de "qui est développeur", déjà utilisée par l'admin (admin.service.ts). Remplace
   // l'ancien filtrage par liste de matricules codés en dur (fragile à chaque changement d'effectif).
-  private readonly groupesUrl = environment.serviceVal + (environment.serviceGroupes || '/POPORTAIL/groupes/');
-  private readonly userGroupesUrl = environment.serviceVal + (environment.serviceUserGroupes || '/POPORTAIL/user_groupes/');
+  private readonly groupesUrl = this.apiDataUrl + (environment.serviceGroupes || '/POPORTAIL/groupes/');
+  private readonly userGroupesUrl = this.apiDataUrl + (environment.serviceUserGroupes || '/POPORTAIL/user_groupes/');
   // Métiers (Dev/Infra/Media...) : source unique partagée avec Admin > Métiers (portail-shell),
   // l'agenda ne fait plus que les consommer en lecture (voir CLAUDE.md — plus de CRUD catégories
   // ici, la gestion se fait exclusivement côté admin).
-  private readonly metiersUrl = environment.serviceVal + (environment.serviceMetiers || '/POPORTAIL/metiers/');
+  private readonly metiersUrl = this.apiDataUrl + (environment.serviceMetiers || '/POPORTAIL/metiers/');
 
   // Valeur initiale : dernier état connu en localStorage (survit aux rechargements en mode
   // dégradé) si présent, sinon les données de démo figées. Chaque émission de projects$/

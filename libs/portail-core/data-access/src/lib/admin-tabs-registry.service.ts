@@ -25,7 +25,18 @@ export class AdminTabsRegistryService {
     this._baseTabs.set(tabs);
   }
 
+  /**
+   * Ajoute des onglets enfants au registre. Chaque sous-application appelle
+   * ceci indépendamment depuis son propre provider (voir
+   * docs/architecture-sous-applications.md) : on ajoute donc aux onglets déjà
+   * enregistrés (par id, idempotent) plutôt que de remplacer le tableau,
+   * sinon le dernier appelant écraserait les précédents.
+   */
   registerChild(tabs: AdminTabDef[]): void {
-    this._childTabs.set(tabs);
+    this._childTabs.update(existing => {
+      const byId = new Map(existing.map(t => [t.id, t]));
+      for (const tab of tabs) byId.set(tab.id, tab);
+      return [...byId.values()];
+    });
   }
 }

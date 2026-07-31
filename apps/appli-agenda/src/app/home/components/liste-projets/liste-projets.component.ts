@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Project, User, ProjectStatus, RiskLevel, ProjectMetier } from '../../../../models/project.model';
-import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../../utils/local-cache';
+import { Project, User, ProjectStatus, RiskLevel, ProjectMetier } from '../../../core/models/project.model';
+import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../core/utils/local-cache';
 import { HelpHintComponent } from '../help-hint/help-hint.component';
-import { metierBadgeClass } from '../../../../utils/metier-colors';
+import { metierBadgeClass } from '../../../core/utils/metier-colors';
 
 @Component({
   selector: 'app-liste-projets',

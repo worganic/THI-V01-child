@@ -3,13 +3,13 @@ import { CommonModule } from '@angular/common';
 import { HelpHintComponent } from '../help-hint/help-hint.component';
 import { FormsModule } from '@angular/forms';
 import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Project, User, DayAgendaSlot, PlanningViewMode, ProjectTask, UnavailabilityPeriod, CreateTaskPayload, UpdateTaskPayload } from '../../../../models/project.model';
+import { Project, User, DayAgendaSlot, PlanningViewMode, ProjectTask, UnavailabilityPeriod, CreateTaskPayload, UpdateTaskPayload } from '../../../core/models/project.model';
 import { TaskModalComponent } from '../task-modal/task-modal.component';
-import { dateRejectionReason, isDateAllowed, isExcludedWeekend, isExcludedHoliday, TODAY_ISO } from '../../../../utils/date-rules';
-import { recomputeTaskSchedule, halfDayKey, allowedDaysInRange } from '../../../../utils/task-progress';
-import { taskAccentColor } from '../../../../utils/task-colors';
-import { toCsv, downloadCsv } from '../../../../utils/csv-export';
-import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../../utils/local-cache';
+import { dateRejectionReason, isDateAllowed, isExcludedWeekend, isExcludedHoliday, TODAY_ISO } from '../../../core/utils/date-rules';
+import { recomputeTaskSchedule, halfDayKey, allowedDaysInRange } from '../../../core/utils/task-progress';
+import { taskAccentColor } from '../../../core/utils/task-colors';
+import { toCsv, downloadCsv } from '../../../core/utils/csv-export';
+import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../core/utils/local-cache';
 
 /** Nombre de jours (inclusif) entre deux dates ISO YYYY-MM-DD. */
 function daysBetween(dateStartIso: string, dateEndIso: string): number {

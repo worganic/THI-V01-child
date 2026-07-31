@@ -30,7 +30,9 @@ worganic-monorepo/
 │   ├── portail/               # App principale (port 4202)
 │   ├── projets/               # Sous-app projets (port 4203, app autonome)
 │   ├── appli-agenda/          # Sous-app agenda   → montée dans le portail sur /agenda
-│   └── appli-recettes/        # Sous-app recettes → montée dans le portail sur /recettes
+│   │   ├── src/app/home/      #   page d'accueil ; src/app/admin/ ; src/app/core/{models,services,utils}
+│   │   └── server/            #   backend co-localisé (register + ensureSchema), voir doc ci-dessous
+│   └── appli-recettes/        # Sous-app recettes → montée dans le portail sur /recettes (pas encore alignée)
 ├── libs/
 │   ├── shared/ui/             # Composants graphiques partagés
 │   └── portail-core/
@@ -41,6 +43,18 @@ worganic-monorepo/
 ├── data/                      # Données JSON, config, users
 └── version.json               # Version locale courante { "version": "BX.XXX" }
 ```
+
+### Sous-applications : contrat & portabilité
+
+Le portail gère le système transverse (users, groupes, métiers, catalogue
+d'apps, thème, config générale, déploiement) ; chaque sous-application
+(`apps/appli-<nom>`) est une unité quasi autonome — même structure de dossier,
+admin propre, config propre, sous-design scopé — reliée au portail uniquement
+via des points de contrat explicites (tokens DI, `registerChild` pour l'admin,
+`upsertCatalogEntry` pour le catalogue `portal_apps`). Contrat complet et état
+d'avancement par sous-application : voir `docs/architecture-sous-applications.md`.
+`appli-agenda` est la première à suivre ce contrat ; `appli-recettes` et
+`apps/projets` restent à aligner.
 
 ### Commandes clés
 ```bash

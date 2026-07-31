@@ -15169,6 +15169,45 @@
       "prompt": "je voudrais que tu rajoute dans la zone admin/application, la gestion des utilisateurs /admin/users. Ainsi toutes la gestion du portail, dois ce passé dans le même menu. Modifi le nom du menu admin/applications etn admin/portail. Regarde ce qui à été fait dans l'appli @portail-exemple\\ pour la gestion des users et rajoute les mêmes otpions, gestion des métiers et des groupe pour un user",
       "startedAt": "2026-07-31T08:00:00.000Z",
       "completedAt": "2026-07-31T08:29:05.000Z"
+    },
+    {
+      "id": "mod-590",
+      "version": "B-0.337",
+      "date": "2026-07-31T09:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "server",
+        "system"
+      ],
+      "features": "portail:agenda,portail:admin,system:architecture",
+      "title": "Contrat d'architecture sous-applications + pilote appli-agenda",
+      "description": "Pose le contrat d'architecture séparant le portail (users/groupes/métiers/catalogue d'apps/thème/config générale — transverse) des sous-applications (quasi autonomes, même structure de dossier, admin propre, config propre, sous-design scopé). Généralise 2 mécanismes existants : AdminTabsRegistryService.registerChild() accumule désormais les onglets par id au lieu de les remplacer (bug latent — un 2e appelant écrasait le 1er) ; server/modules/portal-apps.js expose upsertCatalogEntry(pool, entry) pour qu'une sous-application insère elle-même sa ligne portal_apps plutôt que d'être connue par son nom dans SEED_APPS. Applique le contrat complet en pilote sur appli-agenda : restructuration de dossier (environments/ -> src/environments/, models|services|utils -> src/app/core/{...}, home-agenda/ -> home/), découplage de l'environment (suppression de l'import relatif vers apps/portail/src/app/runtime-env, injection du token API_DATA_URL dans project.service.ts), nouvel onglet admin propre à l'agenda (src/app/admin/, provide-agenda-admin-tab.ts), backend déménagé de server/modules/appli-agenda.js vers apps/appli-agenda/server/index.js (avec sa propre entrée de catalogue auto-enregistrée), et sortie du correctif CSS natif select/input du bridge global styles-sous-apps.scss vers le style scopé du composant. Documenté dans docs/architecture-sous-applications.md ; appli-recettes et apps/projets restent à aligner dans un prompt de suivi.",
+      "files": [
+        "libs/portail-core/data-access/src/lib/admin-tabs-registry.service.ts",
+        "server/modules/portal-apps.js",
+        "server/server-data.js",
+        "apps/appli-agenda/src/environments/environment.ts",
+        "apps/appli-agenda/src/app/core/services/project.service.ts",
+        "apps/appli-agenda/src/app/core/models/project.model.ts",
+        "apps/appli-agenda/src/app/core/utils/*.ts",
+        "apps/appli-agenda/src/app/home/*",
+        "apps/appli-agenda/src/app/admin/admin-agenda.component.ts",
+        "apps/appli-agenda/src/app/admin/provide-agenda-admin-tab.ts",
+        "apps/appli-agenda/server/index.js",
+        "apps/portail/src/app/app.config.ts",
+        "apps/portail/src/styles-sous-apps.scss",
+        "docs/architecture-sous-applications.md",
+        "CLAUDE.md",
+        "tests/fonctions/connecte/agenda/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je voudrais que tu reflechisse et me propose une solution pour séparé le plus possible le portail aux sous application. Le portail doit géré le système en lui même : user, groupes, metiers, liste des applications, design (couleur, thème), logs, config général, deploiement et tous le reste lié à des sous applications (projets, documents, agenda, recette etc. Le portails doit géré l'ensemble du système et les sous app doivent être le plus indépendamment possible et ce raccroché aux données du portails pour certaine data comme les users, le design général (css), groupe, métiers etc. On doit pouvoir quasiement prendre un dossier avec la sous appli et la mettre dans un autres portails sans problème. [...] Chaque sous appli devra avoir le même type de fonctionnement, même structure de dossier et même nom pour les éléments que l'on retrouve dans toutes les sous appli, exemple l'admin, le sous design, page d'accueil etc.",
+      "startedAt": "2026-07-31T08:35:00.000Z",
+      "completedAt": "2026-07-31T09:00:00.000Z"
     }
   ]
 }

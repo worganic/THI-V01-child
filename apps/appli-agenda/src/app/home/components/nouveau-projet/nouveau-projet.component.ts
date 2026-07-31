@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Project, User, RiskLevel, ProjectMetier } from '../../../../models/project.model';
+import { Project, User, RiskLevel, ProjectMetier } from '../../../core/models/project.model';
 import { HelpHintComponent } from '../help-hint/help-hint.component';
-import { metierBadgeClass } from '../../../../utils/metier-colors';
-import { computeDateEndEstimated } from '../../../../utils/date-rules';
+import { metierBadgeClass } from '../../../core/utils/metier-colors';
+import { computeDateEndEstimated } from '../../../core/utils/date-rules';
 
 export interface ProjectFormPayload {
   code: string;

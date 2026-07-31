@@ -73,30 +73,10 @@
     @import 'bootstrap/scss/bootstrap';
 }
 
-// ── 3. Champs de formulaire natifs de l'agenda ───────────────────────────────
-//
-// Les templates de l'agenda utilisent des <select>/<input>/<textarea> nus, sans
-// classe (voir liste-projets, nouveau-projet, indisponibilites, task-modal,
-// planning-agenda) : ils n'ont jamais eu de background/color propres, donc le
-// navigateur retombait sur son rendu par défaut (fond blanc, texte noir), au
-// lieu de suivre le thème du portail. Scopé sur `.agenda-page-layout` (racine
-// de HomeAgendaComponent) pour ne pas affecter les autres écrans.
-.agenda-page-layout {
-    input:not([type="checkbox"]):not([type="radio"]),
-    select,
-    textarea {
-        background-color: var(--surface);
-        color: var(--text-dark);
-    }
-
-    // Sans ça, la liste déroulante elle-même (rendue par l'OS) reste blanche
-    // même quand le <select> qui l'ouvre est stylé en sombre.
-    select {
-        color-scheme: light;
-    }
-}
-
-.dark .agenda-page-layout select,
-.pink .agenda-page-layout select {
-    color-scheme: dark;
-}
+// Note : le correctif des champs de formulaire natifs (select/input/textarea)
+// spécifique à l'agenda a été déplacé dans le style scopé de son propre
+// composant (apps/appli-agenda/src/app/home/home-agenda.component.scss) —
+// contrat "sous-application", voir docs/architecture-sous-applications.md.
+// Les variables de la section 1 ci-dessus restent partagées avec recettes
+// pour l'instant (état transitoire, à revisiter quand recettes migrera à son
+// tour vers le même contrat).

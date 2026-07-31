@@ -67,24 +67,43 @@ const SCHEMA = [
 
 // Sous-applications du monorepo (apps/*), insérées au premier démarrage.
 // `projets` est une application Angular autonome (port 4203) : URL absolue.
-// `appli-agenda` et `appli-recettes` sont montées dans le portail lui-même
-// (routes chargées à la demande, voir apps/portail/src/app/base-routes.ts) :
-// route interne, donc pas de port ni de transfert de session à prévoir.
+// `appli-recettes` est montée dans le portail lui-même (route chargée à la
+// demande, voir apps/portail/src/app/base-routes.ts) : route interne, donc
+// pas de port ni de transfert de session à prévoir.
+// `appli-agenda` ne figure plus ici : elle porte sa propre entrée de
+// catalogue (voir apps/appli-agenda/server/index.js, CATALOG_ENTRY +
+// upsertCatalogEntry) — contrat "sous-application", voir
+// docs/architecture-sous-applications.md. Recettes/projets seront alignés de
+// la même façon dans un prompt suivant ; en attendant, ils restent seedés ici.
 const SEED_APPS = [
     { code: 'projets',        nom: 'Projets',  description: 'Éditeur de projets et de documentation',  url_path: 'http://localhost:4203', icone: 'folder_open',     ordre: 1 },
-    { code: 'appli-agenda',   nom: 'Agenda',   description: 'Planification des projets et des tâches', url_path: '/agenda',              icone: 'calendar_month',  ordre: 2 },
     { code: 'appli-recettes', nom: 'Recettes', description: 'Cahiers de recette et campagnes de test', url_path: '/recettes',            icone: 'restaurant_menu', ordre: 3 },
 ];
 
 // Corrections d'URL rejouées à chaque démarrage : les bases amorcées avant
-// l'intégration de l'agenda et des recettes pointaient sur des ports dédiés
-// (4204/4205) qui n'ont jamais existé — ces deux applications vivent désormais
-// dans le portail. Ciblé sur l'ancienne valeur exacte : une URL modifiée à la
-// main dans Admin › Applications n'est jamais écrasée.
+// l'intégration des recettes pointaient sur un port dédié (4205) qui n'a
+// jamais existé — cette application vit désormais dans le portail. Ciblé sur
+// l'ancienne valeur exacte : une URL modifiée à la main dans Admin › Portail
+// n'est jamais écrasée.
 const URL_MIGRATIONS = [
-    { code: 'appli-agenda',   from: 'http://localhost:4204', to: '/agenda' },
     { code: 'appli-recettes', from: 'http://localhost:4205', to: '/recettes' },
 ];
+
+/**
+ * Insère l'entrée de catalogue d'une sous-application si son `code` n'existe
+ * pas encore (jamais d'écrasement d'une entrée déjà présente, potentiellement
+ * modifiée à la main dans Admin › Portail). Permet à chaque sous-application
+ * de porter sa propre entrée `portal_apps` depuis son propre module serveur,
+ * plutôt que d'être connue par son nom dans `SEED_APPS` ci-dessus — voir
+ * docs/architecture-sous-applications.md.
+ */
+async function upsertCatalogEntry(pool, entry) {
+    await pool.query(
+        `INSERT IGNORE INTO portal_apps (code, nom, description, url_path, icone, ordre)
+         VALUES (?,?,?,?,?,?)`,
+        [entry.code, entry.nom, entry.description, entry.url_path, entry.icone, entry.ordre]
+    );
+}
 
 /**
  * Crée les tables du portail si besoin, ajoute users.metier_id et amorce les
@@ -502,4 +521,4 @@ function register(app, { pool, getSessionUser }) {
     console.log('[Portal] Routes /api/portal/* montées');
 }
 
-module.exports = { register, ensureSchema };
+module.exports = { register, ensureSchema, upsertCatalogEntry };

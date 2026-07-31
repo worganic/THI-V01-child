@@ -2,8 +2,8 @@ import { Component, OnInit, NgZone, ChangeDetectorRef, inject } from '@angular/c
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { ProjectService } from '../../services/project.service';
-import { Project, User, ProjectTask, DayAgendaSlot, PlanningViewMode, TaskHistoryEntry, UnavailabilityPeriod, CreateUnavailabilityPayload, CreateProjectPayload, UpdateProjectPayload, CreateTaskPayload, UpdateTaskPayload, ProjectMetier } from '../../models/project.model';
+import { ProjectService } from '../core/services/project.service';
+import { Project, User, ProjectTask, DayAgendaSlot, PlanningViewMode, TaskHistoryEntry, UnavailabilityPeriod, CreateUnavailabilityPayload, CreateProjectPayload, UpdateProjectPayload, CreateTaskPayload, UpdateTaskPayload, ProjectMetier } from '../core/models/project.model';
 import { NouveauProjetComponent, MetierAssignmentAutoSavePayload } from './components/nouveau-projet/nouveau-projet.component';
 import { ListeProjetsComponent } from './components/liste-projets/liste-projets.component';
 import { PlanningAgendaComponent } from './components/planning-agenda/planning-agenda.component';
@@ -11,8 +11,8 @@ import { ProjectStatsComponent } from './components/project-stats/project-stats.
 import { ChargeInterProjetsComponent } from './components/charge-inter-projets/charge-inter-projets.component';
 import { IndisponibilitesComponent } from './components/indisponibilites/indisponibilites.component';
 import { AideAgendaComponent } from './components/aide-agenda/aide-agenda.component';
-import { isHoliday, isDateAllowed, TODAY_ISO, PlanningRules } from '../../utils/date-rules';
-import { recomputeTaskSchedule } from '../../utils/task-progress';
+import { isHoliday, isDateAllowed, TODAY_ISO, PlanningRules } from '../core/utils/date-rules';
+import { recomputeTaskSchedule } from '../core/utils/task-progress';
 
 type RangeOption = { label: string; kind: 'days' | 'months'; amount: number };
 

@@ -48,6 +48,26 @@ $border-color: var(--border-color);
     gap: 24px;
   }
 
+  // Les templates de l'agenda utilisent des <select>/<input>/<textarea> nus, sans
+  // classe (liste-projets, nouveau-projet, indisponibilites, task-modal,
+  // planning-agenda) : sans background/color propres, le navigateur retombe sur
+  // son rendu par défaut (fond blanc, texte noir) au lieu de suivre le thème du
+  // portail. Scopé au style de ce composant (avant : règle globale dans
+  // apps/portail/src/styles-sous-apps.scss — déplacée ici car spécifique à
+  // l'agenda, voir docs/architecture-sous-applications.md).
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    background-color: var(--surface);
+    color: var(--text-dark);
+  }
+
+  // Sans ça, la liste déroulante elle-même (rendue par l'OS) reste blanche
+  // même quand le <select> qui l'ouvre est stylé en sombre.
+  select {
+    color-scheme: light;
+  }
+
   // Panne serveur réelle (distincte du mode démo silencieux d'origine) : bandeau ambre persistant
   // tant que ProjectService.apiIssue$ signale un dernier appel non abouti.
   .api-issue-banner {
@@ -145,4 +165,9 @@ $border-color: var(--border-color);
       }
     }
   }
+}
+
+.dark .agenda-page-layout select,
+.pink .agenda-page-layout select {
+  color-scheme: dark;
 }

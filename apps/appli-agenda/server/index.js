@@ -1,6 +1,11 @@
 /**
- * Worganic — Module Agenda : projets, tâches et indisponibilités de la
- * sous-application `apps/appli-agenda` (montée dans le portail sur /agenda).
+ * Worganic — Backend de la sous-application `apps/appli-agenda` (montée dans
+ * le portail sur /agenda) : projets, tâches et indisponibilités.
+ *
+ * Co-localisé avec le frontend (apps/appli-agenda/) plutôt que dans
+ * server/modules/ : c'est le contrat "sous-application" (voir
+ * docs/architecture-sous-applications.md) — tout ce qui compose l'agenda vit
+ * dans ce seul dossier, portable tel quel vers un autre portail.
  *
  * Données en MySQL (tables agenda_*) : ce sont des données transverses,
  * partagées entre tous les utilisateurs du portail (voir CLAUDE.md).
@@ -8,12 +13,22 @@
  * Les utilisateurs, groupes et métiers ne sont PAS dupliqués ici : ils sont
  * projetés depuis les tables du portail (`users`, `portal_groupes`,
  * `portal_user_groupes`, `portal_metiers`) au format attendu par les modèles
- * de l'agenda (voir apps/appli-agenda/src/models/project.model.ts), qui
- * identifient les développeurs par un entier — d'où la colonne technique
+ * de l'agenda (voir apps/appli-agenda/src/app/core/models/project.model.ts),
+ * qui identifient les développeurs par un entier — d'où la colonne technique
  * `users.num_id` (auto-incrément) ajoutée au démarrage.
  *
- * Montage : require('./modules/appli-agenda').register(app, { pool, getSessionUser })
+ * Montage : require('../apps/appli-agenda/server').register(app, { pool, getSessionUser })
  */
+
+const { upsertCatalogEntry } = require('../../../server/modules/portal-apps');
+
+// Entrée de catalogue `portal_apps` propre à l'agenda (voir upsertCatalogEntry
+// ci-dessous) : ce module n'a plus besoin d'être connu par son nom dans
+// server/modules/portal-apps.js pour apparaître dans le menu des applications.
+const CATALOG_ENTRY = {
+    code: 'appli-agenda', nom: 'Agenda', description: 'Planification des projets et des tâches',
+    url_path: '/agenda', icone: 'calendar_month', ordre: 2
+};
 
 const SCHEMA = [
     `CREATE TABLE IF NOT EXISTS agenda_projects (
@@ -95,6 +110,7 @@ async function ensureSchema(pool) {
             if (e.errno !== 1060) throw e; // 1060 = colonne déjà présente
         }
         for (const stmt of SCHEMA) await pool.query(stmt);
+        await upsertCatalogEntry(pool, CATALOG_ENTRY);
     } catch (e) {
         console.error('[Agenda] Erreur init schéma:', e.message);
     }

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../../utils/local-cache';
+import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../core/utils/local-cache';
 
 /**
  * Zone d'aide générale, en bas de page : récapitule à quoi sert chaque zone de l'agenda et les

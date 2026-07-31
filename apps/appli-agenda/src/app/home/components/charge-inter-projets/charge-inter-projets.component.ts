@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HelpHintComponent } from '../help-hint/help-hint.component';
-import { Project, User, DayAgendaSlot } from '../../../../models/project.model';
-import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../../utils/local-cache';
+import { Project, User, DayAgendaSlot } from '../../../core/models/project.model';
+import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../core/utils/local-cache';
 
 interface DevDayLoad {
   taskCount: number;

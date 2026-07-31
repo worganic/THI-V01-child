@@ -2,8 +2,8 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HelpHintComponent } from '../help-hint/help-hint.component';
 import { FormsModule } from '@angular/forms';
-import { User, UnavailabilityPeriod, CreateUnavailabilityPayload } from '../../../../models/project.model';
-import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../../utils/local-cache';
+import { User, UnavailabilityPeriod, CreateUnavailabilityPayload } from '../../../core/models/project.model';
+import { loadFromLocalStorage, saveToLocalStorage, userScopedKey } from '../../../core/utils/local-cache';
 import { DateRangePickerComponent } from '../date-range-picker/date-range-picker.component';
 
 /**

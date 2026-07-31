@@ -3555,7 +3555,7 @@ function getSessionUser(req) {
 require('./modules/portal-apps').register(app, { pool, getSessionUser });
 
 // Routes des sous-applications montées dans le portail (/agenda et /recettes)
-require('./modules/appli-agenda').register(app, { pool, getSessionUser });
+require('../apps/appli-agenda/server').register(app, { pool, getSessionUser });
 require('./modules/appli-recettes').register(app, { pool, getSessionUser });
 
 app.post('/api/auth/register', async (req, res) => {
@@ -12184,7 +12184,7 @@ app.listen(PORT, async () => {
     await loadUsersFromDB();
     await loadSessionsFromDB();
     await require('./modules/portal-apps').ensureSchema(pool);
-    await require('./modules/appli-agenda').ensureSchema(pool);
+    await require('../apps/appli-agenda/server').ensureSchema(pool);
     await require('./modules/appli-recettes').ensureSchema(pool);
     await pool.query(`
         CREATE TABLE IF NOT EXISTS ticket_comments (

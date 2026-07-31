@@ -1,10 +1,10 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Project, ProjectTask, SubTask, User, TaskStatus, TaskExtension, TaskHistoryEntry, UnavailabilityPeriod, CreateTaskPayload, UpdateTaskPayload } from '../../../../models/project.model';
-import { dateRejectionReason, isDateAllowed, TODAY_ISO } from '../../../../utils/date-rules';
-import { recomputeTaskSchedule } from '../../../../utils/task-progress';
-import { taskAccentColor } from '../../../../utils/task-colors';
+import { Project, ProjectTask, SubTask, User, TaskStatus, TaskExtension, TaskHistoryEntry, UnavailabilityPeriod, CreateTaskPayload, UpdateTaskPayload } from '../../../core/models/project.model';
+import { dateRejectionReason, isDateAllowed, TODAY_ISO } from '../../../core/utils/date-rules';
+import { recomputeTaskSchedule } from '../../../core/utils/task-progress';
+import { taskAccentColor } from '../../../core/utils/task-colors';
 
 export interface TaskStats {
   totalHalfDays: number;
