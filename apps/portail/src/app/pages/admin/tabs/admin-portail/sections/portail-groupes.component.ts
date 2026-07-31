@@ -5,7 +5,7 @@ import {
   PortalApp,
   PortalGroupe,
   PortalGroupeApp,
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 /**
  * Admin › Applications › Groupes — CRUD des groupes et rattachement

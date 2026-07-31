@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { FormQuestion, FormEntry } from '@worganic/portail-core/data-access';
+import { FormQuestion, FormEntry } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-form-execution-popup',

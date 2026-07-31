@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, forkJoin, of } from 'rxjs';
 import { catchError, map, retry, tap } from 'rxjs/operators';
-import { API_DATA_URL } from '@worganic/portail-core/data-access';
+import { API_DATA_URL } from '@portail/core-data-access';
 import { environment } from '../../../environments/environment';
 import { Project, User, CreateProjectPayload, UpdateProjectPayload, ProjectTask, CreateTaskPayload, UpdateTaskPayload, UnavailabilityPeriod, CreateUnavailabilityPayload, ProjectMetier } from '../models/project.model';
 import { calculateProjectsProgress } from '../utils/project-progress';
@@ -35,7 +35,7 @@ export class ProjectService {
     'Content-Type': 'application/json'
   });
 
-  // Base de l'API portail injectée via API_DATA_URL (token DI, @worganic/portail-core/data-access)
+  // Base de l'API portail injectée via API_DATA_URL (token DI, @portail/core-data-access)
   // plutôt que lue depuis le runtime-env du portail : l'agenda n'a plus besoin de connaître
   // l'app qui l'héberge, seulement le contrat de token partagé par toutes les sous-applis.
   private readonly apiUrl = this.apiDataUrl + (environment.serviceAgenda || '/agenda');

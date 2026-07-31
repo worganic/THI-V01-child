@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
 import { environment } from '../../../../../environments/environment';
 
 const API = environment.apiDataUrl;

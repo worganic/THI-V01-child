@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { ProjetCollabService } from '@worganic/portail-core/data-access';
+import { ProjetCollabService } from '@portail/core-data-access';
 
 export interface IncomingChange {
   fileId: string;

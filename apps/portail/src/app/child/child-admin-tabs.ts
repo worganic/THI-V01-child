@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, Provider } from '@angular/core';
-import { AdminTabsRegistryService, AdminTabDef } from '@worganic/portail-core/data-access';
+import { AdminTabsRegistryService, AdminTabDef } from '@portail/core-data-access';
 import { AdminProjetsComponent } from '../pages/admin/tabs/admin-projets/admin-projets.component';
 import { AdminToolsComponent } from '../pages/admin/tabs/admin-tools/admin-tools.component';
 import { AdminTestsComponent } from '../pages/admin/tabs/admin-tests/admin-tests.component';

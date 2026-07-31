@@ -4,7 +4,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService, ConfigService, API_DATA_URL } from '@worganic/portail-core/data-access';
+import { AuthService, ConfigService, API_DATA_URL } from '@portail/core-data-access';
 import html2canvas from 'html2canvas';
 
 type TicketType = 'bug' | 'amelioration' | 'ui' | 'contenu' | 'performance';

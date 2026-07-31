@@ -1,10 +1,10 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { MegaOutilsService, TrelloCard, MegaOutilInstance } from '@worganic/portail-core/data-access';
-import { TrelloBoardComponent } from '@worganic/shared/ui';
-import { WorgMiniHeaderComponent } from '@worganic/shared/ui';
-import { TRELLO_STATUS_LABELS, TRELLO_PRIORITY_COLORS, TRELLO_PRIORITY_LABELS } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, TrelloCard, MegaOutilInstance } from '@portail/core-data-access';
+import { TrelloBoardComponent } from '@portail/shared-ui';
+import { WorgMiniHeaderComponent } from '@portail/shared-ui';
+import { TRELLO_STATUS_LABELS, TRELLO_PRIORITY_COLORS, TRELLO_PRIORITY_LABELS } from '@portail/core-data-access';
 
 interface BoardItem {
   instance: MegaOutilInstance;

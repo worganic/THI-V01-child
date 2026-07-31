@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MegaOutilsService, MegaOutilInstance, TrelloCard, TrelloStatus } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, MegaOutilInstance, TrelloCard, TrelloStatus } from '@portail/core-data-access';
 import { TrelloBoardComponent } from './trello-board.component';
 
 interface AdminBoard {

@@ -7,7 +7,7 @@ import {
   PortalUser,
   METIER_COLORS,
   metierBadgeClass,
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 /**
  * Admin › Applications › Métiers — CRUD des métiers.

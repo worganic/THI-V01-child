@@ -4,15 +4,15 @@ import { stripStyleMarkdown, mergeCleanIntoStyled, normalizeStyledMarkdown, cssT
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict, fenceBody as sharedFenceBody, PromptLaunchContext } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, MegaOutilInstance, MegaOutilType, MegaOutilsService, MockupConnection, TrelloCard, TrelloStatus, TrelloPriority, TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, ArrayGrid, ArrayCell, ArrayCellStyle, FormQuestion, FormEntry, MaterializedMoPreview, ChartPoint, AgendaOutilService, AiExecuteService, ConfigService, SaveConflict, fenceBody as sharedFenceBody, PromptLaunchContext } from '@portail/core-data-access';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 import { marked } from 'marked';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
-import { ProjetCollabService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
+import { ProjetCollabService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
 import { ImagePropsPanelComponent, ImageProps } from '../image-props-panel/image-props-panel.component';
 import { SlashCommandMenuComponent, SlashCommand } from '../slash-command-menu/slash-command-menu.component';
-import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, FormBoardComponent, ChartBoardComponent } from '@worganic/shared/ui';
+import { TrelloBoardComponent, MockupBoardComponent, ArrayBoardComponent, TitleCreateDialogComponent, PromptBoardComponent, FormBoardComponent, ChartBoardComponent } from '@portail/shared-ui';
 import { ProjetIncomingChangeService, IncomingChange } from '../../services/projet-incoming-change.service';
 import { mergeThreeWay } from '../../utils/compute-tri-diff';
 

@@ -5,8 +5,8 @@ import {
   MegaOutilsService, MegaOutilInstance,
   MockupElement, MockupConnection, MockupDiagramPosition,
   MOCKUP_ELEMENT_LABELS
-} from '@worganic/portail-core/data-access';
-import { MockupBoardComponent, WorgMiniHeaderComponent } from '@worganic/shared/ui';
+} from '@portail/core-data-access';
+import { MockupBoardComponent, WorgMiniHeaderComponent } from '@portail/shared-ui';
 
 interface MockupItem {
   instance: MegaOutilInstance;

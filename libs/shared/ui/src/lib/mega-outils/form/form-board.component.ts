@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormQuestion, FormEntry } from '@worganic/portail-core/data-access';
+import { FormQuestion, FormEntry } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-form-board',

@@ -1,5 +1,5 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { API_DATA_URL } from '@worganic/portail-core/data-access';
+import { API_DATA_URL } from '@portail/core-data-access';
 
 export interface HelpEntry {
   id: number;

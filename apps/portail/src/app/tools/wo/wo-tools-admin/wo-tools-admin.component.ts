@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@portail/core-data-access';
 
 interface ToolEntry {
   id: string;

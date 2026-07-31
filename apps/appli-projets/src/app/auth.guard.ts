@@ -1,6 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
 import { runtimeEnv } from './runtime-env';
 
 export const authGuard: CanActivateFn = async () => {

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, signal, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService, ConfigService, AppConfigService, API_DATA_URL } from '@worganic/portail-core/data-access';
+import { AuthService, ConfigService, AppConfigService, API_DATA_URL } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-footer',

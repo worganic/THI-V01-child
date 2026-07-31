@@ -5,12 +5,12 @@ import {
 import { Subscription, Subject, takeUntil } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MegaOutilInstance } from '@worganic/portail-core/data-access';
+import { MegaOutilInstance } from '@portail/core-data-access';
 import {
   TestsOutilService,
   TestSuite, TestCategory, TestCase, TestRun, TestRunResult,
   TestCriticality, TestStatus, TestGenerationSource
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 type TabId = 'cahier' | 'execution' | 'resultats';
 

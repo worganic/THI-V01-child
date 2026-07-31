@@ -1,7 +1,7 @@
 import { Component, inject } from '@angular/core';
 
-import { ConfigService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
 import { TchatIaComponent } from '../../tchat-ia/tchat-ia.component';
 
 @Component({

@@ -4,8 +4,8 @@ import {
 
 import { FormsModule } from '@angular/forms';
 import { CahierRecetteService } from './cahier-recette.service';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
 import type {
   TestCase, TestCategory, Campaign, TestRun, TestResult,
   ContextVariable, TestTemplate, RunScope, Environment,

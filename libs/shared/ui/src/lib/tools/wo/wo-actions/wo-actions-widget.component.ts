@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@portail/core-data-access';
 import { WoActionsComponent } from './wo-actions.component';
 
 @Component({

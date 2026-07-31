@@ -2,10 +2,10 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { ThemeService } from '@worganic/portail-core/data-access';
-import { DbStatusService } from '@worganic/portail-core/data-access';
-import { AppConfigService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
+import { ThemeService } from '@portail/core-data-access';
+import { DbStatusService } from '@portail/core-data-access';
+import { AppConfigService } from '@portail/core-data-access';
 import { navigateToProjets } from '../../../shared/utils/navigate-to-projets';
 
 @Component({

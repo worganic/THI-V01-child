@@ -1,7 +1,7 @@
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ConfigService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
 import { WoActionsComponent } from '../wo-actions/wo-actions.component';
 import { WoIaLogsComponent } from '../wo-ia-logs/wo-ia-logs.component';
 import { WoHistoryComponent } from '../wo-history/wo-history.component';

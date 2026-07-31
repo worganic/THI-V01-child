@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, Output, computed, inject, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProjetCollabService, SectionPublishedEvent } from '@worganic/portail-core/data-access';
+import { ProjetCollabService, SectionPublishedEvent } from '@portail/core-data-access';
 import { ProjetIncomingChangeService } from '../../services/projet-incoming-change.service';
 
 /**

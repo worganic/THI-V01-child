@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TrelloAdminComponent, MockupAdminComponent, ArrayAdminComponent, PromptAdminComponent } from '@worganic/shared/ui';
+import { TrelloAdminComponent, MockupAdminComponent, ArrayAdminComponent, PromptAdminComponent } from '@portail/shared-ui';
 import { navigateToProjets } from '../../../../shared/utils/navigate-to-projets';
 
 type MoType = 'trello' | 'mockup' | 'array' | 'prompt' | 'form';

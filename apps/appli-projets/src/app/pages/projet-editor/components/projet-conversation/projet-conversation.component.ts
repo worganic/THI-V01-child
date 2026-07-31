@@ -12,12 +12,12 @@ import {
   detectMoFences, parseChoiceForm, fenceBody, parseChartPoints,
   parseArrayTable, parseTrelloPreview, parseAgendaPreview, MO_FENCE_CHAT_INSTRUCTION,
   flattenFolders,
-} from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
-import { DocumentService } from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
+import { DocumentService } from '@portail/core-data-access';
 import { ProjetAiEditService } from '../../services/projet-ai-edit.service';
-import { ChartBoardComponent } from '@worganic/shared/ui';
+import { ChartBoardComponent } from '@portail/shared-ui';
 import { FormExecutionPopupComponent } from '../form-execution-popup/form-execution-popup.component';
 
 const MAX_CADRAGE_WAVES = 5;

@@ -1,2 +1,2 @@
-export { HelpService } from '@worganic/shared/ui';
-export type { HelpEntry } from '@worganic/shared/ui';
+export { HelpService } from '@portail/shared-ui';
+export type { HelpEntry } from '@portail/shared-ui';

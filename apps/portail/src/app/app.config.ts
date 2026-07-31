@@ -5,8 +5,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { runtimeEnv } from './runtime-env';
-import { authInterceptor } from '@worganic/portail-core/auth';
-import { DbStatusService, AppConfigService, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING } from '@worganic/portail-core/data-access';
+import { authInterceptor } from '@portail/core-auth';
+import { DbStatusService, AppConfigService, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING } from '@portail/core-data-access';
 import { CHILD_ADMIN_TABS_PROVIDERS } from './child/child-admin-tabs';
 import { provideAgendaAdminTab } from '../../../appli-agenda/src/app/admin/provide-agenda-admin-tab';
 import { provideRecettesAdminTab } from '../../../appli-recettes/src/app/admin/provide-recettes-admin-tab';

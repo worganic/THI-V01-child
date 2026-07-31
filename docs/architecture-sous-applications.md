@@ -126,7 +126,7 @@ await require('../apps/appli-agenda/server').ensureSchema(pool);
 ### 5. Découplage des tokens DI
 
 Les services de la sous-appli injectent `API_DATA_URL`
-(`@worganic/portail-core/data-access`) pour la base de l'API, plutôt que de
+(`@portail/core-data-access`) pour la base de l'API, plutôt que de
 lire un `environment.serviceVal` construit depuis le `runtime-env` du
 portail. Aucun `import` par chemin relatif vers `apps/portail/` ne doit
 subsister dans le code d'une sous-appli.

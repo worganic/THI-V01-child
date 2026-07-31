@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { API_DATA_URL } from '@worganic/portail-core/data-access';
+import { API_DATA_URL } from '@portail/core-data-access';
 
 interface HistoryEntry {
   id: string;

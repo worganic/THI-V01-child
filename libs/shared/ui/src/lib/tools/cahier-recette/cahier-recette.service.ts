@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService, ConfigService, API_DATA_URL, API_EXECUTOR_URL } from '@worganic/portail-core/data-access';
+import { AuthService, ConfigService, API_DATA_URL, API_EXECUTOR_URL } from '@portail/core-data-access';
 import type {
   TestCase, TestCategory, Campaign, TestRun, ContextVariable,
   TestTemplate, RunProgress, TestResult, RunDiff, PageTestSuggestion

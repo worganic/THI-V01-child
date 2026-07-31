@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, computed, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { AuthService, AppConfigService, ConfigService, PortalAppsService, PortalApp } from '@worganic/portail-core/data-access';
+import { AuthService, AppConfigService, ConfigService, PortalAppsService, PortalApp } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-nav',

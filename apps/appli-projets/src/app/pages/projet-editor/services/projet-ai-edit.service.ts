@@ -1,6 +1,6 @@
 import { Injectable, NgZone, inject, signal } from '@angular/core';
 import { Subject } from 'rxjs';
-import { ProjectFilesService, API_EXECUTOR_URL, API_DATA_URL, AuthService } from '@worganic/portail-core/data-access';
+import { ProjectFilesService, API_EXECUTOR_URL, API_DATA_URL, AuthService } from '@portail/core-data-access';
 import { sanitizeIaContent } from '../utils/sanitize-ia-content';
 
 export interface PendingAiEdit {

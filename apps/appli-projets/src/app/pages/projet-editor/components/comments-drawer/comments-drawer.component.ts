@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, signa
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ProjectCommentsService, ProjectComment } from '../../services/project-comments.service';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-comments-drawer',

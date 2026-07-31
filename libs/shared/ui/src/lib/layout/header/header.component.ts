@@ -6,7 +6,7 @@ import { Subject, interval, takeUntil } from 'rxjs';
 import {
   ThemeService, AuthService, ConfigService, LayoutService, AppConfigService,
   ProviderOption, API_DATA_URL
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 @Component({
   selector: 'app-header',

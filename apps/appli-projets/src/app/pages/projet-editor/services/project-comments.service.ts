@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
-import { AuthService, API_DATA_URL } from '@worganic/portail-core/data-access';
+import { AuthService, API_DATA_URL } from '@portail/core-data-access';
 
 export interface ProjectComment {
   id: string;

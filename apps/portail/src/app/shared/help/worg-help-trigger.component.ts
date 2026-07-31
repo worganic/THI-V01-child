@@ -1,1 +1,1 @@
-export { WorgHelpTriggerComponent } from '@worganic/shared/ui';
+export { WorgHelpTriggerComponent } from '@portail/shared-ui';

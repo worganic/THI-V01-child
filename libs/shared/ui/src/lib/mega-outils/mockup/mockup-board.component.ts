@@ -9,7 +9,7 @@ import {
   MegaOutilsService, ProjetCollabService,
   MockupElement, MockupComment, MockupElementType,
   MOCKUP_ELEMENT_LABELS, MOCKUP_ELEMENT_DEFAULTS
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 type ActiveTool = MockupElementType | 'cursor';
 type ResizeHandle = 'se' | 'e' | 's';

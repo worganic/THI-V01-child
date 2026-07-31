@@ -1,6 +1,6 @@
 # Admin › Méga-outils — Fonctions métier
 
-Composants : `AdminMegaOutilsComponent` (portail) + `TrelloAdminComponent`, `MockupAdminComponent`, `ArrayAdminComponent`, `PromptAdminComponent` (`@worganic/shared/ui`)
+Composants : `AdminMegaOutilsComponent` (portail) + `TrelloAdminComponent`, `MockupAdminComponent`, `ArrayAdminComponent`, `PromptAdminComponent` (`@portail/shared-ui`)
 Vue : gestion globale des méga-outils (Trello, Mockup, Tableau, Prompt), toutes instances tous projets confondus. Form est listé pour information mais n'a pas d'instances partagées (voir `2-1-7-10`).
 
 ---
@@ -84,7 +84,7 @@ Vue : gestion globale des méga-outils (Trello, Mockup, Tableau, Prompt), toutes
 
 ## `2-1-7-9` — [modification] Prompt : configuration des prompts en onglets par mode
 
-- **Composant :** `PromptAdminComponent` (`@worganic/shared/ui`), dans le panneau Prompt de l'accordéon `2-1-7-8`
+- **Composant :** `PromptAdminComponent` (`@portail/shared-ui`), dans le panneau Prompt de l'accordéon `2-1-7-8`
 - Les 3 blocs de configuration (Prompt système de base, méta-prompts du Workflow guidé, format structuré du Mode tchat), auparavant empilés et toujours visibles, sont regroupés dans un accordéon « Configuration des prompts » (signal `configExpanded`, replié par défaut)
 - Une fois déplié : barre d'onglets par mode — **Base** / **Mode guidé** / **Mode tchat** (signal `activeConfigTab`), un seul panneau affiché à la fois
 - Chaque panneau garde ses actions Sauvegarder/Réinitialiser inchangées (voir `POST /api/mega-outils/prompt/config`, `DELETE .../workflow`, `DELETE .../chat`)

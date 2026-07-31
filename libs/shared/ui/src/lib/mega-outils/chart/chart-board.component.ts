@@ -1,6 +1,6 @@
 import { Component, Input, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChartPoint } from '@worganic/portail-core/data-access';
+import { ChartPoint } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-chart-board',

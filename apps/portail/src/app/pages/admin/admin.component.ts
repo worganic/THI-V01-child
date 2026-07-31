@@ -2,7 +2,7 @@ import { Component, OnInit, signal, computed, inject, DestroyRef } from '@angula
 import { CommonModule, NgComponentOutlet } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
 import { AdminDeploymentsComponent } from './tabs/admin-deployments/admin-deployments.component';
 import { AdminThemeComponent } from './tabs/admin-theme/admin-theme.component';
 import { ConfigComponent } from '../user/config/config.component';
@@ -10,7 +10,7 @@ import { AdminMegaOutilsComponent } from './tabs/admin-mega-outils/admin-mega-ou
 import { AdminMemoComponent } from './tabs/admin-memo/admin-memo.component';
 import { AdminIaComponent } from './tabs/admin-ia/admin-ia.component';
 import { AdminPortailComponent } from './tabs/admin-portail/admin-portail.component';
-import { AdminTabsRegistryService, AdminTabDef, AdminTabGroup } from '@worganic/portail-core/data-access';
+import { AdminTabsRegistryService, AdminTabDef, AdminTabGroup } from '@portail/core-data-access';
 
 const BASE_ADMIN_TABS: AdminTabDef[] = [
   // Système : users/groupes/métiers/catalogue d'apps — voir AdminPortailComponent, qui

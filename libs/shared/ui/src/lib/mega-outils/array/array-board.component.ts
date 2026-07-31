@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, signal, inje
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { MegaOutilsService, ProjetCollabService, ArrayCell, ArrayGrid, ArrayCellStyle } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, ProjetCollabService, ArrayCell, ArrayGrid, ArrayCellStyle } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-array-board',

@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, Provider } from '@angular/core';
-import { AdminTabsRegistryService, AdminTabDef } from '@worganic/portail-core/data-access';
+import { AdminTabsRegistryService, AdminTabDef } from '@portail/core-data-access';
 import { AdminRecettesComponent } from './admin-recettes.component';
 
 const RECETTES_ADMIN_TAB: AdminTabDef = {

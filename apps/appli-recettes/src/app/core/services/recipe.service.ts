@@ -21,7 +21,7 @@ import {
   RecentSessionEntry,
   evaluateQualityGate
 } from '../models/recipe.model';
-import { API_DATA_URL } from '@worganic/portail-core/data-access';
+import { API_DATA_URL } from '@portail/core-data-access';
 import { environment } from '../../../environments/environment';
 
 interface BackendResponse<T> {
@@ -130,7 +130,7 @@ interface BackendTaskResponsePayload {
 })
 export class RecipeService {
   private http = inject(HttpClient);
-  // Base de l'API portail injectée via API_DATA_URL (token DI, @worganic/portail-core/data-access)
+  // Base de l'API portail injectée via API_DATA_URL (token DI, @portail/core-data-access)
   // plutôt que lue depuis le runtime-env du portail : les recettes n'ont plus besoin de
   // connaître l'app qui les héberge, seulement le contrat de token partagé par toutes les
   // sous-applis (voir docs/architecture-sous-applications.md).

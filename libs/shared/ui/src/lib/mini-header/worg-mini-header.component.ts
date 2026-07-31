@@ -1,5 +1,5 @@
 import { Component, Input, effect } from '@angular/core';
-import { AuthService, ThemeService, AppConfigService } from '@worganic/portail-core/data-access';
+import { AuthService, ThemeService, AppConfigService } from '@portail/core-data-access';
 
 @Component({
   selector: 'worg-mini-header',

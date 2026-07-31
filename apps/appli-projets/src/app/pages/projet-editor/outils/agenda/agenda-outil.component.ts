@@ -4,7 +4,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AgendaOutilService, AgendaEvent } from '@worganic/portail-core/data-access';
+import { AgendaOutilService, AgendaEvent } from '@portail/core-data-access';
 
 type TabId = 'semaine' | 'mois' | 'annee';
 

@@ -4,8 +4,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
 import { environment } from '../../../environments/environment';
 import html2canvas from 'html2canvas';
 

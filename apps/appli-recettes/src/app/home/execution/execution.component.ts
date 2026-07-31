@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RecipeService } from '../../core/services/recipe.service'; 
 import { RecipeBook, RecipeSection, RecipeTest, TestSession, TestCampaign, TestEnvironment, RecipeUser, TestResponse, TestStatus } from '../../core/models/recipe.model'; 
 import { firstValueFrom } from 'rxjs'; 
-import { AuthService } from '@worganic/portail-core/data-access'; 
+import { AuthService } from '@portail/core-data-access'; 
 import { CaptureModalComponent } from './capture-modal/capture-modal.component'; 
 
 export interface ExecutableTestContext {   

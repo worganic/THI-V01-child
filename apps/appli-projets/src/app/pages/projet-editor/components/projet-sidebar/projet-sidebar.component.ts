@@ -2,11 +2,11 @@ import { Component, Input, Output, EventEmitter, signal, OnChanges, SimpleChange
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { FileNode, ProjectFilesService, FtpNodeSyncStatus, Outil } from '@worganic/portail-core/data-access';
-import { ConversationService } from '@worganic/portail-core/data-access';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
-import { ProjetCollabService, LockInfo } from '@worganic/portail-core/data-access';
-import { AgendaOutilService, AgendaEvent } from '@worganic/portail-core/data-access';
+import { FileNode, ProjectFilesService, FtpNodeSyncStatus, Outil } from '@portail/core-data-access';
+import { ConversationService } from '@portail/core-data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
+import { ProjetCollabService, LockInfo } from '@portail/core-data-access';
+import { AgendaOutilService, AgendaEvent } from '@portail/core-data-access';
 
 interface ContextMenu { x: number; y: number; node: FileNode | null; }
 interface InlineInput { type: 'rename' | 'new-file' | 'new-folder'; nodeId: string | null; parentId: string | null; }

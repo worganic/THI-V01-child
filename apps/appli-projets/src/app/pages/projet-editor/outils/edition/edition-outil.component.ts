@@ -1,5 +1,5 @@
 import { Component, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { FileNode, MegaOutilInstance, MaterializedMoPreview, PromptLaunchContext } from '@worganic/portail-core/data-access';
+import { FileNode, MegaOutilInstance, MaterializedMoPreview, PromptLaunchContext } from '@portail/core-data-access';
 import {
   ProjetEditorZoneComponent,
   FileSaveEvent,

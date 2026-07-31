@@ -1,11 +1,11 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WorgHelpTriggerComponent } from '@worganic/shared/ui';
+import { WorgHelpTriggerComponent } from '@portail/shared-ui';
 import { Router } from '@angular/router';
-import { ProjectService, Project } from '@worganic/portail-core/data-access';
-import { ProjectFilesService } from '@worganic/portail-core/data-access';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
+import { ProjectService, Project } from '@portail/core-data-access';
+import { ProjectFilesService } from '@portail/core-data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
 import { ProjetSearchComponent } from './projet-search/projet-search.component';
 
 @Component({

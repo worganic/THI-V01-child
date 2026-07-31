@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgClass } from '@angular/common';
-import { AuthService, API_DATA_URL } from '@worganic/portail-core/data-access';
+import { AuthService, API_DATA_URL } from '@portail/core-data-access';
 import {
   PortalAppsService,
   PortalApp,
@@ -13,7 +13,7 @@ import {
   PortalUserApp,
   PortalDroit,
   metierBadgeClass,
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 /**
  * Admin › Portail › Utilisateurs — un seul endroit pour tout ce qui concerne

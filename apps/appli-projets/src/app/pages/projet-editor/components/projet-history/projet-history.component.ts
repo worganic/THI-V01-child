@@ -1,8 +1,8 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ProjetCollabService, CollabHistoryEntry } from '@worganic/portail-core/data-access';
-import { AuthService, WoActionHistoryService, WoRestoredContent } from '@worganic/portail-core/data-access';
-import { ProjectFilesService, ContentVersionMeta, TrashEntry } from '@worganic/portail-core/data-access';
+import { ProjetCollabService, CollabHistoryEntry } from '@portail/core-data-access';
+import { AuthService, WoActionHistoryService, WoRestoredContent } from '@portail/core-data-access';
+import { ProjectFilesService, ContentVersionMeta, TrashEntry } from '@portail/core-data-access';
 
 export interface DisplayHistoryEntry extends CollabHistoryEntry {
   pendingState?: 'editing' | 'saving';

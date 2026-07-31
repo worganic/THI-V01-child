@@ -6,7 +6,7 @@ import {
   PortalAppsService,
   PortalApp,
   PortalGroupeAvecApps,
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 import { navigateToApp } from '../../../shared/utils/navigate-to-projets';
 
 /**

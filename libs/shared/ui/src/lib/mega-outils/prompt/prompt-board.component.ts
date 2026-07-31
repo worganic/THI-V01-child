@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, signal, OnInit, OnDestroy, inje
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { MegaOutilsService, ProjetCollabService, PromptExecution } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, ProjetCollabService, PromptExecution } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-prompt-board',

@@ -3,7 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgClass, DatePipe } from '@angular/common';
-import { AuthService, ConfigService } from '@worganic/portail-core/data-access';
+import { AuthService, ConfigService } from '@portail/core-data-access';
 import { environment } from '../../../../../environments/environment';
 
 const API = environment.apiDataUrl;

@@ -5,9 +5,9 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ConfigService } from '@worganic/portail-core/data-access';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@portail/core-data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
 import { environment } from '../../../../environments/environment';
 
 const API = environment.apiDataUrl;

@@ -18,7 +18,7 @@ Aucun output (l'outil gère ses données de manière autonome via `AgendaOutilSe
 
 ## Dépendances
 
-- `AgendaOutilService` (`@worganic/portail-core/data-access`) — CRUD événements
+- `AgendaOutilService` (`@portail/core-data-access`) — CRUD événements
 - `AgendaEvent` (interface) — modèle de données événement
 
 ## Règles Métier

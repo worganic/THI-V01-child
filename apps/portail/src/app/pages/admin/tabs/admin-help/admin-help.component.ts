@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, signal, SimpleChanges, OnChanges } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
 import { WorgHelpTriggerComponent } from '../../../../shared/help/worg-help-trigger.component';
 import { environment } from '../../../../../environments/environment';
 

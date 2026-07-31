@@ -2,8 +2,8 @@ import { Component, OnInit, signal, inject } from '@angular/core';
 import { NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-import { AuthService, WoActionHistoryService, API_DATA_URL } from '@worganic/portail-core/data-access';
-import { MarkdownEditorComponent } from '@worganic/shared/ui';
+import { AuthService, WoActionHistoryService, API_DATA_URL } from '@portail/core-data-access';
+import { MarkdownEditorComponent } from '@portail/shared-ui';
 
 export interface DocCategory {
   id: string;

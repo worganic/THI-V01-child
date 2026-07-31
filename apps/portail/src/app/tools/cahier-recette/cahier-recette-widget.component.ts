@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CahierRecetteService } from './cahier-recette.service';
 import { CahierRecetteComponent } from './cahier-recette.component';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
 import type { TestCase, PageTestSuggestion } from './cahier-recette.types';
 
 type WidgetPhase = 'idle' | 'popup' | 'analyzing';

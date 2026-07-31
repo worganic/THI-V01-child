@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { WoToolsAdminComponent } from '@worganic/shared/ui';
+import { WoToolsAdminComponent } from '@portail/shared-ui';
 
 @Component({
   selector: 'app-admin-tools',

@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { MegaOutilsService, MegaOutilInstance, PromptExecution } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, MegaOutilInstance, PromptExecution } from '@portail/core-data-access';
 
 interface AdminPrompt {
   instance: MegaOutilInstance;

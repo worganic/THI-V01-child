@@ -1,9 +1,9 @@
 import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { WoActionHistoryService, WoActionEntry } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { WoActionHistoryService, WoActionEntry } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
 
 @Component({
     selector: 'app-wo-action-history',

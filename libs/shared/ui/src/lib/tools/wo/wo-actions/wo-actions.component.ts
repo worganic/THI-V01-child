@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-import { ConfigService, AuthService, AgentService, AgentRun, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL } from '@worganic/portail-core/data-access';
+import { ConfigService, AuthService, AgentService, AgentRun, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL } from '@portail/core-data-access';
 import { ActionReportModalComponent } from '../../action-report-modal/action-report-modal.component';
 
 @Component({

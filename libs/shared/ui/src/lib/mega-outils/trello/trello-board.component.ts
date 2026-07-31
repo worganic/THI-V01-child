@@ -6,7 +6,7 @@ import {
   MegaOutilsService, ProjetCollabService,
   TrelloCard, TrelloStatus, TrelloPriority,
   TRELLO_STATUS_LABELS, TRELLO_PRIORITY_LABELS, TRELLO_PRIORITY_COLORS
-} from '@worganic/portail-core/data-access';
+} from '@portail/core-data-access';
 
 type FormMode = 'add' | 'edit';
 

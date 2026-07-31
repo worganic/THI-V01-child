@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PortalAppsService, PortalApp } from '@worganic/portail-core/data-access';
+import { PortalAppsService, PortalApp } from '@portail/core-data-access';
 
 /** Admin › Applications › Applications — CRUD des sous-applications du portail. */
 @Component({

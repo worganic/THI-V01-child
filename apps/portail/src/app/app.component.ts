@@ -2,18 +2,18 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 
-import { ThemeService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
-import { LayoutService } from '@worganic/portail-core/data-access';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
+import { ThemeService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
+import { LayoutService } from '@portail/core-data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
 
 import {
   HeaderComponent, FooterComponent,
   TicketWidgetComponent, CahierRecetteWidgetComponent,
   WoTchatIaWidgetComponent, WoActionsWidgetComponent,
   WoToolsPanelComponent
-} from '@worganic/shared/ui';
+} from '@portail/shared-ui';
 import { navigateToApp } from './shared/utils/navigate-to-projets';
 import { WorgHelpDrawerComponent } from './shared/help/worg-help-drawer.component';
 

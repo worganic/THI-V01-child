@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '@worganic/portail-core/auth';
-import { guestGuard } from '@worganic/portail-core/auth';
+import { authGuard } from '@portail/core-auth';
+import { guestGuard } from '@portail/core-auth';
 
 export const BASE_ROUTES: Routes = [
   {

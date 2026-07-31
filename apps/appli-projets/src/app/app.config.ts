@@ -11,8 +11,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { appRoutes } from './app.routes';
 import { runtimeEnv } from './runtime-env';
-import { authInterceptor } from '@worganic/portail-core/auth';
-import { API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING, ThemeService, AppConfigService } from '@worganic/portail-core/data-access';
+import { authInterceptor } from '@portail/core-auth';
+import { API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING, ThemeService, AppConfigService } from '@portail/core-data-access';
 
 export const appConfig: ApplicationConfig = {
   providers: [

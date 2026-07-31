@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MegaOutilsService, MegaOutilInstance, ArrayGrid } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, MegaOutilInstance, ArrayGrid } from '@portail/core-data-access';
 import { ArrayBoardComponent } from './array-board.component';
 
 interface AdminArray {

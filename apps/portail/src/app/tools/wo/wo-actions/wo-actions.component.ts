@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router, RouterModule } from '@angular/router';
-import { ConfigService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { AgentService, AgentRun } from '@worganic/portail-core/data-access';
+import { ConfigService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
+import { AgentService, AgentRun } from '@portail/core-data-access';
 import { ActionReportModalComponent } from '../../action-report-modal/action-report-modal.component';
 import { environment } from '../../../../environments/environment';
 

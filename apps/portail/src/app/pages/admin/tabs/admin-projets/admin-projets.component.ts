@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { navigateToProjets } from '../../../../shared/utils/navigate-to-projets';
-import { ProjectService, Project } from '@worganic/portail-core/data-access';
-import { ProjectFilesService } from '@worganic/portail-core/data-access';
-import { AuthService } from '@worganic/portail-core/data-access';
-import { WoActionHistoryService } from '@worganic/portail-core/data-access';
-import { DocumentService, DocCategory, DocDocument } from '@worganic/portail-core/data-access';
-import { ConfigService } from '@worganic/portail-core/data-access';
+import { ProjectService, Project } from '@portail/core-data-access';
+import { ProjectFilesService } from '@portail/core-data-access';
+import { AuthService } from '@portail/core-data-access';
+import { WoActionHistoryService } from '@portail/core-data-access';
+import { DocumentService, DocCategory, DocDocument } from '@portail/core-data-access';
+import { ConfigService } from '@portail/core-data-access';
 
 @Component({
   selector: 'app-admin-projets',

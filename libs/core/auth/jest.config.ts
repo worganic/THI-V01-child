@@ -1,8 +1,8 @@
 export default {
-  displayName: 'portail-core-data-access',
+  displayName: 'core-auth',
   preset: '../../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../../coverage/libs/portail-core/data-access',
+  coverageDirectory: '../../../coverage/libs/core/auth',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

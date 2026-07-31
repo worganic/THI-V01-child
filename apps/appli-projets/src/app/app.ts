@@ -5,8 +5,8 @@ import {
   TicketWidgetComponent, CahierRecetteWidgetComponent,
   WoTchatIaWidgetComponent, WoActionsWidgetComponent,
   WoToolsPanelComponent
-} from '@worganic/shared/ui';
-import { LayoutService } from '@worganic/portail-core/data-access';
+} from '@portail/shared-ui';
+import { LayoutService } from '@portail/core-data-access';
 import { runtimeEnv } from './runtime-env';
 
 @Component({

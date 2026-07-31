@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MegaOutilsService, MegaOutilInstance, MockupElement } from '@worganic/portail-core/data-access';
+import { MegaOutilsService, MegaOutilInstance, MockupElement } from '@portail/core-data-access';
 import { MockupBoardComponent } from './mockup-board.component';
 
 interface AdminMockup {

@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { trigger, style, animate, transition } from '@angular/animations';
 import { HelpService } from './help.service';
-import { AuthService } from '@worganic/portail-core/data-access';
+import { AuthService } from '@portail/core-data-access';
 
 @Component({
     selector: 'worg-help-drawer',

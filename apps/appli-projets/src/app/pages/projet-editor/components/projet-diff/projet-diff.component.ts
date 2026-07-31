@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CollabHistoryEntry } from '@worganic/portail-core/data-access';
+import { CollabHistoryEntry } from '@portail/core-data-access';
 import { TriDiffRow, computeTriDiff } from '../../utils/compute-tri-diff';
 
 export type { TriDiffRow };
