@@ -12,8 +12,9 @@ import {
   PortalUserGroupe,
   PortalUserApp,
   PortalDroit,
-  metierBadgeClass,
 } from '@portail/core-data-access';
+// Rendu Tailwind des teintes de métier : propre à ce portail, voir metier-badge.ts.
+import { metierBadgeClass } from '../../../../../shared/metier-badge';
 
 /**
  * Admin › Portail › Utilisateurs — un seul endroit pour tout ce qui concerne

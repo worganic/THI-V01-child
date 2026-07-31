@@ -5,9 +5,9 @@ import {
   PortalAppsService,
   PortalMetier,
   PortalUser,
-  METIER_COLORS,
-  metierBadgeClass,
 } from '@portail/core-data-access';
+// Rendu Tailwind des teintes de métier : propre à ce portail, voir metier-badge.ts.
+import { METIER_COLORS, metierBadgeClass } from '../../../../../shared/metier-badge';
 
 /**
  * Admin › Applications › Métiers — CRUD des métiers.

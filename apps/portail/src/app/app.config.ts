@@ -5,7 +5,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { runtimeEnv } from './runtime-env';
-import { authInterceptor } from '@portail/core-auth';
+import { authInterceptor, providePortalSession } from '@portail/core-auth';
 import { DbStatusService, AppConfigService, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, APP_BRANDING } from '@portail/core-data-access';
 import { CHILD_ADMIN_TABS_PROVIDERS } from './child/child-admin-tabs';
 import { provideAgendaAdminTab } from '../../../appli-agenda/src/app/admin/provide-agenda-admin-tab';
@@ -26,6 +26,9 @@ export const appConfig: ApplicationConfig = {
         copyrightYear: runtimeEnv.copyrightYear,
       }
     },
+    // Vue normalisée de la session pour les sous-applications : elles injectent
+    // PORTAL_SESSION, jamais AuthService dont la forme diffère d'un portail à l'autre.
+    ...providePortalSession(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
