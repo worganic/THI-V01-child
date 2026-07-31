@@ -23,6 +23,14 @@ export const API_EXECUTOR_URL = new InjectionToken<string>('API_EXECUTOR_URL');
 /** Base d'URL du service d'agent IA. Chaîne vide si non exposé. */
 export const API_AGENT_URL = new InjectionToken<string>('API_AGENT_URL');
 
+/**
+ * En-têtes de traçabilité que le portail hôte exige sur chaque appel à son API
+ * (identifiants d'appelant, de transaction…). Objet vide si le portail n'en
+ * impose aucun. Passe par un token pour qu'une lib n'ait jamais à lire le
+ * fichier d'environnement d'une application.
+ */
+export const API_TRACE_HEADERS = new InjectionToken<Record<string, string>>('API_TRACE_HEADERS');
+
 export interface AppBranding {
   appName: string;
   copyrightHolder: string;
