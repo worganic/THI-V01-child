@@ -1,0 +1,18 @@
+// Style scopé + variables du contrat de tokens (libs/shared/ui/src/portal-tokens.scss),
+// jamais de classe Bootstrap ni Tailwind : c'est ce qui rend ce composant
+// identique dans les deux portails et portable tel quel.
+// Voir docs/architecture-sous-applications.md, section « Design ».
+.admin-agenda {
+  h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--heading-color);
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+}
