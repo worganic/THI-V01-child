@@ -339,7 +339,8 @@ function register(app, { pool, getSessionUser }) {
         if (!requireUser(req, res)) return;
         try {
             const [rows] = await pool.query(
-                `SELECT u.id, u.username, u.email, u.role, u.metier_id, m.nom AS metier_nom, m.color AS metier_color
+                `SELECT u.id, u.username, u.email, u.role, u.metier_id, m.nom AS metier_nom, m.color AS metier_color,
+                        u.created_at, u.last_login
                  FROM users u
                  LEFT JOIN portal_metiers m ON m.id = u.metier_id
                  ORDER BY u.username`
@@ -348,7 +349,9 @@ function register(app, { pool, getSessionUser }) {
                 id: r.id, username: r.username, email: r.email, role: r.role,
                 metierId: r.metier_id ?? null,
                 metierNom: r.metier_nom ?? null,
-                metierColor: r.metier_color ?? null
+                metierColor: r.metier_color ?? null,
+                createdAt: r.created_at ? r.created_at.toISOString() : null,
+                lastLogin: r.last_login ? r.last_login.toISOString() : null
             })));
         } catch (e) { fail(res, 'get users', e); }
     });

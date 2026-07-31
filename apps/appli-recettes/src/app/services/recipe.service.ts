@@ -130,12 +130,14 @@ interface BackendTaskResponsePayload {
 export class RecipeService {
   private http = inject(HttpClient);
 
+  // L'API d'origine exigeait des en-têtes IDUSER/IDAPPEL/IDTRANSACTION : ils ont été retirés
+  // lors de l'intégration au portail. Ils n'y ont aucun sens (l'authentification passe par le
+  // token Bearer ajouté par l'intercepteur) et, surtout, ils ne figurent pas dans les
+  // `allowedHeaders` du CORS de server-data.js : le préflight répondait donc sans les
+  // autoriser et le navigateur bloquait TOUS les appels des recettes.
   private get headers(): HttpHeaders {
     return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'IDUSER': environment.IDUSER || 'SYSTEM',
-      'IDAPPEL': environment.IDAPPEL || 'FRONT',
-      'IDTRANSACTION': environment.IDTRANSACTION || 'TX-' + Date.now()
+      'Content-Type': 'application/json'
     });
   }
 

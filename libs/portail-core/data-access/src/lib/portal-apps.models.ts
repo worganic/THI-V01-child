@@ -49,6 +49,8 @@ export interface PortalUser {
   metierId: number | null;
   metierNom: string | null;
   metierColor: string | null;
+  createdAt: string | null;
+  lastLogin: string | null;
 }
 
 export type PortalDroit = 'lecture' | 'ecriture' | 'admin';

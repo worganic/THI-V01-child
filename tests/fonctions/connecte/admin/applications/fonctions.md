@@ -1,19 +1,20 @@
-# Admin › Applications — Fonctions métier
+# Admin › Portail — Fonctions métier
 
-Route : `/admin/applications`  
-Composant : `AdminPortailComponent` (sous-sections Applications / Groupes / Métiers / Droits)  
+Route : `/admin/portail` (ancien `/admin/applications`, renommé — fusionné avec l'ancien onglet séparé `/admin/users`)  
+Composant : `AdminPortailComponent` (sous-sections Utilisateurs / Applications / Groupes / Métiers)  
 Accès : admin uniquement
 
-Cet onglet pilote le contenu de la page d'accueil (`2-6-*`) : quelles
-sous-applications existent, comment elles sont regroupées et qui y a accès.
-Toutes les données sont en MySQL (tables `portal_*`).
+Regroupe toute l'administration du portail : les comptes utilisateurs (compte,
+métier, groupes, accès directs) et ce qui pilote le contenu de la page
+d'accueil (`2-6-*`) : quelles sous-applications existent et comment elles sont
+regroupées. Toutes les données sont en MySQL (tables `portal_*` + `users`).
 
 ---
 
-## `2-1-9-1` — Navigation par sous-onglets
+## `2-1-9-1` — [modification] Navigation par sous-onglets
 
-- **Sous-onglets** : Applications, Groupes, Métiers, Droits
-- **Sous-onglet par défaut** : Applications
+- **Sous-onglets** : Utilisateurs, Applications, Groupes, Métiers
+- **Sous-onglet par défaut** : Utilisateurs
 - **Rendu conditionnel** : une seule section montée à la fois, rechargée à chaque affichage
 - **Priorité:** majeur
 - **Composants:** `apps/portail/src/app/pages/admin/tabs/admin-portail/admin-portail.component.ts`, `apps/portail/src/app/pages/admin/tabs/admin-portail/admin-portail.component.html`, `apps/portail/src/app/pages/admin/admin.component.ts`
@@ -57,16 +58,25 @@ Toutes les données sont en MySQL (tables `portal_*`).
 
 ---
 
-## `2-1-9-5` — Droits par utilisateur
+## `2-1-9-5` — [modification] Comptes utilisateurs (compte, métier, groupes, accès directs)
+
+Fusionne l'ancien onglet séparé « Admin › Utilisateurs » (`2-1-4-*`, composant
+`AdminUsersComponent`, supprimé) avec l'ancienne section « Droits » : un seul
+endroit pour tout ce qui concerne un utilisateur.
 
 - **Liste des utilisateurs** : GET `/api/portal/users` — nom, rôle, nombre de groupes, tag métier
+- **Recherche** : champ texte, filtre la liste par username/email (insensible à la casse)
 - **Sélection** : clic sur un utilisateur → panneau de détail à droite
+- **Panneau Compte** : email, rôle, date de création, dernière connexion (lecture) ; boutons crayon/corbeille → édition (username, email, rôle, mot de passe optionnel) ou suppression (confirmation Oui/Non en ligne)
+- **Création de compte** : bouton « Nouveau » → formulaire (username, email, mot de passe requis, rôle) → POST `/api/auth/register` puis PUT `/api/auth/users/{id}` `{ role: 'admin' }` si rôle admin
+- **Édition de compte** : PUT `/api/auth/users/{id}`
+- **Suppression de compte** : DELETE `/api/auth/users/{id}`
 - **Métier** : sélecteur → PUT `/api/portal/users/{id}/metier` `{ metierId }` (valeur vide = aucun métier)
 - **Groupes** : case à cocher par groupe → POST `/api/portal/user-groupes` `{ userId, groupeId, linked }`
 - **Accès directs** : case à cocher par application → POST `/api/portal/user-apps` ; quand l'accès est actif, un sélecteur permet de choisir le niveau (`lecture` / `ecriture` / `admin`)
 - **Cas admin** : rappel affiché — un administrateur voit de toute façon tous les groupes actifs sur son accueil
 - **Priorité:** bloquant
-- **Composants:** `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-droits.component.ts`, `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-droits.component.html`, `server/modules/portal-apps.js`
+- **Composants:** `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts`, `apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html`, `libs/portail-core/data-access/src/lib/portal-apps.models.ts`, `server/modules/portal-apps.js`, `server/server-data.js`
 
 ---
 

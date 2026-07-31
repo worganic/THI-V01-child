@@ -1,0 +1,295 @@
+@if (error()) {
+  <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="flex items-center justify-center py-16">
+    <span class="material-symbols-outlined text-3xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+  </div>
+}
+
+@if (!loading()) {
+
+  <!-- Formulaire de création de compte -->
+  @if (showNewUserModal()) {
+    <div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-primary/30 dark:border-primary/20 overflow-hidden">
+      <div class="px-5 py-3 bg-light-primary/5 dark:bg-primary/5 border-b border-light-primary/20 dark:border-primary/10 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm text-light-primary dark:text-primary">person_add</span>
+          <span class="text-sm font-semibold text-light-text dark:text-white">Nouvel utilisateur</span>
+        </div>
+        <button (click)="closeNewUserModal()"
+                class="p-1.5 rounded-lg hover:bg-light-surface dark:hover:bg-white/5 text-light-text-muted dark:text-white/40 transition-all">
+          <span class="material-symbols-outlined text-sm">close</span>
+        </button>
+      </div>
+      <div class="px-5 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Nom d'utilisateur *</label>
+          <input type="text" [(ngModel)]="newUsername" placeholder="john_doe"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Email *</label>
+          <input type="email" [(ngModel)]="newEmail" placeholder="john&#64;exemple.fr"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Rôle</label>
+          <select [(ngModel)]="newRole"
+                  class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 dark:[color-scheme:dark] border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors">
+            @for (role of roles; track role) { <option [value]="role">{{ role }}</option> }
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Mot de passe *</label>
+          <input type="password" [(ngModel)]="newPassword" placeholder="Min. 6 caractères"
+                 class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+        </div>
+      </div>
+      <div class="px-5 py-3 border-t border-light-border dark:border-white/10 flex justify-end gap-3">
+        <button (click)="closeNewUserModal()"
+                class="px-4 py-2 rounded-lg text-sm font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-all">
+          Annuler
+        </button>
+        <button (click)="createUser()" [disabled]="!newUsername.trim() || !newEmail.trim() || !newPassword || creatingUser()"
+                class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 disabled:opacity-50 shadow-sm shadow-light-primary/20 dark:shadow-primary/20">
+          @if (creatingUser()) { <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> }
+          @else { <span class="material-symbols-outlined text-base">person_add</span> }
+          Créer
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+
+    <!-- Liste des utilisateurs -->
+    <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+      <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between gap-2">
+        <span class="text-sm font-semibold text-light-text dark:text-white">Utilisateurs</span>
+        <button (click)="openNewUserModal()"
+                class="flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105">
+          <span class="material-symbols-outlined text-sm">person_add</span>
+          Nouveau
+        </button>
+      </div>
+      <div class="px-5 py-2.5 border-b border-light-border dark:border-white/10">
+        <input type="text" [ngModel]="searchQuery()" (ngModelChange)="searchQuery.set($event)" placeholder="Rechercher un utilisateur..."
+               class="w-full px-3 py-1.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-xs focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+      </div>
+      @if (filteredUsers().length === 0) {
+        <div class="text-center py-12 text-light-text-muted dark:text-white/40 text-sm">Aucun utilisateur</div>
+      } @else {
+        <div class="divide-y divide-light-border/50 dark:divide-white/5 max-h-[520px] overflow-y-auto">
+          @for (user of filteredUsers(); track user.id) {
+            <button (click)="selectUser(user.id)"
+                    class="w-full text-left px-5 py-3 flex items-center gap-3 transition-colors"
+                    [class]="selectedUserId() === user.id
+                      ? 'bg-light-primary/5 dark:bg-primary/5'
+                      : 'hover:bg-light-primary/5 dark:hover:bg-primary/5'">
+              <div class="w-7 h-7 rounded-full bg-light-primary/10 dark:bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <span class="text-[11px] font-bold text-light-primary dark:text-primary">{{ user.username[0].toUpperCase() }}</span>
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <span class="font-medium text-light-text dark:text-white truncate">{{ user.username }}</span>
+                  @if (user.role === 'admin') {
+                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">admin</span>
+                  }
+                </div>
+                <div class="text-[11px] text-light-text-muted dark:text-white/30">
+                  {{ countGroupes(user.id) }} groupe(s)
+                </div>
+              </div>
+              @if (user.metierNom) {
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border flex-shrink-0" [ngClass]="badgeClass(user.metierColor)">
+                  {{ user.metierNom }}
+                </span>
+              }
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Détail de l'utilisateur sélectionné -->
+    <div class="lg:col-span-2 space-y-4">
+
+      @if (!selectedUser()) {
+        <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 text-center py-12 text-light-text-muted dark:text-white/40 text-sm">
+          Sélectionne un utilisateur
+        </div>
+      } @else {
+
+        <!-- Compte -->
+        <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+          <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between gap-3">
+            <span class="text-sm font-semibold text-light-text dark:text-white">Compte</span>
+            @if (!editingAccount()) {
+              <div class="flex items-center gap-1">
+                <button (click)="openEditAccount()"
+                        class="p-1.5 rounded-lg hover:bg-light-primary/10 dark:hover:bg-primary/10 text-light-text-muted dark:text-white/40 hover:text-light-primary dark:hover:text-primary transition-all" title="Modifier">
+                  <span class="material-symbols-outlined text-sm">edit</span>
+                </button>
+                @if (deletingUserId() === selectedUser()!.id) {
+                  <span class="text-xs text-red-400">Confirmer ?</span>
+                  <button (click)="deleteUser(selectedUser()!.id)"
+                          class="px-2 py-1 rounded text-xs font-bold bg-red-500 text-white hover:bg-red-600 transition-all">Oui</button>
+                  <button (click)="cancelDeleteUser()"
+                          class="px-2 py-1 rounded text-xs font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 transition-all">Non</button>
+                } @else {
+                  <button (click)="confirmDeleteUser(selectedUser()!.id)"
+                          class="p-1.5 rounded-lg hover:bg-red-500/10 text-light-text-muted dark:text-white/40 hover:text-red-400 transition-all" title="Supprimer">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                  </button>
+                }
+              </div>
+            }
+          </div>
+
+          @if (editingAccount()) {
+            <div class="px-5 py-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Nom d'utilisateur</label>
+                <input type="text" [(ngModel)]="editUsername"
+                       class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Email</label>
+                <input type="email" [(ngModel)]="editEmail"
+                       class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Rôle</label>
+                <select [(ngModel)]="editRole"
+                        class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 dark:[color-scheme:dark] border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors">
+                  @for (role of roles; track role) { <option [value]="role">{{ role }}</option> }
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-light-text-muted dark:text-white/50 mb-1.5 uppercase tracking-wider">Nouveau mot de passe (optionnel)</label>
+                <input type="password" [(ngModel)]="editPassword" placeholder="••••••••"
+                       class="w-full px-3 py-2.5 rounded-lg bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors" />
+              </div>
+              <div class="md:col-span-2 flex justify-end gap-3">
+                <button (click)="closeEditAccount()"
+                        class="px-4 py-2 rounded-lg text-sm font-medium bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-all">
+                  Annuler
+                </button>
+                <button (click)="saveAccount()" [disabled]="savingAccount()"
+                        class="flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105 disabled:opacity-50">
+                  @if (savingAccount()) { <span class="material-symbols-outlined text-base animate-spin">progress_activity</span> }
+                  @else { <span class="material-symbols-outlined text-base">save</span> }
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="px-5 py-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div>
+                <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Email</div>
+                <div class="text-light-text dark:text-white truncate">{{ selectedUser()!.email }}</div>
+              </div>
+              <div>
+                <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Rôle</div>
+                <div class="text-light-text dark:text-white">{{ selectedUser()!.role }}</div>
+              </div>
+              <div>
+                <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Créé</div>
+                <div class="text-light-text-muted dark:text-white/50 text-xs">{{ formatDate(selectedUser()!.createdAt) }}</div>
+              </div>
+              <div>
+                <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Dernière connexion</div>
+                <div class="text-light-text-muted dark:text-white/50 text-xs">{{ formatDateTime(selectedUser()!.lastLogin) }}</div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Métier -->
+        <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+          <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between gap-3">
+            <div>
+              <span class="text-sm font-semibold text-light-text dark:text-white">Métier de {{ selectedUser()!.username }}</span>
+              <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">Information de profil — n'accorde aucun accès.</p>
+            </div>
+            <select [ngModel]="selectedUser()!.metierId ?? ''" (ngModelChange)="setMetier($event)"
+                    class="px-3 py-2 rounded-lg bg-light-surface dark:bg-white/5 dark:[color-scheme:dark] border border-light-border dark:border-white/10 text-light-text dark:text-white text-sm focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors">
+              <option value="">Aucun métier</option>
+              @for (m of metiers(); track m.id) { <option [value]="m.id">{{ m.nom }}</option> }
+            </select>
+          </div>
+        </div>
+
+        <!-- Groupes -->
+        <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+          <div class="px-5 py-3 border-b border-light-border dark:border-white/10">
+            <span class="text-sm font-semibold text-light-text dark:text-white">Groupes</span>
+            <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">
+              L'utilisateur voit sur sa page d'accueil toutes les applications des groupes cochés.
+              @if (selectedUser()!.role === 'admin') {
+                <span class="text-amber-500 dark:text-amber-400"> Un administrateur voit de toute façon tous les groupes actifs.</span>
+              }
+            </p>
+          </div>
+          @if (groupes().length === 0) {
+            <div class="text-center py-10 text-light-text-muted dark:text-white/40 text-sm">Aucun groupe déclaré</div>
+          } @else {
+            <div class="divide-y divide-light-border/50 dark:divide-white/5">
+              @for (groupe of groupes(); track groupe.id) {
+                <label class="px-5 py-3 flex items-center gap-3 cursor-pointer hover:bg-light-primary/5 dark:hover:bg-primary/5 transition-colors">
+                  <input type="checkbox" [checked]="isInGroupe(groupe.id)" (change)="toggleGroupe(groupe.id)"
+                         class="w-4 h-4 rounded accent-light-primary dark:accent-primary" />
+                  <span class="material-symbols-outlined text-base text-light-text-muted dark:text-white/30">category</span>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-medium text-light-text dark:text-white truncate">{{ groupe.nom }}</div>
+                    <div class="text-[11px] text-light-text-muted dark:text-white/30 truncate">{{ groupe.description }}</div>
+                  </div>
+                  @if (!groupe.isActive) {
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-light-surface dark:bg-white/5 text-light-text-muted dark:text-white/40 border border-light-border dark:border-white/10">Inactif</span>
+                  }
+                </label>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Accès directs à une application -->
+        <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+          <div class="px-5 py-3 border-b border-light-border dark:border-white/10">
+            <span class="text-sm font-semibold text-light-text dark:text-white">Accès directs aux applications</span>
+            <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">
+              Accès accordé individuellement, en plus des groupes, avec son niveau de droit.
+            </p>
+          </div>
+          @if (apps().length === 0) {
+            <div class="text-center py-10 text-light-text-muted dark:text-white/40 text-sm">Aucune application déclarée</div>
+          } @else {
+            <div class="divide-y divide-light-border/50 dark:divide-white/5">
+              @for (app of apps(); track app.id) {
+                <div class="px-5 py-3 flex items-center gap-3 hover:bg-light-primary/5 dark:hover:bg-primary/5 transition-colors">
+                  <input type="checkbox" [checked]="hasDirectApp(app.id)" (change)="toggleDirectApp(app.id)"
+                         class="w-4 h-4 rounded accent-light-primary dark:accent-primary cursor-pointer" />
+                  <span class="material-symbols-outlined text-base text-light-text-muted dark:text-white/30">{{ app.icone || 'apps' }}</span>
+                  <div class="min-w-0 flex-1">
+                    <div class="font-medium text-light-text dark:text-white truncate">{{ app.nom }}</div>
+                    <div class="text-[11px] font-mono text-light-text-muted dark:text-white/30 truncate">{{ app.code }}</div>
+                  </div>
+                  @if (hasDirectApp(app.id)) {
+                    <select [ngModel]="directDroits(app.id)" (ngModelChange)="setDroits(app.id, $event)"
+                            class="px-2 py-1.5 rounded-lg bg-light-surface dark:bg-white/5 dark:[color-scheme:dark] border border-light-border dark:border-white/10 text-light-text dark:text-white text-xs focus:outline-none focus:border-light-primary dark:focus:border-primary transition-colors">
+                      @for (d of droitsOptions; track d) { <option [value]="d">{{ d }}</option> }
+                    </select>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+
+      }
+    </div>
+
+  </div>
+}

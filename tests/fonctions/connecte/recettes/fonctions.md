@@ -23,7 +23,7 @@ page d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`)
 
 ---
 
-## `2-8-2` — Cahiers de recette et arborescence
+## `2-8-2` — [modification] Cahiers de recette et arborescence
 
 - **Liste des cahiers** : GET `/api/recettes/recipe_book/` avec vue globale (taux de réussite, nombre de tests, cahiers en cours, sessions du mois)
 - **CRUD cahier** : création / édition via POST `/api/recettes/recipe_book/` et `/update/`, suppression via POST `/del/`
@@ -35,7 +35,7 @@ page d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`)
 
 ---
 
-## `2-8-3` — Campagnes et exécution des sessions
+## `2-8-3` — [modification] Campagnes et exécution des sessions
 
 - **Campagnes** : liste, création et suppression via `/api/recettes/test_campaign/`
 - **Session de test** : choix du testeur (utilisateurs du portail via GET `/api/recettes/users/`), du titre, du périmètre et de l'environnement, puis déroulé test par test
@@ -68,11 +68,12 @@ page d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`)
 
 ---
 
-## `2-8-6` — Persistance et sécurité des routes
+## `2-8-6` — [modification] Persistance et sécurité des routes
 
 - **Stockage** : tables MySQL `recette_books`, `recette_categories`, `recette_applicatifs`, `recette_sections`, `recette_tests`, `recette_tasks`, `recette_campaigns`, `recette_sessions`, `recette_responses`, `recette_task_responses`
 - **Création automatique du schéma** : `ensureSchema` au démarrage du serveur, idempotent
 - **Verbes conservés** : GET liste (filtrable par colonne en paramètre), POST création, POST `update/` et `update2/`, POST `del/` — contrat de l'API d'origine, réimplémenté sur le portail
 - **Authentification** : toutes les routes `/api/recettes/*` exigent une session valide (401 sinon)
+- **En-têtes envoyés** : uniquement `Content-Type` et `Authorization` — tout en-tête personnalisé supplémentaire doit d'abord être ajouté aux `allowedHeaders` du CORS (`server/server-data.js`), sinon le navigateur bloque l'appel après le préflight
 - **Priorité:** bloquant
 - **Composants:** `server/modules/appli-recettes.js`, `server/server-data.js`, `server/init-db.js`

@@ -32,11 +32,8 @@
   </div>
 
   <!-- Contenu des onglets — base (liaisons @Output préservées) -->
-  @if (activeTab() === 'applications') {
+  @if (activeTab() === 'portail') {
     <app-admin-portail />
-  }
-  @if (activeTab() === 'users') {
-    <app-admin-users (count)="usersCount.set($event)" />
   }
   @if (activeTab() === 'deploiement') {
     <app-admin-deployments (versionStatusChange)="versionStatus.set($event)" />

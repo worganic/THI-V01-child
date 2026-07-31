@@ -15060,6 +15060,115 @@
       "prompt": "le système de gestion des applications fonctionne, mais tu dois maintenant intégré et adapté au portail l'application agenda et recette",
       "startedAt": "2026-07-30T18:30:00.000Z",
       "completedAt": "2026-07-30T17:22:05.467Z"
+    },
+    {
+      "id": "mod-587",
+      "version": "B-0.336",
+      "date": "2026-07-30T17:35:50.031Z",
+      "type": "config",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "system"
+      ],
+      "features": "system:workflow",
+      "title": "Suivi en direct des étapes de dev + choix tests IA/manuel",
+      "description": "Ajout d'une règle obligatoire dans CLAUDE.md formalisant le suivi en direct des étapes de développement via TaskCreate/TaskUpdate/TaskList (gabarit fixe de phases : Analyse, Implémentation, Vérification compilation, Tests, Documentation, Git workflow), avec capture du temps par étape (commande date) et renvoi vers /cost pour les tokens (pas d'outil natif de lecture en direct). À l'étape Tests, question AskUserQuestion Automatique (IA) / Manuel (utilisateur) obligatoire, qui remplace la question générique de validation fonctionnelle du workflow de fin de prompt si déjà tranchée.",
+      "files": [
+        "CLAUDE.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "propose moi une solution pour suivre en direct les étapes que tu suis lors d'un dev avec la liste de toutes les étapes prévus, celle en cours et terminé, le temps, le nombre de token utilisé. Lors de la dernière étape des tests, je veux que tu demande à l'utilisateur si les tests doivent être fait automatiquement par l'ia ou manuellement par l'utilisateur.",
+      "startedAt": "2026-07-30T17:35:50.031Z",
+      "completedAt": "2026-07-30T17:35:50.031Z"
+    },
+    {
+      "id": "mod-587",
+      "version": "B-0.336",
+      "date": "2026-07-30T19:37:54.210Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail",
+        "data",
+        "system"
+      ],
+      "features": "portail:agenda|recettes",
+      "title": "Agenda et Recettes : appels API bloqués par le CORS (en-têtes hérités)",
+      "description": "Les deux sous-apps envoyaient sur chaque requête les en-têtes IDUSER/IDAPPEL/IDTRANSACTION hérités de l'API Airbus d'origine. Ces en-têtes ne figurent pas dans les allowedHeaders du cors() de server-data.js : le préflight OPTIONS répondait 204 sans les autoriser, et le navigateur annulait ensuite systématiquement le GET. Symptôme : bandeaux « Métiers indisponibles côté serveur » et retour aux données de démo, alors que l'API répondait 200 en curl. Correctif : suppression de ces en-têtes (inutiles côté portail, l'authentification passant par le token Bearer de l'intercepteur) et des clés d'environnement associées. Ajout au passage d'un retry silencieux (1 tentative, 400ms) sur les appels de référence de l'agenda, et documentation du piège CORS dans CLAUDE.md.",
+      "files": [
+        "apps/appli-agenda/src/services/project.service.ts",
+        "apps/appli-agenda/environments/environment.ts",
+        "apps/appli-recettes/src/app/services/recipe.service.ts",
+        "apps/appli-recettes/environments/environment.ts",
+        "tests/fonctions/connecte/agenda/fonctions.md",
+        "tests/fonctions/connecte/recettes/fonctions.md",
+        "CLAUDE.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "l'application agenda m'indique 'Métiers indisponibles côté serveur — affichage des données précédentes.', ou sont les données actuellement, les tables lié à l'outil agenda ne sont elle pas dans la bdd ?",
+      "startedAt": "2026-07-30T19:35:00.000Z",
+      "completedAt": "2026-07-30T19:37:54.212Z"
+    },
+    {
+      "id": "mod-588",
+      "version": "B-0.336",
+      "date": "2026-07-30T19:46:01.653Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail",
+        "system"
+      ],
+      "features": "portail:agenda",
+      "title": "Agenda : champs de formulaire (select/input) en fond blanc",
+      "description": "Les templates de l'agenda utilisent des <select>/<input>/<textarea> nus, sans classe de couleur (liste-projets, nouveau-projet, indisponibilites, task-modal, planning-agenda) : faute de background/color définis, le navigateur retombait sur son rendu par défaut (fond blanc, texte noir) au lieu de suivre le thème du portail. Ajout d'une règle globale dans styles-sous-apps.scss, scopée sur .agenda-page-layout (racine de HomeAgendaComponent), fixant background-color/color sur --surface/--text-dark, plus color-scheme adapté par thème pour que la liste déroulante native du <select> suive aussi le mode sombre.",
+      "files": [
+        "apps/portail/src/styles-sous-apps.scss",
+        "tests/fonctions/connecte/agenda/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "dans l'outils agenda corrige les problèmes graphique (couleur) des form select et les input texte qui ne devrait pas être clair",
+      "startedAt": "2026-07-30T20:20:00.000Z",
+      "completedAt": "2026-07-30T19:46:01.655Z"
+    },
+    {
+      "id": "mod-589",
+      "version": "B-0.336",
+      "date": "2026-07-31T08:29:05.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "server",
+        "system"
+      ],
+      "features": "portail:admin,portail:header",
+      "title": "Fusion Admin › Applications et Admin › Utilisateurs en Admin › Portail",
+      "description": "L'onglet admin séparé « Utilisateurs » (AdminUsersComponent, CRUD de compte) est fusionné dans l'onglet « Applications », renommé « Portail » (/admin/portail), au sein d'une nouvelle sous-section « Utilisateurs » qui remplace l'ancienne section « Droits » : un seul endroit gère désormais le compte (username/email/rôle/mot de passe, création/édition/suppression), le métier, les groupes et les accès directs d'un utilisateur, avec un champ de recherche. Composant portail-droits.component renommé (git mv) en portail-utilisateurs.component. GET /api/portal/users enrichi (metierId/metierNom/metierColor) pour afficher le tag métier directement dans la liste. Ancien onglet et dossier admin-users/ supprimés. Bug trouvé et corrigé en cours de route : filteredUsers() était un computed() qui lisait un champ searchQuery non-signal, donc ne se recalculait jamais — searchQuery converti en signal().",
+      "files": [
+        "apps/portail/src/app/pages/admin/admin.component.ts",
+        "apps/portail/src/app/pages/admin/admin.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/admin-portail.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/admin-portail.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-users/admin-users.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-users/admin-users.component.html",
+        "libs/portail-core/data-access/src/lib/portal-apps.models.ts",
+        "server/modules/portal-apps.js",
+        "tests/fonctions/connecte/admin/applications/fonctions.md",
+        "tests/fonctions/connecte/admin/utilisateurs/fonctions.md",
+        "CLAUDE.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-4-6",
+      "prompt": "je voudrais que tu rajoute dans la zone admin/application, la gestion des utilisateurs /admin/users. Ainsi toutes la gestion du portail, dois ce passé dans le même menu. Modifi le nom du menu admin/applications etn admin/portail. Regarde ce qui à été fait dans l'appli @portail-exemple\\ pour la gestion des users et rajoute les mêmes otpions, gestion des métiers et des groupe pour un user",
+      "startedAt": "2026-07-31T08:00:00.000Z",
+      "completedAt": "2026-07-31T08:29:05.000Z"
     }
   ]
 }

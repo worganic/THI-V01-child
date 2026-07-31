@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, BehaviorSubject, forkJoin, of } from 'rxjs';
-import { catchError, map, tap } from 'rxjs/operators';
+import { catchError, map, retry, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Project, User, CreateProjectPayload, UpdateProjectPayload, ProjectTask, CreateTaskPayload, UpdateTaskPayload, UnavailabilityPeriod, CreateUnavailabilityPayload, ProjectMetier } from '../models/project.model';
 import { calculateProjectsProgress } from '../utils/project-progress';
@@ -23,12 +23,14 @@ const UNAVAILABILITIES_CACHE_KEY = 'agenda:local-cache:unavailabilities';
 export class ProjectService {
   private http = inject(HttpClient);
 
-  // En-têtes HTTP obligatoires pour les requêtes API Airbus
+  // L'API d'origine exigeait des en-têtes IDUSER/IDAPPEL/IDTRANSACTION : ils ont été retirés
+  // lors de l'intégration au portail. Ils n'y ont aucun sens (l'authentification passe par le
+  // token Bearer ajouté par l'intercepteur) et, surtout, ils ne figurent pas dans les
+  // `allowedHeaders` du CORS de server-data.js : le préflight répondait donc sans les
+  // autoriser et le navigateur bloquait TOUS les appels de l'agenda, ce qui se traduisait par
+  // les bandeaux « indisponible côté serveur » alors que l'API répondait correctement.
   private readonly headers = new HttpHeaders({
-    'Content-Type': 'application/json',
-    'IDUSER': environment.IDUSER || '515',
-    'IDAPPEL': environment.IDAPPEL || 'POST-TEST',
-    'IDTRANSACTION': environment.IDTRANSACTION || 'P-20260724'
+    'Content-Type': 'application/json'
   });
 
   // 🔧 CORRECTIF : comme les autres services (admin.service.ts, recipe.service.ts...),
@@ -150,6 +152,10 @@ export class ProjectService {
             && (!filtrerParGroupe || developerUserIds.has(user.id)));
       }),
       tap(devs => { this.usersSubject.next(devs); this.clearApiIssue(); }),
+      // Absorbe l'aléa du tout premier chargement (rafale de requêtes en parallèle juste après
+      // l'arrivée sur la page, pool de connexions BDD pas encore "chaud") : une nouvelle tentative
+      // silencieuse évite d'afficher la bannière d'erreur pour un simple raté ponctuel.
+      retry({ count: 1, delay: 400 }),
       catchError(() => {
         this.reportApiIssue('Liste des développeurs indisponible côté serveur — affichage des données précédentes.');
         return this.users$;
@@ -173,6 +179,7 @@ export class ProjectService {
           .map((u: any) => this.mapRawUser(u))
           .filter((user: User) => user.is_active === true);
       }),
+      retry({ count: 1, delay: 400 }),
       catchError(() => of([]))
     );
   }
@@ -181,6 +188,7 @@ export class ProjectService {
     return this.http.get<Project[]>(`${this.apiUrl}/projects?options=hydrat`, { headers: this.headers }).pipe(
       map(projects => calculateProjectsProgress(projects)),
       tap(projects => { this.projectsSubject.next(projects); this.clearApiIssue(); }),
+      retry({ count: 1, delay: 400 }),
       catchError(() => {
         this.reportApiIssue('Connexion au serveur agenda indisponible — les projets affichés sont locaux et non synchronisés.');
         const current = this.projectsSubject.value;
@@ -397,6 +405,7 @@ export class ProjectService {
         }));
       }),
       tap(list => { this.unavailabilitiesSubject.next(list); this.clearApiIssue(); }),
+      retry({ count: 1, delay: 400 }),
       catchError(() => {
         this.reportApiIssue('Indisponibilités développeur indisponibles côté serveur — affichage des données précédentes.');
         return this.unavailabilities$;
@@ -446,6 +455,7 @@ export class ProjectService {
         return raw.map((m: any) => ({ id: Number(m.id ?? m.ID), nom: m.nom ?? m.NOM, color: m.color ?? m.COLOR ?? 'slate' }));
       }),
       tap(list => { this.metiersSubject.next(list); this.clearApiIssue(); }),
+      retry({ count: 1, delay: 400 }),
       catchError(() => {
         this.reportApiIssue('Métiers indisponibles côté serveur — affichage des données précédentes.');
         return this.metiers$;

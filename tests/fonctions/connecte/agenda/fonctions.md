@@ -11,7 +11,7 @@ d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`).
 
 ---
 
-## `2-7-1` — Montage dans le portail
+## `2-7-1` — [modification] Montage dans le portail
 
 - **Route interne** : `/agenda`, chargée à la demande (pas d'application autonome ni de port dédié)
 - **Garde d'accès** : `authGuard` — un utilisateur non connecté est renvoyé sur la landing
@@ -23,7 +23,7 @@ d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`).
 
 ---
 
-## `2-7-2` — Référentiel des intervenants
+## `2-7-2` — [modification] Référentiel des intervenants
 
 - **Utilisateurs** : GET `/api/agenda/users` — projection des utilisateurs du portail avec un identifiant numérique stable (`users.num_id`)
 - **Filtre développeurs** : si un groupe nommé `Developpeur` existe (Admin › Applications › Groupes), seuls ses membres sont proposés ; sinon tous les utilisateurs actifs le sont
@@ -34,7 +34,7 @@ d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`).
 
 ---
 
-## `2-7-3` — Projets
+## `2-7-3` — [modification] Projets
 
 - **Liste** : GET `/api/agenda/projects` — projets hydratés (développeurs, métiers, tâches, avancement calculé)
 - **Création** : formulaire « Nouveau Projet » → POST `/api/agenda/projects` (code, nom, description, risque, dates, charge estimée, développeurs, métiers, règles week-end/fériés, tâches initiales)
@@ -59,7 +59,7 @@ d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`).
 
 ---
 
-## `2-7-5` — Indisponibilités
+## `2-7-5` — [modification] Indisponibilités
 
 - **Liste** : GET `/api/agenda/unavailabilities`
 - **Ajout** : POST `/api/agenda/unavailabilities` `{ userId, dateStart, dateEnd, reason }`
@@ -70,11 +70,12 @@ d'accueil (`2-6-*`) et se configure dans Admin › Applications (`2-1-9-*`).
 
 ---
 
-## `2-7-6` — Persistance et sécurité des routes
+## `2-7-6` — [modification] Persistance et sécurité des routes
 
 - **Stockage** : tables MySQL `agenda_projects`, `agenda_project_developers`, `agenda_project_metiers`, `agenda_tasks`, `agenda_unavailabilities`
 - **Identifiant numérique** : colonne `users.num_id` (auto-incrément) ajoutée au démarrage — les modèles de l'agenda identifient les développeurs par un entier alors que `users.id` est un UUID
 - **Création automatique du schéma** : `ensureSchema` au démarrage du serveur, idempotent
 - **Authentification** : toutes les routes `/api/agenda/*` exigent une session valide (401 sinon) ; le token est ajouté automatiquement par l'intercepteur du portail
+- **En-têtes envoyés** : uniquement `Content-Type` et `Authorization` — tout en-tête personnalisé supplémentaire doit d'abord être ajouté aux `allowedHeaders` du CORS (`server/server-data.js`), sinon le navigateur bloque l'appel après le préflight
 - **Priorité:** bloquant
 - **Composants:** `server/modules/appli-agenda.js`, `server/server-data.js`, `server/init-db.js`

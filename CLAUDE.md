@@ -104,6 +104,8 @@ Aucune ligne → OK. Des lignes → corriger avant de continuer.
 - ❌ `[class.dark:text-white]="condition"` → classe jamais appliquée
 - ✅ `[ngClass]="condition ? 'dark:text-white' : ''"` → correct
 
+**En-tête HTTP personnalisé → CORS** — Un en-tête non listé dans les `allowedHeaders` du `cors()` de `server/server-data.js` fait échouer l'appel côté navigateur *après* un préflight pourtant réussi (OPTIONS 204, puis GET annulé). Symptôme trompeur : l'API répond correctement en `curl` mais l'app affiche « indisponible côté serveur ». Avant d'ajouter un en-tête à une requête, l'ajouter aussi aux `allowedHeaders`.
+
 ---
 
 ## Règle obligatoire : Historique des modifications
@@ -146,11 +148,37 @@ Aucune ligne → OK. Des lignes → corriger avant de continuer.
 
 ---
 
+## Règle obligatoire : Suivi en direct des étapes de dev
+
+**Pour tout prompt de dev non trivial (≥3 étapes)**, utiliser `TaskCreate`/`TaskUpdate`/`TaskList` pour afficher une todo-list live, avec un gabarit fixe de phases (omettre celles non pertinentes) :
+
+1. Analyse / exploration
+2. Implémentation
+3. Vérification compilation Angular *(si fichier Angular modifié)*
+4. Tests
+5. Documentation (`histoModif.json` + `fonctions.md`)
+6. Git workflow *(si demandé)*
+
+- Marquer une étape `in_progress` juste avant de la commencer, `completed` juste après — jamais en lot.
+- **Temps** : capturer l'heure (commande shell `date`) au début et à la fin de chaque étape, annoncer la durée à la complétion (ex : *"Étape 2 terminée en 3m42s"*).
+- **Tokens** : pas d'outil pour lire la consommation en direct — renvoyer vers `/cost` (natif Claude Code) plutôt que d'inventer un chiffre.
+- **Étape Tests** : dès qu'elle passe `in_progress`, poser via `AskUserQuestion` :
+  ```
+  Question : "Comment veux-tu gérer les tests de cette étape ?"
+  Options  : Automatique (IA) — je lance moi-même les vérifications possibles et je rapporte le résultat
+             Manuel (utilisateur) — je marque l'étape en attente et j'attends ta validation, sans redirection automatique
+  ```
+  Si Manuel → ne pas enchaîner sur la suite (documentation/commit) avant validation réelle de l'utilisateur.
+
+---
+
 ## Règle obligatoire : Workflow de fin de prompt
 
 **À la fin de chaque prompt**, après l'enregistrement dans `histoModif.json`, poser via `AskUserQuestion` :
 
 ### Étape 1 — Validation fonctionnelle
+
+Si l'étape Tests a déjà été tranchée (Auto/Manuel) via la règle "Suivi en direct des étapes de dev" ci-dessus, ne pas reposer la question — utiliser directement ce résultat. Sinon :
 ```
 Question : "Est-ce que tout fonctionne ?"
 Options  : Oui, tout fonctionne | Non, il y a un problème
@@ -184,12 +212,11 @@ Question 3 : "Titre du commit ?"
 
 | Composant / Zone | Fichier |
 |-----------------|---------|
-| Admin › Utilisateurs | `connecte/admin/utilisateurs/` |
+| Admin › Portail (Utilisateurs, Applications, Groupes, Métiers) | `connecte/admin/applications/` |
 | Admin › Déploiements | `connecte/admin/deploiements/` |
 | Admin › Config | `connecte/admin/config/` |
 | Admin › Thème | `connecte/admin/theme/` |
 | Admin › Tests | `connecte/admin/tests/` |
-| Admin › Applications | `connecte/admin/applications/` |
 | Page d'accueil (`/home`) | `connecte/accueil/` |
 | Agenda (`/agenda`) | `connecte/agenda/` |
 | Recettes (`/recettes`) | `connecte/recettes/` |

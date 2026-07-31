@@ -23,10 +23,4 @@ export const environment = {
   serviceGroupes: '/api/agenda/groupes',
   serviceUserGroupes: '/api/agenda/user-groupes',
   serviceMetiers: '/api/agenda/metiers',
-
-  // En-têtes historiques de l'API d'origine — inutilisés côté portail (auth par token
-  // Bearer via l'intercepteur), conservés pour ne pas casser les services.
-  IDUSER: '',
-  IDAPPEL: 'PORTAIL',
-  IDTRANSACTION: 'PORTAIL',
 };

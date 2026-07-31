@@ -70,12 +70,6 @@ export const environment = {
   // Utilisateurs du portail (testeurs), projetés par le module recettes
   serviceRecipeUsers: '/api/recettes/users/',
 
-  // Upload des captures annotées → server/uploads/recettes/
+  // Upload des captures annotées → data/recettes/captures/
   serviceCaptureUpload: '/api/recettes/capture/upload/',
-
-  // En-têtes historiques de l'API d'origine — inutilisés côté portail (auth par token
-  // Bearer via l'intercepteur), conservés pour ne pas casser le service.
-  IDUSER: '',
-  IDAPPEL: 'PORTAIL',
-  IDTRANSACTION: 'PORTAIL',
 };
