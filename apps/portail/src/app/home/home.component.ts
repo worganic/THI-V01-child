@@ -63,7 +63,7 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  loadUserDashboard(user_id: number, role: string): void {
+  loadUserDashboard(user_id: string, role: string): void {
     this.isLoading = true;
     this.errorMessage = null;
     this.cdr.detectChanges();

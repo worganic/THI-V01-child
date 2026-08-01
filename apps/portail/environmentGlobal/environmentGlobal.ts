@@ -10,7 +10,9 @@ import { runtimeEnv } from '../src/app/runtime-env';
  * chemin en dur et lisent tout ici.
  *
  * Là-bas les chemins pointent sur l'API d'entreprise (`/POPORTAIL/...`) ; ici sur
- * le serveur Express local (`server/server-data.js`, routes `/api/portal/...`).
+ * le serveur Express local (`server/modules/portal-admin-api.js`, routes
+ * `/api/portal-admin/...`). Préfixe distinct de `/api/portal/...`, qui reste
+ * servi en camelCase par `portal-apps.js` pour l'administration maison (/admin-outils).
  */
 export const environmentGlobal = {
   production: false,
@@ -42,43 +44,43 @@ export const environmentGlobal = {
   serviceConnexion: '/api/auth/login',
 
   // ─── Utilisateurs ─────────────────────────────────────────────────────────
-  serviceUsers: '/api/portal/users/',
-  serviceUsersMatricule: '/api/portal/users/matricule/?matricule=',
-  serviceUsersInsert: '/api/portal/users/',
-  serviceUsersUpdate: '/api/portal/users/update/',
-  serviceUsersDelete: '/api/portal/users/delete/',
+  serviceUsers: '/api/portal-admin/users/',
+  serviceUsersMatricule: '/api/portal-admin/users/matricule/?matricule=',
+  serviceUsersInsert: '/api/portal-admin/users/',
+  serviceUsersUpdate: '/api/portal-admin/users/update/',
+  serviceUsersDelete: '/api/portal-admin/users/delete/',
 
   // ─── Applications ─────────────────────────────────────────────────────────
-  serviceApplications: '/api/portal/applications/',
-  serviceApplicationsInsert: '/api/portal/applications/',
-  serviceApplicationsUpdate: '/api/portal/applications/update/',
-  serviceApplicationsDelete: '/api/portal/applications/delete/',
+  serviceApplications: '/api/portal-admin/applications/',
+  serviceApplicationsInsert: '/api/portal-admin/applications/',
+  serviceApplicationsUpdate: '/api/portal-admin/applications/update/',
+  serviceApplicationsDelete: '/api/portal-admin/applications/delete/',
 
   // ─── Groupes ──────────────────────────────────────────────────────────────
-  serviceGroupes: '/api/portal/groupes/',
-  serviceGroupesInsert: '/api/portal/groupes/',
-  serviceGroupesUpdate: '/api/portal/groupes/update/',
-  serviceGroupesDelete: '/api/portal/groupes/delete/',
+  serviceGroupes: '/api/portal-admin/groupes/',
+  serviceGroupesInsert: '/api/portal-admin/groupes/',
+  serviceGroupesUpdate: '/api/portal-admin/groupes/update/',
+  serviceGroupesDelete: '/api/portal-admin/groupes/delete/',
 
   // ─── Métiers ──────────────────────────────────────────────────────────────
-  serviceMetiers: '/api/portal/metiers/',
-  serviceMetiersInsert: '/api/portal/metiers/',
-  serviceMetiersUpdate: '/api/portal/metiers/update/',
-  serviceMetiersDelete: '/api/portal/metiers/delete/',
+  serviceMetiers: '/api/portal-admin/metiers/',
+  serviceMetiersInsert: '/api/portal-admin/metiers/',
+  serviceMetiersUpdate: '/api/portal-admin/metiers/update/',
+  serviceMetiersDelete: '/api/portal-admin/metiers/delete/',
 
   // ─── Affectations utilisateur ↔ application ───────────────────────────────
-  serviceUserApplications: '/api/portal/user_applications/selectAll/',
-  serviceUserApplicationsInsert: '/api/portal/user_applications/',
-  serviceUserApplicationsUpdate: '/api/portal/user_applications/update/',
-  serviceUserApplicationsDelete: '/api/portal/user_applications/delete/',
+  serviceUserApplications: '/api/portal-admin/user_applications/selectAll/',
+  serviceUserApplicationsInsert: '/api/portal-admin/user_applications/',
+  serviceUserApplicationsUpdate: '/api/portal-admin/user_applications/update/',
+  serviceUserApplicationsDelete: '/api/portal-admin/user_applications/delete/',
 
   // ─── Affectations groupe ↔ application ────────────────────────────────────
-  serviceGroupeApplications: '/api/portal/groupe_applications/get/',
-  serviceGroupeApplicationsInsert: '/api/portal/groupe_applications/',
-  serviceGroupeApplicationsDelete: '/api/portal/groupe_applications/del/',
+  serviceGroupeApplications: '/api/portal-admin/groupe_applications/get/',
+  serviceGroupeApplicationsInsert: '/api/portal-admin/groupe_applications/',
+  serviceGroupeApplicationsDelete: '/api/portal-admin/groupe_applications/del/',
 
   // ─── Affectations utilisateur ↔ groupe ────────────────────────────────────
-  serviceUserGroupes: '/api/portal/user_groupes/',
-  serviceUserGroupesInsert: '/api/portal/user_groupes/',
-  serviceUserGroupesDelete: '/api/portal/user_groupes/delete/',
+  serviceUserGroupes: '/api/portal-admin/user_groupes/',
+  serviceUserGroupesInsert: '/api/portal-admin/user_groupes/',
+  serviceUserGroupesDelete: '/api/portal-admin/user_groupes/delete/',
 };

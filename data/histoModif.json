@@ -15684,6 +15684,37 @@
       "prompt": "Je voudrais que tu utilise le meme code pour le portail @portail\\ que pour @THI-V01-child-user3\\, Que tu unifi les 2 codes pour tous ce qui est des fichiers .ts je veux le meme systeme et le meme code. Seul les fichier de configuration (appel au appi/bdd) soi different, le css global (pour la couleur et le style) puisse etre different. Mais toutes les fonctions doivent etre identique. Prend en exemple le @portail\\",
       "startedAt": "2026-08-01T00:00:00.000Z",
       "completedAt": "2026-08-01T00:00:00.000Z"
+    },
+    {
+      "id": "mod-606",
+      "version": "B-0.339",
+      "date": "2026-08-01T02:00:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "server",
+        "libs",
+        "system"
+      ],
+      "features": "system:uniformisation,portail:admin,server:portal-admin-api",
+      "title": "API d'administration au format du shell commun (27 routes)",
+      "description": "Nouveau module server/modules/portal-admin-api.js exposant sous /api/portal-admin/* les 27 ressources que consomme le admin.service.ts commun aux deux portails, en snake_case, sur les memes tables portal_* et users. Prefixe distinct de /api/portal/* pour ne pas casser l'administration maison (camelCase) restee accessible sur /admin-outils : les deux surfaces coexistent. Colonnes app_id de portal_groupe_apps et portal_user_apps exposees en application_id. L'identifiant utilisateur devient une chaine opaque dans le modele commun (AppUser.id) : entier cote portail d'entreprise, UUID ici — toutes les conversions Number() sur un id utilisateur ont ete remplacees par des comparaisons de chaines des deux cotes. 27 routes validees hors-ligne avec un pool simule (aucun acces a la base). Les 3 builds passent, 67 fichiers identiques au contrat.",
+      "files": [
+        "server/modules/portal-admin-api.js",
+        "server/server-data.js",
+        "apps/portail/environmentGlobal/environmentGlobal.ts",
+        "apps/portail/src/models/admin.models.ts",
+        "apps/portail/src/services/admin.service.ts",
+        "apps/portail/src/app/home/home.component.ts",
+        "apps/portail/src/app/admin/admin-users/admin-users.component.ts",
+        "apps/portail/src/app/admin/admin-export/admin-export.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "continue (suite de l'unification des deux portails)",
+      "startedAt": "2026-08-01T01:00:00.000Z",
+      "completedAt": "2026-08-01T02:00:00.000Z"
     }
   ]
 }

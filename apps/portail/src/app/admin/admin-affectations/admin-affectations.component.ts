@@ -43,12 +43,12 @@ export class AdminAffectationsComponent implements OnInit {
     });
   }
 
-  getRights(user_id: number, application_id: number): string {
+  getRights(user_id: string, application_id: number): string {
     const ua = this.userApplications.find(x => x.user_id === user_id && x.application_id === application_id);
     return ua ? ua.droits : '';
   }
 
-  onRightsChange(user_id: number, application_id: number, newDroits: string): void {
+  onRightsChange(user_id: string, application_id: number, newDroits: string): void {
     const existing = this.userApplications.find(x => x.user_id === user_id && x.application_id === application_id);
     
     if (!newDroits) {

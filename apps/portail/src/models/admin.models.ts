@@ -1,7 +1,10 @@
 // AUCUN IMPORT VERS LUI-MÊME EN HAUT DE CE FICHIER !
 
 export interface AppUser {
-    id: number;
+    // Identifiant opaque : entier auto-incrémenté dans ce portail, UUID dans
+    // l'autre. Jamais interprété ni comparé à un nombre — uniquement utilisé
+    // comme clé, ce qui permet au même écran de servir les deux bases.
+    id: string;
     matricule: string;
     nom: string;
     prenom: string;
@@ -62,7 +65,7 @@ export interface Groupe {
 
 export interface UserApplication {
     id?: number; // INDISPENSABLE POUR QUE L'UPDATE (PUT) FONCTIONNE
-    user_id: number;
+    user_id: string;
     application_id: number;
     droits: string;
     application?: Application;
@@ -76,7 +79,7 @@ export interface GroupeApplication {
 
 export interface UserGroupe {
     id?: number; // INDISPENSABLE POUR QUE L'UPDATE (PUT) FONCTIONNE
-    user_id: number;
+    user_id: string;
     groupe_id: number;
 }
 

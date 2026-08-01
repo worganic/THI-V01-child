@@ -192,11 +192,13 @@ export class AdminExportComponent implements OnInit {
     const userApps = this.fullData.userApplications.filter(ua => Number(ua.application_id) === targetAppId);
     const userGroupes = this.fullData.userGroupes.filter(ug => associatedGroupIds.has(Number(ug.groupe_id)));
     
+    // Identifiant utilisateur opaque (entier ici, UUID dans l'autre portail) :
+    // on indexe sur la chaîne, jamais sur une conversion numérique.
     const associatedUserIds = new Set([
-      ...userApps.map(ua => Number(ua.user_id)),
-      ...userGroupes.map(ug => Number(ug.user_id))
+      ...userApps.map(ua => String(ua.user_id)),
+      ...userGroupes.map(ug => String(ug.user_id))
     ]);
-    const users = this.fullData.users.filter(u => associatedUserIds.has(Number(u.id)));
+    const users = this.fullData.users.filter(u => associatedUserIds.has(String(u.id)));
 
     return {
       application: app,

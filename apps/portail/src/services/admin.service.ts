@@ -30,7 +30,7 @@ export class AdminService {
                 const data = response?.data ? response.data : (Array.isArray(response) ? response : []);
                 if (Array.isArray(data)) {
                     return data.map((userAPI: any) => ({
-                        id: Number(userAPI.id || userAPI.ID), 
+                        id: String(userAPI.id ?? userAPI.ID), 
                         matricule: userAPI.matricule || userAPI.MATRICULE, 
                         nom: userAPI.nom || userAPI.NOM,
                         prenom: userAPI.prenom || userAPI.PRENOM, 
@@ -54,7 +54,7 @@ export class AdminService {
         return this.http.post<AppUser>(this.baseUrl + environmentGlobal.serviceUsersUpdate, user, { headers: this.getHeaders() });
     }
 
-    deleteUser(user_id: number): Observable<void> {
+    deleteUser(user_id: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}${environmentGlobal.serviceUsersDelete}${user_id}`, { headers: this.getHeaders() });
     }
 
@@ -70,7 +70,7 @@ export class AdminService {
                     if (!user) return null;
 
                     return {
-                        id: Number(user.id || user.ID),
+                        id: String(user.id ?? user.ID),
                         matricule: user.matricule || user.MATRICULE,
                         nom: user.nom || user.NOM,
                         prenom: user.prenom || user.PRENOM,
@@ -126,7 +126,7 @@ export class AdminService {
                 const data = response?.data ? response.data : (Array.isArray(response) ? response : []);
                 return data.map((item: any) => ({
                     id: item.id || item.ID ? Number(item.id || item.ID) : undefined,
-                    user_id: Number(item.user_id || item.USER_ID),
+                    user_id: String(item.user_id ?? item.USER_ID),
                     application_id: Number(item.application_id || item.APPLICATION_ID),
                     droits: item.droits || item.DROITS
                 } as UserApplication));
@@ -135,8 +135,8 @@ export class AdminService {
         );
     }
 
-    getUserApplications(user_id: number): Observable<UserApplication[]> {
-        const params = new HttpParams().set('user_id', user_id.toString());
+    getUserApplications(user_id: string): Observable<UserApplication[]> {
+        const params = new HttpParams().set('user_id', user_id);
         return this.http.get<any>(this.baseUrl + environmentGlobal.serviceUserApplications, { params, headers: this.getHeaders() })
             .pipe(map(response => response?.data ? response.data : (Array.isArray(response) ? response : [])));
     }
@@ -160,8 +160,8 @@ export class AdminService {
         });
     }
 
-    deleteUserApplication(user_id: number, appId: number): Observable<void> {
-        const params = new HttpParams().set('user_id', user_id.toString()).set('appId', appId.toString());
+    deleteUserApplication(user_id: string, appId: number): Observable<void> {
+        const params = new HttpParams().set('user_id', user_id).set('appId', appId.toString());
         return this.http.delete<void>(this.baseUrl + environmentGlobal.serviceUserApplicationsDelete, { params, headers: this.getHeaders() });
     }
 
@@ -252,13 +252,13 @@ export class AdminService {
                  const data = res?.data ? res.data : (Array.isArray(res) ? res : []);
                  return data.map((item: any) => ({
                      id: item.id || item.ID ? Number(item.id || item.ID) : undefined,
-                     user_id: Number(item.user_id || item.USER_ID),
+                     user_id: String(item.user_id ?? item.USER_ID),
                      groupe_id: Number(item.groupe_id || item.GROUPE_ID)
                  } as UserGroupe));
              }));
     }
 
-    toggleUserGroupe(user_id: number, groupe_id: number, link: boolean): Observable<any> {
+    toggleUserGroupe(user_id: string, groupe_id: number, link: boolean): Observable<any> {
         if (link) {
             return this.http.post(this.baseUrl + environmentGlobal.serviceUserGroupesInsert, { user_id, groupe_id }, { headers: this.getHeaders() });
         }
@@ -266,7 +266,7 @@ export class AdminService {
     }
 
     // --- SPÉCIFIQUE HOME PAGE ---
-    getHomeDashboard(user_id: number, role: string = 'USER'): Observable<Groupe[]> {
+    getHomeDashboard(user_id: string, role: string = 'USER'): Observable<Groupe[]> {
         return forkJoin({
             groupes: this.getGroupes(),
             apps: this.getApplications(),

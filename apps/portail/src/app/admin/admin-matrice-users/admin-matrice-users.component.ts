@@ -45,12 +45,12 @@ export class AdminMatriceUsersComponent implements OnInit {
     });
   }
 
-  isUserInGroupe(user_id: number, groupe_id: number | null): boolean {
+  isUserInGroupe(user_id: string, groupe_id: number | null): boolean {
     if (!groupe_id) return false;
     return this.userGroupes.some(ug => ug.user_id === user_id && ug.groupe_id === groupe_id);
   }
 
-  toggleUserGroupe(user_id: number, groupe_id: number | null, event: any): void {
+  toggleUserGroupe(user_id: string, groupe_id: number | null, event: any): void {
     if (!groupe_id) return;
     const isChecked = event.target.checked;
     this.adminService.toggleUserGroupe(user_id, groupe_id, isChecked).subscribe({

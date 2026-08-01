@@ -37,9 +37,9 @@ export class AdminUsersComponent implements OnInit {
     is_active: false,
     metier_id: null as number | null
   };
-  editinguser_id: number | null = null;
+  editinguser_id: string | null = null;
   editingUserObj: AppUser = {} as AppUser;
-  expandedUserId: number | null = null;
+  expandedUserId: string | null = null;
 
   // --- Recherche / filtres ---
   searchText = '';
@@ -252,12 +252,12 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  toggleExpand(userId: number) {
+  toggleExpand(userId: string) {
     this.expandedUserId = this.expandedUserId === userId ? null : userId;
   }
 
-  isUserInGroup(userId: number, groupId: number): boolean {
-    return this.userGroupes.some(ug => Number(ug.user_id) === Number(userId) && Number(ug.groupe_id) === Number(groupId));
+  isUserInGroup(userId: string, groupId: number): boolean {
+    return this.userGroupes.some(ug => String(ug.user_id) === String(userId) && Number(ug.groupe_id) === Number(groupId));
   }
 
   toggleUserGroup(user: AppUser, grp: Groupe, event: Event) {
@@ -266,7 +266,7 @@ export class AdminUsersComponent implements OnInit {
     if (checked) {
         this.userGroupes.push({ user_id: user.id, groupe_id: grp.id } as UserGroupe);
     } else {
-        this.userGroupes = this.userGroupes.filter(ug => !(Number(ug.user_id) === Number(user.id) && Number(ug.groupe_id) === Number(grp.id)));
+        this.userGroupes = this.userGroupes.filter(ug => !(String(ug.user_id) === String(user.id) && Number(ug.groupe_id) === Number(grp.id)));
     }
 
     this.adminService.toggleUserGroupe(user.id, grp.id, checked).subscribe({
@@ -278,9 +278,9 @@ export class AdminUsersComponent implements OnInit {
     });
   }
 
-  getUserGroups(userId: number): Groupe[] {
+  getUserGroups(userId: string): Groupe[] {
     const groupIds = this.userGroupes
-      .filter(ug => Number(ug.user_id) === Number(userId))
+      .filter(ug => String(ug.user_id) === String(userId))
       .map(ug => Number(ug.groupe_id));
     return this.groupes.filter(g => groupIds.includes(Number(g.id)));
   }
@@ -292,14 +292,14 @@ export class AdminUsersComponent implements OnInit {
     return this.applications.filter(a => appIds.includes(Number(a.id)));
   }
 
-  getUserAppRight(userId: number, appId: number): string {
-    const ua = this.userApplications.find(u => Number(u.user_id) === Number(userId) && Number(u.application_id) === Number(appId));
+  getUserAppRight(userId: string, appId: number): string {
+    const ua = this.userApplications.find(u => String(u.user_id) === String(userId) && Number(u.application_id) === Number(appId));
     return ua ? ua.droits : 'INVITE';
   }
 
-  setUserAppRight(userId: number, appId: number, rights: string) {
+  setUserAppRight(userId: string, appId: number, rights: string) {
     const existingIndex = this.userApplications.findIndex(
-      u => Number(u.user_id) === Number(userId) && Number(u.application_id) === Number(appId)
+      u => String(u.user_id) === String(userId) && Number(u.application_id) === Number(appId)
     );
 
     // On récupère l'élément s'il a été trouvé dans le tableau
@@ -317,7 +317,7 @@ export class AdminUsersComponent implements OnInit {
       const updatedItem = {
         ...existingItem,
         droits: rights,
-        user_id: Number(userId),
+        user_id: String(userId),
         application_id: Number(appId)
       };
       
@@ -340,7 +340,7 @@ export class AdminUsersComponent implements OnInit {
       // 2. C'EST UN INSERT (Ligne absente ou "fantôme" sans ID)
       // ==========================================
       const newUa = { 
-        user_id: Number(userId), 
+        user_id: String(userId), 
         application_id: Number(appId), 
         droits: rights 
       } as UserApplication;

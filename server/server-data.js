@@ -1991,6 +1991,9 @@ function getSessionUser(req) {
 // Routes Portail (sous-applications, groupes, métiers, droits) — déclarées ici
 // car elles ont besoin de getSessionUser, défini juste au-dessus.
 require('./modules/portal-apps').register(app, { pool, getSessionUser });
+// API d'administration au format du shell commun aux deux portails (snake_case,
+// préfixe /api/portal-admin). Mêmes tables que ci-dessus, autre représentation.
+require('./modules/portal-admin-api').register(app, { pool, getSessionUser });
 
 // Routes des sous-applications montées dans le portail (/agenda, /recettes, /documents)
 require('../apps/appli-agenda/server').register(app, { pool, getSessionUser });
