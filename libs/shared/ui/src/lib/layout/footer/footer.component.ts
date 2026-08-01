@@ -3,7 +3,7 @@ import { RouterModule } from '@angular/router';
 import { AuthService, ConfigService, AppConfigService, API_DATA_URL } from '@portail/core-data-access';
 
 @Component({
-  selector: 'app-footer',
+  selector: 'lib-footer',
   standalone: true,
   imports: [RouterModule],
   templateUrl: './footer.component.html',

@@ -7,6 +7,9 @@
  * lui, reste identique des deux côtés.
  */
 
+// Navigation vers une sous-application externe, avec transmission de session
+export * from './navigate-to-app';
+
 // Chrome du portail
 export * from './layout/header/header.component';
 export * from './layout/footer/footer.component';

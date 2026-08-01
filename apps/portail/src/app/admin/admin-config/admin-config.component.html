@@ -1,0 +1,69 @@
+<div class="card shadow-sm mb-4">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center py-3">
+    <h5 class="mb-0 fw-bold">Infos config — État actuel</h5>
+    <button class="btn btn-outline-secondary btn-sm px-3" (click)="retry()">
+      <i class="bi bi-arrow-repeat me-1"></i> Réessayer la sonde
+    </button>
+  </div>
+  <div class="card-body">
+    <div class="d-flex flex-wrap gap-4">
+      <div>
+        <div class="text-muted small fw-bold text-uppercase">Environnement</div>
+        <div class="fs-5 fw-bold">{{ runtime.environment }}</div>
+      </div>
+      <div>
+        <div class="text-muted small fw-bold text-uppercase">Connexion</div>
+        <div class="fs-5 fw-bold">
+          <span
+            class="badge"
+            [class.bg-warning]="runtime.connectionMode() === 'local'"
+            [class.text-dark]="runtime.connectionMode() === 'local'"
+            [class.bg-success]="runtime.connectionMode() === 'remote'"
+            [class.bg-danger]="runtime.connectionMode() === 'unreachable'"
+            [class.bg-secondary]="runtime.connectionMode() === 'unknown'"
+          >{{ runtime.connectionLabel }}</span>
+        </div>
+      </div>
+      <div>
+        <div class="text-muted small fw-bold text-uppercase">Version</div>
+        <div class="fs-5 fw-bold">V.{{ runtime.version }}</div>
+        @if (runtime.versionDate) {
+          <div class="text-muted small">du {{ runtime.versionDate }}</div>
+        }
+      </div>
+    </div>
+
+    @if (runtime.connectionMode() === 'unreachable') {
+      <div class="alert alert-danger mt-3 mb-0 d-flex align-items-center">
+        <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+        <div>Aucun serveur ne répond pour l'environnement <strong>{{ runtime.environment }}</strong> — voir le tableau des modes ci-dessous pour basculer.</div>
+      </div>
+    }
+  </div>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-header bg-light py-3">
+    <h5 class="mb-0 fw-bold">Modes de lancement disponibles</h5>
+  </div>
+  <div class="card-body p-0">
+    <table class="table table-striped mb-0 align-middle">
+      <thead>
+        <tr>
+          <th>Mode</th>
+          <th>Commande</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (mode of launchModes; track mode.command) {
+          <tr>
+            <td class="fw-bold">{{ mode.label }}</td>
+            <td><code>{{ mode.command }}</code></td>
+            <td class="text-muted">{{ mode.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,18 @@
+<!-- Header principal visible sur toutes les pages -->
+<app-header></app-header>
+
+<!-- Conteneur principal de l'application -->
+<main class="main-content">
+  <!-- Les sous-applications injectent ici leurs vues ainsi que leur sous-header spécifique -->
+  @if (runtime.connectionMode() === 'unreachable') {
+    <lib-backend-unavailable></lib-backend-unavailable>
+  } @else {
+    <router-outlet></router-outlet>
+  }
+</main>
+
+<!-- Footer commun fixé tout en bas -->
+<lib-footer></lib-footer>
+
+<!-- Éléments globaux propres à ce portail (voir portal-extras.component.ts) -->
+<app-portal-extras></app-portal-extras>

@@ -1,0 +1,275 @@
+// Variables charte (à remplacer par tes variables globales si besoin)
+$airbus-blue: #00205b;
+$airbus-light-blue: #0055a4;
+$gray-light: #f4f5f7;
+$gray-border: #e0e0e0;
+$gray-text: #333333;
+
+.page-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: $gray-light;
+}
+
+.sub-header {
+  background-color: #ffffff;
+  border-bottom: 2px solid $gray-border;
+  padding: 12px 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  
+  .sub-header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+
+    h2 {
+      margin: 0;
+      color: $airbus-blue;
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+  }
+}
+
+.page-content {
+  flex: 1;
+  padding: 32px 24px;
+}
+
+.admin-groupes-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 32px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  border: 1px solid $gray-border;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: $airbus-blue;
+    border-bottom: 1px solid $gray-border;
+    padding-bottom: 10px;
+  }
+}
+
+/* --- FORMULAIRE --- */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+      font-weight: 500;
+      color: $gray-text;
+      font-size: 0.9rem;
+    }
+
+    input[type="text"], textarea {
+      padding: 10px;
+      border: 1px solid $gray-border;
+      border-radius: 4px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+
+      &:focus {
+        outline: none;
+        border-color: $airbus-light-blue;
+      }
+    }
+  }
+
+  .form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    label {
+      font-weight: 500;
+      color: $gray-text;
+    }
+  }
+}
+
+/* --- BOUTONS --- */
+.form-actions {
+  display: flex;
+  gap: 16px;
+  margin-top: 10px;
+
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-primary {
+    background-color: $airbus-blue;
+    color: white;
+
+    &:hover:not(:disabled) {
+      background-color: darken($airbus-blue, 10%);
+    }
+  }
+
+  .btn-secondary {
+    background-color: #e0e0e0;
+    color: $gray-text;
+
+    &:hover {
+      background-color: darken(#e0e0e0, 10%);
+    }
+  }
+}
+
+/* --- TABLEAU --- */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 14px 12px;
+    text-align: left;
+    border-bottom: 1px solid $gray-border;
+  }
+
+  th {
+    background-color: #f9fafc;
+    font-weight: 600;
+    color: $airbus-blue;
+  }
+
+  tr:hover {
+    background-color: #f4f5f7;
+  }
+
+  .font-bold {
+    font-weight: 600;
+  }
+
+  .badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+
+    &.badge-active {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    &.badge-inactive {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  }
+
+  .actions-cell {
+    display: flex;
+    gap: 12px;
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    
+    &.edit {
+      color: $airbus-light-blue;
+      &:hover { text-decoration: underline; }
+    }
+    
+    &.delete {
+      color: #dc3545;
+      &:hover { text-decoration: underline; }
+    }
+  }
+
+  .empty-state {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 32px;
+  }
+}
+.card.form-section {
+  padding: 0; // On enlève le padding de la carte car il sera géré à l'intérieur
+  overflow: hidden;
+}
+
+.card-header-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: background-color 0.2s ease;
+
+  h3 {
+    margin: 0;
+    border-bottom: none;
+    padding-bottom: 0;
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+
+  &.active {
+    border-bottom: 1px solid #e0e0e0;
+    background-color: #f0f4f8; // Légère teinte bleue quand ouvert
+  }
+
+  .toggle-icon {
+    background: none;
+    border: none;
+    color: #00205b;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* L'animation d'ouverture/fermeture */
+.collapsible-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(0, 1, 0, 1), opacity 0.3s ease;
+
+  &.expanded {
+    max-height: 1000px; // Valeur arbitraire haute pour permettre l'extension
+    opacity: 1;
+    transition: max-height 0.4s ease-in-out, opacity 0.5s ease;
+  }
+}
+
+.form-padding {
+  padding: 24px;
+}

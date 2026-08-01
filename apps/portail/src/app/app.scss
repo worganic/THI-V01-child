@@ -1,0 +1,9 @@
+.main-content {
+  padding-top: 60px;       /* Évite la superposition sous le header principal */
+  padding-bottom: 40px;    /* Empêche le contenu de passer sous le footer fixé en bas */
+  min-height: 100vh;
+  box-sizing: border-box;
+  // Fond derrière absolument tout (home + chaque app chargée dans <router-outlet>) : voir
+  // libs/shared/ui/src/portal-tokens.scss pour les valeurs clair/sombre.
+  background-color: var(--page-bg);
+}

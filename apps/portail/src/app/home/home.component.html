@@ -1,0 +1,79 @@
+<div class="portal-dashboard-content">
+  
+  <div class="top-shortcuts-container">
+    <a href="http://myahts.eu.eurocopter.corp/" class="shortcut-card" target="_blank">
+      <div class="shortcut-title">MyAhts</div>
+      <span class="shortcut-url">http://myahts.eu.eurocopter.corp/</span>
+    </a>
+    
+    <a href="http://tms2/" class="shortcut-card" target="_blank">
+      <div class="shortcut-title">TMS</div>
+      <span class="shortcut-url">http://tms2/</span>
+    </a>
+  </div>
+
+  @if (isLoading) {
+    <div class="loader-wrapper">
+      <img src="assets/img/spinner.gif" alt="Chargement" class="spinner-img">
+      <span>Chargement du portail en cours...</span>
+    </div>
+  }
+
+  @if (errorMessage) {
+    <div class="alert-danger">
+      <p>{{ errorMessage }}</p>
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && categories.length > 0) {
+    <div class="categories-container">
+      
+      @for (cat of categories; track cat.id) {
+        <div class="category-section">
+          <h3 class="category-title">{{ cat.nom }}</h3>
+          
+          @if(cat.description) {
+             <p class="category-desc">{{ cat.description }}</p>
+          }
+          
+          <div class="apps-container">
+            @for (app of cat.applications; track app.id) {
+              
+              <a (click)="naviguerVersApp(app.url_path)" class="app-item" role="button" tabindex="0" (keyup.enter)="naviguerVersApp(app.url_path)">
+                
+                <div class="app-card">
+                  @if (app.icone) {
+                    <div class="icon-zone" #iconZone>
+                      <img 
+                        [src]="app.icone" 
+                        alt="Icone {{ app.nom }}" 
+                        (error)="iconZone.remove()" 
+                      />
+                    </div>
+                  }
+
+                  <div class="text-zone">
+                    <div class="app-title-container">
+                      <span class="app-title-text">{{ app.nom }}</span>
+                    </div>
+                    <p class="app-description">{{ app.description }}</p>
+                  </div>
+                </div>
+                
+              </a>
+              
+            }
+          </div>
+        </div>
+      }
+      
+    </div>
+  }
+
+  @if (!isLoading && !errorMessage && categories.length === 0) {
+    <div class="alert-info">
+      <p>Aucune application n'est disponible pour votre profil.</p>
+    </div>
+  }
+  
+</div>

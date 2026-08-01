@@ -1,6 +1,6 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
-import { AppComponent } from './app/app.component';
+import { App } from './app/app';
 
 // Permet de lancer une 2e instance de l'app sur des ports décalés (test multi-users)
 // via le launcher Python : ?portOffset=10 → les URLs des services (API, executor, agent, projets)
@@ -14,5 +14,5 @@ if (portOffset) {
   window.history.replaceState({}, '', clean.toString());
 }
 
-bootstrapApplication(AppComponent, appConfig)
+bootstrapApplication(App, appConfig)
   .catch((err) => console.error(err));

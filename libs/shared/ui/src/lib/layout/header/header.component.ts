@@ -8,6 +8,7 @@ import {
   ProviderOption, API_DATA_URL
 } from '@portail/core-data-access';
 import { ThemeService } from '../../service/theme.service';
+import { navigateToApp } from '../../navigate-to-app';
 
 @Component({
   selector: 'app-header',
@@ -19,8 +20,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Input() externalBaseUrl?: string;
   @Input() activeExternalRoute = '';
   /** Callback appelé quand une sous-application externe (URL absolue) est cliquée
-   * dans la navigation — transmet la session (token/thème) via navigateToApp(url). */
-  @Input() onAppClick?: (url: string) => void;
+   * dans la navigation — transmet la session (token/thème) via navigateToApp(url).
+   * Valeur par défaut depuis que le shell est commun aux deux monorepos : `app.html`
+   * est identique des deux côtés et ne peut plus la fournir en liaison. */
+  @Input() onAppClick: (url: string) => void = (url: string) => navigateToApp(url);
   @Input() logoutRedirectUrl?: string;
 
   private apiUrl = inject(API_DATA_URL);

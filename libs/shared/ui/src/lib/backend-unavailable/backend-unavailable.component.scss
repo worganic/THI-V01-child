@@ -1,0 +1,123 @@
+.backend-unavailable {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 16px;
+  min-height: 60vh;
+
+  .card {
+    max-width: 640px;
+    width: 100%;
+    background: #ffffff;
+    border: 1px solid #fca5a5;
+    border-radius: 12px;
+    padding: 32px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  .icon {
+    font-size: 40px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 22px;
+    margin: 0 0 16px;
+    color: #991b1b;
+  }
+
+  .lead {
+    font-size: 15px;
+    margin: 0 0 12px;
+    color: #1f2937;
+  }
+
+  .hint {
+    font-size: 13px;
+    color: #4b5563;
+    margin: 0 0 20px;
+
+    code {
+      background: #f3f4f6;
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+  }
+
+  .retry {
+    background: #0085ad;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: #006d8c;
+    }
+  }
+
+  .modes {
+    margin-top: 28px;
+    text-align: left;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 20px;
+
+    h2 {
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #6b7280;
+      margin: 0 0 12px;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    li {
+      display: grid;
+      grid-template-columns: 110px auto;
+      grid-template-rows: auto auto;
+      column-gap: 12px;
+      font-size: 13px;
+      padding: 8px 10px;
+      background: #f9fafb;
+      border-radius: 6px;
+    }
+
+    .mode-label {
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      font-weight: 700;
+      color: #111827;
+      align-self: center;
+    }
+
+    code {
+      grid-column: 2;
+      grid-row: 1;
+      background: #111827;
+      color: #d1fae5;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 12px;
+      width: fit-content;
+    }
+
+    .mode-description {
+      grid-column: 2;
+      grid-row: 2;
+      color: #6b7280;
+    }
+  }
+}

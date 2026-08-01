@@ -1,0 +1,515 @@
+/* On force le composant Angular lui-même à occuper tout l'espace disponible */
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+
+.admin-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   MENU D'ADMINISTRATION À TROIS NIVEAUX (catégorie → onglet → page)
+   Même structure et même rendu que l'autre portail, mais écrit avec les
+   variables --* de libs/shared/ui/src/portal-tokens.scss (ce portail n'a pas
+   Tailwind) : le menu suit donc automatiquement le thème clair/sombre.
+   ========================================================================== */
+
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  &__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--category-red-bg);
+    border: 1px solid var(--category-red-border);
+
+    .material-symbols-outlined {
+      font-size: 22px;
+      color: var(--category-red-text);
+    }
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--heading-color);
+  }
+
+  p {
+    margin: 0.15rem 0 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+}
+
+.admin-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-pill-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 12px;
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border-color);
+
+  &__empty {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+}
+
+.admin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+  }
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &.active {
+    background-color: var(--surface);
+    border-color: var(--border-color);
+    color: var(--heading-color);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* Troisième niveau : mêmes pastilles, un cran plus compactes — c'est ce qui
+   distingue visuellement une page d'un onglet. */
+.admin-pill-bar--sections .admin-pill {
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
+
+  .material-symbols-outlined {
+    font-size: 16px;
+  }
+}
+
+/* Le conteneur qui porte la scrollbar : il touche maintenant obligatoirement les bords */
+.admin-scrollable-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--page-bg);
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--surface-alt);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+  }
+}
+
+.admin-content-wrapper {
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   DESIGN SYSTEM PORTAIL — remplace les surfaces/couleurs Bootstrap par défaut
+   (pensées pour un fond blanc fixe) par les variables --* de
+   libs/shared/ui/src/portal-tokens.scss, chargées une seule fois pour tout le
+   portail (voir apps/portail-shell/src/styles.scss). C'est ce qui permet à
+   l'admin de suivre le même thème clair/sombre que l'accueil et l'agenda —
+   Bootstrap lui-même (chargé via CDN dans index.html) ignore cet attribut
+   `data-theme` et resterait sinon figé sur ses couleurs claires par défaut.
+   Portée : tous les sous-composants Admin (chacun référence ce même fichier
+   via styleUrls), donc une seule mise à jour ici suffit pour tous.
+   ========================================================================== */
+
+// Contraste des formulaires : mêmes noms de variables qu'avant (pour ne pas dérouter la lecture
+// de ce fichier), mais dérivées du thème actif plutôt que de couleurs fixes.
+$admin-input-text-color: var(--text-primary);
+$admin-input-border-color: var(--border-color);
+$admin-input-placeholder-color: var(--text-secondary);
+$admin-input-focus-border: var(--brand-secondary);
+$admin-input-bg: var(--surface);
+
+.admin-layout-container,
+:host {
+
+  // Inputs textuels, numériques, emails et zones de texte
+  .form-control,
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  textarea {
+    color: $admin-input-text-color !important;
+    background-color: $admin-input-bg !important;
+    border: 1px solid $admin-input-border-color !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 4px !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+
+    &::placeholder {
+      color: $admin-input-placeholder-color !important;
+      opacity: 1 !important;
+      font-weight: 400 !important;
+      font-style: italic !important;
+    }
+
+    &:focus {
+      border-color: $admin-input-focus-border !important;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-secondary) 25%, transparent) !important;
+      outline: none !important;
+    }
+
+    &:disabled,
+    &[disabled] {
+      background-color: var(--surface-alt) !important;
+      color: var(--text-secondary) !important;
+      border-color: var(--border-color) !important;
+      opacity: 0.8 !important;
+      cursor: not-allowed;
+    }
+  }
+
+  // Menus déroulants (Dropdown / Select HTML)
+  .form-select,
+  select {
+    color: $admin-input-text-color !important;
+    background-color: $admin-input-bg !important;
+    border: 1px solid $admin-input-border-color !important;
+    font-weight: 500 !important;
+    font-size: 0.95rem !important;
+    padding: 0.5rem 2rem 0.5rem 0.75rem !important;
+    border-radius: 4px !important;
+
+    &:focus {
+      border-color: $admin-input-focus-border !important;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-secondary) 25%, transparent) !important;
+    }
+
+    option {
+      color: $admin-input-text-color;
+      background-color: var(--surface);
+    }
+  }
+
+  // Cases à cocher et curseurs Switch (Form Check)
+  .form-check-input {
+    border: 2px solid $admin-input-border-color !important;
+    background-color: $admin-input-bg !important;
+    cursor: pointer;
+
+    &:checked {
+      background-color: $admin-input-focus-border !important;
+      border-color: $admin-input-focus-border !important;
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-secondary) 25%, transparent) !important;
+      border-color: $admin-input-focus-border !important;
+    }
+  }
+
+  // Intelligibilité des étiquettes textuelles (Labels)
+  label,
+  .form-check-label,
+  .form-label {
+    color: var(--text-primary) !important;
+    font-weight: 600 !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 0.25rem;
+  }
+
+  // Cartes, en-têtes de carte et accordéons : Bootstrap suppose un fond de page blanc
+  // (bg-white/bg-light utilisés partout comme "surface"), remplacé ici par --surface/--surface-alt.
+  .card {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary);
+  }
+
+  .card-header {
+    border-color: var(--border-color) !important;
+
+    &.bg-light {
+      background-color: var(--surface-alt) !important;
+      color: var(--text-primary) !important;
+    }
+
+    // Bandeau "Groupe Applicatif" (bg-dark text-white) : conservé volontairement fixe (comme le
+    // header table-dark ci-dessous) plutôt que remappé sur --surface, pour garder un repère de
+    // hiérarchie visuelle fort quel que soit le thème.
+    &.bg-dark {
+      background-color: var(--brand-primary) !important;
+    }
+  }
+
+  .card-body {
+    background-color: var(--surface) !important;
+    color: var(--text-primary);
+
+    &.bg-light {
+      background-color: var(--surface-alt) !important;
+    }
+  }
+
+  .accordion-item {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+  }
+
+  .accordion-button {
+    background-color: var(--surface-alt) !important;
+    color: var(--text-primary) !important;
+
+    &:not(.collapsed) {
+      background-color: var(--surface-alt) !important;
+      color: var(--heading-color) !important;
+      box-shadow: inset 0 -1px 0 var(--border-color);
+    }
+
+  }
+
+  // Icône chevron de l'accordéon Bootstrap : SVG à trait sombre fixe (data-URI), quasi invisible
+  // une fois l'accordéon lui-même passé en fond sombre ci-dessus — inversée en thème sombre.
+  // :host-context (et non `:root[data-theme=dark] ...`) : ce fichier est recompilé par composant
+  // (chaque sous-page Admin le référence via styleUrls), et l'attribut data-theme vit sur <html>,
+  // en dehors de la vue de CHAQUE composant — seul :host-context sait lire un ancêtre hors vue
+  // sous l'encapsulation Angular par défaut.
+  :host-context([data-theme="dark"]) .accordion-button::after {
+    filter: invert(1);
+  }
+
+  .accordion-body {
+    background-color: var(--surface) !important;
+    color: var(--text-primary);
+  }
+
+  // Fonds "carte" génériques utilisés comme utilitaires bruts (pas seulement via .card/.accordion).
+  .bg-white {
+    background-color: var(--surface) !important;
+  }
+
+  // .bg-light utilisé hors card-header (listes, encarts) : même repli que la variante card-header.
+  .bg-light {
+    background-color: var(--surface-alt) !important;
+  }
+
+  .list-group-item {
+    background-color: var(--surface) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary);
+
+    &.bg-light {
+      background-color: var(--surface-alt) !important;
+    }
+  }
+
+  // Textes : text-dark/text-primary supposent un fond clair fixe côté Bootstrap (#212529 / bleu
+  // Bootstrap #0d6efd) — remplacés par les tons du design system, cohérents avec l'agenda
+  // ($airbus-blue-primary y référence déjà --heading-color pour le même usage).
+  .text-dark {
+    color: var(--text-primary) !important;
+  }
+
+  .text-primary {
+    color: var(--heading-color) !important;
+  }
+
+  .text-muted {
+    color: var(--text-secondary) !important;
+  }
+
+  // Bordures utilitaires (accordéons, encarts) : Bootstrap fixe #6c757d, invisible ou trop
+  // discret sur les fonds sombres.
+  .border,
+  .border-secondary {
+    border-color: var(--border-color) !important;
+  }
+
+  // Tableaux : le fond, les zébrures et le survol supposent un fond blanc.
+  .table {
+    color: var(--text-primary);
+    // Bootstrap applique la couleur du texte de chaque cellule via --bs-table-color (par défaut
+    // = --bs-body-color, gris foncé fixe) sur un sélecteur plus spécifique que .table { color },
+    // qui ne suffit donc pas seul : sans cette variable, le texte reste illisible sur fond sombre.
+    // Les lignes zébrées (nth-of-type(odd)) et survolées ont CHACUNE leur propre variable de
+    // couleur (--bs-table-striped-color / --bs-table-hover-color), indépendante de
+    // --bs-table-color — sans elles, une ligne sur deux (et le survol) retombe sur le gris foncé
+    // par défaut de Bootstrap alors que les autres lignes sont déjà correctement en blanc.
+    --bs-table-color: var(--text-primary);
+    --bs-table-striped-color: var(--text-primary);
+    --bs-table-hover-color: var(--text-primary);
+    --bs-table-active-color: var(--text-primary);
+    --bs-table-bg: var(--surface);
+    --bs-table-striped-bg: color-mix(in srgb, var(--surface) 92%, var(--text-primary) 8%);
+    --bs-table-hover-bg: color-mix(in srgb, var(--surface) 85%, var(--brand-secondary) 15%);
+    --bs-table-border-color: var(--border-color);
+  }
+
+  // En-têtes de colonnes triables (voir admin-users) : curseur main + icône de tri discrète,
+  // plus visible au survol/tri actif.
+  .table thead th[role="button"] {
+    cursor: pointer;
+    user-select: none;
+
+    .sort-icon {
+      opacity: 0.5;
+      margin-left: 4px;
+      font-size: 11px;
+    }
+
+    &:hover .sort-icon {
+      opacity: 1;
+    }
+  }
+
+  .pagination-bar {
+    font-size: 13px;
+  }
+
+  // thead.table-dark : conservé en bleu marine fixe (identité Airbus, comme le pied de page et le
+  // bandeau bg-dark ci-dessus) plutôt que recalé sur le thème — un en-tête de tableau blanc sur
+  // texte n'a pas besoin de suivre le clair/sombre pour rester lisible.
+  .table-dark {
+    --bs-table-bg: var(--brand-primary);
+    --bs-table-color: #ffffff;
+    color: #ffffff;
+  }
+
+  // Alertes : Bootstrap les fond sur des teintes pastel calculées pour un fond de page blanc.
+  .alert-info {
+    background-color: var(--category-blue-bg) !important;
+    color: var(--category-blue-text) !important;
+    border-color: var(--category-blue-border) !important;
+  }
+
+  .alert-warning {
+    background-color: var(--category-amber-bg) !important;
+    color: var(--category-amber-text) !important;
+    border-color: var(--category-amber-border) !important;
+  }
+
+  .alert-danger {
+    background-color: var(--category-red-bg) !important;
+    color: var(--category-red-text) !important;
+    border-color: var(--category-red-border) !important;
+  }
+
+  // Boutons pleins : mêmes couleurs de marque que le reste du portail (agenda, footer) plutôt que
+  // le bleu/gris Bootstrap par défaut.
+  .btn-primary {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+
+    &:hover, &:focus {
+      background-color: var(--brand-secondary) !important;
+      border-color: var(--brand-secondary) !important;
+    }
+  }
+
+  .btn-secondary,
+  .btn-light {
+    background-color: var(--surface-alt) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+
+    &:hover, &:focus {
+      background-color: var(--surface) !important;
+      color: var(--heading-color) !important;
+    }
+  }
+
+  .btn-outline-primary {
+    color: var(--heading-color) !important;
+    border-color: var(--brand-secondary) !important;
+
+    &:hover, &:focus {
+      background-color: var(--brand-secondary) !important;
+      color: #ffffff !important;
+    }
+  }
+
+  .btn-outline-secondary {
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+
+    &:hover, &:focus {
+      background-color: var(--surface-alt) !important;
+      color: var(--text-primary) !important;
+    }
+  }
+}
+
+// Tag coloré d'un métier (Admin > Métiers, et affiché sur la fiche utilisateur) : réutilise les 6
+// teintes --category-* du design system centralisé (voir libs/shared/ui/src/portal-tokens.scss,
+// chargé une seule fois pour tout portail-shell — mêmes variables, même principe que les
+// catégories de projet de l'agenda) plutôt qu'une couleur libre, pour rester cohérent avec le
+// reste du portail et s'adapter au thème sombre sans configuration supplémentaire.
+.metier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  &.metier-blue { background: var(--category-blue-bg); color: var(--category-blue-text); border-color: var(--category-blue-border); }
+  &.metier-green { background: var(--category-green-bg); color: var(--category-green-text); border-color: var(--category-green-border); }
+  &.metier-purple { background: var(--category-purple-bg); color: var(--category-purple-text); border-color: var(--category-purple-border); }
+  &.metier-amber { background: var(--category-amber-bg); color: var(--category-amber-text); border-color: var(--category-amber-border); }
+  &.metier-slate { background: var(--category-slate-bg); color: var(--category-slate-text); border-color: var(--category-slate-border); }
+  &.metier-red { background: var(--category-red-bg); color: var(--category-red-text); border-color: var(--category-red-border); }
+}

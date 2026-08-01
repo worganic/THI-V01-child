@@ -1,0 +1,383 @@
+// Design system centralisé (voir libs/shared/ui/src/portal-tokens.scss, chargé une fois pour
+// tout le portail dans apps/portail-shell/src/styles.scss). $airbus-blue-dark pointe vers
+// --heading-color (pas --brand-primary) car il ne sert ici qu'en couleur de TEXTE sur des cartes
+// dont le fond change de thème — --heading-color reste identique à l'ancien bleu marine en clair,
+// mais s'éclaircit en sombre pour rester lisible (voir commentaire dans portal-tokens.scss).
+$airbus-blue-dark: var(--heading-color);
+$airbus-blue-corporate: var(--brand-secondary);
+$airbus-border: var(--border-color);
+$airbus-white: var(--surface);
+$bg-light: var(--surface-alt);
+
+.portal-dashboard-content {
+  padding: 32px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;         /* Centre la zone principale sur les écrans très larges */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;    /* Aligne tous les blocs enfants directs au centre */
+
+  /* ========================================================
+     SECTION TOP : Boutons d'accès direct centrés
+     ======================================================== */
+  .top-shortcuts-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 32px;
+    margin-bottom: 48px;
+    width: 100%;
+
+    .shortcut-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 48px;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease-in-out;
+      min-width: 280px;
+      border: 1px solid $airbus-border;
+
+      /* --- 1er Bouton : MyAhts (Bleu pâle -> Bleu plus foncé) --- */
+      &:nth-child(1) {
+        background-color: var(--category-blue-bg);
+        border-color: color-mix(in srgb, var(--category-blue-border) 50%, transparent);
+
+        &:hover {
+          background-color: color-mix(in srgb, var(--category-blue-bg) 65%, var(--category-blue-border) 35%);
+          border-color: var(--category-blue-border);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px color-mix(in srgb, var(--category-blue-border) 25%, transparent);
+        }
+
+        .shortcut-title { color: var(--category-blue-text); }
+        .shortcut-url { color: color-mix(in srgb, var(--category-blue-text) 75%, transparent); }
+      }
+
+      /* --- 2ème Bouton : TMS (Rose pâle -> Rose plus foncé) --- */
+      &:nth-child(2) {
+        background-color: var(--category-red-bg);
+        border-color: color-mix(in srgb, var(--category-red-border) 50%, transparent);
+
+        &:hover {
+          background-color: color-mix(in srgb, var(--category-red-bg) 65%, var(--category-red-border) 35%);
+          border-color: var(--category-red-border);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 12px color-mix(in srgb, var(--category-red-border) 25%, transparent);
+        }
+
+        .shortcut-title { color: var(--category-red-text); }
+        .shortcut-url { color: color-mix(in srgb, var(--category-red-text) 75%, transparent); }
+      }
+
+      .shortcut-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      .shortcut-url {
+        font-size: 0.85rem;
+      }
+    }
+  }
+
+/* ========================================================
+     SECTION CATÉGORIES : Élargies pour accueillir 4 colonnes
+     ======================================================== */
+  .categories-container {
+    display: flex;
+    flex-direction: row;      /* Aligne les groupes côte à côte si la place le permet */
+    flex-wrap: wrap;          /* Passe en dessous automatiquement si l'écran est trop étroit */
+    justify-content: center;  /* Centre les blocs dans la page */
+    gap: 32px;
+    width: 100%;
+
+    .category-section {
+      /* Flex-grow/shrink basé sur 50% de la largeur moins le gap pour afficher 2 blocs par ligne */
+      flex: 1 1 calc(50% - 16px); 
+      min-width: 520px;       /* Si l'espace dispo descend sous 520px, le bloc passe en dessous */
+      max-width: 720px;       /* Largeur maximale idéale pour 3 applications de front */
+      background: $airbus-white;
+      border: 1px solid $airbus-border;
+      border-radius: 8px;
+      padding: 24px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+
+      /* Couleurs par catégorie : voir --category-* dans portal-tokens.scss (variantes sombres incluses). */
+      &:nth-child(1) .category-title { background-color: var(--category-blue-bg); color: var(--category-blue-text); border-bottom: 2px solid var(--category-blue-border); }
+      &:nth-child(2) .category-title { background-color: var(--category-green-bg); color: var(--category-green-text); border-bottom: 2px solid var(--category-green-border); }
+      &:nth-child(3) .category-title { background-color: var(--category-purple-bg); color: var(--category-purple-text); border-bottom: 2px solid var(--category-purple-border); }
+      &:nth-child(4) .category-title { background-color: var(--category-amber-bg); color: var(--category-amber-text); border-bottom: 2px solid var(--category-amber-border); }
+      &:nth-child(n+5) .category-title { background-color: var(--category-slate-bg); color: var(--category-slate-text); border-bottom: 2px solid var(--category-slate-border); }
+
+      .category-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 12px;
+        padding: 12px 16px;
+        border-radius: 6px;
+        text-align: center;
+      }
+
+      .category-desc {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin-top: 14px;
+        margin-bottom: 24px;
+        text-align: center;
+      }
+
+      /* ========================================================
+         SECTION APPS : Configuration stricte à 3 par ligne
+         ======================================================== */
+      .apps-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-start; /* Aligne proprement à gauche dans la grille */
+        gap: 12px;                  /* Ajustement du gap pour l'espace à 3 colonnes */
+        width: 100%;
+
+        .app-item {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          gap: 12px;
+          background: color-mix(in srgb, var(--brand-secondary) 4%, transparent);
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          padding: 12px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          
+          /* Formule pour 3 par ligne max : 
+             33.333% de la largeur moins le prorata des 2 gaps (12px * 2 / 3 = 8px) 
+          */
+          flex: 0 0 calc(33.333% - 8px); 
+          
+          min-width: 150px; /* Devient adaptatif si la carte se réduit */
+          outline: none;
+          text-align: left;
+
+          &:hover, &:focus {
+            background-color: color-mix(in srgb, var(--brand-secondary) 12%, transparent);
+            border-color: color-mix(in srgb, var(--brand-secondary) 40%, transparent);
+            box-shadow: 0 4px 10px color-mix(in srgb, var(--brand-secondary) 8%, transparent);
+            transform: translateY(-1px);
+          }
+
+          .app-icon-wrapper {
+            width: 36px;         /* Légère réduction de l'icône pour s'adapter aux colonnes de 3 */
+            height: 36px;
+            min-width: 36px;
+            max-width: 36px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+
+            .app-icon {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+
+            .default-icon {
+              font-size: 20px;
+            }
+          }
+
+          .app-details {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 100%;
+
+            .app-name {
+              font-weight: 700;
+              font-size: 0.85rem;
+              color: $airbus-blue-dark;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+            }
+
+            .app-desc {
+              font-size: 0.72rem;
+              color: var(--text-secondary);
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              margin-top: 2px;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /* ========================================================
+     ALERTS ET LOADERS 
+     ======================================================== */
+  .loader-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 0;
+    // Texte sur le fond de page (var(--page-bg)) : $airbus-blue-corporate resterait trop sombre
+    // sur un fond de page sombre, d'où --heading-color (même logique que les titres de carte).
+    color: var(--heading-color);
+    font-weight: 500;
+
+    .spinner-img {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 12px;
+    }
+  }
+
+  .alert-danger {
+    background-color: color-mix(in srgb, var(--surface) 90%, var(--category-red-border) 10%);
+    border-left: 4px solid var(--category-red-border);
+    padding: 15px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+
+    p {
+      margin: 0;
+      color: var(--category-red-text);
+    }
+  }
+
+  .alert-info {
+    background-color: color-mix(in srgb, var(--surface) 90%, var(--category-blue-border) 10%);
+    border-left: 4px solid var(--brand-secondary);
+    padding: 15px 20px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+
+    p {
+      margin: 0;
+      color: var(--category-blue-text);
+    }
+  }
+}
+
+/* --- EFFET MARQUEE AU SURVOL POUR LES TITRES LONGS --- */
+.app-title-container {
+  width: 100%;
+  overflow: hidden;         // Masque ce qui dépasse
+  white-space: nowrap;      // Empêche le retour à la ligne
+  text-overflow: ellipsis;  // Affiche "..." par défaut si trop long
+  position: relative;
+  display: block;
+
+  &:hover {
+    text-overflow: clip;    // Supprime les "..." au survol pour libérer le texte
+    
+    .app-title-text {
+      display: inline-block;
+      padding-left: 10px;
+      /* Déclenche l'animation de défilement alternatif */
+      animation: marquee-hover 6s linear infinite alternate;
+    }
+  }
+}
+
+/* Animation fluide de droite à gauche */
+@keyframes marquee-hover {
+  0%, 15% {
+    transform: translateX(0); /* Reste fixe au début pendant 15% du temps */
+  }
+  85%, 100% {
+    /* Translate le texte vers la gauche. 
+       -35% permet de dévoiler les titres longs de manière fluide 
+       sans faire disparaître les titres plus courts. */
+    transform: translateX(-35%); 
+  }
+}
+
+/* --- MISE EN PAGE DE LA CARTE APPLICATIVE --- */
+.app-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;            // Espace entre l'icône et le texte
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 8px;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+}
+
+/* ZONE ICONE : Taille fixe stricte */
+.icon-zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;         // Ajustez la taille de votre icône ici
+  min-width: 48px;     // Empêche l'icône de s'écraser
+  height: 48px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+/* ZONE TEXTE : S'étire automatiquement pour combler 100% du vide restant */
+.text-zone {
+  flex: 1;             // S'étend au maximum sur l'espace disponible
+  min-width: 0;        // CRITIQUE : Permet aux ellipses et au défilement (marquee) de calculer la bonne largeur
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* --- EFFET DE DÉFILEMENT (MARQUEE) AU SURVOL COMPATIBLE --- */
+.app-title-container {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &:hover {
+    text-overflow: clip;
+    
+    .app-title-text {
+      display: inline-block;
+      padding-left: 8px;
+      animation: marquee-hover 5s linear infinite alternate;
+    }
+  }
+}
+
+@keyframes marquee-hover {
+  0%, 20% {
+    transform: translateX(0);
+  }
+  80%, 100% {
+    transform: translateX(-30%);
+  }
+}
+
+.app-description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2; // Limite la description à 2 lignes proprement
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

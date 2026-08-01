@@ -1,0 +1,12 @@
+.admin-content-container { 
+  padding: 20px; 
+  .matricule-code { background-color: #eef2f7; padding: 3px 6px; border-radius: 4px; color: #0055a5; font-weight: bold; } 
+  .select-role-management { max-width: 240px; } 
+  .status-icon { height: 16px; vertical-align: middle; margin-right: 5px; } 
+  
+  .spinner-overlay-inline { 
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+    background: rgba(255, 255, 255, 0.7); display: flex; justify-content: center; align-items: center; z-index: 10; 
+    img { width: 40px; } 
+  }
+}

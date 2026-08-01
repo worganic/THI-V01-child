@@ -1,0 +1,33 @@
+<div class="backend-unavailable">
+  <div class="card">
+    <div class="icon">⚠️</div>
+    <h1>Backend indisponible</h1>
+
+    <p class="lead">
+      Aucun serveur ne répond pour l'environnement <strong>{{ runtime.environment }}</strong>
+      (réseau interne / VPN coupé, backend en panne, ou mode mal démarré).
+    </p>
+
+    <p class="hint" *ngIf="runtime.environment !== 'Prod'">
+      Vérifiez votre connexion au réseau interne Airbus / VPN, ou basculez vers le mode local
+      (<code>npm run start:dev-local</code>) pour travailler sans dépendre du réseau.
+    </p>
+    <p class="hint" *ngIf="runtime.environment === 'Prod'">
+      Le service est momentanément indisponible. Réessayez dans quelques instants ; si le problème
+      persiste, contactez l'équipe support.
+    </p>
+
+    <button type="button" class="retry" (click)="retry()">Réessayer</button>
+
+    <div class="modes" *ngIf="runtime.environment !== 'Prod'">
+      <h2>Modes de lancement disponibles</h2>
+      <ul>
+        <li *ngFor="let mode of launchModes">
+          <span class="mode-label">{{ mode.label }}</span>
+          <code>{{ mode.command }}</code>
+          <span class="mode-description">{{ mode.description }}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

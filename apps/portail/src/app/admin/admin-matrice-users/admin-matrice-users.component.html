@@ -1,0 +1,37 @@
+<div class="card shadow-sm mb-4">
+  <div class="card-body d-flex align-items-center gap-3">
+    <h5 class="mb-0">Sélectionner un Groupe :</h5>
+    <select class="form-select w-auto" [(ngModel)]="selectedgroupe_idForUsers">
+      @for (grp of groupes; track grp.id) {
+        <option [ngValue]="grp.id">{{ grp.nom }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (selectedgroupe_idForUsers) {
+  <table class="table table-striped table-hover align-middle shadow-sm bg-white">
+    <thead class="table-dark">
+      <tr>
+        <th>Utilisateur</th>
+        <th>Matricule</th>
+        <th class="text-center">Accès autorisé</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users; track user.id) {
+        <tr>
+          <td class="fw-bold">{{ user.nom }} {{ user.prenom }}</td>
+          <td>{{ user.matricule }}</td>
+          <td class="text-center">
+            <div class="form-check d-inline-block">
+              <input class="form-check-input" type="checkbox"
+                     [checked]="isUserInGroupe(user.id, selectedgroupe_idForUsers)"
+                     (change)="toggleUserGroupe(user.id, selectedgroupe_idForUsers, $event)">
+            </div>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

@@ -1,0 +1,111 @@
+<div class="card-section categories-card">
+  <div class="card-header">
+    <span class="card-icon">🧰</span>
+    <h3 class="card-title">Métiers</h3>
+  </div>
+
+  <div class="card-body">
+    <p class="categories-hint">
+      Regroupe les utilisateurs par métier (Dev, Infra, Instructeurs...), affiché en badge coloré
+      sur la fiche utilisateur (Admin &gt; Utilisateurs). Un métier utilisé par au moins un
+      utilisateur ne peut pas être supprimé — renommez-le ou réaffectez d'abord les utilisateurs
+      concernés.
+    </p>
+
+    <form class="category-form" (ngSubmit)="onSubmit()">
+      <div class="form-group form-group-name">
+        <label for="metierNom">Nom</label>
+        <input id="metierNom" type="text" [(ngModel)]="form.nom" name="nom" placeholder="ex: Dev" required />
+      </div>
+      <div class="form-group">
+        <label for="metierColor">Couleur</label>
+        <select id="metierColor" [(ngModel)]="form.color" name="color">
+          @for (opt of colorOptions; track opt.value) {
+            <option [value]="opt.value">{{ opt.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="form-group form-group-preview">
+        <label>Aperçu</label>
+        <span class="metier-badge" [ngClass]="badgeClass(form.color)">{{ form.nom || 'Aperçu' }}</span>
+      </div>
+      <div class="form-group form-group-active">
+        <label class="checkbox-label" for="metierActive">
+          <input id="metierActive" type="checkbox" [(ngModel)]="form.is_active" name="is_active" />
+          Actif
+        </label>
+      </div>
+      @if (editingId !== null) {
+        <button type="button" class="btn-cancel-edit" (click)="cancelEdit()">Annuler</button>
+      }
+      <button type="submit" class="btn-submit-airbus">{{ editingId !== null ? 'Enregistrer' : '+ Ajouter' }}</button>
+    </form>
+
+    @if (sortedMetiers.length === 0) {
+      <p class="categories-empty">Aucun métier enregistré.</p>
+    } @else {
+      <div class="categories-list">
+        @for (metier of sortedMetiers; track metier.id) {
+          <div class="category-row-wrap">
+            <div class="category-row" [class.is-editing]="editingId === metier.id" [class.is-inactive]="!metier.is_active">
+              <span class="category-col-badge">
+                <span class="metier-badge" [ngClass]="badgeClass(metier.color)">{{ metier.nom }}</span>
+              </span>
+              <span class="inactive-tag" [class.is-hidden]="metier.is_active">Inactif</span>
+              <span class="category-usage">
+                {{ userCount(metier.id) }} utilisateur{{ userCount(metier.id) > 1 ? 's' : '' }}
+              </span>
+              <div class="category-actions">
+                <button type="button" class="btn-edit-category" (click)="startEdit(metier)" title="Modifier ce métier">✎ Modifier</button>
+                <button
+                  type="button"
+                  class="btn-remove-category"
+                  [disabled]="isUsed(metier.id)"
+                  [title]="isUsed(metier.id) ? 'Utilisé par au moins un utilisateur : impossible à supprimer' : 'Supprimer ce métier'"
+                  (click)="onDelete(metier)"
+                >✕</button>
+              </div>
+            </div>
+            @if (isUsed(metier.id)) {
+              <div class="category-users-list">
+                @for (u of usersFor(metier.id); track u.id) {
+                  <span class="category-user-chip">
+                    {{ u.prenom }} {{ u.nom }}
+                    <button
+                      type="button"
+                      class="btn-remove-user"
+                      title="Retirer ce métier de {{ u.prenom }} {{ u.nom }}"
+                      (click)="unassignUser(u)"
+                    >✕</button>
+                  </span>
+                }
+              </div>
+            }
+
+            <div class="category-user-add">
+              <input
+                type="text"
+                class="category-user-input"
+                placeholder="+ ajouter un utilisateur..."
+                [(ngModel)]="userQuery[metier.id]"
+                [ngModelOptions]="{ standalone: true }"
+                (focus)="onUserSearchFocus(metier.id)"
+                (blur)="onUserSearchBlur()"
+              />
+              @if (openSuggestionsFor === metier.id && suggestionsFor(metier.id).length > 0) {
+                <div class="category-user-suggestions">
+                  @for (u of suggestionsFor(metier.id); track u.id) {
+                    <div class="suggestion-item" (mousedown)="assignUser(metier.id, u)">
+                      <span class="suggestion-name">{{ u.prenom }} {{ u.nom }}</span>
+                      <span class="suggestion-matricule">{{ u.matricule }}</span>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

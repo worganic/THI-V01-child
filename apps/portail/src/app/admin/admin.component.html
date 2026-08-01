@@ -1,0 +1,61 @@
+<div class="admin-layout-container">
+  <main class="admin-scrollable-container">
+    <div class="admin-content-wrapper">
+
+      <!-- En-tête -->
+      <header class="admin-page-header">
+        <div class="admin-page-header__icon">
+          <span class="material-symbols-outlined">admin_panel_settings</span>
+        </div>
+        <div>
+          <h1>Administration</h1>
+          <p>Gestion des projets et des utilisateurs</p>
+        </div>
+      </header>
+
+      <nav class="admin-menu" aria-label="Menu d'administration">
+
+        <!-- Niveau 1 — catégories -->
+        <div class="admin-pill-bar">
+          @for (cat of categories; track cat.id) {
+            <button type="button" class="admin-pill" [class.active]="activeCategory() === cat.id"
+                    (click)="setCategory(cat.id)">
+              <span class="material-symbols-outlined">{{ cat.icon }}</span>
+              {{ cat.label }}
+            </button>
+          }
+        </div>
+
+        <!-- Niveau 2 — onglets de la catégorie -->
+        <div class="admin-pill-bar">
+          @for (tab of tabsInCategory(); track tab.id) {
+            <button type="button" class="admin-pill" [class.active]="isActiveTab(tab)"
+                    (click)="openTab(tab)">
+              <span class="material-symbols-outlined">{{ tab.icon }}</span>
+              {{ tab.label }}
+            </button>
+          }
+          @if (tabsInCategory().length === 0) {
+            <span class="admin-pill-bar__empty">Aucune sous-application n'a encore d'admin propre.</span>
+          }
+        </div>
+
+        <!-- Niveau 3 — pages de l'onglet ouvert -->
+        @if (sectionsInTab().length > 0) {
+          <div class="admin-pill-bar admin-pill-bar--sections">
+            @for (section of sectionsInTab(); track section.id) {
+              <a class="admin-pill" [class.active]="isActiveRoute(section.route)"
+                 [routerLink]="['/admin', section.route]">
+                <span class="material-symbols-outlined">{{ section.icon }}</span>
+                {{ section.label }}
+              </a>
+            }
+          </div>
+        }
+
+      </nav>
+
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

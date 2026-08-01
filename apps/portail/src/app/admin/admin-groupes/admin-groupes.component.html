@@ -1,0 +1,114 @@
+<div class="accordion shadow-sm mb-4" id="accordionAddGroup">
+  <div class="accordion-item border-secondary">
+    <h2 class="accordion-header" id="headingAdd">
+      <button 
+        class="accordion-button bg-light fw-bold text-dark" 
+        [class.collapsed]="!isFormOpen"
+        type="button" 
+        (click)="toggleForm()" 
+        [attr.aria-expanded]="isFormOpen" 
+        aria-controls="collapseAdd">
+        <i class="bi bi-plus-circle-fill text-primary me-2"></i> Ajouter un nouveau Groupe Applicatif
+      </button>
+    </h2>
+    <div 
+      id="collapseAdd" 
+      class="accordion-collapse collapse" 
+      [class.show]="isFormOpen"
+      aria-labelledby="headingAdd" 
+      data-bs-parent="#accordionAddGroup">
+      <div class="accordion-body d-flex gap-3 flex-wrap align-items-center bg-white">
+        <input type="text" class="form-control w-auto" placeholder="Nom du Groupe" [(ngModel)]="newGroupe.nom">
+        <input type="text" class="form-control flex-grow-1" style="min-width: 250px;" placeholder="Description" [(ngModel)]="newGroupe.description">
+        <input type="number" class="form-control" style="width: 100px;" placeholder="Ordre" [(ngModel)]="newGroupe.ordre">
+        <div class="form-check ms-2 d-flex align-items-center">
+          <input type="checkbox" class="form-check-input cursor-pointer me-2 m-0" id="new-grp-active" [(ngModel)]="newGroupe.is_active">
+          <label class="form-check-label cursor-pointer fw-medium mb-0" for="new-grp-active">Actif</label>
+        </div>
+        <button class="btn btn-primary ms-auto" (click)="ajouterGroupe()" [disabled]="!newGroupe.nom">
+          <i class="bi bi-save me-1"></i> Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  @for (groupe of groupes; track groupe.id) {
+    <div class="col-12 col-xl-6">
+      <div class="card shadow-sm border-0 bg-white h-100">
+        <div class="card-header bg-dark text-white py-3">
+          @if (editingGroupId === groupe.id) {
+            <div class="d-flex align-items-center flex-wrap gap-2 w-100">
+              <input type="text" class="form-control form-control-sm" style="width: 140px;" [(ngModel)]="editingGroupObj.nom" placeholder="Nom">
+              <input type="text" class="form-control form-control-sm flex-grow-1" style="min-width: 180px;" [(ngModel)]="editingGroupObj.description" placeholder="Description">
+              <input type="number" class="form-control form-control-sm" style="width: 80px;" [(ngModel)]="editingGroupObj.ordre" placeholder="Ordre">
+              <div class="d-flex gap-2 ms-auto">
+                <button class="btn btn-success btn-sm shadow-sm" (click)="saveEdit()">
+                  <i class="bi bi-check-lg"></i> Valider
+                </button>
+                <button class="btn btn-secondary btn-sm shadow-sm" (click)="cancelEdit()">
+                  <i class="bi bi-x-lg"></i> Annuler
+                </button>
+              </div>
+            </div>
+          } @else {
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div class="d-flex align-items-center flex-wrap gap-2">
+                <h5 class="mb-0 fw-bold">{{ groupe.nom }}</h5>
+                <span class="badge bg-secondary border border-light shadow-sm">Ordre: {{ groupe.ordre }}</span>
+                @if (!groupe.is_active) {
+                  <span class="badge bg-danger shadow-sm">Inactif</span>
+                }
+              </div>
+              <div class="d-flex gap-2 ms-auto">
+                <button class="btn btn-light btn-sm text-dark fw-bold shadow-sm" (click)="startEdit(groupe)">
+                  <i class="bi bi-pencil-square text-primary me-1"></i> Éditer
+                </button>
+                <button class="btn btn-danger btn-sm shadow-sm" (click)="deleteGroupe(groupe.id)">
+                  <i class="bi bi-trash"></i> Supprimer
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+        
+        <div class="card-body bg-light">
+          <h6 class="text-primary fw-bold mb-3 border-bottom border-secondary pb-2">
+            <i class="bi bi-grid-3x3-gap me-2"></i>Applications disponibles
+          </h6>
+          
+          <div class="row row-cols-1 row-cols-md-2 g-2">
+            @for (app of applications; track app.id) {
+              <div class="col">
+                <div class="bg-white border rounded p-3 shadow-sm h-100 transition-all"
+                     [class.border-success]="isAppInGroup(groupe.id, app.id)"
+                     [class.border-secondary]="!isAppInGroup(groupe.id, app.id)"
+                     [class.opacity-75]="!isAppInGroup(groupe.id, app.id)">
+                  
+                  <div class="form-check form-switch m-0 p-0 d-flex align-items-center w-100">
+                    <input class="form-check-input flex-shrink-0 ms-0 me-3 fs-5 mt-0 cursor-pointer"
+                           type="checkbox" role="switch"
+                           [id]="'app-' + groupe.id + '-' + app.id"
+                           [checked]="isAppInGroup(groupe.id, app.id)"
+                           (change)="toggleAppGroup(groupe.id, app.id, $event)">
+                    
+                    <label class="form-check-label flex-grow-1 cursor-pointer overflow-hidden m-0" [for]="'app-' + groupe.id + '-' + app.id">
+                      <div class="fw-bold text-truncate" [class.text-success]="isAppInGroup(groupe.id, app.id)">{{ app.nom }}</div>
+                      <div class="text-muted small text-truncate" [title]="app.description">{{ app.description }}</div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+          @if (applications.length === 0) {
+            <div class="text-muted fst-italic p-3 text-center bg-white border rounded">
+              Aucune application n'est disponible dans le système
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

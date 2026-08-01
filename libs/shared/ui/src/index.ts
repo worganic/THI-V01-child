@@ -6,6 +6,12 @@
 // doit le trouver au même endroit.
 export * from './lib/service/theme.service';
 
+// Informations d'exécution affichées par le footer (version, environnement,
+// mode de connexion) et écran de repli quand le backend ne répond pas.
+export * from './lib/service/runtime-info.service';
+export * from './lib/service/launch-modes';
+export * from './lib/backend-unavailable/backend-unavailable.component';
+
 // Composants et services d'interface propres à CE portail (chrome du portail,
 // outils maison) : c'est le seul point de ce dossier qui diffère d'un monorepo
 // à l'autre. Une sous-application destinée à circuler entre les deux portails

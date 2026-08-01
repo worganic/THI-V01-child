@@ -1,0 +1,61 @@
+<div class="login-page">
+  @if (!autorise) {
+    <div class="ip-alert">
+      <span class="icon">⚠️</span>
+      <p>Accès restreint. <br/>Votre adresse IP <strong>{{ ipAddress }}</strong><br/>n'est pas autorisée.</p>
+    </div>
+  } @else {
+    <div class="login-card">
+      <div class="login-header">
+        <h2>Portail - Connexion</h2>
+        <p>Veuillez saisir vos identifiants pour accéder à l'application.</p>
+      </div>
+      
+      <!-- ✨ NOUVEAU : Message d'information ou de succès (Vert / Bleu) -->
+      @if (successMessage) {
+        <div class="login-success-message">
+          <span class="icon">✓</span>
+          <p>{{ successMessage }}</p>
+        </div>
+      }
+
+      <!-- Message d'erreur (Rouge) -->
+      @if (errorMessage) {
+        <div class="login-error-message">
+          <span class="icon">✕</span>
+          <p>{{ errorMessage }}</p>
+        </div>
+      }
+      
+      <form [formGroup]="form" (ngSubmit)="login()" class="login-form">
+        <div class="form-group">
+          <label for="matricule">Identifiant</label>
+          <div class="input-wrapper">
+            <input
+              formControlName="matricule"
+              id="matricule"
+              type="text"
+              placeholder="Ex: A123456"
+              class="form-control">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Mot de passe</label>
+          <div class="input-wrapper">
+            <input
+              formControlName="password"
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              class="form-control">
+          </div>
+        </div>
+        
+        <button class="btn-submit" type="submit" [disabled]="form.invalid || isLoading">
+          {{ isLoading ? 'Connexion en cours...' : 'Se connecter' }}
+        </button>
+      </form>
+    </div>
+  }
+</div>

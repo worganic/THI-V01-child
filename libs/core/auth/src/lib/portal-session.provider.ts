@@ -33,6 +33,7 @@ export class PortalSessionAdapter implements PortalSession {
       displayName: u.username,
       email: u.email ?? null,
       role: PortalSessionAdapter.normalizeRole(u.role),
+      rawRole: u.role ?? null,
     };
   });
 

@@ -1,0 +1,7 @@
+.main-content {
+  padding-top: 60px;       /* Évite la superposition sous le header principal */
+  padding-bottom: 40px;    /* Empêche le contenu de passer sous le footer fixé en bas */
+  min-height: 100vh;
+  box-sizing: border-box;
+  background-color: #f4f6f8;
+}

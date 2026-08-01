@@ -28,6 +28,14 @@ export interface PortalSessionUser {
   email: string | null;
   /** Rôle applicatif normalisé sur les deux portails. */
   role: 'admin' | 'user' | 'invite';
+  /**
+   * Rôle tel que le nomme le portail hôte, avant normalisation ('SU', 'ADMIN',
+   * 'admin'…). Réservé aux écrans d'administration du portail, qui distinguent
+   * des rôles que le vocabulaire commun fusionne — un super-administrateur et
+   * un administrateur valent tous deux `role: 'admin'`. Une sous-application ne
+   * doit jamais s'en servir : sa valeur n'a de sens que dans son portail.
+   */
+  rawRole: string | null;
 }
 
 export interface PortalSession {
