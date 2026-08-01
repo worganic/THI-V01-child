@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 
-import { ThemeService } from '@portail/core-data-access';
+import { ThemeService } from '@portail/shared-ui';
 import { AuthService } from '@portail/core-data-access';
 import { ConfigService } from '@portail/core-data-access';
 import { LayoutService } from '@portail/core-data-access';

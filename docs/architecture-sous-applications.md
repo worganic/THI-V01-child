@@ -130,9 +130,61 @@ getAuthHeaders(): Record<string, string>;
 logout(): void;
 ```
 
-Chaque portail fournit ce token en adaptant son propre service.
+Chaque portail fournit ce token en adaptant son propre service, via
+`providePortalSession()` (`libs/core/auth/src/lib/portal-session.provider.ts`) —
+même signature des deux côtés, implémentation locale.
 
-### 7. Design
+Les gardes de routage `authGuard` et `guestGuard` sont écrites **sur ce
+contrat** et sont donc identiques dans les deux monorepos. Ce qui différait —
+l'adresse de l'écran de connexion et du point d'atterrissage — est fourni par
+`PORTAL_AUTH_ROUTES` depuis `app.config.ts` :
+
+```ts
+{ provide: PORTAL_AUTH_ROUTES, useValue: { login: '/connexion', home: '/home' } }
+```
+
+### 7. Points d'extension : garder les `index.ts` identiques
+
+Les deux portails n'exposent pas le même nombre de services ni les mêmes
+composants — l'un a des mega-outils, un Tchat IA et un éditeur de projets que
+l'autre n'a pas. Pour que les `index.ts` des libs restent malgré tout
+**identiques bit-à-bit**, chaque lib a un fichier d'extension au nom fixe, que
+son `index.ts` réexporte :
+
+| Lib | Fichier d'extension | Contenu |
+|---|---|---|
+| `core/auth` | `lib/portal-auth.ts` | implémentation d'authentification locale |
+| `core/data-access` | `lib/portal-data-access.ts` | services d'accès aux données locaux |
+| `shared/ui` | `lib/portal-ui.ts` | chrome du portail et outils maison |
+
+Ces trois fichiers portent le même nom des deux côtés et n'y exposent **pas** les
+mêmes symboles : ce sont les seuls écarts prévus. Une sous-application destinée à
+circuler entre les deux portails n'importe rien de ce qui vient de là.
+
+### 8. Thème
+
+`ThemeService` (`libs/shared/ui/src/lib/service/theme.service.ts`) est le **même
+code** dans les deux monorepos. Ce qui change — nombre de thèmes, classes CSS
+posées sur `<html>`, icônes, clé de stockage — est fourni par
+`PORTAL_THEME_CONFIG` depuis `app.config.ts` :
+
+```ts
+{
+  provide: PORTAL_THEME_CONFIG,
+  useValue: {
+    storageKey: 'theme',
+    cycle: ['dark', 'light', 'pink'],
+    fallback: 'dark',                       // ou 'system'
+    classes: { dark: ['dark'], light: [], pink: ['dark', 'pink'] },
+    icons:   { dark: 'light_mode', light: 'favorite', pink: 'dark_mode' },
+  }
+}
+```
+
+Un portail à deux thèmes et un portail à trois thèmes exécutent donc bien le
+même service.
+
+### 9. Design
 
 Le contrat visuel est un **vocabulaire de variables CSS**, défini au même chemin
 dans les deux monorepos : `libs/shared/ui/src/portal-tokens.scss`. Mêmes noms

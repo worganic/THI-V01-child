@@ -1938,11 +1938,18 @@ let _usersCache = null;
 async function loadUsersFromDB() {
     try {
         const [rows] = await pool.query(
-            'SELECT id, username, email, password_hash, role, created_at, last_login, config FROM users'
+            `SELECT id, matricule, nom, prenom, username, email, password_hash, role, is_active,
+                    created_at, last_login, config
+             FROM users`
         );
         _usersCache = rows.map(r => ({
-            id: r.id, username: r.username, email: r.email,
+            id: r.id,
+            matricule: r.matricule ?? '',
+            nom: r.nom ?? '',
+            prenom: r.prenom ?? '',
+            username: r.username, email: r.email,
             password: r.password_hash, role: r.role,
+            isActive: r.is_active === undefined ? true : !!r.is_active,
             createdAt: r.created_at ? r.created_at.toISOString() : null,
             lastLogin: r.last_login ? r.last_login.toISOString() : null,
             config: r.config || {}
@@ -1999,25 +2006,36 @@ require('../apps/appli-projets/server').register(app, {
 });
 
 app.post('/api/auth/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    // matricule/nom/prenom/isActive : facultatifs à l'inscription publique, renseignés
+    // depuis Admin › Portail › Utilisateurs. Un compte créé sans eux reste valide.
+    const { username, email, password, matricule, nom, prenom, isActive } = req.body;
     if (!username || !email || !password) return res.status(400).json({ error: 'Tous les champs sont requis' });
     if (password.length < 6) return res.status(400).json({ error: 'Le mot de passe doit faire au moins 6 caractères' });
     try {
         const users = loadUsers();
         if (users.find(u => u.email === email.toLowerCase())) return res.status(409).json({ error: 'Cet email est déjà utilisé' });
         if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) return res.status(409).json({ error: "Ce nom d'utilisateur est déjà pris" });
+        const nouveauMatricule = (matricule || '').trim();
+        if (nouveauMatricule && users.find(u => (u.matricule || '').toLowerCase() === nouveauMatricule.toLowerCase())) {
+            return res.status(409).json({ error: 'Ce matricule est déjà utilisé' });
+        }
         const newUser = {
             id: crypto.randomUUID(),
+            matricule: nouveauMatricule,
+            nom: (nom || '').trim(),
+            prenom: (prenom || '').trim(),
             username: username.trim(),
             email: email.toLowerCase().trim(),
             password: hashPassword(password),
             role: users.length === 0 ? 'admin' : 'user',
+            isActive: isActive === undefined ? true : !!isActive,
             createdAt: new Date().toISOString()
         };
         await pool.query(
-            `INSERT INTO users (id, username, email, password_hash, role, created_at)
-             VALUES (?,?,?,?,?,?)`,
-            [newUser.id, newUser.username, newUser.email, newUser.password, newUser.role, newUser.createdAt]
+            `INSERT INTO users (id, matricule, nom, prenom, username, email, password_hash, role, is_active, created_at)
+             VALUES (?,?,?,?,?,?,?,?,?,?)`,
+            [newUser.id, newUser.matricule, newUser.nom, newUser.prenom, newUser.username,
+             newUser.email, newUser.password, newUser.role, newUser.isActive ? 1 : 0, newUser.createdAt]
         );
         _usersCache = [...users, newUser];
         const token = generateToken();
@@ -2039,6 +2057,11 @@ app.post('/api/auth/login', async (req, res) => {
         const users = await loadUsersFromDB();
         const idx = users.findIndex(u => u.email === email.toLowerCase() && u.password === hashPassword(password));
         if (idx === -1) return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
+        // Compte désactivé depuis Admin › Portail › Utilisateurs : identifiants corrects,
+        // mais connexion refusée (message distinct, il n'y a rien à corriger côté saisie).
+        if (users[idx].isActive === false) {
+            return res.status(403).json({ error: 'Ce compte est désactivé. Contactez un administrateur.' });
+        }
         const lastLogin = new Date().toISOString();
         try {
             await pool.query('UPDATE users SET last_login = ? WHERE id = ?', [lastLogin, users[idx].id]);
@@ -2074,8 +2097,11 @@ app.get('/api/auth/users', (req, res) => {
     const user = getSessionUser(req);
     if (!user) return res.status(401).json({ error: 'Non authentifié' });
     const safeUsers = loadUsers().map(u => ({
-        id: u.id, username: u.username, email: u.email,
-        role: u.role, createdAt: u.createdAt, lastLogin: u.lastLogin || null
+        id: u.id,
+        matricule: u.matricule || '', nom: u.nom || '', prenom: u.prenom || '',
+        username: u.username, email: u.email, role: u.role,
+        isActive: u.isActive !== false,
+        createdAt: u.createdAt, lastLogin: u.lastLogin || null
     }));
     res.json(safeUsers);
 });
@@ -2088,18 +2114,34 @@ app.put('/api/auth/users/:id', async (req, res) => {
         const users = loadUsers();
         const idx = users.findIndex(u => u.id === req.params.id);
         if (idx === -1) return res.status(404).json({ error: 'Utilisateur non trouvé' });
-        const { username, email, role, password } = req.body;
+        const { username, email, role, password, matricule, nom, prenom, isActive } = req.body;
         if (username) users[idx].username = username.trim();
         if (email) users[idx].email = email.toLowerCase().trim();
         if (role) users[idx].role = role;
         if (password) users[idx].password = hashPassword(password);
+        // Champs d'annuaire : `!== undefined` et non `if (valeur)`, pour qu'un champ
+        // volontairement vidé (matricule effacé) soit bien enregistré comme vide.
+        if (matricule !== undefined) users[idx].matricule = (matricule || '').trim();
+        if (nom !== undefined) users[idx].nom = (nom || '').trim();
+        if (prenom !== undefined) users[idx].prenom = (prenom || '').trim();
+        if (isActive !== undefined) users[idx].isActive = !!isActive;
+        if (users[idx].matricule && users.some((u, i) =>
+            i !== idx && (u.matricule || '').toLowerCase() === users[idx].matricule.toLowerCase())) {
+            return res.status(409).json({ error: 'Ce matricule est déjà utilisé' });
+        }
         await pool.query(
-            `UPDATE users SET username=?, email=?, role=?, password_hash=? WHERE id=?`,
-            [users[idx].username, users[idx].email, users[idx].role, users[idx].password, req.params.id]
+            `UPDATE users SET matricule=?, nom=?, prenom=?, username=?, email=?, role=?, is_active=?, password_hash=? WHERE id=?`,
+            [users[idx].matricule || '', users[idx].nom || '', users[idx].prenom || '',
+             users[idx].username, users[idx].email, users[idx].role,
+             users[idx].isActive === false ? 0 : 1, users[idx].password, req.params.id]
         );
         _usersCache = users;
         const u = users[idx];
-        res.json({ id: u.id, username: u.username, email: u.email, role: u.role, createdAt: u.createdAt });
+        res.json({
+            id: u.id, matricule: u.matricule || '', nom: u.nom || '', prenom: u.prenom || '',
+            username: u.username, email: u.email, role: u.role,
+            isActive: u.isActive !== false, createdAt: u.createdAt
+        });
     } catch (e) {
         console.error('[AUTH] Update user error:', e);
         res.status(500).json({ error: 'Erreur serveur' });

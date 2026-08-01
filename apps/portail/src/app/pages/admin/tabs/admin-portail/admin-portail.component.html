@@ -15,8 +15,10 @@
   </div>
 
   @if (section() === 'utilisateurs') { <app-portail-utilisateurs-section /> }
-  @if (section() === 'apps')         { <app-portail-apps-section /> }
   @if (section() === 'groupes')      { <app-portail-groupes-section /> }
   @if (section() === 'metiers')      { <app-portail-metiers-section /> }
+  @if (section() === 'apps')         { <app-portail-apps-section /> }
+  @if (section() === 'export')       { <app-portail-export-section /> }
+  @if (section() === 'config')       { <app-portail-config-section /> }
 
 </div>

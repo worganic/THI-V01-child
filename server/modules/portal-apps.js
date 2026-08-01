@@ -120,17 +120,34 @@ function isAppAvailable(code, urlPath) {
 }
 
 /**
- * Crée les tables du portail si besoin, ajoute users.metier_id et amorce les
- * sous-applications au tout premier démarrage. Idempotent.
+ * Colonnes de fiche utilisateur ajoutées après coup sur `users` : identité
+ * annuaire (matricule/nom/prénom), métier et statut du compte. MySQL ne
+ * supporte pas `ADD COLUMN IF NOT EXISTS` → on tente et on ignore l'erreur
+ * 1060 (colonne déjà présente). Valeurs par défaut non nulles : les comptes
+ * créés avant cet ajout restent exploitables sans reprise de données.
+ */
+const USER_COLUMNS = [
+    "ADD COLUMN metier_id INT NULL",
+    "ADD COLUMN matricule VARCHAR(50) NOT NULL DEFAULT ''",
+    "ADD COLUMN nom VARCHAR(255) NOT NULL DEFAULT ''",
+    "ADD COLUMN prenom VARCHAR(255) NOT NULL DEFAULT ''",
+    "ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1",
+];
+
+/**
+ * Crée les tables du portail si besoin, complète la fiche utilisateur et
+ * amorce les sous-applications au tout premier démarrage. Idempotent.
  */
 async function ensureSchema(pool) {
     try {
         for (const stmt of SCHEMA) await pool.query(stmt);
 
-        try {
-            await pool.query('ALTER TABLE users ADD COLUMN metier_id INT NULL');
-        } catch (e) {
-            if (e.errno !== 1060) throw e; // 1060 = colonne déjà présente
+        for (const ddl of USER_COLUMNS) {
+            try {
+                await pool.query(`ALTER TABLE users ${ddl}`);
+            } catch (e) {
+                if (e.errno !== 1060) throw e; // 1060 = colonne déjà présente
+            }
         }
 
         // Amorçage uniquement si la table est vide (ne réécrit jamais l'existant)
@@ -373,14 +390,20 @@ function register(app, { pool, getSessionUser }) {
         if (!requireUser(req, res)) return;
         try {
             const [rows] = await pool.query(
-                `SELECT u.id, u.username, u.email, u.role, u.metier_id, m.nom AS metier_nom, m.color AS metier_color,
+                `SELECT u.id, u.matricule, u.nom, u.prenom, u.username, u.email, u.role, u.is_active,
+                        u.metier_id, m.nom AS metier_nom, m.color AS metier_color,
                         u.created_at, u.last_login
                  FROM users u
                  LEFT JOIN portal_metiers m ON m.id = u.metier_id
-                 ORDER BY u.username`
+                 ORDER BY u.nom, u.prenom, u.username`
             );
             res.json(rows.map(r => ({
-                id: r.id, username: r.username, email: r.email, role: r.role,
+                id: r.id,
+                matricule: r.matricule ?? '',
+                nom: r.nom ?? '',
+                prenom: r.prenom ?? '',
+                username: r.username, email: r.email, role: r.role,
+                isActive: !!r.is_active,
                 metierId: r.metier_id ?? null,
                 metierNom: r.metier_nom ?? null,
                 metierColor: r.metier_color ?? null,

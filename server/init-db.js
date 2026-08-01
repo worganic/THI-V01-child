@@ -14,10 +14,14 @@ const CONFIG_DIR = path.join(BASE_DIR, 'config');
 const SCHEMA_STATEMENTS = [
     `CREATE TABLE IF NOT EXISTS users (
         id            CHAR(36)      PRIMARY KEY,
+        matricule     VARCHAR(50)   NOT NULL DEFAULT '',
+        nom           VARCHAR(255)  NOT NULL DEFAULT '',
+        prenom        VARCHAR(255)  NOT NULL DEFAULT '',
         username      VARCHAR(255)  UNIQUE NOT NULL,
         email         VARCHAR(255)  UNIQUE NOT NULL,
         password_hash VARCHAR(255)  NOT NULL,
         role          VARCHAR(50)   DEFAULT 'user',
+        is_active     TINYINT(1)    NOT NULL DEFAULT 1,
         config        JSON          DEFAULT ('{}'),
         created_at    DATETIME      DEFAULT CURRENT_TIMESTAMP,
         last_login    DATETIME      NULL
@@ -216,6 +220,12 @@ const SCHEMA_STATEMENTS = [
 // ADD COLUMN IF NOT EXISTS → on teste information_schema avant).
 const COLUMN_MIGRATIONS = [
     { table: 'users', column: 'metier_id', ddl: 'ADD COLUMN metier_id INT NULL' },
+    // Fiche utilisateur alignée sur l'autre portail (matricule/nom/prénom + statut du
+    // compte). Défauts non nuls : les comptes existants restent exploitables tels quels.
+    { table: 'users', column: 'matricule', ddl: "ADD COLUMN matricule VARCHAR(50) NOT NULL DEFAULT ''" },
+    { table: 'users', column: 'nom',       ddl: "ADD COLUMN nom VARCHAR(255) NOT NULL DEFAULT ''" },
+    { table: 'users', column: 'prenom',    ddl: "ADD COLUMN prenom VARCHAR(255) NOT NULL DEFAULT ''" },
+    { table: 'users', column: 'is_active', ddl: 'ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1' },
 ];
 
 // Données de départ : les sous-applications du monorepo (apps/*).
@@ -462,7 +472,7 @@ async function alterPortalColumns() {
             if (e.errno !== 1060) console.warn(`  ⚠ alter ${table}.${column}: ${e.message}`);
         }
     }
-    console.log('  users: colonne metier_id vérifiée');
+    console.log('  users: colonnes metier_id, matricule, nom, prenom, is_active vérifiées');
 }
 
 async function seedPortal() {

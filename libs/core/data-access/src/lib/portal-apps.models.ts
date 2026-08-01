@@ -54,11 +54,25 @@ export interface PortalMetier {
   isActive: boolean;
 }
 
+/**
+ * Fiche utilisateur du portail. `matricule`/`nom`/`prenom` décrivent la
+ * personne (annuaire), `username` reste l'identité technique du compte —
+ * les deux portails exposent désormais les mêmes champs, seule la façon de
+ * les alimenter diffère (annuaire d'entreprise d'un côté, saisie admin de
+ * l'autre). Chaîne vide plutôt que `null` pour les trois champs d'annuaire :
+ * un compte créé avant leur introduction reste exploitable sans migration
+ * de données.
+ */
 export interface PortalUser {
   id: string;
+  matricule: string;
+  nom: string;
+  prenom: string;
   username: string;
   email: string;
   role: string;
+  /** Un compte inactif est conservé mais ne peut plus se connecter. */
+  isActive: boolean;
   metierId: number | null;
   metierNom: string | null;
   metierColor: string | null;

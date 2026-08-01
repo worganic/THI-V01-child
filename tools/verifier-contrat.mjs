@@ -24,16 +24,52 @@ const ICI = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 // Les deux monorepos, par nom de dossier.
 const MONOREPOS = ['portail', 'THI-V01-child-user3'];
 
-/** Fichiers qui doivent être identiques des deux côtés. */
+/**
+ * Fichiers qui doivent être identiques des deux côtés.
+ *
+ * Ce qui n'est PAS dans cette liste et n'a pas vocation à y entrer : les
+ * fichiers `portal-auth.ts`, `portal-data-access.ts`, `portal-ui.ts` et
+ * `portal-session.provider.ts`. Ils portent le même nom dans les deux
+ * monorepos mais exposent chacun l'implémentation locale (appels API/BDD,
+ * chrome du portail) — ce sont précisément les points d'extension qui
+ * permettent aux `index.ts` ci-dessous d'être identiques.
+ */
 const FICHIERS_DU_CONTRAT = [
+  // ── Socle d'accès aux données ────────────────────────────────────────────
+  'libs/core/data-access/src/index.ts',
   'libs/core/data-access/src/lib/tokens.ts',
   'libs/core/data-access/src/lib/admin-tabs-registry.service.ts',
   'libs/core/data-access/src/lib/portal-apps.models.ts',
+
+  // ── Socle d'authentification ─────────────────────────────────────────────
+  'libs/core/auth/src/index.ts',
   'libs/core/auth/src/lib/portal-session.ts',
+  'libs/core/auth/src/lib/auth.routes.ts',
+  'libs/core/auth/src/lib/auth.guard.ts',
+  'libs/core/auth/src/lib/guest.guard.ts',
+
+  // ── Socle d'interface ────────────────────────────────────────────────────
+  'libs/shared/ui/src/index.ts',
+  'libs/shared/ui/src/lib/service/theme.service.ts',
+  'libs/shared/utils/src/index.ts',
+
+  // ── Outillage de test ────────────────────────────────────────────────────
+  'libs/core/auth/jest.config.ts',
+  'libs/core/data-access/jest.config.ts',
+  'libs/shared/ui/jest.config.ts',
+  'libs/shared/utils/jest.config.ts',
+  'libs/core/auth/src/test-setup.ts',
+  'libs/core/data-access/src/test-setup.ts',
+  'libs/shared/ui/src/test-setup.ts',
+  'libs/shared/utils/src/test-setup.ts',
+
+  // ── Sous-application témoin (preuve de portabilité) ──────────────────────
   'apps/appli-agenda/src/app/admin/admin-agenda.component.ts',
   'apps/appli-agenda/src/app/admin/admin-agenda.component.html',
   'apps/appli-agenda/src/app/admin/admin-agenda.component.scss',
   'apps/appli-agenda/src/app/admin/provide-agenda-admin-tab.ts',
+
+  // ── Documentation et outillage du contrat ────────────────────────────────
   'docs/architecture-sous-applications.md',
   'tools/verifier-contrat.mjs',
 ];

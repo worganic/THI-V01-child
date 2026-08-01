@@ -15550,6 +15550,140 @@
       "prompt": "dans l'admin/portail/user, on affiche les groupes lié à un user, il faut affiché sur le front/connecté uniquement les groupes et les applications lié et autorisé pour un user. Dans l'admin/portail/groupe on a une liste d'application, par defaut lorsqu'on associ un groupe à un user cela doit selectionné directement les applications lié au groupe selectionné. Lorsque je selection un groupe dans admin/portail/user cela ne doit pas scroller dans l'écran.",
       "startedAt": "2026-07-31T14:30:00.000Z",
       "completedAt": "2026-07-31T15:10:00.000Z"
+    },
+    {
+      "id": "mod-602",
+      "version": "B-0.339",
+      "date": "2026-07-31T22:59:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs"
+      ],
+      "features": "portail:admin,system:uniformisation",
+      "title": "Uniformisation Admin : menu 3 niveaux côté portail, 6 pages côté THI",
+      "description": "Alignement de l'administration des deux portails, dans les deux sens. (1) Côté portail (autre monorepo, apps/portail-shell) : le bandeau de navigation à liens soulignés est remplacé par le menu à trois niveaux de ce portail — catégories Portail/Applications/Autres, onglets Système/Config/Outils, puis les pages ; menu écrit en SCSS sur les variables de portal-tokens.scss (pas de Tailwind de ce côté), Material Symbols ajouté à index.html, et les six pages existantes (Utilisateurs, Groupes, Métiers, Applications, Export JSON, Infos config) sont conservées telles quelles, l'URL restant la source de vérité. (2) Côté THI : les quatre sections d'Admin › Portail › Système adoptent la mise en page des pages de l'autre portail — carte « Ajouter un… » en tête, barre de filtres, tableau triable avec édition en ligne, ligne dépliable pour le détail (droits d'un utilisateur, applications d'un groupe, utilisateurs d'un métier) et pagination — en conservant le thème Tailwind et les champs réellement portés par PortalUser. Deux sections manquantes sont ajoutées pour compléter les six pages : Export JSON (périmètre tout / socle / une application, JSON copiable) et Infos config (statut BDD, version locale, branche, dernier déploiement, URL des services, modes de lancement). Le tri et la pagination sont mutualisés dans libs/shared/ui (TableSort, paginate, WorgAdminPaginationComponent) plutôt que dupliqués dans les quatre sections.",
+      "files": [
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/admin-portail.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/admin-portail.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-apps.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-apps.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-groupes.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-groupes.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-metiers.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-metiers.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-export.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-export.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-config.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-config.component.html",
+        "libs/shared/ui/src/lib/admin/admin-table.util.ts",
+        "libs/shared/ui/src/lib/admin/worg-admin-pagination.component.ts",
+        "libs/shared/ui/src/index.ts",
+        "tests/fonctions/connecte/admin/applications/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "dans le projet @portail\\ intègre le même menu admin que pour le projet @THI-V01-child-user3\\ dans l'admin, par contre garde les mêmes pages que le projet @portail\\ Ensuite met à jour les différentes page de l'admin/portail du projet @THI-V01-child-user3\\ comme le projet @portail avec les pages",
+      "startedAt": "2026-07-31T22:20:00.000Z",
+      "completedAt": "2026-07-31T22:59:00.000Z"
+    },
+    {
+      "id": "mod-603",
+      "version": "B-0.339",
+      "date": "2026-07-31T23:20:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs"
+      ],
+      "features": "portail:admin,system:uniformisation",
+      "title": "Admin › Portail › Utilisateurs : rendu de tableau identique à l'autre portail",
+      "description": "Deuxième passe sur la page Utilisateurs, pour un rendu de tableau identique à celui de l'autre portail et non plus seulement une organisation équivalente. En-tête de colonnes en bandeau plein (couleur primaire, texte en gras) au lieu du filet discret ; lignes zébrées et survol franc ; cellules plus aérées (py-3.5) ; nom d'utilisateur en gras avec le nombre de groupes en sous-titre ; badges pleins plutôt que translucides — rôle en pastille pleine, métier via la nouvelle variante metierSolidBadgeClass (les fonds translucides de metierBadgeClass restent utilisés dans les listes et fiches) ; boutons d'action en contour coloré par nature d'action (Droits cyan, Éditer bleu, Supprimer rouge, Valider vert) ; formulaire d'ajout sur deux rangées avec le bouton Ajouter aligné à droite ; compteur « N utilisateurs » à droite de la barre de filtres, et retiré de la barre de pagination (nouvelle entrée showTotal, éteinte par défaut). Deux éléments de la capture de référence ne sont pas reproductibles en l'état : les colonnes Matricule/Nom/Prénom (la table `users` de ce portail ne porte qu'un `username`) et la colonne Statut avec l'action Activer/Désactiver (pas de colonne `is_active`) — cela demanderait une évolution de schéma. Budget de bundle initial relevé (2 Mo → 2,5 Mo, alerte à 2 Mo) : il était déjà atteint avant ces changements, qui le dépassaient de 554 octets.",
+      "files": [
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html",
+        "apps/portail/src/app/shared/metier-badge.ts",
+        "apps/portail/project.json",
+        "libs/shared/ui/src/lib/admin/worg-admin-pagination.component.ts"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "je veux que les pages admin de @THI soi identique (niveau design général : tableau organisation data) que pour le portail, commence par la page admin/portail/user",
+      "startedAt": "2026-07-31T23:05:00.000Z",
+      "completedAt": "2026-07-31T23:20:00.000Z"
+    },
+    {
+      "id": "mod-604",
+      "version": "B-0.339",
+      "date": "2026-07-31T23:55:00.000Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "server"
+      ],
+      "features": "portail:admin,system:uniformisation",
+      "title": "Fiche utilisateur alignée sur l'autre portail : matricule, nom, prénom, statut",
+      "description": "La fiche utilisateur de ce portail portait seulement username/email/rôle ; elle porte désormais les mêmes champs que l'autre portail, pris comme référence. Schéma : quatre colonnes ajoutées à `users` (`matricule` VARCHAR(50), `nom`, `prenom`, `is_active` TINYINT défaut 1), posées par ensureSchema (server/modules/portal-apps.js) à chaque démarrage et déclarées aussi dans init-db.js (CREATE TABLE + COLUMN_MIGRATIONS) pour une installation neuve — défauts non nuls, aucun compte existant à reprendre. API : GET /api/portal/users et GET /api/auth/users renvoient les nouveaux champs ; POST /api/auth/register et PUT /api/auth/users/:id les acceptent (les champs d'annuaire sont testés sur `!== undefined` pour qu'un matricule volontairement vidé soit bien enregistré) ; unicité du matricule vérifiée à la création comme à l'édition (409) ; le cache serveur _usersCache transporte les nouveaux champs. Connexion : un compte désactivé reçoit un 403 explicite plutôt qu'un échec d'identifiants. Modèle : PortalUser gagne matricule/nom/prenom/isActive — fichier du contrat, donc répliqué à l'identique dans les deux monorepos (vérifié par tools/verifier-contrat.mjs) ; AuthUser gagne les mêmes champs en optionnels. UI : la page Admin › Portail › Utilisateurs adopte les colonnes de l'autre portail (Matricule, Nom, Prénom, Email, Rôle Global, Métier, Statut, Actions), le filtre de statut, le tri sur toutes ces colonnes et le bouton Activer/Désactiver ; le username, propre à ce portail, est saisi au formulaire et rappelé en sous-titre du matricule. La section Métiers affiche « Prénom NOM » et le matricule là où elle affichait le username. Budget de bundle initial relevé (2 Mo → 2,5 Mo) : il était déjà atteint avant ces changements.",
+      "files": [
+        "libs/core/data-access/src/lib/portal-apps.models.ts",
+        "libs/core/data-access/src/lib/auth.service.ts",
+        "server/modules/portal-apps.js",
+        "server/server-data.js",
+        "server/init-db.js",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-utilisateurs.component.html",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-metiers.component.ts",
+        "apps/portail/src/app/pages/admin/tabs/admin-portail/sections/portail-metiers.component.html",
+        "tests/fonctions/connecte/admin/applications/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "ajoute les elements nom prénom matricule etc pour que les 2 systèmes soi identique en prenant comme base @portail je veux le même système dans les 2 portails",
+      "startedAt": "2026-07-31T23:25:00.000Z",
+      "completedAt": "2026-07-31T23:55:00.000Z"
+    },
+    {
+      "id": "mod-605",
+      "version": "B-0.339",
+      "date": "2026-08-01T00:00:00.000Z",
+      "type": "refactor",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "projets",
+        "libs",
+        "system"
+      ],
+      "features": "system:uniformisation,portail:auth,portail:theme",
+      "title": "Socle des libs unifie avec l'autre portail : 26 fichiers identiques",
+      "description": "Uniformisation du socle entre les deux monorepos, portail pris comme reference. Auth : authGuard et guestGuard reecrites sur le contrat PORTAL_SESSION (elles dependaient de l'AuthService local, de forme differente des deux cotes) ; nouveau token PORTAL_AUTH_ROUTES pour l'ecran de connexion et le point d'atterrissage, seule valeur qui les distinguait. Theme : ThemeService deplace de core-data-access vers shared/ui et rendu identique des deux cotes, son cycle de themes (3 ici, 2 en face), ses classes CSS, ses icones et sa cle de stockage venant desormais du token PORTAL_THEME_CONFIG. Les 3 themes dark/light/pink sont preserves. Points d'extension : portal-auth.ts, portal-data-access.ts et portal-ui.ts portent l'implementation locale, ce qui rend les index.ts des libs identiques bit-a-bit. Nettoyage : suppression des 121 fichiers legacy -old-20260506/16/21 (historique git conserve). verifier-contrat.mjs etendu de 10 a 26 fichiers. Builds portail et projets verifies.",
+      "files": [
+        "libs/core/auth/src/index.ts",
+        "libs/core/auth/src/lib/auth.guard.ts",
+        "libs/core/auth/src/lib/guest.guard.ts",
+        "libs/core/auth/src/lib/auth.routes.ts",
+        "libs/core/auth/src/lib/portal-auth.ts",
+        "libs/core/data-access/src/index.ts",
+        "libs/core/data-access/src/lib/portal-data-access.ts",
+        "libs/shared/ui/src/index.ts",
+        "libs/shared/ui/src/lib/portal-ui.ts",
+        "libs/shared/ui/src/lib/service/theme.service.ts",
+        "apps/portail/src/app/app.config.ts",
+        "apps/appli-projets/src/app/app.config.ts",
+        "tools/verifier-contrat.mjs",
+        "docs/architecture-sous-applications.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "Je voudrais que tu utilise le meme code pour le portail @portail\\ que pour @THI-V01-child-user3\\, Que tu unifi les 2 codes pour tous ce qui est des fichiers .ts je veux le meme systeme et le meme code. Seul les fichier de configuration (appel au appi/bdd) soi different, le css global (pour la couleur et le style) puisse etre different. Mais toutes les fonctions doivent etre identique. Prend en exemple le @portail\\",
+      "startedAt": "2026-08-01T00:00:00.000Z",
+      "completedAt": "2026-08-01T00:00:00.000Z"
     }
   ]
 }

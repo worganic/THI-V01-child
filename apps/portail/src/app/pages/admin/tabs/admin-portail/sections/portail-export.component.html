@@ -1,0 +1,65 @@
+@if (error()) {
+  <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error() }}</div>
+}
+
+@if (loading()) {
+  <div class="flex items-center justify-center py-16">
+    <span class="material-symbols-outlined text-3xl text-light-primary dark:text-primary animate-spin">progress_activity</span>
+  </div>
+}
+
+@if (!loading()) {
+
+  <!-- Périmètre de l'export -->
+  <div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+    <div class="px-5 py-3 bg-light-surface/60 dark:bg-white/5 border-b border-light-border dark:border-white/10">
+      <span class="text-sm font-semibold text-light-text dark:text-white">Périmètre de l'export</span>
+      <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">
+        L'export d'une application ne retient que ses groupes et les utilisateurs qui y accèdent — le bloc
+        est donc utilisable seul.
+      </p>
+    </div>
+    <div class="px-5 py-4 flex flex-wrap gap-2">
+      <button (click)="select(null)"
+              class="px-4 py-2 rounded-lg text-sm font-semibold border transition-all"
+              [class]="selection() === null
+                ? 'bg-light-primary dark:bg-primary text-white dark:text-btn-text border-transparent'
+                : 'bg-light-surface dark:bg-white/5 border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white'">
+        Tous
+      </button>
+      <button (click)="select('portail')"
+              class="px-4 py-2 rounded-lg text-sm font-semibold border transition-all"
+              [class]="selection() === 'portail'
+                ? 'bg-light-primary dark:bg-primary text-white dark:text-btn-text border-transparent'
+                : 'bg-light-surface dark:bg-white/5 border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white'">
+        Socle du portail
+      </button>
+      @for (app of apps(); track app.id) {
+        <button (click)="select(app.id)"
+                class="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold border transition-all"
+                [class]="selection() === app.id
+                  ? 'bg-light-primary dark:bg-primary text-white dark:text-btn-text border-transparent'
+                  : 'bg-light-surface dark:bg-white/5 border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white'">
+          <span class="material-symbols-outlined text-base">{{ app.icone || 'apps' }}</span>
+          {{ app.nom }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- JSON -->
+  <div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+    <div class="px-5 py-3 border-b border-light-border dark:border-white/10 flex items-center justify-between gap-3">
+      <div>
+        <span class="text-sm font-semibold text-light-text dark:text-white">{{ selectionLabel() }}</span>
+        <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">{{ json().length }} caractères</p>
+      </div>
+      <button (click)="copy()"
+              class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold bg-light-primary dark:bg-primary text-white dark:text-btn-text transition-all hover:scale-105">
+        <span class="material-symbols-outlined text-base">{{ copied() ? 'check' : 'content_copy' }}</span>
+        {{ copied() ? 'Copié !' : 'Copier' }}
+      </button>
+    </div>
+    <pre class="px-5 py-4 max-h-[520px] overflow-auto text-xs font-mono text-light-text dark:text-white/80 whitespace-pre">{{ json() }}</pre>
+  </div>
+}

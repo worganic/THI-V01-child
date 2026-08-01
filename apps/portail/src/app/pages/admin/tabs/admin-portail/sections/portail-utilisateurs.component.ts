@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
+import { NgClass, UpperCasePipe } from '@angular/common';
 import { AuthService, API_DATA_URL } from '@portail/core-data-access';
 import {
   PortalAppsService,
@@ -13,19 +13,27 @@ import {
   PortalUserApp,
   PortalDroit,
 } from '@portail/core-data-access';
+import { TableSort, paginate, WorgAdminPaginationComponent } from '@portail/shared-ui';
 // Rendu Tailwind des teintes de métier : propre à ce portail, voir metier-badge.ts.
-import { metierBadgeClass } from '../../../../../shared/metier-badge';
+// Variante pleine dans le tableau, comme sur l'autre portail.
+import { metierSolidBadgeClass } from '../../../../../shared/metier-badge';
+
+type UserColumn = 'matricule' | 'nom' | 'prenom' | 'email' | 'role' | 'metier' | 'statut';
 
 /**
  * Admin › Portail › Utilisateurs — un seul endroit pour tout ce qui concerne
- * un compte : ses informations (nom, email, rôle, mot de passe), son métier,
- * ses groupes (accès aux applications du groupe) et ses accès directs à une
- * application (avec niveau de droit). Fusionne l'ancien onglet séparé
- * « Admin › Utilisateurs » (CRUD de compte) avec l'ancienne section « Droits ».
+ * un compte : sa fiche (matricule, nom, prénom, email, rôle, statut, mot de
+ * passe), son métier, ses groupes (accès aux applications du groupe) et ses
+ * accès directs à une application (avec niveau de droit).
+ *
+ * Colonnes, filtres et actions repris de l'autre portail — les deux systèmes
+ * gèrent désormais la même fiche utilisateur. `username` reste l'identité
+ * technique du compte (unique, sert à l'affichage dans l'en-tête) : il est
+ * saisi avec le reste et rappelé sous le matricule.
  */
 @Component({
   selector: 'app-portail-utilisateurs-section',
-  imports: [FormsModule, NgClass],
+  imports: [FormsModule, NgClass, UpperCasePipe, WorgAdminPaginationComponent],
   templateUrl: './portail-utilisateurs.component.html'
 })
 export class PortailUtilisateursSectionComponent implements OnInit {
@@ -43,40 +51,81 @@ export class PortailUtilisateursSectionComponent implements OnInit {
   loading     = signal(true);
   error       = signal('');
 
-  selectedUserId = signal<string | null>(null);
-  selectedUser = computed(() => this.users().find(u => u.id === this.selectedUserId()) || null);
-
-  readonly badgeClass = metierBadgeClass;
+  readonly badgeClass = metierSolidBadgeClass;
   readonly droitsOptions: PortalDroit[] = ['lecture', 'ecriture', 'admin'];
   readonly roles: readonly string[] = ['user', 'admin'];
 
-  // ── Recherche ─────────────────────────────────────────────────────────────
-  searchQuery = signal('');
-  filteredUsers = computed(() => {
-    const q = this.searchQuery().trim().toLowerCase();
-    if (!q) return this.users();
-    return this.users().filter(u =>
-      u.username.toLowerCase().includes(q) || u.email.toLowerCase().includes(q)
-    );
-  });
-
-  // ── Édition du compte (nom, email, rôle, mot de passe) ──────────────────────
-  editingAccount = signal(false);
-  editUsername = '';
-  editEmail = '';
-  editRole = 'user';
-  editPassword = '';
-  savingAccount = signal(false);
-
-  // ── Création d'un compte ─────────────────────────────────────────────────
-  showNewUserModal = signal(false);
+  // ── Création d'un compte (formulaire toujours visible, en tête de page) ────
+  newMatricule = '';
+  newNom = '';
+  newPrenom = '';
   newUsername = '';
   newEmail = '';
   newPassword = '';
   newRole = 'user';
+  newMetierId: number | null = null;
+  newIsActive = true;
   creatingUser = signal(false);
 
+  // ── Recherche / filtres ───────────────────────────────────────────────────
+  searchText   = signal('');
+  filterRole   = signal('');
+  filterMetier = signal<number | null>(null);
+  filterStatus = signal<'' | 'active' | 'inactive'>('');
+
+  // ── Tri / pagination ──────────────────────────────────────────────────────
+  readonly sort = new TableSort<UserColumn>('matricule');
+  pageSize = signal(10);
+  page     = signal(1);
+
+  // ── Édition en ligne / dépliage / suppression ─────────────────────────────
+  editingUserId = signal<string | null>(null);
+  editMatricule = '';
+  editNom = '';
+  editPrenom = '';
+  editUsername = '';
+  editEmail = '';
+  editRole = 'user';
+  editMetierId: number | null = null;
+  editIsActive = true;
+  editPassword = '';
+  savingAccount = signal(false);
+
+  expandedUserId = signal<string | null>(null);
   deletingUserId = signal<string | null>(null);
+
+  filteredUsers = computed(() => {
+    const q = this.searchText().trim().toLowerCase();
+    return this.users().filter(u => {
+      if (q) {
+        const hay = `${u.matricule} ${u.nom} ${u.prenom} ${u.username} ${u.email}`.toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      if (this.filterRole() && u.role !== this.filterRole()) return false;
+      if (this.filterMetier() !== null && u.metierId !== this.filterMetier()) return false;
+      if (this.filterStatus() === 'active' && !u.isActive) return false;
+      if (this.filterStatus() === 'inactive' && u.isActive) return false;
+      return true;
+    });
+  });
+
+  sortedUsers = computed(() =>
+    this.sort.apply(this.filteredUsers(), (u, col) => {
+      switch (col) {
+        case 'matricule': return (u.matricule || '').toLowerCase();
+        // Repli sur le username : un compte sans nom d'annuaire ne doit pas
+        // se retrouver systématiquement regroupé en tête de tri.
+        case 'nom':       return (u.nom || u.username).toLowerCase();
+        case 'prenom':    return (u.prenom || '').toLowerCase();
+        case 'email':     return u.email.toLowerCase();
+        case 'role':      return u.role.toLowerCase();
+        case 'metier':    return (u.metierNom || '').toLowerCase();
+        case 'statut':    return u.isActive ? 0 : 1;
+      }
+    })
+  );
+
+  pagedUsers = computed(() => paginate(this.sortedUsers(), this.pageSize(), this.page()));
 
   ngOnInit() { this.load(); }
 
@@ -93,8 +142,8 @@ export class PortailUtilisateursSectionComponent implements OnInit {
 
   /**
    * Rechargement des données après une action (bascule groupe/accès, métier,
-   * compte…) — ne touche jamais `loading` : le panneau détail reste monté tel
-   * quel, seules les valeurs des signaux changent. Basculer `loading` ici
+   * compte…) — ne touche jamais `loading` : le tableau reste monté tel quel,
+   * seules les valeurs des signaux changent. Basculer `loading` ici
    * démontait/remontait tout le panneau à chaque clic (via `@if (loading())`
    * dans le template), ce qui faisait sauter le scroll de la page.
    */
@@ -117,133 +166,122 @@ export class PortailUtilisateursSectionComponent implements OnInit {
       this.groupeApps.set(groupeApps);
       this.userGroupes.set(userGroupes);
       this.userApps.set(userApps);
-      if (!this.selectedUserId() || !users.some(u => u.id === this.selectedUserId())) {
-        this.selectedUserId.set(users[0]?.id ?? null);
-      }
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur chargement des utilisateurs');
     }
   }
 
-  selectUser(id: string) {
-    this.selectedUserId.set(id);
-    this.editingAccount.set(false);
+  /** Tout changement de filtre ramène en page 1 — sinon on reste sur une page vide. */
+  onFilterChange() { this.page.set(1); }
+
+  setPageSize(size: number) {
+    this.pageSize.set(size);
+    this.page.set(1);
   }
 
-  countGroupes(userId: string): number {
-    return this.userGroupes().filter(ug => ug.userId === userId).length;
-  }
+  // ── Création ──────────────────────────────────────────────────────────────
 
-  isInGroupe(groupeId: number): boolean {
-    const userId = this.selectedUserId();
-    return !!userId && this.userGroupes().some(ug => ug.userId === userId && ug.groupeId === groupeId);
-  }
-
-  async toggleGroupe(groupeId: number) {
-    const userId = this.selectedUserId();
-    if (!userId) return;
-    const linking = !this.isInGroupe(groupeId);
+  async ajouterUtilisateur() {
+    if (!this.newUsername.trim() || !this.newEmail.trim() || !this.newPassword) return;
+    this.creatingUser.set(true);
+    this.error.set('');
     try {
-      await this.service.toggleUserGroupe(userId, groupeId, linking);
-      // Par défaut, associer un groupe coche aussi ses applications dans "Accès
-      // directs" — purement indicatif pour l'admin (l'accès réel vient déjà du
-      // groupe), mais évite d'avoir à recocher une à une les mêmes apps. On ne
-      // décoche jamais automatiquement au retrait du groupe : un accès direct
-      // laissé coché reste un choix explicite de l'admin.
-      if (linking) {
-        const appIds = this.groupeApps().filter(ga => ga.groupeId === groupeId).map(ga => ga.appId);
-        for (const appId of appIds) {
-          if (!this.hasDirectApp(appId)) {
-            await this.service.toggleUserApp(userId, appId, true, 'lecture');
-          }
-        }
+      const res = await fetch(`${this.apiUrl}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          matricule: this.newMatricule,
+          nom: this.newNom,
+          prenom: this.newPrenom,
+          username: this.newUsername,
+          email: this.newEmail,
+          password: this.newPassword,
+          isActive: this.newIsActive,
+        })
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Erreur création');
       }
+      const data = await res.json();
+      // `register` crée toujours un compte `user` (sauf tout premier compte) et
+      // ignore le rôle : on le repositionne juste après, comme sur l'autre portail.
+      if (this.newRole === 'admin') {
+        await this.authService.updateUser(data.user.id, { role: 'admin' });
+      }
+      if (this.newMetierId !== null) {
+        await this.service.setUserMetier(data.user.id, this.newMetierId);
+      }
+      this.newMatricule = '';
+      this.newNom = '';
+      this.newPrenom = '';
+      this.newUsername = '';
+      this.newEmail = '';
+      this.newPassword = '';
+      this.newRole = 'user';
+      this.newMetierId = null;
+      this.newIsActive = true;
       await this.refresh();
     } catch (e: any) {
-      this.error.set(e?.error?.error || 'Erreur mise à jour du groupe');
+      this.error.set(e?.message || 'Erreur création utilisateur');
+    } finally {
+      this.creatingUser.set(false);
     }
   }
 
-  hasDirectApp(appId: number): boolean {
-    const userId = this.selectedUserId();
-    return !!userId && this.userApps().some(ua => ua.userId === userId && ua.appId === appId);
-  }
+  // ── Édition en ligne ──────────────────────────────────────────────────────
 
-  directDroits(appId: number): PortalDroit {
-    const userId = this.selectedUserId();
-    return this.userApps().find(ua => ua.userId === userId && ua.appId === appId)?.droits || 'lecture';
-  }
-
-  async toggleDirectApp(appId: number) {
-    const userId = this.selectedUserId();
-    if (!userId) return;
-    try {
-      await this.service.toggleUserApp(userId, appId, !this.hasDirectApp(appId), this.directDroits(appId));
-      await this.refresh();
-    } catch (e: any) {
-      this.error.set(e?.error?.error || 'Erreur mise à jour de l\'accès direct');
-    }
-  }
-
-  async setDroits(appId: number, droits: string) {
-    const userId = this.selectedUserId();
-    if (!userId) return;
-    try {
-      await this.service.toggleUserApp(userId, appId, true, droits as PortalDroit);
-      await this.refresh();
-    } catch (e: any) {
-      this.error.set(e?.error?.error || 'Erreur mise à jour du niveau de droit');
-    }
-  }
-
-  async setMetier(metierId: string) {
-    const userId = this.selectedUserId();
-    if (!userId) return;
-    try {
-      await this.service.setUserMetier(userId, metierId ? Number(metierId) : null);
-      await this.refresh();
-    } catch (e: any) {
-      this.error.set(e?.error?.error || 'Erreur mise à jour du métier');
-    }
-  }
-
-  /** Applications héritées des groupes de l'utilisateur (lecture seule, informatif). */
-  appsViaGroupes = computed(() => {
-    const userId = this.selectedUserId();
-    if (!userId) return [] as string[];
-    return this.groupes()
-      .filter(g => this.userGroupes().some(ug => ug.userId === userId && ug.groupeId === g.id))
-      .map(g => g.nom);
-  });
-
-  // ── Édition du compte ────────────────────────────────────────────────────
-
-  openEditAccount() {
-    const user = this.selectedUser();
-    if (!user) return;
+  startUserEdit(user: PortalUser) {
+    this.editingUserId.set(user.id);
+    this.editMatricule = user.matricule;
+    this.editNom = user.nom;
+    this.editPrenom = user.prenom;
     this.editUsername = user.username;
     this.editEmail = user.email;
     this.editRole = user.role;
+    this.editMetierId = user.metierId;
+    this.editIsActive = user.isActive;
     this.editPassword = '';
-    this.editingAccount.set(true);
   }
 
-  closeEditAccount() { this.editingAccount.set(false); }
+  cancelUserEdit() { this.editingUserId.set(null); }
 
-  async saveAccount() {
-    const user = this.selectedUser();
-    if (!user) return;
+  async saveUserEdit(user: PortalUser) {
+    if (!this.editUsername.trim()) return;
     this.savingAccount.set(true);
     try {
-      const data: any = { username: this.editUsername, email: this.editEmail, role: this.editRole };
+      const data: any = {
+        matricule: this.editMatricule,
+        nom: this.editNom,
+        prenom: this.editPrenom,
+        username: this.editUsername,
+        email: this.editEmail,
+        role: this.editRole,
+        isActive: this.editIsActive,
+      };
       if (this.editPassword) data.password = this.editPassword;
       await this.authService.updateUser(user.id, data);
-      this.editingAccount.set(false);
+      // Le métier n'est pas porté par le compte mais par la table de liaison :
+      // deux appels, un seul geste côté admin.
+      if (this.editMetierId !== user.metierId) {
+        await this.service.setUserMetier(user.id, this.editMetierId);
+      }
+      this.editingUserId.set(null);
       await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur sauvegarde du compte');
     } finally {
       this.savingAccount.set(false);
+    }
+  }
+
+  /** Bascule Actif/Inactif depuis la colonne Actions, sans passer par l'édition. */
+  async toggleUserStatus(user: PortalUser) {
+    try {
+      await this.authService.updateUser(user.id, { isActive: !user.isActive });
+      await this.refresh();
+    } catch (e: any) {
+      this.error.set(e?.error?.error || 'Erreur mise à jour du statut');
     }
   }
 
@@ -254,7 +292,7 @@ export class PortailUtilisateursSectionComponent implements OnInit {
     try {
       await this.authService.deleteUser(id);
       this.deletingUserId.set(null);
-      if (this.selectedUserId() === id) this.selectedUserId.set(null);
+      if (this.expandedUserId() === id) this.expandedUserId.set(null);
       await this.refresh();
     } catch (e: any) {
       this.error.set(e?.error?.error || 'Erreur suppression utilisateur');
@@ -262,56 +300,73 @@ export class PortailUtilisateursSectionComponent implements OnInit {
     }
   }
 
-  // ── Création de compte ───────────────────────────────────────────────────
+  // ── Droits (ligne dépliée) ────────────────────────────────────────────────
 
-  openNewUserModal() {
-    this.newUsername = '';
-    this.newEmail = '';
-    this.newPassword = '';
-    this.newRole = 'user';
-    this.showNewUserModal.set(true);
+  toggleExpand(userId: string) {
+    this.expandedUserId.set(this.expandedUserId() === userId ? null : userId);
   }
 
-  closeNewUserModal() { this.showNewUserModal.set(false); }
+  countGroupes(userId: string): number {
+    return this.userGroupes().filter(ug => ug.userId === userId).length;
+  }
 
-  async createUser() {
-    if (!this.newUsername.trim() || !this.newEmail.trim() || !this.newPassword) return;
-    this.creatingUser.set(true);
-    this.error.set('');
+  isInGroupe(userId: string, groupeId: number): boolean {
+    return this.userGroupes().some(ug => ug.userId === userId && ug.groupeId === groupeId);
+  }
+
+  async toggleGroupe(userId: string, groupeId: number) {
+    const linking = !this.isInGroupe(userId, groupeId);
     try {
-      const res = await fetch(`${this.apiUrl}/api/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: this.newUsername, email: this.newEmail, password: this.newPassword })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Erreur création');
+      await this.service.toggleUserGroupe(userId, groupeId, linking);
+      // Par défaut, associer un groupe coche aussi ses applications dans "Accès
+      // directs" — purement indicatif pour l'admin (l'accès réel vient déjà du
+      // groupe), mais évite d'avoir à recocher une à une les mêmes apps. On ne
+      // décoche jamais automatiquement au retrait du groupe : un accès direct
+      // laissé coché reste un choix explicite de l'admin.
+      if (linking) {
+        const appIds = this.groupeApps().filter(ga => ga.groupeId === groupeId).map(ga => ga.appId);
+        for (const appId of appIds) {
+          if (!this.hasDirectApp(userId, appId)) {
+            await this.service.toggleUserApp(userId, appId, true, 'lecture');
+          }
+        }
       }
-      const data = await res.json();
-      if (this.newRole === 'admin') {
-        await this.authService.updateUser(data.user.id, { role: 'admin' });
-      }
-      this.closeNewUserModal();
       await this.refresh();
-      this.selectedUserId.set(data.user.id);
     } catch (e: any) {
-      this.error.set(e?.message || 'Erreur création utilisateur');
-    } finally {
-      this.creatingUser.set(false);
+      this.error.set(e?.error?.error || 'Erreur mise à jour du groupe');
     }
   }
 
-  formatDate(iso: string | null | undefined): string {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  hasDirectApp(userId: string, appId: number): boolean {
+    return this.userApps().some(ua => ua.userId === userId && ua.appId === appId);
   }
 
-  formatDateTime(iso: string | null | undefined): string {
-    if (!iso) return '—';
-    return new Date(iso).toLocaleString('fr-FR', {
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit'
-    });
+  directDroits(userId: string, appId: number): PortalDroit {
+    return this.userApps().find(ua => ua.userId === userId && ua.appId === appId)?.droits || 'lecture';
+  }
+
+  async toggleDirectApp(userId: string, appId: number) {
+    try {
+      await this.service.toggleUserApp(userId, appId, !this.hasDirectApp(userId, appId), this.directDroits(userId, appId));
+      await this.refresh();
+    } catch (e: any) {
+      this.error.set(e?.error?.error || 'Erreur mise à jour de l\'accès direct');
+    }
+  }
+
+  async setDroits(userId: string, appId: number, droits: string) {
+    try {
+      await this.service.toggleUserApp(userId, appId, true, droits as PortalDroit);
+      await this.refresh();
+    } catch (e: any) {
+      this.error.set(e?.error?.error || 'Erreur mise à jour du niveau de droit');
+    }
+  }
+
+  // ── Formatage ─────────────────────────────────────────────────────────────
+
+  metierNom(metierId: number | null): string {
+    if (!metierId) return '—';
+    return this.metiers().find(m => m.id === metierId)?.nom || '—';
   }
 }

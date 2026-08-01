@@ -1,35 +1,13 @@
-export * from './lib/help/help.service';
-export * from './lib/help/worg-help-trigger.component';
-export * from './lib/mini-header/worg-mini-header.component';
-export * from './lib/editor/title-create-dialog.component';
-export * from './lib/layout/header/header.component';
-export * from './lib/layout/footer/footer.component';
-export * from './lib/layout/nav/nav.component';
-export * from './lib/markdown-editor/markdown-editor.component';
+// Socle d'interface commun aux deux portails : ce que les deux monorepos
+// exposent sous le même alias @portail/shared-ui, avec le même code.
+//
+// Le thème est ici plutôt que dans core-data-access parce qu'il relève de la
+// présentation, et parce qu'une sous-application copiée d'un portail à l'autre
+// doit le trouver au même endroit.
+export * from './lib/service/theme.service';
 
-// Tools
-export * from './lib/tools/action-report-modal/action-report-modal.component';
-export * from './lib/tools/ticket-widget/ticket-widget.component';
-export * from './lib/tools/cahier-recette/cahier-recette.service';
-export * from './lib/tools/cahier-recette/cahier-recette.component';
-export * from './lib/tools/cahier-recette/cahier-recette-widget.component';
-export * from './lib/tools/tchat-ia/tchat-ia.component';
-export * from './lib/tools/wo/wo-actions/wo-actions.component';
-export * from './lib/tools/wo/wo-actions/wo-actions-widget.component';
-export * from './lib/tools/wo/wo-history/wo-history.component';
-export * from './lib/tools/wo/wo-ia-logs/wo-ia-logs.component';
-export * from './lib/tools/wo/wo-tchat-ia/wo-tchat-ia-widget.component';
-export * from './lib/tools/wo/wo-tools-admin/wo-tools-admin.component';
-export * from './lib/tools/wo/wo-tools-panel/wo-tools-panel.component';
-
-// Mega-Outils
-export * from './lib/mega-outils/trello/trello-board.component';
-export * from './lib/mega-outils/trello/trello-admin.component';
-export * from './lib/mega-outils/mockup/mockup-board.component';
-export * from './lib/mega-outils/mockup/mockup-admin.component';
-export * from './lib/mega-outils/array/array-board.component';
-export * from './lib/mega-outils/array/array-admin.component';
-export * from './lib/mega-outils/prompt/prompt-board.component';
-export * from './lib/mega-outils/prompt/prompt-admin.component';
-export * from './lib/mega-outils/form/form-board.component';
-export * from './lib/mega-outils/chart/chart-board.component';
+// Composants et services d'interface propres à CE portail (chrome du portail,
+// outils maison) : c'est le seul point de ce dossier qui diffère d'un monorepo
+// à l'autre. Une sous-application destinée à circuler entre les deux portails
+// ne doit rien importer d'ici.
+export * from './lib/portal-ui';

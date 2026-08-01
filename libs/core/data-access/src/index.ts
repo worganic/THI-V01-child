@@ -1,31 +1,21 @@
+// Socle d'accès aux données du portail, partagé avec les sous-applications :
+// tokens d'injection (base d'API, branding), registre des onglets d'admin et
+// modèles du catalogue d'applications.
+//
+// Lib volontairement présente dans les deux monorepos (même chemin, même alias
+// @portail/core-data-access) : une sous-application copiée d'un portail à
+// l'autre y trouve les mêmes symboles, sans jamais importer le code du portail
+// hôte par chemin relatif.
+
 // Tokens
 export * from './lib/tokens';
 
 // Services
 export * from './lib/admin-tabs-registry.service';
-export * from './lib/agent.service';
-export * from './lib/api.service';
-export * from './lib/app-config.service';
-export * from './lib/auth.service';
-export * from './lib/config.service';
-export * from './lib/conversation.service';
-export * from './lib/db-status.service';
-export * from './lib/document.service';
-export * from './lib/layout.service';
-export * from './lib/project-files.service';
-export * from './lib/project.service';
-export * from './lib/projet-collab.service';
-export * from './lib/theme.service';
-export * from './lib/wo-action-history.service';
-export * from './lib/mega-outils.models';
-export * from './lib/mega-outils.service';
-export * from './lib/mo-fence-parser.util';
-export * from './lib/prompt-launch-context.model';
-export * from './lib/prompt-system-composer.util';
-export * from './lib/tests-outil.models';
-export * from './lib/tests-outil.service';
-export * from './lib/agenda-outil.models';
-export * from './lib/agenda-outil.service';
-export * from './lib/ai-execute.service';
+
+// Modèles
 export * from './lib/portal-apps.models';
-export * from './lib/portal-apps.service';
+
+// Services d'accès aux données propres à CE portail (appels API/BDD) :
+// c'est le seul point de ce dossier qui diffère d'un monorepo à l'autre.
+export * from './lib/portal-data-access';

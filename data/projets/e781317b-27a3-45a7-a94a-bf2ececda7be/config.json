@@ -1,0 +1,38 @@
+{
+  "projectName": "test dev framework",
+  "gitRemoteUrl": null,
+  "createdAt": "2026-07-21T19:37:04.000Z",
+  "updatedAt": "2026-07-25T07:52:12.532Z",
+  "structure": [],
+  "outils": [
+    {
+      "id": "fa3d5e98-a10f-4b8a-997b-2d97847c7c82",
+      "type": "edition",
+      "name": "Edition",
+      "rootFolderIds": [
+        "37bad15e-8103-43ce-bbce-30e96c95516d",
+        "91281e16-b37b-48c1-aa61-8abd09b336ce",
+        "3eea0a52-f107-4422-b4e1-91e7e86e0656",
+        "ea3f55bc-a3d3-4ab7-ac38-f4d27151838a",
+        "566de0a5-bbae-4343-997a-32a93017a9bc",
+        "5b613b00-153c-40e7-a6dc-fd72a8674766",
+        "affbb6cf-d826-4546-8096-70b94c7da304",
+        "7a80cad7-05e2-44b2-a6ec-87226d7cb8dd",
+        "f0363445-fbd5-42ed-b333-948f69905497",
+        "4831cf10-e687-4d00-ad11-5d1edd10a396",
+        "d8a1284c-2dc9-438c-beff-22338bb0a5f5",
+        "dd411045-5063-456b-9161-acea25590eb2",
+        "d3fa85ff-81f2-4ef3-9849-7bb770645521",
+        "5306f72f-c35f-4ea5-8c13-7f9981558360",
+        "259268f9-25df-4b42-bd11-effef5889e34",
+        "42dddc34-feb4-4e19-94b7-cd753f8b29fc",
+        "726a612b-4c65-4176-8f95-25fcbdfe9fc1",
+        "0891c00a-a2cf-4946-848e-f9d339b2fbc4",
+        "24a42657-11cb-490f-9b67-deaca2e76ef6",
+        "2830c554-4b9e-4b78-803b-eb2864c03c29",
+        "9aed3527-c386-4ba4-9fd0-9b7c2f2d07ea"
+      ],
+      "createdAt": "2026-07-21T19:37:04.000Z"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import { Component, Input, effect } from '@angular/core';
-import { AuthService, ThemeService, AppConfigService } from '@portail/core-data-access';
+import { AuthService, AppConfigService } from '@portail/core-data-access';
+import { ThemeService } from '../service/theme.service';
 
 @Component({
   selector: 'worg-mini-header',

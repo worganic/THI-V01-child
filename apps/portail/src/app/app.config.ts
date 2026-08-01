@@ -5,7 +5,8 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 
 import { routes } from './app.routes';
 import { runtimeEnv } from './runtime-env';
-import { authInterceptor, providePortalSession } from '@portail/core-auth';
+import { authInterceptor, providePortalSession, PORTAL_AUTH_ROUTES } from '@portail/core-auth';
+import { PORTAL_THEME_CONFIG } from '@portail/shared-ui';
 import { DbStatusService, AppConfigService, API_DATA_URL, API_EXECUTOR_URL, API_AGENT_URL, API_TRACE_HEADERS, APP_BRANDING } from '@portail/core-data-access';
 import { CHILD_ADMIN_TABS_PROVIDERS } from './child/child-admin-tabs';
 import { provideAgendaAdminTab } from '../../../appli-agenda/src/app/admin/provide-agenda-admin-tab';
@@ -34,6 +35,24 @@ export const appConfig: ApplicationConfig = {
     // Vue normalisée de la session pour les sous-applications : elles injectent
     // PORTAL_SESSION, jamais AuthService dont la forme diffère d'un portail à l'autre.
     ...providePortalSession(),
+    // Points d'entrée/sortie de session de CE portail : c'est la seule valeur
+    // qui distinguait les gardes des deux monorepos, désormais identiques.
+    { provide: PORTAL_AUTH_ROUTES, useValue: { login: '/', home: '/home' } },
+    // Thèmes de CE portail. Le ThemeService est le même code des deux côtés :
+    // seule cette configuration change (ici trois thèmes, deux en face).
+    {
+      provide: PORTAL_THEME_CONFIG,
+      useValue: {
+        storageKey: 'theme',
+        cycle: ['dark', 'light', 'pink'],
+        fallback: 'dark',
+        classes: { dark: ['dark'], light: [], pink: ['dark', 'pink'] },
+        icons: { dark: 'light_mode', light: 'favorite', pink: 'dark_mode' },
+      }
+    },
+    // Détection de changement : les deux portails embarquent zone.js et la
+    // configurent de la même façon. Déclaré explicitement des deux côtés plutôt
+    // que laissé implicite, pour que la ligne soit comparable d'un dépôt à l'autre.
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),

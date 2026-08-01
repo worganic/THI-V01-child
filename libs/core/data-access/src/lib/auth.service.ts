@@ -8,6 +8,14 @@ export interface AuthUser {
   username: string;
   email: string;
   role: string;
+  // Fiche d'annuaire — facultative ici : la session et l'en-tête n'en ont pas
+  // besoin, seule l'administration des utilisateurs les renseigne.
+  // Voir PortalUser (portal-apps.models.ts) pour la fiche complète.
+  matricule?: string;
+  nom?: string;
+  prenom?: string;
+  /** Un compte inactif est conservé mais ne peut plus se connecter. */
+  isActive?: boolean;
   createdAt?: string;
   lastLogin?: string;
 }

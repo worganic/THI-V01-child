@@ -29,3 +29,23 @@ if (METIER_COLORS.length !== METIER_COLOR_OPTIONS.length) {
 export function metierBadgeClass(color: string | null | undefined): string {
   return METIER_COLORS.find(c => c.value === color)?.badgeClass ?? METIER_COLORS[4].badgeClass;
 }
+
+/**
+ * Variante pleine des mêmes teintes — pastille de couleur franche sur texte
+ * blanc, comme dans les tableaux d'administration de l'autre portail. Les
+ * fonds translucides de `METIER_COLORS` ci-dessus restent utilisés partout
+ * ailleurs (listes, fiches), où ils se fondent mieux dans la carte.
+ */
+const METIER_SOLID_CLASSES: Record<string, string> = {
+  blue:   'bg-blue-600 text-white border-blue-600',
+  green:  'bg-green-600 text-white border-green-600',
+  purple: 'bg-purple-600 text-white border-purple-600',
+  amber:  'bg-amber-600 text-white border-amber-600',
+  slate:  'bg-slate-600 text-white border-slate-600',
+  red:    'bg-red-600 text-white border-red-600',
+};
+
+/** Même repli sur `slate` que `metierBadgeClass`, si la valeur est inconnue. */
+export function metierSolidBadgeClass(color: string | null | undefined): string {
+  return METIER_SOLID_CLASSES[color ?? ''] ?? METIER_SOLID_CLASSES['slate'];
+}

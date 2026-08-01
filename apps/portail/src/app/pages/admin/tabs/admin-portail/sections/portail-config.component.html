@@ -1,0 +1,109 @@
+@if (error()) {
+  <div class="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">{{ error() }}</div>
+}
+
+<!-- État actuel -->
+<div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+  <div class="px-5 py-3 bg-light-surface/60 dark:bg-white/5 border-b border-light-border dark:border-white/10 flex items-center justify-between gap-3">
+    <span class="text-sm font-semibold text-light-text dark:text-white">Infos config — État actuel</span>
+    <button (click)="probe()" [disabled]="probing()"
+            class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-light-surface dark:bg-white/5 border border-light-border dark:border-white/10 text-light-text-muted dark:text-white/50 hover:text-light-text dark:hover:text-white transition-all disabled:opacity-50">
+      <span class="material-symbols-outlined text-sm" [class.animate-spin]="probing()">refresh</span>
+      Réessayer la sonde
+    </button>
+  </div>
+
+  <div class="px-5 py-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Base de données</div>
+      <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border" [class]="dbBadgeClass()">{{ dbLabel() }}</span>
+      @if (dbStatus.clientIp()) {
+        <div class="text-[11px] text-light-text-muted dark:text-white/30 mt-1.5">IP cliente : {{ dbStatus.clientIp() }}</div>
+      }
+    </div>
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Version locale</div>
+      <div class="text-lg font-bold text-light-text dark:text-white">V.{{ version() }}</div>
+      @if (upToDate() === false) {
+        <div class="text-[11px] text-amber-600 dark:text-amber-400 mt-0.5">Un déploiement plus récent existe</div>
+      } @else if (upToDate() === true) {
+        <div class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">À jour</div>
+      }
+    </div>
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Branche</div>
+      <div class="text-lg font-bold text-light-text dark:text-white">{{ currentBranch() }}</div>
+    </div>
+    <div>
+      <div class="text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/30 mb-1">Dernier déploiement</div>
+      <div class="text-sm text-light-text dark:text-white">{{ deployedAt() }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Services -->
+<div class="mb-4 bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+  <div class="px-5 py-3 bg-light-surface/60 dark:bg-white/5 border-b border-light-border dark:border-white/10">
+    <span class="text-sm font-semibold text-light-text dark:text-white">Services contactés</span>
+    <p class="text-[11px] text-light-text-muted dark:text-white/30 mt-0.5">
+      Valeurs des tokens d'injection du socle — une sous-application ne lit jamais d'autre source pour ces URL.
+    </p>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-light-surface dark:bg-white/5 text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/40">
+        <tr>
+          <th class="px-4 py-3 text-left">Token</th>
+          <th class="px-4 py-3 text-left">Service</th>
+          <th class="px-4 py-3 text-left">URL</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-light-border/50 dark:divide-white/5">
+        <tr>
+          <td class="px-4 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">API_DATA_URL</td>
+          <td class="px-4 py-3 text-light-text dark:text-white">API de données (portail, users, catalogue)</td>
+          <td class="px-4 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">{{ apiDataUrl || '—' }}</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">API_EXECUTOR_URL</td>
+          <td class="px-4 py-3 text-light-text dark:text-white">Exécuteur local (actions système)</td>
+          <td class="px-4 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">{{ apiExecutorUrl || '— (non exposé)' }}</td>
+        </tr>
+        <tr>
+          <td class="px-4 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">API_AGENT_URL</td>
+          <td class="px-4 py-3 text-light-text dark:text-white">Service d'agent IA</td>
+          <td class="px-4 py-3 font-mono text-xs text-light-text-muted dark:text-white/50">{{ apiAgentUrl || '— (non exposé)' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modes de lancement -->
+<div class="bg-white dark:bg-surface rounded-xl border border-light-border dark:border-white/10 overflow-hidden">
+  <div class="px-5 py-3 bg-light-surface/60 dark:bg-white/5 border-b border-light-border dark:border-white/10">
+    <span class="text-sm font-semibold text-light-text dark:text-white">Modes de lancement disponibles</span>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-light-surface dark:bg-white/5 text-[11px] uppercase tracking-wider text-light-text-muted dark:text-white/40">
+        <tr>
+          <th class="px-4 py-3 text-left">Mode</th>
+          <th class="px-4 py-3 text-left">Commande</th>
+          <th class="px-4 py-3 text-left">Description</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-light-border/50 dark:divide-white/5">
+        @for (mode of launchModes; track mode.command) {
+          <tr>
+            <td class="px-4 py-3 font-semibold text-light-text dark:text-white whitespace-nowrap">{{ mode.label }}</td>
+            <td class="px-4 py-3">
+              <code class="px-2 py-1 rounded bg-light-surface dark:bg-white/5 font-mono text-xs text-light-primary dark:text-primary">{{ mode.command }}</code>
+            </td>
+            <td class="px-4 py-3 text-light-text-muted dark:text-white/50">{{ mode.description }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

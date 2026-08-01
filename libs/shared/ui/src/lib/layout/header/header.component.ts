@@ -4,9 +4,10 @@ import { Router, RouterModule } from '@angular/router';
 import { NavComponent } from '../nav/nav.component';
 import { Subject, interval, takeUntil } from 'rxjs';
 import {
-  ThemeService, AuthService, ConfigService, LayoutService, AppConfigService,
+  AuthService, ConfigService, LayoutService, AppConfigService,
   ProviderOption, API_DATA_URL
 } from '@portail/core-data-access';
+import { ThemeService } from '../../service/theme.service';
 
 @Component({
   selector: 'app-header',
