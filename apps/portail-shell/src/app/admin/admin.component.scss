@@ -1,0 +1,221 @@
+/* On force le composant Angular lui-même à occuper tout l'espace disponible */
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  overflow: hidden;
+}
+
+.admin-layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  flex: 1;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   MENU D'ADMINISTRATION À TROIS NIVEAUX (catégorie → onglet → page)
+   Même structure et même rendu que l'autre portail, mais écrit avec les
+   variables --* de libs/shared/ui/src/portal-tokens.scss (ce portail n'a pas
+   Tailwind) : le menu suit donc automatiquement le thème clair/sombre.
+   ========================================================================== */
+
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+
+  &__icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: var(--category-red-bg);
+    border: 1px solid var(--category-red-border);
+
+    .material-symbols-outlined {
+      font-size: 22px;
+      color: var(--category-red-text);
+    }
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--heading-color);
+  }
+
+  p {
+    margin: 0.15rem 0 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+}
+
+.admin-menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-pill-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: 12px;
+  background-color: var(--surface-alt);
+  border: 1px solid var(--border-color);
+
+  &__empty {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+}
+
+.admin-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+
+  .material-symbols-outlined {
+    font-size: 18px;
+  }
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &.active {
+    background-color: var(--surface);
+    border-color: var(--border-color);
+    color: var(--heading-color);
+    box-shadow: var(--shadow-card);
+  }
+}
+
+/* Troisième niveau : mêmes pastilles, un cran plus compactes — c'est ce qui
+   distingue visuellement une page d'un onglet. */
+.admin-pill-bar--sections .admin-pill {
+  padding: 0.375rem 1rem;
+  font-size: 0.8125rem;
+
+  .material-symbols-outlined {
+    font-size: 16px;
+  }
+}
+
+/* Le conteneur qui porte la scrollbar : il touche maintenant obligatoirement les bords */
+.admin-scrollable-container {
+  flex: 1;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background-color: var(--page-bg);
+  box-sizing: border-box;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  &::-webkit-scrollbar-track {
+    background: var(--surface-alt);
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 4px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+  }
+}
+
+.admin-content-wrapper {
+  padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   DESIGN SYSTEM PORTAIL — le rethémage des classes Bootstrap (.form-control,
+   .table, .btn-primary, .card...) vit désormais dans
+   libs/shared/ui/src/portal-bootstrap-theme.scss, chargé une seule fois pour
+   tout le portail (voir apps/portail-shell/src/styles.scss) — donc pour
+   l'admin ET pour toute sous-application Bootstrap (ex. appli-solace). Ne pas
+   dupliquer ces règles ici : une sous-application qui a besoin d'un ajustement
+   propre à elle-même l'ajoute dans son propre SCSS, pas dans ce fichier.
+   ========================================================================== */
+
+// Tag coloré d'un métier (Admin > Métiers, et affiché sur la fiche utilisateur) : réutilise les 6
+// teintes --category-* du design system centralisé (voir libs/shared/ui/src/portal-tokens.scss,
+// chargé une seule fois pour tout portail-shell — mêmes variables, même principe que les
+// catégories de projet de l'agenda) plutôt qu'une couleur libre, pour rester cohérent avec le
+// reste du portail et s'adapter au thème sombre sans configuration supplémentaire.
+.metier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  white-space: nowrap;
+
+  &.metier-blue { background: var(--category-blue-bg); color: var(--category-blue-text); border-color: var(--category-blue-border); }
+  &.metier-green { background: var(--category-green-bg); color: var(--category-green-text); border-color: var(--category-green-border); }
+  &.metier-purple { background: var(--category-purple-bg); color: var(--category-purple-text); border-color: var(--category-purple-border); }
+  &.metier-amber { background: var(--category-amber-bg); color: var(--category-amber-text); border-color: var(--category-amber-border); }
+  &.metier-slate { background: var(--category-slate-bg); color: var(--category-slate-text); border-color: var(--category-slate-border); }
+  &.metier-red { background: var(--category-red-bg); color: var(--category-red-text); border-color: var(--category-red-border); }
+}
+
+// Bandeaux "applications détectées" (admin-apps) : `.alert`/`.list-group` de Bootstrap
+// ne sont pas reteintés par styles-admin.scss (seuls card/table/btn/badge le sont),
+// ils restent donc figés sur les couleurs claires par défaut de Bootstrap, illisibles
+// sur cette admin sombre — d'où ce style scopé, indépendant du thème Bootstrap.
+.detected-apps-panel {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+  margin-bottom: 24px;
+
+  h6 { color: var(--text-primary); margin: 0; }
+}
+
+.detected-apps-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--surface-alt);
+
+  & + & { margin-top: 6px; }
+}

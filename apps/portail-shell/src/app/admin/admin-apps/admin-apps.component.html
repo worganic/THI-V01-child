@@ -1,0 +1,101 @@
+<div id="form-ajout-app" class="card shadow-sm mb-4">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Ajouter une Application</h5>
+    @if (localUnregisteredApps.length > 0) {
+      <span class="badge bg-warning text-dark">{{ localUnregisteredApps.length }} application(s) non-enregistrée(s) détectée(s)</span>
+    }
+  </div>
+  <div class="card-body d-flex gap-2 flex-wrap">
+    <input type="text" class="form-control w-auto" placeholder="Nom de l'App" [(ngModel)]="newApp.nom">
+    <input type="text" class="form-control w-auto" placeholder="Chemin URL (ex: /si)" [(ngModel)]="newApp.url_path">
+    <input type="text" class="form-control w-auto" placeholder="Description" [(ngModel)]="newApp.description">
+    <input type="text" class="form-control w-auto" placeholder="Icône (ex: ico-menu-si.png)" [(ngModel)]="newApp.icone">
+    <div class="form-check d-flex align-items-center">
+      <input type="checkbox" class="form-check-input me-2" id="new-app-active" [(ngModel)]="newApp.is_active">
+      <label class="form-check-label" for="new-app-active">Visible</label>
+    </div>
+    <button class="btn btn-primary ms-auto" (click)="ajouterApplication()">Créer l'App</button>
+  </div>
+</div>
+
+@if (localUnregisteredApps.length > 0) {
+  <div class="detected-apps-panel shadow-sm">
+    <h6 class="mb-2">Applications détectées dans le code (Routes locales)</h6>
+    @for (unregistered of localUnregisteredApps; track unregistered.url_path) {
+      <div class="detected-apps-row">
+        <span><strong>{{ unregistered.nom }}</strong> ({{ unregistered.url_path }})</span>
+        <button class="btn btn-sm btn-outline-info" (click)="registerLocalApp(unregistered)">Pré-remplir le formulaire</button>
+      </div>
+    }
+  </div>
+}
+
+@if (availableApps.length > 0) {
+  <div class="detected-apps-panel shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h6 class="mb-0">Applications disponibles (dossier apps/) non ajoutées au catalogue</h6>
+      <button class="btn btn-sm btn-outline-success" (click)="ajouterToutesApplications()">Tout ajouter</button>
+    </div>
+    @for (avail of availableApps; track avail.nom) {
+      <div class="detected-apps-row">
+        <span>{{ avail.nom }}</span>
+        <button class="btn btn-sm btn-outline-success" (click)="ajouterApplicationAuto(avail)">Ajouter automatiquement</button>
+      </div>
+    }
+  </div>
+}
+
+<table class="table table-striped table-hover align-middle shadow-sm">
+  <thead class="table-dark">
+    <tr>
+      <th>Icône</th>
+      <th>Nom</th>
+      <th>URL Path</th>
+      <th>Description</th>
+      <th>Statut</th>
+      <th class="text-end">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (app of applications; track app.id) {
+      <tr>
+        @if (editingAppId === app.id) {
+          <td><input type="text" class="form-control form-control-sm" [(ngModel)]="editingAppObj.icone"></td>
+          <td><input type="text" class="form-control form-control-sm" [(ngModel)]="editingAppObj.nom"></td>
+          <td><input type="text" class="form-control form-control-sm" [(ngModel)]="editingAppObj.url_path"></td>
+          <td><input type="text" class="form-control form-control-sm" [(ngModel)]="editingAppObj.description"></td>
+          <td>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="editingAppObj.is_active">
+            </div>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-success btn-sm me-2" (click)="saveAppEdit()">Valider</button>
+            <button class="btn btn-secondary btn-sm" (click)="cancelAppEdit()">Annuler</button>
+          </td>
+        } @else {
+          <td>
+            @if (app.icone) {
+              <img [src]="getIconUrl(app.icone)" alt="ico" width="30" height="30" (error)="handleImageError($event)">
+            }
+          </td>
+          <td><span class="fw-bold">{{ app.nom }}</span></td>
+          <td>{{ app.url_path }}</td>
+          <td>{{ app.description }}</td>
+          <td>
+            <span class="badge" [class.bg-success]="app.is_active" [class.bg-danger]="!app.is_active">
+              {{ app.is_active ? 'Visible' : 'Cachée' }}
+            </span>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-outline-primary btn-sm me-2" (click)="startAppEdit(app)">Éditer</button>
+            <button class="btn btn-outline-warning btn-sm me-2" (click)="toggleAppStatus(app)">
+              {{ app.is_active ? 'Masquer' : 'Afficher' }}
+            </button>
+            <button class="btn btn-outline-danger btn-sm" (click)="deleteApplication(app.id)">Supprimer</button>
+          </td>
+        }
+      </tr>
+    }
+  </tbody>
+</table>

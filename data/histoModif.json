@@ -15857,6 +15857,33 @@
       "prompt": "ameliore le design general de ces boutons qui sont tres moche",
       "startedAt": "2026-08-02T16:50:46.342Z",
       "completedAt": "2026-08-02T17:20:46.342Z"
+    },
+    {
+      "id": "mod-613",
+      "version": "B-0.339",
+      "date": "2026-08-02T17:48:43.936Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "server"
+      ],
+      "features": "portail:admin-applications",
+      "title": "Detection des sous-apps apps/appli-* non ajoutees au catalogue + ajout auto",
+      "description": "Admin > Portail > Systeme > Applications ne montrait que le catalogue portal_apps (Projets/Agenda/Recettes/Documents) ; la detection existante (detectLocalApps) inspecte le router Angular donc ne voit jamais une sous-app pas encore montee. Ajout dune vraie inspection du dossier apps/ : nouvelle route serveur GET /applications/available (THI: server/modules/portal-admin-api.js, scan fs.readdirSync ; Airbus: server/server-data.js, mock local uniquement - la vraie API POPORTAIL de prod ne l aura pas tant que l equipe Airbus ne l implemente pas de son cote, erreur avalee cote client) qui liste les dossiers appli-* (hors *-e2e) sans entree catalogue correspondante (comparaison sur nom, insensible casse - pas de colonne code cote Airbus), avec nom/icone derives de provide-*-admin-tab.ts (regex sur label:/icon:) ou a defaut du nom de dossier humanise. Nouvelle section UI sous le bandeau existant, bouton Ajouter automatiquement par ligne + Tout ajouter (boucle sequentielle client sur insertApplication existant, is_active:false par defaut car ces apps n ont pas de route utilisateur - a completer manuellement si besoin). Fichiers contrat (admin-apps.component.ts/html, admin.service.ts) repercutes a l identique dans les deux depots. Verifie au navigateur sur THI : les 6 apps admin-only (design/informations/qrcode/si/solace/welcomeTele) detectees avec les bons libelles extraits des provide-*-admin-tab.ts, ajout individuel et Tout ajouter fonctionnels, section disparait une fois tout ajoute. Note : tests/fonctions/connecte/admin/applications/fonctions.md decrit une refonte admin differente (AdminPortailComponent, /api/portal/apps) qui ne correspond pas au composant reellement monte (admin-apps.component.ts, /admin/apps) - divergence documentation/code preexistante, non touchee. Correction visuelle apres retour utilisateur : les bandeaux utilisaient .alert/.list-group Bootstrap, non reteintes par styles-admin.scss (seuls card/table/btn/badge le sont) - fond clair fige illisible sur cette admin sombre. Remplaces par des classes scopees (.detected-apps-panel/.detected-apps-row dans admin.component.scss, fichier contrat) sur les variables --surface/--surface-alt/--border-color/--text-primary du contrat de tokens, sans dependre du systeme de reteinte Bootstrap. Le meme bandeau preexistant (localUnregisteredApps, jamais visible jusque-la) beneficie du meme correctif.",
+      "files": [
+        "server/modules/portal-admin-api.js",
+        "apps/portail-shell/environmentGlobal/environmentGlobal.ts",
+        "apps/portail-shell/src/services/admin.service.ts",
+        "apps/portail-shell/src/app/admin/admin-apps/admin-apps.component.ts",
+        "apps/portail-shell/src/app/admin/admin-apps/admin-apps.component.html",
+        "apps/portail-shell/src/app/admin/admin.component.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "dans l admin/system/applications on a la liste des appli accessible. Il manque la liste des applications disponible (via repertoire apps/) et non ajoute et le bouton pour l ajoute automatiquement",
+      "startedAt": "2026-08-02T17:03:43.938Z",
+      "completedAt": "2026-08-02T17:48:43.938Z"
     }
   ]
 }

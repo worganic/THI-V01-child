@@ -23,6 +23,8 @@
  */
 
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 
 const PREFIXE = '/api/portal-admin';
 const DROITS_VALIDES = ['lecture', 'ecriture', 'admin'];
@@ -106,15 +108,17 @@ function register(app, { pool, getSessionUser }) {
         const matricule = String(req.query.matricule || '').trim();
         if (!matricule) return res.json([]);
         try {
-            // Le compte peut être identifié par son matricule ou, sur cette
-            // plateforme où le matricule est facultatif, par son e-mail : c'est
-            // ce que saisit l'utilisateur sur l'écran de connexion commun.
+            // Cette route résout `PortalSessionUser.id` (le shell commun l'appelle
+            // avec cette valeur, jamais avec un matricule saisi) — voir
+            // libs/core/auth/src/lib/portal-session.ts : « identifiant stable dans
+            // le portail hôte ». Ici, cet identifiant EST l'id de compte (UUID),
+            // pas le matricule (facultatif) ni l'email — d'où le premier terme.
             const [rows] = await pool.query(
                 `SELECT id, matricule, nom, prenom, email, role, is_active, metier_id
                    FROM users
-                  WHERE matricule = ? OR email = ? OR username = ?
+                  WHERE id = ? OR matricule = ? OR email = ? OR username = ?
                   LIMIT 1`,
-                [matricule, matricule, matricule]
+                [matricule, matricule, matricule, matricule]
             );
             res.json(rows.map(mapUser));
         } catch (e) { fail(res, 'get user by matricule', e); }
@@ -173,6 +177,52 @@ function register(app, { pool, getSessionUser }) {
     });
 
     // ── Applications ─────────────────────────────────────────────────────────
+
+    /**
+     * Dossiers `apps/appli-*` qui ne contribuent qu'un onglet admin (pas de route
+     * utilisateur montée), déduits par lecture de `provide-*-admin-tab.ts` — voir
+     * docs/architecture-sous-applications.md. Best-effort : un dossier sans ce
+     * fichier ou au format inattendu retombe sur un nom/icône par défaut plutôt que
+     * d'être ignoré.
+     */
+    function scanAvailableApps() {
+        const appsDir = path.join(__dirname, '..', '..', 'apps');
+        let entries;
+        try {
+            entries = fs.readdirSync(appsDir, { withFileTypes: true });
+        } catch {
+            return [];
+        }
+        return entries
+            .filter(e => e.isDirectory() && /^appli-.+/.test(e.name) && !e.name.endsWith('-e2e'))
+            .map(e => {
+                const adminDir = path.join(appsDir, e.name, 'src/app/admin');
+                let nom = e.name.replace(/^appli-/, '').replace(/-/g, ' ');
+                nom = nom.charAt(0).toUpperCase() + nom.slice(1);
+                let icone = 'apps';
+                try {
+                    const fichierTab = fs.readdirSync(adminDir).find(f => /^provide-.*-admin-tab\.ts$/.test(f));
+                    if (fichierTab) {
+                        const source = fs.readFileSync(path.join(adminDir, fichierTab), 'utf8');
+                        const labelMatch = source.match(/label:\s*'([^']+)'/);
+                        const iconMatch = source.match(/icon:\s*'([^']+)'/);
+                        if (labelMatch) nom = labelMatch[1];
+                        if (iconMatch) icone = iconMatch[1];
+                    }
+                } catch { /* pas de dossier admin/ : garde les défauts */ }
+                return { nom, description: '', url_path: '', icone, dossier: e.name };
+            });
+    }
+
+    app.get(`${PREFIXE}/applications/available`, async (req, res) => {
+        if (!requireAdmin(req, res)) return;
+        try {
+            const [rows] = await pool.query('SELECT nom FROM portal_apps');
+            const nomsExistants = new Set(rows.map(r => String(r.nom || '').trim().toLowerCase()));
+            const disponibles = scanAvailableApps().filter(a => !nomsExistants.has(a.nom.trim().toLowerCase()));
+            res.json(disponibles);
+        } catch (e) { fail(res, 'get available applications', e); }
+    });
 
     app.get(`${PREFIXE}/applications/`, async (req, res) => {
         if (!requireUser(req, res)) return;
