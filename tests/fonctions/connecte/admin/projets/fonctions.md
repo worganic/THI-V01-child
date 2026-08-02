@@ -1,5 +1,8 @@
 # Admin — Projets
 
+Route : `/admin/app/projets` (hébergée par la route générique `admin/app/:id`, voir `AdminAppHostComponent`)  
+Composant : `AdminProjetsComponent`
+
 ## `2-1-6-1` — Liste et gestion des projets
 
 - Affichage de tous les projets en tableau (titre, auteur, statut, date)
@@ -50,3 +53,9 @@
 - Champs communs (serveur/owner, mot de passe/token) + champs FTP spécifiques (utilisateur, port, répertoire) et bouton "Tester la connexion FTP"
 - **Option FTP conditionnée au réglage global** (`connecte/config` › `2-2-10`) : l'option "FTP" du select est désactivée (libellé "FTP (désactivé — Config)") tant que la synchronisation FTP n'est pas réactivée dans Admin › Config. Un projet déjà configuré en FTP affiche un avertissement ambre indiquant qu'il est traité comme sans sauvegarde tant que le réglage global reste éteint (aucune donnée du projet n'est modifiée, juste ignorée côté synchro).
 - **Composants:** `admin-projets.component.ts`, `admin-projets.component.html`, `libs/portail-core/data-access/src/lib/config.service.ts`, `server/server-data.js`, `server/modules/ftp-service.js`
+
+## `2-1-6-7` — [modification] Navigation entre les deux sous-onglets (Projets / Instructions IA)
+
+- **Sous-onglets en état local** : `activeSubTab` est un signal local, non reflété dans l'URL (pas de deep-link par sous-onglet) — un rafraîchissement de page revient sur "Projets".
+- Auparavant le composant attendait un segment de route `/admin/projets/:subtab` dédié ; devenu inexistant après le passage à la route générique `admin/app/:id`, il retentait de naviguer vers ce chemin à chaque montage, chemin qui ne correspondait plus à aucune route et tombait sur le wildcard de secours (`redirectTo: 'home'`) — l'onglet "Applications" de l'admin renvoyait donc systématiquement à l'accueil connecté. Corrigé en retirant la dépendance à un paramètre de route.
+- **Composants:** `admin-projets.component.ts`

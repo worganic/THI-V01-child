@@ -1,6 +1,6 @@
 # Admin › Tests — Fonctions métier
 
-Route : `/admin` onglet "Tests"  
+Route : `/admin/app/tests` (hébergée par la route générique `admin/app/:id`, voir `AdminAppHostComponent`)  
 Composant : `AdminTestsComponent`  
 Accès : admin uniquement
 
@@ -11,7 +11,7 @@ Interface organisée en **4 onglets** (inspirée de l'outil projets `tests-outil
 ## `2-1-5-1` — [modification] Navigation par onglets + Onglet Cahier de recette
 
 - **Barre d'onglets** : Cahier de recette (`checklist`) / Exécution (`play_circle`) / Résultats (`bar_chart`) / Historique (`history`) / Site Map (`account_tree`).
-- **URL par sous-onglet** : chaque onglet a une URL directe — `/admin/tests/cahier`, `/admin/tests/execution`, `/admin/tests/resultats`, `/admin/tests/historique`, `/admin/tests/sitemap`. Navigation par URL directe ou via le navigateur (retour arrière) possible.
+- **Onglet en état local (pas d'URL par sous-onglet)** : depuis le passage à la route générique `admin/app/:id`, le sous-onglet actif est un signal local (`activeTab`), non reflété dans l'URL — un rafraîchissement de page revient sur "Cahier de recette". (Auparavant chaque onglet avait sa propre URL, `/admin/tests/:subtab` ; cette route dédiée n'existe plus dans `app.routes.ts`, la conserver faisait échouer la navigation vers `/home` — voir `2-1-5-1` historique.)
   - L'onglet actif est souligné (border + texte primary).
   - À l'activation : Exécution initialise les défauts IA ; Résultats charge la matrice (GET `/api/admin/tests/matrix`).
 - **Bouton "Rafraîchir le référentiel"** (en haut à droite, toutes vues) : POST `/api/admin/tests/functions/refresh` → invalide le cache serveur puis recharge.

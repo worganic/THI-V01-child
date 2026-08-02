@@ -15715,6 +15715,126 @@
       "prompt": "continue (suite de l'unification des deux portails)",
       "startedAt": "2026-08-01T01:00:00.000Z",
       "completedAt": "2026-08-01T02:00:00.000Z"
+    },
+    {
+      "id": "mod-607",
+      "version": "B-0.339",
+      "date": "2026-08-01T11:29:29.906Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail"
+      ],
+      "features": "portail:connexion,system:uniformisation",
+      "title": "Ecran de connexion illisible en theme sombre",
+      "description": "La page /connexion du shell commun etait inutilisable sur ce portail : titre, texte saisi et placeholders invisibles. Sa feuille de style, reprise telle quelle de l'autre monorepo, dessine une carte blanche mais ne fixait aucune couleur de texte — le reset Tailwind mettant color:inherit sur les champs et la regle globale h2 { color: var(--h2-color, inherit) !important } de styles.scss, tout heritait de body { color: var(--text-primary) }, soit #ffffff en theme sombre. Blanc sur blanc. Seul le champ pre-rempli par l'autofill Chrome restait visible, d'ou le symptome 'impossible d'afficher du texte dans la zone mot de passe'. La carte impose desormais sa propre couleur de texte (#2d3748), color-scheme: light, et des couleurs explicites sur .form-control et son ::placeholder : elle est autonome quel que soit le theme du portail hote. Fichier sous contrat, correction appliquee a l'identique dans les deux monorepos (67 fichiers toujours identiques). Verifie dans le navigateur : titre, saisie, placeholders et banniere d'erreur s'affichent correctement.",
+      "files": [
+        "apps/portail/src/app/connexion/connexion.component.scss",
+        "tests/fonctions/non-connecte/landing/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "je n'arrive pas a me connecte, je n'arrive meme pas a affiche du texte dans la zone mot de passe",
+      "startedAt": "2026-08-01T11:04:29.909Z",
+      "completedAt": "2026-08-01T11:29:29.909Z"
+    },
+    {
+      "id": "mod-608",
+      "version": "B-0.339",
+      "date": "2026-08-01T11:41:35.298Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "server"
+      ],
+      "features": "server:cors,portail:admin",
+      "title": "Admin Portail Utilisateurs vide (CORS en-tetes de tracabilite)",
+      "description": "La page Admin > Portail > Systeme > Utilisateurs (et les onglets Applications/Groupes/Metiers) affichait '0 utilisateur' alors que l'API repondait correctement. Cause : le admin.service.ts commun aux deux portails pose sur chaque appel les en-tetes de tracabilite IDUSER/IDAPPEL/IDTRANSACTION (vides cote THI, envoyes avec la valeur 'VALEUR_PAR_DEFAUT'). Ces trois en-tetes n'etaient pas listes dans allowedHeaders du cors() de server-data.js : le prefligth OPTIONS repondait 204 mais le navigateur annulait ensuite la requete GET reelle (statut XHR 0), Angular tombait dans catchError et renvoyait un tableau vide. Diagnostic confirme au navigateur : requete manuelle avec le seul en-tete Authorization -> 200 avec les 4 users ; requete de l'app portant les en-tetes de tracabilite -> bloquee. Correctif : ajout de IDUSER, IDAPPEL, IDTRANSACTION a allowedHeaders. Verifie : Access-Control-Allow-Headers les expose desormais, et l'admin liste bien les 4 utilisateurs.",
+      "files": [
+        "server/server-data.js"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "lorsque je suis sur admin/portail/users je ne vois aucun utilisateur",
+      "startedAt": "2026-08-01T11:21:35.299Z",
+      "completedAt": "2026-08-01T11:41:35.299Z"
+    },
+    {
+      "id": "mod-609",
+      "version": "B-0.339",
+      "date": "2026-08-01T12:05:53.473Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail"
+      ],
+      "features": "portail:admin,system:theme",
+      "title": "Graphisme de la zone admin aligne sur l autre portail (Bootstrap scope)",
+      "description": "Les gabarits d admin (users/apps/groupes/metiers) sont sous contrat, identiques a l autre monorepo et ecrits en classes Bootstrap. L autre portail charge Bootstrap : sa zone admin est stylee. Ce portail est en Tailwind : sans Bootstrap, l admin s affichait brute (aucune carte, table ni bouton). Nouveau fichier apps/portail/src/styles-admin.scss (hors contrat) qui charge le MEME Bootstrap que l autre portail mais CONFINE sous .admin-content-wrapper (comme .bs-scope des recettes), puis le re-teinte aux couleurs THI via les variables --bs-* (accent violet, surfaces sombres, theme rose ; adaptatif dark/light/pink). En-tete de table en accent THI au lieu du bleu marine ; couleurs semantiques des boutons d action conservees (info=Droits, warning=Desactiver, danger=Supprimer, success=Actif). Import allege (grille, tables, formulaires, boutons, cartes, badges, alertes, list-group, collapse) pour limiter le poids. Piege corrige : _root.scss de Bootstrap doit rester au niveau :root global, sinon imbrique il devient .admin-content-wrapper :root et --bs-border-width/--bs-border-radius deviennent indefinis -> boutons et cartes sans bordure ni rayon. Verifie au navigateur sur les 4 pages, non-regression des pages Tailwind (accueil) OK, contrat toujours a 67 fichiers identiques, build OK.",
+      "files": [
+        "apps/portail/src/styles-admin.scss",
+        "apps/portail/src/styles.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-opus-5",
+      "prompt": "ameliore le graphisme (uniquement css portail) pour que l admin ressemble a celui de /portail/, garde les couleurs THI mais le design de /portail/",
+      "startedAt": "2026-08-01T11:20:53.474Z",
+      "completedAt": "2026-08-01T12:05:53.474Z"
+    },
+    {
+      "id": "mod-610",
+      "version": "B-0.339",
+      "date": "2026-08-02T16:34:14.997Z",
+      "type": "feature",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "portail",
+        "libs",
+        "system"
+      ],
+      "features": "portail:landing,system:workflow",
+      "title": "Restauration de la landing riche THI a la racine",
+      "description": "La racine (\"\") redirigeait directement vers home (guarde) puis /connexion, comportement aligne sur Airbus depuis l unification. THI avait auparavant une landing publique design (particules, hero, features, modales login/register), deplacee sur /landing (route mineure jamais liee dans le menu) lors de la bascule, avec un commentaire documentant ce choix delibere. Restauree a la racine via un nouveau slot landing (meme mecanisme que le slot home, tools/generate-page-overrides.mjs) : composant par defaut (redirection silencieuse vers /connexion ou /home) identique dans les deux depots, surcharge riche dans apps/portail-shell-special/ propre a THI (absente cote Airbus). Portee depuis la copie pre-migration du depot avec adaptation aux nouveaux tokens (@portail/core-data-access, @portail/shared-ui), redirection post-connexion vers /home (au lieu de l ancien navigateToProjets cross-origine, plus necessaire dans le shell unifie), variables CSS --tw-accent/--tw-primary/--tw-secondary redefinies localement (scopees a .landing-root, l ancien systeme Tailwind THI n existe plus). Ancien doublon mort (apps/portail-shell/src/app/pages/public/landing/) et sa route /landing dans portal-routes.ts supprimes. Contrat etendu (landing/landing.component.ts ajoute a la liste verifiee), verifier-contrat.mjs vert dans les deux depots (86 fichiers), builds portail-shell (2 depots) et projets OK.",
+      "files": [
+        "apps/portail-shell/src/app/app.routes.ts",
+        "apps/portail-shell/src/app/landing/landing.component.ts",
+        "apps/portail-shell-special/src/app/landing/landing.component.ts",
+        "apps/portail-shell-special/src/app/landing/landing.component.html",
+        "apps/portail-shell-special/src/app/landing/landing.component.scss",
+        "apps/portail-shell/src/app/portal-routes.ts",
+        "tools/generate-page-overrides.mjs",
+        "tools/verifier-contrat.mjs",
+        "tests/fonctions/non-connecte/landing/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "lorsque je lance @THI-V01-child-user3Worganic Launcher.lnk la version que je voi a l ecran n est pas la bonne version, je devrait avoir une page de presentation de THI (...) je devrais avoir une page custom (ancien design) qui surcharge cette page par defaut",
+      "startedAt": "2026-08-02T15:34:14.999Z",
+      "completedAt": "2026-08-02T16:34:14.999Z"
+    },
+    {
+      "id": "mod-611",
+      "version": "B-0.339",
+      "date": "2026-08-02T16:34:14.999Z",
+      "type": "fix",
+      "commitType": "FIX",
+      "scope": [
+        "portail"
+      ],
+      "features": "portail:admin",
+      "title": "Fix redirection vers accueil connecte depuis Admin > Applications/Autres",
+      "description": "Cliquer sur les categories Applications ou Autres du menu Admin (onglets Projets et Tests, contribues via AdminTabsRegistryService) renvoyait systematiquement vers /home. Cause : AdminProjetsComponent et AdminTestsComponent attendaient encore un parametre de route :subtab (ancien schema avec route dediee /admin/projets/:subtab et /admin/tests/:subtab) ; montes desormais via la route generique admin/app/:id (un seul segment, sans sous-segment subtab), ce parametre est toujours absent, ce qui declenchait une navigation de secours vers un chemin qui n existe plus dans app.routes.ts, intercepte par le wildcard catch-all (redirectTo: home). Corrige en retirant la subscription a ActivatedRoute.params et les appels router.navigate devenus invalides dans les deux composants ; le sous-onglet actif reste un signal local (perd la persistance par URL/deep-link, mais reste correctement joignable). Verifie : portail/ n a pas d equivalent (pas de dossier child/ ni d appli-projets), bug propre a THI, aucune divergence a reporter. Repro/fix confirmes au navigateur (dispatch de clic reel + suivi history.pushState/replaceState), build portail-shell OK.",
+      "files": [
+        "apps/portail-shell/src/app/pages/admin/tabs/admin-projets/admin-projets.component.ts",
+        "apps/portail-shell/src/app/pages/admin/tabs/admin-tests/admin-tests.component.ts",
+        "tests/fonctions/connecte/admin/projets/fonctions.md",
+        "tests/fonctions/connecte/admin/tests/fonctions.md"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "le menu admin/Applications et admin/Autres renvoi vers la page d accueil connecte, corrige le probleme et verifi avec le projet portail/ si il y a des differences",
+      "startedAt": "2026-08-02T16:14:14.999Z",
+      "completedAt": "2026-08-02T16:34:14.999Z"
     }
   ]
 }

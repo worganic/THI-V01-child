@@ -51,6 +51,18 @@ const FICHIERS_DU_CONTRAT = [
   // ── Socle d'interface ────────────────────────────────────────────────────
   'libs/shared/ui/src/index.ts',
   'libs/shared/ui/src/lib/service/theme.service.ts',
+  'libs/shared/ui/src/portal-forms.scss',
+  'libs/shared/ui/src/portal-cards.scss',
+  'libs/shared/ui/src/portal-tables.scss',
+  'libs/shared/ui/src/portal-buttons.scss',
+  'libs/shared/ui/src/lib/admin-app-shell/admin-app-shell.component.ts',
+  'libs/shared/ui/src/lib/admin-app-shell/admin-app-shell.component.html',
+  'libs/shared/ui/src/lib/admin-app-shell/admin-app-shell.component.scss',
+  'libs/shared/ui/src/lib/admin-app-shell/portal-css-preview.component.ts',
+  'libs/shared/ui/src/lib/page-header/page-header.component.ts',
+  'libs/shared/ui/src/lib/page-header/page-header.component.html',
+  'libs/shared/ui/src/lib/page-header/page-header.component.scss',
+  'libs/shared/ui/src/portal-bootstrap-theme.scss',
   'libs/shared/utils/src/index.ts',
 
   // ── Outillage de test ────────────────────────────────────────────────────
@@ -72,15 +84,23 @@ const FICHIERS_DU_CONTRAT = [
   // ── Documentation et outillage du contrat ────────────────────────────────
   'docs/architecture-sous-applications.md',
   'tools/verifier-contrat.mjs',
+  'tools/generate-page-overrides.mjs',
 ];
 
+// N'y figurent pas non plus les fichiers `*.slot.ts` (générés par
+// tools/generate-page-overrides.mjs) ni le dossier `apps/<app>-special/` :
+// leur contenu dépend, par construction, de la présence locale d'une
+// surcharge et n'a pas vocation à être identique d'un repo à l'autre.
+
 /**
- * Racine du shell du portail dans chaque monorepo. Le projet NX n'y porte pas
- * le même nom, mais le contenu de `src/` est le même.
+ * Racine du shell du portail dans chaque monorepo. Depuis le renommage de
+ * l'app THI (`apps/portail` → `apps/portail-shell`, 2026-08-01), le même
+ * chemin et le même nom de projet NX sont utilisés des deux côtés — la table
+ * reste indirecte pour ne pas coupler ce script à cette coïncidence.
  */
 const RACINE_SHELL = {
   'portail': 'apps/portail-shell/src',
-  'THI-V01-child-user3': 'apps/portail/src',
+  'THI-V01-child-user3': 'apps/portail-shell/src',
 };
 
 /**
@@ -105,12 +125,17 @@ const FICHIERS_DU_SHELL = [
   'app/admin/admin.component.ts',
   'app/admin/admin.component.html',
   'app/admin/admin.component.scss',
+  'app/admin/admin-app-host/admin-app-host.component.ts',
+  'app/admin/admin-app-host/admin-app-host.component.html',
   'app/admin/admin-affectations/admin-affectations.component.ts',
   'app/admin/admin-affectations/admin-affectations.component.html',
   'app/admin/admin-apps/admin-apps.component.ts',
   'app/admin/admin-apps/admin-apps.component.html',
   'app/admin/admin-config/admin-config.component.ts',
   'app/admin/admin-config/admin-config.component.html',
+  'app/admin/admin-design/admin-design.component.ts',
+  'app/admin/admin-design/admin-design.component.html',
+  'app/admin/admin-design/admin-design.component.scss',
   'app/admin/admin-export/admin-export.component.ts',
   'app/admin/admin-export/admin-export.component.html',
   'app/admin/admin-groupes/admin-groupes.component.ts',
@@ -131,6 +156,7 @@ const FICHIERS_DU_SHELL = [
   'app/home/home.component.ts',
   'app/home/home.component.html',
   'app/home/home.component.scss',
+  'app/landing/landing.component.ts',
   'models/admin.models.ts',
   'services/admin.service.ts',
   'services/connexion.service.ts',
