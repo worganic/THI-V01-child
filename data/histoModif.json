@@ -15835,6 +15835,28 @@
       "prompt": "le menu admin/Applications et admin/Autres renvoi vers la page d accueil connecte, corrige le probleme et verifi avec le projet portail/ si il y a des differences",
       "startedAt": "2026-08-02T16:14:14.999Z",
       "completedAt": "2026-08-02T16:34:14.999Z"
+    },
+    {
+      "id": "mod-612",
+      "version": "B-0.339",
+      "date": "2026-08-02T17:20:46.340Z",
+      "type": "fix",
+      "commitType": "AMELIORATION",
+      "scope": [
+        "libs",
+        "portail"
+      ],
+      "features": "portail:design-system,system:workflow",
+      "title": "Fix boutons .portal-btn sans remplissage cote Tailwind + refonte visuelle",
+      "description": "Les boutons du systeme partage .portal-btn (libs/shared/ui/src/portal-buttons.scss, fichier contrat identique aux deux depots) apparaissaient comme de simples contours fins sans fond ni espacement dans ce portail (Tailwind) : Admin > Config > Design System (Dupliquer la palette / Voir le code CSS / Mode Sombre-Clair) tres illisible sur fond sombre. Cause reelle : tout le fichier etait enveloppe dans :where(...) (specificite nulle, intentionnel pour rester surchargeable), qui perd systematiquement face au reset Preflight de Tailwind (button, input... { padding:0; background-color:transparent; margin:0 }, specificite reelle (0,0,1)), charge avant ce fichier dans styles.scss. Fix : selecteurs de classe normaux (specificite (0,1,0), suffisant pour battre Tailwind, toujours perdant face a un style de composant plus specifique). Profite de l occasion pour une refonte visuelle : fond teinte des le repos (pas seulement au survol) sur les variantes de couleur generiques (blue/green/purple/amber/slate/red), rayon de bordure agrandi (4->7px), ombre portee legere + effet actif (translateY), tons plus lisibles sur fond tres sombre. N affectait pas visuellement le portail Bootstrap (Airbus) de la meme maniere (Bootstrap ne fait pas ce reset agressif), mais le fix beneficie aux deux (specificite plus robuste, contrat identique). Verifie au navigateur (styles calcules avant/apres), contrat vert (86 fichiers), builds portail-shell OK des deux cotes.",
+      "files": [
+        "libs/shared/ui/src/portal-buttons.scss"
+      ],
+      "ai": "Claude Code",
+      "model": "claude-sonnet-5",
+      "prompt": "ameliore le design general de ces boutons qui sont tres moche",
+      "startedAt": "2026-08-02T16:50:46.342Z",
+      "completedAt": "2026-08-02T17:20:46.342Z"
     }
   ]
 }

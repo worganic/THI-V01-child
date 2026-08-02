@@ -1,0 +1,180 @@
+// =============================================================================
+// CONTRAT DE STYLE DES BOUTONS DU PORTAIL
+// -----------------------------------------------------------------------------
+// Meme regle que portal-tokens.scss / portal-forms.scss / portal-cards.scss /
+// portal-tables.scss (voir ces fichiers, meme dossier) : meme chemin, meme
+// contenu dans les deux monorepos. Ne cible que des classes generiques (aucune
+// classe Bootstrap ni Tailwind) et ne consomme que les variables de
+// portal-tokens.scss (voir docs/architecture-sous-applications.md, section 9).
+//
+// Charge une seule fois par apps/portail-shell/src/styles.scss : ces regles
+// s'appliquent donc automatiquement a toutes les sous-applications.
+//
+// Equivalent portable des boutons Bootstrap `btn btn-sm btn-outline-*` utilises
+// par l'admin du portail (voir apps/portail-shell/src/app/admin/admin-users) :
+// meme lecture visuelle (contour teinte, fond au survol), mais exprimee en
+// variables du contrat, donc valable aussi dans le portail Tailwind.
+//
+//   <button class="portal-btn portal-btn-sm portal-btn-blue">Editer</button>
+//   <button class="portal-btn portal-btn-red">Supprimer</button>
+//   <button class="portal-btn portal-btn-primary">Ajouter</button>
+//
+// Selecteurs de classe normaux (pas de :where(...)) : specificite (0,1,0), assez
+// pour battre le reset `button, input, ... { padding:0; background-color:transparent;
+// margin:0 }` du Preflight Tailwind (specificite (0,0,1), charge par @tailwind base
+// AVANT ce fichier dans styles.scss) - sans ce niveau minimal de specificite, ce
+// reset gagnait toujours sur le fond et le padding, laissant ces boutons sans
+// remplissage ni espacement cote portail Tailwind (contour seul, illisible). Un
+// style de composant plus specifique (au moins une classe/attribut Angular en plus)
+// l'emporte toujours normalement sur ce fichier.
+// =============================================================================
+
+.portal-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid var(--border-color);
+  border-radius: 7px;
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, transform 0.1s ease-in-out;
+}
+
+.portal-btn:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--text-secondary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.portal-btn:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.portal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.portal-btn.portal-btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+  border-radius: 6px;
+}
+
+// Variantes de couleur : memes noms que les categories du contrat de tokens
+// (--category-*), deja utilises ailleurs pour les pastilles metier. Le jeu
+// `-text` / `-border` / `-bg` est defini pour les deux themes dans
+// portal-tokens.scss : ces boutons suivent donc clair/sombre sans rien de plus.
+// Fond teinte des le repos (pas seulement au survol) : un simple contour fin sur
+// fond transparent se noie dans les pages sombres, la surface teintee donne au
+// bouton un poids visuel propre, lisible dans les deux themes.
+// Noms cites : `blue`, `green`, `purple` et `red` sont des mots-cles couleur en
+// Sass, qui les interpolerait comme des valeurs de couleur sans les guillemets.
+@each $variante in ('blue', 'green', 'purple', 'amber', 'slate', 'red') {
+  .portal-btn.portal-btn-#{$variante} {
+    color: var(--category-#{$variante}-text);
+    border-color: var(--category-#{$variante}-border);
+    background: var(--category-#{$variante}-bg);
+  }
+
+  .portal-btn.portal-btn-#{$variante}:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--category-#{$variante}-bg) 80%, var(--category-#{$variante}-border) 20%);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--category-#{$variante}-border) 35%, transparent);
+  }
+}
+
+// Action principale : plein, aux couleurs de marque (equivalent de `btn-primary`).
+.portal-btn.portal-btn-primary {
+  background: var(--brand-primary);
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}
+
+.portal-btn.portal-btn-primary:hover:not(:disabled) {
+  background: var(--brand-secondary);
+  border-color: var(--brand-secondary);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-secondary) 45%, transparent);
+}
+
+// Bouton "retour" : convention commune a toutes les sous-applications pour revenir a la page/
+// liste parente (ex: retour a la liste des agendas depuis un agenda ouvert). A placer sous le
+// bloc titre (<lib-page-header>), pas au-dessus ni a cote. La fleche est injectee en CSS pour que
+// le HTML reste juste "Retour ..." sans dupliquer le glyphe partout.
+//
+//   <a class="portal-btn portal-btn-sm portal-btn-back" routerLink="..">Retour aux agendas</a>
+//   <button class="portal-btn portal-btn-sm portal-btn-back" (click)="goBack()">Retour</button>
+.portal-btn.portal-btn-back {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.portal-btn.portal-btn-back::before {
+  content: '←';
+}
+
+.portal-btn.portal-btn-back:hover:not(:disabled) {
+  background: var(--surface-alt);
+  color: var(--text-primary);
+  border-color: var(--text-secondary);
+}
+
+// Boutons d'action sémantiques (Insert, Update, Delete, Save, Icon)
+.portal-btn-insert {
+  color: var(--category-green-text);
+  border-color: var(--category-green-border);
+  background: var(--category-green-bg);
+}
+.portal-btn-insert:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--category-green-bg) 85%, black 15%);
+}
+
+.portal-btn-update {
+  color: var(--category-blue-text);
+  border-color: var(--category-blue-border);
+  background: var(--category-blue-bg);
+}
+.portal-btn-update:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--category-blue-bg) 85%, black 15%);
+}
+
+.portal-btn-delete {
+  color: var(--category-red-text);
+  border-color: var(--category-red-border);
+  background: var(--category-red-bg);
+}
+.portal-btn-delete:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--category-red-bg) 85%, black 15%);
+}
+
+.portal-btn-save {
+  background: var(--brand-green);
+  border-color: var(--brand-green);
+  color: #ffffff;
+}
+.portal-btn-save:hover:not(:disabled) {
+  filter: brightness(0.95);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-green) 45%, transparent);
+}
+
+.portal-btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
